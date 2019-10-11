@@ -35,7 +35,7 @@
                                   :placeholder="$t('device-management.origin-model-placeholder')"/>
                   </b-form-group>
                   <b-form-group class="text-right">
-                    <b-button type="submit" variant="primary" class="mt-2 px-5">{{ $t('device-management.save') }}</b-button>
+                    <b-button type="submit" variant="primary" class="mt-2">{{ $t('device-management.save') }}</b-button>
                   </b-form-group>
 
                 </b-form>
@@ -111,9 +111,9 @@
         direction: getDirection().direction,
         searchType: 'chocolate',
         typeData: [
-          {label: 'Chocolate', value: 'chocolate'},
-          {label: 'Vanilla', value: 'vanilla'},
-          {label: 'Strawberry', value: 'strawberry'}
+          {label: this.$t('device-management.all'), value: ''},
+          {label: this.$t('device-management.active'), value: 'Active'},
+          {label: this.$t('device-management.inactive'), value: 'Inactive'}
         ],
         basicForm: {
           templateName: '',
@@ -123,63 +123,56 @@
           originModel: '',
         },
         deviceClassifyData: [
-          {label: 'Chocolate', value: 'chocolate'},
-          {label: 'Vanilla', value: 'vanilla'},
-          {label: 'Strawberry', value: 'strawberry'},
-          {label: 'Caramel', value: 'caramel'},
-          {label: 'Cookies and Cream', value: 'cookiescream'},
-          {label: 'Peppermint', value: 'peppermint'}
+          {label: this.$t('device-management.device-person'), value: 'chocolate'},
+          {label: this.$t('device-management.device-food'), value: 'vanilla'},
+          {label: this.$t('device-management.device-transport'), value: 'vanilla'}
         ],
         selectData: [
-          {label: 'Chocolate', value: 'chocolate'},
-          {label: 'Vanilla', value: 'vanilla'},
-          {label: 'Strawberry', value: 'strawberry'},
-          {label: 'Caramel', value: 'caramel'},
-          {label: 'Cookies and Cream', value: 'cookiescream'},
-          {label: 'Peppermint', value: 'peppermint'}
+          {label: this.$t('device-management.factory1'), value: 'chocolate'},
+          {label: this.$t('device-management.factory1'), value: 'chocolate'}
         ],
         vuetableItems: {
           apiUrl: apiUrl + '/cakes/fordatatable',
           fields: [
             {
-              name: 'title',
-              sortField: 'title',
+              name: 'no',
+              sortField: 'no',
               title: this.$t('device-management.no'),
               titleClass: '',
               dataClass: 'list-item-heading'
             },
             {
-              name: 'sales',
-              sortField: 'sales',
+              name: 'number',
+              sortField: 'number',
               title: this.$t('device-management.template-number'),
               titleClass: '',
               dataClass: 'text-muted'
             },
             {
-              name: 'stock',
-              sortField: 'stock',
+              name: 'name',
+              sortField: 'name',
               title: this.$t('device-management.template-name'),
               titleClass: '',
               dataClass: 'text-muted'
             },
             {
-              name: 'category',
-              sortField: 'category',
+              name: 'classify',
+              sortField: 'classify',
               title: this.$t('device-management.device-classify'),
               titleClass: '',
               dataClass: 'text-muted'
             },
             {
-              name: 'category',
-              sortField: 'category',
+              name: 'setting',
+              sortField: 'setting',
               title: this.$t('device-management.setting'),
               titleClass: '',
               dataClass: 'text-muted'
             },
             {
-              name: 'category',
-              sortField: 'category',
-              title: this.$t('device-management.effective'),
+              name: 'active',
+              sortField: 'active',
+              title: this.$t('device-management.active'),
               titleClass: '',
               dataClass: 'text-muted'
             }
