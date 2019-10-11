@@ -6,11 +6,11 @@ export const buyUrl = 'https://1.envato.market/nEyZa'
 export const subHiddenBreakpoint = 1440
 export const menuHiddenBreakpoint = 768
 
-export const defaultLocale = '中文'
+export const defaultLocale = 'zh'
 export const defaultDirection = 'ltr'
 export const localeOptions = [
   { id: 'en', name: 'English LTR', direction: 'ltr' },
-  { id: '中文', name: '中文', direction: 'ltr' },
+  { id: 'zh', name: '中文', direction: 'ltr' },
   { id: 'es', name: 'Español', direction: 'ltr' },
   { id: 'enrtl', name: 'English RTL', direction: 'rtl' }
 ]
