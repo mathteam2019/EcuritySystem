@@ -1,0 +1,30 @@
+// 开关设置
+//-----------------------------------------------------	
+$lte7:                  true !default; //是否兼容ie6-7
+$filter:                false !default; //是否为ie6-8开启css3滤镜兼容，常用于渐变背景 
+
+// 基本颜色
+// color function 
+//-----------------------------------------------------	
+$black:                 #000 !default;
+$grayDarker:            #333 !default;
+$grayDark:              #999 !default;
+$gray:                  #ccc !default;
+$grayLight:             #f5f5f5 !default;
+$white:                 #fff !default;
+
+$red:                   #cc3300 !default;
+$blue:                  #00A3CF !default;
+$blueDark:              #0064cd !default;
+$orange:                #F47837 !default;
+$green:                 #51B148 !default;
+$yellow:                #ffc40d !default;
+$pink:                  #c3325f !default;
+$purple:                #7a43b6 !default;
+
+$primary:               #0078E7 !default;//主色
+
+//基本数值
+//---------------------------------------------------------
+$all:                   100%!default;
+
