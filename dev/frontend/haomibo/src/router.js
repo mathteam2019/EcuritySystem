@@ -95,7 +95,15 @@ const routes = [
   },
   {
     path: '/error',
-    component: () => import( './views/Error')
+    component: () => import( './views/error404')
+  },
+  {
+    path: '/error/404',
+    component: () => import( './views/error404')
+  },
+  {
+    path: '/error/405',
+    component: () => import( './views/error405')
   },
   {
     path: '/user',
@@ -118,7 +126,7 @@ const routes = [
   },
   {
     path: '*',
-    component: () => import( './views/Error')
+    component: () => import( './views/error404')
   }
 ]
 

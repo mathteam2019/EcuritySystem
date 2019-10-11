@@ -57,9 +57,9 @@
   "pages": {
     "project-name": "欢迎访问统一管理系统",
     "enter-login-information": "请输入你的登录信息",
-    "error-title": "Ooops... looks like an error occurred!",
-    "error-code": "Error Code",
-    "go-back-home": "GO BACK HOME"
+    "error-title": "糟糕...似乎发生了错误！",
+    "error-code": "错码",
+    "go-back-home": "退回"
   },
   "permission-management": {
     "organization-table": "机构列表"
@@ -81,5 +81,8 @@
   },
   "system-setting": {
 
+  },
+  "error-404": {
+    "it-is-indeed":"是的，的确如此！"
   }
 }

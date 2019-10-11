@@ -1,28 +1,28 @@
 const data = [
   {
     id: 'dashboard',
-    icon: "simple-icon-magic-wand",
+    icon: "simple-icon-home",
     label: "menu.dashboard",
     to: "/app/dashboard",
     newWindow: false
   },
   {
     id: "permission-management",
-    icon: "simple-icon-hourglass",
+    icon: "simple-icon-shield",
     label: "menu.permission-management",
     to: "/app/permission-management",
     newWindow: false,
     subs: [
       {
         id: 'permission-management-*-organization-management',
-        icon: "simple-icon-graduation",
+        icon: "simple-icon-organization",
         label: "menu.organization-management",
         to: "/app/permission-management/organization-management",
         newWindow: false
       },
       {
         id: 'permission-management-*-role-management',
-        icon: "simple-icon-ghost",
+        icon: "simple-icon-magic-wand",
         label: "menu.role-management",
         to: "/app/permission-management/role-management",
         newWindow: false
@@ -36,7 +36,7 @@ const data = [
       },
       {
         id: 'permission-management-*-user-management',
-        icon: "simple-icon-fire",
+        icon: "simple-icon-user",
         label: "menu.user-management",
         to: "/app/permission-management/user-management",
         newWindow: false
@@ -45,49 +45,49 @@ const data = [
   },
   {
     id: "device-management",
-    icon: "simple-icon-eyeglass",
+    icon: "simple-icon-puzzle",
     label: "menu.device-management",
     to: "/app/device-management",
     newWindow: false,
     subs: [
       {
         id: 'device-management-*-device-classify',
-        icon: "simple-icon-envelope-open",
+        icon: "simple-icon-chemistry",
         label: "menu.device-classify",
         to: "/app/device-management/device-classify",
         newWindow: false
       },
       {
         id: 'device-management-*-document-template',
-        icon: "simple-icon-badge",
+        icon: "simple-icon-docs",
         label: "menu.document-template",
         to: "/app/device-management/document-template",
         newWindow: false
       },
       {
         id: 'device-management-*-document-management',
-        icon: "simple-icon-anchor",
+        icon: "simple-icon-folder",
         label: "menu.document-management",
         to: "/app/device-management/document-management",
         newWindow: false
       },
       {
         id: 'device-management-*-device-table',
-        icon: "simple-icon-wallet",
+        icon: "simple-icon-puzzle",
         label: "menu.device-table",
         to: "/app/device-management/device-table",
         newWindow: false
       },
       {
         id: 'device-management-*-device-config',
-        icon: "simple-icon-vector",
+        icon: "simple-icon-settings",
         label: "menu.device-config",
         to: "/app/device-management/device-config",
         newWindow: false
       },
       {
         id: 'device-management-*-condition-monitoring',
-        icon: "simple-icon-speech",
+        icon: "simple-icon-screen-desktop",
         label: "menu.condition-monitoring",
         to: "/app/device-management/condition-monitoring",
         newWindow: false
@@ -96,21 +96,21 @@ const data = [
   },
   {
     id: "system-setting",
-    icon: "simple-icon-puzzle",
+    icon: "simple-icon-settings",
     label: "menu.system-setting",
     to: "/app/system-setting",
     newWindow: false,
     subs: [
       {
         id: 'system-setting-*-parameter-setting',
-        icon: "simple-icon-printer",
+        icon: "simple-icon-grid",
         label: "menu.parameter-setting",
         to: "/app/system-setting/parameter-setting",
         newWindow: false
       },
       {
         id: 'system-setting-*-site-management',
-        icon: "simple-icon-present",
+        icon: "simple-icon-settings",
         label: "menu.site-management",
         to: "/app/system-setting/site-management",
         newWindow: false
