@@ -83,6 +83,12 @@
       "all": "全部",
       "active": "生效",
       "inactive": "未生效",
+      "condition-monitoring": "状态监控",
+      "package": "通道",
+      "device-name": "设备名称",
+      "search": "检索",
+      "reset": "重置",
+      "switch-image-list": "图片/清单",
       "document-management": {
         "document-table": "档案列表",
         "document-stat": "业务统计"
