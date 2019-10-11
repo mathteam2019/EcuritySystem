@@ -62,5 +62,14 @@
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
     "go-back-home": "GO BACK HOME"
+  },
+  "permission-management": {
+    "organization-table": "机构列表"
+  },
+  "device-management": {
+
+  },
+  "system-setting": {
+
   }
 }

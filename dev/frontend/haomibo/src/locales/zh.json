@@ -36,8 +36,7 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
-    "docs":"Docs",
-
+    "docs": "Docs",
     "dashboard": "主页",
     "permission-management": "权限管理",
     "organization-management": "机构管理",
@@ -54,7 +53,6 @@
     "system-setting": "系统设置",
     "parameter-setting": "参数设置",
     "site-management": "场地管理"
-
   },
   "pages": {
     "project-name": "欢迎访问统一管理系统",
@@ -62,5 +60,14 @@
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
     "go-back-home": "GO BACK HOME"
+  },
+  "permission-management": {
+    "organization-table": "机构列表"
+  },
+  "device-management": {
+
+  },
+  "system-setting": {
+
   }
 }
