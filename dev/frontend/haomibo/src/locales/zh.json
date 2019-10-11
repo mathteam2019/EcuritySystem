@@ -57,15 +57,36 @@
   "pages": {
     "project-name": "欢迎访问统一管理系统",
     "enter-login-information": "请输入你的登录信息",
-    "error-title": "Ooops... looks like an error occurred!",
-    "error-code": "Error Code",
-    "go-back-home": "GO BACK HOME"
+    "error-title": "糟糕...似乎发生了错误！",
+    "error-code": "错码",
+    "go-back-home": "退回"
   },
   "permission-management": {
     "organization-table": "机构列表"
   },
   "device-management": {
-
+      "file-template": "档案模板",
+      "business-stat": "业务统计",
+      "template-number" : "模板编号",
+      "template-number-placeholder" : "请输入模板编号",
+      "template-name": "模板名称",
+      "template-name-placeholder":"请输入模板编号",
+      "device-classify": "设备分类",
+      "device-classify-placeholder": "请选择设备分类",
+      "manufacture": "生产厂商",
+      "origin-model": "原厂型号",
+      "origin-model-placeholder": "请输入原厂型号",
+      "save": "保存",
+      "no": "序号",
+      "setting": "设置",
+      "active": "生效",
+      "all": "全部",
+      "active": "生效",
+      "inactive": "未生效",
+      "document-management": {
+        "document-table": "档案列表",
+        "document-stat": "业务统计"
+      }
   },
   "system-setting": {
     "site-list": "场地列表",
@@ -91,5 +112,8 @@
     "none": "无",
     "modify": "修改",
     "delete": "删除"
+  },
+  "error-404": {
+    "it-is-indeed":"是的，的确如此！"
   }
 }
