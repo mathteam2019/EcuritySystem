@@ -13,7 +13,7 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs nav-class="separator-tabs ml-0 mb-5" class="w-100" content-class="tab-content" :no-fade="true">
 
       <b-tab :title="$t('device-management.condition-monitoring')">
         <b-row>
@@ -22,7 +22,7 @@
 
               <b-row>
                 <b-col xs="12" md="10"  class="d-flex justify-content-between">
-                  <div class="flex-grow-1">
+                  <div class="w-70">
                     <b-row>
                       <b-col>
                         <b-form-group :label="$t('device-management.package')">
