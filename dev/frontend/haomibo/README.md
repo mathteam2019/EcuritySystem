@@ -1,4 +1,4 @@
-# piaf-vue
+# haomibo-vue
 
 ## Project setup
 ```

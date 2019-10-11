@@ -1860,6 +1860,7 @@ button {
       height: 100%;
       background: url($logoPath) no-repeat;
       background-position: center center;
+      background-size: contain;
     }
 
     .logo-mobile {
