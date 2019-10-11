@@ -27,6 +27,8 @@
     "charts": "Charts",
     "search": "Search",
     "login": "Login",
+    "account":  "Account",
+    "sign-out":  "Sign out",
     "register": "Register",
     "forgot-password": "Forgot Password",
     "error": "Error",

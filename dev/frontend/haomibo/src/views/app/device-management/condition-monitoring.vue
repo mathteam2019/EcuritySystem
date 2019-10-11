@@ -1,3 +1,9 @@
+<style>
+  div.device-list-wrapper div.item {
+    min-height: 200px;
+    margin-bottom: 20px;
+  }
+</style>
 <template>
   <div>
     <b-row>
@@ -57,7 +63,80 @@
                   </b-row>
                 </b-col>
               </b-row>
-
+              <b-row class="device-list-wrapper">
+                <b-col xs="12" md="4" xl="3">
+                  <b-card class="item flex-row" no-body>
+                    <div class="w-50 position-relative">
+                      <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
+                    </div>
+                    <div class="w-50">
+                      <b-card-body>
+                        <b-badge variant="success" pill class="position-absolute badge-top-right ">{{$t('device-management.status-ok')}}</b-badge>
+                        <h2 class="mb-4 card-subtitle font-weight-bold">MW1000AA-001</h2>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.classify')}}: 人体查验设备</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.package')}}: 通道001</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.manufacture')}}：同方威视</p>
+                        <p class="card-text text-small mb-0 font-weight-light">IP: 192.168.22.235</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.register-number')}}:</p>
+                      </b-card-body>
+                    </div>
+                  </b-card>
+                </b-col>
+                <b-col xs="12" md="4" xl="3">
+                  <b-card class="item flex-row" no-body>
+                    <div class="w-50 position-relative">
+                      <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
+                    </div>
+                    <div class="w-50">
+                      <b-card-body>
+                        <b-badge variant="danger" pill class="position-absolute badge-top-right">{{$t('device-management.status-bad')}}</b-badge>
+                        <h2 class="mb-4 card-subtitle font-weight-bold">MW1000AA-001</h2>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.classify')}}: 人体查验设备</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.package')}}: 通道001</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.manufacture')}}：同方威视</p>
+                        <p class="card-text text-small mb-0 font-weight-light">IP: 192.168.22.235</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.register-number')}}:</p>
+                      </b-card-body>
+                    </div>
+                  </b-card>
+                </b-col>
+                <b-col xs="12" md="4" xl="3">
+                  <b-card class="item flex-row" no-body>
+                    <div class="w-50 position-relative">
+                      <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
+                    </div>
+                    <div class="w-50">
+                      <b-card-body>
+                        <b-badge variant="light" pill class="position-absolute badge-top-right ">{{$t('device-management.status-unset')}}</b-badge>
+                        <h2 class="mb-4 card-subtitle font-weight-bold">MW1000AA-001</h2>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.classify')}}: 人体查验设备</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.package')}}: 通道001</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.manufacture')}}：同方威视</p>
+                        <p class="card-text text-small mb-0 font-weight-light">IP: 192.168.22.235</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.register-number')}}:</p>
+                      </b-card-body>
+                    </div>
+                  </b-card>
+                </b-col>
+                <b-col xs="12" md="4" xl="3">
+                  <b-card class="item flex-row" no-body>
+                    <div class="w-50 position-relative">
+                      <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
+                    </div>
+                    <div class="w-50">
+                      <b-card-body>
+                        <b-badge variant="success" pill class="position-absolute badge-top-right ">{{$t('device-management.status-ok')}}</b-badge>
+                        <h2 class="mb-4 card-subtitle font-weight-bold">MW1000AA-001</h2>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.classify')}}: 人体查验设备</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.package')}}: 通道001</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.manufacture')}}：同方威视</p>
+                        <p class="card-text text-small mb-0 font-weight-light">IP: 192.168.22.235</p>
+                        <p class="card-text text-small mb-0 font-weight-light">{{$t('device-management.register-number')}}:</p>
+                      </b-card-body>
+                    </div>
+                  </b-card>
+                </b-col>
+              </b-row>
             </b-card>
           </b-col>
         </b-row>
@@ -101,6 +180,13 @@
   })
 
   export default {
+    props: {
+      numLabels: {
+        type: Number, // type of the property
+        required: (true|false), // is this prop required or not?
+        default: 0 // default value for this prop
+      }
+    },
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,

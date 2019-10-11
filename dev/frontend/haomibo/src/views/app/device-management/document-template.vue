@@ -132,8 +132,8 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import { getDirection } from '../../../utils'
   import {
-      barChartData,
-      pieChartData
+    barChartData,
+    pieChartData
   } from '../../../data/charts'
   import BarShadowChart from '../../../components/Charts/BarShadow'
   import PieShadowChart from '../../../components/Charts/PieShadow'
