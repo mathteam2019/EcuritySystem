@@ -1,0 +1,49 @@
+{
+  "general": {
+    "copyright": "Piaf Vue © 2018 All Rights Reserved."
+  },
+  "user": {
+    "login-title": "登录",
+    "register": "Register",
+    "forgot-password": "Forgot Password",
+    "email": "邮件",
+    "password": "密码",
+    "forgot-password-question": "Forget password?",
+    "fullname": "Full Name",
+    "login-button": "登录",
+    "register-button": "注册",
+    "reset-password-button": "RESET",
+    "buy": "BUY",
+    "username": "Username"
+  },
+  "menu": {
+    "app": "Home",
+    "piaf": "Piaf",
+    "dashboards": "Dashboards",
+    "second-menu": "Second Menu",
+    "second": "Second",
+    "start": "Start",
+    "single": "Single",
+    "pages": "Pages",
+    "charts": "Charts",
+    "search": "Search",
+    "login": "Login",
+    "register": "Register",
+    "forgot-password": "Forgot Password",
+    "error": "Error",
+    "applications": "Applications",
+    "todo": "To-do List",
+    "library": "Library",
+    "survey": "Survey",
+    "chat": "Chat",
+    "ui": "UI",
+    "docs":"Docs"
+  },
+  "pages": {
+    "project-name": "欢迎访问统一管理系统",
+    "enter-login-information": "请输入你的登录信息",
+    "error-title": "Ooops... looks like an error occurred!",
+    "error-code": "Error Code",
+    "go-back-home": "GO BACK HOME"
+  }
+}
