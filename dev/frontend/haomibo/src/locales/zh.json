@@ -65,7 +65,19 @@
     "organization-table": "机构列表"
   },
   "device-management": {
-
+      "template-number" : "模板编号",
+      "template-number-placeholder" : "请输入模板编号",
+      "template-name": "模板名称",
+      "template-name-placeholder":"请输入模板编号",
+      "device-classify": "设备分类",
+      "device-classify-placeholder": "请选择设备分类",
+      "manufacture": "生产厂商",
+      "origin-model": "原厂型号",
+      "origin-model-placeholder": "请输入原厂型号",
+      "save": "保存",
+      "no": "序号",
+      "setting": "设置",
+      "effective": "生效"
   },
   "system-setting": {
 
