@@ -77,7 +77,9 @@
       "save": "保存",
       "no": "序号",
       "setting": "设置",
-      "active": "生效"
+      "all": "全部",
+      "active": "生效",
+      "inactive": "未生效"
   },
   "system-setting": {
 
