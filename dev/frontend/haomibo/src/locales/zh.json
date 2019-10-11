@@ -140,6 +140,10 @@
       "status-unset": "未联网",
       "classify": "分类",
       "register-number": "登录账号",
+      "device-connect": "场地配置",
+      "running-config": "设备关联",
+      "maintenance-config": "运行配置",
+      "site-config": "维保配置",
       "document-management": {
         "document-table": "档案列表",
         "document-stat": "业务统计"
