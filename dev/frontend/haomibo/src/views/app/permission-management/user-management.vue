@@ -213,8 +213,6 @@
   import _ from "lodash";
 
   import staticUserTableData from '../../../data/user'
-  import Vue from 'vue'
-
 
   export default {
     components: {

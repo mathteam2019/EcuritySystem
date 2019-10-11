@@ -73,7 +73,7 @@ const data = [
       },
       {
         id: 'device-management-*-device-table',
-        icon: "simple-icon-puzzle",
+        icon: "simple-icon-grid",
         label: "menu.device-table",
         to: "/app/device-management/device-table",
         newWindow: false
@@ -103,7 +103,7 @@ const data = [
     subs: [
       {
         id: 'system-setting-*-parameter-setting',
-        icon: "simple-icon-grid",
+        icon: "simple-icon-equalizer",
         label: "menu.parameter-setting",
         to: "/app/system-setting/parameter-setting",
         newWindow: false

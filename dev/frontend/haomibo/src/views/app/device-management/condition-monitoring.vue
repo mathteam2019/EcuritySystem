@@ -145,8 +145,8 @@
       <b-tab :title="$t('device-management.business-stat')">
         <b-row>
           <b-col cols="12">
-            <b-card class="mb-4" :title="$t('pages.comments')">
-              <h1>Hi</h1>
+            <b-card class="mb-4" :title="$t('device-management.business-stat')">
+              <h1>It will be soon!</h1>
             </b-card>
           </b-col>
         </b-row>
