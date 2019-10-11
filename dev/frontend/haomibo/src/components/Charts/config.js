@@ -149,8 +149,8 @@ export const barChartOptions = {
       fontSize: 12
     }
   },
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: false,
+  maintainAspectRatio: true,
   scales: {
     yAxes: [
       {
@@ -208,8 +208,8 @@ export const pieChartOptions = {
       fontSize: 12
     }
   },
-  responsive: true,
-  maintainAspectRatio: false,
+  responsive: false,
+  maintainAspectRatio: true,
   title: {
     display: false
   },

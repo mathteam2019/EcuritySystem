@@ -79,7 +79,11 @@
     "save": "Save",
     "no": "No",
     "setting": "Settings",
-    "effective": "Action"
+    "effective": "Action",
+    "document-management": {
+      "document-table": "Table",
+      "document-stat": "Statistics"
+    }
   },
   "system-setting": {
 
