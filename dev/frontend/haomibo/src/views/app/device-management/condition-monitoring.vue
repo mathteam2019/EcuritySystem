@@ -64,7 +64,7 @@
                 </b-col>
               </b-row>
               <b-row class="device-list-wrapper">
-                <b-col xs="12" md="4" xl="3">
+                <b-col xs="12" md="4" xxl="3">
                   <b-card class="item flex-row" no-body>
                     <div class="w-50 position-relative">
                       <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
@@ -82,7 +82,7 @@
                     </div>
                   </b-card>
                 </b-col>
-                <b-col xs="12" md="4" xl="3">
+                <b-col xs="12" md="4" xxl="3">
                   <b-card class="item flex-row" no-body>
                     <div class="w-50 position-relative">
                       <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
@@ -100,7 +100,7 @@
                     </div>
                   </b-card>
                 </b-col>
-                <b-col xs="12" md="4" xl="3">
+                <b-col xs="12" md="4" xxl="3">
                   <b-card class="item flex-row" no-body>
                     <div class="w-50 position-relative">
                       <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
@@ -118,7 +118,7 @@
                     </div>
                   </b-card>
                 </b-col>
-                <b-col xs="12" md="4" xl="3">
+                <b-col xs="12" md="4" xxl="3">
                   <b-card class="item flex-row" no-body>
                     <div class="w-50 position-relative">
                       <img class="card-img-left" src="/assets/img/card-thumb-1.jpg" alt="Card cap" />
@@ -180,13 +180,6 @@
   })
 
   export default {
-    props: {
-      numLabels: {
-        type: Number, // type of the property
-        required: (true|false), // is this prop required or not?
-        default: 0 // default value for this prop
-      }
-    },
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,
