@@ -49,12 +49,9 @@
                         <img :alt="currentUser.title" :src="currentUser.img" />
                     </span>
                 </template>
-                <b-dropdown-item>Account</b-dropdown-item>
-                <b-dropdown-item>Features</b-dropdown-item>
-                <b-dropdown-item>History</b-dropdown-item>
-                <b-dropdown-item>Support</b-dropdown-item>
+                <b-dropdown-item>{{this.$t('menu.account')}}</b-dropdown-item>
                 <b-dropdown-divider />
-                <b-dropdown-item @click="logout">Sign out</b-dropdown-item>
+                <b-dropdown-item @click="logout">{{this.$t('menu.sign-out')}}</b-dropdown-item>
             </b-dropdown>
         </div>
     </div>

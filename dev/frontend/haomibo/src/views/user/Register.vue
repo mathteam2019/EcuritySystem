@@ -4,8 +4,7 @@
       <b-card class="auth-card" no-body>
           <div class="position-relative image-side ">
             <p class=" text-white h2">{{ $t('pages.project-name') }}</p>
-              <p class="white mb-0">  Please use this form to register. <br />If you are a member, please
-                <router-link tag="a" to="/user/login" class="white">login</router-link>.
+              <p class="white mb-0">  {{ $t('pages.register-desc') }} .
               </p>
           </div>
           <div class="form-side">
@@ -24,7 +23,8 @@
                 <input type="password" class="form-control" v-model="password">
                 <span>{{ $t('user.password') }}</span>
               </label>
-              <div class="d-flex justify-content-end align-items-center">
+              <div class="d-flex justify-content-between align-items-center">
+                  <router-link tag="a" to="/user/login" >{{ $t('menu.login') }}</router-link>
                   <b-button type="submit" variant="primary" size="lg" class="btn-shadow">{{ $t('user.register-button')}}</b-button>
               </div>
           </b-form>
