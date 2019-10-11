@@ -9,7 +9,7 @@
     <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
       <b-tab :title="$t('device-management.file-template')">
         <b-row>
-          <b-col xxs="12" md="4" lg="3">
+          <b-col xxs="12" md="4" lg="4">
             <b-card class="mb-4" no-body>
 
               <b-card-body>
@@ -43,7 +43,7 @@
             </b-card>
 
           </b-col>
-          <b-col xxs="12" md="6" lg="6">
+          <b-col xxs="12" md="8" lg="8">
             <b-card class="mb-4" no-body>
               <b-card-body>
                 <b-row>
@@ -98,6 +98,7 @@
   import {apiUrl} from '../../../constants/config'
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+  import { getDirection } from '../../../utils'
 
   export default {
     components: {
@@ -107,6 +108,7 @@
     },
     data() {
       return {
+        direction: getDirection().direction,
         searchType: 'chocolate',
         typeData: [
           {label: 'Chocolate', value: 'chocolate'},
