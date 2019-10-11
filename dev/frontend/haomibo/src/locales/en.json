@@ -36,9 +36,7 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
-    "docs":"Docs",
-
-
+    "docs": "Docs",
     "dashboard": "dashboard",
     "permission-management": "permission-management",
     "organization-management": "organization-management",
@@ -67,9 +65,9 @@
     "organization-table": "机构列表"
   },
   "device-management": {
-
+    "file-template": "档案模板",
+    "business-stat": "业务统计"
   },
   "system-setting": {
-
   }
 }

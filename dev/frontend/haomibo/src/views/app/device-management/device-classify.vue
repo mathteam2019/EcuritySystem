@@ -6,5 +6,8 @@
       <div class="separator mb-5"></div>
     </b-colxx>
   </b-row>
+  <b-row>
+    <p>In progress</p>
+  </b-row>
   </div>
 </template>
