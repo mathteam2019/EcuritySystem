@@ -21,7 +21,8 @@ module.exports = {
     watchOptions: {
       poll: false,
       ignored: /node_modules/
-    }
+    },
+    port: 4545
   },
   chainWebpack: config => {
     config.module

@@ -19,7 +19,6 @@
   "menu": {
     "app": "Home",
     "piaf": "Piaf",
-    "dashboards": "Dashboards",
     "second-menu": "Second Menu",
     "second": "Second",
     "start": "Start",
@@ -37,7 +36,25 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
-    "docs":"Docs"
+    "docs":"Docs",
+
+
+    "dashboard": "dashboard",
+    "permission-management": "permission-management",
+    "organization-management": "organization-management",
+    "role-management": "role-management",
+    "permission-control": "permission-control",
+    "user-management": "user-management",
+    "device-management": "device-management",
+    "device-classify": "device-classify",
+    "document-template": "document-template",
+    "document-management": "document-management",
+    "device-table": "device-table",
+    "device-config": "device-config",
+    "condition-monitoring": "condition-monitoring",
+    "system-setting": "system-setting",
+    "parameter-setting": "parameter-setting",
+    "site-management": "site-management"
   },
   "pages": {
     "project-name": "MAGIC IS IN THE DETAILS",
@@ -45,5 +62,14 @@
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
     "go-back-home": "GO BACK HOME"
+  },
+  "permission-management": {
+    "organization-table": "机构列表"
+  },
+  "device-management": {
+
+  },
+  "system-setting": {
+
   }
 }

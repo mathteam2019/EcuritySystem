@@ -17,9 +17,8 @@
     "username": "Username"
   },
   "menu": {
-    "app": "Home",
+    "app": "主场",
     "piaf": "Piaf",
-    "dashboards": "Dashboards",
     "second-menu": "Second Menu",
     "second": "Second",
     "start": "Start",
@@ -37,7 +36,23 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
-    "docs":"Docs"
+    "docs": "Docs",
+    "dashboard": "主页",
+    "permission-management": "权限管理",
+    "organization-management": "机构管理",
+    "role-management": "角色管理",
+    "permission-control": "权限控制",
+    "user-management": "人员管理",
+    "device-management": "设备管理",
+    "device-classify": "设备分类",
+    "document-template": "档案模板",
+    "document-management": "档案管理",
+    "device-table": "设备列表",
+    "device-config": "设备配置",
+    "condition-monitoring": "状态监控",
+    "system-setting": "系统设置",
+    "parameter-setting": "参数设置",
+    "site-management": "场地管理"
   },
   "pages": {
     "project-name": "欢迎访问统一管理系统",
@@ -45,5 +60,14 @@
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
     "go-back-home": "GO BACK HOME"
+  },
+  "permission-management": {
+    "organization-table": "机构列表"
+  },
+  "device-management": {
+
+  },
+  "system-setting": {
+
   }
 }
