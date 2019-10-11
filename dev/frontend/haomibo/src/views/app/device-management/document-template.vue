@@ -35,7 +35,7 @@
                                   :placeholder="$t('device-management.origin-model-placeholder')"/>
                   </b-form-group>
                   <b-form-group class="text-right">
-                    <b-button type="submit" variant="primary" class="mt-2 px-5">{{ $t('device-management.save') }}</b-button>
+                    <b-button type="submit" variant="primary" class="mt-2">{{ $t('device-management.save') }}</b-button>
                   </b-form-group>
 
                 </b-form>
