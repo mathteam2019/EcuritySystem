@@ -79,7 +79,11 @@
       "save": "保存",
       "no": "序号",
       "setting": "设置",
-      "active": "生效"
+      "active": "生效",
+      "document-management": {
+        "document-table": "档案列表",
+        "document-stat": "业务统计"
+      }
   },
   "system-setting": {
 
