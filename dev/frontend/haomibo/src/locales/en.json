@@ -65,8 +65,21 @@
     "organization-table": "机构列表"
   },
   "device-management": {
-    "file-template": "档案模板",
-    "business-stat": "业务统计"
+    "file-template": "Templates",
+    "business-stat": "Statistics",
+    "template-number" : "Number",
+    "template-number-placeholder" : "Please input the template number",
+    "template-name": "Name",
+    "template-name-placeholder":"Please input the template name",
+    "device-classify": "Type",
+    "device-classify-placeholder": "Please choose template type",
+    "manufacture": "Manufacturer",
+    "origin-model": "Model Type",
+    "origin-model-placeholder": "Please input the model type",
+    "save": "Save",
+    "no": "No",
+    "setting": "Settings",
+    "effective": "Action"
   },
   "system-setting": {
 
