@@ -61,7 +61,8 @@
     "enter-login-information": "Please enter your login information",
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
-    "go-back-home": "GO BACK HOME"
+    "go-back-home": "GO BACK HOME",
+    "register-desc":"If you are a member, please login"
   },
   "permission-management": {
     "organization-table": "机构列表"
