@@ -62,12 +62,54 @@
     "go-back-home": "GO BACK HOME"
   },
   "permission-management": {
-    "organization-table": "机构列表"
+    "organization-table": "机构列表",
+    "organization-structure": "场地架构",
+    "member-table": "人员列表",
+    "organization-user-compare-table": "机构人员对照表",
+    "user-group": "人员分组",
+    "username": "人员姓名",
+    "status": "状态",
+    "affiliated-institution": "隶属机构",
+    "user-category": "类别",
+    "search": "检索",
+    "reset": "重置",
+    "new": "新增",
+    "export": "导出",
+    "print": "打印",
+    "all": "全部",
+    "active": "生效",
+    "inactive": "未生效",
+    "blocked": "禁用",
+    "pending": "锁定",
+    "headquarters": "总部",
+    "office": "办公室",
+    "production-department": "生产部",
+    "production-department-1": "生产一部",
+    "production-department-2": "生产二部",
+    "sales-department": "销售部",
+    "sales-planing-department": "销售计划部",
+    "admin": "系统操作员",
+    "normal-staff": "普通职员",
+
+    "th-no": "序号",
+    "th-user-id": "人员编号",
+    "th-username": "人员姓名",
+    "th-status": "状态",
+    "th-affiliated-institution": "隶属机构",
+    "th-user-category": "人员类别",
+    "th-account": "账号",
+    "th-action": "操作",
+
+    "action-modify": "修改",
+    "action-make-active": "生效",
+    "action-make-inactive": "失效",
+    "action-block": "禁用",
+    "action-unblock": "启用",
+    "action-reset-password": "重置密码"
+
   },
   "device-management": {
-
   },
   "system-setting": {
-
   }
 }
