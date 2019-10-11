@@ -1,6 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
-import { currentUser } from '../../constants/config'
+import {currentUser} from '../../constants/config'
 
 export default {
   state: {
@@ -14,57 +14,74 @@ export default {
     loginError: state => state.loginError
   },
   mutations: {
-    setUser (state, payload) {
+    setUser(state, payload) {
       state.currentUser = payload
       state.processing = false
       state.loginError = null
     },
-    setLogout (state) {
+    setLogout(state) {
       state.currentUser = null
       state.processing = false
       state.loginError = null
     },
-    setProcessing (state, payload) {
+    setProcessing(state, payload) {
       state.processing = payload
       state.loginError = null
     },
-    setError (state, payload) {
+    setError(state, payload) {
       state.loginError = payload
       state.currentUser = null
       state.processing = false
     },
-    clearError (state) {
+    clearError(state) {
       state.loginError = null
     }
   },
   actions: {
 
-    login ({ commit }, payload) {
+    login({commit}, payload) {
       commit('clearError')
       commit('setProcessing', true)
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(payload.email, payload.password)
-        .then(
-          user => {
-            const item = { uid: user.user.uid, ...currentUser }
-            localStorage.setItem('user', JSON.stringify(item))
-            commit('setUser', { uid: user.user.uid, ...currentUser })
-          },
-          err => {
-            localStorage.removeItem('user')
-            commit('setError', err.message)
-          }
-        )
+
+      const item = {"uid":"bzebm5ZQnhepuRBYAAZBbWxa1lm2","id":1,"title":"nuctech","img":"/assets/img/profile-pic-l.jpg","date":"Last seen today 15:24"};
+
+      localStorage.setItem('user', JSON.stringify(item))
+      commit('setUser', {uid: 'bzebm5ZQnhepuRBYAAZBbWxa1lm2', ...currentUser})
+
+      // firebase
+      //   .auth()
+      //   .signInWithEmailAndPassword(payload.email, payload.password)
+      //   .then(
+      //     user => {
+      //       const item = {uid: user.user.uid, ...currentUser}
+      //       localStorage.setItem('user', JSON.stringify(item))
+      //       commit('setUser', {uid: user.user.uid, ...currentUser})
+      //     },
+      //     err => {
+      //       localStorage.removeItem('user')
+      //       commit('setError', err.message)
+      //     }
+      //   )
+
     },
-    signOut ({ commit }) {
-      firebase
-        .auth()
-        .signOut()
+    signOut({commit}) {
+
+      new Promise(() => setTimeout(() => {
+
+      }, 1500))
         .then(() => {
           localStorage.removeItem('user')
           commit('setLogout')
-        }, _error => {})
+        })
+
+
+      // firebase
+      //   .auth()
+      //   .signOut()
+      //   .then(() => {
+      //     localStorage.removeItem('user')
+      //     commit('setLogout')
+      //   }, _error => {})
     }
   }
 }
