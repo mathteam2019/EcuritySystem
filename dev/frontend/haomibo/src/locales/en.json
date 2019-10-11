@@ -36,6 +36,7 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
+
     "docs": "Docs",
     "dashboard": "dashboard",
     "permission-management": "permission-management",
@@ -53,6 +54,25 @@
     "system-setting": "system-setting",
     "parameter-setting": "parameter-setting",
     "site-management": "site-management"
+
+
+
+    "dashboard": "Dashboard",
+    "permission-management": "Permissions",
+    "organization-management": "Organizations",
+    "role-management": "Roles",
+    "permission-control": "Permissions",
+    "user-management": "Users",
+    "device-management": "Devices",
+    "device-classify": "Classification",
+    "document-template": "Templates",
+    "document-management": "Documents",
+    "device-table": "Devices",
+    "device-config": "Configuration",
+    "condition-monitoring": "Monitoring",
+    "system-setting": "Configuration",
+    "parameter-setting": "Globals",
+    "site-management": "Site Settings"
   },
   "pages": {
     "project-name": "MAGIC IS IN THE DETAILS",
@@ -69,5 +89,11 @@
     "business-stat": "业务统计"
   },
   "system-setting": {
+
+
+  },
+  "error-404": {
+    "it-is-indeed":"Yes, it is indeed!"
+
   }
 }
