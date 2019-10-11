@@ -65,6 +65,8 @@
     "organization-table": "机构列表"
   },
   "device-management": {
+      "file-template": "档案模板",
+      "business-stat": "业务统计",
       "template-number" : "模板编号",
       "template-number-placeholder" : "请输入模板编号",
       "template-name": "模板名称",
