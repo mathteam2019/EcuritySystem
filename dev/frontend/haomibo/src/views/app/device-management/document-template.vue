@@ -84,9 +84,41 @@
 
       <b-tab :title="$t('device-management.business-stat')">
         <b-row>
-          <b-colxx>
+          <b-col xxs="12" md="4" lg="4">
+            <b-card class="mb-4" no-body>
+              <b-card-body>
+                <b-row>
+                  <b-colxx class="mb-4">
+                    <h6 class="card-subtitle">Pie</h6>
+                    <div class="chart-container">
+                      <pie-shadow-chart :data="pieChartData" :height="300" />
+                    </div>
+                  </b-colxx>
+                </b-row>
+              </b-card-body>
+            </b-card>
 
-          </b-colxx>
+          </b-col>
+          <b-col xxs="12" md="8" lg="8">
+            <b-card class="mb-4" no-body>
+              <b-card-body>
+                <b-row>
+                  <b-colxx class="mb-4">
+                    <h6 class="card-subtitle">Bar-1</h6>
+                    <div class="chart-container">
+                      <bar-shadow-chart :data="barChartData" :height="300" />
+                    </div>
+                  </b-colxx>
+                  <b-colxx class="mb-4">
+                    <h6 class="card-subtitle">Bar-2</h6>
+                    <div class="chart-container">
+                      <bar-shadow-chart :data="barChartData" :height="300" />
+                    </div>
+                  </b-colxx>
+                </b-row>
+              </b-card-body>
+            </b-card>
+          </b-col>
         </b-row>
       </b-tab>
     </b-tabs>
@@ -99,17 +131,26 @@
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import { getDirection } from '../../../utils'
-
+  import {
+      barChartData,
+      pieChartData
+  } from '../../../data/charts'
+  import BarShadowChart from '../../../components/Charts/BarShadow'
+  import PieShadowChart from '../../../components/Charts/PieShadow'
   export default {
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,
-      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'pie-shadow-chart': PieShadowChart,
+      'bar-shadow-chart': BarShadowChart
     },
     data() {
       return {
         direction: getDirection().direction,
         searchType: 'chocolate',
+        barChartData,
+        pieChartData,
         typeData: [
           {label: 'Chocolate', value: 'chocolate'},
           {label: 'Vanilla', value: 'vanilla'},
