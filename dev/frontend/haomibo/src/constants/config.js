@@ -10,7 +10,7 @@ export const defaultLocale = 'zh'
 export const defaultDirection = 'ltr'
 export const localeOptions = [
   { id: 'en', name: 'English LTR', direction: 'ltr' },
-  { id: 'zh', name: 'Chinese LTR', direction: 'ltr' },
+  { id: 'zh', name: '中文', direction: 'ltr' },
   { id: 'es', name: 'Español', direction: 'ltr' },
   { id: 'enrtl', name: 'English RTL', direction: 'rtl' }
 ]

@@ -44,7 +44,7 @@
                     <div>
                         <router-link tag="a" to="#" class="icon-menu-item">
                             <i class="iconsminds-shop-4 d-block" />
-                            {{$t('menu.dashboards')}}
+                            {{$t('menu.dashboard')}}
                         </router-link>
                         <router-link tag="a" to="#" class="icon-menu-item">
                             <i class="iconsminds-pantone d-block" />
