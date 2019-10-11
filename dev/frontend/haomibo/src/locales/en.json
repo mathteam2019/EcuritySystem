@@ -88,8 +88,29 @@
     }
   },
   "system-setting": {
-
-
+    "site-list": "Site list",
+    "site-architecture": "Site architecture",
+    "site-name": "Site name",
+    "status": "Status",
+    "status-all": "All",
+    "status-active": "Active",
+    "status-inactive": "Inactive",
+    "super-site-name": "Super site name",
+    "search": "Search",
+    "reset": "Reset",
+    "new": "New",
+    "export": "Export",
+    "print": "Print",
+    "no": "No.",
+    "site-no": "Site No.",
+    "super-site-no": "Super site No.",
+    "manager": "Manager",
+    "contact-info": "Contact info.",
+    "remarks": "Remarks",
+    "operating": "Operation",
+    "none": "None",
+    "modify": "Modify",
+    "delete": "Delete"
   },
   "error-404": {
     "it-is-indeed":"Yes, it is indeed!"
