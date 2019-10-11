@@ -68,6 +68,28 @@
 
   },
   "system-setting": {
-
+    "site-list": "场地列表",
+    "site-architecture": "场地架构",
+    "site-name": "场地名称",
+    "status": "状态",
+    "status-all": "全部",
+    "status-active": "生效",
+    "status-inactive": "失效",
+    "super-site-name": "上级场地名称",
+    "search": "检索",
+    "reset": "重置",
+    "new": "新增",
+    "export": "导出",
+    "print": "打印",
+    "no": "序号",
+    "site-no": "场地编号",
+    "super-site-no": "上级场地编号",
+    "manager": "负责人",
+    "contact-info": "联系方式",
+    "remarks": "备注",
+    "operating": "操作",
+    "none": "无",
+    "modify": "修改",
+    "delete": "删除"
   }
 }
