@@ -1,0 +1,16 @@
+dashboard
+permission-management
+    organization-management
+    role-management
+    permission-control
+    user-management
+device-management
+    device-classify
+    document-template
+    document-management
+    device-table
+    device-config
+    condition-monitoring
+system-setting
+    parameter-setting
+    site-management
