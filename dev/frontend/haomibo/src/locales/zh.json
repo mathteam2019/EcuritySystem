@@ -124,6 +124,7 @@
       "origin-model": "原厂型号",
       "origin-model-placeholder": "请输入原厂型号",
       "save": "保存",
+      "remove": "删除",
       "no": "序号",
       "setting": "设置",
       "all": "全部",
@@ -144,6 +145,8 @@
       "running-config": "设备关联",
       "maintenance-config": "运行配置",
       "site-config": "维保配置",
+      "site": "场地",
+      "connected-device": "关联设备",
       "document-management": {
         "document-table": "档案列表",
         "document-stat": "业务统计"
