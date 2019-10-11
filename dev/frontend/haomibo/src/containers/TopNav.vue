@@ -43,7 +43,7 @@
         </div>
         <div class="user d-inline-block">
             <b-dropdown class="dropdown-menu-right" right variant="empty" toggle-class="p-0" menu-class="mt-3" no-caret>
-                <template slot="button-content">
+                <template slot="button-content" v-if="currentUser">
                     <span class="name mr-1">{{currentUser.title}}</span>
                     <span>
                         <img :alt="currentUser.title" :src="currentUser.img" />
