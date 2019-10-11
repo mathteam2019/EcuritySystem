@@ -148,7 +148,7 @@
     data() {
       return {
         direction: getDirection().direction,
-        searchType: 'chocolate',
+        searchType: '全部',
         barChartData,
         pieChartData,
         typeData: [
@@ -164,13 +164,13 @@
           originModel: '',
         },
         deviceClassifyData: [
-          {label: this.$t('device-management.device-person'), value: 'chocolate'},
-          {label: this.$t('device-management.device-food'), value: 'vanilla'},
-          {label: this.$t('device-management.device-transport'), value: 'vanilla'}
+          {label: "人体查验设备", value: 'chocolate'},
+          {label: "物品查验设备", value: 'vanilla'},
+          {label: "车辆查验设备", value: 'vanilla'}
         ],
         selectData: [
-          {label: this.$t('device-management.factory1'), value: 'chocolate'},
-          {label: this.$t('device-management.factory1'), value: 'chocolate'}
+          {label: "同方威视", value: 'chocolate'},
+          {label: "海康威视", value: 'chocolate'}
         ],
         vuetableItems: {
           apiUrl: apiUrl + '/cakes/fordatatable',
