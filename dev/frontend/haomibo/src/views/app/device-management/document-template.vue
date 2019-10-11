@@ -24,16 +24,20 @@
                   </b-form-group>
                   <b-form-group :label="$t('device-management.device-classify')">
                     <v-select v-model="basicForm.deviceClassify" :options="deviceClassifyData" :dir="direction"
-                              :placeholder="$t('device-management.deviceClassify-placeholder')"/>
+                              :placeholder="$t('device-management.device-classify-placeholder')"/>
                   </b-form-group>
-                  <b-form-group :label="$t('form-components.manufacture')">
-                    <v-select v-model="basicForm.manufacture" :options="selectData" :dir="direction"/>
+                  <b-form-group :label="$t('device-management.manufacture')">
+                    <v-select v-model="basicForm.manufacture" :options="selectData" :dir="direction"
+                    />
                   </b-form-group>
                   <b-form-group :label="$t('device-management.origin-model')">
                     <b-form-input type="text" v-model="basicForm.originModel"
-                                  :placeholder="$t('device-management.originModel-placeholder')"/>
+                                  :placeholder="$t('device-management.origin-model-placeholder')"/>
                   </b-form-group>
-                  <b-button type="submit" variant="primary" class="mt-4">{{ $t('device-management.save') }}</b-button>
+                  <b-form-group class="text-right">
+                    <b-button type="submit" variant="primary" class="mt-2 px-5">{{ $t('device-management.save') }}</b-button>
+                  </b-form-group>
+
                 </b-form>
               </b-card-body>
             </b-card>
@@ -103,7 +107,7 @@
     },
     data() {
       return {
-        searchType: '',
+        searchType: 'chocolate',
         typeData: [
           {label: 'Chocolate', value: 'chocolate'},
           {label: 'Vanilla', value: 'vanilla'},
