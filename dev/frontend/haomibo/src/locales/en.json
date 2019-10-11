@@ -27,6 +27,8 @@
     "charts": "Charts",
     "search": "Search",
     "login": "Login",
+    "account":  "Account",
+    "sign-out":  "Sign out",
     "register": "Register",
     "forgot-password": "Forgot Password",
     "error": "Error",
@@ -36,32 +38,31 @@
     "survey": "Survey",
     "chat": "Chat",
     "ui": "UI",
-    "docs":"Docs",
-
-
-    "dashboard": "dashboard",
-    "permission-management": "permission-management",
-    "organization-management": "organization-management",
-    "role-management": "role-management",
-    "permission-control": "permission-control",
-    "user-management": "user-management",
-    "device-management": "device-management",
-    "device-classify": "device-classify",
-    "document-template": "document-template",
-    "document-management": "document-management",
-    "device-table": "device-table",
-    "device-config": "device-config",
-    "condition-monitoring": "condition-monitoring",
-    "system-setting": "system-setting",
-    "parameter-setting": "parameter-setting",
-    "site-management": "site-management"
+    "docs": "Docs",
+    "dashboard": "Dashboard",
+    "permission-management": "Permissions",
+    "organization-management": "Organizations",
+    "role-management": "Roles",
+    "permission-control": "Permissions",
+    "user-management": "Users",
+    "device-management": "Devices",
+    "device-classify": "Classification",
+    "document-template": "Templates",
+    "document-management": "Documents",
+    "device-table": "Devices",
+    "device-config": "Configuration",
+    "condition-monitoring": "Monitoring",
+    "system-setting": "Configuration",
+    "parameter-setting": "Globals",
+    "site-management": "Site Settings"
   },
   "pages": {
     "project-name": "MAGIC IS IN THE DETAILS",
     "enter-login-information": "Please enter your login information",
     "error-title": "Ooops... looks like an error occurred!",
     "error-code": "Error Code",
-    "go-back-home": "GO BACK HOME"
+    "go-back-home": "GO BACK HOME",
+    "register-desc":"If you are a member, please login"
   },
   "permission-management": {
     "organization-table": "organization table",
@@ -110,9 +111,53 @@
     "action-reset-password": "reset password"
   },
   "device-management": {
-
+    "file-template": "Templates",
+    "business-stat": "Statistics",
+    "template-number" : "Number",
+    "template-number-placeholder" : "Please input the template number",
+    "template-name": "Name",
+    "template-name-placeholder":"Please input the template name",
+    "device-classify": "Type",
+    "device-classify-placeholder": "Please choose template type",
+    "manufacture": "Manufacturer",
+    "origin-model": "Model Type",
+    "origin-model-placeholder": "Please input the model type",
+    "save": "Save",
+    "no": "No",
+    "setting": "Settings",
+    "effective": "Action",
+    "document-management": {
+      "document-table": "Table",
+      "document-stat": "Statistics"
+    }
   },
   "system-setting": {
+    "site-list": "Site list",
+    "site-architecture": "Site architecture",
+    "site-name": "Site name",
+    "status": "Status",
+    "status-all": "All",
+    "status-active": "Active",
+    "status-inactive": "Inactive",
+    "super-site-name": "Super site name",
+    "search": "Search",
+    "reset": "Reset",
+    "new": "New",
+    "export": "Export",
+    "print": "Print",
+    "no": "No.",
+    "site-no": "Site No.",
+    "super-site-no": "Super site No.",
+    "manager": "Manager",
+    "contact-info": "Contact info.",
+    "remarks": "Remarks",
+    "operating": "Operation",
+    "none": "None",
+    "modify": "Modify",
+    "delete": "Delete"
+  },
+  "error-404": {
+    "it-is-indeed":"Yes, it is indeed!"
 
   }
 }

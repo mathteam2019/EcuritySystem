@@ -21,9 +21,6 @@
                 <b-dropdown-item v-for="(l,index) in localeOptions" :key="index" @click="changeLocale(l.id, l.direction)">{{l.name}}</b-dropdown-item>
             </b-dropdown>
         </div>
-        <div class="position-relative d-none d-none d-lg-inline-block">
-            <a class="btn btn-outline-primary btn-sm ml-2" target="_top" :href="buyUrl">{{$t('user.buy')}}</a>
-        </div>
     </div>
     <router-link class="navbar-logo" tag="a" to="/app">
         <span class="logo d-none d-xs-block"></span>
@@ -36,61 +33,6 @@
             <b-tooltip target="tool-mode-switch" placement="left" title="Dark Mode"></b-tooltip>
         </div>
         <div class="header-icons d-inline-block align-middle">
-            <div class="position-relative d-none d-sm-inline-block">
-                <b-dropdown variant="empty" size="sm" right toggle-class="header-icon" menu-class="position-absolute mt-3 iconMenuDropdown" no-caret>
-                    <template slot="button-content">
-                        <i class="simple-icon-grid" />
-                    </template>
-                    <div>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-shop-4 d-block" />
-                            {{$t('menu.dashboard')}}
-                        </router-link>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-pantone d-block" />
-                            {{$t('menu.ui')}}
-                        </router-link>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-bar-chart-4 d-block" />
-                            {{$t('menu.charts')}}
-                        </router-link>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-speach-bubble d-block" />
-                            {{$t('menu.chat')}}
-                        </router-link>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-formula d-block" />
-                            {{$t('menu.survey')}}
-                        </router-link>
-                        <router-link tag="a" to="#" class="icon-menu-item">
-                            <i class="iconsminds-check d-block" />
-                            {{$t('menu.todo')}}
-                        </router-link>
-                    </div>
-                </b-dropdown>
-            </div>
-
-            <div class="position-relative d-inline-block">
-                <b-dropdown variant="empty" size="sm" right toggle-class="header-icon notificationButton" menu-class="position-absolute mt-3 notificationDropdown" no-caret>
-                    <template slot="button-content">
-                        <i class="simple-icon-bell" />
-                        <span class="count">3</span>
-                    </template>
-                    <vue-perfect-scrollbar :settings="{ suppressScrollX: true, wheelPropagation: false }">
-                        <div class="d-flex flex-row mb-3 pb-3 border-bottom" v-for="(n,index) in notifications" :key="index">
-                            <router-link tag="a" to="#">
-                                <img :src="n.img" :alt="n.title" class="img-thumbnail list-thumbnail xsmall border-0 rounded-circle" />
-                            </router-link>
-                            <div class="pl-3 pr-2">
-                                <router-link tag="a" to="#">
-                                    <p class="font-weight-medium mb-1">{{n.title}}</p>
-                                    <p class="text-muted mb-0 text-small">{{n.date}}</p>
-                                </router-link>
-                            </div>
-                        </div>
-                    </vue-perfect-scrollbar>
-                </b-dropdown>
-            </div>
             <div class="position-relative d-none d-sm-inline-block ">
                 <div class="btn-group">
                     <b-button variant="empty" class="header-icon btn-sm" @click="toggleFullScreen">
@@ -107,12 +49,9 @@
                         <img :alt="currentUser.title" :src="currentUser.img" />
                     </span>
                 </template>
-                <b-dropdown-item>Account</b-dropdown-item>
-                <b-dropdown-item>Features</b-dropdown-item>
-                <b-dropdown-item>History</b-dropdown-item>
-                <b-dropdown-item>Support</b-dropdown-item>
+                <b-dropdown-item>{{this.$t('menu.account')}}</b-dropdown-item>
                 <b-dropdown-divider />
-                <b-dropdown-item @click="logout">Sign out</b-dropdown-item>
+                <b-dropdown-item @click="logout">{{this.$t('menu.sign-out')}}</b-dropdown-item>
             </b-dropdown>
         </div>
     </div>

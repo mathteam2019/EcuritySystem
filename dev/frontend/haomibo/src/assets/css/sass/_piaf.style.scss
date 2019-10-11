@@ -1833,6 +1833,10 @@ button {
     .user {
       margin-right: $main-margin;
 
+      .name {
+        color: $primary-color;
+      }
+
       @include respond-below(xl) {
         margin-right: $main-margin-lg;
       }
@@ -8644,6 +8648,7 @@ i.large-icon {
           margin-right: 10px;
           margin-left: initial;
         }
+
       }
 
       .header-icons {
@@ -9051,3 +9056,4 @@ i.large-icon {
     }
   }
 }
+
