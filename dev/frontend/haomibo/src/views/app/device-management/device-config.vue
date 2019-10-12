@@ -72,7 +72,7 @@
                   </b-row>
                 </b-col>
                 <b-col cols="2">
-                  <div class="d-flex flex-column justify-content-between h-100">
+                  <div class="d-flex flex-column justify-content-around h-100">
                     <b-button size="sm" class="ml-2" variant="danger">{{ $t('device-management.remove') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="success">{{ $t('device-management.save') }}</b-button>
                   </div>
@@ -111,7 +111,7 @@
                   </b-row>
                 </b-col>
                 <b-col cols="2">
-                  <div class="d-flex flex-column justify-content-between h-100">
+                  <div class="d-flex flex-column justify-content-around h-100">
                     <b-button size="sm" class="ml-2" variant="danger">{{ $t('device-management.remove') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="success">{{ $t('device-management.save') }}</b-button>
                   </div>
@@ -150,7 +150,7 @@
                   </b-row>
                 </b-col>
                 <b-col cols="2">
-                  <div class="d-flex flex-column justify-content-between h-100">
+                  <div class="d-flex flex-column justify-content-around h-100">
                     <b-button size="sm" class="ml-2" variant="danger">{{ $t('device-management.remove') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="success">{{ $t('device-management.save') }}</b-button>
                   </div>
@@ -225,7 +225,7 @@
                   </b-row>
                 </b-col>
                 <b-col cols="2">
-                  <div class="d-flex flex-column justify-content-between h-100">
+                  <div class="d-flex flex-column justify-content-around h-100">
                     <b-button size="sm" class="ml-2" variant="danger">{{ $t('device-management.remove') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="success">{{ $t('device-management.save') }}</b-button>
                   </div>
@@ -300,7 +300,7 @@
                   </b-row>
                 </b-col>
                 <b-col cols="2">
-                  <div class="d-flex flex-column justify-content-between h-100">
+                  <div class="d-flex flex-column justify-content-around h-100">
                     <b-button size="sm" class="ml-2" variant="danger">{{ $t('device-management.remove') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="success">{{ $t('device-management.save') }}</b-button>
                   </div>
