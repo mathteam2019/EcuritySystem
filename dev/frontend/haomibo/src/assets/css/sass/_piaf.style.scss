@@ -362,7 +362,7 @@ hr {
 .logo-single {
   width: 147px;
   height: 72px;
-  background: url($logoPath) no-repeat;
+  background: url($blackLogoPath) no-repeat;
   background-position: center center;
   display: inline-block;
   margin-bottom: 60px;
@@ -1719,7 +1719,7 @@ button {
 
 /* 09.Navbar*/
 .navbar {
-  background: $foreground-color;
+  background: $navbar-background-color;
   height: $navbar-height;
   padding: 1.5rem 0 1.5rem 0;
   @include depth(1);
@@ -1751,7 +1751,7 @@ button {
     display: inline-block;
     text-align: center;
     margin-bottom: 1.7rem;
-    color: rgba($primary-color, 0.8);
+    color: rgba($menu-primary-color, 0.8);
 
     i {
       font-size: 28px;
@@ -1766,17 +1766,17 @@ button {
 
     &:hover,
     &:focus {
-      color: $theme-color-1;
+      color: $menu-theme-color-1;
     }
   }
 
   .menu-button-mobile {
-    color: $secondary-color;
+    color: $menu-secondary-color;
     text-align: center;
 
     svg {
       height: 12px;
-      fill: $primary-color;
+      fill: $menu-primary-color;
     }
 
     margin-left: $main-margin-xs;
@@ -1787,7 +1787,7 @@ button {
   }
 
   .menu-button {
-    color: $secondary-color;
+    color: $menu-secondary-color;
     width: $main-menu-width;
     text-align: center;
 
@@ -1796,17 +1796,17 @@ button {
     }
 
     .main {
-      fill: $primary-color;
+      fill: $menu-primary-color;
       transition: fill $menu-collapse-time;
     }
 
     .sub {
-      fill: $primary-color;
+      fill: $menu-primary-color;
       transition: fill $menu-collapse-time;
     }
 
     &:hover {
-      color: $theme-color-1;
+      color: $menu-theme-color-1;
     }
 
     @include respond-below(xl) {
@@ -1834,7 +1834,7 @@ button {
       margin-right: $main-margin;
 
       .name {
-        color: $primary-color;
+        color: $menu-primary-color;
       }
 
       @include respond-below(xl) {
@@ -1862,7 +1862,7 @@ button {
     .logo {
       width: 100%;
       height: 100%;
-      background: url($logoPath) no-repeat;
+      background: url($whiteLogoPath) no-repeat;
       background-position: center center;
       background-size: contain;
     }
@@ -1872,6 +1872,7 @@ button {
       height: 100%;
       background: url($logoPathMobile) no-repeat;
       background-position: center center;
+      background-size: contain;
     }
 
     @include respond-below(sm) {
@@ -1884,10 +1885,10 @@ button {
   }
 
   .language-button {
-    background: $background-color;
+    background: $navbar-control-background-color;
     border: initial;
     font-size: 0.8rem;
-    color: $secondary-color;
+    color: $menu-secondary-color;
     padding: 0.6rem 1rem;
 
     @include respond-below(xs) {
@@ -1900,7 +1901,7 @@ button {
     position: relative;
     width: $sub-menu-width;
     border-radius: 20px;
-    background: $background-color;
+    background: $navbar-control-background-color;
 
     input {
       border: initial;
@@ -1910,13 +1911,13 @@ button {
       line-height: 2;
       font-size: 0.8rem;
       width: 93%;
-      color: $primary-color;
+      color: $menu-primary-color;
     }
 
     .search-icon {
       font-size: 17px;
       border-radius: 10px;
-      color: $secondary-color;
+      color: $menu-secondary-color;
       position: absolute;
       width: 40px;
       height: 40px;
@@ -1926,7 +1927,7 @@ button {
       cursor: pointer;
 
       &:hover {
-        color: $theme-color-1;
+        color: $menu-theme-color-1;
       }
     }
 
@@ -1950,7 +1951,7 @@ button {
       height: 30px;
       background: initial;
       margin-left: 0.6rem;
-      color: rgba($primary-color, 0.7);
+      color: rgba($menu-primary-color, 0.7);
 
       input {
         display: none;
@@ -1970,7 +1971,7 @@ button {
         width: 100%;
         position: fixed;
         z-index: 2;
-        background: $foreground-color;
+        background: $menu-foreground-color;
         left: 0;
         top: 0;
         height: $navbar-height-xs;
@@ -2002,7 +2003,7 @@ button {
 
   .header-icon {
     font-size: 16px;
-    color: $secondary-color;
+    color: $menu-secondary-color;
     padding-left: 0.4rem;
     padding-right: 0.4rem;
     vertical-align: initial;
@@ -2017,7 +2018,7 @@ button {
     }
 
     &:hover {
-      color: $theme-color-1;
+      color: $menu-theme-color-1;
     }
 
     &#fullScreenButton i:last-of-type {
@@ -2027,8 +2028,8 @@ button {
     &.notificationButton {
       .count {
         font-size: 10px;
-        color: $theme-color-1;
-        border: 1px solid $theme-color-1;
+        color: $menu-theme-color-1;
+        border: 1px solid $menu-theme-color-1;
         border-radius: 10px;
         position: absolute;
         width: 18px;
@@ -2047,7 +2048,7 @@ button {
   }
 
   .user {
-    color: lighten($primary-color, 30%);
+    color: lighten($menu-primary-color, 30%);
     position: relative;
 
     .dropdown-toggle:after {
@@ -2101,7 +2102,7 @@ button {
 .sub-hidden .menu-button,
 .menu-sub-hidden .menu-button {
   .sub {
-    fill: $secondary-color;
+    fill: $menu-secondary-color;
   }
 }
 
@@ -2109,9 +2110,14 @@ button {
 .menu-hidden .menu-button {
   .main,
   .sub {
-    fill: $secondary-color;
+    fill: $menu-secondary-color;
   }
 }
+
+.sub-show-temporary .menu-button .sub {
+  fill: $menu-primary-color;
+}
+
 .sidebar {
   position: fixed;
   top: 0;
@@ -2129,7 +2135,7 @@ button {
   .main-menu {
     width: $main-menu-width;
     height: calc(100% - #{$navbar-height});
-    background: $foreground-color;
+    background: $menu-foreground-color;
     z-index: 3;
     position: fixed;
     transition: transform $menu-collapse-time;
@@ -2169,14 +2175,14 @@ button {
         font-size: 13px;
         font-style: normal;
         font-weight: 400;
-        border-bottom: 1px solid $separator-color-light;
-        color: $primary-color;
+        border-bottom: 1px solid $menu-separator-color-light;
+        color: $menu-primary-color;
         transition: color $menu-collapse-time;
         transition: background $menu-collapse-time;
 
         &:hover,
         &:focus {
-          color: $theme-color-1;
+          color: $menu-theme-color-1;
         }
       }
 
@@ -2186,12 +2192,12 @@ button {
       }
 
       &.active a {
-        color: $theme-color-1;
+        color: $menu-theme-color-1;
       }
 
       &.active:after {
         content: " ";
-        background: $theme-color-1;
+        background: $menu-theme-color-1;
         border-radius: 10px;
         position: absolute;
         width: 6px;
@@ -2240,11 +2246,11 @@ button {
 
   .sub-menu {
     width: $sub-menu-width;
-    background: $foreground-color;
+    background: $menu-foreground-color;
     z-index: 2;
     position: fixed;
     left: $main-menu-width;
-    border-left: 1px solid $separator-color-light;
+    border-left: 1px solid $menu-separator-color-light;
     @include depth(2);
     transition: transform $menu-collapse-time;
     height: calc(100% - #{$navbar-height});
@@ -2280,24 +2286,25 @@ button {
           display: block;
           padding: 8px 0;
           margin-bottom: 10px;
+          color: $menu-primary-color;
         }
 
         i {
           font-size: 1.3em;
           margin-right: 10px;
-          color: $secondary-color;
+          color: $menu-primary-color;
           vertical-align: middle;
           display: inline-block;
         }
 
         &.active i,
         &.active a {
-          color: $theme-color-1;
+          color: $menu-theme-color-1;
         }
 
         &.active:after {
           content: " ";
-          background: $theme-color-1;
+          background: $menu-theme-color-1;
           border-radius: 10px;
           position: absolute;
           width: 4px;
@@ -2326,12 +2333,12 @@ button {
         li {
           a,
           i {
-            color: $primary-color;
+            color: $menu-primary-color;
           }
           a:hover,
           &.active i,
           &.active a {
-            color: $theme-color-1;
+            color: $menu-theme-color-1;
           }
 
           &.active:after {
