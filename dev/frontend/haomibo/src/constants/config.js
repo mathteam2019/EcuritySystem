@@ -35,16 +35,7 @@ export const currentUser = {
 
 export const isDemo = true
 export const themeRadiusStorageKey = 'theme_radius'
-export const defaultColor = 'light.orange'
+export const defaultColor = 'light.blue'
 export const colors = [
-  'light.purple',
-  'dark.purple',
   'light.blue',
-  'dark.blue',
-  'light.green',
-  'dark.green',
-  'light.orange',
-  'dark.orange',
-  'light.red',
-  'dark.red'
 ]
