@@ -63,7 +63,7 @@
                   >
                     <div slot="operating" slot-scope="props">
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="info" disabled>{{$t('system-setting.modify')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="primary">{{$t('system-setting.status-inactive')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning">{{$t('system-setting.status-inactive')}}</b-button>
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
 
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info">{{$t('system-setting.modify')}}</b-button>
