@@ -154,7 +154,14 @@
     "operating": "Operation",
     "none": "None",
     "modify": "Modify",
-    "delete": "Delete"
+    "delete": "Delete",
+    "please-enter-site-name": "Please enter the site name",
+    "please-enter-site-no": "Please enter the site number",
+    "please-enter-manager": "Please enter the manager",
+    "please-enter-manager-contact-info": "Please enter the manager's contact info.",
+    "please-enter-remarks": "Please enter the remarks",
+    "save": "Save",
+    "back": "Back"
   },
   "error-404": {
     "it-is-indeed":"Yes, it is indeed!"
