@@ -9,7 +9,7 @@
 
   <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
     <b-tab :title="$t('system-setting.site-list')">
-      <b-row>
+      <b-row v-if="!detailMode">
         <b-col cols="12" class="mb-4">
           <b-card class="mb-4" no-body>
             <b-card-body>
@@ -27,7 +27,7 @@
 
                       <b-col >
                         <b-form-group :label="$t('system-setting.status')">
-                          <v-select :options="stateOptions" plain/>
+                          <v-select :options="stateOptions" v-model="selectedStatus" plain/>
                         </b-form-group>
                       </b-col>
 
@@ -43,7 +43,7 @@
                   <div class="align-self-center">
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.search') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('system-setting.new') }}</b-button>
+                    <b-button size="sm" class="ml-2" variant="success" v-on:click="onNewClicked">{{ $t('system-setting.new') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.export') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.print') }}</b-button>
                   </div>
@@ -66,7 +66,7 @@
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning">{{$t('system-setting.status-inactive')}}</b-button>
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
 
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info">{{$t('system-setting.modify')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info" @click="editRow(props.rowData)">{{$t('system-setting.modify')}}</b-button>
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="success">{{$t('system-setting.status-active')}}</b-button>
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger">{{$t('system-setting.delete')}}</b-button>
                     </div>
@@ -80,6 +80,39 @@
             </b-card-body>
           </b-card>
         </b-col>
+      </b-row>
+      <b-row v-if="detailMode">
+        <b-colxx xxs="12">
+          <b-card ref="detailsCard" class="mb-4">
+            <b-form @submit.prevent="onHorizontalSubmit">
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.site-name')">
+                <b-form-input :placeholder="$t('system-setting.please-enter-site-name')"></b-form-input>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.site-no')">
+                <b-form-input :placeholder="$t('system-setting.please-enter-site-no')"></b-form-input>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.super-site-name')">
+                <v-select :options="superSiteOptions" v-model="selectedStatus"  plain  />
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.super-site-no')">
+                <b-form-input :disabled="true" v-model="selectedStatus.value"></b-form-input>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.manager')">
+                <b-form-input :placeholder="$t('system-setting.please-enter-manager')"></b-form-input>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.contact-info')">
+                <b-form-input :placeholder="$t('system-setting.please-enter-manager-contact-info')"></b-form-input>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal :label="$t('system-setting.remarks')">
+                <b-form-textarea rows="6" :placeholder="$t('system-setting.please-enter-remarks')"></b-form-textarea>
+              </b-form-group>
+              <b-form-group label-cols="2" horizontal>
+                <b-button type="submit" variant="info" class="mt-4">{{ $t('system-setting.save') }}</b-button>
+                <b-button variant="info" class="mt-4 ml-2" v-on:click="onReturnClicked">{{ $t('system-setting.return') }}</b-button>
+              </b-form-group>
+            </b-form>
+          </b-card>
+        </b-colxx>
       </b-row>
     </b-tab>
 
@@ -116,7 +149,7 @@
       },
       data () {
           return {
-              selectedStatus: 'all',
+              selectedStatus: '',
               vuetableItems: {
                   perPage: 5,
                   fields: [
@@ -296,10 +329,24 @@
                   {value: "all", label: this.$t('system-setting.status-all')},
                   {value: "valid", label: this.$t('system-setting.status-active')},
                   {value: "invalid", label: this.$t('system-setting.status-inactive')},
+              ],
+              detailMode: false,
+              selectedSite: '0000',
+              superSiteOptions: [
+                  {value: "0000", label: '首都机场'},
+                  {value: "0001", label: '1号航站楼'},
+                  {value: "0002", label: '2号航站楼'},
+                  {value: "0003", label: '通道1'},
+                  {value: "0004", label: '通道2'},
+                  {value: "0020", label: '3号航站楼'},
+                  {value: "0030", label: '通道001'},
               ]
           }
       },
       methods: {
+          onNewClicked() {
+              this.detailMode = true;
+          },
           onPaginationData(paginationData) {
               this.$refs.pagination.setPaginationData(paginationData);
           },
@@ -330,6 +377,13 @@
                   pagination: pagination,
                   data: _.slice(local, from, to)
               };
+          },
+          editRow(data) {
+              console.log(data);
+              this.detailMode = true;
+          },
+          onReturnClicked() {
+              this.detailMode = false;
           }
       }
   }

@@ -183,7 +183,14 @@
     "operating": "操作",
     "none": "无",
     "modify": "修改",
-    "delete": "删除"
+    "delete": "删除",
+    "please-enter-site-name": "请输入场地名称",
+    "please-enter-site-no": "请输入场地编号",
+    "please-enter-manager": "请输入负责人",
+    "please-enter-manager-contact-info": "请输入负责人联系方式",
+    "please-enter-remarks": "请输入备注信息",
+    "save": "保存",
+    "return": "返回"
   },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
