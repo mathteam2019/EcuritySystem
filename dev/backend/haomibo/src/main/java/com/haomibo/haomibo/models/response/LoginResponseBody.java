@@ -1,5 +1,6 @@
 package com.haomibo.haomibo.models.response;
 
+import com.haomibo.haomibo.models.reusables.Token;
 import lombok.*;
 
 @Getter
@@ -9,5 +10,5 @@ import lombok.*;
 @ToString
 public class LoginResponseBody {
     int userId;
-    String token;
+    Token token;
 }
