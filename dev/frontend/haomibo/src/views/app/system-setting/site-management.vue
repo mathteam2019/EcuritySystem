@@ -384,6 +384,9 @@
           },
           onReturnClicked() {
               this.detailMode = false;
+          },
+          onHorizontalSubmit() {
+              console.log('submit form');
           }
       }
   }

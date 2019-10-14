@@ -109,7 +109,6 @@
     "action-block": "禁用",
     "action-unblock": "启用",
     "action-reset-password": "重置密码"
-
   },
   "device-management": {
       "file-template": "档案模板",
@@ -182,7 +181,30 @@
     "please-enter-manager-contact-info": "请输入负责人联系方式",
     "please-enter-remarks": "请输入备注信息",
     "save": "保存",
-    "return": "返回"
+    "return": "返回",
+
+    "standby-time": "设备端待机时间",
+    "alarm-sound": "报警提示声音开关",
+    "pass-sound": "通过提示声音开关",
+    "pos-error-sound": "站姿错误提示声音开关",
+    "start-sound": "开始扫描提醒声音开关",
+    "scan-sound": "扫描过程声音开关",
+    "scan-complete-sound": "扫描完成提示声音开关",
+    "auto-recognition": "辅助识别开关",
+    "recognition-rate": "辅助识别等级",
+    "atr-rect-color": "辅助识别嫌疑框颜色",
+    "record-delete-rect": "记录删除的嫌疑框开关",
+    "check-disk-period": "硬盘空间扫描任务周期",
+    "warn-disk-space": "磁盘空间报警",
+    "history-image-delete-period": "历史图像自动删除时间间隔",
+    "save-scan-data": "设备端是否保存历史图像",
+    "save-suspect-data": "设备端仅保存嫌疑图像",
+    "facial-blurring": "面部模糊处理",
+    "chest-blurring": "胸部模糊处理",
+    "hip-blurring": "臀部模糊处理",
+    "groin-blurring": "腹股沟模糊处理",
+    "minutes": "分钟",
+    "hours": "小时"
   },
   "error-404": {
     "it-is-indeed":"是的，的确如此！"

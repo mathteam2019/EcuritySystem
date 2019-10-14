@@ -161,7 +161,30 @@
     "please-enter-manager-contact-info": "Please enter the manager's contact info.",
     "please-enter-remarks": "Please enter the remarks",
     "save": "Save",
-    "back": "Back"
+    "return": "Return",
+
+    "standby-time": "Device standby time",
+    "alarm-sound": "Alarm sound",
+    "pass-sound": "Pass sound",
+    "pos-error-sound": "Pos error sound",
+    "start-sound": "Start sound",
+    "scan-sound": "Scan sound",
+    "scan-complete-sound": "Scan complete sound",
+    "auto-recognition": "Auto recognition",
+    "recognition-rate": "Recognition rate",
+    "atr-rect-color": "ATR rect color",
+    "record-delete-rect": "Record delete rect",
+    "check-disk-period": "Check disk period",
+    "warn-disk-space": "Warn disk space",
+    "history-image-delete-period": "History image delete period",
+    "save-scan-data": "Save scan data",
+    "save-suspect-data": "Save suspect data",
+    "facial-blurring": "Facial blurring",
+    "chest-blurring": "Chest blurring",
+    "hip-blurring": "Hip blurring",
+    "groin-blurring": "Groin blurring",
+    "minutes": "min.",
+    "hours": "hr."
   },
   "error-404": {
     "it-is-indeed":"Yes, it is indeed!"
