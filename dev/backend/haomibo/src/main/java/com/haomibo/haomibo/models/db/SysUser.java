@@ -1,8 +1,6 @@
 package com.haomibo.haomibo.models.db;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +9,8 @@ import java.io.Serializable;
 @Setter
 @ToString
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tbl_sys_user")
 public class SysUser implements Serializable {
 

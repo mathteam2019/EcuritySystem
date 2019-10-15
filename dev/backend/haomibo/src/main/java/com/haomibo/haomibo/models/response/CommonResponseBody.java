@@ -10,4 +10,9 @@ import lombok.*;
 public class CommonResponseBody {
     String message;
     Object data;
+
+    public CommonResponseBody(String message) {
+        this.message = message;
+        this.data = null;
+    }
 }
