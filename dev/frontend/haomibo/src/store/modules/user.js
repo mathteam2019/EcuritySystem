@@ -101,6 +101,30 @@ export default {
       //   )
 
     },
+    register({commit},payload){
+      commit('clearError');
+      commit('setProcessing', true);
+      getApiManager()
+        .post(`${apiUrl}/auth/register`, payload)
+        .then(response => {
+          let message = response.data.message;
+          switch (message) {
+            case responseMessages['ok']:
+              commit('setUser', {...currentUser});
+              break;
+            case responseMessages['invalid-parameter']:
+              commit('setError', 'invalid-parameter');
+              break;
+            case responseMessages['user-not-found']:
+              commit('setError', 'user-not-found');
+              break;
+            case responseMessages['invalid-password']:
+              commit('setError', 'invalid-password');
+              break;
+
+          }
+        });
+    },
     signOut({commit}) {
 
       return getApiManager()

@@ -36,7 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/csrf",
                         "/Auth/**",
                         "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**",
-                        "/auth/login"
+                        "/auth/login",
+                        "/auth/register"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
