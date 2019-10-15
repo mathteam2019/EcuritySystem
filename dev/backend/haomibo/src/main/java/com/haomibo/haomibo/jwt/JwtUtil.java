@@ -58,7 +58,7 @@ public class JwtUtil implements Serializable {
 
         return Constants.TOKEN_PREFIX + Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(System.currentTimeMillis() + Constants.ACCESS_TOKEN_VALIDITY_SECONDS * 1000))
+                .setExpiration(new Date(System.currentTimeMillis() + Constants.JWT_VALIDITY_SECONDS * 1000))
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }

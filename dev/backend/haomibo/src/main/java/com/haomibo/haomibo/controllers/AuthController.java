@@ -8,6 +8,7 @@ import com.haomibo.haomibo.models.request.LoginRequestBody;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.response.LoginResponseBody;
 import com.haomibo.haomibo.models.reusables.Token;
+import com.haomibo.haomibo.models.reusables.User;
 import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
 import com.haomibo.haomibo.repositories.SysUserRepository;
 import com.haomibo.haomibo.jwt.JwtUtil;
@@ -71,7 +72,7 @@ public class AuthController extends BaseController {
         return new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 new LoginResponseBody(
-                        sysUser.getId(),
+                        new User(sysUser.getId(), sysUser.getName()),
                         new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
                 )
         );
