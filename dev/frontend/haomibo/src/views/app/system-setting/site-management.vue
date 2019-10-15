@@ -138,6 +138,15 @@
         <b-col cols="12">
           <b-card class="mb-4" no-body>
             <b-card-body>
+              <vue2-org-tree
+                :data="treeData"
+                :horizontal="false"
+                :collapsable="false"
+                :label-class-name="treeLabelClass"
+                :render-content="renderTreeContent"
+                @on-expand="() => {}"
+                @on-node-click="() => {}"
+              />
             </b-card-body>
           </b-card>
         </b-col>
@@ -357,7 +366,41 @@
                   {value: "0004", label: '通道2'},
                   {value: "0020", label: '3号航站楼'},
                   {value: "0030", label: '通道001'},
-              ]
+              ],
+              treeData: {
+                  id: 0,
+                  label: '0000 首都机场',
+                  children: [
+                      {
+                          id: 1,
+                          label: '0100 1号航站楼'
+                      },
+                      {
+                          id: 2,
+                          label: '0200 2号航站楼',
+                          children: [
+                              {
+                                  id: 3,
+                                  label: '0201 通道1'
+                              },
+                              {
+                                  id: 4,
+                                  label: '0202 通道2'
+                              }
+                          ]
+                      },
+                      {
+                          id: 5,
+                          label: '0300 3号航站楼',
+                          children: [
+                              {
+                                  id: 6,
+                                  label: '0301 通道001'
+                              }
+                          ]
+                      }
+                  ]
+              }
           }
       },
       methods: {
@@ -415,6 +458,12 @@
           },
           onHorizontalSubmit() {
               console.log('submit form');
+          },
+          renderTreeContent: function(h, data) {
+            return data.label;
+          },
+          treeLabelClass: function(data) {
+              return data.labelClass;
           }
       }
   }
