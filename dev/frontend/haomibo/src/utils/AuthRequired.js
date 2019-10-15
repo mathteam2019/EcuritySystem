@@ -3,11 +3,11 @@ export default (to, from, next) => {
 
   if (isDemo)
     next()
-  if (localStorage.getItem('user') != null && localStorage.getItem('user').length > 0) {
+  if (localStorage.getItem('authToken') != null && localStorage.getItem('authToken').length > 0) {
     // verify with firebase or jwt
     next()
   } else {
-    localStorage.removeItem('user')
+    localStorage.removeItem('authToken')
     next('/user/login')
   }
 }

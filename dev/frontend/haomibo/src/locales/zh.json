@@ -152,9 +152,9 @@
     "pending-device": " 待分派设备",
     "device-no": "设备编号",
     "number": "账号",
-    "file-name":"档案名称",
-    "file-list":"档案列表",
-    "file-no":"档案编号",
+    "file-name": "档案名称",
+    "file-list": "档案列表",
+    "file-no": "档案编号",
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
@@ -191,7 +191,6 @@
     "please-enter-remarks": "请输入备注信息",
     "save": "保存",
     "return": "返回",
-
     "standby-time": "设备端待机时间",
     "alarm-sound": "报警提示声音开关",
     "pass-sound": "通过提示声音开关",
@@ -217,5 +216,13 @@
   },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
+  },
+  "response-messages": {
+    "ok": "ok",
+    "invalid-parameter": "invalid_parameter",
+    "user-not-found": "user_not_found",
+    "invalid-password": "invalid_password",
+    "token-expired": "token_expired",
+    "invalid-token": "invalid_token"
   }
 }

@@ -1,4 +1,4 @@
-import { defaultDirection } from '../constants/config'
+import {defaultDirection} from '../constants/config'
 
 export const addCommas = nStr => {
   nStr += ''
@@ -79,7 +79,8 @@ export const chartTooltip = {
 }
 
 export const centerTextPlugin = {
-  afterDatasetsUpdate: function (chart) {},
+  afterDatasetsUpdate: function (chart) {
+  },
   beforeDraw: function (chart) {
     var width = chart.chartArea.right
     var height = chart.chartArea.bottom
@@ -161,3 +162,27 @@ export const setDirection = localValue => {
   }
   localStorage.setItem('direction', direction)
 }
+
+export const saveAuthToken = (token) => {
+  localStorage.setItem('authToken', JSON.stringify(token));
+};
+
+export const removeAuthToken = () => {
+  localStorage.removeItem('authToken');
+};
+
+export const getAuthToken = () => {
+  let token = localStorage.getItem('authToken');
+  try {
+    token = JSON.parse(token);
+    if (token.token && token.expirationTimestamp) {
+      return token;
+    }
+  } catch (e) {
+  }
+
+  return {
+    token: '',
+    expirationTimestamp: 0
+  };
+};

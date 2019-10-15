@@ -52,7 +52,7 @@ export default {
   },
   watch: {
     currentUser (val) {
-      if (val && val.uid && val.uid.length > 0) {
+      if (val && val.id) {
         setTimeout(() => {
           this.$router.push('/')
         }, 500)
@@ -60,7 +60,7 @@ export default {
     },
     loginError (val) {
       if (val != null) {
-        this.$notify('error', 'Login Error', val, { duration: 3000, permanent: false })
+        this.$notify('error', 'Login Error', this.$t(`response-messages.${val}`), { duration: 3000, permanent: false })
       }
     }
   }

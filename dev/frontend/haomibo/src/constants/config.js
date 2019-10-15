@@ -9,10 +9,10 @@ export const menuHiddenBreakpoint = 768
 export const defaultLocale = 'zh'
 export const defaultDirection = 'ltr'
 export const localeOptions = [
-  { id: 'en', name: 'English LTR', direction: 'ltr' },
-  { id: 'zh', name: '中文', direction: 'ltr' },
-  { id: 'es', name: 'Español', direction: 'ltr' },
-  { id: 'enrtl', name: 'English RTL', direction: 'rtl' }
+  {id: 'en', name: 'English LTR', direction: 'ltr'},
+  {id: 'zh', name: '中文', direction: 'ltr'},
+  {id: 'es', name: 'Español', direction: 'ltr'},
+  {id: 'enrtl', name: 'English RTL', direction: 'rtl'}
 ]
 
 export const firebaseConfig = {
@@ -24,11 +24,11 @@ export const firebaseConfig = {
   messagingSenderId: '216495999563'
 }
 
-export const apiUrl = 'https://api.coloredstrategies.com'
+export const apiUrl = 'http://localhost:4546';
 
 export const currentUser = {
-  id: 1,
-  title: 'nuctech',
+  id: 0,
+  name: '',
   img: '/assets/img/profile-pic-l.jpg',
   date: 'Last seen today 15:24'
 }
