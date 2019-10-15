@@ -1,26 +1,31 @@
 package com.haomibo.haomibo.controllers;
 
 import com.haomibo.haomibo.config.Constants;
+import com.haomibo.haomibo.models.db.ForbiddenToken;
 import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.db.SysUser;
-import com.haomibo.haomibo.models.db.Test;
 import com.haomibo.haomibo.models.request.LoginRequestBody;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.response.LoginResponseBody;
+import com.haomibo.haomibo.models.reusables.Token;
+import com.haomibo.haomibo.models.reusables.User;
+import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
 import com.haomibo.haomibo.repositories.SysUserRepository;
-import com.haomibo.haomibo.repositories.TestRepository;
-import com.haomibo.haomibo.security.JwtTokenUtil;
+import com.haomibo.haomibo.jwt.JwtUtil;
+import com.haomibo.haomibo.security.AuthenticationFacade;
+import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.types.Predicate;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.security.Principal;
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -30,45 +35,78 @@ public class AuthController extends BaseController {
     SysUserRepository sysUserRepository;
 
     @Autowired
-    JwtTokenUtil jwtTokenUtil;
+    ForbiddenTokenRepository forbiddenTokenRepository;
+
+    @Autowired
+    JwtUtil jwtUtil;
+
+    @Autowired
+    AuthenticationFacade authenticationFacade;
+
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public Object login(@RequestBody @Valid LoginRequestBody requestBody, BindingResult bindingResult) {
+    public Object login(
+            @RequestBody @Valid LoginRequestBody requestBody,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(
-                    Constants.ResponseMessages.INVALID_PARAMETER,
-                    null
-            );
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
+
         QSysUser qSysUser = QSysUser.sysUser;
         Predicate predicate = qSysUser.email.eq(requestBody.getEmail());
 
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(predicate);
 
         if (!optionalSysUser.isPresent()) {
-            return new CommonResponseBody(
-                    Constants.ResponseMessages.USER_NOT_FOUND,
-                    null
-            );
+            return new CommonResponseBody(Constants.ResponseMessages.USER_NOT_FOUND);
         }
 
         SysUser sysUser = optionalSysUser.get();
 
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
-            return new CommonResponseBody(
-                    Constants.ResponseMessages.INVALID_PASSWORD,
-                    null
-            );
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PASSWORD);
         }
 
-        String token = jwtTokenUtil.generateToken(sysUser);
+        String token = jwtUtil.generateTokenForSysUser(sysUser);
 
         return new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 new LoginResponseBody(
-                        sysUser.getId(),
-                        token
+                        new User(sysUser.getId(), sysUser.getName()),
+                        new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
                 )
+        );
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public Object logout(
+            @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
+
+        authToken = Utils.removePrefixFromToken(authToken);
+        Date expirationToken = jwtUtil.getExpirationDateFromToken(authToken);
+        int expirationTimestamp = (int) (expirationToken.getTime() / 1000);
+
+        ForbiddenToken forbiddenToken = new ForbiddenToken(authToken, expirationTimestamp);
+
+        forbiddenTokenRepository.save(forbiddenToken);
+        forbiddenTokenRepository.flush();
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/refresh-token", method = RequestMethod.POST)
+    public Object refreshToken(
+            @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
+
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        String token = jwtUtil.generateTokenForSysUser(sysUser);
+
+        return new CommonResponseBody(
+                Constants.ResponseMessages.OK,
+                new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
         );
     }
 }

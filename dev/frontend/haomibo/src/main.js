@@ -12,7 +12,7 @@ import es from './locales/es.json'
 import zh from './locales/zh.json'
 
 import VueI18n from 'vue-i18n'
-import { defaultLocale, localeOptions, firebaseConfig } from './constants/config'
+import { defaultLocale, localeOptions} from './constants/config'
 // Notification Component Add
 import Notifications from './components/Common/Notification'
 // Breadcrumb Component Add
@@ -30,6 +30,7 @@ import 'v-calendar/lib/v-calendar.min.css'
 import VueScrollTo from 'vue-scrollto'
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import {scheduleRefreshToken} from "./utils";
 
 
 Vue.use(BootstrapVue)
@@ -66,7 +67,9 @@ Vue.use(VCalendar, {
 })
 Vue.use(VueScrollTo)
 
-firebase.initializeApp(firebaseConfig)
+
+
+
 
 export default new Vue({
   el: '#app',
@@ -75,3 +78,5 @@ export default new Vue({
   store,
   render: h => h(App)
 })
+
+scheduleRefreshToken();

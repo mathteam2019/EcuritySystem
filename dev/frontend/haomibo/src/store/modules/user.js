@@ -1,10 +1,24 @@
-import firebase from 'firebase/app'
 import 'firebase/auth'
-import {currentUser} from '../../constants/config'
+import {apiUrl, currentUser} from '../../constants/config'
+import {responseMessages} from '../../constants/response-messages';
+import {getApiManager} from "../../api";
+import {getLoginInfo, isLoggedIn, removeLoginInfo, saveLoginInfo, scheduleRefreshToken} from "../../utils";
+
+let loadCurrentUser = () => {
+  if (isLoggedIn()) {
+    let loginInfo = getLoginInfo();
+
+    return {
+      ...loginInfo.user,
+      img: '/assets/img/profile-pic-l.jpg',
+    };
+  }
+  return null;
+};
 
 export default {
   state: {
-    currentUser: localStorage.getItem('user') != null ? JSON.parse(localStorage.getItem('user')) : null,
+    currentUser: loadCurrentUser(),
     loginError: null,
     processing: false
   },
@@ -40,13 +54,36 @@ export default {
   actions: {
 
     login({commit}, payload) {
-      commit('clearError')
-      commit('setProcessing', true)
+      commit('clearError');
+      commit('setProcessing', true);
 
-      const item = {"uid":"bzebm5ZQnhepuRBYAAZBbWxa1lm2","id":1,"title":"nuctech","img":"/assets/img/profile-pic-l.jpg","date":"Last seen today 15:24"};
 
-      localStorage.setItem('user', JSON.stringify(item))
-      commit('setUser', {uid: 'bzebm5ZQnhepuRBYAAZBbWxa1lm2', ...currentUser})
+      getApiManager()
+        .post(`${apiUrl}/auth/login`, payload)
+        .then(response => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+
+              saveLoginInfo(data);
+              scheduleRefreshToken();
+
+              commit('setUser', {...currentUser, id: data.user.id, name: data.user.name});
+              break;
+            case responseMessages['invalid-parameter']:
+              commit('setError', 'invalid-parameter');
+              break;
+            case responseMessages['user-not-found']:
+              commit('setError', 'user-not-found');
+              break;
+            case responseMessages['invalid-password']:
+              commit('setError', 'invalid-password');
+              break;
+
+          }
+        });
+
 
       // firebase
       //   .auth()
@@ -66,22 +103,22 @@ export default {
     },
     signOut({commit}) {
 
-      new Promise(() => setTimeout(() => {
+      return getApiManager()
+        .post(`${apiUrl}/auth/logout`, {})
+        .then(response => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
 
-      }, 1500))
-        .then(() => {
-          localStorage.removeItem('user')
-          commit('setLogout')
-        })
+              removeLoginInfo();
 
+              commit('setLogout');
+              break;
 
-      // firebase
-      //   .auth()
-      //   .signOut()
-      //   .then(() => {
-      //     localStorage.removeItem('user')
-      //     commit('setLogout')
-      //   }, _error => {})
+          }
+        });
+
     }
   }
 }
