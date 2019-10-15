@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import AuthRequired from './utils/AuthRequired'
 
-Vue.use(Router)
+Vue.use(Router);
 
 const routes = [
   {
@@ -128,12 +128,12 @@ const routes = [
     path: '*',
     component: () => import( './views/error404')
   }
-]
+];
 
 const router = new Router({
   linkActiveClass: 'active',
   routes,
   mode: 'history'
-})
+});
 
 export default router

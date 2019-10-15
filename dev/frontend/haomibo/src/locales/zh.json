@@ -14,7 +14,13 @@
     "register-button": "注册",
     "reset-password-button": "RESET",
     "buy": "BUY",
-    "username": "Username"
+    "username": "Username",
+    "login-fail": "登录失败",
+    "warning": "警告",
+    "success": "成功",
+    "enter-valid-email": "请输入有效的邮件地址",
+    "enter-valid-password": "请输入有效的密码",
+    "login-success": "登录成功"
   },
   "menu": {
     "app": "主场",
@@ -224,5 +230,10 @@
     "invalid-password": "invalid_password",
     "token-expired": "token_expired",
     "invalid-token": "invalid_token"
+  },
+  "auth-token-messages": {
+    "error-title": "错误",
+    "invalid-token": "Invalid token information",
+    "token-expired": "Token is expired"
   }
 }

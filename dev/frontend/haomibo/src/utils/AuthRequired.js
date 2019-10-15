@@ -1,13 +1,17 @@
-import { isDemo } from '../constants/config'
+import {isLoggedIn} from "./index";
+
 export default (to, from, next) => {
 
-  if (isDemo)
-    next()
-  if (localStorage.getItem('authToken') != null && localStorage.getItem('authToken').length > 0) {
-    // verify with firebase or jwt
-    next()
+
+  if (isLoggedIn()) {
+
+    next();
+
   } else {
-    localStorage.removeItem('authToken')
-    next('/user/login')
+
+    localStorage.removeItem('loginInfo');
+
+    next('/user/login');
+
   }
-}
+};

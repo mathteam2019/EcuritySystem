@@ -1,12 +1,12 @@
 import axios from 'axios';
-import {getAuthToken} from "../utils";
+import {getAuthTokenInfo, removeLoginInfo} from "../utils";
 import {responseMessages} from "../constants/response-messages";
-import router from '../router';
+import app from '../main';
 
 const getApiManager = function () {
 
   const apiManager = axios.create({
-    headers: {'X-AUTH-TOKEN': getAuthToken().token}
+    headers: {'X-AUTH-TOKEN': getAuthTokenInfo().token}
   });
   apiManager.interceptors.response.use((response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
@@ -14,17 +14,30 @@ const getApiManager = function () {
 
     let message = response.data.message;
 
-    console.log(message);
 
     switch (message) {
 
       case responseMessages['invalid-token']:
-        localStorage.removeItem('authToken');
-        router.push('/');
+        removeLoginInfo();
+
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`auth-token-messages.invalid-token`), {
+          duration: 3000,
+          permanent: false
+        });
+
+        app.$router.push('/').catch(error => {
+        });
         break;
       case responseMessages['token-expired']:
-        localStorage.removeItem('authToken');
-        router.push('/');
+        removeLoginInfo();
+
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`auth-token-messages.token-expired`), {
+          duration: 3000,
+          permanent: false
+        });
+
+        app.$router.push('/').catch(error => {
+        });
         break;
     }
 

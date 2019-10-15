@@ -1,13 +1,24 @@
-import firebase from 'firebase/app'
 import 'firebase/auth'
 import {apiUrl, currentUser} from '../../constants/config'
 import {responseMessages} from '../../constants/response-messages';
 import {getApiManager} from "../../api";
-import {removeAuthToken, saveAuthToken} from "../../utils";
+import {getLoginInfo, isLoggedIn, removeLoginInfo, saveLoginInfo, scheduleRefreshToken} from "../../utils";
+
+let loadCurrentUser = () => {
+  if (isLoggedIn()) {
+    let loginInfo = getLoginInfo();
+
+    return {
+      ...loginInfo.user,
+      img: '/assets/img/profile-pic-l.jpg',
+    };
+  }
+  return null;
+};
 
 export default {
   state: {
-    currentUser: localStorage.getItem('user') != null ? JSON.parse(localStorage.getItem('user')) : null,
+    currentUser: loadCurrentUser(),
     loginError: null,
     processing: false
   },
@@ -55,7 +66,8 @@ export default {
           switch (message) {
             case responseMessages['ok']:
 
-              saveAuthToken(data.token);
+              saveLoginInfo(data);
+              scheduleRefreshToken();
 
               commit('setUser', {...currentUser, id: data.user.id, name: data.user.name});
               break;
@@ -99,8 +111,8 @@ export default {
           switch (message) {
             case responseMessages['ok']:
 
-              removeAuthToken();
-              localStorage.removeItem('user');
+              removeLoginInfo();
+
               commit('setLogout');
               break;
 

@@ -62,7 +62,6 @@
     searchPath,
     menuHiddenBreakpoint,
     localeOptions,
-    buyUrl,
     defaultColor
   } from '../constants/config'
   import {
@@ -81,7 +80,6 @@
         selectedParentMenu: '',
         menuHiddenBreakpoint,
         localeOptions,
-        buyUrl,
         notifications,
       }
     },
