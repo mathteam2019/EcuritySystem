@@ -63,18 +63,35 @@
                   >
                     <div slot="operating" slot-scope="props">
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="info" disabled>{{$t('system-setting.modify')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning">{{$t('system-setting.status-inactive')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning" v-b-modal.modal-inactive>{{$t('system-setting.status-inactive')}}</b-button>
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
 
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info" @click="editRow(props.rowData)">{{$t('system-setting.modify')}}</b-button>
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="success">{{$t('system-setting.status-active')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger">{{$t('system-setting.delete')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger" v-b-modal.modal-delete>{{$t('system-setting.delete')}}</b-button>
                     </div>
                   </vuetable>
                   <vuetable-pagination-bootstrap
                     ref="pagination"
                     @vuetable-pagination:change-page="onChangePage"
                   ></vuetable-pagination-bootstrap>
+
+                  <b-modal id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
+                    {{$t('system-setting.make-inactive-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="inactiveRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                      <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}</b-button>
+                    </template>
+                  </b-modal>
+
+                  <b-modal id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
+                    {{$t('system-setting.delete-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                      <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
+                    </template>
+                  </b-modal>
+
                 </b-col>
               </b-row>
             </b-card-body>
@@ -381,6 +398,17 @@
           editRow(data) {
               console.log(data);
               this.detailMode = true;
+          },
+          inactiveRow(data) {
+            console.log(data);
+            this.$refs['modal-inactive'].hide();
+          },
+          deleteRow(data) {
+              console.log(data);
+              this.$refs['modal-delete'].hide();
+          },
+          hideModal(modal) {
+              this.$refs[modal].hide();
           },
           onReturnClicked() {
               this.detailMode = false;
