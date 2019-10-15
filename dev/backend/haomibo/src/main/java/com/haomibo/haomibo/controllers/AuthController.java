@@ -96,8 +96,8 @@ public class AuthController extends BaseController {
     }
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-new-token", method = RequestMethod.POST)
-    public Object getNewToken(
+    @RequestMapping(value = "/refresh-token", method = RequestMethod.POST)
+    public Object refreshToken(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
