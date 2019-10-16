@@ -137,7 +137,7 @@
       <b-row>
         <b-col cols="12">
           <b-card class="mb-4" no-body>
-            <b-card-body>
+            <b-card-body class="text-center">
               <vue2-org-tree
                 :data="treeData"
                 :horizontal="false"
@@ -163,6 +163,7 @@
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+  import Vue2OrgTree from 'vue2-org-tree'
   import 'vue-select/dist/vue-select.css'
 
   export default {
@@ -171,7 +172,8 @@
           'v-select' : vSelect,
           'vuetable' : Vuetable,
           'vuetable-pagination': VuetablePagination,
-          'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap
+          'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap,
+          Vue2OrgTree
       },
       data () {
           return {
@@ -463,7 +465,8 @@
             return data.label;
           },
           treeLabelClass: function(data) {
-              return data.labelClass;
+              const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
+              return `${labelClasses[data.id % 6]} text-white`;
           }
       }
   }
