@@ -85,14 +85,28 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
-        SysUser sysUser = new SysUser();
-        sysUser.setName(requestBody.getName());
-        sysUser.setEmail(requestBody.getEmail());
-        sysUser.setPassword(requestBody.getPassword());
+        QSysUser qSysUser = QSysUser.sysUser;
+        boolean isEmailUsed = sysUserRepository.count(qSysUser.email.eq(requestBody.getEmail())) > 0;
 
-        sysUserRepository.save(sysUser);
+        if (isEmailUsed) {
+            return new CommonResponseBody(Constants.ResponseMessages.USED_EMAIL);
+        }
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        try {
+            SysUser sysUser = new SysUser();
+            sysUser.setName(requestBody.getName());
+            sysUser.setEmail(requestBody.getEmail());
+            sysUser.setPassword(requestBody.getPassword());
+
+            sysUserRepository.save(sysUser);
+
+            return new CommonResponseBody(Constants.ResponseMessages.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new CommonResponseBody(Constants.ResponseMessages.SERVER_ERROR);
     }
 
     @Secured({Constants.Roles.SYS_USER})

@@ -18,6 +18,8 @@ public class Constants {
         public static final String INVALID_PASSWORD = "invalid_password";
         public static final String TOKEN_EXPIRED = "token_expired";
         public static final String INVALID_TOKEN = "invalid_token";
+        public static final String USED_EMAIL = "used_email";
+        public static final String SERVER_ERROR = "server_error";
     }
 
 
