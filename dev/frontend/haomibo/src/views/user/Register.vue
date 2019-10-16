@@ -21,30 +21,41 @@
                 <input type="text" class="form-control" v-model="registerForm.name">
                 <span>{{ $t('user.name') }}</span>
                 <div v-if="submitted&&!$v.registerForm.name.required" class="invalid-feedback">Name is required</div>
-                <div v-else-if="!$v.registerForm.name.alphaNum" class="invalid-feedback">Name should be numerical or characters</div>
+                <div v-else-if="!$v.registerForm.name.alphaNum" class="invalid-feedback">Name should be numerical or
+                  characters
+                </div>
               </label>
               <label class="form-group has-float-label mb-4">
                 <input type="email" class="form-control" v-model="registerForm.email">
                 <span>{{ $t('user.email') }}</span>
                 <div v-if="submitted&&!$v.registerForm.email.required" class="invalid-feedback">Email is required</div>
-                <div v-else-if="!$v.registerForm.email.email" class="invalid-feedback">Email should be valid format</div>
+                <div v-else-if="!$v.registerForm.email.email" class="invalid-feedback">Email should be valid format
+                </div>
               </label>
               <label class="form-group has-float-label mb-4">
                 <input type="password" class="form-control" v-model="registerForm.password">
                 <span>{{ $t('user.password') }}</span>
-                <div v-if="submitted&&!$v.registerForm.password.required" class="invalid-feedback">Password is required</div>
-                <div v-else-if="!$v.registerForm.password.minLength" class="invalid-feedback">Password must be at least 6 characters</div>
+                <div v-if="submitted&&!$v.registerForm.password.required" class="invalid-feedback">Password is
+                  required
+                </div>
+                <div v-else-if="!$v.registerForm.password.minLength" class="invalid-feedback">Password must be at least
+                  6 characters
+                </div>
               </label>
               <label class="form-group has-float-label mb-4">
                 <input type="password" class="form-control" v-model="registerForm.confPassword">
                 <span>{{ $t('user.conf-password') }}</span>
-                <div v-if="submitted&&!$v.registerForm.confPassword.required" class="invalid-feedback">Password Confirmation is required</div>
-                <div v-else-if="!$v.registerForm.confPassword.sameAsPassword" class="invalid-feedback">Confirmation  should be match as Password</div>
+                <div v-if="submitted&&!$v.registerForm.confPassword.required" class="invalid-feedback">Password
+                  Confirmation is required
+                </div>
+                <div v-else-if="!$v.registerForm.confPassword.sameAsPassword" class="invalid-feedback">Confirmation
+                  should be match as Password
+                </div>
               </label>
             </div>
             <div class="d-flex justify-content-between align-items-center">
               <router-link tag="a" to="/user/login">{{ $t('menu.login') }}</router-link>
-              <b-button type="submit"  variant="success" size="lg" :disabled="$v.registerForm.$invalid"
+              <b-button type="submit" variant="success" size="lg" :disabled="$v.registerForm.$invalid || processing"
                         class="btn-shadow">{{
                 $t('user.register-button')}}
               </b-button>
@@ -56,10 +67,9 @@
   </b-row>
 </template>
 <script>
-  import 'vue-select/dist/vue-select.css'
   import {validationMixin} from 'vuelidate'
-  import {getDirection} from '../../utils'
   import {mapGetters, mapActions} from 'vuex'
+
   const {required, email, minLength, sameAs, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -71,11 +81,11 @@
           password: '',
           confPassword: '',
         },
-        submitted:false
+        submitted: false
       }
     },
     computed: {
-      ...mapGetters(['currentUser', 'processing', 'loginError'])
+      ...mapGetters(['currentUser', 'processing', 'registerStatus'])
     },
     mixins: [validationMixin],
     validations: {
@@ -107,23 +117,28 @@
       }
     },
     watch: {
-      currentUser(val) {
-        if (val) {
-          this.$notify('success', this.$t('user.success'), this.$t(`user.register-success`), {
-            duration: 3000,
-            permanent: false
-          });
-          setTimeout(() => {
-            this.$router.push('/user/login')
-          }, 100)
-        }
-      },
-      loginError(val) {
+      registerStatus(val) {
         if (val != null) {
-          this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.${val}`), {
-            duration: 3000,
-            permanent: false
-          })
+          switch (val) {
+            case 'invalid-parameter':
+              this.$notify('error', this.$t('user.success'), this.$t(`user.register-invalid-parameter`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case 'used-email':
+              this.$notify('error', this.$t('user.fail'), this.$t(`user.used-email`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+            case 'server-error':
+              this.$notify('error', this.$t('user.fail'), this.$t(`user.server-error`), {
+                duration: 3000,
+                permanent: false
+              });
+              break;
+          }
         }
       }
     },
