@@ -5,6 +5,7 @@ import com.haomibo.haomibo.models.db.ForbiddenToken;
 import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.db.SysUser;
 import com.haomibo.haomibo.models.request.LoginRequestBody;
+import com.haomibo.haomibo.models.request.RegisterRequestBody;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.response.LoginResponseBody;
 import com.haomibo.haomibo.models.reusables.Token;
@@ -76,6 +77,22 @@ public class AuthController extends BaseController {
                         new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
                 )
         );
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public Object register(@RequestBody @Valid RegisterRequestBody requestBody, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        SysUser sysUser = new SysUser();
+        sysUser.setName(requestBody.getName());
+        sysUser.setEmail(requestBody.getEmail());
+        sysUser.setPassword(requestBody.getPassword());
+
+        sysUserRepository.save(sysUser);
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
     }
 
     @Secured({Constants.Roles.SYS_USER})

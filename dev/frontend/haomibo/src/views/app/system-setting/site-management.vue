@@ -63,18 +63,35 @@
                   >
                     <div slot="operating" slot-scope="props">
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="info" disabled>{{$t('system-setting.modify')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning">{{$t('system-setting.status-inactive')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning" v-b-modal.modal-inactive>{{$t('system-setting.status-inactive')}}</b-button>
                       <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
 
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info" @click="editRow(props.rowData)">{{$t('system-setting.modify')}}</b-button>
                       <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="success">{{$t('system-setting.status-active')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger">{{$t('system-setting.delete')}}</b-button>
+                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger" v-b-modal.modal-delete>{{$t('system-setting.delete')}}</b-button>
                     </div>
                   </vuetable>
                   <vuetable-pagination-bootstrap
                     ref="pagination"
                     @vuetable-pagination:change-page="onChangePage"
                   ></vuetable-pagination-bootstrap>
+
+                  <b-modal id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
+                    {{$t('system-setting.make-inactive-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="inactiveRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                      <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}</b-button>
+                    </template>
+                  </b-modal>
+
+                  <b-modal id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
+                    {{$t('system-setting.delete-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                      <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
+                    </template>
+                  </b-modal>
+
                 </b-col>
               </b-row>
             </b-card-body>
@@ -120,7 +137,16 @@
       <b-row>
         <b-col cols="12">
           <b-card class="mb-4" no-body>
-            <b-card-body>
+            <b-card-body class="text-center">
+              <vue2-org-tree
+                :data="treeData"
+                :horizontal="false"
+                :collapsable="false"
+                :label-class-name="treeLabelClass"
+                :render-content="renderTreeContent"
+                @on-expand="() => {}"
+                @on-node-click="() => {}"
+              />
             </b-card-body>
           </b-card>
         </b-col>
@@ -137,6 +163,7 @@
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+  import Vue2OrgTree from 'vue2-org-tree'
   import 'vue-select/dist/vue-select.css'
 
   export default {
@@ -145,7 +172,8 @@
           'v-select' : vSelect,
           'vuetable' : Vuetable,
           'vuetable-pagination': VuetablePagination,
-          'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap
+          'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap,
+          Vue2OrgTree
       },
       data () {
           return {
@@ -340,7 +368,41 @@
                   {value: "0004", label: '通道2'},
                   {value: "0020", label: '3号航站楼'},
                   {value: "0030", label: '通道001'},
-              ]
+              ],
+              treeData: {
+                  id: 0,
+                  label: '0000 首都机场',
+                  children: [
+                      {
+                          id: 1,
+                          label: '0100 1号航站楼'
+                      },
+                      {
+                          id: 2,
+                          label: '0200 2号航站楼',
+                          children: [
+                              {
+                                  id: 3,
+                                  label: '0201 通道1'
+                              },
+                              {
+                                  id: 4,
+                                  label: '0202 通道2'
+                              }
+                          ]
+                      },
+                      {
+                          id: 5,
+                          label: '0300 3号航站楼',
+                          children: [
+                              {
+                                  id: 6,
+                                  label: '0301 通道001'
+                              }
+                          ]
+                      }
+                  ]
+              }
           }
       },
       methods: {
@@ -382,11 +444,29 @@
               console.log(data);
               this.detailMode = true;
           },
+          inactiveRow(data) {
+            console.log(data);
+            this.$refs['modal-inactive'].hide();
+          },
+          deleteRow(data) {
+              console.log(data);
+              this.$refs['modal-delete'].hide();
+          },
+          hideModal(modal) {
+              this.$refs[modal].hide();
+          },
           onReturnClicked() {
               this.detailMode = false;
           },
           onHorizontalSubmit() {
               console.log('submit form');
+          },
+          renderTreeContent: function(h, data) {
+            return data.label;
+          },
+          treeLabelClass: function(data) {
+              const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
+              return `${labelClasses[data.id % 6]} text-white`;
           }
       }
   }
