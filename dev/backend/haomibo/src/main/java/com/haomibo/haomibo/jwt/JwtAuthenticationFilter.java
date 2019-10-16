@@ -1,12 +1,9 @@
 package com.haomibo.haomibo.jwt;
 
 import com.haomibo.haomibo.config.Constants;
-import com.haomibo.haomibo.models.db.ForbiddenToken;
-import com.haomibo.haomibo.models.db.QForbiddenToken;
-import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
+import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.repositories.SysUserRepository;
 import com.haomibo.haomibo.utils.Utils;
-import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -34,10 +31,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
+        AtomicReference<String> tokenStatus = new AtomicReference<>(Constants.ResponseMessages.OK);
+
         Utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY)).ifPresent(token -> {
 
-            String tokenStatus = jwtUtil.getTokenStatus(token);
-            if (Constants.ResponseMessages.TOKEN_EXPIRED.equals(tokenStatus) || Constants.ResponseMessages.INVALID_TOKEN.equals(tokenStatus)) {
+            tokenStatus.set(jwtUtil.getTokenStatus(token));
+            if (!Constants.ResponseMessages.OK.equals(tokenStatus.get())) {
                 return;
             }
 
@@ -58,7 +57,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             });
         });
 
-        filterChain.doFilter(request, response);
+        if (Constants.ResponseMessages.OK.equals(tokenStatus.get())) {
+            filterChain.doFilter(request, response);
+        } else {
+            try {
+                response.getWriter().write(Utils.convertObjectToJson(new CommonResponseBody(tokenStatus.get())));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.config;
 
-import com.haomibo.haomibo.jwt.*;
+import com.haomibo.haomibo.jwt.JwtAuthenticationEntryPoint;
+import com.haomibo.haomibo.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 @Configuration
 @EnableWebSecurity
