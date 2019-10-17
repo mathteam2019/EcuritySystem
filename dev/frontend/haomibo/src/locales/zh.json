@@ -14,6 +14,8 @@
     "register-button": "注册",
     "reset-password-button": "RESET",
     "buy": "BUY",
+    "name": "姓名",
+    "confirm-password": "确认密码",
     "username": "Username",
     "login-fail": "登录失败",
     "warning": "警告",
@@ -22,9 +24,17 @@
     "enter-valid-password": "请输入有效的密码",
     "login-success": "登录成功",
     "register-success": "注册成功",
-    "register-invalid-parameter": "register-invalid-parameter",
-    "used-email": "used-email",
-    "server-error": "server-error"
+    "register-invalid-parameter": "无效的参数",
+    "used-email": "正在使用电子邮件",
+    "server-error": "服务器错误",
+    "please-enter-valid-email": "请输入有效的邮件地址",
+    "password-length-need-to-be-more-than-6-letters": "密码长度需要超过6个字母",
+    "password-field-is-mandatory": "密码是必需的",
+    "name-field-is-mandatory": "姓名是必需的",
+    "email-field-is-mandatory": "邮件是必需的",
+    "password-confirm-field-is-mandatory": "确认密码是必需的",
+    "name-should-be-numerical-or-characters": "名称应为数字或字符",
+    "confirmation-should-be-match-as-password": "确认应与密码相同"
 
   },
   "menu": {
@@ -245,5 +255,9 @@
     "error-title": "错误",
     "invalid-token": "Invalid token information",
     "token-expired": "Token is expired"
+  },
+  "api-call-error-messages": {
+    "error-title": "错误",
+    "network-error": "网路错误"
   }
 }

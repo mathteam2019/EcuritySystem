@@ -38,8 +38,6 @@ export default {
     },
     setLogout(state) {
       state.currentUser = null;
-      state.processing = false;
-      state.loginError = null
     },
     setProcessing(state, payload) {
       state.processing = payload;
@@ -88,11 +86,16 @@ export default {
               break;
 
           }
+        })
+        .catch((error) => {
+          commit('clearError');
+          commit('setProcessing', false);
         });
 
     },
     register({commit}, payload) {
-      commit('clearError');
+
+
       commit('setProcessing', true);
       commit('setRegisterStatus', null);
 
@@ -138,6 +141,10 @@ export default {
               break;
 
           }
+        })
+        .catch((error) => {
+          commit('setRegisterStatus', 'null');
+          commit('setProcessing', false);
         });
     },
     signOut({commit}) {
@@ -156,6 +163,9 @@ export default {
               break;
 
           }
+        })
+        .catch((error) => {
+
         });
 
     }

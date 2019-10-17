@@ -45,6 +45,11 @@ const getApiManager = function () {
   }, (error) => {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+    console.error(error);
+    app.$notify('error', app.$t(`api-call-error-messages.error-title`), app.$t(`api-call-error-messages.network-error`), {
+      duration: 3000,
+      permanent: false
+    });
     return Promise.reject(error);
   });
 

@@ -20,36 +20,41 @@
               <label class="form-group has-float-label mb-4">
                 <input type="text" class="form-control" v-model="registerForm.name">
                 <span>{{ $t('user.name') }}</span>
-                <div v-if="submitted&&!$v.registerForm.name.required" class="invalid-feedback">Name is required</div>
-                <div v-else-if="!$v.registerForm.name.alphaNum" class="invalid-feedback">Name should be numerical or
-                  characters
+                <div v-if="submitted && !$v.registerForm.name.required" class="invalid-feedback">
+                  {{$t('user.name-field-is-mandatory')}}
+                </div>
+                <div v-else-if="!$v.registerForm.name.alphaNum" class="invalid-feedback">
+                  {{$t('user.name-should-be-numerical-or-characters')}}
                 </div>
               </label>
               <label class="form-group has-float-label mb-4">
                 <input type="email" class="form-control" v-model="registerForm.email">
                 <span>{{ $t('user.email') }}</span>
-                <div v-if="submitted&&!$v.registerForm.email.required" class="invalid-feedback">Email is required</div>
-                <div v-else-if="!$v.registerForm.email.email" class="invalid-feedback">Email should be valid format
+                <div v-if="submitted && !$v.registerForm.email.required" class="invalid-feedback">
+                  {{$t('user.email-field-is-mandatory')}}
+                </div>
+                <div v-else-if="!$v.registerForm.email.email" class="invalid-feedback">
+                  {{$t('user.please-enter-valid-email') }}
                 </div>
               </label>
               <label class="form-group has-float-label mb-4">
                 <input type="password" class="form-control" v-model="registerForm.password">
                 <span>{{ $t('user.password') }}</span>
-                <div v-if="submitted&&!$v.registerForm.password.required" class="invalid-feedback">Password is
-                  required
+                <div v-if="submitted && !$v.registerForm.password.required" class="invalid-feedback">
+                  {{ $t('user.password-field-is-mandatory') }}
                 </div>
-                <div v-else-if="!$v.registerForm.password.minLength" class="invalid-feedback">Password must be at least
-                  6 characters
+                <div v-else-if="!$v.registerForm.password.minLength" class="invalid-feedback">
+                  {{ $t('user.password-length-need-to-be-more-than-6-letters') }}
                 </div>
               </label>
               <label class="form-group has-float-label mb-4">
-                <input type="password" class="form-control" v-model="registerForm.confPassword">
-                <span>{{ $t('user.conf-password') }}</span>
-                <div v-if="submitted&&!$v.registerForm.confPassword.required" class="invalid-feedback">Password
-                  Confirmation is required
+                <input type="password" class="form-control" v-model="registerForm.confirmPassword">
+                <span>{{ $t('user.confirm-password') }}</span>
+                <div v-if="submitted && !$v.registerForm.confirmPassword.required" class="invalid-feedback">
+                  {{$t('user.password-confirm-field-is-mandatory')}}
                 </div>
-                <div v-else-if="!$v.registerForm.confPassword.sameAsPassword" class="invalid-feedback">Confirmation
-                  should be match as Password
+                <div v-else-if="!$v.registerForm.confirmPassword.sameAsPassword" class="invalid-feedback">
+                  {{$t('user.confirmation-should-be-match-as-password')}}
                 </div>
               </label>
             </div>
@@ -79,7 +84,7 @@
           name: '',
           email: '',
           password: '',
-          confPassword: '',
+          confirmPassword: '',
         },
         submitted: false
       }
@@ -96,7 +101,7 @@
         password: {
           required, minLength: minLength(6)
         },
-        confPassword: {
+        confirmPassword: {
           required, sameAsPassword: sameAs('password')
         },
         email: {
