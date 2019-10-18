@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -11,24 +12,19 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tbl_forbidden_token")
+@Table(name = "sys_forbidden_token")
 public class ForbiddenToken implements Serializable {
-
-    public ForbiddenToken(String token, int expirationTimestamp) {
-        this.token = token;
-        this.expirationTimestamp = expirationTimestamp;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "TOKEN_ID", nullable = false)
     private Integer id;
 
-    @Column(name = "token", nullable = false)
+    @Column(name = "TOKEN", nullable = false)
     private String token;
 
-    @Column(name = "expiration_timestamp", nullable = false)
-    private int expirationTimestamp;
+    @Column(name = "CREATEDTIME", nullable = false)
+    private Date createdTime;
 
 }
 

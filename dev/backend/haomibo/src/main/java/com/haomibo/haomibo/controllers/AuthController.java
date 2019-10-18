@@ -115,10 +115,10 @@ public class AuthController extends BaseController {
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
 
         authToken = Utils.removePrefixFromToken(authToken);
-        Date expirationToken = jwtUtil.getExpirationDateFromToken(authToken);
-        int expirationTimestamp = (int) (expirationToken.getTime() / 1000);
 
-        ForbiddenToken forbiddenToken = new ForbiddenToken(authToken, expirationTimestamp);
+        ForbiddenToken forbiddenToken = new ForbiddenToken();
+
+        forbiddenToken.setToken(authToken);
 
         forbiddenTokenRepository.save(forbiddenToken);
         forbiddenTokenRepository.flush();

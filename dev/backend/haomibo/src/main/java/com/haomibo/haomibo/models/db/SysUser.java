@@ -11,21 +11,21 @@ import java.io.Serializable;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tbl_sys_user")
+@Table(name = "sys_user")
 public class SysUser implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "USER_ID", nullable = false)
     private Integer id;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "EMAIL", nullable = false)
     private String email;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "USER_NAME", nullable = false)
     private String name;
 
 }

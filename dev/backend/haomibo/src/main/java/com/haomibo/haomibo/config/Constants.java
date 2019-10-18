@@ -2,7 +2,7 @@ package com.haomibo.haomibo.config;
 
 public class Constants {
 
-    public static final long JWT_VALIDITY_SECONDS = 24 * 60 * 60;
+    public static final long JWT_VALIDITY_SECONDS = 2 * 60 * 60;
     public static final String TOKEN_PREFIX = "haomibo_";
     public static final String REQUEST_HEADER_AUTH_TOKEN_KEY = "X-AUTH-TOKEN";
     public static final long TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE = 24 * 60 * 60;

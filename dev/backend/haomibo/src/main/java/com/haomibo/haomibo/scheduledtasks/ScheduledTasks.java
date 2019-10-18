@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.scheduledtasks;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.haomibo.haomibo.config.Constants;
@@ -36,10 +37,13 @@ public class ScheduledTasks {
 
         Date now = new Date();
 
-        QForbiddenToken qForbiddenToken = QForbiddenToken.forbiddenToken;
-        int timestamp = (int) (now.getTime() / 1000);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(now);
+        cal.add(Calendar.SECOND, (int) -Constants.JWT_VALIDITY_SECONDS);
 
-        forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(qForbiddenToken.expirationTimestamp.loe(timestamp)));
+        QForbiddenToken qForbiddenToken = QForbiddenToken.forbiddenToken;
+
+        forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(qForbiddenToken.createdTime.before(cal.getTime())));
 
         log.info("========END Cleaning Forbidden token table from DB========");
     }
