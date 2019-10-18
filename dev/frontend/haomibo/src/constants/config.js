@@ -15,6 +15,7 @@ export const localeOptions = [
 ];
 
 export const apiUrl = 'http://localhost:4546';
+// export const apiUrl = 'http://39.97.175.200:8080/haomibo';
 
 export const refreshTokenTimeDiff = 30;
 

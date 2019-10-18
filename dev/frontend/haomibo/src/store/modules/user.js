@@ -111,6 +111,8 @@ export default {
                 permanent: false
               });
 
+              commit('setProcessing', false);
+
               setTimeout(() => {
                 app.$router.push('/user/login')
               }, 100);

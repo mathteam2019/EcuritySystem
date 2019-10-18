@@ -18,6 +18,7 @@
     "confirm-password": "确认密码",
     "username": "Username",
     "login-fail": "登录失败",
+    "fail": "失败",
     "warning": "警告",
     "success": "成功",
     "enter-valid-email": "请输入有效的邮件地址",
@@ -245,11 +246,11 @@
   },
   "response-messages": {
     "ok": "ok",
-    "invalid-parameter": "invalid_parameter",
-    "user-not-found": "user_not_found",
-    "invalid-password": "invalid_password",
-    "token-expired": "token_expired",
-    "invalid-token": "invalid_token"
+    "invalid-parameter": "无效的参数",
+    "user-not-found": "用户找不到",
+    "invalid-password": "错密码",
+    "token-expired": "Token超过有效时间",
+    "invalid-token": "Token无效"
   },
   "auth-token-messages": {
     "error-title": "错误",
