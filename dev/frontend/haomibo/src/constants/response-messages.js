@@ -6,5 +6,6 @@ export const responseMessages = {
   'token-expired': 'token_expired',
   'invalid-token': 'invalid_token',
   'used-email': 'used_email',
-  'server-error': 'server_error'
+  'server-error': 'server_error',
+  'has-children': 'has_children'
 };
