@@ -22,7 +22,7 @@
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.organization-name')">
-                          <b-form-input></b-form-input>
+                          <b-form-input v-model="filter.orgName"></b-form-input>
                         </b-form-group>
                       </b-col>
 
@@ -63,9 +63,10 @@
                     :api-url="vuetableItems.apiUrl"
                     :fields="vuetableItems.fields"
                     :http-fetch="vuetableHttpFetch"
-                    :per-page="5"
+                    :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
+
                     @vuetable:pagination-data="onPaginationData"
                   >
 
@@ -201,7 +202,7 @@
                         <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="createPage.parentOrg" plain/>
+                                       v-model="createPage.parentOrgId" plain/>
                       </b-form-group>
                     </b-col>
                   </b-row>
@@ -306,7 +307,7 @@
                         <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="modifyPage.parentOrg" plain/>
+                                       v-model="modifyPage.parentOrgId" plain/>
                       </b-form-group>
                     </b-col>
                   </b-row>
@@ -416,6 +417,15 @@
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
+  let getOrgById = (orgData, orgId) => {
+    for (let i = 0; i < orgData.length; i++) {
+      if (orgData[i].orgId == orgId) {
+        return orgData[i];
+      }
+    }
+    return 0;
+  };
+
   export default {
     components: {
       'vuetable': Vuetable,
@@ -423,6 +433,8 @@
       Vue2OrgTree
     },
     mounted() {
+
+      this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
       getApiManager().post(`${apiUrl}/permission-management/get-all-organization`).then((response) => {
         let message = response.data.message;
@@ -437,11 +449,23 @@
     },
     data() {
       return {
+        filter: {
+          orgName: ''
+        }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
         createPage: { // create page
           orgName: '',
           orgNumber: '',
-          parentOrg: {},
+          parentOrgId: null,
+          leader: '',
+          mobile: '',
+          note: ''
+        },
+        modifyPage: { // modify page
+          selectedOrg: {},
+          orgName: '',
+          orgNumber: '',
+          parentOrgId: null,
           leader: '',
           mobile: '',
           note: ''
@@ -455,7 +479,7 @@
         },
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiUrl}/permission-management/get-all-organization`,
+          apiUrl: `${apiUrl}/permission-management/get-organization-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -542,10 +566,9 @@
               dataClass: 'text-center'
             },
 
-          ]
+          ],
+          perPage: 5,
         },
-        currentPage: 1,
-        perPage: 5,
         totalRows: 0,
         bootstrapTable: {
           selected: [],
@@ -566,12 +589,14 @@
     computed: {
       createPageSelectedParentOrganizationNumber: { // create page selected parent org number ( disabled input but automatically change)
         get() {
-          return this.createPage.parentOrg.orgNumber;
+          let org = getOrgById(this.orgData, this.createPage.parentOrgId);
+          return org ? org.orgNumber : "";
         }
       },
       modifyPageSelectedParentOrganizationNumber: { // modify page selected parent org number ( disabled input but automatically change)
         get() {
-          return this.modifyPage.parentOrg.orgNumber;
+          let org = getOrgById(this.orgData, this.modifyPage.parentOrgId);
+          return org ? org.orgNumber : "";
         }
       }
     },
@@ -625,7 +650,7 @@
 
         newVal.forEach((org) => {
           selectOptions.push({
-            value: org,
+            value: org.orgId,
             html: `${generateSpace(getLevel(org))}${org.orgName}`
           });
         });
@@ -635,8 +660,41 @@
       }
     },
     methods: {
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.perPage,
+          current_page: data.currentPage,
+          last_page: data.lastPage,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+
+        for (let i = 0; i < data.data.length; i++) {
+          transformed.data.push(data.data[i])
+        }
+
+        // console.log(response, transformed);
+        return transformed
+
+      },
+
       vuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        return getApiManager().post(apiUrl);
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: httpOptions.params.per_page,
+          filter: {
+            orgName: this.filter.orgName
+          }
+        });
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
@@ -648,14 +706,12 @@
 
         let modifyItem = () => {
 
-          console.log(data);
-
           // rest models
           this.modifyPage = {
             selectedOrg: data,
             orgName: data.orgName,
             orgNumber: data.orgNumber,
-            parentOrg: data.parent,
+            parentOrgId: data.parent.orgId,
             leader: data.leader,
             mobile: data.mobile,
             note: data.note
@@ -731,7 +787,7 @@
         this.createPage = {
           orgName: '',
           orgNumber: '',
-          parentOrg: {},
+          parentOrgId: null,
           leader: '',
           mobile: '',
           note: ''
@@ -758,7 +814,7 @@
           return;
         }
 
-        if (this.createPage.parentOrg.orgId == undefined) {
+        if (this.createPage.parentOrgId == null) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-parent-organization`), {
             duration: 3000,
             permanent: false
@@ -771,7 +827,7 @@
           .post(`${apiUrl}/permission-management/new-organization`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
-            'parentOrgId': this.createPage.parentOrg.orgId,
+            'parentOrgId': this.createPage.parentOrgId,
             'leader': this.createPage.leader,
             'mobile': this.createPage.mobile,
             'note': this.createPage.note
@@ -820,7 +876,7 @@
           return;
         }
 
-        if (this.modifyPage.parentOrg.orgId == undefined) {
+        if (this.modifyPage.parentOrgId == null) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-parent-organization`), {
             duration: 3000,
             permanent: false
@@ -828,7 +884,7 @@
           return;
         }
 
-        if (this.modifyPage.parentOrg.orgId == this.modifyPage.selectedOrg.orgId) {
+        if (this.modifyPage.parentOrgId == this.modifyPage.selectedOrg.orgId) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-different-parent-organization`), {
             duration: 3000,
             permanent: false
@@ -842,7 +898,7 @@
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
-            'parentOrgId': this.modifyPage.parentOrg.orgId,
+            'parentOrgId': this.modifyPage.parentOrgId,
             'leader': this.modifyPage.leader,
             'mobile': this.modifyPage.mobile,
             'note': this.modifyPage.note
@@ -877,8 +933,6 @@
       deleteOrg() {
 
         let org = this.selectedOrg;
-
-        console.log(org);
 
         // call api
         getApiManager()
@@ -916,8 +970,6 @@
       deactivateOrg() {
 
         let org = this.selectedOrg;
-
-        console.log(org);
 
         // call api
         getApiManager()
