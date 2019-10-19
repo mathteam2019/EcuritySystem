@@ -4,15 +4,15 @@ import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.jwt.JwtUtil;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
-import com.haomibo.haomibo.models.request.DeleteOrgRequestBody;
-import com.haomibo.haomibo.models.request.ModifyOrgRequestBody;
-import com.haomibo.haomibo.models.request.NewOrgRequestBody;
-import com.haomibo.haomibo.models.request.UpdateOrgStatusRequestBody;
+import com.haomibo.haomibo.models.request.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
+import com.haomibo.haomibo.models.response.GetOrgByFilterAndPageResponseBody;
 import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
 import com.haomibo.haomibo.repositories.SysOrgRepository;
 import com.haomibo.haomibo.security.AuthenticationFacade;
+import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -152,7 +152,46 @@ public class PermissionManagementController extends BaseController {
             }
         });
 
+
         return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgArray);
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/get-organization-by-filter-and-page", method = RequestMethod.POST)
+    public Object getOrgByFilterAndPage(@RequestBody @Valid GetOrgByFilterAndPageRequestBody requestBody) {
+
+
+        QSysOrg qSysOrg = QSysOrg.sysOrg;
+
+        Predicate predicate = qSysOrg.orgName.containsIgnoreCase(requestBody.getFilter().getOrgName());
+
+        int currentPage = requestBody.getCurrentPage() - 1; // on server side, page is calculated from 0
+        int perPage = requestBody.getPerPage();
+
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
+        long total = sysOrgRepository.count(predicate);
+        List<SysOrg> sysOrgList = sysOrgRepository.findAll(predicate, pageRequest).getContent();
+
+        sysOrgList.forEach(sysOrg -> {
+            if (sysOrg.getParent() != null) {
+                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
+            }
+        });
+
+
+        return new CommonResponseBody(
+                Constants.ResponseMessages.OK,
+                GetOrgByFilterAndPageResponseBody
+                        .builder()
+                        .total(total)
+                        .perPage(perPage)
+                        .currentPage(currentPage + 1)
+                        .lastPage((int) Math.ceil(((double) total) / perPage))
+                        .from(perPage * currentPage + 1)
+                        .to(perPage * currentPage + sysOrgList.size())
+                        .data(sysOrgList)
+                        .build());
     }
 
 }
