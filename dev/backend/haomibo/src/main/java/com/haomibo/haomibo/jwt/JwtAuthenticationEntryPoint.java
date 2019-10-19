@@ -24,6 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
+        // TODO: This is still ambitious.... this is for handling authentication exceptions but what exception can be thrown ?
+
         Optional<String> tokenStringOptional = Utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY));
 
         if (!tokenStringOptional.isPresent()) {

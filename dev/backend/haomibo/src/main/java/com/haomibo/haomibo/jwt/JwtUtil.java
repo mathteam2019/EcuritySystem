@@ -63,23 +63,6 @@ public class JwtUtil implements Serializable {
                 .compact();
     }
 
-    public Optional<Object> getUserFromToken(String token) {
-
-        Optional<Integer> idFromToken = getIdFromToken(token);
-        Optional<String> roleFromToken = getRoleFromToken(token);
-
-        if (idFromToken.isPresent() && roleFromToken.isPresent()) {
-            int id = idFromToken.get();
-            String role = roleFromToken.get();
-
-            if (Constants.Roles.SYS_USER.equals(role)) {
-                return Optional.of(sysUserRepository.findById(id));
-            }
-        }
-
-        return Optional.empty();
-    }
-
     public Optional<String> getRoleFromToken(String token) {
         try {
             return Optional.of(this.getClaimFromToken(token, claims -> (String) claims.get("role")));

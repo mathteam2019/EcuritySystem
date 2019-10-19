@@ -8,7 +8,7 @@ public class Constants {
     public static final long TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE = 24 * 60 * 60;
 
     public static class Roles {
-        public static final String SYS_USER = "role_sys_user";
+        public static final String SYS_USER = "ROLE_SYS_USER";
     }
 
     public static class ResponseMessages {
@@ -20,6 +20,7 @@ public class Constants {
         public static final String INVALID_TOKEN = "invalid_token";
         public static final String USED_EMAIL = "used_email";
         public static final String SERVER_ERROR = "server_error";
+        public static final String HAS_CHILDREN = "has_children";
     }
 
 
