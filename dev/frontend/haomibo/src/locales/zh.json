@@ -306,5 +306,12 @@
   "api-call-error-messages": {
     "error-title": "错误",
     "network-error": "网路错误"
+  },
+  "vuetable": {
+    "every-page-showing": "每页显示",
+    "items": "条记录",
+    "total": "共",
+    "record": "条"
+
   }
 }
