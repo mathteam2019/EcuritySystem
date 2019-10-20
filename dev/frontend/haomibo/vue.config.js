@@ -1,7 +1,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-
+  runtimeCompiler: true,
   pages: {
     index: {
       entry: 'src/index.js',
