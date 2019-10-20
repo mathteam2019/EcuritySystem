@@ -28,13 +28,13 @@
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.active-state')">
-                          <b-form-select :options="statusSelectOptions" plain/>
+                          <b-form-select :options="statusSelectOptions" v-model="filter.status" plain/>
                         </b-form-group>
                       </b-col>
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.parent-organization-name')">
-                          <b-form-input></b-form-input>
+                          <b-form-input v-model="filter.parentOrgName" ></b-form-input>
                         </b-form-group>
                       </b-col>
 
@@ -43,8 +43,20 @@
 
                   </div>
                   <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
+                    <b-button
+                      size="sm"
+                      class="ml-2"
+                      variant="info"
+                      @click="onSearchButton()">
+                      {{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button
+                      size="sm"
+                      class="ml-2"
+                      variant="info"
+                      @click="onResetButton()">
+                      {{ $t('permission-management.reset') }}
+                    </b-button>
                     <b-button size="sm" class="ml-2" variant="success" @click="showCreatePage()">{{
                       $t('permission-management.new') }}
                     </b-button>
@@ -450,7 +462,9 @@
     data() {
       return {
         filter: {
-          orgName: ''
+          orgName: '',
+          status: null,
+          parentOrgName: ''
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
         createPage: { // create page
@@ -660,6 +674,17 @@
       }
     },
     methods: {
+      onSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          orgName: '',
+          status: null,
+          parentOrgName: ''
+        };
+        this.$refs.vuetable.refresh();
+      },
       transform(response) {
 
         let transformed = {};
@@ -681,7 +706,6 @@
           transformed.data.push(data.data[i])
         }
 
-        // console.log(response, transformed);
         return transformed
 
       },
@@ -692,7 +716,9 @@
           currentPage: httpOptions.params.page,
           perPage: httpOptions.params.per_page,
           filter: {
-            orgName: this.filter.orgName
+            orgName: this.filter.orgName,
+            status: this.filter.status,
+            parentOrgName: this.filter.parentOrgName
           }
         });
       },
@@ -744,7 +770,9 @@
                     duration: 3000,
                     permanent: false
                   });
-                  // TODO: reload table
+
+                  this.$refs.vuetable.refresh();
+
                   break;
               }
             })
@@ -842,7 +870,9 @@
                   permanent: false
                 });
                 // back to table
-                // TODO: reload table
+
+                this.$refs.vuetable.refresh();
+
                 this.pageStatus = 'table';
                 break;
             }
@@ -912,7 +942,9 @@
                   duration: 3000,
                   permanent: false
                 });
-                // TODO: reload table
+
+                this.$refs.vuetable.refresh();
+
                 this.pageStatus = 'table';
                 break;
             }
@@ -949,7 +981,9 @@
                   duration: 3000,
                   permanent: false
                 });
-                // TODO: reload table
+
+                this.$refs.vuetable.refresh();
+
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
@@ -986,7 +1020,9 @@
                   duration: 3000,
                   permanent: false
                 });
-                // TODO: reload table
+
+                this.$refs.vuetable.refresh();
+
                 break;
             }
           })
