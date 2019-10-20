@@ -17,6 +17,8 @@ public class GetOrgByFilterAndPageRequestBody {
     @AllArgsConstructor
     public static class Filter {
         String orgName;
+        String status;
+        String parentOrgName;
     }
 
     int currentPage;

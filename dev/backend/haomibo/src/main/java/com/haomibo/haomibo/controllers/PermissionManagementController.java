@@ -10,7 +10,9 @@ import com.haomibo.haomibo.models.response.GetOrgByFilterAndPageResponseBody;
 import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
 import com.haomibo.haomibo.repositories.SysOrgRepository;
 import com.haomibo.haomibo.security.AuthenticationFacade;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.annotation.Secured;
@@ -163,7 +165,21 @@ public class PermissionManagementController extends BaseController {
 
         QSysOrg qSysOrg = QSysOrg.sysOrg;
 
-        Predicate predicate = qSysOrg.orgName.containsIgnoreCase(requestBody.getFilter().getOrgName());
+
+        BooleanBuilder predicate = new BooleanBuilder(qSysOrg.isNotNull());
+
+        GetOrgByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getOrgName())) {
+                predicate.and(qSysOrg.orgName.contains(filter.getOrgName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(qSysOrg.status.contains(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentOrgName())) {
+                predicate.and(qSysOrg.parent.orgName.contains(filter.getParentOrgName()));
+            }
+        }
 
         int currentPage = requestBody.getCurrentPage() - 1; // on server side, page is calculated from 0
         int perPage = requestBody.getPerPage();
