@@ -10,7 +10,7 @@
     <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
       <b-tab :title="$t('permission-management.member-table')">
-        <b-row>
+        <b-row v-if="pageStatus=='table'">
           <b-col cols="12">
             <b-card class="mb-4">
 
@@ -28,20 +28,20 @@
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.status')">
-                          <v-select v-model="selectedStatus" :options="statusSelectData" :dir="direction"/>
+                          <b-form-select v-model="selectedStatus" :options="statusSelectData" plain/>
                         </b-form-group>
                       </b-col>
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.affiliated-institution')">
-                          <v-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
-                                    :dir="direction"/>
+                          <b-form-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
+                                    plain/>
                         </b-form-group>
                       </b-col>
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.user-category')">
-                          <v-select v-model="selectedUserCategory" :options="userCategorySelectData" :dir="direction"/>
+                          <b-form-select v-model="selectedUserCategory" :options="userCategorySelectData" plain/>
                         </b-form-group>
                       </b-col>
                       <b-col></b-col>
@@ -51,7 +51,7 @@
                   <div class="align-self-center">
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
+                    <b-button size="sm" class="ml-2" @click="showCreatePage()" variant="success">{{ $t('permission-management.new') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
@@ -173,14 +173,12 @@
             </b-card>
           </b-col>
         </b-row>
-      </b-tab>
-
-      <b-tab :title="$t('permission-management.organization-user-compare-table')">
-        <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Hi</h1>
-            </b-card>
+        <b-row v-if="pageStatus=='create'">
+          <b-col cols="2">
+            testing
+          </b-col>
+          <b-col cols="10">
+            testing
           </b-col>
         </b-row>
       </b-tab>
@@ -203,54 +201,65 @@
 </template>
 <script>
 
-  import {apiUrl} from "../../../constants/config";
+  import {apiBaseUrl} from "../../../constants/config";
   import axios from 'axios'
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import vSelect from 'vue-select'
-  import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
   import _ from "lodash";
-
+  import {getApiManager} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
   import staticUserTableData from '../../../data/user'
+
+  let getOrgById = (orgData, orgId) => {
+    for (let i = 0; i < orgData.length; i++) {
+      if (orgData[i].orgId == orgId) {
+        return orgData[i];
+      }
+    }
+    return 0;
+  };
 
   export default {
     components: {
-      'v-select': vSelect,
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
+
       this.tableData = staticUserTableData;
+      getApiManager().post(`${apiUrl}/permission-management/get-all-organization`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.orgData = data;
+            break;
+        }
+      })
+
     },
     data() {
       return {
         tableData: [],
-        selectedStatus: '',
+        pageStatus:'table',
+        selectedStatus: null,
         selectedAffiliatedInstitution: '',
-        selectedUserCategory: '',
-
+        selectedUserCategory: null,
+        orgData: [],
         direction: getDirection().direction,
         statusSelectData: [
-          this.$t('permission-management.all'),
-          this.$t('permission-management.active'),
-          this.$t('permission-management.inactive'),
-          this.$t('permission-management.blocked'),
-          this.$t('permission-management.pending'),
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'active', text: this.$t('permission-management.active')},
+          {value: 'inactive', text: this.$t('permission-management.inactive')},
+          {value: 'pending', text: this.$t('permission-management.pending')},
+          {value: 'blocked', text: this.$t('permission-management.blocked')},
         ],
-        affiliatedInstitutionSelectData: [
-          this.$t('permission-management.headquarters'),
-          this.$t('permission-management.office'),
-          this.$t('permission-management.production-department'),
-          this.$t('permission-management.production-department-1'),
-          this.$t('permission-management.production-department-2'),
-          this.$t('permission-management.sales-department'),
-          this.$t('permission-management.sales-planing-department'),
-        ],
+        affiliatedInstitutionSelectData: {},
         userCategorySelectData: [
-          this.$t('permission-management.all'),
-          this.$t('permission-management.admin'),
-          this.$t('permission-management.normal-staff'),
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'admin', text: this.$t('permission-management.admin')},
+          {value: 'normal', text: this.$t('permission-management.normal-staff')}
         ],
         items: [
           {id: 1, first_name: 'Mark', last_name: 'Otto', username: '@mdo'},
@@ -258,7 +267,7 @@
           {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
         ],
         vuetableItems: {
-          apiUrl: apiUrl + '/cakes/fordatatable',
+          apiUrl: apiBaseUrl + '/cakes/fordatatable',
           fields: [
 
             {
@@ -349,9 +358,79 @@
     watch: {
       tableData(newVal, oldVal) {
         this.$refs.vuetable.refresh();
+      },
+      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
+
+        let id = 0;
+        let nest = (items, id = 0) =>
+          items
+            .filter(item => item.parentOrgId == id)
+            .map(item => ({
+              ...item,
+              children: nest(items, item.orgId),
+              id: id++,
+              label: `${item.orgNumber} ${item.orgName}`
+            }));
+
+        this.treeData = nest(newVal)[0];
+
+        let getLevel = (org) => {
+
+          let getParent = (org) => {
+            for (let i = 0; i < newVal.length; i++) {
+              if (newVal[i].orgId == org.parentOrgId) {
+                return newVal[i];
+              }
+            }
+            return null;
+          };
+
+          let stepValue = org;
+          let level = 0;
+          while (getParent(stepValue) !== null) {
+            stepValue = getParent(stepValue);
+            level++;
+          }
+
+          return level;
+
+        };
+
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
+
+        let selectOptions = [];
+
+        newVal.forEach((org) => {
+          selectOptions.push({
+            value: org.orgId,
+            html: `${generateSpace(getLevel(org))}${org.orgName}`
+          });
+        });
+
+        this.affiliatedInstitutionSelectData = selectOptions;
+
       }
     },
     methods: {
+      showCreatePage() { // move to create page
+        // reset models
+        this.createPage = {
+          orgName: '',
+          orgNumber: '',
+          parentOrgId: null,
+          leader: '',
+          mobile: '',
+          note: ''
+        };
+        // change page to create
+        this.pageStatus = 'create';
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },

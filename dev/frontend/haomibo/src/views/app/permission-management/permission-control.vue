@@ -374,7 +374,7 @@
 </template>
 <script>
 
-  import {apiUrl} from "../../../constants/config";
+  import {apiBaseUrl} from "../../../constants/config";
   import axios from 'axios'
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
@@ -429,7 +429,7 @@
           {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
         ],
         vuetableItems: {
-          apiUrl: apiUrl + '/cakes/fordatatable',
+          apiUrl: apiBaseUrl + '/cakes/fordatatable',
           fields: [
 
             {

@@ -422,7 +422,7 @@
 </template>
 <script>
 
-  import {apiUrl} from '../../../constants/config';
+  import {apiBaseUrl} from '../../../constants/config';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
 
@@ -450,7 +450,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiUrl}/permission-management/get-all-organization`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -496,7 +496,7 @@
         ],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiUrl}/permission-management/get-organization-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -764,7 +764,7 @@
 
           // call api
           getApiManager()
-            .post(`${apiUrl}/permission-management/update-organization-status`, {
+            .post(`${apiBaseUrl}/permission-management/update-organization-status`, {
               'orgId': data.orgId,
               'status': 'active',
             })
@@ -859,7 +859,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiUrl}/permission-management/new-organization`, {
+          .post(`${apiBaseUrl}/permission-management/organization/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -877,10 +877,10 @@
                   permanent: false
                 });
                 // back to table
+                this.pageStatus = 'table';
 
                 this.$refs.vuetable.refresh();
 
-                this.pageStatus = 'table';
                 break;
             }
           })
@@ -931,7 +931,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiUrl}/permission-management/modify-organization`, {
+          .post(`${apiBaseUrl}/permission-management/organization/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -950,9 +950,9 @@
                   permanent: false
                 });
 
-                this.$refs.vuetable.refresh();
-
                 this.pageStatus = 'table';
+
+                this.$refs.vuetable.refresh();
                 break;
             }
           })
@@ -975,7 +975,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiUrl}/permission-management/delete-organization`, {
+          .post(`${apiBaseUrl}/permission-management/organization/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -1014,7 +1014,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiUrl}/permission-management/update-organization-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })

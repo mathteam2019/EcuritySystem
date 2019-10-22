@@ -1,5 +1,5 @@
 import 'firebase/auth'
-import {apiUrl, currentUser} from '../../constants/config'
+import {apiBaseUrl, currentUser} from '../../constants/config'
 import {responseMessages} from '../../constants/response-messages';
 import {getApiManager} from "../../api";
 import {getLoginInfo, isLoggedIn, removeLoginInfo, saveLoginInfo, scheduleRefreshToken} from "../../utils";
@@ -63,7 +63,7 @@ export default {
 
 
       getApiManager()
-        .post(`${apiUrl}/auth/login`, payload)
+        .post(`${apiBaseUrl}/auth/login`, payload)
         .then(response => {
           let message = response.data.message;
           let data = response.data.data;
@@ -100,7 +100,7 @@ export default {
       commit('setRegisterStatus', null);
 
       getApiManager()
-        .post(`${apiUrl}/auth/register`, payload)
+        .post(`${apiBaseUrl}/auth/register`, payload)
         .then(response => {
           let message = response.data.message;
           switch (message) {
@@ -152,7 +152,7 @@ export default {
     signOut({commit}) {
 
       return getApiManager()
-        .post(`${apiUrl}/auth/logout`, {})
+        .post(`${apiBaseUrl}/auth/logout`, {})
         .then(response => {
           let message = response.data.message;
           let data = response.data.data;

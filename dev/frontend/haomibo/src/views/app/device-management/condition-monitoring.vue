@@ -26,14 +26,13 @@
                     <b-row>
                       <b-col>
                         <b-form-group :label="$t('device-management.package')">
-                          <v-select v-model="package" :options="packageData" :dir="direction"/>
+                          <b-form-select v-model="package" :options="packageData" plain/>
                         </b-form-group>
                       </b-col>
 
                       <b-col>
                         <b-form-group :label="$t('device-management.device-classify')">
-                          <v-select v-model="deviceClassify" :options="deviceClassifyData"
-                                    :dir="direction"/>
+                          <b-form-select v-model="deviceClassify" :options="deviceClassifyData" plain />
                         </b-form-group>
                       </b-col>
                       <b-col>
@@ -181,12 +180,11 @@
 </template>
 <script>
 
-  import {apiUrl} from "../../../constants/config";
+  import {apiBaseUrl} from "../../../constants/config";
   import _ from 'lodash';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
   import Switches from 'vue-switches'
@@ -195,7 +193,6 @@
 
   export default {
     components: {
-      'v-select': vSelect,
       'switches' : Switches,
       'vuetable' : Vuetable,
       'vuetable-pagination': VuetablePagination,
@@ -206,6 +203,7 @@
         isListMode:false,
         package: '',
         deviceClassify: '',
+        parentOrganizationNameSelectOptions: {},
         direction: getDirection().direction,
         packageData: [
           '全部',
