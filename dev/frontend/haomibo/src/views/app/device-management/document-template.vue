@@ -127,7 +127,7 @@
 <script>
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
-  import {apiUrl} from '../../../constants/config'
+  import {apiBaseUrl} from '../../../constants/config'
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import { getDirection } from '../../../utils'
@@ -173,7 +173,7 @@
           {label: "海康威视", value: 'chocolate'}
         ],
         vuetableItems: {
-          apiUrl: apiUrl + '/cakes/fordatatable',
+          apiUrl: apiBaseUrl + '/cakes/fordatatable',
           fields: [
             {
               name: 'no',

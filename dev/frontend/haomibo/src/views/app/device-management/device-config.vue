@@ -322,7 +322,7 @@
 </template>
 <script>
 
-  import {apiUrl} from "../../../constants/config";
+  import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select'

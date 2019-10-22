@@ -181,7 +181,7 @@
 </template>
 <script>
 
-  import {apiUrl} from "../../../constants/config";
+  import {apiBaseUrl} from "../../../constants/config";
   import _ from 'lodash';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
