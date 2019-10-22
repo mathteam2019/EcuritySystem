@@ -10,7 +10,7 @@
     <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
       <b-tab :title="$t('permission-management.member-table')">
-        <b-row>
+        <b-row v-if="pageStatus=='table'">
           <b-col cols="12">
             <b-card class="mb-4">
 
@@ -51,7 +51,7 @@
                   <div class="align-self-center">
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
+                    <b-button size="sm" class="ml-2" @click="showCreatePage()" variant="success">{{ $t('permission-management.new') }}</b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
@@ -173,6 +173,14 @@
             </b-card>
           </b-col>
         </b-row>
+        <b-row v-if="pageStatus=='create'">
+          <b-col cols="2">
+            testing
+          </b-col>
+          <b-col cols="10">
+            testing
+          </b-col>
+        </b-row>
       </b-tab>
 
       <b-tab :title="$t('permission-management.user-group')">
@@ -233,6 +241,7 @@
     data() {
       return {
         tableData: [],
+        pageStatus:'table',
         selectedStatus: null,
         selectedAffiliatedInstitution: '',
         selectedUserCategory: null,
@@ -408,6 +417,19 @@
       }
     },
     methods: {
+      showCreatePage() { // move to create page
+        // reset models
+        this.createPage = {
+          orgName: '',
+          orgNumber: '',
+          parentOrgId: null,
+          leader: '',
+          mobile: '',
+          note: ''
+        };
+        // change page to create
+        this.pageStatus = 'create';
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
