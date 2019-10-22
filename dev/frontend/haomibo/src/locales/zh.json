@@ -65,6 +65,7 @@
     "permission-management": "权限管理",
     "organization-management": "机构管理",
     "role-management": "角色管理",
+    "assign-permission-management": "授权管理",
     "permission-control": "权限控制",
     "user-management": "人员管理",
     "device-management": "设备管理",
@@ -306,5 +307,12 @@
   "api-call-error-messages": {
     "error-title": "错误",
     "network-error": "网路错误"
+  },
+  "vuetable": {
+    "every-page-showing": "每页显示",
+    "items": "条记录",
+    "total": "共",
+    "record": "条"
+
   }
 }

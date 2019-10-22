@@ -32,8 +32,8 @@ const routes = [
             component: () => import('./views/app/permission-management/organization-management')
           },
           {
-            path: 'role-management',
-            component: () => import('./views/app/permission-management/role-management')
+            path: 'assign-permission-management',
+            component: () => import('./views/app/permission-management/assign-permission-management')
           },
           {
             path: 'permission-control',

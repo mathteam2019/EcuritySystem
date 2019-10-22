@@ -2,7 +2,7 @@
   <div>
     <b-row>
       <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.role-management')"/>
+        <piaf-breadcrumb :heading="$t('menu.assign-permission-management')"/>
         <div class="separator mb-5"></div>
       </b-colxx>
     </b-row>

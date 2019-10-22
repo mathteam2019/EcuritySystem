@@ -34,7 +34,7 @@
 
                       <b-col>
                         <b-form-group :label="$t('permission-management.parent-organization-name')">
-                          <b-form-input v-model="filter.parentOrgName" ></b-form-input>
+                          <b-form-input v-model="filter.parentOrgName"></b-form-input>
                         </b-form-group>
                       </b-col>
 
@@ -146,6 +146,8 @@
                   <vuetable-pagination-bootstrap
                     ref="pagination"
                     @vuetable-pagination:change-page="onChangePage"
+                    :initial-per-page="vuetableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
 
                   <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
@@ -487,10 +489,11 @@
         orgData: [], // loaded from server when the page is mounted
         pageStatus: 'table', // table, create, modify -> it will change the page
 
-        statusSelectOptions: { // on the filtering
-          active: this.$t('permission-management.active'),
-          inactive: this.$t('permission-management.inactive')
-        },
+        statusSelectOptions: [ // on the filtering
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'active', text: this.$t('permission-management.active')},
+          {value: 'inactive', text: this.$t('permission-management.inactive')}
+        ],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
           apiUrl: `${apiUrl}/permission-management/get-organization-by-filter-and-page`,
@@ -615,6 +618,9 @@
       }
     },
     watch: {
+      'vuetableItems.perPage': function (newVal) {
+        this.$refs.vuetable.refresh();
+      },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let id = 0;
@@ -674,6 +680,7 @@
       }
     },
     methods: {
+
       onSearchButton() {
         this.$refs.vuetable.refresh();
       },
@@ -714,7 +721,7 @@
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
-          perPage: httpOptions.params.per_page,
+          perPage: this.vuetableItems.perPage,
           filter: {
             orgName: this.filter.orgName,
             status: this.filter.status,
