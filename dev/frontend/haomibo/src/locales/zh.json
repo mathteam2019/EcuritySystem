@@ -219,10 +219,17 @@
       "role-setting": "角色设置",
       "data-grouping": "数据分组",
       "role-name": "角色名称",
-      "remarks": "备注",
+      "note": "备注",
+      "role-flag": "角色标记",
+      "all": "全部",
+      "system-management": "系统管理",
+      "business-operating": "业务操作",
+      "no-role": "无角色",
+      "serial-number": "序号",
+      "operating": "操作",
 
       "enter-role-name": "请输入角色名称",
-      "enter-remarks": "请输入备注信息",
+      "enter-note": "请输入备注信息",
       "save": "保存"
     }
   },

@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/permission-management/organization")
-public class OrganizationController extends BaseController {
+@RequestMapping("/permission-management/organization-management")
+public class OrganizationManagementController extends BaseController {
 
     @Getter
     @Setter
