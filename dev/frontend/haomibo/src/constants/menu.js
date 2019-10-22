@@ -21,10 +21,10 @@ const data = [
         newWindow: false
       },
       {
-        id: 'permission-management-*-role-management',
-        icon: "simple-icon-magic-wand",
-        label: "menu.role-management",
-        to: "/app/permission-management/role-management",
+        id: 'permission-management-*-user-management',
+        icon: "simple-icon-user",
+        label: "menu.user-management",
+        to: "/app/permission-management/user-management",
         newWindow: false
       },
       {
@@ -35,12 +35,14 @@ const data = [
         newWindow: false
       },
       {
-        id: 'permission-management-*-user-management',
-        icon: "simple-icon-user",
-        label: "menu.user-management",
-        to: "/app/permission-management/user-management",
+        id: 'permission-management-*-assign-permission-management',
+        icon: "simple-icon-magic-wand",
+        label: "menu.assign-permission-management",
+        to: "/app/permission-management/assign-permission-management",
         newWindow: false
       },
+
+
     ]
   },
   {
