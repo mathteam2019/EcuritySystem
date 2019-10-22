@@ -419,10 +419,18 @@
           {value: 'normal', text: this.$t('permission-management.normal-staff')}
         ],
         educationOptions: [
-
+            {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
+            {value: 'student', text: this.$t('permission-management.student')},
+            {value: 'master_student', text: this.$t('permission-management.master_student')},
+            {value: 'doctor_student', text: this.$t('permission-management.doctor_student')},
+            {value: 'other', text: this.$t('permission-management.other')},
         ],
         degreeOptions:[
-
+            {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
+            {value: 'bachelor', text: this.$t('permission-management.bachelor')},
+            {value: 'master', text: this.$t('permission-management.master')},
+            {value: 'doctor', text: this.$t('permission-management.doctor')},
+            {value: 'other', text: this.$t('permission-management.other')},
         ],
         profile: {
           username:'',
