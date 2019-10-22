@@ -233,8 +233,10 @@
       "gender-field-is-mandatory": "性别是必需的",
       "license-number-field-is-mandatory": "证件号是必需的",
       "organization-field-is-mandatory": "机构是必需的",
-      "userType-field-is-mandatory": "人员类别是必需的",
-      "account-field-is-mandatory": "账号是必需的"
+      "userCategory-field-is-mandatory": "人员类别是必需的",
+      "account-field-is-mandatory": "账号是必需的",
+      "orgId-field-is-mandatory": "机构编号是必需的",
+      "account-should-be-numerical-or-characters": "账号称应为数字或字符"
     },
 
     "permission-control": {
