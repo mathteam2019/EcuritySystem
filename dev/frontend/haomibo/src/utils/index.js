@@ -1,4 +1,4 @@
-import {apiUrl, defaultDirection, refreshTokenTimeDiff} from '../constants/config'
+import {apiBaseUrl, defaultDirection, refreshTokenTimeDiff} from '../constants/config'
 import {getApiManager} from "../api";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
@@ -219,7 +219,7 @@ export const doRefreshToken = () => {
     return;
   }
 
-  getApiManager().post(`${apiUrl}/auth/refresh-token`).then((response) => {
+  getApiManager().post(`${apiBaseUrl}/auth/refresh-token`).then((response) => {
     let message = response.data.message;
     let data = response.data.data;
     switch (message) {
