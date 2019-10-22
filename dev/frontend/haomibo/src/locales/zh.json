@@ -252,12 +252,15 @@
       "serial-number": "序号",
       "operating": "操作",
       "select-all": "全选",
+      "data-group-name": "数据组名称",
 
       "enter-role-name": "请输入角色名称",
       "enter-note": "请输入备注信息",
+      "enter-data-group-name": "请输入数据组名称",
       "required-field": "This field is required.",
       "success": "成功",
       "role-created": "A role is created",
+      "data-group-created": "A data group is created",
       "save": "保存"
     }
   },

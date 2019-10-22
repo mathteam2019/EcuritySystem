@@ -123,12 +123,14 @@
       "serial-number": "No.",
       "operating": "Operating",
       "select-all": "全选",
+      "data-group-name": "Data group name",
 
       "enter-role-name": "Please enter the role name",
       "enter-note": "Please enter the note",
       "required-field": "This field is required.",
       "success": "成功",
       "role-created": "A role is created",
+      "data-group-created": "A data group is created",
       "save": "Save"
     }
   },

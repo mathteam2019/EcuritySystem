@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isLoading">
+  <div>
     <b-row>
       <b-colxx xxs="12">
         <piaf-breadcrumb :heading="$t('menu.permission-control')"/>
@@ -7,7 +7,7 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
       <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>
@@ -202,9 +202,187 @@
 
       <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Hi</h1>
+          <b-col cols="3">
+            <b-card class="mb-4">
+              <b-form @submit.prevent="onDataGroupFormSubmit">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="dataGroupForm.dataGroupName"
+                    :state="!$v.dataGroupForm.dataGroupName.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-data-group-name')" />
+                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+
+                </b-form-group>
+                <b-form-group :label="$t('permission-management.permission-control.note')">
+                  <b-form-textarea v-model="dataGroupForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
+                </b-form-group>
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" :disabled="$v.dataGroupForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <b-col cols="5">
+            <b-card class="mb-4">
+              <b-row>
+                <b-col cols="5" class="pr-3">
+                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
+                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="7">
+                  <b-form-group>
+                    <template slot="label">&nbsp;</template>
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <vuetable
+                    ref="vuetable"
+                    :api-mode="false"
+                    :fields="roleItems.fields"
+                    :data-manager="dataManager"
+                    :per-page="5"
+                    pagination-path="pagination"
+                    class="table-striped"
+                    @vuetable:pagination-data="onPaginationData"
+                  >
+
+                    <template slot="actions" slot-scope="props">
+                      <div>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="info"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive'"
+                          size="sm"
+                          variant="info"
+                          disabled>
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('make-active', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='active'"
+                          size="sm"
+                          variant="warning"
+                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-inactive') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          size="sm"
+                          variant="success"
+                          disabled>
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="danger"
+                          @click="onAction('block', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='blocked'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('unblock', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-unblock') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          size="sm"
+                          variant="danger"
+                          disabled>
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='pending'"
+                          size="sm"
+                          variant="dark"
+                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='pending'"
+                          size="sm"
+                          variant="dark"
+                          disabled>
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                      </div>
+                    </template>
+
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="pagination"
+                    @vuetable-pagination:change-page="onChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="4">
+            <b-card class="mb-4">
+
+              <b-row>
+                <b-col class="text-right">
+                  <b-form-group>
+                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
             </b-card>
           </b-col>
         </b-row>
@@ -212,9 +390,9 @@
 
     </b-tabs>
 
+    <div v-show="isLoading" class="loading"></div>
 
   </div>
-  <div v-else class="loading"></div>
 </template>
 <script>
 
@@ -260,8 +438,10 @@
             this.$t('permission-management.permission-control.business-operating'),
             this.$t('permission-management.permission-control.no-role'),
         ],
-
-
+        dataGroupForm: {
+          dataGroupName: '',
+          note: '',
+        },
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -388,6 +568,11 @@
         roleName: {
           required
         }
+      },
+      dataGroupForm: {
+        dataGroupName: {
+          required
+        }
       }
     },
     watch: {
@@ -424,6 +609,34 @@
             this.isLoading = false;
           });
       },
+      onDataGroupFormSubmit() {
+        this.isLoading = true;
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/permission-control/create-data-group`, {
+            'dataGroupName': this.dataGroupForm.dataGroupName,
+            'note': this.dataGroupForm.note
+          })
+          .then((response) => {
+            this.isLoading = false;
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.dataGroupForm.dataGroupName = '';
+                this.dataGroupForm.note = '';
+                break;
+              default:
+
+            }
+          })
+          .catch((error) => {
+            this.isLoading = false;
+          });
+        },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
@@ -467,20 +680,6 @@
       },
       onAction(action, data, index) {
         console.log('(slot) action: ' + action, data, index)
-      },
-      // tpl (node, ctx, parent, index, props) {
-      tpl (...args) {
-        let {0: node, 2: parent, 3: index} = args
-        let titleClass = node.selected ? 'node-title node-selected' : 'node-title'
-        if (node.searched) titleClass += ' node-searched'
-        return `<span>
-        <button class="treebtn1" onClick={() => this.$refs.accessTree.addNode(node, {title: 'sync node'})}>+</button>
-        <span class={titleClass} domPropsInnerHTML={node.title} onClick={() => {
-            this.$refs.accessTree.nodeSelected(node)
-        }}></span>
-        <button class="treebtn2" onClick={() => this.asyncLoad(node)}>async</button>
-        <button class="treebtn3" onClick={() => this.$refs.accessTree.delNode(node, parent, index)}>delete</button>
-        </span>`;
       },
     }
   }
