@@ -9,9 +9,191 @@
 
     <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
-      <b-tab :title="$t('permission-management.member-table')">
+      <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>
-          <b-col cols="12">
+          <b-col cols="3">
+            <b-card class="mb-4">
+              <b-form>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.role-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                </b-form-group>
+                <b-form-group :label="$t('permission-management.permission-control.remarks')">
+                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-remarks')"></b-form-textarea>
+                </b-form-group>
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <b-col cols="5">
+            <b-card class="mb-4">
+
+              <b-row>
+                <b-col class="d-flex">
+                  <div class="flex-grow-1">
+
+                    <b-row>
+
+                      <b-col>
+                        <b-form-group :label="$t('permission-management.username')">
+                          <b-form-input></b-form-input>
+                        </b-form-group>
+                      </b-col>
+
+                      <b-col>
+                        <b-form-group :label="$t('permission-management.status')">
+                          <v-select v-model="selectedStatus" :options="statusSelectData" :dir="direction"/>
+                        </b-form-group>
+                      </b-col>
+
+                      <b-col>
+                        <b-form-group :label="$t('permission-management.affiliated-institution')">
+                          <v-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
+                                    :dir="direction"/>
+                        </b-form-group>
+                      </b-col>
+
+                      <b-col>
+                        <b-form-group :label="$t('permission-management.user-category')">
+                          <v-select v-model="selectedUserCategory" :options="userCategorySelectData" :dir="direction"/>
+                        </b-form-group>
+                      </b-col>
+                      <b-col></b-col>
+                    </b-row>
+
+                  </div>
+                  <div class="align-self-center">
+                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
+                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
+                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
+                    </b-button>
+                  </div>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <vuetable
+                    ref="vuetable"
+                    :api-mode="false"
+                    :fields="vuetableItems.fields"
+                    :data-manager="dataManager"
+                    :per-page="5"
+                    pagination-path="pagination"
+                    class="table-striped"
+                    @vuetable:pagination-data="onPaginationData"
+                  >
+
+                    <template slot="actions" slot-scope="props">
+                      <div>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="info"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive'"
+                          size="sm"
+                          variant="info"
+                          disabled>
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('make-active', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='active'"
+                          size="sm"
+                          variant="warning"
+                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-inactive') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          size="sm"
+                          variant="success"
+                          disabled>
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="danger"
+                          @click="onAction('block', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='blocked'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('unblock', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-unblock') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          size="sm"
+                          variant="danger"
+                          disabled>
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='pending'"
+                          size="sm"
+                          variant="dark"
+                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='pending'"
+                          size="sm"
+                          variant="dark"
+                          disabled>
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                      </div>
+                    </template>
+
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="pagination"
+                    @vuetable-pagination:change-page="onChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="4">
             <b-card class="mb-4">
 
               <b-row>
@@ -175,7 +357,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.organization-user-compare-table')">
+      <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
           <b-col cols="12">
             <b-card class="mb-4" :title="'TODO'">
@@ -184,17 +366,6 @@
           </b-col>
         </b-row>
       </b-tab>
-
-      <b-tab :title="$t('permission-management.user-group')">
-        <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Nice</h1>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-tab>
-
 
     </b-tabs>
 
