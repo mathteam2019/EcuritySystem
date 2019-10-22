@@ -1,19 +1,13 @@
-package com.haomibo.haomibo.controllers;
+package com.haomibo.haomibo.controllers.permissionmanagement;
 
 import com.haomibo.haomibo.config.Constants;
-import com.haomibo.haomibo.jwt.JwtUtil;
+import com.haomibo.haomibo.controllers.BaseController;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
-import com.haomibo.haomibo.models.request.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
-import com.haomibo.haomibo.models.response.GetOrgByFilterAndPageResponseBody;
-import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
-import com.haomibo.haomibo.repositories.SysOrgRepository;
-import com.haomibo.haomibo.security.AuthenticationFacade;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
@@ -23,29 +17,172 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/permission-management")
-public class PermissionManagementController extends BaseController {
+@RequestMapping("/permission-management/organization")
+public class OrganizationController extends BaseController {
 
-    @Autowired
-    SysOrgRepository sysOrgRepository;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class CreateRequestBody {
 
-    @Autowired
-    ForbiddenTokenRepository forbiddenTokenRepository;
+        @NotNull
+        String orgName;
 
-    @Autowired
-    JwtUtil jwtUtil;
+        @NotNull
+        String orgNumber;
 
-    @Autowired
-    AuthenticationFacade authenticationFacade;
+        @NotNull
+        Long parentOrgId;
+
+        String leader;
+
+        String mobile;
+
+        String note;
+
+        SysOrg convert2SysOrg() {
+
+            return SysOrg
+                    .builder()
+                    .orgName(this.getOrgName())
+                    .orgNumber(this.getOrgNumber())
+                    .parentOrgId(this.getParentOrgId())
+                    .leader(Optional.of(this.getLeader()).orElse(""))
+                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .status(SysOrg.Status.INACTIVE)
+                    .note(Optional.of(this.getNote()).orElse(""))
+                    .build();
+
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class DeleteRequestBody {
+
+        @NotNull
+        Long orgId;
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class GetByFilterAndPageRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+            String orgName;
+            String status;
+            String parentOrgName;
+        }
+
+        int currentPage;
+        int perPage;
+
+        Filter filter;
+
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class ModifyRequestBody {
+
+        @NotNull
+        Long orgId;
+
+        @NotNull
+        String orgName;
+
+        @NotNull
+        String orgNumber;
+
+        @NotNull
+        Long parentOrgId;
+
+        String leader;
+
+        String mobile;
+
+        String note;
+
+        SysOrg convert2SysOrg() {
+            return SysOrg
+                    .builder()
+                    .orgId(this.getOrgId())
+                    .orgName(this.getOrgName())
+                    .orgNumber(this.getOrgNumber())
+                    .parentOrgId(this.getParentOrgId())
+                    .leader(Optional.of(this.getLeader()).orElse(""))
+                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .status(SysOrg.Status.INACTIVE)
+                    .note(Optional.of(this.getNote()).orElse(""))
+                    .build();
+        }
+
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class UpdateStatusRequestBody {
+
+        @NotNull
+        Long orgId;
+
+        @NotNull
+        @Pattern(regexp = SysOrg.Status.ACTIVE + "|" + SysOrg.Status.INACTIVE)
+        String status;
+
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    @Builder()
+    public static class GetByFilterAndPageResponseBody {
+
+        long total;
+        int perPage;
+        int currentPage;
+        int lastPage;
+        int from;
+        int to;
+
+        List<SysOrg> data;
+    }
+
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/new-organization", method = RequestMethod.POST)
-    public Object newOrg(
-            @RequestBody @Valid NewOrgRequestBody requestBody,
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public Object create(
+            @RequestBody @Valid CreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -53,8 +190,7 @@ public class PermissionManagementController extends BaseController {
         }
 
         // check if parent org is existing
-        boolean isParentOrgExisting = sysOrgRepository.count(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId())) > 0;
-        if (!isParentOrgExisting) {
+        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
             return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
@@ -67,9 +203,9 @@ public class PermissionManagementController extends BaseController {
 
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/modify-organization", method = RequestMethod.POST)
-    public Object modifyOrg(
-            @RequestBody @Valid ModifyOrgRequestBody requestBody,
+    @RequestMapping(value = "/modify", method = RequestMethod.POST)
+    public Object modify(
+            @RequestBody @Valid ModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -77,14 +213,12 @@ public class PermissionManagementController extends BaseController {
         }
 
         // check if org is existing
-        boolean isOrgExisting = sysOrgRepository.count(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId())) > 0;
-        if (!isOrgExisting) {
+        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
             return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
         // check if parent org is existing
-        boolean isParentOrgExisting = sysOrgRepository.count(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId())) > 0;
-        if (!isParentOrgExisting) {
+        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
             return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
@@ -96,9 +230,9 @@ public class PermissionManagementController extends BaseController {
     }
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/delete-organization", method = RequestMethod.POST)
-    public Object deleteOrg(
-            @RequestBody @Valid DeleteOrgRequestBody requestBody,
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public Object delete(
+            @RequestBody @Valid DeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -106,7 +240,7 @@ public class PermissionManagementController extends BaseController {
         }
 
         // check if org has children
-        boolean isHavingChildren = sysOrgRepository.count(QSysOrg.sysOrg.parentOrgId.eq(requestBody.getOrgId())) > 0;
+        boolean isHavingChildren = sysOrgRepository.exists(QSysOrg.sysOrg.parentOrgId.eq(requestBody.getOrgId()));
         if (isHavingChildren) {
             return new CommonResponseBody(Constants.ResponseMessages.HAS_CHILDREN);
         }
@@ -118,9 +252,9 @@ public class PermissionManagementController extends BaseController {
 
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/update-organization-status", method = RequestMethod.POST)
-    public Object updateOrgStatus(
-            @RequestBody @Valid UpdateOrgStatusRequestBody requestBody,
+    @RequestMapping(value = "/update-status", method = RequestMethod.POST)
+    public Object updateStatus(
+            @RequestBody @Valid UpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -143,8 +277,8 @@ public class PermissionManagementController extends BaseController {
 
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-all-organization", method = RequestMethod.POST)
-    public Object getAllOrg() {
+    @RequestMapping(value = "/get-all", method = RequestMethod.POST)
+    public Object getAll() {
 
         List<SysOrg> sysOrgArray = sysOrgRepository.findAll();
 
@@ -159,8 +293,8 @@ public class PermissionManagementController extends BaseController {
     }
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-organization-by-filter-and-page", method = RequestMethod.POST)
-    public Object getOrgByFilterAndPage(@RequestBody @Valid GetOrgByFilterAndPageRequestBody requestBody) {
+    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object getByFilterAndPage(@RequestBody @Valid GetByFilterAndPageRequestBody requestBody) {
 
 
         QSysOrg qSysOrg = QSysOrg.sysOrg;
@@ -168,7 +302,7 @@ public class PermissionManagementController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(qSysOrg.isNotNull());
 
-        GetOrgByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        GetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getOrgName())) {
                 predicate.and(qSysOrg.orgName.contains(filter.getOrgName()));
@@ -198,7 +332,7 @@ public class PermissionManagementController extends BaseController {
 
         return new CommonResponseBody(
                 Constants.ResponseMessages.OK,
-                GetOrgByFilterAndPageResponseBody
+                GetByFilterAndPageResponseBody
                         .builder()
                         .total(total)
                         .perPage(perPage)

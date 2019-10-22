@@ -1,15 +1,27 @@
 package com.haomibo.haomibo.controllers;
 
-import com.haomibo.haomibo.models.request.LoginRequestBody;
-import com.haomibo.haomibo.models.response.CommonResponseBody;
+import com.haomibo.haomibo.jwt.JwtUtil;
+import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
+import com.haomibo.haomibo.repositories.SysOrgRepository;
 import com.haomibo.haomibo.repositories.SysUserRepository;
+import com.haomibo.haomibo.security.AuthenticationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 public class BaseController {
 
+    @Autowired
+    public SysOrgRepository sysOrgRepository;
+
+    @Autowired
+    public ForbiddenTokenRepository forbiddenTokenRepository;
+
+    @Autowired
+    public JwtUtil jwtUtil;
+
+    @Autowired
+    public AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    public SysUserRepository sysUserRepository;
 
 }

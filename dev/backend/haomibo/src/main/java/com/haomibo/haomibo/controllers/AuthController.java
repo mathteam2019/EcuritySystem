@@ -4,45 +4,67 @@ import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.models.db.ForbiddenToken;
 import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.db.SysUser;
-import com.haomibo.haomibo.models.request.LoginRequestBody;
-import com.haomibo.haomibo.models.request.RegisterRequestBody;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
-import com.haomibo.haomibo.models.response.LoginResponseBody;
 import com.haomibo.haomibo.models.reusables.Token;
 import com.haomibo.haomibo.models.reusables.User;
-import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
-import com.haomibo.haomibo.repositories.SysUserRepository;
-import com.haomibo.haomibo.jwt.JwtUtil;
-import com.haomibo.haomibo.security.AuthenticationFacade;
 import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.types.Predicate;
-import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.*;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.Date;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
-    @Autowired
-    SysUserRepository sysUserRepository;
 
-    @Autowired
-    ForbiddenTokenRepository forbiddenTokenRepository;
 
-    @Autowired
-    JwtUtil jwtUtil;
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class LoginRequestBody {
+        @NotNull
+        @Email
+        String email;
 
-    @Autowired
-    AuthenticationFacade authenticationFacade;
+        @NotNull
+        String password;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class RegisterRequestBody {
+        @NotNull
+        @Email
+        String email;
+
+        @NotNull
+        String password;
+        @NotNull
+        String name;
+
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class LoginResponseBody {
+        User user;
+        Token token;
+    }
 
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -86,7 +108,7 @@ public class AuthController extends BaseController {
         }
 
         QSysUser qSysUser = QSysUser.sysUser;
-        boolean isEmailUsed = sysUserRepository.count(qSysUser.email.eq(requestBody.getEmail())) > 0;
+        boolean isEmailUsed = sysUserRepository.exists(qSysUser.email.eq(requestBody.getEmail()));
 
         if (isEmailUsed) {
             return new CommonResponseBody(Constants.ResponseMessages.USED_EMAIL);

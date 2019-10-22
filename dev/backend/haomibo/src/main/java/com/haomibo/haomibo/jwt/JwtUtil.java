@@ -97,9 +97,8 @@ public class JwtUtil implements Serializable {
         }
 
         QForbiddenToken qForbiddenToken = QForbiddenToken.forbiddenToken;
-        boolean isForbidden = forbiddenTokenRepository.count(qForbiddenToken.token.eq(token)) > 0;
 
-        if (isForbidden) {
+        if (forbiddenTokenRepository.exists(qForbiddenToken.token.eq(token))) {
             return Constants.ResponseMessages.INVALID_TOKEN;
         }
 
