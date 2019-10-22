@@ -122,9 +122,13 @@
       "no-role": "No role",
       "serial-number": "No.",
       "operating": "Operating",
+      "select-all": "全选",
 
       "enter-role-name": "Please enter the role name",
       "enter-note": "Please enter the note",
+      "required-field": "This field is required.",
+      "success": "成功",
+      "role-created": "A role is created",
       "save": "Save"
     }
   },

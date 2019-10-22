@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isLoading">
     <b-row>
       <b-colxx xxs="12">
         <piaf-breadcrumb :heading="$t('menu.permission-control')"/>
@@ -13,20 +13,26 @@
         <b-row>
           <b-col cols="3">
             <b-card class="mb-4">
-              <b-form>
+              <b-form @submit.prevent="onRoleFormSubmit">
                 <b-form-group>
                   <template slot="label">
                     {{$t('permission-management.permission-control.role-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                  <b-form-input
+                    v-model="roleForm.roleName"
+                    :state="!$v.roleForm.roleName.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                  <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+
                 </b-form-group>
                 <b-form-group :label="$t('permission-management.permission-control.note')">
-                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
+                  <b-form-textarea v-model="roleForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
                 </b-form-group>
                 <b-row class="mt-4">
                   <b-col cols="12" class="text-right">
-                    <b-button type="submit" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
                   </b-col>
                 </b-row>
               </b-form>
@@ -165,161 +171,30 @@
             <b-card class="mb-4">
 
               <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
-
-                    <b-row>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.username')">
-                          <b-form-input></b-form-input>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.status')">
-                          <v-select v-model="selectedStatus" :options="statusSelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.affiliated-institution')">
-                          <v-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
-                                    :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.user-category')">
-                          <v-select v-model="selectedUserCategory" :options="userCategorySelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-                      <b-col></b-col>
-                    </b-row>
-
-                  </div>
-                  <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
-                    </b-button>
-                  </div>
-                </b-col>
+                <b-form-group>
+                  <b-form-radio-group>
+                    <b-form-radio value="first">统一管理平台</b-form-radio>
+                    <b-form-radio value="second">综合业务平台</b-form-radio>
+                  </b-form-radio-group>
+                </b-form-group>
               </b-row>
 
               <b-row>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                  </b-form-group>
+                </b-col>
                 <b-col cols="12">
-                  <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="roleItems.fields"
-                    :data-manager="dataManager"
-                    :per-page="5"
-                    pagination-path="pagination"
-                    class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
-                  >
-
-                    <template slot="actions" slot-scope="props">
-                      <div>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="info"
-                          @click="onAction('modify', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive'"
-                          size="sm"
-                          variant="info"
-                          disabled>
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('make-active', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='active'"
-                          size="sm"
-                          variant="warning"
-                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-inactive') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                          size="sm"
-                          variant="success"
-                          disabled>
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="danger"
-                          @click="onAction('block', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='blocked'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-unblock') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                          size="sm"
-                          variant="danger"
-                          disabled>
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='pending'"
-                          size="sm"
-                          variant="dark"
-                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='pending'"
-                          size="sm"
-                          variant="dark"
-                          disabled>
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                      </div>
-                    </template>
-
-                  </vuetable>
-                  <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
-                  ></vuetable-pagination-bootstrap>
+                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                </b-col>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                  </b-form-group>
                 </b-col>
               </b-row>
+
             </b-card>
           </b-col>
         </b-row>
@@ -339,6 +214,7 @@
 
 
   </div>
+  <div v-else class="loading"></div>
 </template>
 <script>
 
@@ -348,22 +224,35 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
+  import VTree from 'vue-tree-halower';
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import {getDirection} from "../../../utils";
   import _ from "lodash";
+  import { validationMixin } from 'vuelidate';
+  const { required } = require('vuelidate/lib/validators');
+  import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
+  import {getApiManager} from "../../../api";
 
   export default {
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,
-      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'v-tree': VTree
     },
     mounted() {
       this.tableData = staticUserTableData;
     },
-    data() {
+      mixins: [validationMixin],
+      data() {
       return {
+        isLoading: false,
+        roleForm: {
+          roleName: '',
+          note: ''
+        },
         roleFlag: '',
         roleFlagData: [
             this.$t('permission-management.permission-control.all'),
@@ -469,6 +358,35 @@
             {key: 'category', label: 'Category', sortable: true, tdClass: 'text-muted'},
             {key: 'status', label: 'Status', sortable: true, tdClass: 'text-muted'}
           ]
+        },
+        accessTreeData: [{
+          title: 'node1',
+          expanded: true,
+          children: [{
+            title: 'node 1-1',
+            expanded: true,
+            children: [{
+              title: 'node 1-1-1'
+            }, {
+              title: 'node 1-1-2'
+            }, {
+              title: 'node 1-1-3'
+            }]
+          }, {
+            title: 'node 1-2',
+            children: [{
+              title: "<span style='color: red'>node 1-2-1</span>"
+            }, {
+              title: "<span style='color: red'>node 1-2-2</span>"
+            }]
+          }]
+        }]
+      }
+    },
+    validations: {
+      roleForm: {
+        roleName: {
+          required
         }
       }
     },
@@ -478,6 +396,34 @@
       }
     },
     methods: {
+      onRoleFormSubmit() {
+        this.isLoading = true;
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/permission-control/create-role`, {
+            'roleName': this.roleForm.roleName,
+            'note': this.roleForm.note
+          })
+          .then((response) => {
+            this.isLoading = false;
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.roleForm.roleName = '';
+                this.roleForm.note = '';
+                break;
+              default:
+
+            }
+          })
+          .catch((error) => {
+            this.isLoading = false;
+          });
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
@@ -521,7 +467,21 @@
       },
       onAction(action, data, index) {
         console.log('(slot) action: ' + action, data, index)
-      }
+      },
+      // tpl (node, ctx, parent, index, props) {
+      tpl (...args) {
+        let {0: node, 2: parent, 3: index} = args
+        let titleClass = node.selected ? 'node-title node-selected' : 'node-title'
+        if (node.searched) titleClass += ' node-searched'
+        return `<span>
+        <button class="treebtn1" onClick={() => this.$refs.accessTree.addNode(node, {title: 'sync node'})}>+</button>
+        <span class={titleClass} domPropsInnerHTML={node.title} onClick={() => {
+            this.$refs.accessTree.nodeSelected(node)
+        }}></span>
+        <button class="treebtn2" onClick={() => this.asyncLoad(node)}>async</button>
+        <button class="treebtn3" onClick={() => this.$refs.accessTree.delNode(node, parent, index)}>delete</button>
+        </span>`;
+      },
     }
   }
 </script>
