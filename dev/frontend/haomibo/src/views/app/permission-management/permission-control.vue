@@ -9,9 +9,159 @@
 
     <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
-      <b-tab :title="$t('permission-management.member-table')">
+      <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>
-          <b-col cols="12">
+          <b-col cols="3">
+            <b-card class="mb-4">
+              <b-form>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.role-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                </b-form-group>
+                <b-form-group :label="$t('permission-management.permission-control.note')">
+                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
+                </b-form-group>
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <b-col cols="5">
+            <b-card class="mb-4">
+              <b-row>
+                <b-col cols="5" class="pr-3">
+                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
+                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="7">
+                  <b-form-group>
+                    <template slot="label">&nbsp;</template>
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <vuetable
+                    ref="vuetable"
+                    :api-mode="false"
+                    :fields="roleItems.fields"
+                    :data-manager="dataManager"
+                    :per-page="5"
+                    pagination-path="pagination"
+                    class="table-striped"
+                    @vuetable:pagination-data="onPaginationData"
+                  >
+
+                    <template slot="actions" slot-scope="props">
+                      <div>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="info"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive'"
+                          size="sm"
+                          variant="info"
+                          disabled>
+                          {{ $t('permission-management.action-modify') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('make-active', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='active'"
+                          size="sm"
+                          variant="warning"
+                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-make-inactive') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          size="sm"
+                          variant="success"
+                          disabled>
+                          {{ $t('permission-management.action-make-active') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="danger"
+                          @click="onAction('block', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='blocked'"
+                          size="sm"
+                          variant="success"
+                          @click="onAction('unblock', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-unblock') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          size="sm"
+                          variant="danger"
+                          disabled>
+                          {{ $t('permission-management.action-block') }}
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='pending'"
+                          size="sm"
+                          variant="dark"
+                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='pending'"
+                          size="sm"
+                          variant="dark"
+                          disabled>
+                          {{ $t('permission-management.action-reset-password') }}
+                        </b-button>
+
+                      </div>
+                    </template>
+
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="pagination"
+                    @vuetable-pagination:change-page="onChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="4">
             <b-card class="mb-4">
 
               <b-row>
@@ -65,7 +215,7 @@
                   <vuetable
                     ref="vuetable"
                     :api-mode="false"
-                    :fields="vuetableItems.fields"
+                    :fields="roleItems.fields"
                     :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
@@ -175,7 +325,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.organization-user-compare-table')">
+      <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
           <b-col cols="12">
             <b-card class="mb-4" :title="'TODO'">
@@ -184,17 +334,6 @@
           </b-col>
         </b-row>
       </b-tab>
-
-      <b-tab :title="$t('permission-management.user-group')">
-        <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Nice</h1>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-tab>
-
 
     </b-tabs>
 
@@ -225,6 +364,15 @@
     },
     data() {
       return {
+        roleFlag: '',
+        roleFlagData: [
+            this.$t('permission-management.permission-control.all'),
+            this.$t('permission-management.permission-control.system-management'),
+            this.$t('permission-management.permission-control.business-operating'),
+            this.$t('permission-management.permission-control.no-role'),
+        ],
+
+
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -257,34 +405,33 @@
           {id: 2, first_name: 'Jacob', last_name: 'Thornton', username: '@fat'},
           {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
         ],
-        vuetableItems: {
+        roleItems: {
           apiUrl: apiBaseUrl + '/cakes/fordatatable',
           fields: [
-
             {
               name: 'no',
-              title: this.$t('permission-management.th-no'),
+              title: this.$t('permission-management.permission-control.serial-number'),
               sortField: 'no',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'id',
-              title: this.$t('permission-management.th-no'),
+              title: this.$t('permission-management.permission-control.role-name'),
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'username',
-              title: this.$t('permission-management.th-username'),
+              title: this.$t('permission-management.permission-control.role-flag'),
               sortField: 'username',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'status',
-              title: this.$t('permission-management.th-status'),
+              title: this.$t('permission-management.permission-control.operating'),
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -302,32 +449,11 @@
             },
             {
               name: 'affiliatedInstitution',
-              title: this.$t('permission-management.th-affiliated-institution'),
+              title: this.$t('permission-management.permission-control.note'),
               sortField: 'affiliatedInstitution',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
-            {
-              name: 'category',
-              title: this.$t('permission-management.th-user-category'),
-              sortField: 'userCategory',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'account',
-              title: this.$t('permission-management.th-account'),
-              sortField: 'account',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__slot:actions',
-              title: this.$t('permission-management.th-action'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-
           ]
         },
         currentPage: 1,
