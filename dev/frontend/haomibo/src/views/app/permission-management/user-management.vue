@@ -175,16 +175,6 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.organization-user-compare-table')">
-        <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Hi</h1>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-tab>
-
       <b-tab :title="$t('permission-management.user-group')">
         <b-row>
           <b-col cols="12">
