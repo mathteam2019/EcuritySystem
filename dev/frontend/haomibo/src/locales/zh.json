@@ -36,7 +36,6 @@
     "password-confirm-field-is-mandatory": "确认密码是必需的",
     "name-should-be-numerical-or-characters": "名称应为数字或字符",
     "confirmation-should-be-match-as-password": "确认应与密码相同"
-
   },
   "menu": {
     "app": "主场",
@@ -175,6 +174,19 @@
     "organization-activated-successfully": "机构生效成功",
     "organization-deactivated-successfully": "机构失效成功",
     "organization-deleted-successfully": "机构删除成功",
+    "organization-has-children": "该机构有孩子",
+    "assign-permission-management": {
+      "assign-to-user": "人员授权",
+      "assign-to-group": "分组授权",
+      "summary-table": "授权对照表",
+      "assign-flag": "授权标记",
+      "please-input-user-name": "请输入人员姓名",
+      "assign-flag-select-options": {
+        "all": "全部",
+        "assigned": "已授权",
+        "not-assigned": "未授权"
+      }
+    },
     "organization-has-children": "该机构有孩子",
 
     "permission-control": {

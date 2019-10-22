@@ -450,7 +450,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -496,7 +496,7 @@
         ],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization-management/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -585,18 +585,6 @@
 
           ],
           perPage: 5,
-        },
-        totalRows: 0,
-        bootstrapTable: {
-          selected: [],
-          selectMode: 'multi',
-          fields: [
-            {key: 'title', label: 'Title', sortable: true, sortDirection: 'desc', tdClass: 'list-item-heading'},
-            {key: 'sales', label: 'Sales', sortable: true, tdClass: 'text-muted'},
-            {key: 'stock', label: 'Stock', sortable: true, tdClass: 'text-muted'},
-            {key: 'category', label: 'Category', sortable: true, tdClass: 'text-muted'},
-            {key: 'status', label: 'Status', sortable: true, tdClass: 'text-muted'}
-          ]
         },
         treeData: { // holds tree data for org diagram
         }
@@ -859,7 +847,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization/create`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -931,7 +919,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization/modify`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -975,7 +963,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization/delete`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -1014,7 +1002,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })
