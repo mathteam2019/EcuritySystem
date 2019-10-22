@@ -202,7 +202,7 @@
                         <b-form-input type="text" v-model="profileForm.userName"
                                       :placeholder="$t('permission-management.please-enter-user-name')"></b-form-input>
                         <div  class="invalid-feedback d-block">
-                          {{ (submitted && !$v.profileForm.username.required) ? $t('permission-management.user.username-field-is-mandatory') : (!$v.profileForm.username.alphaNum) ?$t('permission-management.user.username-should-be-numerical-or-characters'):"&nbsp;" }}
+                          {{ (submitted && !$v.profileForm.userName.required) ? $t('permission-management.user.username-field-is-mandatory') : (!$v.profileForm.userName.alphaNum) ?$t('permission-management.user.username-should-be-numerical-or-characters'):"&nbsp;" }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -442,7 +442,7 @@
     mounted() {
 
       this.tableData = staticUserTableData;
-      getApiManager().post(`${apiBaseUrl}/permission-management/orgId/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
