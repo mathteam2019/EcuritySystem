@@ -215,6 +215,16 @@
     "organization-deleted-successfully": "机构删除成功",
     "organization-has-children": "该机构有孩子",
 
+    "user": {
+      "username-field-is-mandatory": "人员姓名是必需的",
+      "userId-field-is-mandatory": "人员编号是必需的",
+      "gender-field-is-mandatory": "性别是必需的",
+      "license-number-field-is-mandatory": "证件号是必需的",
+      "organization-field-is-mandatory": "机构是必需的",
+      "userType-field-is-mandatory": "人员类别是必需的",
+      "account-field-is-mandatory": "账号是必需的"
+    },
+
     "permission-control": {
       "role-setting": "角色设置",
       "data-grouping": "数据分组",
