@@ -199,7 +199,7 @@
                       <b-form-group >
                         <template slot="label">{{$t('permission-management.th-username')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <b-form-input type="text" v-model="profileForm.username"
+                        <b-form-input type="text" v-model="profileForm.userName"
                                       :placeholder="$t('permission-management.please-enter-user-name')"></b-form-input>
                         <div  class="invalid-feedback d-block">
                           {{ (submitted && !$v.profileForm.username.required) ? $t('permission-management.user.username-field-is-mandatory') : (!$v.profileForm.username.alphaNum) ?$t('permission-management.user.username-should-be-numerical-or-characters'):"&nbsp;" }}
@@ -231,10 +231,10 @@
                       <b-form-group >
                         <template slot="label">{{$t('permission-management.license-number')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <b-form-input type="text" v-model="profileForm.licenseNumber"
+                        <b-form-input type="text" v-model="profileForm.identityCard"
                                       :placeholder="$t('permission-management.please-enter-license-number')"></b-form-input>
                         <div  class="invalid-feedback d-block">
-                          {{ (submitted && !$v.profileForm.licenseNumber.required) ? $t('permission-management.user.license-number-field-is-mandatory') : "&nbsp;" }}
+                          {{ (submitted && !$v.profileForm.identityCard.required) ? $t('permission-management.user.license-number-field-is-mandatory') : "&nbsp;" }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -244,9 +244,9 @@
                       <b-form-group >
                         <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <b-form-select v-model="profileForm.organization" :options="affiliatedInstitutionSelectData" plain />
+                        <b-form-select v-model="profileForm.orgId" :options="affiliatedInstitutionSelectData" plain />
                         <div  class="invalid-feedback d-block">
-                          {{ (submitted && !$v.profileForm.organization.required) ? $t('permission-management.user.organization-field-is-mandatory') : "&nbsp;" }}
+                          {{ (submitted && !$v.profileForm.orgId.required) ? $t('permission-management.user.orgId-field-is-mandatory') : "&nbsp;" }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -281,7 +281,7 @@
                     <b-col cols="3">
                       <b-form-group >
                         <template slot="label">{{$t('permission-management.phone')}}</template>
-                        <b-form-input type="text" v-model="profileForm.phone"
+                        <b-form-input type="text" v-model="profileForm.mobile"
                                       :placeholder="$t('permission-management.please-enter-phone')"></b-form-input>
                       </b-form-group>
                     </b-col>
@@ -299,11 +299,11 @@
                         <template slot="label">{{$t('permission-management.th-user-category')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <b-form-radio-group inline>
-                          <b-form-radio v-model="profileForm.userType" value="admin">{{$t('permission-management.admin')}}</b-form-radio>
-                          <b-form-radio v-model="profileForm.userType" value="normal">{{$t('permission-management.normal')}}</b-form-radio>
+                          <b-form-radio v-model="profileForm.userCategory" value="admin">{{$t('permission-management.admin')}}</b-form-radio>
+                          <b-form-radio v-model="profileForm.userCategory" value="normal">{{$t('permission-management.normal')}}</b-form-radio>
                         </b-form-radio-group>
                         <div  class="invalid-feedback d-block">
-                          {{ (submitted && !$v.profileForm.userType.required) ? $t('permission-management.user.userType-field-is-mandatory') : "&nbsp;" }}
+                          {{ (submitted && !$v.profileForm.userCategory.required) ? $t('permission-management.user.userCategory-field-is-mandatory') : "&nbsp;" }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -311,10 +311,10 @@
                       <b-form-group >
                         <template slot="label">{{$t('permission-management.user-account')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <b-form-input type="text" v-model="profileForm.account"
+                        <b-form-input type="text" v-model="profileForm.userAccount"
                                       :placeholder="$t('permission-management.please-enter-user-account')"></b-form-input>
                         <div  class="invalid-feedback d-block">
-                          {{ (submitted && !$v.profileForm.account.required) ? $t('permission-management.user.account-field-is-mandatory') : (!$v.profileForm.account.alphaNum) ?$t('permission-management.user.account-should-be-numerical-or-characters'):"&nbsp;" }}
+                          {{ (submitted && !$v.profileForm.userAccount.required) ? $t('permission-management.user.account-field-is-mandatory') : (!$v.profileForm.userAccount.alphaNum) ?$t('permission-management.user.account-should-be-numerical-or-characters'):"&nbsp;" }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -406,7 +406,7 @@
     mixins: [validationMixin],
     validations: {
       profileForm: {
-        username: {
+        userName: {
           required, alphaNum
         },
         password: {
@@ -418,20 +418,20 @@
         gender: {
           required,
         },
-        licenseNumber:{
+        identityCard:{
           required
         },
-        organization:{
+        orgId:{
           required
         },
         email: {
           required,
           email
         },
-        account: {
+        userAccount: {
           required,alphaNum
         },
-        userType : {
+        userCategory : {
           required
         },
         passwordValue: {
@@ -442,7 +442,7 @@
     mounted() {
 
       this.tableData = staticUserTableData;
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/orgId/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -488,20 +488,20 @@
 
         ],
         profileForm: {
-          username:'',
+          userName:'',
           userId:'',
           gender:'',
-          licenseNumber:'',
-          organization:'',
+          identityCard:'',
+          orgId:'',
           post:'',
           education:'',
           degree:'',
           email:'',
-          phone:'',
+          mobile:'',
           address:'',
-          userType:'',
-          account:'',
-          passwordType:'basic',
+          userCategory:'',
+          userAccount:'',
+          passwordType:'default',
           passwordValue:'',
           note:''
         },
