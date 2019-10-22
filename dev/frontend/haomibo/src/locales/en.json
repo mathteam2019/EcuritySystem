@@ -108,7 +108,18 @@
     "action-make-inactive": "make inactive",
     "action-block": "block",
     "action-unblock": "unblock",
-    "action-reset-password": "reset password"
+    "action-reset-password": "reset password",
+
+    "permission-control": {
+      "role-setting": "Role setting",
+      "data-grouping": "Data grouping",
+      "role-name": "Role name",
+      "remarks": "Remarks",
+
+      "enter-role-name": "Please enter the role name",
+      "enter-remarks": "Please enter the remarks",
+      "save": "Save"
+    }
   },
   "device-management": {
     "file-template": "Templates",

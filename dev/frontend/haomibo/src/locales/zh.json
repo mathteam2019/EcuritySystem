@@ -175,7 +175,18 @@
     "organization-activated-successfully": "机构生效成功",
     "organization-deactivated-successfully": "机构失效成功",
     "organization-deleted-successfully": "机构删除成功",
-    "organization-has-children": "该机构有孩子"
+    "organization-has-children": "该机构有孩子",
+
+    "permission-control": {
+      "role-setting": "角色设置",
+      "data-grouping": "数据分组",
+      "role-name": "角色名称",
+      "remarks": "备注",
+
+      "enter-role-name": "请输入角色名称",
+      "enter-remarks": "请输入备注信息",
+      "save": "保存"
+    }
   },
   "device-management": {
     "file-template": "档案模板",
