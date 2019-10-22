@@ -114,10 +114,17 @@
       "role-setting": "Role setting",
       "data-grouping": "Data grouping",
       "role-name": "Role name",
-      "remarks": "Remarks",
+      "note": "Note",
+      "role-flag": "Role flag",
+      "all": "All",
+      "system-management": "System management",
+      "business-operating": "Business operating",
+      "no-role": "No role",
+      "serial-number": "No.",
+      "operating": "Operating",
 
       "enter-role-name": "Please enter the role name",
-      "enter-remarks": "Please enter the remarks",
+      "enter-note": "Please enter the note",
       "save": "Save"
     }
   },

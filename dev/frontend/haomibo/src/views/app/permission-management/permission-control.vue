@@ -21,8 +21,8 @@
                   </template>
                   <b-form-input :placeholder="$t('permission-management.permission-control.enter-role-name')" />
                 </b-form-group>
-                <b-form-group :label="$t('permission-management.permission-control.remarks')">
-                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-remarks')"></b-form-textarea>
+                <b-form-group :label="$t('permission-management.permission-control.note')">
+                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
                 </b-form-group>
                 <b-row class="mt-4">
                   <b-col cols="12" class="text-right">
@@ -34,50 +34,18 @@
           </b-col>
           <b-col cols="5">
             <b-card class="mb-4">
-
               <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+                <b-col cols="5" class="pr-3">
+                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
+                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  </b-form-group>
+                </b-col>
 
-                    <b-row>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.username')">
-                          <b-form-input></b-form-input>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.status')">
-                          <v-select v-model="selectedStatus" :options="statusSelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.affiliated-institution')">
-                          <v-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
-                                    :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.user-category')">
-                          <v-select v-model="selectedUserCategory" :options="userCategorySelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-                      <b-col></b-col>
-                    </b-row>
-
-                  </div>
-                  <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
-                    </b-button>
-                  </div>
+                <b-col cols="7">
+                  <b-form-group>
+                    <template slot="label">&nbsp;</template>
+                    <b-form-input></b-form-input>
+                  </b-form-group>
                 </b-col>
               </b-row>
 
@@ -86,7 +54,7 @@
                   <vuetable
                     ref="vuetable"
                     :api-mode="false"
-                    :fields="vuetableItems.fields"
+                    :fields="roleItems.fields"
                     :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
@@ -247,7 +215,7 @@
                   <vuetable
                     ref="vuetable"
                     :api-mode="false"
-                    :fields="vuetableItems.fields"
+                    :fields="roleItems.fields"
                     :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
@@ -396,6 +364,15 @@
     },
     data() {
       return {
+        roleFlag: '',
+        roleFlagData: [
+            this.$t('permission-management.permission-control.all'),
+            this.$t('permission-management.permission-control.system-management'),
+            this.$t('permission-management.permission-control.business-operating'),
+            this.$t('permission-management.permission-control.no-role'),
+        ],
+
+
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -428,34 +405,33 @@
           {id: 2, first_name: 'Jacob', last_name: 'Thornton', username: '@fat'},
           {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
         ],
-        vuetableItems: {
+        roleItems: {
           apiUrl: apiBaseUrl + '/cakes/fordatatable',
           fields: [
-
             {
               name: 'no',
-              title: this.$t('permission-management.th-no'),
+              title: this.$t('permission-management.permission-control.serial-number'),
               sortField: 'no',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'id',
-              title: this.$t('permission-management.th-no'),
+              title: this.$t('permission-management.permission-control.role-name'),
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'username',
-              title: this.$t('permission-management.th-username'),
+              title: this.$t('permission-management.permission-control.role-flag'),
               sortField: 'username',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'status',
-              title: this.$t('permission-management.th-status'),
+              title: this.$t('permission-management.permission-control.operating'),
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -473,32 +449,11 @@
             },
             {
               name: 'affiliatedInstitution',
-              title: this.$t('permission-management.th-affiliated-institution'),
+              title: this.$t('permission-management.permission-control.note'),
               sortField: 'affiliatedInstitution',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
-            {
-              name: 'category',
-              title: this.$t('permission-management.th-user-category'),
-              sortField: 'userCategory',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'account',
-              title: this.$t('permission-management.th-account'),
-              sortField: 'account',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__slot:actions',
-              title: this.$t('permission-management.th-action'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-
           ]
         },
         currentPage: 1,
