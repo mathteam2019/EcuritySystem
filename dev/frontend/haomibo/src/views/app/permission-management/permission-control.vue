@@ -249,17 +249,18 @@
               <b-row>
                 <b-col cols="12">
                   <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="roleItems.fields"
-                    @vuetable:row-clicked="rowSelected"
-                    :row-class="onRowClass"
-                    :data-manager="dataManager"
-                    :per-page="5"
-                    pagination-path="pagination"
+                    ref="dataGroupVuetable"
+                    :api-url="dataGroupVuetableItems.apiUrl"
+                    :http-fetch="dataGroupVuetableHttpFetch"
+                    :fields="dataGroupVuetableItems.fields"
+                    :per-page="dataGroupVuetableItems.perPage"
+                    pagination-path="data"
+                    data-path="data.data"
                     class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onDataGroupPaginationData"
                   >
+<!--                    @vuetable:row-clicked="rowSelected"-->
+<!--                    :row-class="onRowClass"-->
 
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -353,8 +354,10 @@
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
+                    ref="dataGroupPagination"
                     @vuetable-pagination:change-page="onChangePage"
+                    :initial-per-page="dataGroupVuetableItems.perPage"
+                    @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
@@ -478,6 +481,46 @@
         orgList: [],
         userList: [],
         orgUserTreeData: [],
+        dataGroupVuetableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'dataGroupId',
+              title: this.$t('permission-management.permission-control.serial-number'),
+              sortField: 'dataGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupName',
+              title: this.$t('permission-management.permission-control.data-group-name'),
+              // sortField: 'dataGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupFlag',
+              title: this.$t('permission-management.permission-control.group-flag'),
+              // sortField: 'dataGroupFlag',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operating',
+              title: this.$t('permission-management.permission-control.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'note',
+              title: this.$t('permission-management.permission-control.note'),
+              // sortField: 'note',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
+        },
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -707,8 +750,21 @@
       onRowClass (dataItem, index) {
         return (dataItem.selected) ? 'color-red' : 'color-white'
       },
+      dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
+          console.log(httpOptions);
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.dataGroupVuetableItems.perPage,
+          filter: {
+              dataGroupName: '',
+          }
+        });
+      },
+      onDataGroupPaginationData(paginationData) {
+        this.$refs.dataGroupPagination.setPaginationData(paginationData)
+      },
       onPaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
+          this.$refs.pagination.setPaginationData(paginationData)
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page)
