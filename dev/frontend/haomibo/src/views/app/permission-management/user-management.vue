@@ -86,7 +86,14 @@
                     class="table-striped"
                     @vuetable:pagination-data="onPaginationData"
                   >
-
+                    <template slot="userNumber" slot-scope="props">
+                      <b-button
+                        size="sm"
+                        variant="default"
+                        @click="onAction('show', props.rowData, props.rowIndex)">
+                        {{ props.rowData.userNumber }}
+                      </b-button>
+                    </template>
                     <template slot="actions" slot-scope="props">
                       <div>
 
@@ -110,7 +117,7 @@
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
                           variant="success"
-                          @click="onAction('make-active', props.rowData, props.rowIndex)">
+                          @click="onAction('active', props.rowData, props.rowIndex)">
                           {{ $t('permission-management.action-make-active') }}
                         </b-button>
 
@@ -119,7 +126,7 @@
                           v-if="props.rowData.status=='active'"
                           size="sm"
                           variant="warning"
-                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
+                          @click="onAction('inactive', props.rowData, props.rowIndex)">
                           {{ $t('permission-management.action-make-inactive') }}
                         </b-button>
 
@@ -136,7 +143,7 @@
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
                           variant="danger"
-                          @click="onAction('block', props.rowData, props.rowIndex)">
+                          @click="onAction('blocked', props.rowData, props.rowIndex)">
                           {{ $t('permission-management.action-block') }}
                         </b-button>
 
@@ -185,25 +192,14 @@
                     :initial-per-page="vuetableItems.perPage"
                     @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
-                  <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-delete-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteOrg()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-delete')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
 
-                  <b-modal ref="modal-deactivate" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-deactivate-prompt')}}
+                  <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
+                    {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
                     <template slot="modal-footer">
-                      <b-button variant="primary" @click="deactivateOrg()" class="mr-1">
+                      <b-button variant="primary" @click="changeItemStatus()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-deactivate')">
+                      <b-button variant="danger" @click="hideModal('modal-prompt')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -220,8 +216,12 @@
                 <b-col cols="2" class="text-right">
                   <b-card class="mb-4" no-body>
                     <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                      <img :src="image" class="card-img-top"/>
-                      <b-badge variant="primary" pill class="position-absolute badge-bottom-left">NEW</b-badge>
+                      <img :src="profileForm.avatar" class="card-img-top"/>
+                      <b-badge
+                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
+                        pill class="position-absolute badge-bottom-left">
+                        {{$t('permission-management.' + profileForm.status)}}
+                      </b-badge>
                     </div>
                     <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
                   </b-card>
@@ -355,11 +355,11 @@
                       <b-form-group>
                         <template slot="label">{{$t('permission-management.th-user-category')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <b-form-radio-group inline>
-                          <b-form-radio v-model="profileForm.category" value="admin">
+                        <b-form-radio-group v-model="profileForm.category" inline>
+                          <b-form-radio value="admin">
                             {{$t('permission-management.admin')}}
                           </b-form-radio>
-                          <b-form-radio v-model="profileForm.category" value="normal">
+                          <b-form-radio value="normal">
                             {{$t('permission-management.normal')}}
                           </b-form-radio>
                         </b-form-radio-group>
@@ -390,18 +390,18 @@
                         <template slot="label">{{$t('permission-management.password')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <div>
-                          <b-form-radio-group inline>
-                            <b-form-radio v-model="profileForm.passwordType" value="default">
+                          <b-form-radio-group inline v-model="profileForm.passwordType">
+                            <b-form-radio value="default">
                               {{$t('permission-management.password-basic')}}
                             </b-form-radio>
-                            <b-form-radio v-model="profileForm.passwordType" value="other">
+                            <b-form-radio value="other">
                               {{$t('permission-management.password-other')}}
                             </b-form-radio>
                           </b-form-radio-group>
                         </div>
                         <div>
                           <b-form-input type="password" v-model="profileForm.passwordValue"
-                                        :disabled="profileForm.passwordType=='basic'"
+                                        :disabled="profileForm.passwordType==='default'"
                                         :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
                         </div>
                       </b-form-group>
@@ -420,6 +420,177 @@
                       <b-button class="mb-1" @click="saveUserPage()" variant="info default">{{
                         $t('permission-management.save') }}
                       </b-button>
+                      <b-button class="mb-1" @click="showTablePage()" variant="danger default">{{
+                        $t('permission-management.return') }}
+                      </b-button>
+                    </b-col>
+                  </b-row>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row v-if="pageStatus=='show'">
+          <b-col cols="12">
+            <b-card class="mb-4">
+              <b-row>
+                <b-col cols="2" class="text-right">
+                  <b-card class="mb-4" no-body>
+                    <div class="position-relative img-wrapper p-1" style="min-height: 180px">
+                      <img :src="image" class="card-img-top"/>
+                      <b-badge
+                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
+                        pill class="position-absolute badge-bottom-left">
+                        {{$t('permission-management.' + profileForm.status)}}
+                      </b-badge>
+                    </div>
+                    <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
+                  </b-card>
+                </b-col>
+                <b-col cols="10">
+                  <b-row class="mb-2">
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.th-username')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-input type="text" v-model="profileForm.userName"
+                                      :placeholder="$t('permission-management.please-enter-user-name')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.th-user-id')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-input type="text" v-model="profileForm.userNumber"
+
+                                      :placeholder="$t('permission-management.please-enter-user-id')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
+                                       />
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.license-number')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-input type="text" v-model="profileForm.identityCard"
+                                      :placeholder="$t('permission-management.please-enter-license-number')"></b-form-input>
+
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row class="mb-2">
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-select v-model="profileForm.orgId" :options="orgNameSelectData" plain
+                                      />
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.post')}}</template>
+                        <b-form-input type="text" v-model="profileForm.post"
+                                      :placeholder="$t('permission-management.please-enter-post')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.education')}}</template>
+                        <b-form-select v-model="profileForm.education" :options="educationOptions" plain/>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.degree')}}</template>
+                        <b-form-select v-model="profileForm.degree" :options="degreeOptions" plain/>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row class="mb-3">
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.email')}}</template>
+                        <b-form-input type="email" v-model="profileForm.email"
+                                      :placeholder="$t('permission-management.please-enter-email')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.phone')}}</template>
+                        <b-form-input type="text" v-model="profileForm.mobile"
+                                      :placeholder="$t('permission-management.please-enter-phone')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="6">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.address')}}</template>
+                        <b-form-input type="text" v-model="profileForm.address"
+                                      :placeholder="$t('permission-management.please-enter-address')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row class="mb-2">
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.th-user-category')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-radio-group v-model="profileForm.category" inline>
+                          <b-form-radio value="admin">
+                            {{$t('permission-management.admin')}}
+                          </b-form-radio>
+                          <b-form-radio value="normal">
+                            {{$t('permission-management.normal')}}
+                          </b-form-radio>
+                        </b-form-radio-group>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.user-account')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <b-form-input type="text" v-model="profileForm.userAccount"
+                                      :placeholder="$t('permission-management.please-enter-user-account')"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="3">
+                      <b-form-group>
+                        <template slot="label">{{$t('permission-management.password')}}&nbsp;<span
+                          class="text-danger">*</span></template>
+                        <div>
+                          <b-form-radio-group inline v-model="profileForm.passwordType">
+                            <b-form-radio value="default">
+                              {{$t('permission-management.password-basic')}}
+                            </b-form-radio>
+                            <b-form-radio value="other">
+                              {{$t('permission-management.password-other')}}
+                            </b-form-radio>
+                          </b-form-radio-group>
+                        </div>
+                        <div>
+                          <b-form-input type="password" v-model="profileForm.passwordValue"
+                                        :disabled="profileForm.passwordType==='default'"
+                                        :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
+                        </div>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="6">
+                      <b-form-group :label="$t('permission-management.note')">
+                        <b-form-textarea type="text" v-model="profileForm.note"
+                                         :placeholder="$t('permission-management.please-enter-note')"/>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                  <b-row>
+                    <b-col cols="12">
                       <b-button class="mb-1" @click="showTablePage()" variant="danger default">{{
                         $t('permission-management.return') }}
                       </b-button>
@@ -536,15 +707,19 @@
     },
     data() {
       return {
-        image: '',
         submitted: false,
         tableData: [],
         pageStatus: 'table',
+        defaultOrgId: '',
         filter: {
           userName: '',
           status: null,
           orgId: '',
           category: null
+        },
+        promptTemp: {
+          userId: 0,
+          action: ''
         },
         orgData: [],
         direction: getDirection().direction,
@@ -581,6 +756,9 @@
           {value: 'other', text: this.$t('permission-management.other')},
         ],
         profileForm: {
+          status:'inactive',
+          userId: 0,
+          avatar:'',
           userName: '',
           userNumber: '',
           gender: '',
@@ -615,11 +793,11 @@
               dataClass: 'text-center'
             },
             {
-              name: 'userNumber',
+              name: '__slot:userNumber',
               title: this.$t('permission-management.th-user-id'),
               sortField: 'userNumber',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
             },
             {
               name: 'userName',
@@ -690,6 +868,9 @@
       }
     },
     watch: {
+      'profileForm.passwordType': function (newVal) {
+        console.log(newVal);
+      },
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
@@ -707,7 +888,7 @@
             }));
 
         this.treeData = nest(newVal)[0];
-
+        console.log(this.treeData);
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -749,12 +930,17 @@
 
         this.orgNameSelectData = selectOptions;
 
+        this.filter.orgId = this.treeData.orgId;
+        this.defaultOrgId = this.treeData.orgId;
       }
     },
     methods: {
       showCreatePage() { // move to create page
         // reset models
         this.profileForm = {
+          avatar:'',
+          userId: 0,
+          status:'inactive',
           userName: '',
           userNumber: '',
           gender: '',
@@ -770,7 +956,8 @@
           userAccount: '',
           passwordType: 'default',
           passwordValue: '',
-          note: ''
+          note: '',
+          portrait:null
         };
         this.submitted = false;
         // change page to create
@@ -785,22 +972,24 @@
         if (this.$v.$invalid) {
           return;
         }
+
         const formData = new FormData();
         for (let key in this.profileForm) {
           if (key !== 'portrait')
             formData.append(key, this.profileForm[key]);
-          else
+          else if(this.profileForm['portrait']!==null)
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
         }
         // call api
+        let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/create`, formData)
+          .post(`${apiBaseUrl}/permission-management/user-management/` + finalLink, formData)
           .then((response) => {
             let message = response.data.message;
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-created-successfully`), {
+                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -848,7 +1037,94 @@
 
       },
       onAction(action, data, index) {
-        console.log('(slot) action: ' + action, data, index)
+        console.log('(slot) action: ' + action, data, index);
+        let userId = data.userId;
+        switch (action) {
+          case 'modify':
+            this.modifyItem(data);
+            break;
+          case 'show':
+            this.showItem(data);
+            break;
+          case 'reset-password':
+          case 'active':
+          case 'unblock':
+            this.changeItemStatus(userId, action);
+            break;
+          case 'inactive':
+          case 'blocked':
+            this.showConfDiaglog(userId, action);
+            break;
+        }
+      },
+      hideModal(modal) {
+        // hide modal
+        this.$refs[modal].hide();
+        this.promptTemp = {
+          userId: 0,
+          action: ''
+        }
+      },
+      showConfDiaglog(userId, action) {
+        this.promptTemp.userId = userId;
+        this.promptTemp.action = action;
+        this.$refs['modal-prompt'].show();
+      },
+      modifyItem(data) {
+        for (let key in this.profileForm) {
+          if (Object.keys(data).includes(key)){
+            if(key!=='portrait'&&key!=='avatar')
+              this.profileForm[key] = data[key];
+            else if(key==='portrait')
+              this.profileForm.avatar = apiBaseUrl + '/' + data['portrait'];
+          }
+
+        }
+        this.profileForm.passwordType = 'default';
+        this.pageStatus = 'create';
+      },
+      showItem(data) {
+        for (let key in this.profileForm) {
+          if (Object.keys(data).includes(key))
+            this.profileForm[key] = data[key];
+        }
+        this.profileForm.passwordType = 'default';
+        this.pageStatus = 'show';
+      },
+      changeItemStatus(userId = 0, action = '') {
+        if (userId === 0)
+          userId = this.promptTemp.userId;
+        if (action === '')
+          action = this.promptTemp.action;
+        let status = action;
+        if (status === 'unblock' || status === 'reset-password')
+          status = 'inactive';
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/user-management/update-status`, {
+            'userId': userId,
+            'status': status,
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-change-status-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+
+                this.$refs.vuetable.refresh();
+
+                break;
+            }
+          })
+          .catch((error) => {
+          })
+          .finally(() => {
+            this.$refs['modal-prompt'].hide();
+          });
+
       },
       onFileChange(e) {
         let files = e.target.files || e.dataTransfer.files;
@@ -857,11 +1133,10 @@
         this.createImage(files[0]);
       },
       createImage(file) {
-        let image = new Image();
+        this.profileForm.avatar = new Image();
         let reader = new FileReader();
-        var vm = this;
         reader.onload = (e) => {
-          vm.image = e.target.result;
+          this.profileForm.avatar = e.target.result;
         };
         reader.readAsDataURL(file);
         this.profileForm.portrait = file;
@@ -876,6 +1151,8 @@
           orgId: '',
           category: null
         };
+        if (this.defaultOrgId !== '')
+          this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
       transform(response) {
