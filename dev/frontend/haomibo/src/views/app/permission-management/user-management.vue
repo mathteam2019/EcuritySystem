@@ -3,6 +3,9 @@
     left: -7px;
     bottom: 0px;
   }
+  span.cursor-p {
+    cursor: pointer!important;
+  }
 </style>
 <template>
   <div>
@@ -87,12 +90,7 @@
                     @vuetable:pagination-data="onPaginationData"
                   >
                     <template slot="userNumber" slot-scope="props">
-                      <b-button
-                        size="sm"
-                        variant="default"
-                        @click="onAction('show', props.rowData, props.rowIndex)">
-                        {{ props.rowData.userNumber }}
-                      </b-button>
+                      <span class="cursor-p text-primary"  @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                     </template>
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -216,7 +214,7 @@
                 <b-col cols="2" class="text-right">
                   <b-card class="mb-4" no-body>
                     <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                      <img :src="profileForm.avatar" class="card-img-top"/>
+                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
                       <b-badge
                         :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
                         pill class="position-absolute badge-bottom-left">
@@ -437,7 +435,7 @@
                 <b-col cols="2" class="text-right">
                   <b-card class="mb-4" no-body>
                     <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                      <img :src="image" class="card-img-top"/>
+                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
                       <b-badge
                         :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
                         pill class="position-absolute badge-bottom-left">
@@ -1076,18 +1074,22 @@
             if(key!=='portrait'&&key!=='avatar')
               this.profileForm[key] = data[key];
             else if(key==='portrait')
-              this.profileForm.avatar = apiBaseUrl + '/' + data['portrait'];
+              this.profileForm.avatar = apiBaseUrl  + data['portrait'];
           }
-
         }
+        this.profileForm.portrait = null;
         this.profileForm.passwordType = 'default';
         this.pageStatus = 'create';
       },
       showItem(data) {
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key))
-            this.profileForm[key] = data[key];
+            if(key!=='portrait'&&key!=='avatar')
+              this.profileForm[key] = data[key];
+            else if(key==='portrait')
+              this.profileForm.avatar = apiBaseUrl  + data['portrait'];
         }
+        this.profileForm.portrait = null;
         this.profileForm.passwordType = 'default';
         this.pageStatus = 'show';
       },
