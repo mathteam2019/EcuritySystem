@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.jwt;
 
 import com.haomibo.haomibo.config.Constants;
+import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.repositories.SysUserRepository;
 import com.haomibo.haomibo.utils.Utils;
@@ -40,11 +41,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            jwtUtil.getIdFromToken(token).ifPresent(id -> {
+            jwtUtil.getUserIdFromToken(token).ifPresent(userId -> {
                 jwtUtil.getRoleFromToken(token).ifPresent(role -> {
 
                     if (Constants.Roles.SYS_USER.equals(role)) {
-                        sysUserRepository.findById(id).ifPresent(sysUser -> {
+                        sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId)).ifPresent(sysUser -> {
                             UsernamePasswordAuthenticationToken authentication =
                                     new UsernamePasswordAuthenticationToken(sysUser, null, Arrays.asList(new SimpleGrantedAuthority(Constants.Roles.SYS_USER)));
                             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
