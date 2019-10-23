@@ -249,15 +249,18 @@
               <b-row>
                 <b-col cols="12">
                   <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="roleItems.fields"
-                    :data-manager="dataManager"
-                    :per-page="5"
-                    pagination-path="pagination"
+                    ref="dataGroupVuetable"
+                    :api-url="dataGroupVuetableItems.apiUrl"
+                    :http-fetch="dataGroupVuetableHttpFetch"
+                    :fields="dataGroupVuetableItems.fields"
+                    :per-page="dataGroupVuetableItems.perPage"
+                    pagination-path="data"
+                    data-path="data.data"
                     class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onDataGroupPaginationData"
                   >
+<!--                    @vuetable:row-clicked="rowSelected"-->
+<!--                    :row-class="onRowClass"-->
 
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -351,8 +354,10 @@
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
+                    ref="dataGroupPagination"
                     @vuetable-pagination:change-page="onChangePage"
+                    :initial-per-page="dataGroupVuetableItems.perPage"
+                    @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
@@ -371,7 +376,7 @@
 
               <b-row>
                 <b-col>
-                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                  <v-tree ref='accessTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
 
@@ -394,6 +399,13 @@
 
   </div>
 </template>
+
+<style>
+  .halo-tree .inputCheck {
+    top: 2px!important;
+  }
+</style>
+
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
@@ -422,9 +434,33 @@
     },
     mounted() {
       this.tableData = staticUserTableData;
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+            case responseMessages['ok']:
+              this.orgList = data;
+              break;
+            default:
+
+        }
+      });
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userList = data;
+            break;
+          default:
+
+        }
+      });
     },
-      mixins: [validationMixin],
-      data() {
+    mixins: [validationMixin],
+    data() {
       return {
         isLoading: false,
         roleForm: {
@@ -441,6 +477,49 @@
         dataGroupForm: {
           dataGroupName: '',
           note: '',
+        },
+        orgList: [],
+        userList: [],
+        orgUserTreeData: [],
+        dataGroupVuetableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'dataGroupId',
+              title: this.$t('permission-management.permission-control.serial-number'),
+              sortField: 'dataGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupName',
+              title: this.$t('permission-management.permission-control.data-group-name'),
+              // sortField: 'dataGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupFlag',
+              title: this.$t('permission-management.permission-control.group-flag'),
+              // sortField: 'dataGroupFlag',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operating',
+              title: this.$t('permission-management.permission-control.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'note',
+              title: this.$t('permission-management.permission-control.note'),
+              // sortField: 'note',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
         },
         tableData: [],
         selectedStatus: '',
@@ -576,6 +655,12 @@
       }
     },
     watch: {
+      orgList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
+      userList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
       tableData(newVal, oldVal) {
         this.$refs.vuetable.refresh();
       }
@@ -637,13 +722,55 @@
             this.isLoading = false;
           });
         },
+      refreshOrgUserTreeData() {
+        let pseudoRootId = 0;
+        let nest = (orgList, userList, rootId = pseudoRootId) => {
+          let childrenOrgList = orgList
+            .filter(org => org.parentOrgId === rootId)
+            .map(org => ({
+              ...org,
+              title: org.orgName,
+              expanded: true,
+              children: nest(orgList, userList, org.orgId)
+            }));
+          let childrenUserList = userList
+            .filter(user => user.orgId === rootId)
+            .map(user => ({
+              ...user,
+              isUser: true,
+              title: user.userName,
+              expanded: true,
+              children: []
+            }));
+          return [...childrenOrgList, ...childrenUserList];
+        };
+        this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
+        console.log(this.orgUserTreeData);
+      },
+      onRowClass (dataItem, index) {
+        return (dataItem.selected) ? 'color-red' : 'color-white'
+      },
+      dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
+          console.log(httpOptions);
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.dataGroupVuetableItems.perPage,
+          filter: {
+              dataGroupName: '',
+          }
+        });
+      },
+      onDataGroupPaginationData(paginationData) {
+        this.$refs.dataGroupPagination.setPaginationData(paginationData)
+      },
       onPaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
+          this.$refs.pagination.setPaginationData(paginationData)
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
       rowSelected(items) {
+          console.log(items);
         this.bootstrapTable.selected = items
       },
       dataManager(sortOrder, pagination) {

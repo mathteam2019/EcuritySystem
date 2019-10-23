@@ -253,6 +253,7 @@
       "operating": "操作",
       "select-all": "全选",
       "data-group-name": "数据组名称",
+      "group-flag": "分组标记",
 
       "enter-role-name": "请输入角色名称",
       "enter-note": "请输入备注信息",
