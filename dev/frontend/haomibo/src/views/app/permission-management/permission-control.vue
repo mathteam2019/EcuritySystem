@@ -252,6 +252,8 @@
                     ref="vuetable"
                     :api-mode="false"
                     :fields="roleItems.fields"
+                    @vuetable:row-clicked="rowSelected"
+                    :row-class="onRowClass"
                     :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
@@ -371,7 +373,7 @@
 
               <b-row>
                 <b-col>
-                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                  <v-tree ref='accessTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
 
@@ -394,6 +396,13 @@
 
   </div>
 </template>
+
+<style>
+  .halo-tree .inputCheck {
+    top: 2px!important;
+  }
+</style>
+
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
@@ -422,9 +431,33 @@
     },
     mounted() {
       this.tableData = staticUserTableData;
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+            case responseMessages['ok']:
+              this.orgList = data;
+              break;
+            default:
+
+        }
+      });
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userList = data;
+            break;
+          default:
+
+        }
+      });
     },
-      mixins: [validationMixin],
-      data() {
+    mixins: [validationMixin],
+    data() {
       return {
         isLoading: false,
         roleForm: {
@@ -442,6 +475,9 @@
           dataGroupName: '',
           note: '',
         },
+        orgList: [],
+        userList: [],
+        orgUserTreeData: [],
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -576,6 +612,12 @@
       }
     },
     watch: {
+      orgList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
+      userList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
       tableData(newVal, oldVal) {
         this.$refs.vuetable.refresh();
       }
@@ -637,6 +679,34 @@
             this.isLoading = false;
           });
         },
+      refreshOrgUserTreeData() {
+        let pseudoRootId = 0;
+        let nest = (orgList, userList, rootId = pseudoRootId) => {
+          let childrenOrgList = orgList
+            .filter(org => org.parentOrgId === rootId)
+            .map(org => ({
+              ...org,
+              title: org.orgName,
+              expanded: true,
+              children: nest(orgList, userList, org.orgId)
+            }));
+          let childrenUserList = userList
+            .filter(user => user.orgId === rootId)
+            .map(user => ({
+              ...user,
+              isUser: true,
+              title: user.userName,
+              expanded: true,
+              children: []
+            }));
+          return [...childrenOrgList, ...childrenUserList];
+        };
+        this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
+        console.log(this.orgUserTreeData);
+      },
+      onRowClass (dataItem, index) {
+        return (dataItem.selected) ? 'color-red' : 'color-white'
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
@@ -644,6 +714,7 @@
         this.$refs.vuetable.changePage(page)
       },
       rowSelected(items) {
+          console.log(items);
         this.bootstrapTable.selected = items
       },
       dataManager(sortOrder, pagination) {
