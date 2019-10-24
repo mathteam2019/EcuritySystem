@@ -134,7 +134,10 @@
       "success": "Success",
       "role-created": "A role is created",
       "data-group-created": "A data group is created",
-      "save": "Save"
+      "data-group-modified": "The data group has modified",
+      "delete-data-group-prompt": "Do you want to delete this data group?",
+      "save": "Save",
+      "prompt": "Prompt"
     }
   },
   "device-management": {

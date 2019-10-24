@@ -264,7 +264,10 @@
       "success": "成功",
       "role-created": "A role is created",
       "data-group-created": "A data group is created",
-      "save": "保存"
+      "data-group-modified": "The data group has modified",
+      "delete-data-group-prompt": "Do you want to delete this data group?",
+      "save": "保存",
+      "prompt": "提示"
     }
   },
   "device-management": {

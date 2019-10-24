@@ -261,7 +261,7 @@
                   >
 
                     <template slot="dataGroupFlag" slot-scope="props">
-                      <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-notebook text-info tb-icon"></div>
+                      <div v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info tb-icon"></div>
                     </template>
 
                     <template slot="operating" slot-scope="props">
@@ -276,7 +276,16 @@
                     @vuetable-pagination:change-page="onChangePage"
                     :initial-per-page="dataGroupVuetableItems.perPage"
                     @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
+                    class="table-hover"
                   ></vuetable-pagination-bootstrap>
+
+                  <b-modal id="modal-delete-data-group" ref="modalDeleteDataGroup" :title="$t('permission-management.permission-control.prompt')">
+                    {{$t('permission-management.permission-control.delete-data-group-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                      <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
+                    </template>
+                  </b-modal>
                 </b-col>
               </b-row>
             </b-card>
@@ -296,14 +305,14 @@
 
               <b-row>
                 <b-col>
-                  <v-tree ref='accessTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+                  <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col cols="12" class="text-right">
                   <b-form-group>
-                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                    <b-button @click="onClickSaveDataGroup">{{$t('permission-management.permission-control.save')}}</b-button>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -425,7 +434,7 @@
         selectedDataGroup: null,
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
-          apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
           perPage: 5,
           fields: [
             {
@@ -627,7 +636,7 @@
       onRoleFormSubmit() {
         this.isLoading = true;
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/create-role`, {
+          .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
             'roleName': this.roleForm.roleName,
             'note': this.roleForm.note
           })
@@ -655,7 +664,7 @@
       onDataGroupFormSubmit() {
         this.isLoading = true;
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/create-data-group`, {
+          .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
             'dataGroupName': this.dataGroupForm.dataGroupName,
             'note': this.dataGroupForm.note
           })
@@ -680,7 +689,41 @@
           .catch((error) => {
             this.isLoading = false;
           });
-        },
+      },
+      onClickSaveDataGroup() {
+          if(this.selectedDataGroup) {
+              // this.isLoading = true;
+              let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+              let dataGroupUserIds = [];
+              checkedNodes.forEach((node) => {
+                  if(node.isUser)dataGroupUserIds.push(node.userId);
+              });
+              getApiManager()
+                  .post(`${apiBaseUrl}/permission-management/permission-control/data-group/modify`, {
+                      'dataGroupId': this.selectedDataGroup.dataGroupId,
+                      'userIdList': dataGroupUserIds
+                  })
+                  .then((response) => {
+                      this.isLoading = false;
+                      let message = response.data.message;
+                      let data = response.data.data;
+                      switch (message) {
+                          case responseMessages['ok']:
+                              this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-modified`), {
+                                  duration: 3000,
+                                  permanent: false
+                              });
+                              this.$refs.dataGroupVuetable.reload();
+                              break;
+                          default:
+
+                      }
+                  })
+                  .catch((error) => {
+                      this.isLoading = false;
+                  });
+          }
+      },
       refreshOrgUserTreeData() {
         let pseudoRootId = 0;
         let nest = (orgList, userList, rootId = pseudoRootId) => {
