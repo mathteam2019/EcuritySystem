@@ -41,7 +41,9 @@ public class SwaggerConfig {
                 "0.0.1",
                 "",
                 null,
-                "License of API", "API license URL", Collections.emptyList());
+                null,
+                null,
+                Collections.emptyList());
     }
 
 }

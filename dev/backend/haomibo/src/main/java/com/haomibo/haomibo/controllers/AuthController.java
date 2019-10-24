@@ -95,40 +95,10 @@ public class AuthController extends BaseController {
         return new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 new LoginResponseBody(
-                        new User(sysUser.getId(), sysUser.getName()),
+                        new User(sysUser.getUserId(), sysUser.getUserName()),
                         new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
                 )
         );
-    }
-
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public Object register(@RequestBody @Valid RegisterRequestBody requestBody, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
-        }
-
-        QSysUser qSysUser = QSysUser.sysUser;
-        boolean isEmailUsed = sysUserRepository.exists(qSysUser.email.eq(requestBody.getEmail()));
-
-        if (isEmailUsed) {
-            return new CommonResponseBody(Constants.ResponseMessages.USED_EMAIL);
-        }
-
-        try {
-            SysUser sysUser = new SysUser();
-            sysUser.setName(requestBody.getName());
-            sysUser.setEmail(requestBody.getEmail());
-            sysUser.setPassword(requestBody.getPassword());
-
-            sysUserRepository.save(sysUser);
-
-            return new CommonResponseBody(Constants.ResponseMessages.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return new CommonResponseBody(Constants.ResponseMessages.SERVER_ERROR);
     }
 
     @Secured({Constants.Roles.SYS_USER})

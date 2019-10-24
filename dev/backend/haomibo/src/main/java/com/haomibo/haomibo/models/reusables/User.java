@@ -11,7 +11,7 @@ import java.util.Date;
 @ToString
 public class User {
 
-    int id;
+    long id;
 
     String name;
 }

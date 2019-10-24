@@ -1,5 +1,6 @@
 package com.haomibo.haomibo.models.db;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NotFound;
@@ -7,7 +8,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 @Getter
 @Setter
@@ -16,8 +17,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "orgId")
 @Table(name = "sys_org")
-@DynamicUpdate
 public class SysOrg implements Serializable {
 
 
@@ -26,48 +27,78 @@ public class SysOrg implements Serializable {
         public static final String INACTIVE = "inactive";
     }
 
+    public List<SysOrg> generateChildrenList() {
+
+        List<SysOrg> children = new ArrayList<>();
+
+        Queue<SysOrg> queue = new LinkedList<>();
+
+        queue.add(this);
+
+        while (!queue.isEmpty()) {
+            SysOrg head = queue.remove();
+            if (head.children != null) {
+                queue.addAll(head.children);
+            }
+            children.add(head.toBuilder().parent(null).children(null).build());
+        }
+
+        return children;
+    }
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORG_ID", length = 20, nullable = false)
-    private Long orgId;
+    Long orgId;
 
     @Column(name = "PARENT_ORG_ID", length = 20)
-    private Long parentOrgId;
+    Long parentOrgId;
 
     @Column(name = "ORG_NAME", length = 50)
-    private String orgName;
+    String orgName;
 
     @Column(name = "ORG_NUMBER", length = 50)
-    private String orgNumber;
+    String orgNumber;
 
     @Column(name = "LEADER", length = 50)
-    private String leader;
+    String leader;
 
     @Column(name = "MOBILE", length = 20)
-    private String mobile;
+    String mobile;
 
     @Column(name = "STATUS", length = 10)
-    private String status;
+    String status;
 
     @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
+    Long createdBy;
 
     @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
+    Date createdTime;
 
     @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
+    Long editedBy;
 
     @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
+    Date editedTime;
 
     @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
+    String note;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @OneToOne()
     @JoinColumn(name = "PARENT_ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysOrg parent;
+    @MapsId("parent")
+    @JsonManagedReference
+    SysOrg parent;
+
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "parent")
+    @NotFound(action = NotFoundAction.IGNORE)
+    @JsonBackReference
+    Set<SysOrg> children;
 
 }
 
