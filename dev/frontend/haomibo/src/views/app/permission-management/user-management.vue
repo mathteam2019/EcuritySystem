@@ -818,7 +818,9 @@
             break;
         }
       });
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+        type: 'with_org_tree'
+      }).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
