@@ -238,7 +238,17 @@
       "userCategory-field-is-mandatory": "人员类别是必需的",
       "account-field-is-mandatory": "账号是必需的",
       "orgId-field-is-mandatory": "机构编号是必需的",
-      "account-should-be-numerical-or-characters": "账号称应为数字或字符"
+      "account-should-be-numerical-or-characters": "账号称应为数字或字符",
+      "group-name": "分组名称",
+      "required-field": "This field is required.",
+      "note": "备注",
+      "enter-note":"请输入备注信息",
+      "group-flag": "分组标志",
+      "grouped":"己分组",
+      "no-grouped": "未分组",
+      "please-enter-group-name": "请输入分组名称",
+      "user-group-name": "分组名称",
+      "operating": "操作"
     },
 
     "permission-control": {
@@ -397,7 +407,13 @@
     "node-type": "节点类型",
     "node-name": "节点名称",
     "start-time": "环节开始时间",
-    "processing-time": "环节处理时间"
+    "processing-time": "环节处理时间",
+    "boot-time": "开机时间",
+    "scan-count":"扫描次数",
+    "alarm-count": "报警次数",
+    "invalid-scan": "无效扫描次数",
+    "missing-alarm-rate": "漏报率",
+    "false-alarm-rate": "误报率"
   },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
