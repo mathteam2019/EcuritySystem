@@ -61,7 +61,6 @@
                     ref="vuetable"
                     :api-mode="false"
                     :fields="roleItems.fields"
-                    :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
                     class="table-striped"
@@ -233,15 +232,15 @@
             <b-card class="mb-4">
               <b-row>
                 <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
-                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  <b-form-group :label="$t('permission-management.permission-control.group-flag')">
+                    <b-form-select v-model="groupFlag" @change="onGroupFlagChanged" :options="groupFlagData" plain/>
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="7">
                   <b-form-group>
                     <template slot="label">&nbsp;</template>
-                    <b-form-input></b-form-input>
+                    <b-form-input v-model="groupKeyword" @change="onGroupKeywordChanged"></b-form-input>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -256,100 +255,18 @@
                     :per-page="dataGroupVuetableItems.perPage"
                     pagination-path="data"
                     data-path="data.data"
-                    class="table-striped"
+                    :row-class="onDataGroupRowClass"
                     @vuetable:pagination-data="onDataGroupPaginationData"
+                    @vuetable:row-clicked="onDataGroupRowClicked"
                   >
-<!--                    @vuetable:row-clicked="rowSelected"-->
-<!--                    :row-class="onRowClass"-->
 
-                    <template slot="actions" slot-scope="props">
-                      <div>
+                    <template slot="dataGroupFlag" slot-scope="props">
+                      <div v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info tb-icon"></div>
+                    </template>
 
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="info"
-                          @click="onAction('modify', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive'"
-                          size="sm"
-                          variant="info"
-                          disabled>
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('make-active', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='active'"
-                          size="sm"
-                          variant="warning"
-                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-inactive') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                          size="sm"
-                          variant="success"
-                          disabled>
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="danger"
-                          @click="onAction('block', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='blocked'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-unblock') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                          size="sm"
-                          variant="danger"
-                          disabled>
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='pending'"
-                          size="sm"
-                          variant="dark"
-                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='pending'"
-                          size="sm"
-                          variant="dark"
-                          disabled>
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                      </div>
+                    <template slot="operating" slot-scope="props">
+                      <div v-if="!props.rowData.users.length" @click="onClickDeleteDataGroup(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
+                      <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-close tb-button-disabled"></div>
                     </template>
 
                   </vuetable>
@@ -358,32 +275,35 @@
                     @vuetable-pagination:change-page="onChangePage"
                     :initial-per-page="dataGroupVuetableItems.perPage"
                     @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
+                    class="table-hover"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
             </b-card>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4">
+            <b-card class="mb-4" v-if="selectedDataGroup">
 
               <b-row>
                 <b-col class="text-right">
                   <b-form-group>
-                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                    <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                      {{$t('permission-management.permission-control.select-all')}}
+                    </b-form-checkbox>
                   </b-form-group>
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col>
-                  <v-tree ref='accessTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+                  <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col cols="12" class="text-right">
                   <b-form-group>
-                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                    <b-button @click="onClickSaveDataGroup">{{$t('permission-management.permission-control.save')}}</b-button>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -397,12 +317,34 @@
 
     <div v-show="isLoading" class="loading"></div>
 
+    <b-modal id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
+      {{$t('permission-management.permission-control.delete-data-group-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button variant="danger" @click="hideModal('modal-delete-data-group')">{{$t('system-setting.cancel')}}</b-button>
+      </template>
+    </b-modal>
+
   </div>
 </template>
 
 <style>
   .halo-tree .inputCheck {
     top: 2px!important;
+  }
+  .tb-icon {
+    font-size: 20px;
+  }
+  .tb-button {
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .tb-button-disabled {
+    font-size: 20px;
+    color: lightgray!important;
+  }
+  .selected-row {
+    background-color: #0000ff20!important;
   }
 </style>
 
@@ -447,7 +389,7 @@
         }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -478,11 +420,20 @@
           dataGroupName: '',
           note: '',
         },
+        groupKeyword: '',
+        groupFlag: null,
+        groupFlagData: [
+            {value: null, text: this.$t('permission-management.permission-control.all')},
+            {value: 'set', text: this.$t('permission-management.permission-control.grouped')},
+            {value: 'unset', text: this.$t('permission-management.permission-control.ungrouped')},
+        ],
         orgList: [],
         userList: [],
         orgUserTreeData: [],
+        selectedDataGroup: null,
+        isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
-          apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
           perPage: 5,
           fields: [
             {
@@ -500,14 +451,13 @@
               dataClass: 'text-center',
             },
             {
-              name: 'dataGroupFlag',
+              name: '__slot:dataGroupFlag',
               title: this.$t('permission-management.permission-control.group-flag'),
-              // sortField: 'dataGroupFlag',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'operating',
+              name: '__slot:operating',
               title: this.$t('permission-management.permission-control.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -521,7 +471,6 @@
             }
           ],
         },
-        tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
         selectedUserCategory: '',
@@ -661,15 +610,35 @@
       userList(newVal, oldVal) {
         this.refreshOrgUserTreeData();
       },
-      tableData(newVal, oldVal) {
-        this.$refs.vuetable.refresh();
+      selectedDataGroup(newVal, oldVal) {
+        if(newVal) {
+          let dataGroupUserIds = [];
+          newVal.users.forEach((user) => {
+            dataGroupUserIds.push(user.userId);
+          });
+          this.userList.forEach((user) => {
+            user.selected = dataGroupUserIds.includes(user.userId);
+          });
+          this.refreshOrgUserTreeData();
+        }
+      },
+      isSelectedAllUsersForDataGroup(newVal, oldVal) {
+          if(this.selectedDataGroup) {
+              let tempSelectedDataGroup = this.selectedDataGroup;
+              tempSelectedDataGroup.users = newVal ? this.userList : [];
+              this.selectedDataGroup = null;
+              this.selectedDataGroup = tempSelectedDataGroup;
+          }
       }
     },
     methods: {
+        hideModal(refName) {
+            this.$refs[refName].hide();
+        },
       onRoleFormSubmit() {
         this.isLoading = true;
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/create-role`, {
+          .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
             'roleName': this.roleForm.roleName,
             'note': this.roleForm.note
           })
@@ -697,7 +666,7 @@
       onDataGroupFormSubmit() {
         this.isLoading = true;
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/create-data-group`, {
+          .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
             'dataGroupName': this.dataGroupForm.dataGroupName,
             'note': this.dataGroupForm.note
           })
@@ -713,6 +682,7 @@
                 });
                 this.dataGroupForm.dataGroupName = '';
                 this.dataGroupForm.note = '';
+                this.$refs.dataGroupVuetable.refresh();
                 break;
               default:
 
@@ -721,6 +691,71 @@
           .catch((error) => {
             this.isLoading = false;
           });
+      },
+      onClickSaveDataGroup() {
+          if(this.selectedDataGroup) {
+              // this.isLoading = true;
+              let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+              let dataGroupUserIds = [];
+              checkedNodes.forEach((node) => {
+                  if(node.isUser)dataGroupUserIds.push(node.userId);
+              });
+              getApiManager()
+                  .post(`${apiBaseUrl}/permission-management/permission-control/data-group/modify`, {
+                      'dataGroupId': this.selectedDataGroup.dataGroupId,
+                      'userIdList': dataGroupUserIds
+                  })
+                  .then((response) => {
+                      this.isLoading = false;
+                      let message = response.data.message;
+                      let data = response.data.data;
+                      switch (message) {
+                          case responseMessages['ok']:
+                              this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-modified`), {
+                                  duration: 3000,
+                                  permanent: false
+                              });
+                              this.$refs.dataGroupVuetable.reload();
+                              break;
+                          default:
+
+                      }
+                  })
+                  .catch((error) => {
+                      this.isLoading = false;
+                  });
+          }
+      },
+        onClickDeleteDataGroup(dataGroup) {
+          this.$refs['modal-delete-data-group'].show();
+        },
+        deleteDataGroup() {
+          if(this.selectedDataGroup) {
+              getApiManager()
+                  .post(`${apiBaseUrl}/permission-management/permission-control/data-group/delete`, {
+                      'dataGroupId': this.selectedDataGroup.dataGroupId
+                  })
+                  .then((response) => {
+                      this.isLoading = false;
+                      let message = response.data.message;
+                      let data = response.data.data;
+                      switch (message) {
+                          case responseMessages['ok']:
+                              this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-deleted`), {
+                                  duration: 3000,
+                                  permanent: false
+                              });
+                              this.$refs.dataGroupVuetable.refresh();
+                              this.hideModal('modal-delete-data-group')
+                              break;
+                          default:
+
+                      }
+                  })
+                  .catch((error) => {
+                      this.isLoading = false;
+                  });
+          }
         },
       refreshOrgUserTreeData() {
         let pseudoRootId = 0;
@@ -740,70 +775,48 @@
               isUser: true,
               title: user.userName,
               expanded: true,
+              checked: user.selected,
               children: []
             }));
           return [...childrenOrgList, ...childrenUserList];
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
-        console.log(this.orgUserTreeData);
       },
-      onRowClass (dataItem, index) {
-        return (dataItem.selected) ? 'color-red' : 'color-white'
+      onGroupFlagChanged(value) {
+          this.$refs.dataGroupVuetable.refresh();
+      },
+      onGroupKeywordChanged(value) {
+          this.$refs.dataGroupVuetable.refresh();
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
-          console.log(httpOptions);
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.dataGroupVuetableItems.perPage,
           filter: {
-              dataGroupName: '',
+              dataGroupName: this.groupKeyword,
+              flag: this.groupFlag
           }
         });
       },
       onDataGroupPaginationData(paginationData) {
         this.$refs.dataGroupPagination.setPaginationData(paginationData)
       },
+      onDataGroupRowClass(dataItem, index) {
+        let selectedItem = this.selectedDataGroup;
+        if(selectedItem && selectedItem.dataGroupId === dataItem.dataGroupId) {
+          return 'selected-row';
+        } else {
+            return '';
+        }
+      },
+      onDataGroupRowClicked(dataItem, event) {
+        this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
+      },
       onPaginationData(paginationData) {
           this.$refs.pagination.setPaginationData(paginationData)
       },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page)
-      },
-      rowSelected(items) {
-          console.log(items);
-        this.bootstrapTable.selected = items
-      },
-      dataManager(sortOrder, pagination) {
-
-        if (this.tableData.length < 1) return;
-
-        let local = this.tableData;
-
-        for (let i = 0; i < local.length; i++) {
-          local[i].no = i + 1;
-        }
-
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
-        }
-
-        pagination = this.$refs.vuetable.makePagination(
-          local.length,
-          this.perPage
-        );
-        let from = pagination.from - 1;
-        let to = from + this.perPage;
-
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
-        };
-
+        this.$refs.dataGroupVuetable.changePage(page)
       },
       onAction(action, data, index) {
         console.log('(slot) action: ' + action, data, index)

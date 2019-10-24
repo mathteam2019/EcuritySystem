@@ -15,6 +15,7 @@ export const localeOptions = [
 ];
 
 export const apiBaseUrl = 'http://192.168.5.4:8080/haomibo-0.0.1-SNAPSHOT';
+// export const apiBaseUrl = 'http://192.168.5.4:4546';
 // export const apiBaseUrl = 'http://39.97.175.200:8080/haomibo';
 
 export const refreshTokenTimeDiff = 30;
