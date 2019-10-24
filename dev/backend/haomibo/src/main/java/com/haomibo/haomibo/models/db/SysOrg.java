@@ -1,6 +1,6 @@
 package com.haomibo.haomibo.models.db;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
@@ -17,9 +17,8 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "orgId")
-@Table(name = "sys_org")
 @JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
+@Table(name = "sys_org")
 public class SysOrg implements Serializable {
 
 
@@ -98,6 +97,12 @@ public class SysOrg implements Serializable {
     @OneToMany(mappedBy = "parent")
     @NotFound(action = NotFoundAction.IGNORE)
     Set<SysOrg> children;
+
+
+    @ToString.Exclude
+    @OneToMany(mappedBy = "org")
+    @NotFound(action = NotFoundAction.IGNORE)
+    Set<SysUser> users;
 
 }
 

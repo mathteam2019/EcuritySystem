@@ -2,6 +2,7 @@ package com.haomibo.haomibo.controllers.permissionmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
@@ -169,6 +170,34 @@ public class OrganizationManagementController extends BaseController {
 
     }
 
+    static class GetAllType {
+        public static final String BARE = "bare";
+        public static final String WITH_PARENT = "with_parent";
+        public static final String WITH_CHILDREN = "with_children";
+        public static final String WITH_USERS = "with_users";
+        public static final String WITH_PARENT_AND_USERS = "with_parent_and_users";
+        public static final String WITH_CHILDREN_AND_USERS = "with_children_and_users";
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class GetAllRequestBody {
+
+
+        @Pattern(regexp = GetAllType.BARE + "|" +
+                GetAllType.WITH_PARENT + "|" +
+                GetAllType.WITH_CHILDREN + "|" +
+                GetAllType.WITH_USERS + "|" +
+                GetAllType.WITH_PARENT_AND_USERS + "|" +
+                GetAllType.WITH_CHILDREN_AND_USERS)
+        String type;
+
+
+    }
+
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object create(
@@ -268,55 +297,50 @@ public class OrganizationManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public MappingJacksonValue getAll() {
+    public MappingJacksonValue getAll(@RequestBody @Valid  GetAllRequestBody requestBody,
+                                      BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new MappingJacksonValue( new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER));
+        }
+
 
         List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
-
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
-
-        value.setFilters(filters);
-
-        return value;
-    }
-
-    @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-all-with-parent", method = RequestMethod.POST)
-    public MappingJacksonValue getAllWithParent() {
-
-        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
 
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children"));
+        String type = requestBody.getType() == null ? GetAllType.BARE : requestBody.getType();
 
-        value.setFilters(filters);
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        return value;
-    }
+        switch (type) {
 
-    @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-all-with-children", method = RequestMethod.POST)
-    public MappingJacksonValue getAllWithChildren() {
+            case GetAllType.BARE:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
+                break;
+            case GetAllType.WITH_PARENT:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                break;
+            case GetAllType.WITH_CHILDREN:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users"));
+                break;
+            case GetAllType.WITH_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            case GetAllType.WITH_PARENT_AND_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            case GetAllType.WITH_CHILDREN_AND_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            default:
 
-        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
-
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+                break;
+        }
 
         value.setFilters(filters);
 

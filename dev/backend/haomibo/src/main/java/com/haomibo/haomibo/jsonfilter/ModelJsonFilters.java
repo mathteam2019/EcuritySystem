@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 public class ModelJsonFilters {
 
     public final static String FILTER_SYS_ORG = "filter_sys_org";
+    public final static String FILTER_SYS_USER = "filter_sys_user";
 
     public static SimpleFilterProvider getDefaultFilters() {
         SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAll();
