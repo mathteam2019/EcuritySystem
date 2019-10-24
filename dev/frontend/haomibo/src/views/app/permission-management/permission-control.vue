@@ -265,8 +265,7 @@
                     </template>
 
                     <template slot="operating" slot-scope="props">
-<!--                      @click="onAction('delete', props.rowData)"-->
-                      <div v-if="!props.rowData.users.length" class="glyph-icon simple-icon-close text-danger tb-button"></div>
+                      <div v-if="!props.rowData.users.length" @click="onClickDeleteDataGroup(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
                       <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-close tb-button-disabled"></div>
                     </template>
 
@@ -278,14 +277,6 @@
                     @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
                     class="table-hover"
                   ></vuetable-pagination-bootstrap>
-
-                  <b-modal id="modal-delete-data-group" ref="modalDeleteDataGroup" :title="$t('permission-management.permission-control.prompt')">
-                    {{$t('permission-management.permission-control.delete-data-group-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
-                      <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
-                    </template>
-                  </b-modal>
                 </b-col>
               </b-row>
             </b-card>
@@ -325,6 +316,14 @@
     </b-tabs>
 
     <div v-show="isLoading" class="loading"></div>
+
+    <b-modal id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
+      {{$t('permission-management.permission-control.delete-data-group-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button variant="danger" @click="hideModal('modal-delete-data-group')">{{$t('system-setting.cancel')}}</b-button>
+      </template>
+    </b-modal>
 
   </div>
 </template>
@@ -633,6 +632,9 @@
       }
     },
     methods: {
+        hideModal(refName) {
+            this.$refs[refName].hide();
+        },
       onRoleFormSubmit() {
         this.isLoading = true;
         getApiManager()
@@ -680,7 +682,7 @@
                 });
                 this.dataGroupForm.dataGroupName = '';
                 this.dataGroupForm.note = '';
-                this.$refs.dataGroupVuetable.reload();
+                this.$refs.dataGroupVuetable.refresh();
                 break;
               default:
 
@@ -724,6 +726,37 @@
                   });
           }
       },
+        onClickDeleteDataGroup(dataGroup) {
+          this.$refs['modal-delete-data-group'].show();
+        },
+        deleteDataGroup() {
+          if(this.selectedDataGroup) {
+              getApiManager()
+                  .post(`${apiBaseUrl}/permission-management/permission-control/data-group/delete`, {
+                      'dataGroupId': this.selectedDataGroup.dataGroupId
+                  })
+                  .then((response) => {
+                      this.isLoading = false;
+                      let message = response.data.message;
+                      let data = response.data.data;
+                      switch (message) {
+                          case responseMessages['ok']:
+                              this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-deleted`), {
+                                  duration: 3000,
+                                  permanent: false
+                              });
+                              this.$refs.dataGroupVuetable.refresh();
+                              this.hideModal('modal-delete-data-group')
+                              break;
+                          default:
+
+                      }
+                  })
+                  .catch((error) => {
+                      this.isLoading = false;
+                  });
+          }
+        },
       refreshOrgUserTreeData() {
         let pseudoRootId = 0;
         let nest = (orgList, userList, rootId = pseudoRootId) => {
