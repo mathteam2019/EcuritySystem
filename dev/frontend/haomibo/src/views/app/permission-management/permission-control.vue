@@ -377,7 +377,7 @@
     mounted() {
       this.tableData = staticUserTableData;
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all-with-parent`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
