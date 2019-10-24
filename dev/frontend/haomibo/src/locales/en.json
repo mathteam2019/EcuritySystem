@@ -122,17 +122,23 @@
       "no-role": "No role",
       "serial-number": "No.",
       "operating": "Operating",
-      "select-all": "全选",
+      "select-all": "Select all",
       "data-group-name": "Data group name",
-      "group-flag": "分组标记",
+      "group-flag": "Group flag",
+      "grouped": "Grouped",
+      "ungrouped": "Ungrouped",
 
       "enter-role-name": "Please enter the role name",
       "enter-note": "Please enter the note",
       "required-field": "This field is required.",
-      "success": "成功",
-      "role-created": "A role is created",
-      "data-group-created": "A data group is created",
-      "save": "Save"
+      "success": "Success",
+      "role-created": "A role is created.",
+      "data-group-created": "A data group is created.",
+      "data-group-modified": "The data group has modified.",
+      "data-group-deleted": "The data group has deleted.",
+      "delete-data-group-prompt": "Do you want to delete this data group?",
+      "save": "Save",
+      "prompt": "Prompt"
     }
   },
   "device-management": {

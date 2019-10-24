@@ -3,9 +3,32 @@
     left: -7px;
     bottom: 0px;
   }
+
   span.cursor-p {
-    cursor: pointer!important;
+    cursor: pointer !important;
   }
+</style>
+<style lang="scss">
+  .search-form-group {
+    [role="group"] {
+      position: relative;
+
+      .form-control {
+        padding-right: 30px;
+      }
+
+      .search-input-icon {
+        position: absolute;
+        top: 50%;
+        right: 1em;
+        transform: translateY(-50%);
+      }
+
+    }
+
+  }
+
+
 </style>
 <template>
   <div>
@@ -82,15 +105,14 @@
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
                     :fields="vuetableItems.fields"
-                    :data-manager="dataManager"
-                    :http-fetch="vuetableHttpFetch"
+                    :http-fetch="userTableHttpFetch"
                     :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onUserTablePaginationData"
                   >
                     <template slot="userNumber" slot-scope="props">
-                      <span class="cursor-p text-primary"  @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                     </template>
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -186,7 +208,7 @@
                   </vuetable>
                   <vuetable-pagination-bootstrap
                     ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
+                    @vuetable-pagination:change-page="onUserTableChangePage"
                     :initial-per-page="vuetableItems.perPage"
                     @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
@@ -469,7 +491,7 @@
                         <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
-                                       />
+                        />
                       </b-form-group>
                     </b-col>
                     <b-col cols="3">
@@ -488,7 +510,7 @@
                         <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
                           class="text-danger">*</span></template>
                         <b-form-select v-model="profileForm.orgId" :options="orgNameSelectData" plain
-                                      />
+                        />
                       </b-form-group>
                     </b-col>
                     <b-col cols="3">
@@ -603,14 +625,101 @@
 
       <b-tab :title="$t('permission-management.user-group')">
         <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Nice</h1>
+          <b-col cols="3">
+            <b-card class="mb-4">
+              <b-form @submit.prevent="onGroupFormSubmit">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.user.group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="groupForm.groupName"
+                    :state="!$v.groupForm.groupName.$invalid"
+                    :placeholder="$t('permission-management.user.please-enter-group-name')"/>
+                  <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
+                  </b-form-invalid-feedback>
+
+                </b-form-group>
+                <b-form-group :label="$t('permission-management.user.note')">
+                  <b-form-textarea v-model="groupForm.note" rows="3"
+                                   :placeholder="$t('permission-management.user.enter-note')"></b-form-textarea>
+                </b-form-group>
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" :disabled="$v.groupForm.$invalid" variant="primary">{{
+                      $t('permission-management.save') }}
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <b-col cols="5">
+            <b-card class="mb-4">
+              <b-row>
+                <b-col cols="5" class="pr-3">
+                  <b-form-group :label="$t('permission-management.user.group-flag')">
+                    <b-form-select v-model="groupFilter.flag" :options="userGroupFlagData" plain/>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="7">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">&nbsp;</template>
+                    <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')"
+                                  v-model="groupFilter.name"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="12" class="table-responsive">
+                  <vuetable
+                    ref="userGroupTable"
+                    :api-url="userGroupTableItems.apiUrl"
+                    :fields="userGroupTableItems.fields"
+                    :http-fetch="userGroupTableHttpFetch"
+                    pagination-path="userGroupPagination"
+                    class="table-hover"
+                    @vuetable:pagination-data="onUserGroupTablePaginationData"
+                    @vuetable:row-clicked="onUserGroupTableRowClick"
+                  >
+                    <template slot="operating" slot-scope="props">
+                      <span style="font-size: 18px" v-if="props.rowData.orgId==null"
+                            class="btn-action cursor-p text-danger"
+                            @click="onAction('group-remove', props.rowData, props.rowIndex)">
+                        <i class="btn-action simple-icon-close"></i>
+                      </span>
+                      <span style="font-size: 18px" v-if="props.rowData.orgId!=null" class="text-dark">
+                        <i class="simple-icon-close"></i>
+                      </span>
+                    </template>
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="userGroupPagination"
+                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                    :initial-per-page="userGroupTableItems.perPage"
+                    @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
+                  ></vuetable-pagination-bootstrap>
+                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+                    {{$t('permission-management.user.user-group-delete-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="deleteUserGroupItem()" class="mr-1">
+                        {{$t('permission-management.modal-ok')}}
+                      </b-button>
+                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
+                        {{$t('permission-management.modal-cancel')}}
+                      </b-button>
+                    </template>
+                  </b-modal>
+                </b-col>
+              </b-row>
             </b-card>
           </b-col>
         </b-row>
       </b-tab>
-
 
     </b-tabs>
 
@@ -688,16 +797,32 @@
         category: {
           required
         },
+      },
+      groupForm: {
+        groupName: {
+          required
+        }
       }
     },
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
+      this.$refs.userGroupTable.$parent.transform = this.transformUserGroupTable.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
           case responseMessages['ok']:
             this.orgData = data;
+            break;
+        }
+      });
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userData = data;
+            console.log(data);
             break;
         }
       })
@@ -720,6 +845,7 @@
           action: ''
         },
         orgData: [],
+        userData: [],
         direction: getDirection().direction,
         genderOptions: [
           {value: 'male', text: this.$t('permission-management.male')},
@@ -754,9 +880,9 @@
           {value: 'other', text: this.$t('permission-management.other')},
         ],
         profileForm: {
-          status:'inactive',
+          status: 'inactive',
           userId: 0,
-          avatar:'',
+          avatar: '',
           userName: '',
           userNumber: '',
           gender: '',
@@ -781,7 +907,7 @@
           {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
         ],
         vuetableItems: {
-          apiUrl: `${apiBaseUrl}/permission-management/user-management/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
           fields: [
             {
               name: 'userId',
@@ -862,15 +988,84 @@
           ],
           perPage: 5,
         },
+        //second tab content
+        selectedUserGroupItem: {
+          userGroupId: 0,
+          action: ''
+        },
+        groupForm: {
+          groupName: '',
+          note: ''
+        },
+        groupFilter: {
+          flag: null,
+          name: ''
+        },
+        userGroupFlagData: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'set', text: this.$t('permission-management.user.grouped')},
+          {value: 'unset', text: this.$t('permission-management.user.no-grouped')},
+        ],
+        userGroupTableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'userGroupId',
+              title: this.$t('permission-management.th-no'),
+              sortField: 'userGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'groupName',
+              title: this.$t('permission-management.user.user-group-name'),
+              sortField: 'userGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'users',
+              title: this.$t('permission-management.user.group-flag'),
+              // sortField: 'userGroupFlag',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (value) => {
+                if (value.length > 0)
+                  return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
+                return '';
+              }
+            },
+            {
+              name: '__slot:operating',
+              title: this.$t('permission-management.user.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'note',
+              title: this.$t('permission-management.user.note'),
+              // sortField: 'note',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
+        },
 
       }
     },
     watch: {
-      'profileForm.passwordType': function (newVal) {
-        console.log(newVal);
-      },
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+      },
+      'groupFilter.flag': function (newVal) {
+        this.$refs.userGroupTable.refresh();
+      },
+      'groupFilter.name': function (newVal) {
+        this.$refs.userGroupTable.refresh();
+      },
+      'userGroupTableItems.perPage': function (newVal) {
+        this.$refs.userGroupTable.refresh();
       },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
@@ -886,7 +1081,6 @@
             }));
 
         this.treeData = nest(newVal)[0];
-        console.log(this.treeData);
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -935,28 +1129,7 @@
     methods: {
       showCreatePage() { // move to create page
         // reset models
-        this.profileForm = {
-          avatar:'',
-          userId: 0,
-          status:'inactive',
-          userName: '',
-          userNumber: '',
-          gender: '',
-          identityCard: '',
-          orgId: '',
-          post: '',
-          education: '',
-          degree: '',
-          email: '',
-          mobile: '',
-          address: '',
-          category: '',
-          userAccount: '',
-          passwordType: 'default',
-          passwordValue: '',
-          note: '',
-          portrait:null
-        };
+        this.initialUserData();
         this.submitted = false;
         // change page to create
         this.pageStatus = 'create';
@@ -975,13 +1148,13 @@
         for (let key in this.profileForm) {
           if (key !== 'portrait')
             formData.append(key, this.profileForm[key]);
-          else if(this.profileForm['portrait']!==null)
+          else if (this.profileForm['portrait'] !== null)
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
         }
         // call api
         let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/` + finalLink, formData)
+          .post(`${apiBaseUrl}/permission-management/user-management/user/` + finalLink, formData)
           .then((response) => {
             let message = response.data.message;
             let data = response.data.data;
@@ -991,8 +1164,15 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.initialUserData();
                 // back to table
                 this.pageStatus = 'table';
+                break;
+              case responseMessages['used-user-account']://duplicated user account
+                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })
@@ -1000,42 +1180,9 @@
           });
       },
       rowSelected(items) {
-        this.bootstrapTable.selected = items
-      },
-      dataManager(sortOrder, pagination) {
-
-        if (this.tableData.length < 1) return;
-
-        let local = this.tableData;
-
-        for (let i = 0; i < local.length; i++) {
-          local[i].no = i + 1;
-        }
-
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
-        }
-
-        pagination = this.$refs.vuetable.makePagination(
-          local.length,
-          this.perPage
-        );
-        let from = pagination.from - 1;
-        let to = from + this.perPage;
-
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
-        };
-
+        this.bootstrapTable.selected = items;
       },
       onAction(action, data, index) {
-        console.log('(slot) action: ' + action, data, index);
         let userId = data.userId;
         switch (action) {
           case 'modify':
@@ -1053,6 +1200,9 @@
           case 'blocked':
             this.showConfDiaglog(userId, action);
             break;
+          case 'group-remove':
+            this.showUserGroupConfDiaglog(data.userGroupId,action);
+            break;
         }
       },
       hideModal(modal) {
@@ -1069,12 +1219,13 @@
         this.$refs['modal-prompt'].show();
       },
       modifyItem(data) {
+        this.initialUserData();
         for (let key in this.profileForm) {
-          if (Object.keys(data).includes(key)){
-            if(key!=='portrait'&&key!=='avatar')
+          if (Object.keys(data).includes(key)) {
+            if (key !== 'portrait' && key !== 'avatar')
               this.profileForm[key] = data[key];
-            else if(key==='portrait')
-              this.profileForm.avatar = apiBaseUrl  + data['portrait'];
+            else if (key === 'portrait')
+              this.profileForm.avatar = apiBaseUrl + data['portrait'];
           }
         }
         this.profileForm.portrait = null;
@@ -1082,12 +1233,13 @@
         this.pageStatus = 'create';
       },
       showItem(data) {
+        this.initialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key))
-            if(key!=='portrait'&&key!=='avatar')
+            if (key !== 'portrait' && key !== 'avatar')
               this.profileForm[key] = data[key];
-            else if(key==='portrait')
-              this.profileForm.avatar = apiBaseUrl  + data['portrait'];
+            else if (key === 'portrait')
+              this.profileForm.avatar = apiBaseUrl + data['portrait'];
         }
         this.profileForm.portrait = null;
         this.profileForm.passwordType = 'default';
@@ -1102,7 +1254,7 @@
         if (status === 'unblock' || status === 'reset-password')
           status = 'inactive';
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
             'userId': userId,
             'status': status,
           })
@@ -1157,6 +1309,30 @@
           this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
+      initialUserData(){
+        profileForm =  {
+          status: 'inactive',
+            userId: 0,
+            avatar: '',
+            userName: '',
+            userNumber: '',
+            gender: '',
+            identityCard: '',
+            orgId: '',
+            post: '',
+            education: '',
+            degree: '',
+            email: '',
+            mobile: '',
+            address: '',
+            category: '',
+            userAccount: '',
+            passwordType: 'default',
+            passwordValue: '',
+            note: '',
+            portrait: null
+        }
+      },
       transform(response) {
 
         let transformed = {};
@@ -1183,7 +1359,78 @@
         return transformed
 
       },
-      vuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+      //second tab content
+      showUserGroupConfDiaglog(userGroupId,action){
+        this.selectedUserGroupItem.userGroupId = userGroupId;
+        this.selectedUserGroupItem.action = action;
+        this.$refs['modal-prompt-group'].show();
+      },
+      deleteUserGroupItem() {
+        if(this.selectedUserGroupItem.action==='group-remove'){
+          this.$refs['modal-prompt-group'].hide();
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+
+                  break;
+                case responseMessages['has-children']: // okay
+                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+
+                  break;
+
+              }
+            })
+            .catch((error) => {
+            })
+            .finally(() => {
+
+            });
+        }
+      },
+      transformUserGroupTable(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.userGroupPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
@@ -1196,12 +1443,71 @@
           }
         });
       },
-      onPaginationData(paginationData) {
+      onUserTablePaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
-      onChangePage(page) {
+      onUserTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
+      onGroupFormSubmit() {
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+
+                this.$refs.userGroupTable.refresh();
+
+                break;
+
+            }
+          })
+          .catch((error) => {
+          })
+          .finally(() => {
+            //
+            this.groupForm = {
+              groupName: '',
+              note: ''
+            };
+            console.log('final step completed');
+          });
+      },
+      userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.userGroupTableItems.perPage,
+          filter: {
+            groupName: this.groupFilter.name,
+            flag: this.groupFilter.flag,
+          }
+        });
+      },
+      onUserGroupTablePaginationData(paginationData) {
+        this.$refs.userGroupPagination.setPaginationData(paginationData)
+      },
+      onUserGroupTableChangePage(page) {
+        this.$refs.userGroupTable.changePage(page)
+      },
+      onUserGroupTableRowClick(dataItems, event) {
+        //console.log(dataItems);
+        if (event.path[0].className.includes('btn-action'))
+          return false;
+        let nodeIndex = 0;
+        while (event.path[nodeIndex].nodeName !== 'TR') {
+          nodeIndex++;
+        }
+        if (event.path[nodeIndex].nodeName === 'TR') {
+
+        }
+      }
     }
   }
 </script>
