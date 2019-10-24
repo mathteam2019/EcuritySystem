@@ -1,5 +1,6 @@
 package com.haomibo.haomibo.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haomibo.haomibo.jwt.JwtUtil;
 import com.haomibo.haomibo.repositories.*;
 import com.haomibo.haomibo.security.AuthenticationFacade;
@@ -15,6 +16,9 @@ public class BaseController {
 
     @Autowired
     public JwtUtil jwtUtil;
+
+    @Autowired
+    private ObjectMapper jacksonObjectMapper;
 
     @Autowired
     public AuthenticationFacade authenticationFacade;
@@ -39,6 +43,9 @@ public class BaseController {
 
     @Autowired
     public SysUserGroupUserRepository sysUserGroupUserRepository;
+
+    @Autowired
+    public SysRoleResourceRepository sysRoleResourceRepository;
 
 
 

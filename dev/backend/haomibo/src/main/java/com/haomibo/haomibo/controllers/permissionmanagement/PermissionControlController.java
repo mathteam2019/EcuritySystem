@@ -1,7 +1,10 @@
 package com.haomibo.haomibo.controllers.permissionmanagement;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
@@ -9,6 +12,7 @@ import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -173,6 +177,75 @@ public class PermissionControlController extends BaseController {
         sysRole = sysRoleRepository.save(sysRole);
 
         return new CommonResponseBody(Constants.ResponseMessages.OK, sysRole);
+    }
+
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/role/get-by-filter-and-page", method = RequestMethod.POST)
+    public MappingJacksonValue roleGetByFilterAndPage(
+            @RequestBody @Valid RoleGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return null;
+        }
+
+        MappingJacksonValue value;
+
+        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
+
+        value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
+
+        value.setFilters(filters);
+        return value;
+
+//        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList);
+
+//        QSysRole builder = QSysRole.sysRole;
+//
+//        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+//
+//        RoleGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+//
+//        if (filter != null) {
+//            if (!StringUtils.isEmpty(filter.getRoleName())) {
+//                predicate.and(builder.roleName.contains(filter.getRoleName()));
+//            }
+//            if (SysDataGroup.Flag.SET.equals(filter.getFlag())) {
+//                predicate.and(builder.users.isNotEmpty());
+//            }
+//            if (SysDataGroup.Flag.UNSET.equals(filter.getFlag())) {
+//                predicate.and(builder.users.isEmpty());
+//            }
+//        }
+//
+//        int currentPage = requestBody.getCurrentPage() - 1; // on server side, page is calculated from 0
+//        int perPage = requestBody.getPerPage();
+//
+//        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+//
+//        long total = sysDataGroupRepository.count(predicate);
+//        List<SysDataGroup> data = sysDataGroupRepository.findAll(predicate, pageRequest).getContent();
+//
+//        return new CommonResponseBody(
+//                Constants.ResponseMessages.OK,
+//                FilteringAndPaginationResult
+//                        .builder()
+//                        .total(total)
+//                        .perPage(perPage)
+//                        .currentPage(currentPage + 1)
+//                        .lastPage((int) Math.ceil(((double) total) / perPage))
+//                        .from(perPage * currentPage + 1)
+//                        .to(perPage * currentPage + data.size())
+//                        .data(data)
+//                        .build());
     }
 
 

@@ -1,8 +1,8 @@
 package com.haomibo.haomibo.models.db;
 
 import com.fasterxml.jackson.annotation.*;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -19,6 +19,7 @@ import java.util.*;
 @Builder(toBuilder = true)
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "orgId")
 @Table(name = "sys_org")
+@JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
 public class SysOrg implements Serializable {
 
 
@@ -90,14 +91,12 @@ public class SysOrg implements Serializable {
     @JoinColumn(name = "PARENT_ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
-    @JsonManagedReference
     SysOrg parent;
 
 
     @ToString.Exclude
     @OneToMany(mappedBy = "parent")
     @NotFound(action = NotFoundAction.IGNORE)
-    @JsonBackReference
     Set<SysOrg> children;
 
 }

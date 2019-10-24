@@ -1,21 +1,19 @@
 package com.haomibo.haomibo.controllers.permissionmanagement;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
-import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +25,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -272,30 +268,70 @@ public class OrganizationManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public Object getAll() {
+    public MappingJacksonValue getAll() {
 
         List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
 
-//        sysOrgList.forEach(sysOrg -> {
-//            sysOrg.setChildren(null);
-//            if (sysOrg.getParent() != null) {
-//                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
-//            }
-//        });
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList);
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/get-all-with-parent", method = RequestMethod.POST)
+    public MappingJacksonValue getAllWithParent() {
+
+        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("children"));
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/get-all-with-children", method = RequestMethod.POST)
+    public MappingJacksonValue getAllWithChildren() {
+
+        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
+        value.setFilters(filters);
+
+        return value;
     }
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object getByFilterAndPage(
+    public MappingJacksonValue getByFilterAndPage(
             @RequestBody @Valid GetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER));
         }
 
 
@@ -325,14 +361,8 @@ public class OrganizationManagementController extends BaseController {
         long total = sysOrgRepository.count(predicate);
         List<SysOrg> data = sysOrgRepository.findAll(predicate, pageRequest).getContent();
 
-        data.forEach(sysOrg -> {
-            if (sysOrg.getParent() != null) {
-                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
-            }
-        });
 
-
-        return new CommonResponseBody(
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 FilteringAndPaginationResult
                         .builder()
@@ -343,7 +373,17 @@ public class OrganizationManagementController extends BaseController {
                         .from(perPage * currentPage + 1)
                         .to(perPage * currentPage + data.size())
                         .data(data)
-                        .build());
+                        .build()));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
+
+        value.setFilters(filters);
+
+        return value;
     }
 
 }
