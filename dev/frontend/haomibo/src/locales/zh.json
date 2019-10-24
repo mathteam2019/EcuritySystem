@@ -215,7 +215,6 @@
     "organization-activated-successfully": "机构生效成功",
     "organization-deactivated-successfully": "机构失效成功",
     "organization-deleted-successfully": "机构删除成功",
-    "organization-has-children": "该机构有孩子",
     "assign-permission-management": {
       "assign-to-user": "人员授权",
       "assign-to-group": "分组授权",
