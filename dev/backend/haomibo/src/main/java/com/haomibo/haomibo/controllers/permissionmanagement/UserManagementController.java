@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.haomibo.haomibo.models.db.QSysUser.sysUser;
 
@@ -36,7 +37,7 @@ public class UserManagementController extends BaseController {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class CreateUserRequestBody {
+    private static class UserCreateRequestBody {
 
         static class PasswordType {
             static final String DEFAULT = "default";
@@ -109,7 +110,7 @@ public class UserManagementController extends BaseController {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class ModifyUserRequestBody {
+    private static class UserModifyRequestBody {
 
         @NotNull
         long userId;
@@ -170,7 +171,7 @@ public class UserManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class GetUserByFilterAndPageRequestBody {
+    private static class UserGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
@@ -204,7 +205,7 @@ public class UserManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class GetUserGroupByFilterAndPageRequestBody {
+    private static class UserGroupGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
@@ -234,7 +235,7 @@ public class UserManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class UpdateUserStatusRequestBody {
+    private static class UserUpdateStatusRequestBody {
 
         @NotNull
         Long userId;
@@ -251,7 +252,7 @@ public class UserManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class CreateUserGroupRequestBody {
+    private static class UserGroupCreateRequestBody {
 
         @NotNull
         String groupName;
@@ -271,10 +272,33 @@ public class UserManagementController extends BaseController {
     }
 
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserGroupModifyRequestBody {
+        @NotNull
+        long userGroupId;
+
+        @NotNull
+        List<Long> userIdList;
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserGroupDeleteRequestBody {
+        @NotNull
+        long userGroupId;
+    }
+
+
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
-    public Object createUser(
-            @ModelAttribute @Valid CreateUserRequestBody requestBody,
+    public Object userCreate(
+            @ModelAttribute @Valid UserCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -292,7 +316,7 @@ public class UserManagementController extends BaseController {
         }
 
         // check password
-        if (CreateUserRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) {
+        if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) {
             return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
@@ -328,8 +352,8 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
-    public Object modifyUser(
-            @ModelAttribute @Valid ModifyUserRequestBody requestBody,
+    public Object userModify(
+            @ModelAttribute @Valid UserModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -386,8 +410,8 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object getUserByFilterAndPage(
-            @RequestBody @Valid GetUserByFilterAndPageRequestBody requestBody,
+    public Object userGetByFilterAndPage(
+            @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
@@ -399,7 +423,7 @@ public class UserManagementController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        GetUserByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        UserGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getUserName())) {
@@ -449,8 +473,8 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
-    public Object updateUserStatus(
-            @RequestBody @Valid UpdateUserStatusRequestBody requestBody,
+    public Object userUpdateStatus(
+            @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -473,7 +497,7 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/get-all", method = RequestMethod.POST)
-    public Object getAllUser() {
+    public Object userGetAll() {
 
         List<SysUser> sysUserList = sysUserRepository.findAll();
 
@@ -482,8 +506,8 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user-group/create", method = RequestMethod.POST)
-    public Object createUserGroup(
-            @RequestBody @Valid CreateUserGroupRequestBody requestBody,
+    public Object userGroupCreate(
+            @RequestBody @Valid UserGroupCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -500,8 +524,8 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user-group/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object getUserGroupByFilterAndPage(
-            @RequestBody @Valid GetUserGroupByFilterAndPageRequestBody requestBody,
+    public Object userGroupGetByFilterAndPage(
+            @RequestBody @Valid UserGroupGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
@@ -513,16 +537,16 @@ public class UserManagementController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        GetUserGroupByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        UserGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getGroupName())) {
                 predicate.and(builder.groupName.contains(filter.getGroupName()));
             }
-            if (SysDataGroup.Flag.SET.equals(filter.getFlag()) ) {
+            if (SysDataGroup.Flag.SET.equals(filter.getFlag())) {
                 predicate.and(builder.users.isNotEmpty());
             }
-            if (SysDataGroup.Flag.UNSET.equals(filter.getFlag()) ) {
+            if (SysDataGroup.Flag.UNSET.equals(filter.getFlag())) {
                 predicate.and(builder.users.isEmpty());
             }
 
@@ -548,6 +572,76 @@ public class UserManagementController extends BaseController {
                         .to(perPage * currentPage + data.size())
                         .data(data)
                         .build());
+    }
+
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
+    public Object userGroupModify(
+            @RequestBody @Valid UserGroupModifyRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
+
+        if (!optionalSysUserGroup.isPresent()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        SysUserGroup sysUserGroup = optionalSysUserGroup.get();
+        List<Long> userIdList = requestBody.getUserIdList();
+
+        sysUserGroupUserRepository.deleteAll(sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId())));
+
+        List<SysUserGroupUser> sysUserGroupUserList = StreamSupport.stream(
+                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
+                false)
+                .map(sysUser -> SysUserGroupUser
+                        .builder()
+                        .userGroupId(sysUserGroup.getUserGroupId())
+                        .userId(sysUser.getUserId())
+                        .build()).collect(Collectors.toList());
+
+        sysUserGroupUserRepository.saveAll(sysUserGroupUserList);
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
+
+    }
+
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
+    public Object userGroupCreate(
+            @RequestBody @Valid UserGroupDeleteRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
+        if (!optionalSysUserGroup.isPresent()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        SysUserGroup sysUserGroup = optionalSysUserGroup.get();
+        if (!sysUserGroup.getUsers().isEmpty()) {
+            return new CommonResponseBody(Constants.ResponseMessages.HAS_CHILDREN);
+        }
+
+        sysUserGroupRepository.delete(
+                SysUserGroup
+                        .builder()
+                        .userGroupId(sysUserGroup.getUserGroupId())
+                        .build()
+        );
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
     }
 
 

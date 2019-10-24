@@ -177,7 +177,7 @@ public class PermissionControlController extends BaseController {
 
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/create-data-group", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/create", method = RequestMethod.POST)
     public Object dataGroupCreate(
             @RequestBody @Valid DataGroupCreateRequestBody requestBody,
             BindingResult bindingResult) {
@@ -265,6 +265,8 @@ public class PermissionControlController extends BaseController {
         SysDataGroup sysDataGroup = optionalSysDataGroup.get();
         List<Long> userIdList = requestBody.getUserIdList();
 
+        sysDataGroupUserRepository.deleteAll(sysDataGroupUserRepository.findAll(QSysDataGroupUser.sysDataGroupUser.dataGroupId.eq(sysDataGroup.getDataGroupId())));
+
         List<SysDataGroupUser> sysDataGroupUserList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
                 false)
@@ -310,6 +312,16 @@ public class PermissionControlController extends BaseController {
 
         return new CommonResponseBody(Constants.ResponseMessages.OK);
 
+
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/resource/get-all", method = RequestMethod.POST)
+    public Object resourceGetAll() {
+
+        List<SysResource> sysResourceList = sysResourceRepository.findAll();
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK, sysResourceList);
 
     }
 
