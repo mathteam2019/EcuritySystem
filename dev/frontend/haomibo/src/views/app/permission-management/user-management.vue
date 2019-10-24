@@ -8,6 +8,28 @@
     cursor: pointer !important;
   }
 </style>
+<style lang="scss">
+  .search-form-group {
+    [role="group"] {
+      position: relative;
+
+      .form-control {
+        padding-right: 30px;
+      }
+
+      .search-input-icon {
+        position: absolute;
+        top: 50%;
+        right: 1em;
+        transform: translateY(-50%);
+      }
+
+    }
+
+  }
+
+
+</style>
 <template>
   <div>
     <b-row>
@@ -646,7 +668,8 @@
                 <b-col cols="7">
                   <b-form-group class="search-form-group">
                     <template slot="label">&nbsp;</template>
-                    <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')" v-model="groupFilter.name"></b-form-input>
+                    <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')"
+                                  v-model="groupFilter.name"></b-form-input>
                     <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
@@ -659,9 +682,20 @@
                     :fields="userGroupTableItems.fields"
                     :http-fetch="userGroupTableHttpFetch"
                     pagination-path="userGroupPagination"
-                    class="table-striped"
+                    class="table-hover"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
+                    @vuetable:row-clicked="onUserGroupTableRowClick"
                   >
+                    <template slot="operating" slot-scope="props">
+                      <span style="font-size: 18px" v-if="props.rowData.orgId==null"
+                            class="btn-action cursor-p text-danger"
+                            @click="onAction('group-remove', props.rowData, props.rowIndex)">
+                        <i class="btn-action simple-icon-close"></i>
+                      </span>
+                      <span style="font-size: 18px" v-if="props.rowData.orgId!=null" class="text-dark">
+                        <i class="simple-icon-close"></i>
+                      </span>
+                    </template>
                   </vuetable>
                   <vuetable-pagination-bootstrap
                     ref="userGroupPagination"
@@ -669,6 +703,17 @@
                     :initial-per-page="userGroupTableItems.perPage"
                     @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
+                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+                    {{$t('permission-management.user.user-group-delete-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="deleteUserGroupItem()" class="mr-1">
+                        {{$t('permission-management.modal-ok')}}
+                      </b-button>
+                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
+                        {{$t('permission-management.modal-cancel')}}
+                      </b-button>
+                    </template>
+                  </b-modal>
                 </b-col>
               </b-row>
             </b-card>
@@ -770,6 +815,16 @@
             this.orgData = data;
             break;
         }
+      });
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userData = data;
+            console.log(data);
+            break;
+        }
       })
 
     },
@@ -790,6 +845,7 @@
           action: ''
         },
         orgData: [],
+        userData: [],
         direction: getDirection().direction,
         genderOptions: [
           {value: 'male', text: this.$t('permission-management.male')},
@@ -933,15 +989,19 @@
           perPage: 5,
         },
         //second tab content
+        selectedUserGroupItem: {
+          userGroupId: 0,
+          action: ''
+        },
         groupForm: {
           groupName: '',
           note: ''
         },
         groupFilter: {
-          flag:null,
-          name:''
+          flag: null,
+          name: ''
         },
-        userGroupFlagData : [
+        userGroupFlagData: [
           {value: null, text: this.$t('permission-management.all')},
           {value: 'set', text: this.$t('permission-management.user.grouped')},
           {value: 'unset', text: this.$t('permission-management.user.no-grouped')},
@@ -970,22 +1030,17 @@
               // sortField: 'userGroupFlag',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback:(value) => {
-                if(value.length > 0)
-                    return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
+              callback: (value) => {
+                if (value.length > 0)
+                  return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
                 return '';
               }
             },
             {
-              name: 'operating',
+              name: '__slot:operating',
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback:(value) => {
-                if(value.length > 0)
-                  return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
-                return '';
-              }
+              dataClass: 'text-center'
             },
             {
               name: 'note',
@@ -1003,10 +1058,10 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
-      'groupFilter.flag':function (newVal) {
+      'groupFilter.flag': function (newVal) {
         this.$refs.userGroupTable.refresh();
       },
-      'groupFilter.name':function (newVal) {
+      'groupFilter.name': function (newVal) {
         this.$refs.userGroupTable.refresh();
       },
       'userGroupTableItems.perPage': function (newVal) {
@@ -1074,28 +1129,7 @@
     methods: {
       showCreatePage() { // move to create page
         // reset models
-        this.profileForm = {
-          avatar: '',
-          userId: 0,
-          status: 'inactive',
-          userName: '',
-          userNumber: '',
-          gender: '',
-          identityCard: '',
-          orgId: '',
-          post: '',
-          education: '',
-          degree: '',
-          email: '',
-          mobile: '',
-          address: '',
-          category: '',
-          userAccount: '',
-          passwordType: 'default',
-          passwordValue: '',
-          note: '',
-          portrait: null
-        };
+        this.initialUserData();
         this.submitted = false;
         // change page to create
         this.pageStatus = 'create';
@@ -1130,10 +1164,11 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.initialUserData();
                 // back to table
                 this.pageStatus = 'table';
                 break;
-              case responseMessages['used_user_account']://duplicated user account
+              case responseMessages['used-user-account']://duplicated user account
                 this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
                   duration: 3000,
                   permanent: false
@@ -1145,7 +1180,7 @@
           });
       },
       rowSelected(items) {
-        this.bootstrapTable.selected = items
+        this.bootstrapTable.selected = items;
       },
       onAction(action, data, index) {
         let userId = data.userId;
@@ -1165,6 +1200,9 @@
           case 'blocked':
             this.showConfDiaglog(userId, action);
             break;
+          case 'group-remove':
+            this.showUserGroupConfDiaglog(data.userGroupId,action);
+            break;
         }
       },
       hideModal(modal) {
@@ -1181,6 +1219,7 @@
         this.$refs['modal-prompt'].show();
       },
       modifyItem(data) {
+        this.initialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key)) {
             if (key !== 'portrait' && key !== 'avatar')
@@ -1194,6 +1233,7 @@
         this.pageStatus = 'create';
       },
       showItem(data) {
+        this.initialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key))
             if (key !== 'portrait' && key !== 'avatar')
@@ -1269,6 +1309,30 @@
           this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
+      initialUserData(){
+        profileForm =  {
+          status: 'inactive',
+            userId: 0,
+            avatar: '',
+            userName: '',
+            userNumber: '',
+            gender: '',
+            identityCard: '',
+            orgId: '',
+            post: '',
+            education: '',
+            degree: '',
+            email: '',
+            mobile: '',
+            address: '',
+            category: '',
+            userAccount: '',
+            passwordType: 'default',
+            passwordValue: '',
+            note: '',
+            portrait: null
+        }
+      },
       transform(response) {
 
         let transformed = {};
@@ -1294,6 +1358,52 @@
 
         return transformed
 
+      },
+
+      //second tab content
+      showUserGroupConfDiaglog(userGroupId,action){
+        this.selectedUserGroupItem.userGroupId = userGroupId;
+        this.selectedUserGroupItem.action = action;
+        this.$refs['modal-prompt-group'].show();
+      },
+      deleteUserGroupItem() {
+        if(this.selectedUserGroupItem.action==='group-remove'){
+          this.$refs['modal-prompt-group'].hide();
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+
+                  break;
+                case responseMessages['has-children']: // okay
+                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+
+                  break;
+
+              }
+            })
+            .catch((error) => {
+            })
+            .finally(() => {
+
+            });
+        }
       },
       transformUserGroupTable(response) {
 
@@ -1339,8 +1449,7 @@
       onUserTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
-      //second tab content
-      onGroupFormSubmit(){
+      onGroupFormSubmit() {
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
           .then((response) => {
@@ -1364,8 +1473,8 @@
           .finally(() => {
             //
             this.groupForm = {
-              groupName:'',
-              note:''
+              groupName: '',
+              note: ''
             };
             console.log('final step completed');
           });
@@ -1387,6 +1496,18 @@
       onUserGroupTableChangePage(page) {
         this.$refs.userGroupTable.changePage(page)
       },
+      onUserGroupTableRowClick(dataItems, event) {
+        //console.log(dataItems);
+        if (event.path[0].className.includes('btn-action'))
+          return false;
+        let nodeIndex = 0;
+        while (event.path[nodeIndex].nodeName !== 'TR') {
+          nodeIndex++;
+        }
+        if (event.path[nodeIndex].nodeName === 'TR') {
+
+        }
+      }
     }
   }
 </script>
