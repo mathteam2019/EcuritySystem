@@ -28,4 +28,12 @@ public class BaseController {
     @Autowired
     public SysDataGroupRepository sysDataGroupRepository;
 
+    @Autowired
+    public SysDataGroupUserRepository sysDataGroupUserRepository;
+
+    @Autowired
+    public SysUserGroupRepository sysUserGroupRepository;
+
+
+
 }

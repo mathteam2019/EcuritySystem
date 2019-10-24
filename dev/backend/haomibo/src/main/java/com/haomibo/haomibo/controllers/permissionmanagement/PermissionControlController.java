@@ -21,7 +21,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/permission-management/permission-control")
@@ -32,7 +34,7 @@ public class PermissionControlController extends BaseController {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private static class CreateRoleRequestBody {
+    private static class RoleCreateRequestBody {
 
         @NotNull
         String roleName;
@@ -50,64 +52,12 @@ public class PermissionControlController extends BaseController {
         }
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class CreateDataGroupRequestBody {
-
-        @NotNull
-        String dataGroupName;
-
-        String note;
-
-        SysDataGroup convert2SysDataGroup() {
-
-            return SysDataGroup
-                    .builder()
-                    .dataGroupName(this.getDataGroupName())
-                    .note(this.note)
-                    .build();
-
-        }
-    }
-
 
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
-    private static class GetDataGroupByFilterAndPageRequestBody {
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        static class Filter {
-
-            @Pattern(regexp = SysDataGroup.Flag.SET + "|" + SysDataGroup.Flag.UNSET)
-            String flag;
-            String dataGroupName;
-        }
-
-        @NotNull
-        @Min(1)
-        int currentPage;
-
-        @NotNull
-        int perPage;
-
-        Filter filter;
-
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class GetRoleByFilterAndPageRequestBody {
+    private static class RoleGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
@@ -132,10 +82,86 @@ public class PermissionControlController extends BaseController {
     }
 
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DataGroupGetByFilterAndPageRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            @Pattern(regexp = SysDataGroup.Flag.SET + "|" + SysDataGroup.Flag.UNSET)
+            String flag;
+            String dataGroupName;
+        }
+
+        @NotNull
+        @Min(1)
+        int currentPage;
+
+        @NotNull
+        int perPage;
+
+        Filter filter;
+
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class DataGroupCreateRequestBody {
+
+        @NotNull
+        String dataGroupName;
+
+        String note;
+
+        SysDataGroup convert2SysDataGroup() {
+
+            return SysDataGroup
+                    .builder()
+                    .dataGroupName(this.getDataGroupName())
+                    .note(this.note)
+                    .build();
+
+        }
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class DataGroupModifyRequestBody {
+        @NotNull
+        long dataGroupId;
+
+        @NotNull
+        List<Long> userIdList;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class DataGroupDeleteRequestBody {
+
+        @NotNull
+        long dataGroupId;
+
+    }
+
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/create-role", method = RequestMethod.POST)
-    public Object createRole(
-            @RequestBody @Valid CreateRoleRequestBody requestBody,
+    @RequestMapping(value = "/role/create", method = RequestMethod.POST)
+    public Object roleCreate(
+            @RequestBody @Valid RoleCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -152,8 +178,8 @@ public class PermissionControlController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/create-data-group", method = RequestMethod.POST)
-    public Object createDataGroup(
-            @RequestBody @Valid CreateDataGroupRequestBody requestBody,
+    public Object dataGroupCreate(
+            @RequestBody @Valid DataGroupCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -169,9 +195,9 @@ public class PermissionControlController extends BaseController {
 
 
     @Secured({Constants.Roles.SYS_USER})
-    @RequestMapping(value = "/get-data-group-by-filter-and-page", method = RequestMethod.POST)
-    public Object getDataGroupByFilterAndPage(
-            @RequestBody @Valid GetDataGroupByFilterAndPageRequestBody requestBody,
+    @RequestMapping(value = "/data-group/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object dataGroupGetByFilterAndPage(
+            @RequestBody @Valid DataGroupGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
@@ -183,7 +209,7 @@ public class PermissionControlController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        GetDataGroupByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        DataGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getDataGroupName())) {
@@ -217,6 +243,74 @@ public class PermissionControlController extends BaseController {
                         .to(perPage * currentPage + data.size())
                         .data(data)
                         .build());
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/data-group/modify", method = RequestMethod.POST)
+    public Object dataGroupModify(
+            @RequestBody @Valid DataGroupModifyRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        Optional<SysDataGroup> optionalSysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(requestBody.getDataGroupId()));
+
+        if (!optionalSysDataGroup.isPresent()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        SysDataGroup sysDataGroup = optionalSysDataGroup.get();
+        List<Long> userIdList = requestBody.getUserIdList();
+
+        List<SysDataGroupUser> sysDataGroupUserList = StreamSupport.stream(
+                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
+                false)
+                .map(sysUser -> SysDataGroupUser
+                        .builder()
+                        .dataGroupId(sysDataGroup.getDataGroupId())
+                        .userId(sysUser.getUserId())
+                        .build()).collect(Collectors.toList());
+
+        sysDataGroupUserRepository.saveAll(sysDataGroupUserList);
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
+
+    }
+
+    @Secured({Constants.Roles.SYS_USER})
+    @RequestMapping(value = "/data-group/delete", method = RequestMethod.POST)
+    public Object dataGroupDelete(
+            @RequestBody @Valid DataGroupDeleteRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        Optional<SysDataGroup> optionalSysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(requestBody.getDataGroupId()));
+        if (!optionalSysDataGroup.isPresent()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
+        SysDataGroup sysDataGroup = optionalSysDataGroup.get();
+        if (!sysDataGroup.getUsers().isEmpty()) {
+            return new CommonResponseBody(Constants.ResponseMessages.HAS_CHILDREN);
+        }
+
+        sysDataGroupRepository.delete(
+                SysDataGroup
+                        .builder()
+                        .dataGroupId(sysDataGroup.getDataGroupId())
+                        .build()
+        );
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK);
+
+
     }
 
 }
