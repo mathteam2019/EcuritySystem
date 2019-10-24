@@ -450,7 +450,9 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all-with-parent`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+        type: 'with_parent'
+      }).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -732,7 +734,7 @@
             selectedOrg: data,
             orgName: data.orgName,
             orgNumber: data.orgNumber,
-            parentOrgId: data.parentOrgId,
+            parentOrgId: data.parent.orgId,
             leader: data.leader,
             mobile: data.mobile,
             note: data.note
