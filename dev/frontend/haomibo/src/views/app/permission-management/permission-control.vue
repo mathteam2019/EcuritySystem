@@ -287,7 +287,9 @@
               <b-row>
                 <b-col class="text-right">
                   <b-form-group>
-                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                    <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                      {{$t('permission-management.permission-control.select-all')}}
+                    </b-form-checkbox>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -379,7 +381,7 @@
         }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/get-all`).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -414,6 +416,7 @@
         userList: [],
         orgUserTreeData: [],
         selectedDataGroup: null,
+        isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
           perPage: 5,
@@ -604,6 +607,14 @@
           this.refreshOrgUserTreeData();
         }
       },
+      isSelectedAllUsersForDataGroup(newVal, oldVal) {
+          if(this.selectedDataGroup) {
+              let tempSelectedDataGroup = this.selectedDataGroup;
+              tempSelectedDataGroup.users = newVal ? this.userList : [];
+              this.selectedDataGroup = null;
+              this.selectedDataGroup = tempSelectedDataGroup;
+          }
+      }
     },
     methods: {
       onRoleFormSubmit() {
@@ -687,10 +698,8 @@
           return [...childrenOrgList, ...childrenUserList];
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
-        console.log(this.orgUserTreeData);
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
-          console.log(httpOptions);
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.dataGroupVuetableItems.perPage,
@@ -711,7 +720,7 @@
         }
       },
       onDataGroupRowClicked(dataItem, event) {
-        this.selectedDataGroup = dataItem;
+        this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
       },
       onPaginationData(paginationData) {
           this.$refs.pagination.setPaginationData(paginationData)
