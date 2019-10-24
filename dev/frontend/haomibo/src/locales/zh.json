@@ -254,6 +254,8 @@
       "select-all": "全选",
       "data-group-name": "数据组名称",
       "group-flag": "分组标记",
+      "grouped": "已分组",
+      "ungrouped": "未分组",
 
       "enter-role-name": "请输入角色名称",
       "enter-note": "请输入备注信息",

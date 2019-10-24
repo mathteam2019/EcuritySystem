@@ -232,15 +232,15 @@
             <b-card class="mb-4">
               <b-row>
                 <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
-                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  <b-form-group :label="$t('permission-management.permission-control.group-flag')">
+                    <b-form-select v-model="groupFlag" @change="onGroupFlagChanged" :options="groupFlagData" plain/>
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="7">
                   <b-form-group>
                     <template slot="label">&nbsp;</template>
-                    <b-form-input></b-form-input>
+                    <b-form-input v-model="groupKeyword" @change="onGroupKeywordChanged"></b-form-input>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -412,6 +412,13 @@
           dataGroupName: '',
           note: '',
         },
+        groupKeyword: '',
+        groupFlag: null,
+        groupFlagData: [
+            {value: null, text: this.$t('permission-management.permission-control.all')},
+            {value: 'set', text: this.$t('permission-management.permission-control.grouped')},
+            {value: 'unset', text: this.$t('permission-management.permission-control.ungrouped')},
+        ],
         orgList: [],
         userList: [],
         orgUserTreeData: [],
@@ -699,12 +706,19 @@
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
       },
+      onGroupFlagChanged(value) {
+          this.$refs.dataGroupVuetable.refresh();
+      },
+      onGroupKeywordChanged(value) {
+          this.$refs.dataGroupVuetable.refresh();
+      },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.dataGroupVuetableItems.perPage,
           filter: {
-              dataGroupName: '',
+              dataGroupName: this.groupKeyword,
+              flag: this.groupFlag
           }
         });
       },
