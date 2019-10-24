@@ -182,7 +182,7 @@ public class PermissionControlController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/role/get-by-filter-and-page", method = RequestMethod.POST)
-    public MappingJacksonValue roleGetByFilterAndPage(
+    public Object roleGetByFilterAndPage(
             @RequestBody @Valid RoleGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 

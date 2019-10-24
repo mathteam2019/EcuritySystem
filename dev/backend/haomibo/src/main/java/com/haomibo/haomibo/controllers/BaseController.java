@@ -5,6 +5,7 @@ import com.haomibo.haomibo.jwt.JwtUtil;
 import com.haomibo.haomibo.repositories.*;
 import com.haomibo.haomibo.security.AuthenticationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJacksonValue;
 
 public class BaseController {
 
@@ -46,6 +47,8 @@ public class BaseController {
 
     @Autowired
     public SysRoleResourceRepository sysRoleResourceRepository;
+
+
 
 
 

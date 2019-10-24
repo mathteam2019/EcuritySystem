@@ -1,7 +1,11 @@
 package com.haomibo.haomibo.controllers.permissionmanagement;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
@@ -10,6 +14,7 @@ import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -164,6 +169,26 @@ public class UserManagementController extends BaseController {
                     .note(this.getNote())
                     .build();
         }
+    }
+
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserGetAllRequestBody {
+
+        static class GetAllType {
+            static final String BARE = "bare";
+            static final String WITH_ORG_TREE = "with_org_tree";
+        }
+
+        @Pattern(regexp = GetAllType.BARE + "|" +
+                GetAllType.WITH_ORG_TREE)
+        String type = GetAllType.BARE;
+
+
     }
 
     @Getter
@@ -456,7 +481,7 @@ public class UserManagementController extends BaseController {
         long total = sysUserRepository.count(predicate);
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
 
-        return new CommonResponseBody(
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 FilteringAndPaginationResult
                         .builder()
@@ -467,7 +492,17 @@ public class UserManagementController extends BaseController {
                         .from(perPage * currentPage + 1)
                         .to(perPage * currentPage + data.size())
                         .data(data)
-                        .build());
+                        .build()));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
+
+        value.setFilters(filters);
+
+        return value;
     }
 
 
@@ -497,11 +532,39 @@ public class UserManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/user/get-all", method = RequestMethod.POST)
-    public Object userGetAll() {
+    public Object userGetAll (@RequestBody @Valid UserGetAllRequestBody requestBody,
+    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
 
         List<SysUser> sysUserList = sysUserRepository.findAll();
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysUserList);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysUserList));
+
+        String type = requestBody.getType();
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        switch (type) {
+            case UserGetAllRequestBody.GetAllType.BARE:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            case UserGetAllRequestBody.GetAllType.WITH_ORG_TREE:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                break;
+            default:
+                break;
+        }
+
+        value.setFilters(filters);
+
+        return value;
+
+
     }
 
     @Secured({Constants.Roles.SYS_USER})

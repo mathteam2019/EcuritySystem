@@ -170,14 +170,6 @@ public class OrganizationManagementController extends BaseController {
 
     }
 
-    static class GetAllType {
-        public static final String BARE = "bare";
-        public static final String WITH_PARENT = "with_parent";
-        public static final String WITH_CHILDREN = "with_children";
-        public static final String WITH_USERS = "with_users";
-        public static final String WITH_PARENT_AND_USERS = "with_parent_and_users";
-        public static final String WITH_CHILDREN_AND_USERS = "with_children_and_users";
-    }
 
     @Getter
     @Setter
@@ -186,6 +178,14 @@ public class OrganizationManagementController extends BaseController {
     @ToString
     private static class GetAllRequestBody {
 
+        static class GetAllType {
+            static final String BARE = "bare";
+            static final String WITH_PARENT = "with_parent";
+            static final String WITH_CHILDREN = "with_children";
+            static final String WITH_USERS = "with_users";
+            static final String WITH_PARENT_AND_USERS = "with_parent_and_users";
+            static final String WITH_CHILDREN_AND_USERS = "with_children_and_users";
+        }
 
         @Pattern(regexp = GetAllType.BARE + "|" +
                 GetAllType.WITH_PARENT + "|" +
@@ -193,7 +193,7 @@ public class OrganizationManagementController extends BaseController {
                 GetAllType.WITH_USERS + "|" +
                 GetAllType.WITH_PARENT_AND_USERS + "|" +
                 GetAllType.WITH_CHILDREN_AND_USERS)
-        String type;
+        String type = GetAllType.BARE;
 
 
     }
@@ -297,11 +297,11 @@ public class OrganizationManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public MappingJacksonValue getAll(@RequestBody @Valid  GetAllRequestBody requestBody,
-                                      BindingResult bindingResult) {
+    public Object getAll(@RequestBody @Valid GetAllRequestBody requestBody,
+                         BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new MappingJacksonValue( new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER));
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
 
@@ -310,30 +310,30 @@ public class OrganizationManagementController extends BaseController {
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
 
-        String type = requestBody.getType() == null ? GetAllType.BARE : requestBody.getType();
+        String type = requestBody.getType();
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         switch (type) {
 
-            case GetAllType.BARE:
+            case GetAllRequestBody.GetAllType.BARE:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
                 break;
-            case GetAllType.WITH_PARENT:
+            case GetAllRequestBody.GetAllType.WITH_PARENT:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
                 break;
-            case GetAllType.WITH_CHILDREN:
+            case GetAllRequestBody.GetAllType.WITH_CHILDREN:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users"));
                 break;
-            case GetAllType.WITH_USERS:
+            case GetAllRequestBody.GetAllType.WITH_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
                 break;
-            case GetAllType.WITH_PARENT_AND_USERS:
+            case GetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
                 break;
-            case GetAllType.WITH_CHILDREN_AND_USERS:
+            case GetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
                 break;
@@ -349,31 +349,30 @@ public class OrganizationManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public MappingJacksonValue getByFilterAndPage(
+    public Object getByFilterAndPage(
             @RequestBody @Valid GetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
         if (bindingResult.hasErrors()) {
-            return new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER));
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
         }
 
 
-        QSysOrg qSysOrg = QSysOrg.sysOrg;
+        QSysOrg builder = QSysOrg.sysOrg;
 
-
-        BooleanBuilder predicate = new BooleanBuilder(qSysOrg.isNotNull());
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         GetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getOrgName())) {
-                predicate.and(qSysOrg.orgName.contains(filter.getOrgName()));
+                predicate.and(builder.orgName.contains(filter.getOrgName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(qSysOrg.status.eq(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (!StringUtils.isEmpty(filter.getParentOrgName())) {
-                predicate.and(qSysOrg.parent.orgName.contains(filter.getParentOrgName()));
+                predicate.and(builder.parent.orgName.contains(filter.getParentOrgName()));
             }
         }
 
@@ -403,7 +402,7 @@ public class OrganizationManagementController extends BaseController {
                 .getDefaultFilters()
                 .addFilter(
                         ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
+                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
 
         value.setFilters(filters);
 
