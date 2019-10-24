@@ -61,7 +61,6 @@
                     ref="vuetable"
                     :api-mode="false"
                     :fields="roleItems.fields"
-                    :data-manager="dataManager"
                     :per-page="5"
                     pagination-path="pagination"
                     class="table-striped"
@@ -256,100 +255,19 @@
                     :per-page="dataGroupVuetableItems.perPage"
                     pagination-path="data"
                     data-path="data.data"
-                    class="table-striped"
+                    :row-class="onDataGroupRowClass"
                     @vuetable:pagination-data="onDataGroupPaginationData"
+                    @vuetable:row-clicked="onDataGroupRowClicked"
                   >
-<!--                    @vuetable:row-clicked="rowSelected"-->
-<!--                    :row-class="onRowClass"-->
 
-                    <template slot="actions" slot-scope="props">
-                      <div>
+                    <template slot="dataGroupFlag" slot-scope="props">
+                      <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-notebook text-info tb-icon"></div>
+                    </template>
 
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="info"
-                          @click="onAction('modify', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive'"
-                          size="sm"
-                          variant="info"
-                          disabled>
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('make-active', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='active'"
-                          size="sm"
-                          variant="warning"
-                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-inactive') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                          size="sm"
-                          variant="success"
-                          disabled>
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="danger"
-                          @click="onAction('block', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='blocked'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-unblock') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                          size="sm"
-                          variant="danger"
-                          disabled>
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='pending'"
-                          size="sm"
-                          variant="dark"
-                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='pending'"
-                          size="sm"
-                          variant="dark"
-                          disabled>
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                      </div>
+                    <template slot="operating" slot-scope="props">
+<!--                      @click="onAction('delete', props.rowData)"-->
+                      <div v-if="!props.rowData.users.length" class="glyph-icon simple-icon-close text-danger tb-button"></div>
+                      <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-close tb-button-disabled"></div>
                     </template>
 
                   </vuetable>
@@ -364,7 +282,7 @@
             </b-card>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4">
+            <b-card class="mb-4" v-if="selectedDataGroup">
 
               <b-row>
                 <b-col class="text-right">
@@ -403,6 +321,20 @@
 <style>
   .halo-tree .inputCheck {
     top: 2px!important;
+  }
+  .tb-icon {
+    font-size: 20px;
+  }
+  .tb-button {
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .tb-button-disabled {
+    font-size: 20px;
+    color: lightgray!important;
+  }
+  .selected-row {
+    background-color: #0000ff20!important;
   }
 </style>
 
@@ -481,6 +413,7 @@
         orgList: [],
         userList: [],
         orgUserTreeData: [],
+        selectedDataGroup: null,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
           perPage: 5,
@@ -500,14 +433,13 @@
               dataClass: 'text-center',
             },
             {
-              name: 'dataGroupFlag',
+              name: '__slot:dataGroupFlag',
               title: this.$t('permission-management.permission-control.group-flag'),
-              // sortField: 'dataGroupFlag',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'operating',
+              name: '__slot:operating',
               title: this.$t('permission-management.permission-control.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -521,7 +453,6 @@
             }
           ],
         },
-        tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
         selectedUserCategory: '',
@@ -661,9 +592,18 @@
       userList(newVal, oldVal) {
         this.refreshOrgUserTreeData();
       },
-      tableData(newVal, oldVal) {
-        this.$refs.vuetable.refresh();
-      }
+      selectedDataGroup(newVal, oldVal) {
+        if(newVal) {
+          let dataGroupUserIds = [];
+          newVal.users.forEach((user) => {
+            dataGroupUserIds.push(user.userId);
+          });
+          this.userList.forEach((user) => {
+            user.selected = dataGroupUserIds.includes(user.userId);
+          });
+          this.refreshOrgUserTreeData();
+        }
+      },
     },
     methods: {
       onRoleFormSubmit() {
@@ -713,6 +653,7 @@
                 });
                 this.dataGroupForm.dataGroupName = '';
                 this.dataGroupForm.note = '';
+                this.$refs.dataGroupVuetable.reload();
                 break;
               default:
 
@@ -740,15 +681,13 @@
               isUser: true,
               title: user.userName,
               expanded: true,
+              checked: user.selected,
               children: []
             }));
           return [...childrenOrgList, ...childrenUserList];
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
         console.log(this.orgUserTreeData);
-      },
-      onRowClass (dataItem, index) {
-        return (dataItem.selected) ? 'color-red' : 'color-white'
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
           console.log(httpOptions);
@@ -763,47 +702,22 @@
       onDataGroupPaginationData(paginationData) {
         this.$refs.dataGroupPagination.setPaginationData(paginationData)
       },
+      onDataGroupRowClass(dataItem, index) {
+        let selectedItem = this.selectedDataGroup;
+        if(selectedItem && selectedItem.dataGroupId === dataItem.dataGroupId) {
+          return 'selected-row';
+        } else {
+            return '';
+        }
+      },
+      onDataGroupRowClicked(dataItem, event) {
+        this.selectedDataGroup = dataItem;
+      },
       onPaginationData(paginationData) {
           this.$refs.pagination.setPaginationData(paginationData)
       },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page)
-      },
-      rowSelected(items) {
-          console.log(items);
-        this.bootstrapTable.selected = items
-      },
-      dataManager(sortOrder, pagination) {
-
-        if (this.tableData.length < 1) return;
-
-        let local = this.tableData;
-
-        for (let i = 0; i < local.length; i++) {
-          local[i].no = i + 1;
-        }
-
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
-        }
-
-        pagination = this.$refs.vuetable.makePagination(
-          local.length,
-          this.perPage
-        );
-        let from = pagination.from - 1;
-        let to = from + this.perPage;
-
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
-        };
-
+        this.$refs.dataGroupVuetable.changePage(page)
       },
       onAction(action, data, index) {
         console.log('(slot) action: ' + action, data, index)
