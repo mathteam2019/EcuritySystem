@@ -51,9 +51,9 @@ public class JwtUtil implements Serializable {
 
     public String generateTokenForSysUser(SysUser sysUser) {
 
-        Claims claims = Jwts.claims().setSubject(String.valueOf(sysUser.getId()));
+        Claims claims = Jwts.claims().setSubject(String.valueOf(sysUser.getUserId()));
 
-        claims.put("id", sysUser.getId());
+        claims.put("user_id", sysUser.getUserId());
         claims.put("role", Constants.Roles.SYS_USER);
 
         return Constants.TOKEN_PREFIX + Jwts.builder()
@@ -72,9 +72,9 @@ public class JwtUtil implements Serializable {
         return Optional.empty();
     }
 
-    public Optional<Integer> getIdFromToken(String token) {
+    public Optional<Long> getUserIdFromToken(String token) {
         try {
-            return Optional.of(this.getClaimFromToken(token, claims -> (Integer) claims.get("id")));
+            return Optional.of(this.getClaimFromToken(token, claims -> (Long.valueOf(String.valueOf(claims.get("user_id"))))));
         } catch (Exception e) {
             e.printStackTrace();
         }

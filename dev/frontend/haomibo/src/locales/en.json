@@ -124,6 +124,7 @@
       "operating": "Operating",
       "select-all": "全选",
       "data-group-name": "Data group name",
+      "group-flag": "分组标记",
 
       "enter-role-name": "Please enter the role name",
       "enter-note": "Please enter the note",

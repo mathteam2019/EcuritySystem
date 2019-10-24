@@ -655,9 +655,9 @@
 
         transformed.pagination = {
           total: data.total,
-          per_page: data.perPage,
-          current_page: data.currentPage,
-          last_page: data.lastPage,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
           from: data.from,
           to: data.to
         };

@@ -1,14 +1,21 @@
 package com.haomibo.haomibo.controllers.permissionmanagement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
+import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
+import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +24,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +41,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class CreateRequestBody {
+    private static class CreateRequestBody {
 
         @NotNull
         String orgName;
@@ -70,7 +80,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class DeleteRequestBody {
+    private static class DeleteRequestBody {
 
         @NotNull
         Long orgId;
@@ -82,7 +92,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class GetByFilterAndPageRequestBody {
+    private static class GetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
@@ -94,7 +104,11 @@ public class OrganizationManagementController extends BaseController {
             String parentOrgName;
         }
 
+        @NotNull
+        @Min(1)
         int currentPage;
+
+        @NotNull
         int perPage;
 
         Filter filter;
@@ -107,7 +121,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class ModifyRequestBody {
+    private static class ModifyRequestBody {
 
         @NotNull
         Long orgId;
@@ -148,7 +162,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class UpdateStatusRequestBody {
+    private static class UpdateStatusRequestBody {
 
         @NotNull
         Long orgId;
@@ -158,26 +172,6 @@ public class OrganizationManagementController extends BaseController {
         String status;
 
     }
-
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    @Builder()
-    public static class GetByFilterAndPageResponseBody {
-
-        long total;
-        int perPage;
-        int currentPage;
-        int lastPage;
-        int from;
-        int to;
-
-        List<SysOrg> data;
-    }
-
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -280,21 +274,29 @@ public class OrganizationManagementController extends BaseController {
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
     public Object getAll() {
 
-        List<SysOrg> sysOrgArray = sysOrgRepository.findAll();
-
-        sysOrgArray.forEach(sysOrg -> {
-            if (sysOrg.getParent() != null) {
-                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
-            }
-        });
+        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgArray);
+//        sysOrgList.forEach(sysOrg -> {
+//            sysOrg.setChildren(null);
+//            if (sysOrg.getParent() != null) {
+//                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
+//            }
+//        });
+
+        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList);
     }
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object getByFilterAndPage(@RequestBody @Valid GetByFilterAndPageRequestBody requestBody) {
+    public Object getByFilterAndPage(
+            @RequestBody @Valid GetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
 
 
         QSysOrg qSysOrg = QSysOrg.sysOrg;
@@ -308,7 +310,7 @@ public class OrganizationManagementController extends BaseController {
                 predicate.and(qSysOrg.orgName.contains(filter.getOrgName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(qSysOrg.status.contains(filter.getStatus()));
+                predicate.and(qSysOrg.status.eq(filter.getStatus()));
             }
             if (!StringUtils.isEmpty(filter.getParentOrgName())) {
                 predicate.and(qSysOrg.parent.orgName.contains(filter.getParentOrgName()));
@@ -321,9 +323,9 @@ public class OrganizationManagementController extends BaseController {
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
         long total = sysOrgRepository.count(predicate);
-        List<SysOrg> sysOrgList = sysOrgRepository.findAll(predicate, pageRequest).getContent();
+        List<SysOrg> data = sysOrgRepository.findAll(predicate, pageRequest).getContent();
 
-        sysOrgList.forEach(sysOrg -> {
+        data.forEach(sysOrg -> {
             if (sysOrg.getParent() != null) {
                 sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
             }
@@ -332,15 +334,15 @@ public class OrganizationManagementController extends BaseController {
 
         return new CommonResponseBody(
                 Constants.ResponseMessages.OK,
-                GetByFilterAndPageResponseBody
+                FilteringAndPaginationResult
                         .builder()
                         .total(total)
                         .perPage(perPage)
                         .currentPage(currentPage + 1)
                         .lastPage((int) Math.ceil(((double) total) / perPage))
                         .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + sysOrgList.size())
-                        .data(sysOrgList)
+                        .to(perPage * currentPage + data.size())
+                        .data(data)
                         .build());
     }
 

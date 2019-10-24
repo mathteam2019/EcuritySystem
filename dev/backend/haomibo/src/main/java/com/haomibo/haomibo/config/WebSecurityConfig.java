@@ -40,7 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/Auth/**",
                         "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**",
                         "/auth/login",
-                        "/auth/register"
+                        "/auth/register",
+                        Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
