@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <div style="display: flex;" :class="putDownPageSizeBar?'flex-column':''">
+    <div style="display: flex;" >
       <div style="flex: 1;display: flex;"></div>
 
       <div style="flex: 1;display: flex;justify-content: center;">
@@ -74,7 +74,6 @@
         type: Number,
         default: 10
       },
-      putDownPageSizeBar: false
     },
     data() {
       return {

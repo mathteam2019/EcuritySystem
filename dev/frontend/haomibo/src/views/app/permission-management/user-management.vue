@@ -608,13 +608,13 @@
               <b-form @submit.prevent="onGroupFormSubmit">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('permission-management.user.user.group-name')}}&nbsp;
+                    {{$t('permission-management.user.group-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input
                     v-model="groupForm.groupName"
                     :state="!$v.groupForm.groupName.$invalid"
-                    :placeholder="$t('permission-management.user.user.enter-group-name')"/>
+                    :placeholder="$t('permission-management.user.please-enter-group-name')"/>
                   <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
                   <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
                   </b-form-invalid-feedback>
@@ -627,7 +627,7 @@
                 <b-row class="mt-4">
                   <b-col cols="12" class="text-right">
                     <b-button type="submit" :disabled="$v.groupForm.$invalid" variant="primary">{{
-                      $t('permission-management.user.save') }}
+                      $t('permission-management.save') }}
                     </b-button>
                   </b-col>
                 </b-row>
@@ -667,7 +667,6 @@
                     ref="userGroupPagination"
                     @vuetable-pagination:change-page="onUserGroupTableChangePage"
                     :initial-per-page="userGroupTableItems.perPage"
-                    :put-down-page-size-bar="true"
                     @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
@@ -762,6 +761,7 @@
     },
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
+      this.$refs.userGroupTable.$parent.transform = this.transformUserGroupTable.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
@@ -952,30 +952,40 @@
           fields: [
             {
               name: 'userGroupId',
-              title: this.$t('permission-management.no'),
+              title: this.$t('permission-management.th-no'),
               sortField: 'userGroupId',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'userGroupName',
+              name: 'groupName',
               title: this.$t('permission-management.user.user-group-name'),
               sortField: 'userGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'userGroupFlag',
+              name: 'users',
               title: this.$t('permission-management.user.group-flag'),
               // sortField: 'userGroupFlag',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback:(value) => {
+                if(value.length > 0)
+                    return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
+                return '';
+              }
             },
             {
               name: 'operating',
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback:(value) => {
+                if(value.length > 0)
+                  return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
+                return '';
+              }
             },
             {
               name: 'note',
@@ -993,6 +1003,15 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+      'groupFilter.flag':function (newVal) {
+        this.$refs.userGroupTable.refresh();
+      },
+      'groupFilter.name':function (newVal) {
+        this.$refs.userGroupTable.refresh();
+      },
+      'userGroupTableItems.perPage': function (newVal) {
+        this.$refs.userGroupTable.refresh();
+      },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let id = 0;
@@ -1007,7 +1026,6 @@
             }));
 
         this.treeData = nest(newVal)[0];
-        console.log(this.treeData);
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -1130,7 +1148,6 @@
         this.bootstrapTable.selected = items
       },
       onAction(action, data, index) {
-        console.log('(slot) action: ' + action, data, index);
         let userId = data.userId;
         switch (action) {
           case 'modify':
@@ -1278,6 +1295,31 @@
         return transformed
 
       },
+      transformUserGroupTable(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.userGroupPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
       userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
@@ -1299,11 +1341,8 @@
       },
       //second tab content
       onGroupFormSubmit(){
-        let formData = new FormData();
-        formData.append('groupName','test');
-        formData.append('note','from formdata');
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, formData)
+          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
           .then((response) => {
             let message = response.data.message;
             let data = response.data.data;
@@ -1317,21 +1356,17 @@
                 this.$refs.userGroupTable.refresh();
 
                 break;
-              case responseMessages['invalid_parameter']: // invalid_parameter
-                this.$notify('warning', this.$t('permission-management.failed'), this.$t(`permission-management.user.group-created-failed`), {
-                  duration: 3000,
-                  permanent: false
-                });
 
-                this.$refs.userGroupTable.refresh();
-
-                break;
             }
           })
           .catch((error) => {
           })
           .finally(() => {
             //
+            this.groupForm = {
+              groupName:'',
+              note:''
+            };
             console.log('final step completed');
           });
       },
@@ -1341,7 +1376,7 @@
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
           filter: {
-            name: this.groupFilter.name,
+            groupName: this.groupFilter.name,
             flag: this.groupFilter.flag,
           }
         });
@@ -1350,7 +1385,7 @@
         this.$refs.userGroupPagination.setPaginationData(paginationData)
       },
       onUserGroupTableChangePage(page) {
-        this.$refs.userGroupTableItems.changePage(page)
+        this.$refs.userGroupTable.changePage(page)
       },
     }
   }
