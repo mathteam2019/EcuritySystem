@@ -7,26 +7,32 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
 
       <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>
           <b-col cols="3">
             <b-card class="mb-4">
-              <b-form>
+              <b-form @submit.prevent="onRoleFormSubmit">
                 <b-form-group>
                   <template slot="label">
                     {{$t('permission-management.permission-control.role-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                  <b-form-input
+                    v-model="roleForm.roleName"
+                    :state="!$v.roleForm.roleName.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                  <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+
                 </b-form-group>
                 <b-form-group :label="$t('permission-management.permission-control.note')">
-                  <b-form-textarea rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
+                  <b-form-textarea v-model="roleForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
                 </b-form-group>
                 <b-row class="mt-4">
                   <b-col cols="12" class="text-right">
-                    <b-button type="submit" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
                   </b-col>
                 </b-row>
               </b-form>
@@ -165,63 +171,96 @@
             <b-card class="mb-4">
 
               <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+                <b-form-group>
+                  <b-form-radio-group>
+                    <b-form-radio value="first">统一管理平台</b-form-radio>
+                    <b-form-radio value="second">综合业务平台</b-form-radio>
+                  </b-form-radio-group>
+                </b-form-group>
+              </b-row>
 
-                    <b-row>
+              <b-row>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                </b-col>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                  </b-form-group>
+                </b-col>
+              </b-row>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.username')">
-                          <b-form-input></b-form-input>
-                        </b-form-group>
-                      </b-col>
+            </b-card>
+          </b-col>
+        </b-row>
+      </b-tab>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.status')">
-                          <v-select v-model="selectedStatus" :options="statusSelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
+      <b-tab :title="$t('permission-management.permission-control.data-grouping')">
+        <b-row>
+          <b-col cols="3">
+            <b-card class="mb-4">
+              <b-form @submit.prevent="onDataGroupFormSubmit">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="dataGroupForm.dataGroupName"
+                    :state="!$v.dataGroupForm.dataGroupName.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-data-group-name')" />
+                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.affiliated-institution')">
-                          <v-select v-model="selectedAffiliatedInstitution" :options="affiliatedInstitutionSelectData"
-                                    :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
+                </b-form-group>
+                <b-form-group :label="$t('permission-management.permission-control.note')">
+                  <b-form-textarea v-model="dataGroupForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
+                </b-form-group>
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" :disabled="$v.dataGroupForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <b-col cols="5">
+            <b-card class="mb-4">
+              <b-row>
+                <b-col cols="5" class="pr-3">
+                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
+                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                  </b-form-group>
+                </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.user-category')">
-                          <v-select v-model="selectedUserCategory" :options="userCategorySelectData" :dir="direction"/>
-                        </b-form-group>
-                      </b-col>
-                      <b-col></b-col>
-                    </b-row>
-
-                  </div>
-                  <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.search') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('permission-management.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success">{{ $t('permission-management.new') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
-                    </b-button>
-                  </div>
+                <b-col cols="7">
+                  <b-form-group>
+                    <template slot="label">&nbsp;</template>
+                    <b-form-input></b-form-input>
+                  </b-form-group>
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col cols="12">
                   <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="roleItems.fields"
-                    :data-manager="dataManager"
-                    :per-page="5"
-                    pagination-path="pagination"
+                    ref="dataGroupVuetable"
+                    :api-url="dataGroupVuetableItems.apiUrl"
+                    :http-fetch="dataGroupVuetableHttpFetch"
+                    :fields="dataGroupVuetableItems.fields"
+                    :per-page="dataGroupVuetableItems.perPage"
+                    pagination-path="data"
+                    data-path="data.data"
                     class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onDataGroupPaginationData"
                   >
+<!--                    @vuetable:row-clicked="rowSelected"-->
+<!--                    :row-class="onRowClass"-->
 
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -315,21 +354,40 @@
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
+                    ref="dataGroupPagination"
                     @vuetable-pagination:change-page="onChangePage"
+                    :initial-per-page="dataGroupVuetableItems.perPage"
+                    @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
             </b-card>
           </b-col>
-        </b-row>
-      </b-tab>
+          <b-col cols="4">
+            <b-card class="mb-4">
 
-      <b-tab :title="$t('permission-management.permission-control.data-grouping')">
-        <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Hi</h1>
+              <b-row>
+                <b-col class="text-right">
+                  <b-form-group>
+                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <v-tree ref='accessTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12" class="text-right">
+                  <b-form-group>
+                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
             </b-card>
           </b-col>
         </b-row>
@@ -337,9 +395,17 @@
 
     </b-tabs>
 
+    <div v-show="isLoading" class="loading"></div>
 
   </div>
 </template>
+
+<style>
+  .halo-tree .inputCheck {
+    top: 2px!important;
+  }
+</style>
+
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
@@ -348,22 +414,59 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
+  import VTree from 'vue-tree-halower';
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import {getDirection} from "../../../utils";
   import _ from "lodash";
+  import { validationMixin } from 'vuelidate';
+  const { required } = require('vuelidate/lib/validators');
+  import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
+  import {getApiManager} from "../../../api";
 
   export default {
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,
-      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'v-tree': VTree
     },
     mounted() {
       this.tableData = staticUserTableData;
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+            case responseMessages['ok']:
+              this.orgList = data;
+              break;
+            default:
+
+        }
+      });
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/get-all`).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userList = data;
+            break;
+          default:
+
+        }
+      });
     },
+    mixins: [validationMixin],
     data() {
       return {
+        isLoading: false,
+        roleForm: {
+          roleName: '',
+          note: ''
+        },
         roleFlag: '',
         roleFlagData: [
             this.$t('permission-management.permission-control.all'),
@@ -371,8 +474,53 @@
             this.$t('permission-management.permission-control.business-operating'),
             this.$t('permission-management.permission-control.no-role'),
         ],
-
-
+        dataGroupForm: {
+          dataGroupName: '',
+          note: '',
+        },
+        orgList: [],
+        userList: [],
+        orgUserTreeData: [],
+        dataGroupVuetableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/permission-control/get-data-group-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'dataGroupId',
+              title: this.$t('permission-management.permission-control.serial-number'),
+              sortField: 'dataGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupName',
+              title: this.$t('permission-management.permission-control.data-group-name'),
+              // sortField: 'dataGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'dataGroupFlag',
+              title: this.$t('permission-management.permission-control.group-flag'),
+              // sortField: 'dataGroupFlag',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operating',
+              title: this.$t('permission-management.permission-control.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'note',
+              title: this.$t('permission-management.permission-control.note'),
+              // sortField: 'note',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
+        },
         tableData: [],
         selectedStatus: '',
         selectedAffiliatedInstitution: '',
@@ -469,22 +617,160 @@
             {key: 'category', label: 'Category', sortable: true, tdClass: 'text-muted'},
             {key: 'status', label: 'Status', sortable: true, tdClass: 'text-muted'}
           ]
+        },
+        accessTreeData: [{
+          title: 'node1',
+          expanded: true,
+          children: [{
+            title: 'node 1-1',
+            expanded: true,
+            children: [{
+              title: 'node 1-1-1'
+            }, {
+              title: 'node 1-1-2'
+            }, {
+              title: 'node 1-1-3'
+            }]
+          }, {
+            title: 'node 1-2',
+            children: [{
+              title: "<span style='color: red'>node 1-2-1</span>"
+            }, {
+              title: "<span style='color: red'>node 1-2-2</span>"
+            }]
+          }]
+        }]
+      }
+    },
+    validations: {
+      roleForm: {
+        roleName: {
+          required
+        }
+      },
+      dataGroupForm: {
+        dataGroupName: {
+          required
         }
       }
     },
     watch: {
+      orgList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
+      userList(newVal, oldVal) {
+        this.refreshOrgUserTreeData();
+      },
       tableData(newVal, oldVal) {
         this.$refs.vuetable.refresh();
       }
     },
     methods: {
+      onRoleFormSubmit() {
+        this.isLoading = true;
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/permission-control/create-role`, {
+            'roleName': this.roleForm.roleName,
+            'note': this.roleForm.note
+          })
+          .then((response) => {
+            this.isLoading = false;
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.roleForm.roleName = '';
+                this.roleForm.note = '';
+                break;
+              default:
+
+            }
+          })
+          .catch((error) => {
+            this.isLoading = false;
+          });
+      },
+      onDataGroupFormSubmit() {
+        this.isLoading = true;
+        getApiManager()
+          .post(`${apiBaseUrl}/permission-management/permission-control/create-data-group`, {
+            'dataGroupName': this.dataGroupForm.dataGroupName,
+            'note': this.dataGroupForm.note
+          })
+          .then((response) => {
+            this.isLoading = false;
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.dataGroupForm.dataGroupName = '';
+                this.dataGroupForm.note = '';
+                break;
+              default:
+
+            }
+          })
+          .catch((error) => {
+            this.isLoading = false;
+          });
+        },
+      refreshOrgUserTreeData() {
+        let pseudoRootId = 0;
+        let nest = (orgList, userList, rootId = pseudoRootId) => {
+          let childrenOrgList = orgList
+            .filter(org => org.parentOrgId === rootId)
+            .map(org => ({
+              ...org,
+              title: org.orgName,
+              expanded: true,
+              children: nest(orgList, userList, org.orgId)
+            }));
+          let childrenUserList = userList
+            .filter(user => user.orgId === rootId)
+            .map(user => ({
+              ...user,
+              isUser: true,
+              title: user.userName,
+              expanded: true,
+              children: []
+            }));
+          return [...childrenOrgList, ...childrenUserList];
+        };
+        this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
+        console.log(this.orgUserTreeData);
+      },
+      onRowClass (dataItem, index) {
+        return (dataItem.selected) ? 'color-red' : 'color-white'
+      },
+      dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
+          console.log(httpOptions);
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.dataGroupVuetableItems.perPage,
+          filter: {
+              dataGroupName: '',
+          }
+        });
+      },
+      onDataGroupPaginationData(paginationData) {
+        this.$refs.dataGroupPagination.setPaginationData(paginationData)
+      },
       onPaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
+          this.$refs.pagination.setPaginationData(paginationData)
       },
       onChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
       rowSelected(items) {
+          console.log(items);
         this.bootstrapTable.selected = items
       },
       dataManager(sortOrder, pagination) {
@@ -521,7 +807,7 @@
       },
       onAction(action, data, index) {
         console.log('(slot) action: ' + action, data, index)
-      }
+      },
     }
   }
 </script>

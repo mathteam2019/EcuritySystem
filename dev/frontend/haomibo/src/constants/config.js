@@ -14,7 +14,7 @@ export const localeOptions = [
   {id: 'enrtl', name: 'English RTL', direction: 'rtl'}
 ];
 
-export const apiBaseUrl = 'http://192.168.5.13:4546';
+export const apiBaseUrl = 'http://192.168.5.13:8080/haomibo-0.0.1-SNAPSHOT';
 // export const apiBaseUrl = 'http://39.97.175.200:8080/haomibo';
 
 export const refreshTokenTimeDiff = 30;
