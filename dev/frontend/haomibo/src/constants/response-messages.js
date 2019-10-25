@@ -7,5 +7,6 @@ export const responseMessages = {
   'invalid-token': 'invalid_token',
   'used-email': 'used_email',
   'server-error': 'server_error',
-  'has-children': 'has_children'
+  'has-children': 'has_children',
+  'used-user-account':'used_user_account'
 };
