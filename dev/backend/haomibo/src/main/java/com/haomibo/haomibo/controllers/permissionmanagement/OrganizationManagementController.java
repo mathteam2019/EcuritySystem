@@ -1,21 +1,20 @@
 package com.haomibo.haomibo.controllers.permissionmanagement;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
-import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
@@ -173,6 +170,34 @@ public class OrganizationManagementController extends BaseController {
 
     }
 
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class GetAllRequestBody {
+
+        static class GetAllType {
+            static final String BARE = "bare";
+            static final String WITH_PARENT = "with_parent";
+            static final String WITH_CHILDREN = "with_children";
+            static final String WITH_USERS = "with_users";
+            static final String WITH_PARENT_AND_USERS = "with_parent_and_users";
+            static final String WITH_CHILDREN_AND_USERS = "with_children_and_users";
+        }
+
+        @Pattern(regexp = GetAllType.BARE + "|" +
+                GetAllType.WITH_PARENT + "|" +
+                GetAllType.WITH_CHILDREN + "|" +
+                GetAllType.WITH_USERS + "|" +
+                GetAllType.WITH_PARENT_AND_USERS + "|" +
+                GetAllType.WITH_CHILDREN_AND_USERS)
+        String type = GetAllType.BARE;
+
+
+    }
+
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object create(
@@ -272,19 +297,54 @@ public class OrganizationManagementController extends BaseController {
 
     @Secured({Constants.Roles.SYS_USER})
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public Object getAll() {
+    public Object getAll(@RequestBody @Valid GetAllRequestBody requestBody,
+                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+        }
+
 
         List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
 
-//        sysOrgList.forEach(sysOrg -> {
-//            sysOrg.setChildren(null);
-//            if (sysOrg.getParent() != null) {
-//                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
-//            }
-//        });
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList);
+        String type = requestBody.getType();
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        switch (type) {
+
+            case GetAllRequestBody.GetAllType.BARE:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
+                break;
+            case GetAllRequestBody.GetAllType.WITH_PARENT:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                break;
+            case GetAllRequestBody.GetAllType.WITH_CHILDREN:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users"));
+                break;
+            case GetAllRequestBody.GetAllType.WITH_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            case GetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            case GetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                break;
+            default:
+
+                break;
+        }
+
+        value.setFilters(filters);
+
+        return value;
     }
 
     @Secured({Constants.Roles.SYS_USER})
@@ -299,21 +359,20 @@ public class OrganizationManagementController extends BaseController {
         }
 
 
-        QSysOrg qSysOrg = QSysOrg.sysOrg;
+        QSysOrg builder = QSysOrg.sysOrg;
 
-
-        BooleanBuilder predicate = new BooleanBuilder(qSysOrg.isNotNull());
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         GetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getOrgName())) {
-                predicate.and(qSysOrg.orgName.contains(filter.getOrgName()));
+                predicate.and(builder.orgName.contains(filter.getOrgName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(qSysOrg.status.eq(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (!StringUtils.isEmpty(filter.getParentOrgName())) {
-                predicate.and(qSysOrg.parent.orgName.contains(filter.getParentOrgName()));
+                predicate.and(builder.parent.orgName.contains(filter.getParentOrgName()));
             }
         }
 
@@ -325,14 +384,8 @@ public class OrganizationManagementController extends BaseController {
         long total = sysOrgRepository.count(predicate);
         List<SysOrg> data = sysOrgRepository.findAll(predicate, pageRequest).getContent();
 
-        data.forEach(sysOrg -> {
-            if (sysOrg.getParent() != null) {
-                sysOrg.setParent(sysOrg.getParent().toBuilder().parent(null).build());
-            }
-        });
 
-
-        return new CommonResponseBody(
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 Constants.ResponseMessages.OK,
                 FilteringAndPaginationResult
                         .builder()
@@ -343,7 +396,17 @@ public class OrganizationManagementController extends BaseController {
                         .from(perPage * currentPage + 1)
                         .to(perPage * currentPage + data.size())
                         .data(data)
-                        .build());
+                        .build()));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
+
+        value.setFilters(filters);
+
+        return value;
     }
 
 }

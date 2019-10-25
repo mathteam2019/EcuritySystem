@@ -1,16 +1,29 @@
 package com.haomibo.haomibo.config;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.persistence.EntityManagerFactory;
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.List;
 
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -27,6 +40,37 @@ public class WebConfig implements WebMvcConfigurer {
         registry
                 .addResourceHandler(Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**")
                 .addResourceLocations("file:///" + baseAbsolutePath + Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY + File.separator);
+
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        ObjectMapper mapper = new ObjectMapper();
+
+        mapper.registerModule(getConfiguredHibernateModule());
+
+        subscribeFiltersInMapper(mapper);
+
+        mapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+
+        converter.setObjectMapper(mapper);
+        converters.add(converter);
+    }
+
+    private Hibernate5Module getConfiguredHibernateModule() {
+        SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
+        Hibernate5Module module = new Hibernate5Module(sessionFactory);
+        module.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, true);
+
+        return module;
+
+    }
+
+    private void subscribeFiltersInMapper(ObjectMapper mapper) {
+
+        mapper.setFilterProvider(ModelJsonFilters.getDefaultFilters());
 
     }
 }
