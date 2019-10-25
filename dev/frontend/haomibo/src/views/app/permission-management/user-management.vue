@@ -697,7 +697,7 @@
                     @vuetable:row-clicked="onUserGroupTableRowClick"
                   >
                     <template slot="userGroupFlag" slot-scope="props">
-                      <div v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info tb-icon"></div>
+                      <div style="font-size: 18px" v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info"></div>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <span style="font-size: 18px" v-if="props.rowData.orgId==null"
@@ -1460,9 +1460,6 @@
                     duration: 3000,
                     permanent: false
                   });
-
-                  this.$refs.userGroupTable.refresh();
-
                   break;
 
               }
@@ -1475,7 +1472,7 @@
         }
       },
       transformUserGroupTable(response) {
-
+        this.selectedUserGroupItem = null;
         let transformed = {};
 
         let data = response.data;
@@ -1500,7 +1497,6 @@
 
       },
       userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -1622,11 +1618,11 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-modified`), {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
                     duration: 3000,
                     permanent: false
                   });
-                  this.$refs.dataGroupVuetable.reload();
+                  this.$refs.userGroupTable.refresh();
                   break;
                 default:
 
