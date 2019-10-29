@@ -1,5 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,8 +16,14 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_USER_GROUP)
 @Table(name = "sys_user_group")
 public class SysUserGroup implements Serializable {
+
+    public static class Flag {
+        public static final String SET = "set";
+        public static final String UNSET = "unset";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

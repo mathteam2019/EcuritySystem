@@ -13,9 +13,9 @@ public class Token {
 
     public Token(String token, Date expirationDate) {
         this.token = token;
-        this.expirationTimestamp = (int) (expirationDate.getTime() / 1000);
+        this.expirationTimestamp = expirationDate.getTime();
     }
 
     String token;
-    int expirationTimestamp;
+    long expirationTimestamp;
 }
