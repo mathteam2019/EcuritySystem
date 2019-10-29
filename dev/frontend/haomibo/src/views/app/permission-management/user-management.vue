@@ -7,6 +7,11 @@
   span.cursor-p {
     cursor: pointer !important;
   }
+  .h-50vh {
+    height: 50vh;
+    max-height: 50vh;
+    overflow: auto;
+  }
 </style>
 <style lang="scss">
   .search-form-group {
@@ -26,6 +31,10 @@
 
     }
 
+  }
+
+  .selected-row {
+    background-color: #0000ff20 !important;
   }
 
 
@@ -683,9 +692,13 @@
                     :http-fetch="userGroupTableHttpFetch"
                     pagination-path="userGroupPagination"
                     class="table-hover"
+                    :row-class="onDataGroupRowClass"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                     @vuetable:row-clicked="onUserGroupTableRowClick"
                   >
+                    <template slot="userGroupFlag" slot-scope="props">
+                      <div style="font-size: 18px" v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info"></div>
+                    </template>
                     <template slot="operating" slot-scope="props">
                       <span style="font-size: 18px" v-if="props.rowData.orgId==null"
                             class="btn-action cursor-p text-danger"
@@ -718,6 +731,36 @@
               </b-row>
             </b-card>
           </b-col>
+          <b-col cols="4">
+            <b-card class="mb-4" v-if="selectedUserGroupItem">
+
+              <b-row>
+                <b-col class="text-right">
+                  <b-form-group>
+                    <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                      {{$t('permission-management.permission-control.select-all')}}
+                    </b-form-checkbox>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col class="h-50vh">
+                  <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true'/>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12" class="text-right pt-3">
+                  <b-form-group>
+                    <b-button @click="onClickSaveUserGroup">{{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+            </b-card>
+          </b-col>
         </b-row>
       </b-tab>
 
@@ -736,6 +779,8 @@
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
+  import VTree from 'vue-tree-halower';
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -747,6 +792,7 @@
     }
     return 0;
   };
+
 
   /**
    * getting orgFull name with parent org
@@ -768,7 +814,8 @@
   export default {
     components: {
       'vuetable': Vuetable,
-      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'v-tree': VTree
     },
     mixins: [validationMixin],
     validations: {
@@ -807,7 +854,7 @@
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.transformUserGroupTable.bind(this);
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`, {
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -850,6 +897,7 @@
         },
         orgData: [],
         userData: [],
+        orgUserTreeData: [],
         direction: getDirection().direction,
         genderOptions: [
           {value: 'male', text: this.$t('permission-management.male')},
@@ -993,10 +1041,7 @@
           perPage: 5,
         },
         //second tab content
-        selectedUserGroupItem: {
-          userGroupId: 0,
-          action: ''
-        },
+        selectedUserGroupItem: null,
         groupForm: {
           groupName: '',
           note: ''
@@ -1029,16 +1074,11 @@
               dataClass: 'text-center',
             },
             {
-              name: 'users',
+              name: '__slot:userGroupFlag',
               title: this.$t('permission-management.user.group-flag'),
               // sortField: 'userGroupFlag',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-                if (value.length > 0)
-                  return `<span class="text-primary" style="font-size: 18px"><i class="iconsminds-file"></i> </span>`;
-                return '';
-              }
             },
             {
               name: '__slot:operating',
@@ -1056,6 +1096,7 @@
           ],
         },
 
+        isSelectedAllUsersForDataGroup: false,
       }
     },
     watch: {
@@ -1073,7 +1114,7 @@
       },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
-        let id = 0;
+
         let nest = (items, id = 0) =>
           items
             .filter(item => item.parentOrgId == id)
@@ -1128,6 +1169,31 @@
 
         this.filter.orgId = this.treeData.orgId;
         this.defaultOrgId = this.treeData.orgId;
+        this.refreshOrgUserTreeData();
+      },
+      userData(newVal) {
+        this.refreshOrgUserTreeData();
+      },
+      selectedUserGroupItem(newVal) {
+        if (newVal) {
+          let userGroupList = [];
+          newVal.users.forEach((user) => {
+            userGroupList.push(user.userId);
+          });
+          this.userData.forEach((user) => {
+            user.selected = userGroupList.includes(user.userId);
+          });
+          this.refreshOrgUserTreeData();
+        }
+      },
+      isSelectedAllUsersForDataGroup(newVal) {
+
+        if (this.selectedUserGroupItem) {
+          let tempSelectedUserGroup = this.selectedUserGroupItem;
+          tempSelectedUserGroup.users = newVal ? this.userData : [];
+          this.selectedUserGroupItem = null;
+          this.selectedUserGroupItem = tempSelectedUserGroup;
+        }
       }
     },
     methods: {
@@ -1205,7 +1271,7 @@
             this.showConfDiaglog(userId, action);
             break;
           case 'group-remove':
-            this.showUserGroupConfDiaglog(data.userGroupId,action);
+            this.showUserGroupConfDiaglog(data);
             break;
         }
       },
@@ -1313,28 +1379,28 @@
           this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
-      initialUserData(){
-        profileForm =  {
+      initialUserData() {
+        profileForm = {
           status: 'inactive',
-            userId: 0,
-            avatar: '',
-            userName: '',
-            userNumber: '',
-            gender: '',
-            identityCard: '',
-            orgId: '',
-            post: '',
-            education: '',
-            degree: '',
-            email: '',
-            mobile: '',
-            address: '',
-            category: '',
-            userAccount: '',
-            passwordType: 'default',
-            passwordValue: '',
-            note: '',
-            portrait: null
+          userId: 0,
+          avatar: '',
+          userName: '',
+          userNumber: '',
+          gender: '',
+          identityCard: '',
+          orgId: '',
+          post: '',
+          education: '',
+          degree: '',
+          email: '',
+          mobile: '',
+          address: '',
+          category: '',
+          userAccount: '',
+          passwordType: 'default',
+          passwordValue: '',
+          note: '',
+          portrait: null
         }
       },
       transform(response) {
@@ -1365,13 +1431,12 @@
       },
 
       //second tab content
-      showUserGroupConfDiaglog(userGroupId,action){
-        this.selectedUserGroupItem.userGroupId = userGroupId;
-        this.selectedUserGroupItem.action = action;
+      showUserGroupConfDiaglog(userGroupItem) {
+        this.selectedUserGroupItem = userGroupItem;
         this.$refs['modal-prompt-group'].show();
       },
       deleteUserGroupItem() {
-        if(this.selectedUserGroupItem.action==='group-remove'){
+        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
@@ -1388,16 +1453,13 @@
                   });
 
                   this.$refs.userGroupTable.refresh();
-
+                  this.selectedUserGroupItem = null;
                   break;
                 case responseMessages['has-children']: // okay
                   this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                     duration: 3000,
                     permanent: false
                   });
-
-                  this.$refs.userGroupTable.refresh();
-
                   break;
 
               }
@@ -1410,7 +1472,7 @@
         }
       },
       transformUserGroupTable(response) {
-
+        this.selectedUserGroupItem = null;
         let transformed = {};
 
         let data = response.data;
@@ -1435,7 +1497,6 @@
 
       },
       userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
@@ -1500,16 +1561,76 @@
       onUserGroupTableChangePage(page) {
         this.$refs.userGroupTable.changePage(page)
       },
+      onDataGroupRowClass(dataItem, index) {
+        let selectedItem = this.selectedUserGroupItem;
+        if (selectedItem && selectedItem.userGroupId === dataItem.userGroupId) {
+          return 'selected-row';
+        } else {
+          return '';
+        }
+      },
       onUserGroupTableRowClick(dataItems, event) {
-        //console.log(dataItems);
+        //ignore if action button click;
         if (event.path[0].className.includes('btn-action'))
           return false;
-        let nodeIndex = 0;
-        while (event.path[nodeIndex].nodeName !== 'TR') {
-          nodeIndex++;
-        }
-        if (event.path[nodeIndex].nodeName === 'TR') {
+        this.selectedUserGroupItem = JSON.parse(JSON.stringify(dataItems));
+      },
+      // user tree group
+      refreshOrgUserTreeData() {
+        let pseudoRootId = 0;
+        let nest = (orgData, userData, rootId = pseudoRootId) => {
+          let childrenOrgList = orgData
+            .filter(org => org.parentOrgId === rootId)
+            .map(org => ({
+              ...org,
+              title: org.orgName,
+              expanded: true,
+              children: nest(orgData, userData, org.orgId)
+            }));
+          let childrenUserList = userData
+            .filter(user => user.orgId === rootId)
+            .map(user => ({
+              ...user,
+              isUser: true,
+              title: user.userName,
+              expanded: true,
+              checked: user.selected,
+              children: []
+            }));
+          return [...childrenOrgList, ...childrenUserList];
+        };
+        this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
+      },
+      onClickSaveUserGroup() {
+        if(this.selectedUserGroupItem) {
+          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+          let userGroupUserIds = [];
+          checkedNodes.forEach((node) => {
+            if(node.isUser)userGroupUserIds.push(node.userId);
+          });
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
+              'userGroupId': this.selectedUserGroupItem.userGroupId,
+              'userIdList': userGroupUserIds
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']:
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  this.$refs.userGroupTable.refresh();
+                  break;
+                default:
 
+              }
+            })
+            .catch((error) => {
+
+            });
         }
       }
     }

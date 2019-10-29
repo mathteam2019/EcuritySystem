@@ -43,14 +43,14 @@
               <b-row>
                 <b-col cols="5" class="pr-3">
                   <b-form-group :label="$t('permission-management.permission-control.role-flag')">
-                    <v-select v-model="roleFlag" :options="roleFlagData" :dir="direction"/>
+                    <b-form-select v-model="roleFlag" @change="onRoleFlagChanged" :options="roleFlagData" plain/>
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="7">
                   <b-form-group>
                     <template slot="label">&nbsp;</template>
-                    <b-form-input></b-form-input>
+                    <b-form-input v-model="roleKeyword" @change="onRoleKeywordChanged"></b-form-input>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -58,138 +58,62 @@
               <b-row>
                 <b-col cols="12">
                   <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="roleItems.fields"
-                    :per-page="5"
-                    pagination-path="pagination"
-                    class="table-striped"
-                    @vuetable:pagination-data="onPaginationData"
+                    ref="roleVuetable"
+                    :fields="roleVuetableItems.fields"
+                    :api-url="roleVuetableItems.apiUrl"
+                    :http-fetch="roleVuetableHttpFetch"
+                    :per-page="roleVuetableItems.perPage"
+                    pagination-path="data"
+                    data-path="data.data"
+                    :row-class="onRoleRowClass"
+                    @vuetable:pagination-data="onRolePaginationData"
+                    @vuetable:row-clicked="onRoleRowClicked"
                   >
+                    <template slot="roleFlag" slot-scope="props">
+                      <div v-if="props.rowData.roleFlag === 'admin'" class="glyph-icon iconsminds-gear text-info tb-icon"></div>
+                      <div v-else-if="props.rowData.roleFlag === 'user'" class="glyph-icon iconsminds-file-edit text-info tb-icon"></div>
+                    </template>
 
-                    <template slot="actions" slot-scope="props">
-                      <div>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="info"
-                          @click="onAction('modify', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive'"
-                          size="sm"
-                          variant="info"
-                          disabled>
-                          {{ $t('permission-management.action-modify') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('make-active', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='active'"
-                          size="sm"
-                          variant="warning"
-                          @click="onAction('make-inactive', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-inactive') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                          size="sm"
-                          variant="success"
-                          disabled>
-                          {{ $t('permission-management.action-make-active') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="danger"
-                          @click="onAction('block', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='blocked'"
-                          size="sm"
-                          variant="success"
-                          @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-unblock') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                          size="sm"
-                          variant="danger"
-                          disabled>
-                          {{ $t('permission-management.action-block') }}
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='pending'"
-                          size="sm"
-                          variant="dark"
-                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='pending'"
-                          size="sm"
-                          variant="dark"
-                          disabled>
-                          {{ $t('permission-management.action-reset-password') }}
-                        </b-button>
-
-                      </div>
+                    <template slot="operating" slot-scope="props">
+                      <div v-if="!['admin', 'user'].includes(props.rowData.roleFlag)" @click="onClickDeleteRole(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
+                      <div v-else class="glyph-icon simple-icon-close tb-button-disabled"></div>
                     </template>
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
+                    ref="rolePagination"
+                    @vuetable-pagination:change-page="onRoleChangePage"
+                    :initial-per-page="roleVuetableItems.perPage"
+                    @onUpdatePerPage="roleVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
             </b-card>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4">
+            <b-card class="mb-4" v-if="selectedRole">
 
               <b-row>
                 <b-form-group>
                   <b-form-radio-group>
-                    <b-form-radio value="first">统一管理平台</b-form-radio>
-                    <b-form-radio value="second">综合业务平台</b-form-radio>
+                    <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                    <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
                   </b-form-radio-group>
                 </b-form-group>
               </b-row>
 
-              <b-row>
+              <b-row v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
                 <b-col cols="12" class="text-right">
                   <b-form-group>
-                    <b-form-checkbox>{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                    <b-form-checkbox v-model="isSelectedAllResourcesForRole">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
                   </b-form-group>
                 </b-col>
                 <b-col cols="12">
-                  <v-tree ref='accessTree' :data='accessTreeData' :multiple="true" :halfcheck='true' />
+                  <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
                 <b-col cols="12" class="text-right">
                   <b-form-group>
-                    <b-button>{{$t('permission-management.permission-control.save')}}</b-button>
+                    <b-button @click="onClickSaveRole">{{$t('permission-management.permission-control.save')}}</b-button>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -266,16 +190,15 @@
 
                     <template slot="operating" slot-scope="props">
                       <div v-if="!props.rowData.users.length" @click="onClickDeleteDataGroup(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
-                      <div v-if="props.rowData.users.length" class="glyph-icon simple-icon-close tb-button-disabled"></div>
+                      <div v-else class="glyph-icon simple-icon-close tb-button-disabled"></div>
                     </template>
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
                     ref="dataGroupPagination"
-                    @vuetable-pagination:change-page="onChangePage"
+                    @vuetable-pagination:change-page="onDataGroupChangePage"
                     :initial-per-page="dataGroupVuetableItems.perPage"
                     @onUpdatePerPage="dataGroupVuetableItems.perPage = Number($event)"
-                    class="table-hover"
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
@@ -316,6 +239,14 @@
     </b-tabs>
 
     <div v-show="isLoading" class="loading"></div>
+
+    <b-modal id="modal-delete-role" ref="modal-delete-role" :title="$t('permission-management.permission-control.prompt')">
+      {{$t('permission-management.permission-control.delete-role-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deleteRole" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button variant="danger" @click="hideModal('modal-delete-role')">{{$t('system-setting.cancel')}}</b-button>
+      </template>
+    </b-modal>
 
     <b-modal id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
       {{$t('permission-management.permission-control.delete-data-group-prompt')}}
@@ -377,9 +308,20 @@
     mounted() {
       this.tableData = staticUserTableData;
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
-        type: 'with_parent'
-      }).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+              case responseMessages['ok']:
+                  this.resourceList = data;
+                  break;
+
+              default:
+
+          }
+      });
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -391,9 +333,7 @@
         }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
-        type: 'bare'
-      }).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -413,13 +353,62 @@
           roleName: '',
           note: ''
         },
-        roleFlag: '',
+          roleKeyword: '',
+        roleFlag: null,
         roleFlagData: [
-            this.$t('permission-management.permission-control.all'),
-            this.$t('permission-management.permission-control.system-management'),
-            this.$t('permission-management.permission-control.business-operating'),
-            this.$t('permission-management.permission-control.no-role'),
+            {value: null, text: this.$t('permission-management.permission-control.all')},
+            {value: 'admin', text: this.$t('permission-management.permission-control.system-management')},
+            {value: 'user', text: this.$t('permission-management.permission-control.business-operating')},
+            {value: 'unset', text: this.$t('permission-management.permission-control.no-role')},
         ],
+          resourceList: [],
+          resourceTreeData: {
+            admin: [],
+              user: [],
+          },
+          currentResourceTreeData: [],
+          roleCategory: null,
+          selectedRole: null,
+          isSelectedAllResourcesForRole: false,
+          roleVuetableItems: {
+            apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
+              perPage: 5,
+              fields: [
+                  {
+                      name: 'roleId',
+                      title: this.$t('permission-management.permission-control.serial-number'),
+                      // sortField: 'roleId,
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'roleName',
+                      title: this.$t('permission-management.permission-control.role-name'),
+                      // sortField: 'dataGroupName',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: '__slot:roleFlag',
+                      title: this.$t('permission-management.permission-control.role-flag'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: '__slot:operating',
+                      title: this.$t('permission-management.permission-control.operating'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'note',
+                      title: this.$t('permission-management.permission-control.note'),
+                      // sortField: 'note',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  }
+              ]
+          },
         dataGroupForm: {
           dataGroupName: '',
           note: '',
@@ -443,7 +432,7 @@
             {
               name: 'dataGroupId',
               title: this.$t('permission-management.permission-control.serial-number'),
-              sortField: 'dataGroupId',
+              // sortField: 'dataGroupId',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -475,124 +464,6 @@
             }
           ],
         },
-        selectedStatus: '',
-        selectedAffiliatedInstitution: '',
-        selectedUserCategory: '',
-
-        direction: getDirection().direction,
-        statusSelectData: [
-          this.$t('permission-management.all'),
-          this.$t('permission-management.active'),
-          this.$t('permission-management.inactive'),
-          this.$t('permission-management.blocked'),
-          this.$t('permission-management.pending'),
-        ],
-        affiliatedInstitutionSelectData: [
-          this.$t('permission-management.headquarters'),
-          this.$t('permission-management.office'),
-          this.$t('permission-management.production-department'),
-          this.$t('permission-management.production-department-1'),
-          this.$t('permission-management.production-department-2'),
-          this.$t('permission-management.sales-department'),
-          this.$t('permission-management.sales-planing-department'),
-        ],
-        userCategorySelectData: [
-          this.$t('permission-management.all'),
-          this.$t('permission-management.admin'),
-          this.$t('permission-management.normal-staff'),
-        ],
-        items: [
-          {id: 1, first_name: 'Mark', last_name: 'Otto', username: '@mdo'},
-          {id: 2, first_name: 'Jacob', last_name: 'Thornton', username: '@fat'},
-          {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
-        ],
-        roleItems: {
-          apiUrl: apiBaseUrl + '/cakes/fordatatable',
-          fields: [
-            {
-              name: 'no',
-              title: this.$t('permission-management.permission-control.serial-number'),
-              sortField: 'no',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'id',
-              title: this.$t('permission-management.permission-control.role-name'),
-              sortField: 'id',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'username',
-              title: this.$t('permission-management.permission-control.role-flag'),
-              sortField: 'username',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'status',
-              title: this.$t('permission-management.permission-control.operating'),
-              sortField: 'status',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (value) => {
-
-                const dictionary = {
-                  "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
-                  "inactive": `<span class="text-dark">${this.$t('permission-management.inactive')}</span>`,
-                  "blocked": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
-                  "pending": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
-            },
-            {
-              name: 'affiliatedInstitution',
-              title: this.$t('permission-management.permission-control.note'),
-              sortField: 'affiliatedInstitution',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-          ]
-        },
-        currentPage: 1,
-        perPage: 5,
-        totalRows: 0,
-        bootstrapTable: {
-          selected: [],
-          selectMode: 'multi',
-          fields: [
-            {key: 'title', label: 'Title', sortable: true, sortDirection: 'desc', tdClass: 'list-item-heading'},
-            {key: 'sales', label: 'Sales', sortable: true, tdClass: 'text-muted'},
-            {key: 'stock', label: 'Stock', sortable: true, tdClass: 'text-muted'},
-            {key: 'category', label: 'Category', sortable: true, tdClass: 'text-muted'},
-            {key: 'status', label: 'Status', sortable: true, tdClass: 'text-muted'}
-          ]
-        },
-        accessTreeData: [{
-          title: 'node1',
-          expanded: true,
-          children: [{
-            title: 'node 1-1',
-            expanded: true,
-            children: [{
-              title: 'node 1-1-1'
-            }, {
-              title: 'node 1-1-2'
-            }, {
-              title: 'node 1-1-3'
-            }]
-          }, {
-            title: 'node 1-2',
-            children: [{
-              title: "<span style='color: red'>node 1-2-1</span>"
-            }, {
-              title: "<span style='color: red'>node 1-2-2</span>"
-            }]
-          }]
-        }]
       }
     },
     validations: {
@@ -608,6 +479,40 @@
       }
     },
     watch: {
+        resourceList(newVal, oldVal) {
+            this.refreshResourceTreeData();
+        },
+        roleCategory(newVal, oldVal) {
+            if(this.selectedRole) {
+                this.selectedRole.roleFlag = newVal;
+                this.isSelectedAllResourcesForRole = false;
+                this.refreshResourceTreeData();
+            }
+        },
+        selectedRole(newVal, oldVal) {
+            if(newVal) {
+                let roleResourceIds = [];
+                newVal.resources.forEach((resource) => {
+                    roleResourceIds.push(resource.resourceId);
+                });
+                this.resourceList.forEach((resource) => {
+                    resource.selected = roleResourceIds.includes(resource.resourceId);
+                });
+                this.roleCategory = newVal.roleFlag;
+                this.refreshResourceTreeData();
+            }
+        },
+        isSelectedAllResourcesForRole(newVal, oldVal) {
+            if(this.selectedRole) {
+                let tempSelectedRole = this.selectedRole;
+                tempSelectedRole.resources = newVal ? this.resourceList.filter(resource => resource.resourceCategory === this.selectedRole.roleFlag) : [];
+                console.log(tempSelectedRole);
+                this.selectedRole = null;
+                this.selectedRole = tempSelectedRole;
+
+                this.refreshResourceTreeData();
+            }
+        },
       orgList(newVal, oldVal) {
         this.refreshOrgUserTreeData();
       },
@@ -639,6 +544,7 @@
         hideModal(refName) {
             this.$refs[refName].hide();
         },
+
       onRoleFormSubmit() {
         this.isLoading = true;
         getApiManager()
@@ -667,6 +573,128 @@
             this.isLoading = false;
           });
       },
+        onRoleFlagChanged(value) {
+            this.$refs.roleVuetable.refresh();
+        },
+        onClickSaveRole() {
+            if(this.selectedRole) {
+                this.isLoading = true;
+                let checkedNodes = this.$refs.resourceTree.getCheckedNodes();
+                let roleResourceIds = checkedNodes.map(node => node.resourceId);
+                getApiManager()
+                    .post(`${apiBaseUrl}/permission-management/permission-control/role/modify`, {
+                        'roleId': this.selectedRole.roleId,
+                        'resourceIdList': roleResourceIds
+                    })
+                    .then((response) => {
+                        this.isLoading = false;
+                        let message = response.data.message;
+                        let data = response.data.data;
+                        switch (message) {
+                            case responseMessages['ok']:
+                                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
+                                    duration: 3000,
+                                    permanent: false
+                                });
+                                this.$refs.roleVuetable.reload();
+                                break;
+                            default:
+
+                        }
+                    })
+                    .catch((error) => {
+                        this.isLoading = false;
+                    });
+            }
+        },
+        onClickDeleteRole(dataGroup) {
+            this.$refs['modal-delete-role'].show();
+        },
+        deleteRole() {
+            if(this.selectedRole) {
+                getApiManager()
+                    .post(`${apiBaseUrl}/permission-management/permission-control/role/delete`, {
+                        'roleId': this.selectedRole.roleId
+                    })
+                    .then((response) => {
+                        this.isLoading = false;
+                        let message = response.data.message;
+                        let data = response.data.data;
+                        switch (message) {
+                            case responseMessages['ok']:
+                                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-deleted`), {
+                                    duration: 3000,
+                                    permanent: false
+                                });
+                                this.$refs.roleVuetable.refresh();
+                                this.hideModal('modal-delete-role')
+                                break;
+                            default:
+
+                        }
+                    })
+                    .catch((error) => {
+                        this.isLoading = false;
+                    });
+            }
+        },
+        refreshResourceTreeData() {
+            let pseudoRootId = 0;
+            let nest = (resourceList, rootId = pseudoRootId) =>
+                resourceList
+                    .filter(resource => resource.parentResourceId === rootId)
+                    .map(resource => ({
+                        ...resource,
+                        title: resource.resourceCaption,
+                        expanded: true,
+                        children: nest(resourceList, resource.resourceId),
+                        checked: resource.selected
+                    }));
+            let resourceTreeData = nest(this.resourceList, pseudoRootId);
+            this.resourceTreeData.admin = resourceTreeData.filter(rootNode => rootNode.resourceCategory === 'admin');
+            this.resourceTreeData.user = resourceTreeData.filter(rootNode => rootNode.resourceCategory === 'user');
+            if(this.selectedRole) {
+                if(this.selectedRole.roleFlag === 'admin') {
+                    this.currentResourceTreeData = this.resourceTreeData.admin;
+                } else if(this.selectedRole.roleFlag === 'user') {
+                    this.currentResourceTreeData = this.resourceTreeData.user;
+                } else {
+                    this.currentResourceTreeData = [];
+                }
+            }
+        },
+        onRoleKeywordChanged(value) {
+            this.$refs.roleVuetable.refresh();
+        },
+        roleVuetableHttpFetch(apiUrl, httpOptions) {
+            return getApiManager().post(apiUrl, {
+                currentPage: httpOptions.params.page,
+                perPage: this.roleVuetableItems.perPage,
+                filter: {
+                    roleName: this.roleKeyword,
+                    category: this.roleFlag
+                }
+            });
+        },
+        onRolePaginationData(paginationData) {
+            this.$refs.rolePagination.setPaginationData(paginationData)
+        },
+        onRoleRowClass(dataItem, index) {
+            let selectedItem = this.selectedRole;
+            if(selectedItem && selectedItem.roleId === dataItem.roleId) {
+                return 'selected-row';
+            } else {
+                return '';
+            }
+        },
+        onRoleRowClicked(dataItem, event) {
+            this.selectedRole = JSON.parse(JSON.stringify(dataItem));
+        },
+        onRoleChangePage(page) {
+            this.$refs.roleVuetable.changePage(page);
+        },
+
+
       onDataGroupFormSubmit() {
         this.isLoading = true;
         getApiManager()
@@ -698,7 +726,7 @@
       },
       onClickSaveDataGroup() {
           if(this.selectedDataGroup) {
-              // this.isLoading = true;
+              this.isLoading = true;
               let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
               let dataGroupUserIds = [];
               checkedNodes.forEach((node) => {
@@ -816,14 +844,8 @@
       onDataGroupRowClicked(dataItem, event) {
         this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
       },
-      onPaginationData(paginationData) {
-          this.$refs.pagination.setPaginationData(paginationData)
-      },
-      onChangePage(page) {
+      onDataGroupChangePage(page) {
         this.$refs.dataGroupVuetable.changePage(page)
-      },
-      onAction(action, data, index) {
-        console.log('(slot) action: ' + action, data, index)
       },
     }
   }
