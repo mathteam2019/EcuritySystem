@@ -10,13 +10,11 @@ import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
-import com.haomibo.haomibo.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,11 +32,17 @@ import java.util.stream.StreamSupport;
 
 import static com.haomibo.haomibo.models.db.QSysUser.sysUser;
 
+/**
+ * User management controller.
+ */
 @RestController
 @RequestMapping("/permission-management/user-management")
 public class UserManagementController extends BaseController {
 
 
+    /**
+     * User create request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -112,6 +116,9 @@ public class UserManagementController extends BaseController {
     }
 
 
+    /**
+     * User modify request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -173,6 +180,9 @@ public class UserManagementController extends BaseController {
     }
 
 
+    /**
+     * User get all request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -192,6 +202,9 @@ public class UserManagementController extends BaseController {
 
     }
 
+    /**
+     * User datatable request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -226,6 +239,77 @@ public class UserManagementController extends BaseController {
     }
 
 
+    /**
+     * User update status request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserUpdateStatusRequestBody {
+
+        @NotNull
+        Long userId;
+
+        @NotNull
+        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED)
+        String status;
+
+    }
+
+
+    /**
+     * User group create request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserGroupCreateRequestBody {
+
+        @NotNull
+        String groupNumber;
+
+        @NotNull
+        String groupName;
+
+        String note;
+
+        SysUserGroup convert2SysUserGroup() {
+
+            return SysUserGroup
+                    .builder()
+                    .groupNumber(this.getGroupNumber())
+                    .groupName(this.getGroupName())
+                    .note(this.note)
+                    .build();
+
+        }
+
+    }
+
+
+    /**
+     * User group modify request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserGroupModifyRequestBody {
+        @NotNull
+        long userGroupId;
+
+        @NotNull
+        List<Long> userIdList;
+    }
+
+
+    /**
+     * User group datatable request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -256,61 +340,10 @@ public class UserManagementController extends BaseController {
 
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class UserUpdateStatusRequestBody {
 
-        @NotNull
-        Long userId;
-
-        @NotNull
-        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED)
-        String status;
-
-    }
-
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class UserGroupCreateRequestBody {
-
-        @NotNull
-        String groupName;
-
-        String note;
-
-        SysUserGroup convert2SysUserGroup() {
-
-            return SysUserGroup
-                    .builder()
-                    .groupName(this.getGroupName())
-                    .note(this.note)
-                    .build();
-
-        }
-
-    }
-
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class UserGroupModifyRequestBody {
-        @NotNull
-        long userGroupId;
-
-        @NotNull
-        List<Long> userIdList;
-    }
-
-
+    /**
+     * User group delete request body.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -321,7 +354,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User create request.
+     */
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
     public Object userCreate(
             @ModelAttribute @Valid UserCreateRequestBody requestBody,
@@ -331,23 +366,25 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // check if org is valid
+        // Check if org is valid.
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
+            // If organization is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // check if user account is duplicated
+        // Check if user account is duplicated.
         if (sysUserRepository.exists(sysUser.userAccount.eq(requestBody.userAccount))) {
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
-        // check password
+        // Check password.
         if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
 
+        // Process portrait file.
         MultipartFile portraitFile = requestBody.getPortrait();
 
         if (portraitFile != null && !portraitFile.isEmpty()) {
@@ -360,6 +397,7 @@ public class UserManagementController extends BaseController {
                 boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
 
                 if (isSucceeded) {
+                    // Save file name.
                     sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
                 }
 
@@ -376,7 +414,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User modify request.
+     */
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
     public Object userModify(
             @ModelAttribute @Valid UserModifyRequestBody requestBody,
@@ -386,28 +426,34 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // check if user if existing
+        // Check if user is existing.
         Optional<SysUser> optionalOldSysUser = sysUserRepository.findOne(sysUser.userId.eq(requestBody.getUserId()));
         if (!optionalOldSysUser.isPresent()) {
+            // If user is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUser oldSysUser = optionalOldSysUser.get();
 
-        // check if org is valid
+        // Check if org is valid.
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // check if user account is duplicated
+        // Check if user account is duplicated.
         if (sysUserRepository.exists(sysUser.userAccount.eq(requestBody.userAccount).and(sysUser.userId.ne(requestBody.getUserId())))) {
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
+
+        // Don't modify password.
         sysUser.setPassword(oldSysUser.getPassword());
+
+        // Don't modify portrait if uploaded file is not found.
         sysUser.setPortrait(oldSysUser.getPortrait());
 
+        // Process user portrait file.
         MultipartFile portraitFile = requestBody.getPortrait();
 
         if (portraitFile != null && !portraitFile.isEmpty()) {
@@ -420,6 +466,7 @@ public class UserManagementController extends BaseController {
                 boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
 
                 if (isSucceeded) {
+                    // Update portrait.
                     sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
                 }
 
@@ -429,12 +476,15 @@ public class UserManagementController extends BaseController {
 
         }
 
-        sysUser = sysUserRepository.save(sysUser);
+        sysUserRepository.save(sysUser);
 
-        return new CommonResponseBody(ResponseMessage.OK, sysUser);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
+    /**
+     * User datatable request.
+     */
     @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGetByFilterAndPage(
             @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
@@ -445,6 +495,7 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        // Build query.
         QSysUser builder = sysUser;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -463,6 +514,7 @@ public class UserManagementController extends BaseController {
             }
             if (filter.getOrgId() != null) {
 
+                // Build query if the user's org is under the org.
                 sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
 
                     List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
@@ -474,7 +526,9 @@ public class UserManagementController extends BaseController {
             }
         }
 
-        int currentPage = requestBody.getCurrentPage() - 1; // on server side, page is calculated from 0
+        // Pagination.
+
+        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -495,6 +549,8 @@ public class UserManagementController extends BaseController {
                         .data(data)
                         .build()));
 
+
+        // Set filters.
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
                 .addFilter(
@@ -507,7 +563,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User update status request.
+     */
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
     public Object userUpdateStatus(
             @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
@@ -517,9 +575,10 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // check if org is existing
+        // Check if org is existing.
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(sysUser.userId.eq(requestBody.getUserId()));
         if (!optionalSysUser.isPresent()) {
+            // If org is not found ,this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -532,9 +591,13 @@ public class UserManagementController extends BaseController {
     }
 
 
+    /**
+     * User get all request.
+     * BARE, WITH_ORG_TREE.
+     */
     @RequestMapping(value = "/user/get-all", method = RequestMethod.POST)
-    public Object userGetAll (@RequestBody @Valid UserGetAllRequestBody requestBody,
-    BindingResult bindingResult) {
+    public Object userGetAll(@RequestBody @Valid UserGetAllRequestBody requestBody,
+                             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -548,6 +611,7 @@ public class UserManagementController extends BaseController {
 
         String type = requestBody.getType();
 
+        // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         switch (type) {
@@ -568,7 +632,9 @@ public class UserManagementController extends BaseController {
 
     }
 
-
+    /**
+     * User group create request.
+     */
     @RequestMapping(value = "/user-group/create", method = RequestMethod.POST)
     public Object userGroupCreate(
             @RequestBody @Valid UserGroupCreateRequestBody requestBody,
@@ -586,7 +652,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User group datatable request.
+     */
     @RequestMapping(value = "/user-group/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGroupGetByFilterAndPage(
             @RequestBody @Valid UserGroupGetByFilterAndPageRequestBody requestBody,
@@ -597,6 +665,7 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        // Build query.
         QSysUserGroup builder = QSysUserGroup.sysUserGroup;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -616,7 +685,8 @@ public class UserManagementController extends BaseController {
 
         }
 
-        int currentPage = requestBody.getCurrentPage() - 1; // on server side, page is calculated from 0
+        // Pagination.
+        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -624,6 +694,7 @@ public class UserManagementController extends BaseController {
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
 
+        // Set filters.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
                 FilteringAndPaginationResult
@@ -649,7 +720,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User group modify request.
+     */
     @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
     public Object userGroupModify(
             @RequestBody @Valid UserGroupModifyRequestBody requestBody,
@@ -663,14 +736,17 @@ public class UserManagementController extends BaseController {
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
 
         if (!optionalSysUserGroup.isPresent()) {
+            // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
         List<Long> userIdList = requestBody.getUserIdList();
 
+        // Delete all existing relation.
         sysUserGroupUserRepository.deleteAll(sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId())));
 
+        // Build relation array which are valid only.
         List<SysUserGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
                 false)
@@ -680,6 +756,7 @@ public class UserManagementController extends BaseController {
                         .userId(sysUser.getUserId())
                         .build()).collect(Collectors.toList());
 
+        // Save.
         sysUserGroupUserRepository.saveAll(relationList);
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -687,7 +764,9 @@ public class UserManagementController extends BaseController {
     }
 
 
-
+    /**
+     * User group delete request.
+     */
     @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
     public Object userGroupDelete(
             @RequestBody @Valid UserGroupDeleteRequestBody requestBody,
@@ -700,14 +779,17 @@ public class UserManagementController extends BaseController {
 
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
         if (!optionalSysUserGroup.isPresent()) {
+            // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
         if (!sysUserGroup.getUsers().isEmpty()) {
+            // If user group has users, it can't be delete.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+        // Delete.
         sysUserGroupRepository.delete(
                 SysUserGroup
                         .builder()

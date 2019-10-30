@@ -2,6 +2,9 @@ package com.haomibo.haomibo.config;
 
 import java.io.File;
 
+/**
+ * Defines constants for this project.
+ */
 public class Constants {
 
     public static final long JWT_VALIDITY_SECONDS = 2 * 60 * 60;

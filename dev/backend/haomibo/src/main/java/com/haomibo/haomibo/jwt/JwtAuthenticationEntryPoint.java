@@ -1,6 +1,5 @@
 package com.haomibo.haomibo.jwt;
 
-import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -11,8 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Optional;
 
+/**
+ * This is used when authentication exception is thrown.
+ */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
@@ -24,9 +25,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        int k = 0;
 
-        // TODO: This is still ambitious.... this is for handling authentication exceptions but what exception can be thrown ?
+        // TODO: This is still ambitious.... This is for handling authentication exceptions but what exception can be thrown ?
+
+        ;
 
 //        Optional<String> tokenStringOptional = utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY));
 //

@@ -19,22 +19,31 @@ import java.nio.file.Paths;
 import java.util.List;
 
 
+/**
+ * Web configurations.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
+    /**
+     * Allow CORS.
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
     }
 
+    /**
+     * Resource handlers for serving files.
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        // we can use System.getProperty("user.dir") too ~~
+        // We can use System.getProperty("user.dir") too.
         String baseAbsolutePath = Paths.get("").toAbsolutePath().toString() + File.separator;
 
         registry
@@ -43,6 +52,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     }
 
+    /**
+     * Used for filtering object for json conversion
+     */
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 
@@ -59,6 +71,9 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(converter);
     }
 
+    /**
+     * Used for filtering object for json conversion
+     */
     private Hibernate5Module getConfiguredHibernateModule() {
         SessionFactory sessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
         Hibernate5Module module = new Hibernate5Module(sessionFactory);
@@ -68,6 +83,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     }
 
+    /**
+     * Used for filtering object for json conversion
+     */
     private void subscribeFiltersInMapper(ObjectMapper mapper) {
 
         mapper.setFilterProvider(ModelJsonFilters.getDefaultFilters());
