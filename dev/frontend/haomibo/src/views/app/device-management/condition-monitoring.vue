@@ -13,7 +13,7 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" class="w-100" content-class="tab-content" :no-fade="true">
+    <b-tabs nav-class="ml-2" class="w-100" :no-fade="true">
 
       <b-tab :title="$t('device-management.condition-monitoring')">
         <b-row>

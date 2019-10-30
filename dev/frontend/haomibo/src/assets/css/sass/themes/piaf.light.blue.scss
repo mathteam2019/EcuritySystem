@@ -45,7 +45,24 @@ $navbar-control-background-color: #131728;
 
 $blackLogoPath: "/assets/img/logo-black.png";
 $whiteLogoPath: "/assets/img/logo-white.png";
+$grayLogoPath: "/assets/img/logo-gray.png";
 $logoPathMobile: "/assets/img/logo-mobile.png";
+
+$nav-height: 80px;
+$nav-background: "/assets/img/nav-bg.png";
+$nav-background-mirror: "/assets/img/nav-bg-mirror.png";
+
+$nav-logo-width: 115px;
+$nav-logo-height: 50px;
+$nav-logo-start: 14px;
+
+$nav-title-width: 225px;
+$nav-title-height: 30px;
+$nav-title-start: 150px;
+
+$nav-auth-avatar-margin-end: 0px;
+
+$nav-auth-margin-end: 160px;
 
 @import "../_mixins.scss";
 @import "../_piaf.style.scss";

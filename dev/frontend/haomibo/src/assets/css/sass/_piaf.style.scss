@@ -1591,6 +1591,11 @@ button {
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
   background: $foreground-color;
+  box-shadow: 3px -2px 6px -5px #888888, -3px -2px 6px -5px #888888;
+}
+
+.nav-tabs .nav-link:not(.active) {
+  box-shadow: 0 0 6px -5px #888888;
 }
 
 .nav-tabs .nav-link.active::before,
@@ -1600,7 +1605,7 @@ button {
   border-radius: 10px;
   position: absolute;
   width: 100%;
-  height: 5px;
+  height: 3px;
   left: 0;
   top: 0;
 }
@@ -1719,7 +1724,8 @@ button {
 
 /* 09.Navbar*/
 .navbar {
-  background: $navbar-background-color;
+  background: url($nav-background) no-repeat;
+  background-position: right;
   height: $navbar-height;
   padding: 1.5rem 0 1.5rem 0;
   @include depth(1);
@@ -1829,6 +1835,8 @@ button {
   .navbar-right {
     flex-basis: 40%;
     text-align: right;
+    position: absolute;
+    right: $nav-auth-margin-end;
 
     .user {
       margin-right: $main-margin;
@@ -1851,18 +1859,35 @@ button {
     }
   }
 
-  .navbar-logo {
-    width: 110px;
-    height: 35px;
+  .navbar-title {
+    width: $nav-title-width;
+    height: $nav-title-height;
     position: absolute;
-    left: 0;
+    left: $nav-title-start;
     right: 0;
-    margin: 0 auto;
+    margin: 0;
 
     .logo {
       width: 100%;
       height: 100%;
-      background: url($whiteLogoPath) no-repeat;
+      background: url(/assets/img/top-title.png) no-repeat;
+      background-position: center center;
+      background-size: contain;
+    }
+  }
+
+  .navbar-logo {
+    width: $nav-logo-width;
+    height: $nav-logo-height;
+    position: absolute;
+    left: $nav-logo-start;
+    right: 0;
+    margin: 0;
+
+    .logo {
+      width: 100%;
+      height: 100%;
+      background: url($grayLogoPath) no-repeat;
       background-position: center center;
       background-size: contain;
     }
@@ -1888,8 +1913,13 @@ button {
     background: $navbar-control-background-color;
     border: initial;
     font-size: 0.8rem;
-    color: $menu-secondary-color;
+    color: $menu-primary-color;
     padding: 0.6rem 1rem;
+
+    .locale {
+      width: 40px;
+      border-radius: 20px;
+    }
 
     @include respond-below(xs) {
       padding-left: 0.75rem;
@@ -2056,7 +2086,7 @@ button {
     }
 
     img {
-      margin-left: 10px;
+      margin-right: 0;
       border-radius: 30px;
       width: 40px;
     }
@@ -2122,9 +2152,9 @@ button {
   position: fixed;
   top: 0;
   bottom: 0;
-  padding-top: $navbar-height;
+  padding-top: $nav-height;
   z-index: 4;
-  height: calc(100% - #{$navbar-height});
+  height: calc(100% - #{$nav-height});
   transition: border-radius $menu-collapse-time;
 
   .ps-container {
@@ -2134,7 +2164,7 @@ button {
 
   .main-menu {
     width: $main-menu-width;
-    height: calc(100% - #{$navbar-height});
+    height: calc(100% - #{$nav-height});
     background: $menu-foreground-color;
     z-index: 3;
     position: fixed;
@@ -2253,7 +2283,7 @@ button {
     border-left: 1px solid $menu-separator-color-light;
     @include depth(2);
     transition: transform $menu-collapse-time;
-    height: calc(100% - #{$navbar-height});
+    height: calc(100% - #{$nav-height});
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 0;
@@ -8571,8 +8601,23 @@ i.large-icon {
 
   /*Navbar */
   .navbar {
+    background: url($nav-background-mirror) no-repeat;
+    background-position: left;
+
+    .navbar-logo {
+      right: $nav-logo-start;
+      left: 0;
+    }
+
+    .navbar-title {
+      left: 0;
+      right: $nav-title-start;
+    }
+
     .navbar-right {
       text-align: left;
+      position: absolute;
+      left: $nav-auth-margin-end;
     }
 
     .menu-button-mobile {
@@ -8651,12 +8696,12 @@ i.large-icon {
           margin-right: 0;
         }
 
-        img {
-          margin-right: 10px;
-          margin-left: initial;
-        }
-
+      img {
+        margin-left: 10px;
+        margin-right: initial;
       }
+
+    }
 
       .header-icons {
         margin-right: initial;
@@ -9064,3 +9109,36 @@ i.large-icon {
   }
 }
 
+.navbar {
+  height: $nav-height;
+}
+
+.navbar .navbar-right .user {
+  margin-right: $nav-auth-avatar-margin-end;
+}
+
+.rtl .navbar .navbar-right .user {
+  margin-left: $nav-auth-avatar-margin-end;
+}
+
+.dropdown-toggle::after {
+  display: inline-block;
+  margin-left: .255em;
+  vertical-align: -2px;
+  content: "";
+  border: none;
+  background: url(/assets/img/bottom_arrow.svg) no-repeat;
+  width: 10px;
+  height: 10px;
+}
+
+.nav.nav-tabs {
+  margin-bottom: -1px;
+}
+
+.tab-content {
+  background: white;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 4px 1px #88888880;
+}

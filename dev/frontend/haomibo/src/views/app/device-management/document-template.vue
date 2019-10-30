@@ -6,7 +6,7 @@
         <div class="separator mb-5"></div>
       </b-colxx>
     </b-row>
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.file-template')">
         <b-row>
           <b-col xxs="12" md="4" lg="4">
