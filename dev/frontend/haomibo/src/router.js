@@ -112,16 +112,8 @@ const routes = [
     children: [
       {
         path: 'login',
-        component: () => import( './views/user/Login')
+        component: () => import( './views/user/login')
       },
-      {
-        path: 'register',
-        component: () => import( './views/user/Register')
-      },
-      {
-        path: 'forgot-password',
-        component: () => import( './views/user/ForgotPassword')
-      }
     ]
   },
   {

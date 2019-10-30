@@ -1,6 +1,8 @@
 package com.haomibo.haomibo.models.db;
 
 import lombok.*;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -42,9 +44,7 @@ public class SysRoleResource implements Serializable {
 
     @Column(name = "NOTE", length = 500, nullable = false)
     private String note;
-//
-//    @OneToMany(mappedBy = "sysRoleResource", fetch = FetchType.EAGER)
-//    private Set<SysRole> roles;
+
 
 
 }

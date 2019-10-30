@@ -12,6 +12,8 @@
     max-height: 50vh;
     overflow: auto;
   }
+
+
 </style>
 <style lang="scss">
   .search-form-group {
@@ -56,53 +58,52 @@
             <b-card class="mb-4">
 
               <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+                <b-col cols="6">
+                  <b-row>
 
-                    <b-row>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.username')">
+                        <b-form-input v-model="filter.userName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.username')">
-                          <b-form-input v-model="filter.userName"></b-form-input>
-                        </b-form-group>
-                      </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.status')">
+                        <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.status')">
-                          <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
-                        </b-form-group>
-                      </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.affiliated-institution')">
+                        <b-form-select v-model="filter.orgId"
+                                       :options="orgNameSelectData"
+                                       plain/>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.affiliated-institution')">
-                          <b-form-select v-model="filter.orgId"
-                                         :options="orgNameSelectData"
-                                         plain/>
-                        </b-form-group>
-                      </b-col>
-
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.user-category')">
-                          <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
-                        </b-form-group>
-                      </b-col>
-                      <b-col></b-col>
-                    </b-row>
-
-                  </div>
-                  <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info" @click="onSearchButton()">{{
-                      $t('permission-management.search') }}
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.user-category')">
+                        <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="info" @click="onResetButton()">{{
-                      $t('permission-management.reset') }}
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="showCreatePage()" variant="success">{{
-                      $t('permission-management.new') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
+                    <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
                 </b-col>
@@ -124,90 +125,90 @@
                       <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                     </template>
                     <template slot="actions" slot-scope="props">
-                      <div>
+                      <div >
 
                         <b-button
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
-                          variant="info"
+                          variant="primary default btn-square"
                           @click="onAction('modify', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-modify') }}
+                          <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status!='inactive'"
                           size="sm"
-                          variant="info"
+                          variant="primary default btn-square"
                           disabled>
-                          {{ $t('permission-management.action-modify') }}
+                          <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
-                          variant="success"
+                          variant="success default btn-square"
                           @click="onAction('active', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-active') }}
+                          <i class="icofont-check-circled"></i>
                         </b-button>
 
 
                         <b-button
                           v-if="props.rowData.status=='active'"
                           size="sm"
-                          variant="warning"
+                          variant="warning default btn-square"
                           @click="onAction('inactive', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-make-inactive') }}
+                          <i class="icofont-ban"></i>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
                           size="sm"
-                          variant="success"
+                          variant="success default btn-square"
                           disabled>
-                          {{ $t('permission-management.action-make-active') }}
+                          <i class="icofont-ban"></i>
                         </b-button>
 
 
                         <b-button
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
-                          variant="danger"
+                          variant="danger default btn-square"
                           @click="onAction('blocked', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-block') }}
+                          <i class="icofont-minus-circle"></i>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status=='blocked'"
                           size="sm"
-                          variant="success"
+                          variant="success default btn-square"
                           @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-unblock') }}
+                          <i class="icofont-power"></i>
                         </b-button>
 
 
                         <b-button
                           v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
                           size="sm"
-                          variant="danger"
+                          variant="danger default btn-square"
                           disabled>
-                          {{ $t('permission-management.action-block') }}
+                          <i class="icofont-minus-circle"></i>
                         </b-button>
 
 
                         <b-button
                           v-if="props.rowData.status=='pending'"
                           size="sm"
-                          variant="dark"
+                          variant="purple default btn-square"
                           @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          {{ $t('permission-management.action-reset-password') }}
+                          <i class="icofont-ui-password"></i>
                         </b-button>
 
                         <b-button
                           v-if="props.rowData.status!='pending'"
                           size="sm"
-                          variant="dark"
+                          variant="purple default btn-square"
                           disabled>
-                          {{ $t('permission-management.action-reset-password') }}
+                          <i class="icofont-ui-password"></i>
                         </b-button>
 
 
@@ -225,10 +226,10 @@
                   <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
                     {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
                     <template slot="modal-footer">
-                      <b-button variant="primary" @click="changeItemStatus()" class="mr-1">
+                      <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-prompt')">
+                      <b-button variant="danger" @click="fnHideModal('modal-prompt')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -242,22 +243,6 @@
           <b-col cols="12">
             <b-card class="mb-4">
               <b-row>
-                <b-col cols="2" class="text-right">
-                  <b-card class="mb-4" no-body>
-                    <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
-                      <b-badge
-                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
-                        pill class="position-absolute badge-bottom-left">
-                        {{$t('permission-management.' + profileForm.status)}}
-                      </b-badge>
-                    </div>
-                    <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
-                  </b-card>
-                  <b-button @click="$refs.profileFile.click()" class="mb-1" variant="light default" size="sm">{{
-                    $t('permission-management.upload-image')}}
-                  </b-button>
-                </b-col>
                 <b-col cols="10">
                   <b-row class="mb-2">
                     <b-col cols="3">
@@ -444,12 +429,31 @@
                       </b-form-group>
                     </b-col>
                   </b-row>
+
+                </b-col>
+                <b-col cols="2" class="text-right">
+                  <b-card class="mb-4" no-body>
+                    <div class="position-relative img-wrapper p-1" style="min-height: 180px">
+                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
+                      <b-badge
+                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
+                        pill class="position-absolute badge-bottom-left">
+                        {{$t('permission-management.' + profileForm.status)}}
+                      </b-badge>
+                    </div>
+                    <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
+                  </b-card>
+                  <b-button @click="$refs.profileFile.click()" class="mb-1" variant="light default" size="sm">{{
+                    $t('permission-management.upload-image')}}
+                  </b-button>
+                </b-col>
+                <b-col cols="12">
                   <b-row>
-                    <b-col cols="12">
-                      <b-button class="mb-1" @click="saveUserPage()" variant="info default">{{
+                    <b-col cols="12" class="text-right">
+                      <b-button class="mb-1" @click="onSaveUserPage()" variant="info default">{{
                         $t('permission-management.save') }}
                       </b-button>
-                      <b-button class="mb-1" @click="showTablePage()" variant="danger default">{{
+                      <b-button class="mb-1" @click="onTableListPage()" variant="danger default">{{
                         $t('permission-management.return') }}
                       </b-button>
                     </b-col>
@@ -463,19 +467,6 @@
           <b-col cols="12">
             <b-card class="mb-4">
               <b-row>
-                <b-col cols="2" class="text-right">
-                  <b-card class="mb-4" no-body>
-                    <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
-                      <b-badge
-                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
-                        pill class="position-absolute badge-bottom-left">
-                        {{$t('permission-management.' + profileForm.status)}}
-                      </b-badge>
-                    </div>
-                    <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
-                  </b-card>
-                </b-col>
                 <b-col cols="10">
                   <b-row class="mb-2">
                     <b-col cols="3">
@@ -618,9 +609,25 @@
                       </b-form-group>
                     </b-col>
                   </b-row>
+
+                </b-col>
+                <b-col cols="2" class="text-right">
+                  <b-card class="mb-4" no-body>
+                    <div class="position-relative img-wrapper p-1" style="min-height: 180px">
+                      <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
+                      <b-badge
+                        :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
+                        pill class="position-absolute badge-bottom-left">
+                        {{$t('permission-management.' + profileForm.status)}}
+                      </b-badge>
+                    </div>
+                    <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
+                  </b-card>
+                </b-col>
+                <b-col cols="12">
                   <b-row>
                     <b-col cols="12">
-                      <b-button class="mb-1" @click="showTablePage()" variant="danger default">{{
+                      <b-button class="mb-1" @click="onTableListPage()" variant="danger default">{{
                         $t('permission-management.return') }}
                       </b-button>
                     </b-col>
@@ -634,7 +641,7 @@
 
       <b-tab :title="$t('permission-management.user-group')">
         <b-row>
-          <b-col cols="3">
+          <b-col cols="3" style="display: none">
             <b-card class="mb-4">
               <b-form @submit.prevent="onGroupFormSubmit">
                 <b-form-group>
@@ -665,22 +672,35 @@
               </b-form>
             </b-card>
           </b-col>
-          <b-col cols="5">
+          <b-col cols="8">
             <b-card class="mb-4">
               <b-row>
-                <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.user.group-flag')">
-                    <b-form-select v-model="groupFilter.flag" :options="userGroupFlagData" plain/>
-                  </b-form-group>
-                </b-col>
-
-                <b-col cols="7">
+                <b-col cols="3" class="pr-3">
                   <b-form-group class="search-form-group">
-                    <template slot="label">&nbsp;</template>
+                    <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
                     <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')"
                                   v-model="groupFilter.name"></b-form-input>
                     <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
+                </b-col>
+                <b-col cols="9" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
                 </b-col>
               </b-row>
               <b-row>
@@ -719,10 +739,10 @@
                   <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
                     {{$t('permission-management.user.user-group-delete-prompt')}}
                     <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteUserGroupItem()" class="mr-1">
+                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
+                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -784,22 +804,13 @@
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
-  let getOrgById = (orgData, orgId) => {
-    for (let i = 0; i < orgData.length; i++) {
-      if (orgData[i].orgId == orgId) {
-        return orgData[i];
-      }
-    }
-    return 0;
-  };
-
 
   /**
    * getting orgFull name with parent org
    * @param orgData
    * @returns {*}
    */
-  let getOrgFullName = orgData => {
+  let fnGetOrgFullName = orgData => {
     let orgFullName = '';
     if (orgData == null)
       return orgFullName;
@@ -853,7 +864,7 @@
     },
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-      this.$refs.userGroupTable.$parent.transform = this.transformUserGroupTable.bind(this);
+      this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`, {
         type: 'with_parent'
       }).then((response) => {
@@ -1033,8 +1044,8 @@
             {
               name: '__slot:actions',
               title: this.$t('permission-management.th-action'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
+              titleClass: 'text-center btn-actions',
+              dataClass: 'text-center btn-actions'
             },
 
           ],
@@ -1047,14 +1058,8 @@
           note: ''
         },
         groupFilter: {
-          flag: null,
           name: ''
         },
-        userGroupFlagData: [
-          {value: null, text: this.$t('permission-management.all')},
-          {value: 'set', text: this.$t('permission-management.user.grouped')},
-          {value: 'unset', text: this.$t('permission-management.user.no-grouped')},
-        ],
         userGroupTableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
           perPage: 5,
@@ -1067,16 +1072,16 @@
               dataClass: 'text-center',
             },
             {
-              name: 'groupName',
-              title: this.$t('permission-management.user.user-group-name'),
-              sortField: 'userGroupName',
+              name: 'userGroupNumber',
+              title: this.$t('permission-management.user.user-group-number'),
+              sortField: 'userGroupNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:userGroupFlag',
-              title: this.$t('permission-management.user.group-flag'),
-              // sortField: 'userGroupFlag',
+              name: 'groupName',
+              title: this.$t('permission-management.user.user-group-name'),
+              sortField: 'userGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1085,13 +1090,6 @@
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center'
-            },
-            {
-              name: 'note',
-              title: this.$t('permission-management.user.note'),
-              // sortField: 'note',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
             }
           ],
         },
@@ -1102,12 +1100,6 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
-      },
-      'groupFilter.flag': function (newVal) {
-        this.$refs.userGroupTable.refresh();
-      },
-      'groupFilter.name': function (newVal) {
-        this.$refs.userGroupTable.refresh();
       },
       'userGroupTableItems.perPage': function (newVal) {
         this.$refs.userGroupTable.refresh();
@@ -1169,10 +1161,10 @@
 
         this.filter.orgId = this.treeData.orgId;
         this.defaultOrgId = this.treeData.orgId;
-        this.refreshOrgUserTreeData();
+        this.fnRefreshOrgUserTreeData();
       },
       userData(newVal) {
-        this.refreshOrgUserTreeData();
+        this.fnRefreshOrgUserTreeData();
       },
       selectedUserGroupItem(newVal) {
         if (newVal) {
@@ -1183,7 +1175,7 @@
           this.userData.forEach((user) => {
             user.selected = userGroupList.includes(user.userId);
           });
-          this.refreshOrgUserTreeData();
+          this.fnRefreshOrgUserTreeData();
         }
       },
       isSelectedAllUsersForDataGroup(newVal) {
@@ -1197,17 +1189,17 @@
       }
     },
     methods: {
-      showCreatePage() { // move to create page
+      onCreatePage() { // move to create page
         // reset models
-        this.initialUserData();
+        this.onInitialUserData();
         this.submitted = false;
         // change page to create
         this.pageStatus = 'create';
       },
-      showTablePage() {
+      onTableListPage() {
         this.pageStatus = 'table';
       },
-      saveUserPage() {
+      onSaveUserPage() {
         this.submitted = true;
         this.$v.$touch();
         if (this.$v.$invalid) {
@@ -1234,7 +1226,7 @@
                   duration: 3000,
                   permanent: false
                 });
-                this.initialUserData();
+                this.onInitialUserData();
                 // back to table
                 this.pageStatus = 'table';
                 break;
@@ -1249,33 +1241,30 @@
           .catch((error) => {
           });
       },
-      rowSelected(items) {
-        this.bootstrapTable.selected = items;
-      },
       onAction(action, data, index) {
         let userId = data.userId;
         switch (action) {
           case 'modify':
-            this.modifyItem(data);
+            this.fnModifyItem(data);
             break;
           case 'show':
-            this.showItem(data);
+            this.fnShowItem(data);
             break;
           case 'reset-password':
           case 'active':
           case 'unblock':
-            this.changeItemStatus(userId, action);
+            this.fnChangeItemStatus(userId, action);
             break;
           case 'inactive':
           case 'blocked':
-            this.showConfDiaglog(userId, action);
+            this.fnShowConfDiaglog(userId, action);
             break;
           case 'group-remove':
-            this.showUserGroupConfDiaglog(data);
+            this.fnShowUserGroupConfDiaglog(data);
             break;
         }
       },
-      hideModal(modal) {
+      fnHideModal(modal) {
         // hide modal
         this.$refs[modal].hide();
         this.promptTemp = {
@@ -1283,13 +1272,13 @@
           action: ''
         }
       },
-      showConfDiaglog(userId, action) {
+      fnShowConfDiaglog(userId, action) {
         this.promptTemp.userId = userId;
         this.promptTemp.action = action;
         this.$refs['modal-prompt'].show();
       },
-      modifyItem(data) {
-        this.initialUserData();
+      fnModifyItem(data) {
+        this.onInitialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key)) {
             if (key !== 'portrait' && key !== 'avatar')
@@ -1302,8 +1291,8 @@
         this.profileForm.passwordType = 'default';
         this.pageStatus = 'create';
       },
-      showItem(data) {
-        this.initialUserData();
+      fnShowItem(data) {
+        this.onInitialUserData();
         for (let key in this.profileForm) {
           if (Object.keys(data).includes(key))
             if (key !== 'portrait' && key !== 'avatar')
@@ -1315,7 +1304,7 @@
         this.profileForm.passwordType = 'default';
         this.pageStatus = 'show';
       },
-      changeItemStatus(userId = 0, action = '') {
+      fnChangeItemStatus(userId = 0, action = '') {
         if (userId === 0)
           userId = this.promptTemp.userId;
         if (action === '')
@@ -1354,9 +1343,9 @@
         let files = e.target.files || e.dataTransfer.files;
         if (!files.length)
           return;
-        this.createImage(files[0]);
+        this.onCreateImage(files[0]);
       },
-      createImage(file) {
+      onCreateImage(file) {
         this.profileForm.avatar = new Image();
         let reader = new FileReader();
         reader.onload = (e) => {
@@ -1379,8 +1368,8 @@
           this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
-      initialUserData() {
-        profileForm = {
+      onInitialUserData() {
+        this.profileForm = {
           status: 'inactive',
           userId: 0,
           avatar: '',
@@ -1422,7 +1411,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.orgName = getOrgFullName(temp.org);
+          temp.orgName = fnGetOrgFullName(temp.org);
           transformed.data.push(temp)
         }
 
@@ -1431,11 +1420,11 @@
       },
 
       //second tab content
-      showUserGroupConfDiaglog(userGroupItem) {
+      fnShowUserGroupConfDiaglog(userGroupItem) {
         this.selectedUserGroupItem = userGroupItem;
         this.$refs['modal-prompt-group'].show();
       },
-      deleteUserGroupItem() {
+      fnDeleteUserGroupItem() {
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
           getApiManager()
@@ -1471,7 +1460,7 @@
             });
         }
       },
-      transformUserGroupTable(response) {
+      fnTransformUserGroupTable(response) {
         this.selectedUserGroupItem = null;
         let transformed = {};
 
@@ -1576,7 +1565,7 @@
         this.selectedUserGroupItem = JSON.parse(JSON.stringify(dataItems));
       },
       // user tree group
-      refreshOrgUserTreeData() {
+      fnRefreshOrgUserTreeData() {
         let pseudoRootId = 0;
         let nest = (orgData, userData, rootId = pseudoRootId) => {
           let childrenOrgList = orgData

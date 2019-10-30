@@ -1,11 +1,9 @@
 package com.haomibo.haomibo.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.haomibo.haomibo.jwt.JwtUtil;
 import com.haomibo.haomibo.repositories.*;
 import com.haomibo.haomibo.security.AuthenticationFacade;
+import com.haomibo.haomibo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.MappingJacksonValue;
 
 public class BaseController {
 
@@ -16,10 +14,7 @@ public class BaseController {
     public ForbiddenTokenRepository forbiddenTokenRepository;
 
     @Autowired
-    public JwtUtil jwtUtil;
-
-    @Autowired
-    private ObjectMapper jacksonObjectMapper;
+    public Utils utils;
 
     @Autowired
     public AuthenticationFacade authenticationFacade;
@@ -47,9 +42,6 @@ public class BaseController {
 
     @Autowired
     public SysRoleResourceRepository sysRoleResourceRepository;
-
-
-
 
 
 }

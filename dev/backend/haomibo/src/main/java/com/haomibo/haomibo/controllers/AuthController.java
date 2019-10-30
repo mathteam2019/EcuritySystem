@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.controllers;
 
 import com.haomibo.haomibo.config.Constants;
+import com.haomibo.haomibo.enums.ResponseMessage;
 import com.haomibo.haomibo.models.db.ForbiddenToken;
 import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.db.SysUser;
@@ -72,7 +73,7 @@ public class AuthController extends BaseController {
             @RequestBody @Valid LoginRequestBody requestBody,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         QSysUser qSysUser = QSysUser.sysUser;
@@ -81,32 +82,30 @@ public class AuthController extends BaseController {
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(predicate);
 
         if (!optionalSysUser.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.USER_NOT_FOUND);
+            return new CommonResponseBody(ResponseMessage.USER_NOT_FOUND);
         }
 
         SysUser sysUser = optionalSysUser.get();
 
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PASSWORD);
+            return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
 
-        String token = jwtUtil.generateTokenForSysUser(sysUser);
+        Token token = utils.generateTokenForSysUser(sysUser);
 
         return new CommonResponseBody(
-                Constants.ResponseMessages.OK,
+                ResponseMessage.OK,
                 new LoginResponseBody(
                         new User(sysUser.getUserId(), sysUser.getUserName()),
-                        new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
+                        token
                 )
         );
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public Object logout(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
-
-        authToken = Utils.removePrefixFromToken(authToken);
 
         ForbiddenToken forbiddenToken = new ForbiddenToken();
 
@@ -115,21 +114,21 @@ public class AuthController extends BaseController {
         forbiddenTokenRepository.save(forbiddenToken);
         forbiddenTokenRepository.flush();
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/refresh-token", method = RequestMethod.POST)
     public Object refreshToken(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
 
-        String token = jwtUtil.generateTokenForSysUser(sysUser);
+        Token token = utils.generateTokenForSysUser(sysUser);
 
         return new CommonResponseBody(
-                Constants.ResponseMessages.OK,
-                new Token(token, jwtUtil.getExpirationDateFromToken(Utils.removePrefixFromToken(token)))
+                ResponseMessage.OK,
+                token
         );
     }
 }
