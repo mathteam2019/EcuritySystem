@@ -80,16 +80,23 @@ $animation-time-short: 200ms;
 $border-radius: 0.1rem;
 $border-radius-rounded: 0.75rem;
 
-$theme-color-purple: #922c88;
+$theme-color-purple: #9900ff;
 $theme-color-blue: #145388;
 $theme-color-green: #576a3d;
 $theme-color-orange: #e2863b;
 $theme-color-red: #880a1f;
 
+/*
+modify color valuables by jgj
 $info-color: #3195a5;
 $success-color: #3e884f;
 $warning-color: #b69329;
-$error-color: #c43d4b;
+$error-color: #c43d4b;*/
+
+$info-color: #122881;
+$success-color: #009900;
+$warning-color: #e6a23c;
+$error-color: #ff0000;
 
 /* 01.Base */
 html {

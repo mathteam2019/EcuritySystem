@@ -1,18 +1,17 @@
 <template>
   <nav>
-    <div style="display: flex;" >
-      <div style="flex: 1;display: flex;"></div>
+    <div style="display: flex;" class="justify-content-between">
 
-      <div style="flex: 1;display: flex;justify-content: center;">
+      <div style="flex: 1;display: flex;">
         <ul class="pagination justify-content-center pagination-sm mb-0">
           <li :class="{'disabled': isOnFirstPage,'page-item':true}">
             <a class="page-link" href="" @click.prevent="loadPage(1)">
-              <span><i class='simple-icon-control-start'/></span>
+              <span><i class='icofont-double-left'/></span>
             </a>
           </li>
           <li :class="{'disabled': isOnFirstPage,'page-item':true}">
             <a class="page-link" href="" @click.prevent="loadPage('prev')">
-              <span><i class='simple-icon-arrow-left'/></span>
+              <span><i class='icofont-simple-left'/></span>
             </a>
           </li>
           <template v-if="notEnoughPages">
@@ -27,12 +26,12 @@
           </template>
           <li :class="{'disabled': isOnLastPage,'page-item':true}">
             <a class="page-link" href="" @click.prevent="loadPage('next')">
-              <span><i class='simple-icon-arrow-right'/></span>
+              <span><i class='icofont-simple-right'/></span>
             </a>
           </li>
           <li :class="{'disabled': isOnLastPage,'page-item':true}">
             <a class="page-link" href="" @click.prevent="tablePagination && loadPage(tablePagination.last_page)">
-              <span><i class='simple-icon-control-end'/></span>
+              <span><i class='icofont-double-right'/></span>
             </a>
           </li>
 
@@ -44,7 +43,7 @@
           <span class="mr-3">{{$t('vuetable.every-page-showing')}}</span>
           <select
             v-model="perPage"
-            class="mr-3"
+            class="mr-3 form-control d-inline"
             style="width: 48px;">
             <option>5</option>
             <option>10</option>
