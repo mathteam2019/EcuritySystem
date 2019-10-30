@@ -7,7 +7,7 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs v-show="!isLoading" nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>

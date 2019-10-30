@@ -1,0 +1,162 @@
+
+html body {
+  font-family: "Microsoft YaHei"!important;
+}
+
+//vue table btn square style variables
+$btn-square-length:30px;
+$btn-square-padding: 0;
+$btn-square-font-size: 17px;
+$theme-color-purple-2: #881aff;
+
+.btn.default {
+  border-radius: 0.3rem;
+}
+.form-group {
+  .col-form-label {
+    font-weight: bold;
+  }
+}
+.form-control {
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.4rem 0.55rem 0.5rem;
+}
+
+.btn-success {
+  background-color: $success-color;
+}
+.btn-danger {
+  background-color: $error-color;
+}
+.btn-info {
+  background-color: $info-color;
+  border-color: $info-color;
+  &:hover {
+    background-color: darken($info-color, 8%);
+    border-color: darken($info-color, 8%);
+  }
+}
+.btn-outline-info {
+  color: $info-color;
+  border-color: $info-color;
+  &:hover,&:active,&:focus {
+    color: white;
+    background-color: $info-color;
+    border-color: darken($info-color, 8%);
+  }
+}
+.btn-outline-info:not(:disabled):not(.disabled):active, .btn-outline-info:not(:disabled):not(.disabled).active, .show>.btn-outline-info.dropdown-toggle {
+  background-color: $info-color;
+  border-color: darken($info-color, 8%);
+}
+.btn-info:not(:disabled):not(.disabled):active, .btn-info:not(:disabled):not(.disabled).active, .show>.btn-info.dropdown-toggle {
+  background-color: darken($info-color, 8%)!important;
+  border-color: darken($info-color, 8%)!important;
+}
+.btn-primary {
+  background-color: $info-color;
+  border-color: $info-color;
+  color: $button-text-color;
+
+  &:hover,&:not(:disabled):active,&:focus {
+    color: $button-text-color;
+    background-color: darken($info-color, 8%)!important;
+    border-color: darken($info-color, 8%)!important;
+  }
+}
+
+
+.btn-purple {
+  background-color: $theme-color-purple;
+  color: $button-text-color;
+  &:hover {
+    color: $button-text-color;
+    background-color: $theme-color-purple-2;
+  }
+}
+.text-success {
+  color: $success-color!important;
+}
+.text-danger {
+  color: $error-color!important;
+}
+.text-primary {
+  color: $info-color!important;
+}
+
+
+.vuetable {
+  thead {
+    tr {
+      background: #f1f1f1;
+      th {
+        padding: 14px 0!important;
+        border: solid 1px #e7e7e7!important;
+        &.btn-actions {
+          width: 230px;
+        }
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        padding: 10px 0!important;
+        border: solid 1px #e7e7e7!important;
+        vertical-align: middle!important;
+        &.btn-actions {
+          width: 230px;
+        }
+        button.btn-square {
+          width: $btn-square-length;
+          height: $btn-square-length;
+          padding: $btn-square-padding;
+          font-size: $btn-square-font-size;
+          line-height: $btn-square-length - 3px;
+          border-radius: 4px!important;
+          margin-left: 20px;
+          &:disabled {
+            background-color: #cccccc;
+            border-color: transparent;
+          }
+        }
+      }
+    }
+  }
+  &.table-striped {
+    tbody {
+      tr:nth-of-type(odd) {
+        td {
+          background-color: #fafafa!important;
+        }
+      }
+    }
+  }
+}
+.pagination-sm {
+  .page-item {
+    .page-link {
+      border: none;
+      cursor: pointer;
+      min-width: 5px;
+      font-size: 14px;
+      &:hover {
+        color: #1782d4;
+      }
+    }
+    &.active {
+      .page-link {
+        color: #1782d4;
+        border: none;
+      }
+    }
+
+
+  }
+}
+
+.navbar .logout {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

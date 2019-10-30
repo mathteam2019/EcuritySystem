@@ -7,7 +7,7 @@
       </b-colxx>
     </b-row>
 
-    <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+    <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
         <b-row v-if="pageStatus==='table'">
@@ -365,22 +365,15 @@
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
         <b-row>
           <b-col >
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Hi</h1>
+            <b-card class="mb-4" >
+              <b-row>
+
+              </b-row>
             </b-card>
           </b-col>
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.assign-permission-management.summary-table')">
-        <b-row>
-          <b-col >
-            <b-card class="mb-4" :title="'TODO'">
-              <h1>Nice</h1>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-tab>
 
     </b-tabs>
 
