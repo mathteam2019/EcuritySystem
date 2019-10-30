@@ -45,12 +45,10 @@
             <span class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
           <b-dropdown-item>{{this.$t('menu.account')}}</b-dropdown-item>
-          <b-dropdown-divider/>
-          <b-dropdown-item @click="logout">{{this.$t('menu.sign-out')}}</b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="d-inline-block">
-        <b-button variant="empty">Power off</b-button>
+        <img src="/assets/img/turn_on_icon.svg" class="ml-4 mb-1 logout" @click="logout" />
       </div>
     </div>
   </nav>
