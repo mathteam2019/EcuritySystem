@@ -109,7 +109,6 @@
 
       getLocaleIcon() {
         const locale = this.$i18n.locale;
-        console.log(locale);
         for(let l of localeOptions) {
             if(l.id === locale) return l.icon;
         }
