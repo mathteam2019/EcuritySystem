@@ -33,7 +33,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+/**
+ * The filter class which will check all the requests.
+ * This will be added before UsernamePasswordAuthenticationFilter.
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
@@ -50,19 +53,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private PathMatcher pathMatcher;
 
 
+    /**
+     * Overridden method for filtering request.
+     *
+     * @param request     Request object.
+     * @param response    Response object.
+     * @param filterChain FilterChain object.
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
-        // get token from header
+        // Get token from header.
         String token = request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY);
 
         if (token == null) {
-            // if token does not exist, this token is invalid
+            // Ff token does not exist, this token is invalid.
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
 
-        // if token is forbidden, this token is invalid
+        // If token is forbidden, this token is invalid.
         if (forbiddenTokenRepository.exists(QForbiddenToken.forbiddenToken.token.eq(token))) {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
@@ -71,24 +83,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Claims claims;
         try {
 
-            // try to get claims from token
+            // Try to get claims from token.
             claims = Jwts.parser()
                     .setSigningKey(utils.jwtSecret)
                     .parseClaimsJws(token)
                     .getBody();
 
         } catch (ExpiredJwtException e) {
-            // token expired
+            // Token expired.
             utils.writeResponse(response, ResponseMessage.TOKEN_EXPIRED);
             return;
         } catch (Exception e) {
-            // token is invalid
+            // Token is invalid.
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
 
         if (!claims.containsKey("userId")) {
-            // if claims has not key "userId", this token is invalid
+            // If claims have not key "userId", this token is invalid.
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
@@ -96,7 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Long userId;
 
         try {
-            // if conversion from String to Long fails, this token is invalid
+            // If conversion from String to Long fails, this token is invalid.
             userId = Long.parseLong(claims.get("userId", String.class));
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,24 +116,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
+        // Find user from the database.
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
 
         if (!optionalSysUser.isPresent()) {
-            // if we can't get user from the token, this token is invalid
+            // If we can't get user from the token, this token is invalid.
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
 
         SysUser sysUser = optionalSysUser.get();
 
-        // get all available resources for user
+        // Get all available resources for user.
         List<SysResource> availableSysResourceList = new ArrayList<>();
         sysUser.getRoles().forEach(sysRole -> {
             availableSysResourceList.addAll(sysRole.getResources());
         });
 
 
-        // generate roles for this user
+        // Generate roles for this user.
         List<GrantedAuthority> roles = availableSysResourceList
                 .stream()
                 .map(sysResource -> Role.Authority.ROLE_PREFIX + sysResource.getResourceName())
@@ -129,22 +142,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .collect(Collectors.toList());
 
 
-        // generate authentication
+        // Generate authentication.
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(sysUser, null, roles);
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        // set as authenticated
+        // Set as authenticated.
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // continue to next process
+        // Continue to next filter.
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Overridden method for excluding urls which don't need token checking
+     *
+     * @param request
+     * @return
+     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
-        // we don't need to check the request which are inside EXCLUDE_URL_PATTERNS
-
+        // We don't need to check the request which are inside EXCLUDE_URL_PATTERNS.
         return Arrays.stream(Constants.EXCLUDE_URL_PATTERNS).anyMatch(p -> pathMatcher.match(p, request.getServletPath()));
 
     }

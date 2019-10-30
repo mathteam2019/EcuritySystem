@@ -1,9 +1,5 @@
 package com.haomibo.haomibo.scheduledtasks;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.models.db.QForbiddenToken;
 import com.haomibo.haomibo.repositories.ForbiddenTokenRepository;
@@ -13,6 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+/**
+ * This class will hold all scheduled tasks on the server.
+ */
 @Component
 public class ScheduledTasks {
 
@@ -23,11 +26,17 @@ public class ScheduledTasks {
     @Autowired
     ForbiddenTokenRepository forbiddenTokenRepository;
 
-    void logCurrentTime() {
+    /**
+     * Write current time to log.
+     */
+    private void logCurrentTime() {
         Date now = new Date();
         log.info("The time is now {} - {}", (int) (now.getTime() / 1000), dateFormat.format(now));
     }
 
+    /**
+     * Cleans forbidden token table.
+     */
     @Scheduled(fixedRate = Constants.TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE * 1000)
     public void cleanForbiddenTokenTable() {
 
@@ -35,11 +44,14 @@ public class ScheduledTasks {
 
         logCurrentTime();
 
+        // Calculate time.
         Date now = new Date();
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
         cal.add(Calendar.SECOND, (int) -Constants.JWT_VALIDITY_SECONDS);
+
+        // Delete all records which is created more than JWT validity time ago.
 
         QForbiddenToken qForbiddenToken = QForbiddenToken.forbiddenToken;
 
