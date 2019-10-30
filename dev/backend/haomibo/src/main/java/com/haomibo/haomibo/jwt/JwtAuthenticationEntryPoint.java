@@ -17,21 +17,25 @@ import java.util.Optional;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Serializable {
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private Utils utils;
 
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
+        int k = 0;
+
         // TODO: This is still ambitious.... this is for handling authentication exceptions but what exception can be thrown ?
 
-        Optional<String> tokenStringOptional = Utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY));
+//        Optional<String> tokenStringOptional = utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY));
+//
+//        if (!tokenStringOptional.isPresent()) {
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ResponseMessage.INVALID_TOKEN);
+//        } else {
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, jwtUtil.getTokenStatus(tokenStringOptional.get()));
+//        }
 
-        if (!tokenStringOptional.isPresent()) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Constants.ResponseMessages.INVALID_TOKEN);
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, jwtUtil.getTokenStatus(tokenStringOptional.get()));
-        }
+
     }
 }

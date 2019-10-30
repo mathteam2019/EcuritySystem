@@ -1,5 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NotFound;
@@ -17,8 +19,16 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_ROLE)
 @Table(name = "sys_role")
 public class SysRole implements Serializable {
+
+    public static class Flag {
+        public static final String SET = "set";
+        public static final String UNSET = "unset";
+        public static final String ADMIN = "admin";
+        public static final String USER = "user";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,5 +69,6 @@ public class SysRole implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID")}
     )
     Set<SysResource> resources;
+
 
 }

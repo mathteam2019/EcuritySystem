@@ -1,10 +1,13 @@
 package com.haomibo.haomibo.models.db;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -13,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_RESOURCE)
 @Table(name = "sys_resource")
 public class SysResource implements Serializable {
 
@@ -50,6 +54,7 @@ public class SysResource implements Serializable {
 
     @Column(name = "NOTE", length = 500, nullable = false)
     private String note;
+
 
 }
 

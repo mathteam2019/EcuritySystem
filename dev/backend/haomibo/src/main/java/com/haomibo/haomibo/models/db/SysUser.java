@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import org.hibernate.annotations.NotFound;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -54,6 +56,7 @@ public class SysUser implements Serializable {
     @Column(name = "USER_ACCOUNT", length = 20)
     String userAccount;
 
+    @JsonIgnore
     @Column(name = "PASSWORD", length = 20)
     String password;
 
@@ -118,4 +121,11 @@ public class SysUser implements Serializable {
     @MapsId("org")
     private SysOrg org;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_role_user",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
+    )
+    Set<SysRole> roles;
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.enums.ResponseMessage;
+import com.haomibo.haomibo.enums.Role;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
@@ -16,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -198,92 +201,94 @@ public class OrganizationManagementController extends BaseController {
 
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
+    @PreAuthorize(Role.Authority.HAS_ORG_CREATE)
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object create(
             @RequestBody @Valid CreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if parent org is existing
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
 
-        sysOrg = sysOrgRepository.save(sysOrg);
+        sysOrgRepository.save(sysOrg);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrg);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+    @PreAuthorize(Role.Authority.HAS_ORG_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object modify(
             @RequestBody @Valid ModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if org is existing
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if parent org is existing
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
 
         sysOrg = sysOrgRepository.save(sysOrg);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysOrg);
+        return new CommonResponseBody(ResponseMessage.OK, sysOrg);
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
+    @PreAuthorize(Role.Authority.HAS_ORG_DELETE)
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public Object delete(
             @RequestBody @Valid DeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if org has children
         boolean isHavingChildren = sysOrgRepository.exists(QSysOrg.sysOrg.parentOrgId.eq(requestBody.getOrgId()));
         if (isHavingChildren) {
-            return new CommonResponseBody(Constants.ResponseMessages.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         sysOrgRepository.delete(SysOrg.builder().orgId(requestBody.getOrgId()).build());
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/update-status", method = RequestMethod.POST)
     public Object updateStatus(
             @RequestBody @Valid UpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if org is existing
         Optional<SysOrg> optionalSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()));
         if (!optionalSysOrg.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysOrg sysOrg = optionalSysOrg.get();
@@ -291,24 +296,24 @@ public class OrganizationManagementController extends BaseController {
 
         sysOrgRepository.save(sysOrg);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
     public Object getAll(@RequestBody @Valid GetAllRequestBody requestBody,
                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         List<SysOrg> sysOrgList = sysOrgRepository.findAll();
 
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysOrgList));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysOrgList));
 
         String type = requestBody.getType();
 
@@ -327,15 +332,15 @@ public class OrganizationManagementController extends BaseController {
                 break;
             case GetAllRequestBody.GetAllType.WITH_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
             case GetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
             case GetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
             default:
 
@@ -347,7 +352,7 @@ public class OrganizationManagementController extends BaseController {
         return value;
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
     public Object getByFilterAndPage(
             @RequestBody @Valid GetByFilterAndPageRequestBody requestBody,
@@ -355,7 +360,7 @@ public class OrganizationManagementController extends BaseController {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
@@ -386,7 +391,7 @@ public class OrganizationManagementController extends BaseController {
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                Constants.ResponseMessages.OK,
+                ResponseMessage.OK,
                 FilteringAndPaginationResult
                         .builder()
                         .total(total)

@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Table(name = "sys_data_group_user")
+@Table(name = "sys_user_group_user")
 public class SysUserGroupUser implements Serializable {
 
     @Id

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.config.Constants;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.enums.ResponseMessage;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
@@ -239,8 +240,8 @@ public class UserManagementController extends BaseController {
         static class Filter {
             String groupName;
 
-            @Pattern(regexp = SysDataGroup.Flag.SET + "|" +
-                    SysDataGroup.Flag.UNSET)
+            @Pattern(regexp = SysUserGroup.Flag.SET + "|" +
+                    SysUserGroup.Flag.UNSET)
             String flag;
         }
 
@@ -320,29 +321,29 @@ public class UserManagementController extends BaseController {
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
     public Object userCreate(
             @ModelAttribute @Valid UserCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if org is valid
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if user account is duplicated
         if (sysUserRepository.exists(sysUser.userAccount.eq(requestBody.userAccount))) {
-            return new CommonResponseBody(Constants.ResponseMessages.USED_USER_ACCOUNT);
+            return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
         // check password
         if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
@@ -356,7 +357,7 @@ public class UserManagementController extends BaseController {
                 String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
                 String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
 
-                boolean isSucceeded = Utils.saveFile(directoryPath, fileName, bytes);
+                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
 
                 if (isSucceeded) {
                     sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
@@ -369,38 +370,38 @@ public class UserManagementController extends BaseController {
         }
 
 
-        sysUser = sysUserRepository.save(sysUser);
+        sysUserRepository.save(sysUser);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysUser);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
     public Object userModify(
             @ModelAttribute @Valid UserModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if user if existing
         Optional<SysUser> optionalOldSysUser = sysUserRepository.findOne(sysUser.userId.eq(requestBody.getUserId()));
         if (!optionalOldSysUser.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUser oldSysUser = optionalOldSysUser.get();
 
         // check if org is valid
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if user account is duplicated
         if (sysUserRepository.exists(sysUser.userAccount.eq(requestBody.userAccount).and(sysUser.userId.ne(requestBody.getUserId())))) {
-            return new CommonResponseBody(Constants.ResponseMessages.USED_USER_ACCOUNT);
+            return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
@@ -416,7 +417,7 @@ public class UserManagementController extends BaseController {
                 String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
                 String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
 
-                boolean isSucceeded = Utils.saveFile(directoryPath, fileName, bytes);
+                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
 
                 if (isSucceeded) {
                     sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
@@ -430,10 +431,10 @@ public class UserManagementController extends BaseController {
 
         sysUser = sysUserRepository.save(sysUser);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysUser);
+        return new CommonResponseBody(ResponseMessage.OK, sysUser);
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGetByFilterAndPage(
             @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
@@ -441,7 +442,7 @@ public class UserManagementController extends BaseController {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         QSysUser builder = sysUser;
@@ -482,7 +483,7 @@ public class UserManagementController extends BaseController {
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                Constants.ResponseMessages.OK,
+                ResponseMessage.OK,
                 FilteringAndPaginationResult
                         .builder()
                         .total(total)
@@ -506,20 +507,20 @@ public class UserManagementController extends BaseController {
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
     public Object userUpdateStatus(
             @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // check if org is existing
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(sysUser.userId.eq(requestBody.getUserId()));
         if (!optionalSysUser.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUser sysUser = optionalSysUser.get();
@@ -527,23 +528,23 @@ public class UserManagementController extends BaseController {
 
         sysUserRepository.save(sysUser);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user/get-all", method = RequestMethod.POST)
     public Object userGetAll (@RequestBody @Valid UserGetAllRequestBody requestBody,
     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         List<SysUser> sysUserList = sysUserRepository.findAll();
 
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(Constants.ResponseMessages.OK, sysUserList));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserList));
 
         String type = requestBody.getType();
 
@@ -551,7 +552,7 @@ public class UserManagementController extends BaseController {
 
         switch (type) {
             case UserGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
             case UserGetAllRequestBody.GetAllType.WITH_ORG_TREE:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
@@ -567,25 +568,25 @@ public class UserManagementController extends BaseController {
 
     }
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user-group/create", method = RequestMethod.POST)
     public Object userGroupCreate(
             @RequestBody @Valid UserGroupCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUserGroup sysUserGroup = requestBody.convert2SysUserGroup();
 
-        sysUserGroup = sysUserGroupRepository.save(sysUserGroup);
+        sysUserGroupRepository.save(sysUserGroup);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK, sysUserGroup);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user-group/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGroupGetByFilterAndPage(
             @RequestBody @Valid UserGroupGetByFilterAndPageRequestBody requestBody,
@@ -593,7 +594,7 @@ public class UserManagementController extends BaseController {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         QSysUserGroup builder = QSysUserGroup.sysUserGroup;
@@ -606,10 +607,10 @@ public class UserManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getGroupName())) {
                 predicate.and(builder.groupName.contains(filter.getGroupName()));
             }
-            if (SysDataGroup.Flag.SET.equals(filter.getFlag())) {
+            if (SysUserGroup.Flag.SET.equals(filter.getFlag())) {
                 predicate.and(builder.users.isNotEmpty());
             }
-            if (SysDataGroup.Flag.UNSET.equals(filter.getFlag())) {
+            if (SysUserGroup.Flag.UNSET.equals(filter.getFlag())) {
                 predicate.and(builder.users.isEmpty());
             }
 
@@ -623,8 +624,8 @@ public class UserManagementController extends BaseController {
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
 
-        return new CommonResponseBody(
-                Constants.ResponseMessages.OK,
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
+                ResponseMessage.OK,
                 FilteringAndPaginationResult
                         .builder()
                         .total(total)
@@ -634,11 +635,21 @@ public class UserManagementController extends BaseController {
                         .from(perPage * currentPage + 1)
                         .to(perPage * currentPage + data.size())
                         .data(data)
-                        .build());
+                        .build()));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_USER,
+                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+
+        value.setFilters(filters);
+
+        return value;
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
     public Object userGroupModify(
             @RequestBody @Valid UserGroupModifyRequestBody requestBody,
@@ -646,13 +657,13 @@ public class UserManagementController extends BaseController {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
 
         if (!optionalSysUserGroup.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
@@ -660,7 +671,7 @@ public class UserManagementController extends BaseController {
 
         sysUserGroupUserRepository.deleteAll(sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId())));
 
-        List<SysUserGroupUser> sysUserGroupUserList = StreamSupport.stream(
+        List<SysUserGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
                 false)
                 .map(sysUser -> SysUserGroupUser
@@ -669,32 +680,32 @@ public class UserManagementController extends BaseController {
                         .userId(sysUser.getUserId())
                         .build()).collect(Collectors.toList());
 
-        sysUserGroupUserRepository.saveAll(sysUserGroupUserList);
+        sysUserGroupUserRepository.saveAll(relationList);
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
 
     }
 
 
-    @Secured({Constants.Roles.SYS_USER})
+
     @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
-    public Object userGroupCreate(
+    public Object userGroupDelete(
             @RequestBody @Valid UserGroupDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
 
         if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
         if (!optionalSysUserGroup.isPresent()) {
-            return new CommonResponseBody(Constants.ResponseMessages.INVALID_PARAMETER);
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
         if (!sysUserGroup.getUsers().isEmpty()) {
-            return new CommonResponseBody(Constants.ResponseMessages.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         sysUserGroupRepository.delete(
@@ -704,7 +715,7 @@ public class UserManagementController extends BaseController {
                         .build()
         );
 
-        return new CommonResponseBody(Constants.ResponseMessages.OK);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
