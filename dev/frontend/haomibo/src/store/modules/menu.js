@@ -41,7 +41,7 @@ const mutations = {
       if (currentClasses.includes('menu-default') && currentClasses.includes('menu-sub-hidden')) {
         nextClasses = 'menu-default menu-sub-hidden';
       } else if (currentClasses.includes('menu-default')) {
-        nextClasses = 'menu-default';
+        nextClasses = 'menu-default menu-sub-hidden';
       } else if (currentClasses.includes('menu-sub-hidden')) {
         nextClasses = 'menu-sub-hidden';
       } else if (currentClasses.includes('menu-hidden')) {
@@ -50,7 +50,7 @@ const mutations = {
       clickIndex = 0;
     } else if (clickIndex % 4 === 1) {
       if (currentClasses.includes('menu-default') && currentClasses.includes('menu-sub-hidden')) {
-        nextClasses = 'menu-default menu-sub-hidden main-hidden sub-hidden';
+        nextClasses = 'menu-default menu-sub-hidden sub-show-temporary';
       } else if (currentClasses.includes('menu-default')) {
         nextClasses = 'menu-default sub-hidden';
       } else if (currentClasses.includes('menu-sub-hidden')) {

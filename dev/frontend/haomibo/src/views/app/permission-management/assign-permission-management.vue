@@ -366,8 +366,191 @@
         <b-row>
           <b-col >
             <b-card class="mb-4" >
-              <b-row>
+              <b-row v-if="groupPageStatus==='table'">
+                <b-col cols="12">
+                  <div class="mb-4">
 
+                    <b-row>
+                      <b-col cols="6">
+                        <b-row>
+
+                          <b-col>
+                            <b-form-group :label="$t('permission-management.username')">
+                              <b-form-input v-model="filter.userName"></b-form-input>
+                            </b-form-group>
+                          </b-col>
+
+                          <b-col>
+                            <b-form-group :label="$t('permission-management.status')">
+                              <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                            </b-form-group>
+                          </b-col>
+
+                          <b-col>
+                            <b-form-group :label="$t('permission-management.affiliated-institution')">
+                              <b-form-select v-model="filter.orgId"
+                                             :options="orgNameSelectData"
+                                             plain/>
+                            </b-form-group>
+                          </b-col>
+
+                          <b-col>
+                            <b-form-group :label="$t('permission-management.user-category')">
+                              <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
+                            </b-form-group>
+                          </b-col>
+                        </b-row>
+                      </b-col>
+                      <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                        <div>
+                          <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                            <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                          </b-button>
+                          <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                            <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                          </b-button>
+                          <b-button size="sm" class="ml-2" variant="outline-info default">
+                            <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                          </b-button>
+                          <b-button size="sm" class="ml-2" variant="outline-info default">
+                            <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                          </b-button>
+                          <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                            <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                          </b-button>
+                        </div>
+                      </b-col>
+                    </b-row>
+
+                    <b-row>
+                      <b-col cols="12">
+                        <vuetable
+                          ref="vuetable"
+                          :api-url="vuetableItems.apiUrl"
+                          :fields="vuetableItems.fields"
+                          :http-fetch="userTableHttpFetch"
+                          :per-page="vuetableItems.perPage"
+                          pagination-path="pagination"
+                          class="table-striped"
+                          @vuetable:pagination-data="onUserTablePaginationData"
+                        >
+                          <template slot="userNumber" slot-scope="props">
+                            <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
+                          </template>
+                          <template slot="actions" slot-scope="props">
+                            <div >
+
+                              <b-button
+                                v-if="props.rowData.status=='inactive'"
+                                size="sm"
+                                variant="primary default btn-square"
+                                @click="onAction('modify', props.rowData, props.rowIndex)">
+                                <i class="icofont-edit"></i>
+                              </b-button>
+
+                              <b-button
+                                v-if="props.rowData.status!='inactive'"
+                                size="sm"
+                                variant="primary default btn-square"
+                                disabled>
+                                <i class="icofont-edit"></i>
+                              </b-button>
+
+                              <b-button
+                                v-if="props.rowData.status=='inactive'"
+                                size="sm"
+                                variant="success default btn-square"
+                                @click="onAction('active', props.rowData, props.rowIndex)">
+                                <i class="icofont-check-circled"></i>
+                              </b-button>
+
+
+                              <b-button
+                                v-if="props.rowData.status=='active'"
+                                size="sm"
+                                variant="warning default btn-square"
+                                @click="onAction('inactive', props.rowData, props.rowIndex)">
+                                <i class="icofont-ban"></i>
+                              </b-button>
+
+                              <b-button
+                                v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                                size="sm"
+                                variant="success default btn-square"
+                                disabled>
+                                <i class="icofont-ban"></i>
+                              </b-button>
+
+
+                              <b-button
+                                v-if="props.rowData.status=='inactive'"
+                                size="sm"
+                                variant="danger default btn-square"
+                                @click="onAction('blocked', props.rowData, props.rowIndex)">
+                                <i class="icofont-minus-circle"></i>
+                              </b-button>
+
+                              <b-button
+                                v-if="props.rowData.status=='blocked'"
+                                size="sm"
+                                variant="success default btn-square"
+                                @click="onAction('unblock', props.rowData, props.rowIndex)">
+                                <i class="icofont-power"></i>
+                              </b-button>
+
+
+                              <b-button
+                                v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                                size="sm"
+                                variant="danger default btn-square"
+                                disabled>
+                                <i class="icofont-minus-circle"></i>
+                              </b-button>
+
+
+                              <b-button
+                                v-if="props.rowData.status=='pending'"
+                                size="sm"
+                                variant="purple default btn-square"
+                                @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                                <i class="icofont-ui-password"></i>
+                              </b-button>
+
+                              <b-button
+                                v-if="props.rowData.status!='pending'"
+                                size="sm"
+                                variant="purple default btn-square"
+                                disabled>
+                                <i class="icofont-ui-password"></i>
+                              </b-button>
+
+
+                            </div>
+                          </template>
+
+                        </vuetable>
+                        <vuetable-pagination-bootstrap
+                          ref="pagination"
+                          @vuetable-pagination:change-page="onUserTableChangePage"
+                          :initial-per-page="vuetableItems.perPage"
+                          @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                        ></vuetable-pagination-bootstrap>
+
+                        <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
+                          {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
+                          <template slot="modal-footer">
+                            <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
+                              {{$t('permission-management.modal-ok')}}
+                            </b-button>
+                            <b-button variant="danger" @click="fnHideModal('modal-prompt')">
+                              {{$t('permission-management.modal-cancel')}}
+                            </b-button>
+                          </template>
+                        </b-modal>
+                      </b-col>
+                    </b-row>
+                  </div>
+                </b-col>
               </b-row>
             </b-card>
           </b-col>
@@ -549,7 +732,10 @@
           perPage: 5,
         },
         treeData: { // holds tree data for org diagram
-        }
+        },
+
+        //assign permission management for user group part
+        groupPageStatus:'table', //table, create
 
       }
     },

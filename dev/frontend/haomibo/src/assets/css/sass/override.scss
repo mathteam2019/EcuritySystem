@@ -12,26 +12,41 @@ $menu-color-6:#000e19;
 $menu-color-7:#042340;
 $menu-main-color-1:#104975;
 $menu-main-color-2:#307fcf;
+
+.main-hidden .main-menu, .menu-hidden .main-menu {
+  transform: unset!important;
+}
+
+
+@media (max-width: 1439px) {
+  .sidebar {
+    padding-top: 80px!important;
+  }
+}
 .sidebar {
   .main-menu {
     padding-top: 0!important;
     background-color: $menu-color-7;
-    width: 90px;
+    width: 70px;
     section {
       ul {
         li {
           background-color: $menu-color-7;
-          border-bottom: solid 2px $menu-color-6;
-          border-top: solid 2px $menu-main-color-1;
+          border-bottom: solid 1px $menu-color-6;
+          border-top: solid 1px $menu-main-color-1;
           color: $menu-main-color-2!important;
           a {
             color: inherit!important;
             border-bottom: unset!important;
-            height: 80px;
+            height: 65px;
+            i {
+              font-size: 30px;
+              line-height: 38px;
+            }
           }
           &.active,&:hover,&:focus {
             background-color: $menu-color-4;
-            border-bottom:solid 2px transparent!important;
+            border-bottom:solid 1px transparent!important;
             color: white!important;
             &:after {
               background: transparent!important;
@@ -44,7 +59,7 @@ $menu-main-color-2:#307fcf;
   .sub-menu {
     height: auto!important;
     padding: 0!important;
-    left: 90px;
+    left: 70px;
     section {
       padding-top: 0!important;
       padding-bottom: 0!important;
@@ -55,7 +70,7 @@ $menu-main-color-2:#307fcf;
           margin-left: 0!important;
           padding:0 5px!important;
           background-color: $menu-color-4;
-          border: 2px solid $menu-color-5;
+          border: 1px solid $menu-color-5;
           border-bottom-color: $menu-color-3;
           border-left-color: $menu-color-2;
           a {
@@ -64,7 +79,7 @@ $menu-main-color-2:#307fcf;
           }
           &.active,&:hover,&:active {
             background-color: $menu-color-7;
-            border: 2px solid $menu-color-6;
+            border: 1px solid $menu-color-6;
             border-right-color: transparent;
             border-bottom-color: transparent;
             color: $menu-color-5;
