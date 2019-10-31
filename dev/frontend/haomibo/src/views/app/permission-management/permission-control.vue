@@ -1,11 +1,12 @@
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.permission-control')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
+      </b-row>
+    </div>
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
@@ -223,48 +224,45 @@
 
       <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
-          <b-col cols="3">
-            <b-card class="mb-4">
-              <b-form @submit.prevent="onDataGroupFormSubmit">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="dataGroupForm.dataGroupName"
-                    :state="!$v.dataGroupForm.dataGroupName.$invalid"
-                    :placeholder="$t('permission-management.permission-control.enter-data-group-name')" />
-                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-
-                </b-form-group>
-                <b-form-group :label="$t('permission-management.permission-control.note')">
-                  <b-form-textarea v-model="dataGroupForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
-                </b-form-group>
-                <b-row class="mt-4">
-                  <b-col cols="12" class="text-right">
-                    <b-button type="submit" :disabled="$v.dataGroupForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
-                  </b-col>
-                </b-row>
-              </b-form>
-            </b-card>
-          </b-col>
-          <b-col cols="5">
+          <b-col cols="8">
             <b-card class="mb-4">
               <b-row>
-                <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.permission-control.group-flag')">
-                    <b-form-select v-model="groupFlag" @change="onGroupFlagChanged" :options="groupFlagData" plain/>
+                <b-col cols="2" class="pr-3">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
+                    <b-form-input v-model="groupKeyword"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
 
-                <b-col cols="7">
-                  <b-form-group>
-                    <template slot="label">&nbsp;</template>
-                    <b-form-input v-model="groupKeyword" @change="onGroupKeywordChanged"></b-form-input>
+                <b-col cols="2">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
+                    <b-form-input v-model="dataRangeKeyword"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
+
+                <b-col cols="8" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="searchDataGroup()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="resetDataGroupSearchForm()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
+                </b-col>
+
               </b-row>
 
               <b-row>
@@ -277,18 +275,20 @@
                     :per-page="dataGroupVuetableItems.perPage"
                     pagination-path="data"
                     data-path="data.data"
-                    :row-class="onDataGroupRowClass"
+                    class="table-hover"
                     @vuetable:pagination-data="onDataGroupPaginationData"
-                    @vuetable:row-clicked="onDataGroupRowClicked"
                   >
 
-                    <template slot="dataGroupFlag" slot-scope="props">
-                      <div v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info tb-icon"></div>
+                    <template slot="dataGroupNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onDataGroupNumberClicked(props.rowData)">
+                        {{props.rowData.dataGroupNumber}}
+                      </span>
                     </template>
 
                     <template slot="operating" slot-scope="props">
-                      <div v-if="!props.rowData.users.length" @click="onClickDeleteDataGroup(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
-                      <div v-else class="glyph-icon simple-icon-close tb-button-disabled"></div>
+                      <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup()">
+                        <i class="icofont-bin"></i>
+                      </b-button>
                     </template>
 
                   </vuetable>
@@ -303,9 +303,65 @@
             </b-card>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4" v-if="selectedDataGroup">
+            <div class="section" v-if="selectedDataGroup">
 
               <b-row>
+                <b-col cols="12" v-if="dataGroupDetailStatus === 'create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="dataGroupForm.dataGroupNumber"
+                      :state="!$v.dataGroupForm.dataGroupNumber.$invalid" />
+                    <div v-if="!$v.dataGroupForm.dataGroupNumber.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-number')}}
+                    </b-form-invalid-feedback>
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="dataGroupForm.dataGroupName"
+                      :state="!$v.dataGroupForm.dataGroupName.$invalid" />
+                    <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-name')}}
+                    </b-form-invalid-feedback>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="12" v-if="dataGroupDetailStatus !== 'create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label class="col-form-label">
+                      {{selectedDataGroup.dataGroupNumber}}
+                    </label>
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label class="col-form-label">
+                      {{selectedDataGroup.dataGroupName}}
+                    </label>
+                  </b-form-group>
+                </b-col>
+
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <label class="font-weight-bold">{{$t('permission-management.permission-control.data-range')}}<span class="text-danger">*</span></label>
+                </b-col>
                 <b-col class="text-right">
                   <b-form-group>
                     <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
@@ -322,14 +378,24 @@
               </b-row>
 
               <b-row>
-                <b-col cols="12" class="text-right">
+                <b-col cols="12" class="text-right pt-3" v-if="dataGroupDetailStatus==='create'">
                   <b-form-group>
-                    <b-button @click="onClickSaveDataGroup">{{$t('permission-management.permission-control.save')}}</b-button>
+                    <b-button @click="createDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="12" class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
+                  <b-form-group>
+                    <b-button @click="onClickSaveDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                    <b-button @click="onClickDeleteDataGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
+                    </b-button>
                   </b-form-group>
                 </b-col>
               </b-row>
 
-            </b-card>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
@@ -524,10 +590,12 @@
               ]
           },
         dataGroupForm: {
+          dataGroupNumber: '',
           dataGroupName: '',
           note: '',
         },
         groupKeyword: '',
+        dataRangeKeyword: '',
         groupFlag: null,
         groupFlagData: [
             {value: null, text: this.$t('permission-management.permission-control.all')},
@@ -537,6 +605,7 @@
         orgList: [],
         userList: [],
         orgUserTreeData: [],
+        dataGroupDetailStatus: null,
         selectedDataGroup: null,
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
@@ -551,17 +620,25 @@
               dataClass: 'text-center',
             },
             {
+                name: '__slot:dataGroupNumber',
+                title: this.$t('permission-management.permission-control.data-group-number'),
+                // sortField: 'dataGroupId',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
+            },
+            {
               name: 'dataGroupName',
-              title: this.$t('permission-management.permission-control.data-group-name'),
+              title: this.$t('permission-management.permission-control.data-group'),
               // sortField: 'dataGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:dataGroupFlag',
-              title: this.$t('permission-management.permission-control.group-flag'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
+                name: '__slot:dataGroupRange',
+                title: this.$t('permission-management.permission-control.data-group-range'),
+                // sortField: 'note',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
             },
             {
               name: '__slot:operating',
@@ -569,13 +646,6 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
-            {
-              name: 'note',
-              title: this.$t('permission-management.permission-control.note'),
-              // sortField: 'note',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            }
           ],
         },
       }
@@ -590,12 +660,21 @@
         }
       },
       dataGroupForm: {
-        dataGroupName: {
+        dataGroupNumber: {
           required
+        },
+        dataGroupName: {
+            required
         }
       }
     },
     watch: {
+        'roleVuetableItems.perPage': function(newVal) {
+            this.$refs.roleVuetable.refresh();
+        },
+        'dataGroupVuetableItems.perPage': function(newVal) {
+            this.$refs.dataGroupVuetable.refresh();
+        },
         resourceList(newVal, oldVal) {
             this.refreshResourceTreeData();
         },
@@ -833,35 +912,48 @@
             this.$refs.roleVuetable.changePage(page);
         },
 
+      onClickCreateDataGroup() {
+          this.selectedDataGroup = {
+              users: []
+          };
+          this.dataGroupForm.dataGroupName = '';
+          this.dataGroupForm.dataGroupNumber = '';
+          this.dataGroupDetailStatus = 'create';
+      },
 
-      onDataGroupFormSubmit() {
-        this.isLoading = true;
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
-            'dataGroupName': this.dataGroupForm.dataGroupName,
-            'note': this.dataGroupForm.note
-          })
-          .then((response) => {
-            this.isLoading = false;
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
-                  duration: 3000,
-                  permanent: false
+      createDataGroup() {
+        if(this.selectedDataGroup) {
+            let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+            let userIdList = checkedNodes.filter(node => node.isUser).map(node => node.userId);
+            this.isLoading = true;
+            getApiManager()
+                .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
+                    'dataGroupNumber': this.dataGroupForm.dataGroupNumber,
+                    'dataGroupName': this.dataGroupForm.dataGroupName,
+                    'userIdList': userIdList
+                })
+                .then((response) => {
+                    this.isLoading = false;
+                    let message = response.data.message;
+                    let data = response.data.data;
+                    switch (message) {
+                        case responseMessages['ok']: // okay
+                            this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
+                                duration: 3000,
+                                permanent: false
+                            });
+                            this.dataGroupForm.dataGroupName = '';
+                            this.dataGroupForm.dataGroupNumber = '';
+                            this.$refs.dataGroupVuetable.refresh();
+                            break;
+                        default:
+
+                    }
+                })
+                .catch((error) => {
+                    this.isLoading = false;
                 });
-                this.dataGroupForm.dataGroupName = '';
-                this.dataGroupForm.note = '';
-                this.$refs.dataGroupVuetable.refresh();
-                break;
-              default:
-
-            }
-          })
-          .catch((error) => {
-            this.isLoading = false;
-          });
+        }
       },
       onClickSaveDataGroup() {
           if(this.selectedDataGroup) {
@@ -917,7 +1009,7 @@
                                   permanent: false
                               });
                               this.$refs.dataGroupVuetable.refresh();
-                              this.hideModal('modal-delete-data-group')
+                              this.hideModal('modal-delete-data-group');
                               break;
                           default:
 
@@ -953,11 +1045,12 @@
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
       },
-      onGroupFlagChanged(value) {
+      searchDataGroup() {
           this.$refs.dataGroupVuetable.refresh();
       },
-      onGroupKeywordChanged(value) {
-          this.$refs.dataGroupVuetable.refresh();
+      resetDataGroupSearchForm() {
+          this.groupKeyword = '';
+          this.dataRangeKeyword = '';
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {
@@ -965,7 +1058,6 @@
           perPage: this.dataGroupVuetableItems.perPage,
           filter: {
               dataGroupName: this.groupKeyword,
-              flag: this.groupFlag
           }
         });
       },
@@ -980,7 +1072,8 @@
             return '';
         }
       },
-      onDataGroupRowClicked(dataItem, event) {
+      onDataGroupNumberClicked(dataItem) {
+        this.dataGroupDetailStatus = 'modify';
         this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
       },
       onDataGroupChangePage(page) {
