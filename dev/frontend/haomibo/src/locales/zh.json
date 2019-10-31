@@ -38,7 +38,9 @@
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
   "login":{
-    "title":"统一权限管理系统"
+    "title":"统一权限管理系统",
+    "enter-user-email": "请输入人员邮箱",
+    "enter-user-password": "请输入人员密码"
   },
   "menu": {
     "app": "主场",
@@ -261,7 +263,12 @@
       "no-grouped": "未分组",
       "please-enter-group-name": "请输入分组名称",
       "user-group-name": "分组名称",
-      "operating": "操作"
+      "operating": "操作",
+      "user-group-number": "人员组编号",
+      "group-number": "分组编号",
+      "group-member": "人员",
+      "userNumber-field-is-mandatory": "人员编号是必需的",
+      "category-field-is-mandatory": "类别是必需的"
     },
 
     "permission-control": {
@@ -411,17 +418,26 @@
     "hours": "小时"
   },
   "log-management": {
+    "access-log": "访问日志",
+    "operating-log": "操作日志",
     "hand-check": "手检端",
     "approved": "审图端",
     "remote": "远程端",
     "device": "设备",
-    "nodetype": "节点类型",
+    "access-ip": "访问ip",
+    "starting-time": "开始时间",
+    "end-time": "结束时间",
+    "access-user": "访问用户",
+    "client-ip":"客户端ip",
+    "operating-result": "操作结果",
+    "operating-object": "操作对象",
+    "operating-account": "操作账号",
     "timelimit": "时间范围",
-    "shutdown_timerange":"关机时间范围",
-    "boot_timerange": "开机时间范围",
     "status-all": "全部",
     "status-active": "生效",
     "status-inactive": "失效",
+    "status-success": "成功",
+    "status-failure": "失败",
     "search": "检索",
     "reset": "重置",
     "export": "导出",

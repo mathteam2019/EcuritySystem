@@ -119,6 +119,29 @@ const data = [
       },
     ]
   },
+  {
+    id: "log-management",
+    icon: "simple-icon-note",
+    label: "menu.log-management",
+    to: "/app/log-management",
+    newWindow: false,
+    subs: [
+      {
+        id: 'log-management-*-operating-log',
+        icon: "simple-icon-equalizer",
+        label: "menu.operating-log",
+        to: "/app/log-management/operating-log",
+        newWindow: false
+      },
+      {
+        id: 'log-management-*-device-log',
+        icon: "simple-icon-settings",
+        label: "menu.device-log",
+        to: "/app/log-management/device-log",
+        newWindow: false
+      },
+    ]
+  },
 ];
 
 export default data;
