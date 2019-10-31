@@ -2,7 +2,7 @@ export const defaultMenuType = 'menu-default'; // 'menu-default', 'menu-sub-hidd
 export const defaultStartPath = '/app/piaf/start';
 export const searchPath = '#';
 
-export const subHiddenBreakpoint = 1440;
+export const subHiddenBreakpoint = 4500;
 export const menuHiddenBreakpoint = 768;
 
 export const defaultLocale = 'zh';
