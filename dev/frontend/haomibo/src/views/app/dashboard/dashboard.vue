@@ -17,7 +17,7 @@
           </div>
           <div class="ml-5 mt-2">
             <h5 style="color: #1782d4;">{{$t('dashboard.article-title-1')}}</h5>
-            <h7 style="color: #757575">{{$t('dashboard.article-extract-1')}}</h7>
+            <h6 style="color: #757575" v-html="$t('dashboard.article-extract-1')"></h6>
           </div>
         </b-col>
         <b-col cols="6 d-flex">
@@ -26,7 +26,7 @@
           </div>
           <div class="ml-5 mt-2">
             <h5 style="color: #1782d4;">{{$t('dashboard.article-title-2')}}</h5>
-            <h7 style="color: #757575">{{$t('dashboard.article-extract-2')}}</h7>
+            <h6 style="color: #757575" v-html="$t('dashboard.article-extract-2')"></h6>
           </div>
         </b-col>
       </b-row>
@@ -37,7 +37,7 @@
           </div>
           <div class="ml-5 mt-2">
             <h5 style="color: #1782d4;">{{$t('dashboard.article-title-3')}}</h5>
-            <h7 style="color: #757575">{{$t('dashboard.article-extract-3')}}</h7>
+            <h6 style="color: #757575" v-html="$t('dashboard.article-extract-3')"></h6>
           </div>
         </b-col>
         <b-col cols="6 d-flex">
@@ -46,7 +46,7 @@
           </div>
           <div class="ml-5 mt-2">
             <h5 style="color: #1782d4;">{{$t('dashboard.article-title-4')}}</h5>
-            <h7 style="color: #757575">{{$t('dashboard.article-extract-4')}}</h7>
+            <h6 style="color: #757575" v-html="$t('dashboard.article-extract-4')"></h6>
           </div>
         </b-col>
       </b-row>
