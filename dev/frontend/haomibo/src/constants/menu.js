@@ -15,28 +15,28 @@ const data = [
     subs: [
       {
         id: 'permission-management-*-organization-management',
-        icon: "simple-icon-organization",
+        icon: "icofont-caret-right",
         label: "menu.organization-management",
         to: "/app/permission-management/organization-management",
         newWindow: false
       },
       {
         id: 'permission-management-*-user-management',
-        icon: "simple-icon-user",
+        icon: "icofont-caret-right",
         label: "menu.user-management",
         to: "/app/permission-management/user-management",
         newWindow: false
       },
       {
         id: 'permission-management-*-permission-control',
-        icon: "simple-icon-game-controller",
+        icon: "icofont-caret-right",
         label: "menu.permission-control",
         to: "/app/permission-management/permission-control",
         newWindow: false
       },
       {
         id: 'permission-management-*-assign-permission-management',
-        icon: "simple-icon-magic-wand",
+        icon: "icofont-caret-right",
         label: "menu.assign-permission-management",
         to: "/app/permission-management/assign-permission-management",
         newWindow: false

@@ -7,9 +7,9 @@
   span.cursor-p {
     cursor: pointer !important;
   }
-  .h-50vh {
-    height: 50vh;
-    max-height: 50vh;
+  .h-30vh {
+    height: 30vh;
+    max-height: 30vh;
     overflow: auto;
   }
 
@@ -55,7 +55,7 @@
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="mb-4">
 
               <b-row>
                 <b-col cols="6">
@@ -236,12 +236,12 @@
                   </b-modal>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus=='create'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="mb-4">
               <b-row>
                 <b-col cols="10">
                   <b-row class="mb-2">
@@ -460,7 +460,7 @@
                   </b-row>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus=='show'">
@@ -673,7 +673,7 @@
             </b-card>
           </b-col>
           <b-col cols="8">
-            <b-card class="mb-4">
+            <div class="section">
               <b-row>
                 <b-col cols="3" class="pr-3">
                   <b-form-group class="search-form-group">
@@ -685,10 +685,10 @@
                 </b-col>
                 <b-col cols="9" class="d-flex justify-content-end align-items-center">
                   <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupSearchButton()">
                       <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupResetButton()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -697,7 +697,7 @@
                     <b-button size="sm" class="ml-2" variant="outline-info default">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -712,22 +712,13 @@
                     :http-fetch="userGroupTableHttpFetch"
                     pagination-path="userGroupPagination"
                     class="table-hover"
-                    :row-class="onDataGroupRowClass"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
-                    @vuetable:row-clicked="onUserGroupTableRowClick"
                   >
-                    <template slot="userGroupFlag" slot-scope="props">
-                      <div style="font-size: 18px" v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info"></div>
+                    <template slot="userGroupNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
-                      <span style="font-size: 18px" v-if="props.rowData.orgId==null"
-                            class="btn-action cursor-p text-danger"
-                            @click="onAction('group-remove', props.rowData, props.rowIndex)">
-                        <i class="btn-action simple-icon-close"></i>
-                      </span>
-                      <span style="font-size: 18px" v-if="props.rowData.orgId!=null" class="text-dark">
-                        <i class="simple-icon-close"></i>
-                      </span>
+                      <b-button variant="danger default btn-square" class="m-0" @click="onAction('group-remove', props.rowData, props.rowIndex)"><i class="icofont-bin"></i> </b-button>
                     </template>
                   </vuetable>
                   <vuetable-pagination-bootstrap
@@ -749,12 +740,68 @@
                   </b-modal>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4" v-if="selectedUserGroupItem">
-
+            <div class="section" v-if="selectedUserGroupItem">
               <b-row>
+                <b-col cols="8" v-if="groupForm.status=='create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.user.group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="groupForm.groupNumber"
+                      :state="!$v.groupForm.groupNumber.$invalid" />
+                    <div v-if="!$v.groupForm.groupNumber.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
+                    </b-form-invalid-feedback>
+
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.user.group-name')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input v-if="groupForm.status=='create'"
+                      v-model="groupForm.groupName"
+                      :state="!$v.groupForm.groupName.$invalid" />
+                    <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
+                    </b-form-invalid-feedback>
+
+                  </b-form-group>
+                </b-col>
+                <b-col cols="8" v-if="groupForm.status!='create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.user.group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                   <label class="col-form-label">
+                     {{selectedUserGroupItem.groupNumber}}
+                   </label>
+
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.user.group-name')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label class="col-form-label">
+                      {{selectedUserGroupItem.groupName}}
+                    </label>
+
+                  </b-form-group>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="12">
+                  <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span class="text-danger">*</span></label>
+                </b-col>
                 <b-col class="text-right">
                   <b-form-group>
                     <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
@@ -765,21 +812,31 @@
               </b-row>
 
               <b-row>
-                <b-col class="h-50vh">
+                <b-col class="h-30vh">
+
                   <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true'/>
                 </b-col>
               </b-row>
 
               <b-row>
-                <b-col cols="12" class="text-right pt-3">
+                <b-col cols="12" class="text-right pt-3" v-if="groupForm.status=='create'">
                   <b-form-group>
-                    <b-button @click="onClickSaveUserGroup">{{$t('permission-management.permission-control.save')}}
+                    <b-button @click="onClickCreateUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                     </b-button>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12" class="text-right pt-3" v-if="groupForm.status!='create'">
+                  <b-form-group>
+                    <b-button @click="onClickModifyUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                    <b-button @click="onClickDeleteUserGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
+                    </b-button>
+
                   </b-form-group>
                 </b-col>
               </b-row>
 
-            </b-card>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
@@ -859,6 +916,9 @@
       groupForm: {
         groupName: {
           required
+        },
+        groupNumber: {
+          required
         }
       }
     },
@@ -884,7 +944,6 @@
         switch (message) {
           case responseMessages['ok']:
             this.userData = data;
-            console.log(data);
             break;
         }
       })
@@ -1055,7 +1114,8 @@
         selectedUserGroupItem: null,
         groupForm: {
           groupName: '',
-          note: ''
+          groupNumber: '',
+          status:'create'
         },
         groupFilter: {
           name: ''
@@ -1072,9 +1132,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'userGroupNumber',
+              name: '__slot:userGroupNumber',
               title: this.$t('permission-management.user.user-group-number'),
-              sortField: 'userGroupNumber',
+              sortField: 'groupNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -1527,10 +1587,10 @@
           .finally(() => {
             //
             this.groupForm = {
-              groupName: '',
-              note: ''
+              groupName: null,
+              groupNumber: null,
+              status:'create'
             };
-            console.log('final step completed');
           });
       },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
@@ -1540,7 +1600,6 @@
           perPage: this.userGroupTableItems.perPage,
           filter: {
             groupName: this.groupFilter.name,
-            flag: this.groupFilter.flag,
           }
         });
       },
@@ -1558,11 +1617,10 @@
           return '';
         }
       },
-      onUserGroupTableRowClick(dataItems, event) {
-        //ignore if action button click;
-        if (event.path[0].className.includes('btn-action'))
-          return false;
-        this.selectedUserGroupItem = JSON.parse(JSON.stringify(dataItems));
+      onUserGroupTableRowClick(dataItems) {
+        this.selectedUserGroupItem = dataItems;
+        this.groupForm.status = 'modify';
+        console.log(this.selectedUserGroupItem);
       },
       // user tree group
       fnRefreshOrgUserTreeData() {
@@ -1590,7 +1648,73 @@
         };
         this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
       },
-      onClickSaveUserGroup() {
+      onUserGroupSearchButton() {
+        this.$refs.userGroupTable.refresh();
+      },
+      onUserGroupResetButton() {
+        this.groupFilter = {
+         name:null
+        };
+        this.$refs.userGroupTable.refresh();
+      },
+      onUserGroupCreateButton(){
+        this.selectedUserGroupItem = {
+          users:[]
+        };
+        this.groupForm = {
+          groupNumber:null,
+          groupName:null,
+          status:'create'
+        }
+      },
+      onClickDeleteUserGroup(){
+        this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
+      },
+      onClickCreateUserGroup() {
+        if(this.selectedUserGroupItem) {
+          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+          let userGroupUserIds = [];
+          checkedNodes.forEach((node) => {
+            if(node.isUser)userGroupUserIds.push(node.userId);
+          });
+          if(userGroupUserIds.length==0){
+            console.log('this is empty for users');
+            return ;
+          }
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
+              'groupName':this.groupForm.groupName,
+              'groupNumber':this.groupForm.groupNumber,
+              'userIdList': userGroupUserIds
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']:
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  this.$refs.userGroupTable.refresh();
+                  break;
+                default:
+
+              }
+            })
+            .catch((error) => {
+
+            }).finally(() => {
+            //
+            this.groupForm = {
+              groupName: null,
+              groupNumber: null,
+              status:'create'
+            };
+          });
+        }
+      },
+      onClickModifyUserGroup() {
         if(this.selectedUserGroupItem) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userGroupUserIds = [];
