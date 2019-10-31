@@ -452,7 +452,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -500,7 +500,7 @@
         ],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization-management/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -756,7 +756,7 @@
 
           // call api
           getApiManager()
-            .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
+            .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
               'orgId': data.orgId,
               'status': 'active',
             })
@@ -851,7 +851,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/create`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -923,7 +923,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/modify`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -967,7 +967,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/delete`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -1006,7 +1006,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })

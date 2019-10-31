@@ -365,48 +365,46 @@
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
         <b-row>
           <b-col >
-            <b-card class="mb-4" >
+            <div class="mb-4" >
               <b-row v-if="groupPageStatus==='table'">
                 <b-col cols="12">
-                  <div class="mb-4">
+                  <div class="p-2">
 
                     <b-row>
                       <b-col cols="6">
                         <b-row>
 
                           <b-col>
-                            <b-form-group :label="$t('permission-management.username')">
-                              <b-form-input v-model="filter.userName"></b-form-input>
+                            <b-form-group :label="$t('permission-management.assign-group.user-group')">
+                              <b-form-input v-model="groupFilter.groupName"></b-form-input>
                             </b-form-group>
                           </b-col>
 
                           <b-col>
-                            <b-form-group :label="$t('permission-management.status')">
-                              <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                            <b-form-group :label="$t('permission-management.assign-group.groupMember')">
+                              <b-form-input v-model="groupFilter.userName" ></b-form-input>
                             </b-form-group>
                           </b-col>
 
                           <b-col>
-                            <b-form-group :label="$t('permission-management.affiliated-institution')">
-                              <b-form-select v-model="filter.orgId"
-                                             :options="orgNameSelectData"
-                                             plain/>
+                            <b-form-group :label="$t('permission-management.assign-group.role')">
+                              <b-form-input v-model="groupFilter.role" ></b-form-input>
                             </b-form-group>
                           </b-col>
 
                           <b-col>
-                            <b-form-group :label="$t('permission-management.user-category')">
-                              <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
+                            <b-form-group :label="$t('permission-management.assign-group.data-range')">
+                              <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
                             </b-form-group>
                           </b-col>
                         </b-row>
                       </b-col>
                       <b-col cols="6" class="d-flex justify-content-end align-items-center">
                         <div>
-                          <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                          <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
                             <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
                           </b-button>
-                          <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                          <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
                             <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                           </b-button>
                           <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -415,7 +413,7 @@
                           <b-button size="sm" class="ml-2" variant="outline-info default">
                             <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                           </b-button>
-                          <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                          <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
                             <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                           </b-button>
                         </div>
@@ -425,14 +423,13 @@
                     <b-row>
                       <b-col cols="12">
                         <vuetable
-                          ref="vuetable"
-                          :api-url="vuetableItems.apiUrl"
-                          :fields="vuetableItems.fields"
-                          :http-fetch="userTableHttpFetch"
-                          :per-page="vuetableItems.perPage"
-                          pagination-path="pagination"
-                          class="table-striped"
-                          @vuetable:pagination-data="onUserTablePaginationData"
+                          ref="userGroupTable"
+                          :api-url="userGroupTableItems.apiUrl"
+                          :fields="userGroupTableItems.fields"
+                          :http-fetch="userGroupTableHttpFetch"
+                          pagination-path="userGroupPagination"
+                          class="table-hover"
+                          @vuetable:pagination-data="onUserGroupTablePaginationData"
                         >
                           <template slot="userNumber" slot-scope="props">
                             <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
@@ -530,19 +527,18 @@
 
                         </vuetable>
                         <vuetable-pagination-bootstrap
-                          ref="pagination"
-                          @vuetable-pagination:change-page="onUserTableChangePage"
-                          :initial-per-page="vuetableItems.perPage"
-                          @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                          ref="userGroupPagination"
+                          @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                          :initial-per-page="userGroupTableItems.perPage"
+                          @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                         ></vuetable-pagination-bootstrap>
-
-                        <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
-                          {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
+                        <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+                          {{$t('permission-management.user.user-group-delete-prompt')}}
                           <template slot="modal-footer">
-                            <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
+                            <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
                               {{$t('permission-management.modal-ok')}}
                             </b-button>
-                            <b-button variant="danger" @click="fnHideModal('modal-prompt')">
+                            <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">
                               {{$t('permission-management.modal-cancel')}}
                             </b-button>
                           </template>
@@ -552,7 +548,7 @@
                   </div>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
@@ -593,7 +589,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -641,7 +637,7 @@
 
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization-management/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -734,8 +730,47 @@
         treeData: { // holds tree data for org diagram
         },
 
-        //assign permission management for user group part
+        //TODO assign permission management for user group part
         groupPageStatus:'table', //table, create
+        groupFilter:{
+          groupName:null,
+          userName:null,
+          role:null,
+          dataRange:null
+        },
+        userGroupTableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'userGroupId',
+              title: this.$t('permission-management.th-no'),
+              sortField: 'userGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: '__slot:userGroupNumber',
+              title: this.$t('permission-management.user.user-group-number'),
+              sortField: 'groupNumber',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'groupName',
+              title: this.$t('permission-management.user.user-group-name'),
+              sortField: 'userGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: '__slot:operating',
+              title: this.$t('permission-management.user.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            }
+          ],
+        },
 
       }
     },
@@ -995,7 +1030,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/create`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -1067,7 +1102,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/modify`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -1111,7 +1146,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/delete`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -1150,7 +1185,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })
@@ -1175,6 +1210,127 @@
             this.$refs['modal-deactivate'].hide();
           });
 
+      },
+
+      //TODO assign user group point
+
+      onAssignUserGroupSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onAssignUserGroupResetButton() {
+        this.filter = {
+          userName: '',
+          status: null,
+          orgId: '',
+          category: null
+        };
+        if (this.defaultOrgId !== '')
+          this.filter.orgId = this.defaultOrgId;
+        this.$refs.vuetable.refresh();
+      },
+
+      onAssignUserGroupCreatePage(){
+
+      },
+      userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.userGroupTableItems.perPage,
+          filter: {
+            groupName: this.groupFilter.name,
+          }
+        });
+      },
+      onUserGroupTablePaginationData(paginationData) {
+        this.$refs.userGroupPagination.setPaginationData(paginationData)
+      },
+
+      onUserGroupTableChangePage(page) {
+        this.$refs.userGroupTable.changePage(page)
+      },
+      fnShowUserGroupConfDiaglog(userGroupItem) {
+        this.selectedUserGroupItem = userGroupItem;
+        this.$refs['modal-prompt-group'].show();
+      },
+      fnDeleteUserGroupItem() {
+        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
+          this.$refs['modal-prompt-group'].hide();
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+                  this.selectedUserGroupItem = null;
+                  break;
+                case responseMessages['has-children']: // okay
+                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+
+              }
+            })
+            .catch((error) => {
+            })
+            .finally(() => {
+
+            });
+        }
+      },
+      fnTransformUserGroupTable(response) {
+        this.selectedUserGroupItem = null;
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.userGroupPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.vuetableItems.perPage,
+          filter: {
+            userName: this.filter.userName,
+            status: this.filter.status,
+            orgId: this.filter.orgId,
+            category: this.filter.category,
+          }
+        });
+      },
+      onUserTablePaginationData(paginationData) {
+        this.$refs.pagination.setPaginationData(paginationData)
+      },
+      onUserTableChangePage(page) {
+        this.$refs.vuetable.changePage(page)
       },
     }
   }

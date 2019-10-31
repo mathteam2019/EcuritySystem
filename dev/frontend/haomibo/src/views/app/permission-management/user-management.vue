@@ -43,12 +43,14 @@
 </style>
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.user-management')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb :heading="$t('menu.user-management')"/>
+        </b-colxx>
+      </b-row>
+    </div>
+
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
@@ -925,7 +927,7 @@
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`, {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
