@@ -273,11 +273,13 @@
     },
 
     "permission-control": {
+      "role": "角色",
       "role-setting": "角色设置",
       "data-grouping": "数据分组",
       "role-name": "角色名称",
+      "role-number": "角色编号",
       "note": "备注",
-      "role-flag": "角色标记",
+      "role-flag": "功能",
       "all": "全部",
       "system-management": "系统管理",
       "business-operating": "业务操作",
@@ -290,6 +292,7 @@
       "grouped": "已分组",
       "ungrouped": "未分组",
 
+      "enter-role-number": "请输入角色编号",
       "enter-role-name": "请输入角色名称",
       "enter-note": "请输入备注信息",
       "enter-data-group-name": "请输入数据组名称",
@@ -304,6 +307,7 @@
       "data-group-deleted": "The data group has deleted.",
       "delete-data-group-prompt": "Do you want to delete this data group?",
       "save": "保存",
+      "delete": "删除",
       "prompt": "提示"
     }
   },

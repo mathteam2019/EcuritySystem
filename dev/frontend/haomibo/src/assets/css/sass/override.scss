@@ -1,6 +1,7 @@
 
-html body {
+html,html body {
   font-family: "Microsoft YaHei"!important;
+  background: #eaeaea;
 }
 //left side menu
 $menu-color-1:#042340;
@@ -12,6 +13,42 @@ $menu-color-6:#000e19;
 $menu-color-7:#042340;
 $menu-main-color-1:#104975;
 $menu-main-color-2:#307fcf;
+
+//breadcrumb style point
+main {
+  margin: 160px 20px 0 90px !important;
+
+  div.container-fluid {
+    .breadcrumb-container {
+      position: fixed;
+      background: white;
+      height: 70px;
+      left: 70px;
+      top: 80px;
+      width: 100%;
+      div.row {
+        height: 100%;
+        div.col-12 {
+          display: flex;
+          align-items: center;
+          ol.breadcrumb {
+            margin: 0;
+            font-size: 19px;
+            li a,li span {
+              color: $info-color!important;
+            }
+          }
+        }
+      }
+      .breadcrumb-item + .breadcrumb-item::before{
+        content: "/";
+        color: $info-color!important;
+      }
+    }
+
+  }
+}
+
 
 .main-hidden .main-menu, .menu-hidden .main-menu {
   transform: unset!important;
