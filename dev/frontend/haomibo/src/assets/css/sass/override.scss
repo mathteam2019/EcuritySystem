@@ -60,6 +60,7 @@ $menu-main-color-2:#307fcf;
           border-left-color: $menu-color-2;
           a {
             margin-bottom: 0!important;
+            line-height: 20px;
           }
           &.active,&:hover,&:active {
             background-color: $menu-color-7;
