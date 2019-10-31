@@ -38,7 +38,9 @@
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
   "login":{
-    "title":"统一权限管理系统"
+    "title":"统一权限管理系统",
+    "enter-user-email": "请输入人员邮箱",
+    "enter-user-password": "请输入人员密码"
   },
   "menu": {
     "app": "主场",
@@ -261,7 +263,12 @@
       "no-grouped": "未分组",
       "please-enter-group-name": "请输入分组名称",
       "user-group-name": "分组名称",
-      "operating": "操作"
+      "operating": "操作",
+      "user-group-number": "人员组编号",
+      "group-number": "分组编号",
+      "group-member": "人员",
+      "userNumber-field-is-mandatory": "人员编号是必需的",
+      "category-field-is-mandatory": "类别是必需的"
     },
 
     "permission-control": {
