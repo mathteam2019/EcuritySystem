@@ -89,6 +89,16 @@
     "go-back-home": "退回",
     "register-desc": "如果你是会员，请登录"
   },
+  "dashboard": {
+    "article-title-1": "2秒完成扫描",
+    "article-extract-1": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-2": "通过率高",
+    "article-extract-2": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-3": "仪器占地小",
+    "article-extract-3": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-4": "保护隐私",
+    "article-extract-4": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率"
+  },
   "permission-management": {
     "organization-table": "机构列表",
     "organization-structure": "组织架构",

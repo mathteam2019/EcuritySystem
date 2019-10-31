@@ -5,6 +5,9 @@ import com.haomibo.haomibo.security.AuthenticationFacade;
 import com.haomibo.haomibo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The base controller for all controllers. This class defines common fields and methods.
+ */
 public class BaseController {
 
     @Autowired

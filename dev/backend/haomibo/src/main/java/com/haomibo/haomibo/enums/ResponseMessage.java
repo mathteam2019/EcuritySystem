@@ -2,6 +2,9 @@ package com.haomibo.haomibo.enums;
 
 import lombok.Getter;
 
+/**
+ * Defines response messages
+ */
 public enum ResponseMessage {
     OK("ok"),
     INVALID_PARAMETER("invalid_parameter"),

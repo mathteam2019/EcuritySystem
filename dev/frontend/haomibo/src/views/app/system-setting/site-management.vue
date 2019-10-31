@@ -13,11 +13,11 @@
         <b-col cols="12" class="mb-4">
           <b-card class="mb-4" no-body>
             <b-card-body>
-              <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+                      <b-row>
+                        <b-col class="d-flex">
+                          <div class="flex-grow-1">
 
-                    <b-row>
+                            <b-row>
 
                       <b-col >
                         <b-form-group :label="$t('system-setting.site-name')">

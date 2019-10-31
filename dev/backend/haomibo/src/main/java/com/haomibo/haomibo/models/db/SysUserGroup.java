@@ -33,6 +33,9 @@ public class SysUserGroup implements Serializable {
     @Column(name = "ORG_ID", length = 20)
     Long orgId;
 
+    @Column(name = "GROUP_NUMBER", length = 50)
+    String groupNumber;
+
     @Column(name = "GROUP_NAME", length = 50)
     String groupName;
 

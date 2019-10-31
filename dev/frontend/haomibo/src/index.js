@@ -1,3 +1,4 @@
+require('./utils/ArrayFrom');
 
 import './assets/css/vendor/dropzone.min.css'
 import './assets/css/vendor/bootstrap.min.css'
