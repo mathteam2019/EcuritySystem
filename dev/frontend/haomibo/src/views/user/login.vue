@@ -1,4 +1,10 @@
 <style lang="scss" >
+  $text-color :#d4d5da;
+  .header-title {
+    font-size: 70px;
+    font-weight: bold;
+    text-shadow: 3px 4px 0px black;
+  }
   body.ltr {
     img.logo {
       top: 50px;
@@ -32,17 +38,14 @@
         }
         span.name {
           padding-left: 18px;
-          color: white;
+          color: $text-color;
         }
       }
       div.input-group {
         span.front-input-icon {
           height: 36px;
           line-height: 36px;
-          img {
-            width: 14px;
-            margin-left: 5px;
-          }
+          color: $text-color;
         }
         .form-control {
           padding-left: 40px;
@@ -53,9 +56,19 @@
           outline: none;
           background: transparent !important;
           color: white;
+          font-size: 16px;
+          &::placeholder {
+            color: $text-color;
+          }
         }
       }
-  }
+      button.btn-primary {
+        background-color: #1782d4!important;
+        &:hover {
+          background-color: darken(#1782d4, 8%);
+        }
+      }
+    }
 
   }
   body.rtl {
@@ -79,6 +92,7 @@
         border-right: transparent;
         border-left: transparent;
         border-top: transparent;
+
         .dropdown-toggle::after {
           background: none!important;
         }
@@ -94,17 +108,19 @@
         }
         span.name {
           padding-right: 18px;
-          color: white;
+          color: $text-color;;
+        }
+      }
+      button.btn-primary {
+        background-color: #1782d4!important;
+        &:hover {
+          background-color: darken(#1782d4, 8%);
         }
       }
       div.input-group {
         span.front-input-icon {
           height: 36px;
           line-height: 36px;
-          img {
-            width: 14px;
-            margin-right: 5px;
-          }
         }
         .form-control {
           padding-right: 40px;
@@ -114,7 +130,8 @@
           border-bottom-right-radius: unset;
           outline: none;
           background: transparent !important;
-          color: white;
+          color: $text-color;
+          font-size: 16px;
         }
       }
     }
@@ -125,25 +142,26 @@
   <b-row class="h-100">
     <img class="position-absolute logo" src="../../assets/img/logo-white.png" />
     <b-col md=10 class="mx-auto my-auto">
-      <h3 class="text-white h2 font-weight-bold mb-5">{{$t('login.unity-system-management-system')}}</h3>
+      <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
         <b-col cols="9">
           <div class="form-side line-form">
             <b-form @submit.prevent="formSubmit">
-              <div class="form-group">
+              <div class="form-group mb-5">
                 <div class="input-group ">
-                  <span class="front-input-icon position-absolute text-white"><img src="../../assets/img/user_icon.svg"> </span>
+                  <span class="front-input-icon position-absolute "><i style="font-size: 18px"
+                                                                                 class="icofont-ui-user"></i> </span>
                   <input type="email" class="form-control" :placeholder="$t('login.enter-user-email')" v-model="email" autocomplete="off">
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group mb-5">
                 <div class="input-group ">
-                  <span class="front-input-icon position-absolute text-white"><i style="font-size: 20px"
+                  <span class="front-input-icon position-absolute "><i style="font-size: 20px"
                                                                                  class="icofont-unlock"></i> </span>
                   <input type="password" class="form-control" :placeholder="$t('login.enter-user-password')" v-model="password" autocomplete="off">
                 </div>
               </div>
-              <b-dropdown id="langddm" variant="empty"  toggle-class="language-button">
+              <b-dropdown id="langddm" variant="empty"  class="mb-4" toggle-class="language-button">
                 <template slot="button-content">
                 <span class="front-icon">
                 <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()"/>

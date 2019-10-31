@@ -37,6 +37,9 @@
     "name-should-be-numerical-or-characters": "名称应为数字或字符",
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
+  "login":{
+    "title":"统一权限管理系统"
+  },
   "menu": {
     "app": "主场",
     "piaf": "Piaf",

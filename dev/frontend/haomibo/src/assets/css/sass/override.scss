@@ -16,6 +16,7 @@ $menu-main-color-2:#307fcf;
   .main-menu {
     padding-top: 0!important;
     background-color: $menu-color-7;
+    width: 90px;
     section {
       ul {
         li {
@@ -26,6 +27,7 @@ $menu-main-color-2:#307fcf;
           a {
             color: inherit!important;
             border-bottom: unset!important;
+            height: 80px;
           }
           &.active,&:hover,&:focus {
             background-color: $menu-color-4;
@@ -42,6 +44,7 @@ $menu-main-color-2:#307fcf;
   .sub-menu {
     height: auto!important;
     padding: 0!important;
+    left: 90px;
     section {
       padding-top: 0!important;
       padding-bottom: 0!important;
@@ -50,7 +53,7 @@ $menu-main-color-2:#307fcf;
         height: 100%;
         li {
           margin-left: 0!important;
-          padding: 10px!important;
+          padding:0 5px!important;
           background-color: $menu-color-4;
           border: 2px solid $menu-color-5;
           border-bottom-color: $menu-color-3;
