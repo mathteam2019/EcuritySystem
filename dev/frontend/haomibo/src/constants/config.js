@@ -23,7 +23,7 @@ export const refreshTokenTimeDiff = 30;
 export const currentUser = {
   id: 0,
   name: '',
-  img: '/assets/img/profile-pic-l.jpg',
+  img: '/assets/img/user_placeholder.png',
 };
 
 export const defaultColor = 'light.blue';
