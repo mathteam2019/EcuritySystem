@@ -46,23 +46,25 @@
                     <b-button
                       size="sm"
                       class="ml-2"
-                      variant="info"
-                      @click="onSearchButton()">
+                      variant="info default"
+                      @click="onSearchButton()"><i class="icofont-search-1"></i>&nbsp;
                       {{ $t('permission-management.search') }}
                     </b-button>
                     <b-button
                       size="sm"
                       class="ml-2"
-                      variant="info"
-                      @click="onResetButton()">
+                      variant="info default"
+                      @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
                       {{ $t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="success" @click="showCreatePage()">{{
-                      $t('permission-management.new') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                      {{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
+                    <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
                 </b-col>
@@ -87,55 +89,55 @@
                         <template v-if="props.rowData.status=='inactive'">
                           <b-button
                             size="sm"
-                            variant="info"
+                            variant="info default btn-square"
                             @click="onAction('modify', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-modify') }}
+                            <i class="icofont-edit"></i>
                           </b-button>
                           <b-button
                             size="sm"
-                            variant="success"
+                            variant="success default btn-square"
                             @click="onAction('activate', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-activate') }}
+                            <i class="icofont-check-circled"></i>
                           </b-button>
                           <b-button
                             size="sm"
-                            variant="danger"
+                            variant="danger default btn-square"
                             @click="onAction('delete', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-delete') }}
+                            <i class="icofont-bin"></i>
                           </b-button>
                         </template>
 
                         <template v-if="props.rowData.status=='active'">
                           <b-button
                             size="sm"
-                            variant="info"
+                            variant="info default btn-square"
                             disabled>
-                            {{ $t('permission-management.org-action-modify') }}
+                            <i class="icofont-edit"></i>
                           </b-button>
 
                           <template v-if="props.rowData.parentOrgId==0">
                             <b-button
                               size="sm"
-                              variant="warning"
+                              variant="warning default btn-square"
                               disabled>
-                              {{ $t('permission-management.org-action-deactivate') }}
+                              <i class="icofont-ban"></i>
                             </b-button>
                           </template>
                           <template v-else>
                             <b-button
                               size="sm"
-                              variant="warning"
+                              variant="warning default btn-square"
                               @click="onAction('deactivate', props.rowData, props.rowIndex)">
-                              {{ $t('permission-management.org-action-deactivate') }}
+                              <i class="icofont-ban"></i>
                             </b-button>
                           </template>
 
 
                           <b-button
                             size="sm"
-                            variant="danger"
+                            variant="danger default btn-square"
                             disabled>
-                            {{ $t('permission-management.org-action-delete') }}
+                            <i class="icofont-bin"></i>
                           </b-button>
                         </template>
 
@@ -754,7 +756,7 @@
 
           // call api
           getApiManager()
-            .post(`${apiBaseUrl}/permission-management/update-organization-status`, {
+            .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
               'orgId': data.orgId,
               'status': 'active',
             })
