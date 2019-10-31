@@ -1,11 +1,12 @@
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
+      </b-row>
+    </div>
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 

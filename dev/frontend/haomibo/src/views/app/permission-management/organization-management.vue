@@ -1,18 +1,34 @@
+<style lang="scss">
+  .bg-organization-structure {
+      .bg-level-1 {
+        background-color: #056aa5;
+      }
+      .bg-level-2 {
+        background-color: #047a98;
+      }
+      .bg-level-3 {
+        background-color: #576872;
+      }
+  }
+</style>
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
+          <div class="separator mb-5"></div>
+        </b-colxx>
+      </b-row>
+    </div>
+
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.organization-table')">
         <b-row v-if="pageStatus==='table'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="">
 
               <b-row>
                 <b-col class="d-flex">
@@ -179,12 +195,12 @@
                 </b-col>
               </b-row>
 
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='create'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="p-5">
               <b-row>
                 <b-col cols="6">
 
@@ -284,12 +300,12 @@
                   </b-button>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='modify'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="p-5">
               <b-row>
                 <b-col cols="6">
 
@@ -389,7 +405,7 @@
                   </b-button>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
 
@@ -399,7 +415,7 @@
 
         <b-row>
           <b-col cols="12">
-            <b-card class="mb-4" no-body>
+            <div class="bg-organization-structure table-responsive" no-body>
               <b-card-body class="text-center">
                 <vue2-org-tree
                   :data="treeData"
@@ -411,7 +427,7 @@
                   @on-node-click="() => {}"
                 />
               </b-card-body>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
 
@@ -440,6 +456,17 @@
       }
     }
     return 0;
+  };
+
+  let fnGetOrgLevel = orgData => {
+    let level = 0;
+    if (orgData == null)
+      return level;
+    while (orgData.parent != null) {
+      level ++;
+      orgData = orgData.parent;
+    }
+    return level;
   };
 
   export default {
@@ -805,8 +832,9 @@
         return data.label;
       },
       treeLabelClass: function (data) {
-        const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
-        return `${labelClasses[data.id % 6]} text-white`;
+        let level = fnGetOrgLevel(data);
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3'];
+        return `${labelClasses[level % 3]} text-white`;
       },
 
       showCreatePage() { // move to create page

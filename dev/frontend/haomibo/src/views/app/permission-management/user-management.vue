@@ -46,7 +46,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb :heading="$t('menu.user-management')"/>
+          <piaf-breadcrumb />
         </b-colxx>
       </b-row>
     </div>
