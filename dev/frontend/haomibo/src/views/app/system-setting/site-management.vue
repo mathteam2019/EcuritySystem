@@ -7,17 +7,17 @@
     </b-colxx>
   </b-row>
 
-  <b-tabs nav-class="separator-tabs ml-0 mb-5" content-class="tab-content" :no-fade="true">
+  <b-tabs nav-class="ml-2" :no-fade="true">
     <b-tab :title="$t('system-setting.site-list')">
       <b-row v-if="!detailMode">
         <b-col cols="12" class="mb-4">
           <b-card class="mb-4" no-body>
             <b-card-body>
-              <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+                      <b-row>
+                        <b-col class="d-flex">
+                          <div class="flex-grow-1">
 
-                    <b-row>
+                            <b-row>
 
                       <b-col >
                         <b-form-group :label="$t('system-setting.site-name')">

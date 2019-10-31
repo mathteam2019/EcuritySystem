@@ -3,6 +3,9 @@ package com.haomibo.haomibo.models.reusables;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+/**
+ * this class is used for filtering and pagination result which is used in datatable.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

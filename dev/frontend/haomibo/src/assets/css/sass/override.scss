@@ -1,0 +1,264 @@
+
+html body {
+  font-family: "Microsoft YaHei"!important;
+}
+//left side menu
+$menu-color-1:#042340;
+$menu-color-2:#136076;
+$menu-color-3:#0e6781;
+$menu-color-4:#1c94b7;
+$menu-color-5:#48b4ff;
+$menu-color-6:#000e19;
+$menu-color-7:#042340;
+$menu-main-color-1:#104975;
+$menu-main-color-2:#307fcf;
+.sidebar {
+  .main-menu {
+    padding-top: 0!important;
+    background-color: $menu-color-7;
+    width: 90px;
+    section {
+      ul {
+        li {
+          background-color: $menu-color-7;
+          border-bottom: solid 2px $menu-color-6;
+          border-top: solid 2px $menu-main-color-1;
+          color: $menu-main-color-2!important;
+          a {
+            color: inherit!important;
+            border-bottom: unset!important;
+            height: 80px;
+          }
+          &.active,&:hover,&:focus {
+            background-color: $menu-color-4;
+            border-bottom:solid 2px transparent!important;
+            color: white!important;
+            &:after {
+              background: transparent!important;
+            }
+          }
+        }
+      }
+    }
+  }
+  .sub-menu {
+    height: auto!important;
+    padding: 0!important;
+    left: 90px;
+    section {
+      padding-top: 0!important;
+      padding-bottom: 0!important;
+      ul {
+        margin: 0!important;
+        height: 100%;
+        li {
+          margin-left: 0!important;
+          padding:0 5px!important;
+          background-color: $menu-color-4;
+          border: 2px solid $menu-color-5;
+          border-bottom-color: $menu-color-3;
+          border-left-color: $menu-color-2;
+          a {
+            margin-bottom: 0!important;
+            line-height: 20px;
+          }
+          &.active,&:hover,&:active {
+            background-color: $menu-color-7;
+            border: 2px solid $menu-color-6;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            color: $menu-color-5;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+//vue table btn square style variables
+$btn-square-length:30px;
+$btn-square-padding: 0;
+$btn-square-font-size: 17px;
+$theme-color-purple-2: #881aff;
+
+.btn.default {
+  border-radius: 0.3rem;
+}
+.form-group {
+  .col-form-label {
+    font-weight: bold;
+  }
+}
+.form-control {
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.4rem 0.55rem 0.5rem;
+}
+
+.btn-success {
+  background-color: $success-color;
+}
+.btn-danger {
+  background-color: $error-color;
+}
+.btn-info {
+  background-color: $info-color;
+  border-color: $info-color;
+  &:hover {
+    background-color: darken($info-color, 8%);
+    border-color: darken($info-color, 8%);
+  }
+}
+.btn-outline-info {
+  color: $info-color;
+  border-color: $info-color;
+  &:hover,&:active,&:focus {
+    color: white;
+    background-color: $info-color;
+    border-color: darken($info-color, 8%);
+  }
+}
+.btn-outline-info:not(:disabled):not(.disabled):active, .btn-outline-info:not(:disabled):not(.disabled).active, .show>.btn-outline-info.dropdown-toggle {
+  background-color: $info-color;
+  border-color: darken($info-color, 8%);
+}
+.btn-info:not(:disabled):not(.disabled):active, .btn-info:not(:disabled):not(.disabled).active, .show>.btn-info.dropdown-toggle {
+  background-color: darken($info-color, 8%)!important;
+  border-color: darken($info-color, 8%)!important;
+}
+.btn-primary {
+  background-color: $info-color;
+  border-color: $info-color;
+  color: $button-text-color;
+
+  &:hover,&:not(:disabled):active,&:focus {
+    color: $button-text-color;
+    background-color: darken($info-color, 8%)!important;
+    border-color: darken($info-color, 8%)!important;
+  }
+}
+
+
+.btn-purple {
+  background-color: $theme-color-purple;
+  color: $button-text-color;
+  &:hover {
+    color: $button-text-color;
+    background-color: $theme-color-purple-2;
+  }
+}
+.text-success {
+  color: $success-color!important;
+}
+.text-danger {
+  color: $error-color!important;
+}
+.text-primary {
+  color: $info-color!important;
+}
+
+@supports not (-ms-high-contrast: none) {
+  select {
+    background-image: url("../../../img/bottom_arrow_black.svg") !important;
+    background-position: calc(100% - 12px) 1em,
+    calc(100% - 20px) 1em,
+    100% 0 !important;
+    background-size: 9px 9px,
+    5px 5px,
+    2.5em 2.5em !important;
+    background-repeat: no-repeat !important;
+    border-color: grey;
+    outline: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    &.form-control:not([size]):not([multiple]){
+    height: calc(2.4rem + 0px);
+    }
+  }
+
+}
+.tab-content {
+  div.section {
+    border-radius: 5px;
+    padding: 20px;
+    border: solid 1px #cccccc;
+  }
+}
+.vuetable {
+  thead {
+    tr {
+      background: #f1f1f1;
+      th {
+        padding: 14px 0!important;
+        border: solid 1px #e7e7e7!important;
+        &.btn-actions {
+          width: 230px;
+        }
+      }
+    }
+  }
+  tbody {
+    tr {
+      td {
+        padding: 10px 0!important;
+        border: solid 1px #e7e7e7!important;
+        vertical-align: middle!important;
+        &.btn-actions {
+          width: 230px;
+        }
+        button.btn-square {
+          width: $btn-square-length;
+          height: $btn-square-length;
+          padding: $btn-square-padding;
+          font-size: $btn-square-font-size;
+          line-height: $btn-square-length - 3px;
+          border-radius: 4px!important;
+          margin-left: 20px;
+          &:disabled {
+            background-color: #cccccc;
+            border-color: transparent;
+          }
+        }
+      }
+    }
+  }
+  &.table-striped {
+    tbody {
+      tr:nth-of-type(odd) {
+        td {
+          background-color: #fafafa!important;
+        }
+      }
+    }
+  }
+}
+.pagination-sm {
+  .page-item {
+    .page-link {
+      border: none;
+      cursor: pointer;
+      min-width: 5px;
+      font-size: 14px;
+      &:hover {
+        color: #1782d4;
+      }
+    }
+    &.active {
+      .page-link {
+        color: #1782d4;
+        border: none;
+      }
+    }
+
+
+  }
+}
+
+.navbar .logout {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

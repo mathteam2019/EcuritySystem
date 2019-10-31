@@ -8,10 +8,10 @@ export const menuHiddenBreakpoint = 768;
 export const defaultLocale = 'zh';
 export const defaultDirection = 'ltr';
 export const localeOptions = [
-  {id: 'en', name: 'English LTR', direction: 'ltr'},
-  {id: 'zh', name: '中文', direction: 'ltr'},
-  {id: 'es', name: 'Español', direction: 'ltr'},
-  {id: 'enrtl', name: 'English RTL', direction: 'rtl'}
+  {id: 'en', name: 'English LTR', direction: 'ltr', icon: '/assets/img/flags/united-kingdom.svg'},
+  {id: 'zh', name: '中文', direction: 'ltr', icon: '/assets/img/flags/china.svg'},
+  {id: 'es', name: 'Español', direction: 'ltr', icon: '/assets/img/flags/spain.svg'},
+  {id: 'enrtl', name: 'English RTL', direction: 'rtl', icon: '/assets/img/flags/united-kingdom.svg'}
 ];
 
 export const apiBaseUrl = 'http://192.168.5.4:8080/haomibo-0.0.1-SNAPSHOT';
@@ -23,7 +23,7 @@ export const refreshTokenTimeDiff = 30;
 export const currentUser = {
   id: 0,
   name: '',
-  img: '/assets/img/profile-pic-l.jpg',
+  img: '/assets/img/user_placeholder.png',
 };
 
 export const defaultColor = 'light.blue';

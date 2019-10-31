@@ -11,7 +11,7 @@ let loadCurrentUser = () => {
 
     return {
       ...loginInfo.user,
-      img: '/assets/img/profile-pic-l.jpg',
+      img: '/assets/img/user_placeholder.png',
     };
   }
   return null;

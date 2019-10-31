@@ -22,6 +22,10 @@ const mutations = {
     let { classNames, step: clickIndex, selectedMenuHasSubItems } = payload;
     const currentClasses = classNames ? classNames.split(' ').filter(x => x !== '') : '';
     let nextClasses = '';
+    console.log(clickIndex % 4);
+    if(clickIndex % 4 === 1) {
+      clickIndex = 3;
+    }
     if (!selectedMenuHasSubItems) {
       if (currentClasses.includes("menu-default") && (clickIndex % 4 === 0 || clickIndex % 4 === 3))
         clickIndex = 1;

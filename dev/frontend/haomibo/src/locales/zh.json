@@ -37,6 +37,9 @@
     "name-should-be-numerical-or-characters": "名称应为数字或字符",
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
+  "login":{
+    "title":"统一权限管理系统"
+  },
   "menu": {
     "app": "主场",
     "piaf": "Piaf",
@@ -88,6 +91,16 @@
     "error-code": "错码",
     "go-back-home": "退回",
     "register-desc": "如果你是会员，请登录"
+  },
+  "dashboard": {
+    "article-title-1": "2秒完成扫描",
+    "article-extract-1": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-2": "通过率高",
+    "article-extract-2": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-3": "仪器占地小",
+    "article-extract-3": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率",
+    "article-title-4": "保护隐私",
+    "article-extract-4": "项目主要是通过安检门对人进行安检，<br />人可以快速通过，简化化安检流程，<br />提高安检效率"
   },
   "permission-management": {
     "organization-table": "机构列表",
@@ -275,6 +288,9 @@
       "required-field": "This field is required.",
       "success": "成功",
       "role-created": "A role is created.",
+      "role-modified": "The role has modified.",
+      "role-deleted": "The role has deleted.",
+      "delete-role-prompt": "Do you want to delete this role?",
       "data-group-created": "A data group is created.",
       "data-group-modified": "The data group has modified.",
       "data-group-deleted": "The data group has deleted.",

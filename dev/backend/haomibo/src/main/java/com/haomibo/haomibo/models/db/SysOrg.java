@@ -27,6 +27,11 @@ public class SysOrg implements Serializable {
         public static final String INACTIVE = "inactive";
     }
 
+    /**
+     * Generates children org list.
+     *
+     * @return List of Children org.
+     */
     public List<SysOrg> generateChildrenList() {
 
         List<SysOrg> children = new ArrayList<>();
