@@ -231,6 +231,7 @@
     "organization-activated-successfully": "机构生效成功",
     "organization-deactivated-successfully": "机构失效成功",
     "organization-deleted-successfully": "机构删除成功",
+    "user-change-status-successfully": "User Status changed successfully.",
     "assign-permission-management": {
       "assign-to-user": "人员授权",
       "assign-to-group": "分组授权",
@@ -277,7 +278,10 @@
       "group-number": "分组编号",
       "group-member": "人员",
       "userNumber-field-is-mandatory": "人员编号是必需的",
-      "category-field-is-mandatory": "类别是必需的"
+      "category-field-is-mandatory": "类别是必需的",
+      "user-group-delete-prompt":"是否删除该人员组",
+      "inactive-prompt": "是否失效该",
+      "block-prompt": "block-prompt"
     },
 
     "permission-control": {
