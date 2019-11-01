@@ -22,7 +22,6 @@ const mutations = {
     let { classNames, step: clickIndex, selectedMenuHasSubItems } = payload;
     const currentClasses = classNames ? classNames.split(' ').filter(x => x !== '') : '';
     let nextClasses = '';
-    console.log(clickIndex % 4);
     if(clickIndex % 4 === 1) {
       clickIndex = 3;
     }
