@@ -549,7 +549,7 @@
         <b-row v-else-if="groupPageStatus==='create'">
           <b-col cols="12" class="form-section">
             <b-row>
-              <b-col cols="12">
+              <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
                     class="text-danger">*</span></template>
@@ -570,13 +570,25 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-radio-group stacked>
-                    <b-form-radio value="first">Select this custom radio</b-form-radio>
-                    <b-form-radio value="second">Or this one</b-form-radio>
-                    <b-form-radio value="third">Or this one</b-form-radio>
-                    <b-form-radio value="four">Or this one</b-form-radio>
-                  </b-form-radio-group>
+                  <div class="d-flex ">
+                    <div>
+                      <b-form-radio-group  stacked>
+                        <b-form-radio value="first">{{$t('permission-management.assign-permission-management.group.one-user-data')}}</b-form-radio>
+                        <b-form-radio value="second">{{$t('permission-management.assign-permission-management.group.group-user-data')}}</b-form-radio>
+                        <b-form-radio value="third">{{$t('permission-management.assign-permission-management.group.all-user-data')}}</b-form-radio>
+                        <b-form-radio value="four">{{$t('permission-management.assign-permission-management.group.select-data-group')}}</b-form-radio>
+                      </b-form-radio-group>
+                    </div>
+                    <div class="align-self-end flex-grow-1 pl-2">
+                      <b-form-select v-model="groupForm.filterGroup" :options="filterGroupOptions" plain/>
+                    </div>
+                  </div>
                 </b-form-group>
+              </b-col>
+              <b-col cols="12 text-right">
+                <b-button variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
           </b-col>
@@ -769,17 +781,28 @@
           userGroup:null,
           role:null,
         },
+        groupUserGroupOptions:[
+          '组1',
+          '组2',
+          '组3',
+        ],
         roleOptions:[
           '角色1',
           '角色2',
           '角色3',
+        ],
+        filterGroupOptions:[
+          '组1',
+          '组2',
+          '组3',
         ],
         groupPageStatus:'table', //table, create
         groupFilter:{
           groupName:null,
           userName:null,
           role:null,
-          dataRange:null
+          dataRange:null,
+          filterGroup:null
         },
         userGroupTableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
@@ -1256,7 +1279,16 @@
       },
 
       //TODO assign user group point
-
+      onActionGroup(value){
+        console.log(value);
+        switch (value) {
+          case 'show-list':
+            this.groupPageStatus = 'table';
+            break;
+          case 'delete-item':
+            break;
+        }
+      },
       onAssignUserGroupSearchButton() {
         this.$refs.vuetable.refresh();
       },

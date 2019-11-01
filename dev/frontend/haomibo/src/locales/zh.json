@@ -243,7 +243,11 @@
         "groupMember": "组员",
         "role": "角色",
         "data-range": "数据范围",
-        "member": "组员"
+        "member": "组员",
+        "one-user-data":"个人数据",
+        "group-user-data":"组内所有人数据",
+        "all-user-data":"所有人数据",
+        "select-data-group":"选定数据组数据"
       },
       "assign-flag-select-options": {
         "all": "全部",
