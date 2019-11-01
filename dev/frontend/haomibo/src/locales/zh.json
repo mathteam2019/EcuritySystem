@@ -237,6 +237,13 @@
       "summary-table": "授权对照表",
       "assign-flag": "授权标记",
       "please-input-user-name": "请输入人员姓名",
+      "group": {
+        "user-group": "人员组",
+        "groupMember": "组员",
+        "role": "角色",
+        "data-range": "数据范围",
+        "member": "组员"
+      },
       "assign-flag-select-options": {
         "all": "全部",
         "assigned": "已授权",
@@ -244,12 +251,6 @@
       }
     },
 
-    "assign-group": {
-      "user-group": "人员组",
-      "groupMember": "组员",
-      "role": "角色",
-      "data-range": "数据范围"
-    },
     "organization-has-children": "该机构有孩子",
 
     "user": {
