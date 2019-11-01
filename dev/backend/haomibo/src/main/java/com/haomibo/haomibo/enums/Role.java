@@ -1,10 +1,13 @@
 package com.haomibo.haomibo.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * Enum for Roles which are used to protect Controller methods from users who are not granted with specified roles.
  */
+@AllArgsConstructor
+@Getter
 public enum Role {
 
     ORG_CREATE("org_create"),
@@ -28,15 +31,6 @@ public enum Role {
         public static final String HAS_ROLE_DELETE = "hasRole('ROLE_role_delete')";
     }
 
-    @Getter
     private final String value;
 
-    Role(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return this.value;
-    }
 }

@@ -20,6 +20,11 @@ import java.util.Set;
 @Table(name = "sys_resource")
 public class SysResource implements Serializable {
 
+    public static class Category {
+        public static final String ADMIN = "admin";
+        public static final String USER = "user";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "RESOURCE_ID", length = 20, nullable = false)

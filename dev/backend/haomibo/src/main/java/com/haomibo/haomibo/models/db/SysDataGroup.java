@@ -1,5 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_DATA_GROUP)
 @Table(name = "sys_data_group")
 public class SysDataGroup implements Serializable {
 
@@ -29,6 +32,9 @@ public class SysDataGroup implements Serializable {
 
     @Column(name = "ORG_ID", length = 20)
     Long orgId;
+
+    @Column(name = "DATA_GROUP_NUMBER", length = 50)
+    String dataGroupNumber;
 
     @Column(name = "DATA_GROUP_NAME", length = 50)
     String dataGroupName;

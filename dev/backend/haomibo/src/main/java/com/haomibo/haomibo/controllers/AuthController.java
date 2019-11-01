@@ -117,6 +117,7 @@ public class AuthController extends BaseController {
                                 .builder()
                                 .id(sysUser.getUserId())
                                 .name(sysUser.getUserName())
+                                .portrait(sysUser.getPortrait())
                                 .build(),
                         token
                 )

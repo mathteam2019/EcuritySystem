@@ -91,7 +91,7 @@ public class SysOrg implements Serializable {
     String note;
 
     @ToString.Exclude
-    @OneToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
@@ -100,7 +100,6 @@ public class SysOrg implements Serializable {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "parent")
-    @NotFound(action = NotFoundAction.IGNORE)
     Set<SysOrg> children;
 
 

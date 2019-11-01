@@ -22,7 +22,7 @@ public class Token {
      */
     public Token(String token, Date expirationDate) {
         this.token = token;
-        this.expirationTimestamp = expirationDate.getTime();
+        this.expirationTimestamp = expirationDate.getTime() / 1000;
     }
 
     String token;

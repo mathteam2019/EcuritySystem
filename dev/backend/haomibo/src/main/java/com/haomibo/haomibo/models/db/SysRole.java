@@ -23,13 +23,6 @@ import java.util.Set;
 @Table(name = "sys_role")
 public class SysRole implements Serializable {
 
-    public static class Flag {
-        public static final String SET = "set";
-        public static final String UNSET = "unset";
-        public static final String ADMIN = "admin";
-        public static final String USER = "user";
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROLE_ID", length = 20, nullable = false)
@@ -37,6 +30,9 @@ public class SysRole implements Serializable {
 
     @Column(name = "ORG_ID", length = 20)
     Long orgId;
+
+    @Column(name = "ROLE_NUMBER", length = 50)
+    String roleNumber;
 
     @Column(name = "ROLE_NAME", length = 50)
     String roleName;

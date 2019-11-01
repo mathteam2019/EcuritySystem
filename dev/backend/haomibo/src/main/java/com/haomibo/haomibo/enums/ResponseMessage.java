@@ -1,10 +1,13 @@
 package com.haomibo.haomibo.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * Defines response messages
  */
+@AllArgsConstructor
+@Getter
 public enum ResponseMessage {
     OK("ok"),
     INVALID_PARAMETER("invalid_parameter"),
@@ -16,12 +19,9 @@ public enum ResponseMessage {
     SERVER_ERROR("server_error"),
     HAS_CHILDREN("has_children"),
     USED_USER_ACCOUNT("used_user_account"),
-    FORBIDDEN("forbidden");
+    FORBIDDEN("forbidden"),
+    BAD_REQUEST("bad_request");
 
-    @Getter
     private final String value;
 
-    ResponseMessage(String value) {
-        this.value = value;
-    }
 }
