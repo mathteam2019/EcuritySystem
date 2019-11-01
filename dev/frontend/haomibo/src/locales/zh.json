@@ -238,6 +238,8 @@
       "summary-table": "授权对照表",
       "assign-flag": "授权标记",
       "please-input-user-name": "请输入人员姓名",
+      "user": "人员",
+      "affiliated-org": "隶属机构",
       "group": {
         "user-group": "人员组",
         "groupMember": "组员",

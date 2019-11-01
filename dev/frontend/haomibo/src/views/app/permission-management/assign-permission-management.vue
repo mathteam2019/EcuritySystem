@@ -12,39 +12,71 @@
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
         <b-row v-if="pageStatus==='table'">
-          <b-col cols="7">
-            <b-card class="mb-4">
+          <b-col cols="12">
+            <div class="p-2">
 
               <b-row>
-                <b-col cols="5">
-                  <b-form-group :label="$t('permission-management.assign-permission-management.assign-flag')">
-                    <b-form-select :options="assignFlagSelectOptions" v-model="filter.assignFlag" plain/>
-                  </b-form-group>
+                <b-col cols="6">
+                  <b-row>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.user')">
+                        <b-form-input v-model="userFilter.userName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
+                        <b-form-select :options="assignFlagSelectOptions" v-model="userFilter.assignFlag" plain/>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
+                        <b-form-input v-model="groupFilter.role" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
+                        <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
                 </b-col>
 
-                <b-col cols="7">
-                  <b-form-group class="search-form-group">
-                    <template slot="label">&nbsp;</template>
-                    <b-form-input :placeholder="$t('permission-management.assign-permission-management.please-input-user-name')" v-model="filter.userName"></b-form-input>
-
-                    <i class="search-input-icon simple-icon-magnifier"></i>
-
-                  </b-form-group>
+                <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col >
                   <vuetable
-                    ref="vuetable"
-                    :api-url="vuetableItems.apiUrl"
-                    :fields="vuetableItems.fields"
-                    :http-fetch="vuetableHttpFetch"
-                    :per-page="vuetableItems.perPage"
-                    pagination-path="pagination"
+                    ref="userVuetable"
+                    :api-mode="false"
+                    :api-url="userVuetableItems.apiUrl"
+                    :fields="userVuetableItems.fields"
+                    :per-page="userVuetableItems.perPage"
                     class="table-striped"
 
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onUserPaginationData"
                   >
 
                     <template slot="actions" slot-scope="props">
@@ -109,10 +141,10 @@
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
-                    :initial-per-page="vuetableItems.perPage"
-                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                    ref="userPagination"
+                    @vuetable-pagination:change-page="onUserChangePage"
+                    :initial-per-page="userVuetableItems.perPage"
+                    @onUpdatePerPage="userVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
 
                   <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
@@ -142,12 +174,7 @@
                 </b-col>
               </b-row>
 
-            </b-card>
-          </b-col>
-          <b-col cols="5">
-            <b-card :title="'TODO'">
-              <h1>Hello world</h1>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='create'">
@@ -632,8 +659,6 @@
     },
     mounted() {
 
-      this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
       }).then((response) => {
@@ -655,11 +680,68 @@
           {value: 'assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.assigned')},
           {value: 'not_assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.not-assigned')}
         ],
-        filter: {
+        userFilter: {
           assignFlag: null,
           userName: ''
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
+          userVuetableItems: { // main table options
+              apiUrl: `${apiBaseUrl}/permission-management/...`,
+              fields: [
+                  {
+                      name: 'userId',
+                      title: this.$t('permission-management.th-no'),
+                      sortField: 'userId',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'userName',
+                      title: this.$t('permission-management.assign-permission-management.user'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'gender',
+                      title: this.$t('permission-management.gender'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'account',
+                      title: this.$t('permission-management.th-account'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'affiliatedOrg',
+                      title: this.$t('permission-management.assign-permission-management.affiliated-org'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'role',
+                      title: this.$t('permission-management.assign-permission-management.group.role'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'groupRange',
+                      title: this.$t('permission-management.assign-permission-management.group.data-range'),
+                      sortField: 'leader',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: '__slot:actions',
+                      title: this.$t('permission-management.th-org-actions'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+
+              ],
+              perPage: 5,
+          },
         createPage: { // create page
           orgName: '',
           orgNumber: '',
@@ -855,6 +937,9 @@
       }
     },
     watch: {
+        'userVuetableItems.perPage': function (newVal) {
+            this.$refs.userVuetable.refresh();
+        },
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
@@ -966,11 +1051,17 @@
           }
         });
       },
+      onUserPaginationData(paginationData) {
+          this.$refs.userPagination.setPaginationData(paginationData)
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
+      onUserChangePage(page) {
+        this.$refs.userVuetable.changePage(page)
+      },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page)
+          this.$refs.vuetable.changePage(page)
       },
       onAction(action, data, index) { // called when any action button is called from table
 
