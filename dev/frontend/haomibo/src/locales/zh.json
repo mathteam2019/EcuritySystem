@@ -243,6 +243,13 @@
         "not-assigned": "未授权"
       }
     },
+
+    "assign-group": {
+      "user-group": "人员组",
+      "groupMember": "组员",
+      "role": "角色",
+      "data-range": "数据范围"
+    },
     "organization-has-children": "该机构有孩子",
 
     "user": {
