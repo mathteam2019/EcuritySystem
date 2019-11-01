@@ -1,5 +1,11 @@
 <style lang="scss">
   .bg-organization-structure {
+    &>div {
+      background: url("../../../assets/img/bg-china-map.png") no-repeat center;
+      background-size: contain;
+      min-height: 60vh;
+    }
+
       .bg-level-1 {
         background-color: #056aa5;
       }
@@ -415,8 +421,8 @@
 
         <b-row>
           <b-col cols="12">
-            <div class="bg-organization-structure table-responsive" no-body>
-              <b-card-body class="text-center">
+            <div class="table-responsive" >
+              <div class="bg-organization-structure text-center">
                 <vue2-org-tree
                   :data="treeData"
                   :horizontal="false"
@@ -426,7 +432,7 @@
                   @on-expand="() => {}"
                   @on-node-click="() => {}"
                 />
-              </b-card-body>
+              </div>
             </div>
           </b-col>
         </b-row>

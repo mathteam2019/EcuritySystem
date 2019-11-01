@@ -643,37 +643,6 @@
 
       <b-tab :title="$t('permission-management.user-group')">
         <b-row>
-          <b-col cols="3" style="display: none">
-            <b-card class="mb-4">
-              <b-form @submit.prevent="onGroupFormSubmit">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.user.group-name')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="groupForm.groupName"
-                    :state="!$v.groupForm.groupName.$invalid"
-                    :placeholder="$t('permission-management.user.please-enter-group-name')"/>
-                  <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
-                  </b-form-invalid-feedback>
-
-                </b-form-group>
-                <b-form-group :label="$t('permission-management.user.note')">
-                  <b-form-textarea v-model="groupForm.note" rows="3"
-                                   :placeholder="$t('permission-management.user.enter-note')"></b-form-textarea>
-                </b-form-group>
-                <b-row class="mt-4">
-                  <b-col cols="12" class="text-right">
-                    <b-button type="submit" :disabled="$v.groupForm.$invalid" variant="primary">{{
-                      $t('permission-management.save') }}
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-form>
-            </b-card>
-          </b-col>
           <b-col cols="8">
             <div class="section">
               <b-row>
