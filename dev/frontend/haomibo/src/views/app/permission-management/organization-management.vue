@@ -1,18 +1,40 @@
+<style lang="scss">
+  .bg-organization-structure {
+    &>div {
+      background: url("../../../assets/img/bg-china-map.png") no-repeat center;
+      background-size: contain;
+      min-height: 60vh;
+    }
+
+      .bg-level-1 {
+        background-color: #056aa5;
+      }
+      .bg-level-2 {
+        background-color: #047a98;
+      }
+      .bg-level-3 {
+        background-color: #576872;
+      }
+  }
+</style>
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
+          <div class="separator mb-5"></div>
+        </b-colxx>
+      </b-row>
+    </div>
+
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.organization-table')">
         <b-row v-if="pageStatus==='table'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="">
 
               <b-row>
                 <b-col class="d-flex">
@@ -46,23 +68,25 @@
                     <b-button
                       size="sm"
                       class="ml-2"
-                      variant="info"
-                      @click="onSearchButton()">
+                      variant="info default"
+                      @click="onSearchButton()"><i class="icofont-search-1"></i>&nbsp;
                       {{ $t('permission-management.search') }}
                     </b-button>
                     <b-button
                       size="sm"
                       class="ml-2"
-                      variant="info"
-                      @click="onResetButton()">
+                      variant="info default"
+                      @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
                       {{ $t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="success" @click="showCreatePage()">{{
-                      $t('permission-management.new') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.export') }}
+                    <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                      {{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('permission-management.print') }}
+                    <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
                 </b-col>
@@ -87,55 +111,55 @@
                         <template v-if="props.rowData.status=='inactive'">
                           <b-button
                             size="sm"
-                            variant="info"
+                            variant="info default btn-square"
                             @click="onAction('modify', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-modify') }}
+                            <i class="icofont-edit"></i>
                           </b-button>
                           <b-button
                             size="sm"
-                            variant="success"
+                            variant="success default btn-square"
                             @click="onAction('activate', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-activate') }}
+                            <i class="icofont-check-circled"></i>
                           </b-button>
                           <b-button
                             size="sm"
-                            variant="danger"
+                            variant="danger default btn-square"
                             @click="onAction('delete', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-delete') }}
+                            <i class="icofont-bin"></i>
                           </b-button>
                         </template>
 
                         <template v-if="props.rowData.status=='active'">
                           <b-button
                             size="sm"
-                            variant="info"
+                            variant="info default btn-square"
                             disabled>
-                            {{ $t('permission-management.org-action-modify') }}
+                            <i class="icofont-edit"></i>
                           </b-button>
 
                           <template v-if="props.rowData.parentOrgId==0">
                             <b-button
                               size="sm"
-                              variant="warning"
+                              variant="warning default btn-square"
                               disabled>
-                              {{ $t('permission-management.org-action-deactivate') }}
+                              <i class="icofont-ban"></i>
                             </b-button>
                           </template>
                           <template v-else>
                             <b-button
                               size="sm"
-                              variant="warning"
+                              variant="warning default btn-square"
                               @click="onAction('deactivate', props.rowData, props.rowIndex)">
-                              {{ $t('permission-management.org-action-deactivate') }}
+                              <i class="icofont-ban"></i>
                             </b-button>
                           </template>
 
 
                           <b-button
                             size="sm"
-                            variant="danger"
+                            variant="danger default btn-square"
                             disabled>
-                            {{ $t('permission-management.org-action-delete') }}
+                            <i class="icofont-bin"></i>
                           </b-button>
                         </template>
 
@@ -177,12 +201,12 @@
                 </b-col>
               </b-row>
 
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='create'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="p-5">
               <b-row>
                 <b-col cols="6">
 
@@ -282,12 +306,12 @@
                   </b-button>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='modify'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <div class="p-5">
               <b-row>
                 <b-col cols="6">
 
@@ -387,7 +411,7 @@
                   </b-button>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
 
@@ -397,8 +421,8 @@
 
         <b-row>
           <b-col cols="12">
-            <b-card class="mb-4" no-body>
-              <b-card-body class="text-center">
+            <div class="table-responsive" >
+              <div class="bg-organization-structure text-center">
                 <vue2-org-tree
                   :data="treeData"
                   :horizontal="false"
@@ -408,8 +432,8 @@
                   @on-expand="() => {}"
                   @on-node-click="() => {}"
                 />
-              </b-card-body>
-            </b-card>
+              </div>
+            </div>
           </b-col>
         </b-row>
 
@@ -440,6 +464,17 @@
     return 0;
   };
 
+  let fnGetOrgLevel = orgData => {
+    let level = 0;
+    if (orgData == null)
+      return level;
+    while (orgData.parent != null) {
+      level ++;
+      orgData = orgData.parent;
+    }
+    return level;
+  };
+
   export default {
     components: {
       'vuetable': Vuetable,
@@ -450,7 +485,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -498,7 +533,7 @@
         ],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization-management/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -754,7 +789,7 @@
 
           // call api
           getApiManager()
-            .post(`${apiBaseUrl}/permission-management/update-organization-status`, {
+            .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
               'orgId': data.orgId,
               'status': 'active',
             })
@@ -803,8 +838,9 @@
         return data.label;
       },
       treeLabelClass: function (data) {
-        const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
-        return `${labelClasses[data.id % 6]} text-white`;
+        let level = fnGetOrgLevel(data);
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3'];
+        return `${labelClasses[level % 3]} text-white`;
       },
 
       showCreatePage() { // move to create page
@@ -849,7 +885,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/create`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -921,7 +957,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/modify`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -965,7 +1001,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/delete`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -1004,7 +1040,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })

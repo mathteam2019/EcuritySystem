@@ -3,26 +3,25 @@
     <div class="main-menu">
         <vue-perfect-scrollbar class="scroll" :settings="{ suppressScrollX: true, wheelPropagation: false }">
             <ul class="list-unstyled">
-                <li v-for="(item,index) in menuItems" :class="{ 'active' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :key="`parent_${item.id}`" :data-flag="item.id">
-                    <a v-if="item.newWindow" :href="item.to" rel="noopener noreferrer" target="_blank">
+                <li v-tooltip.left="$t(item.label)" v-for="(item,index) in menuItems" :class="{ 'active' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :key="`parent_${item.id}`" :data-flag="item.id">
+                    <a   v-if="item.newWindow" :href="item.to" rel="noopener noreferrer" target="_blank">
                         <i :class="item.icon" />
-                        {{ $t(item.label) }}
                     </a>
-                    <a v-else-if="item.subs && item.subs.length>0" @click.prevent="openSubMenu($event,item)" :href="`#${item.to}`"><i :class="item.icon" />
-                        {{ $t(item.label) }}</a>
+                    <a   v-else-if="item.subs && item.subs.length>0" @click.prevent="openSubMenu($event,item,index)" :href="`#${item.to}`"><i :class="item.icon" />
+                        </a>
                     <router-link v-else @click.native="changeSelectedParentHasNoSubmenu(item.id)" :to="item.to"><i :class="item.icon" />
-                        {{ $t(item.label) }}</router-link>
+                        </router-link>
                 </li>
             </ul>
         </vue-perfect-scrollbar>
     </div>
 
-    <div class="sub-menu">
+    <div class="sub-menu" :style="{top:80+ subMenuIndex * 67 + 'px'}">
         <vue-perfect-scrollbar class="scroll" :settings="{ suppressScrollX: true, wheelPropagation: false }">
             <ul v-for="(item,itemIndex) in menuItems" :class="{'list-unstyled':true, 'd-block' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :data-parent="item.id" :key="`sub_${item.id}`">
                 <li v-for="(sub,subIndex) in item.subs" :class="{'has-sub-item' : sub.subs && sub.subs.length > 0 , 'active' : $route.path.indexOf(sub.to)>-1}">
                     <a v-if="sub.newWindow" :href="sub.to" rel="noopener noreferrer" target="_blank">
-                        <i :class="sub.icon" />
+                        <i class="icofont-caret-right" />
                         <span>{{ $t(sub.label) }}</span>
                     </a>
                     <template v-else-if="sub.subs &&  sub.subs.length > 0">
@@ -31,7 +30,7 @@
                             <ul class="list-unstyled third-level-menu">
                                 <li v-for="(thirdLevelSub, thirdIndex) in sub.subs" :key="`third_${itemIndex}_${subIndex}_${thirdIndex}`" :class="{'third-level-menu':true , 'active' : $route.path ===thirdLevelSub.to}">
                                     <a v-if="thirdLevelSub.newWindow" :href="thirdLevelSub.to" rel="noopener noreferrer" target="_blank">
-                                        <i :class="thirdLevelSub.icon" />
+                                      <i class="icofont-caret-right" />
                                         <span>{{ $t(thirdLevelSub.label) }}</span>
                                     </a>
 
@@ -45,7 +44,7 @@
                         </b-collapse>
                     </template>
                     <router-link v-else :to="sub.to">
-                        <i :class="sub.icon" />
+                      <i class="icofont-caret-right" />
                         <span>{{ $t(sub.label) }}</span>
                     </router-link>
                 </li>
@@ -65,6 +64,12 @@ import {
     subHiddenBreakpoint
 } from '../constants/config'
 import menuItems from '../constants/menu'
+import Vue from 'vue';
+import Tooltip from 'vue-directive-tooltip';
+import 'vue-directive-tooltip/dist/vueDirectiveTooltip.css';
+Vue.use(Tooltip,{
+  delay: 100,
+});
 
 export default {
     data() {
@@ -72,7 +77,8 @@ export default {
             selectedParentMenu: '',
             isMenuOver: false,
             menuItems,
-            viewingParentMenu: ''
+            viewingParentMenu: '',
+            subMenuIndex:0,
         }
     },
     mounted() {
@@ -125,7 +131,9 @@ export default {
             })
         },
 
-        openSubMenu(e, menuItem) {
+        openSubMenu(e, menuItem,index) {
+          console.log('index==='+index);
+          this.subMenuIndex = index;
             const selectedParent = menuItem.id;
             const hasSubMenu = menuItem.subs && menuItem.subs.length > 0;
             this.changeSelectedMenuHasSubItems(hasSubMenu);
@@ -179,6 +187,7 @@ export default {
             }
         },
         handleDocumentClick(e) {
+
             if (!this.isMenuOver) {
                 let cont = true
                 var path = e.path || (e.composedPath && e.composedPath())
@@ -216,6 +225,7 @@ export default {
         },
         // Resize
         handleWindowResize(event) {
+
             if (event && !event.isTrusted) {
                 return
             }
@@ -227,6 +237,7 @@ export default {
             })
         },
         getMenuClassesForResize(classes) {
+
             let nextClasses = classes.split(' ').filter(x => x !== '')
             const windowWidth = window.innerWidth
 

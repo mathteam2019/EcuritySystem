@@ -1,7 +1,133 @@
 
-html body {
+html,html body {
   font-family: "Microsoft YaHei"!important;
+  background: #eaeaea;
 }
+//left side menu
+$menu-color-1:#042340;
+$menu-color-2:#136076;
+$menu-color-3:#0e6781;
+$menu-color-4:#1c94b7;
+$menu-color-5:#48b4ff;
+$menu-color-6:#000e19;
+$menu-color-7:#042340;
+$menu-main-color-1:#104975;
+$menu-main-color-2:#307fcf;
+
+//breadcrumb style point
+main {
+  margin: 160px 20px 0 90px !important;
+
+  div.container-fluid {
+    .breadcrumb-container {
+      position: fixed;
+      background: white;
+      height: 70px;
+      left: 70px;
+      top: 80px;
+      width: 100%;
+      z-index: 10;
+      div.row {
+        height: 100%;
+        div.col-12 {
+          display: flex;
+          align-items: center;
+          ol.breadcrumb {
+            margin: 0;
+            font-size: 19px;
+            li a,li span {
+              color: $info-color!important;
+            }
+          }
+        }
+      }
+      .breadcrumb-item + .breadcrumb-item::before{
+        content: "/";
+        color: $info-color!important;
+      }
+    }
+
+  }
+}
+
+
+.main-hidden .main-menu, .menu-hidden .main-menu {
+  transform: unset!important;
+}
+
+
+@media (max-width: 1439px) {
+  .sidebar {
+    padding-top: 80px!important;
+  }
+}
+.sidebar {
+  .main-menu {
+    padding-top: 0!important;
+    background-color: $menu-color-7;
+    width: 70px;
+    section {
+      ul {
+        li {
+          background-color: $menu-color-7;
+          border-bottom: solid 1px $menu-color-6;
+          border-top: solid 1px $menu-main-color-1;
+          color: $menu-main-color-2!important;
+          a {
+            color: inherit!important;
+            border-bottom: unset!important;
+            height: 65px;
+            i {
+              font-size: 30px;
+              line-height: 38px;
+            }
+          }
+          &.active,&:hover,&:focus {
+            background-color: $menu-color-4;
+            border-bottom:solid 1px transparent!important;
+            color: white!important;
+            &:after {
+              background: transparent!important;
+            }
+          }
+        }
+      }
+    }
+  }
+  .sub-menu {
+    height: auto!important;
+    padding: 0!important;
+    left: 70px;
+    section {
+      padding-top: 0!important;
+      padding-bottom: 0!important;
+      ul {
+        margin: 0!important;
+        height: 100%;
+        li {
+          margin-left: 0!important;
+          padding:0 5px!important;
+          background-color: $menu-color-4;
+          border: 1px solid $menu-color-5;
+          border-bottom-color: $menu-color-3;
+          border-left-color: $menu-color-2;
+          a {
+            margin-bottom: 0!important;
+            line-height: 20px;
+          }
+          &.active,&:hover,&:active {
+            background-color: $menu-color-7;
+            border: 1px solid $menu-color-6;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            color: $menu-color-5;
+          }
+        }
+      }
+    }
+  }
+}
+
 
 //vue table btn square style variables
 $btn-square-length:30px;
@@ -21,7 +147,9 @@ $theme-color-purple-2: #881aff;
   border-radius: 0.3rem;
   padding: 0.5rem 0.4rem 0.55rem 0.5rem;
 }
-
+.form-section {
+  padding: 60px 40px 40px 90px;
+}
 .btn-success {
   background-color: $success-color;
 }
@@ -84,7 +212,36 @@ $theme-color-purple-2: #881aff;
   color: $info-color!important;
 }
 
+@supports not (-ms-high-contrast: none) {
+  select {
+    background-image: url("../../../img/bottom_arrow_black.svg") !important;
+    background-position: calc(100% - 12px) 1em,
+    calc(100% - 20px) 1em,
+    100% 0 !important;
+    background-size: 9px 9px,
+    5px 5px,
+    2.5em 2.5em !important;
+    background-repeat: no-repeat !important;
+    border-color: grey;
+    outline: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    &.form-control:not([size]):not([multiple]){
+    height: calc(2.4rem + 0px);
+    }
+  }
 
+}
+.tab-content {
+  div.section {
+    border-radius: 5px;
+    padding: 20px;
+    border: solid 1px #cccccc;
+  }
+}
 .vuetable {
   thead {
     tr {

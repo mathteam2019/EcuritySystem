@@ -1,57 +1,45 @@
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.permission-control')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
+      </b-row>
+    </div>
 
     <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.permission-control.role-setting')">
         <b-row>
-          <b-col cols="3">
-            <b-card class="mb-4">
-              <b-form @submit.prevent="onRoleFormSubmit">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.role-name')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="roleForm.roleName"
-                    :state="!$v.roleForm.roleName.$invalid"
-                    :placeholder="$t('permission-management.permission-control.enter-role-name')" />
-                  <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-
-                </b-form-group>
-                <b-form-group :label="$t('permission-management.permission-control.note')">
-                  <b-form-textarea v-model="roleForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
-                </b-form-group>
-                <b-row class="mt-4">
-                  <b-col cols="12" class="text-right">
-                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
-                  </b-col>
-                </b-row>
-              </b-form>
-            </b-card>
-          </b-col>
-          <b-col cols="5">
-            <b-card class="mb-4">
+          <b-col cols="8">
+            <div class="section">
               <b-row>
-                <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.permission-control.role-flag')">
-                    <b-form-select v-model="roleFlag" @change="onRoleFlagChanged" :options="roleFlagData" plain/>
+                <b-col cols="3">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
+                    <b-form-input v-model="roleKeyword"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
-
-                <b-col cols="7">
-                  <b-form-group>
-                    <template slot="label">&nbsp;</template>
-                    <b-form-input v-model="roleKeyword" @change="onRoleKeywordChanged"></b-form-input>
-                  </b-form-group>
+                <b-col cols="9" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="searchRoles()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="resetRoleSearchForm()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onClickCreateRole()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
                 </b-col>
               </b-row>
 
@@ -65,18 +53,18 @@
                     :per-page="roleVuetableItems.perPage"
                     pagination-path="data"
                     data-path="data.data"
-                    :row-class="onRoleRowClass"
+                    class="table-hover"
                     @vuetable:pagination-data="onRolePaginationData"
-                    @vuetable:row-clicked="onRoleRowClicked"
                   >
-                    <template slot="roleFlag" slot-scope="props">
-                      <div v-if="props.rowData.roleFlag === 'admin'" class="glyph-icon iconsminds-gear text-info tb-icon"></div>
-                      <div v-else-if="props.rowData.roleFlag === 'user'" class="glyph-icon iconsminds-file-edit text-info tb-icon"></div>
+                    <template slot="roleNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onRoleNumberClicked(props.rowData)">
+                        {{props.rowData.roleNumber}}
+                      </span>
                     </template>
-
                     <template slot="operating" slot-scope="props">
-                      <div v-if="!['admin', 'user'].includes(props.rowData.roleFlag)" @click="onClickDeleteRole(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
-                      <div v-else class="glyph-icon simple-icon-close tb-button-disabled"></div>
+                      <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteRole(props.rowData)">
+                        <i class="icofont-bin"></i>
+                      </b-button>
                     </template>
 
                   </vuetable>
@@ -88,18 +76,120 @@
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4" v-if="selectedRole">
+            <div class="section" v-if="roleForm.visible">
+              <b-form @submit.prevent="onRoleFormSubmit">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.role-number')}}
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="roleForm.roleNumber"
+                    :state="!$v.roleForm.roleNumber.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-role-number')" />
+                  <div v-if="!$v.roleForm.roleNumber.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                </b-form-group>
+
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.role')}}
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="roleForm.roleName"
+                    :state="!$v.roleForm.roleName.$invalid"
+                    :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                  <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                </b-form-group>
+
+                <b-row>
+
+                  <b-col cols="12">
+                    <label class="font-weight-bold">
+                      {{$t('permission-management.permission-control.role-flag')}}
+                      <span class="text-danger">*</span>
+                    </label>
+                  </b-col>
+
+                  <b-col cols="12" class="text-center">
+                    <b-form-group>
+                      <b-form-radio-group>
+                        <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                        <b-form-radio v-model="roleFormFlag" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                      </b-form-radio-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+                <b-row v-if="['admin', 'user'].includes(roleFormFlag)">
+                  <b-col cols="12" class="text-right">
+                    <b-form-group>
+                      <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="12" class="h-30vh">
+                    <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
+                  </b-col>
+                </b-row>
+
+                <b-row class="mt-4">
+                  <b-col cols="12" class="text-right">
+                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+                  </b-col>
+                </b-row>
+
+              </b-form>
+            </div>
+
+            <div class="section" v-if="selectedRole">
 
               <b-row>
-                <b-form-group>
-                  <b-form-radio-group>
-                    <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                    <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
-                  </b-form-radio-group>
-                </b-form-group>
+                <b-col cols="12">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role-number')}}
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label>
+                      {{selectedRole.roleNumber}}
+                    </label>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="12">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role')}}
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label>
+                      {{selectedRole.roleName}}
+                    </label>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <label class="font-weight-bold">
+                    {{$t('permission-management.permission-control.role-flag')}}
+                    <span class="text-danger">*</span>
+                  </label>
+                </b-col>
+
+                <b-col cols="12" class="text-center">
+                  <b-form-group>
+                    <b-form-radio-group>
+                      <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                      <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                    </b-form-radio-group>
+                  </b-form-group>
+                </b-col>
               </b-row>
 
               <b-row v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
@@ -108,65 +198,71 @@
                     <b-form-checkbox v-model="isSelectedAllResourcesForRole">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
                   </b-form-group>
                 </b-col>
-                <b-col cols="12">
+                <b-col cols="12" class="h-30vh">
                   <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
-                </b-col>
-                <b-col cols="12" class="text-right">
-                  <b-form-group>
-                    <b-button @click="onClickSaveRole">{{$t('permission-management.permission-control.save')}}</b-button>
-                  </b-form-group>
                 </b-col>
               </b-row>
 
-            </b-card>
+              <b-row>
+                <b-col cols="12" class="text-right mt-4">
+                  <b-form-group>
+                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" @click="onClickSaveRole" variant="info default" class="mr-3">
+                      <i class="icofont-save"></i>
+                      {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                    <b-button @click="onClickDeleteRole(selectedRole)" variant="danger default">
+                      <i class="icofont-bin"></i>
+                      {{$t('permission-management.permission-control.delete')}}
+                    </b-button>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
 
       <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
-          <b-col cols="3">
-            <b-card class="mb-4">
-              <b-form @submit.prevent="onDataGroupFormSubmit">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="dataGroupForm.dataGroupName"
-                    :state="!$v.dataGroupForm.dataGroupName.$invalid"
-                    :placeholder="$t('permission-management.permission-control.enter-data-group-name')" />
-                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-
-                </b-form-group>
-                <b-form-group :label="$t('permission-management.permission-control.note')">
-                  <b-form-textarea v-model="dataGroupForm.note" rows="3" :placeholder="$t('permission-management.permission-control.enter-note')"></b-form-textarea>
-                </b-form-group>
-                <b-row class="mt-4">
-                  <b-col cols="12" class="text-right">
-                    <b-button type="submit" :disabled="$v.dataGroupForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
-                  </b-col>
-                </b-row>
-              </b-form>
-            </b-card>
-          </b-col>
-          <b-col cols="5">
+          <b-col cols="8">
             <b-card class="mb-4">
               <b-row>
-                <b-col cols="5" class="pr-3">
-                  <b-form-group :label="$t('permission-management.permission-control.group-flag')">
-                    <b-form-select v-model="groupFlag" @change="onGroupFlagChanged" :options="groupFlagData" plain/>
+                <b-col cols="2" class="pr-3">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
+                    <b-form-input v-model="groupKeyword"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
 
-                <b-col cols="7">
-                  <b-form-group>
-                    <template slot="label">&nbsp;</template>
-                    <b-form-input v-model="groupKeyword" @change="onGroupKeywordChanged"></b-form-input>
+                <b-col cols="2">
+                  <b-form-group class="search-form-group">
+                    <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
+                    <b-form-input v-model="dataRangeKeyword"></b-form-input>
+                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
+
+                <b-col cols="8" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="searchDataGroup()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="resetDataGroupSearchForm()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
+                </b-col>
+
               </b-row>
 
               <b-row>
@@ -179,18 +275,20 @@
                     :per-page="dataGroupVuetableItems.perPage"
                     pagination-path="data"
                     data-path="data.data"
-                    :row-class="onDataGroupRowClass"
+                    class="table-hover"
                     @vuetable:pagination-data="onDataGroupPaginationData"
-                    @vuetable:row-clicked="onDataGroupRowClicked"
                   >
 
-                    <template slot="dataGroupFlag" slot-scope="props">
-                      <div v-if="props.rowData.users.length" class="glyph-icon iconsminds-file text-info tb-icon"></div>
+                    <template slot="dataGroupNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onDataGroupNumberClicked(props.rowData)">
+                        {{props.rowData.dataGroupNumber}}
+                      </span>
                     </template>
 
                     <template slot="operating" slot-scope="props">
-                      <div v-if="!props.rowData.users.length" @click="onClickDeleteDataGroup(props.rowData)" class="glyph-icon simple-icon-close text-danger tb-button"></div>
-                      <div v-else class="glyph-icon simple-icon-close tb-button-disabled"></div>
+                      <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup()">
+                        <i class="icofont-bin"></i>
+                      </b-button>
                     </template>
 
                   </vuetable>
@@ -205,9 +303,65 @@
             </b-card>
           </b-col>
           <b-col cols="4">
-            <b-card class="mb-4" v-if="selectedDataGroup">
+            <div class="section" v-if="selectedDataGroup">
 
               <b-row>
+                <b-col cols="12" v-if="dataGroupDetailStatus === 'create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="dataGroupForm.dataGroupNumber"
+                      :state="!$v.dataGroupForm.dataGroupNumber.$invalid" />
+                    <div v-if="!$v.dataGroupForm.dataGroupNumber.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-number')}}
+                    </b-form-invalid-feedback>
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="dataGroupForm.dataGroupName"
+                      :state="!$v.dataGroupForm.dataGroupName.$invalid" />
+                    <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-name')}}
+                    </b-form-invalid-feedback>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="12" v-if="dataGroupDetailStatus !== 'create'">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label class="col-form-label">
+                      {{selectedDataGroup.dataGroupNumber}}
+                    </label>
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label class="col-form-label">
+                      {{selectedDataGroup.dataGroupName}}
+                    </label>
+                  </b-form-group>
+                </b-col>
+
+              </b-row>
+
+              <b-row>
+                <b-col cols="12">
+                  <label class="font-weight-bold">{{$t('permission-management.permission-control.data-range')}}<span class="text-danger">*</span></label>
+                </b-col>
                 <b-col class="text-right">
                   <b-form-group>
                     <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
@@ -218,20 +372,30 @@
               </b-row>
 
               <b-row>
-                <b-col>
+                <b-col class="h-30vh">
                   <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
 
               <b-row>
-                <b-col cols="12" class="text-right">
+                <b-col cols="12" class="text-right pt-3" v-if="dataGroupDetailStatus==='create'">
                   <b-form-group>
-                    <b-button @click="onClickSaveDataGroup">{{$t('permission-management.permission-control.save')}}</b-button>
+                    <b-button @click="createDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                  </b-form-group>
+                </b-col>
+
+                <b-col cols="12" class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
+                  <b-form-group>
+                    <b-button @click="onClickSaveDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                    <b-button @click="onClickDeleteDataGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
+                    </b-button>
                   </b-form-group>
                 </b-col>
               </b-row>
 
-            </b-card>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
@@ -274,8 +438,33 @@
     font-size: 20px;
     color: lightgray!important;
   }
-  .selected-row {
-    background-color: #0000ff20!important;
+  span.cursor-p {
+    cursor: pointer !important;
+  }
+  .h-30vh {
+    height: 30vh;
+    max-height: 30vh;
+    overflow: auto;
+  }
+</style>
+<style lang="scss">
+  .search-form-group {
+    [role="group"] {
+      position: relative;
+
+      .form-control {
+        padding-right: 30px;
+      }
+
+      .search-input-icon {
+        position: absolute;
+        top: 50%;
+        right: 1em;
+        transform: translateY(-50%);
+      }
+
+    }
+
   }
 </style>
 
@@ -321,7 +510,7 @@
           }
       });
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`, {}).then((response) => {
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {}).then((response) => {
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
@@ -350,17 +539,14 @@
       return {
         isLoading: false,
         roleForm: {
-          roleName: '',
-          note: ''
+            visible: false,
+            roleNumber: '',
+            roleName: '',
         },
+          roleFormFlag: null,
+          isSelectedAllResourcesForRoleForm: false,
+          currentResourceTreeDataForRoleForm: [],
           roleKeyword: '',
-        roleFlag: null,
-        roleFlagData: [
-            {value: null, text: this.$t('permission-management.permission-control.all')},
-            {value: 'admin', text: this.$t('permission-management.permission-control.system-management')},
-            {value: 'user', text: this.$t('permission-management.permission-control.business-operating')},
-            {value: 'unset', text: this.$t('permission-management.permission-control.no-role')},
-        ],
           resourceList: [],
           resourceTreeData: {
             admin: [],
@@ -372,11 +558,18 @@
           isSelectedAllResourcesForRole: false,
           roleVuetableItems: {
             apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
-              perPage: 5,
+              perPage: 10,
               fields: [
                   {
                       name: 'roleId',
                       title: this.$t('permission-management.permission-control.serial-number'),
+                      // sortField: 'roleId,
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: '__slot:roleNumber',
+                      title: this.$t('permission-management.permission-control.role-number'),
                       // sortField: 'roleId,
                       titleClass: 'text-center',
                       dataClass: 'text-center',
@@ -389,31 +582,20 @@
                       dataClass: 'text-center',
                   },
                   {
-                      name: '__slot:roleFlag',
-                      title: this.$t('permission-management.permission-control.role-flag'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center',
-                  },
-                  {
                       name: '__slot:operating',
                       title: this.$t('permission-management.permission-control.operating'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center',
-                  },
-                  {
-                      name: 'note',
-                      title: this.$t('permission-management.permission-control.note'),
-                      // sortField: 'note',
                       titleClass: 'text-center',
                       dataClass: 'text-center',
                   }
               ]
           },
         dataGroupForm: {
+          dataGroupNumber: '',
           dataGroupName: '',
           note: '',
         },
         groupKeyword: '',
+        dataRangeKeyword: '',
         groupFlag: null,
         groupFlagData: [
             {value: null, text: this.$t('permission-management.permission-control.all')},
@@ -423,11 +605,12 @@
         orgList: [],
         userList: [],
         orgUserTreeData: [],
+        dataGroupDetailStatus: null,
         selectedDataGroup: null,
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: 'dataGroupId',
@@ -437,17 +620,25 @@
               dataClass: 'text-center',
             },
             {
+                name: '__slot:dataGroupNumber',
+                title: this.$t('permission-management.permission-control.data-group-number'),
+                // sortField: 'dataGroupId',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
+            },
+            {
               name: 'dataGroupName',
-              title: this.$t('permission-management.permission-control.data-group-name'),
+              title: this.$t('permission-management.permission-control.data-group'),
               // sortField: 'dataGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:dataGroupFlag',
-              title: this.$t('permission-management.permission-control.group-flag'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
+                name: '__slot:dataGroupRange',
+                title: this.$t('permission-management.permission-control.data-group-range'),
+                // sortField: 'note',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
             },
             {
               name: '__slot:operating',
@@ -455,30 +646,35 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
-            {
-              name: 'note',
-              title: this.$t('permission-management.permission-control.note'),
-              // sortField: 'note',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            }
           ],
         },
       }
     },
     validations: {
       roleForm: {
-        roleName: {
+        roleNumber: {
           required
+        },
+        roleName: {
+            required
         }
       },
       dataGroupForm: {
-        dataGroupName: {
+        dataGroupNumber: {
           required
+        },
+        dataGroupName: {
+            required
         }
       }
     },
     watch: {
+        'roleVuetableItems.perPage': function(newVal) {
+            this.$refs.roleVuetable.refresh();
+        },
+        'dataGroupVuetableItems.perPage': function(newVal) {
+            this.$refs.dataGroupVuetable.refresh();
+        },
         resourceList(newVal, oldVal) {
             this.refreshResourceTreeData();
         },
@@ -488,6 +684,10 @@
                 this.isSelectedAllResourcesForRole = false;
                 this.refreshResourceTreeData();
             }
+        },
+        roleFormFlag(newVal, oldVal) {
+            this.isSelectedAllResourcesForRoleForm = false;
+            this.refreshResourceTreeData();
         },
         selectedRole(newVal, oldVal) {
             if(newVal) {
@@ -506,12 +706,19 @@
             if(this.selectedRole) {
                 let tempSelectedRole = this.selectedRole;
                 tempSelectedRole.resources = newVal ? this.resourceList.filter(resource => resource.resourceCategory === this.selectedRole.roleFlag) : [];
-                console.log(tempSelectedRole);
                 this.selectedRole = null;
                 this.selectedRole = tempSelectedRole;
 
                 this.refreshResourceTreeData();
             }
+        },
+        isSelectedAllResourcesForRoleForm(newVal, oldVal) {
+            console.log(this.resourceList);
+            this.resourceList.forEach((resource) => {
+                  resource.selected = newVal && (resource.resourceCategory === this.roleFormFlag);
+            });
+            console.log(this.resourceList);
+            this.refreshResourceTreeData();
         },
       orgList(newVal, oldVal) {
         this.refreshOrgUserTreeData();
@@ -545,12 +752,13 @@
             this.$refs[refName].hide();
         },
 
-      onRoleFormSubmit() {
+        onRoleFormSubmit() {
         this.isLoading = true;
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
+            'roleNumber': this.roleForm.roleNumber,
             'roleName': this.roleForm.roleName,
-            'note': this.roleForm.note
+            'resourceIdList': this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId),
           })
           .then((response) => {
             this.isLoading = false;
@@ -562,8 +770,9 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.roleForm.roleNumber = '';
                 this.roleForm.roleName = '';
-                this.roleForm.note = '';
+                this.roleFormFlag = null;
                 break;
               default:
 
@@ -573,8 +782,20 @@
             this.isLoading = false;
           });
       },
-        onRoleFlagChanged(value) {
+        searchRoles() {
             this.$refs.roleVuetable.refresh();
+        },
+        resetRoleSearchForm() {
+            this.roleKeyword = '';
+        },
+        onClickCreateRole() {
+            this.selectedRole = null;
+            this.roleForm.visible = true;
+            this.roleFormFlag = null;
+            this.currentResourceTreeDataForRoleForm = [];
+            this.resourceList.forEach((resource) => {
+                resource.selected = false;
+            });
         },
         onClickSaveRole() {
             if(this.selectedRole) {
@@ -626,6 +847,7 @@
                                     duration: 3000,
                                     permanent: false
                                 });
+                                this.selectedRole = null;
                                 this.$refs.roleVuetable.refresh();
                                 this.hideModal('modal-delete-role')
                                 break;
@@ -662,9 +884,13 @@
                     this.currentResourceTreeData = [];
                 }
             }
-        },
-        onRoleKeywordChanged(value) {
-            this.$refs.roleVuetable.refresh();
+            if(this.roleFormFlag === 'admin') {
+                this.currentResourceTreeDataForRoleForm = this.resourceTreeData.admin;
+            } else if(this.roleFormFlag === 'user') {
+                this.currentResourceTreeDataForRoleForm = this.resourceTreeData.user;
+            } else {
+                this.currentResourceTreeDataForRoleForm = [];
+            }
         },
         roleVuetableHttpFetch(apiUrl, httpOptions) {
             return getApiManager().post(apiUrl, {
@@ -672,57 +898,62 @@
                 perPage: this.roleVuetableItems.perPage,
                 filter: {
                     roleName: this.roleKeyword,
-                    category: this.roleFlag
                 }
             });
         },
         onRolePaginationData(paginationData) {
             this.$refs.rolePagination.setPaginationData(paginationData)
         },
-        onRoleRowClass(dataItem, index) {
-            let selectedItem = this.selectedRole;
-            if(selectedItem && selectedItem.roleId === dataItem.roleId) {
-                return 'selected-row';
-            } else {
-                return '';
-            }
-        },
-        onRoleRowClicked(dataItem, event) {
+        onRoleNumberClicked(dataItem) {
+            this.roleForm.visible = false;
             this.selectedRole = JSON.parse(JSON.stringify(dataItem));
         },
         onRoleChangePage(page) {
             this.$refs.roleVuetable.changePage(page);
         },
 
+      onClickCreateDataGroup() {
+          this.selectedDataGroup = {
+              users: []
+          };
+          this.dataGroupForm.dataGroupName = '';
+          this.dataGroupForm.dataGroupNumber = '';
+          this.dataGroupDetailStatus = 'create';
+      },
 
-      onDataGroupFormSubmit() {
-        this.isLoading = true;
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
-            'dataGroupName': this.dataGroupForm.dataGroupName,
-            'note': this.dataGroupForm.note
-          })
-          .then((response) => {
-            this.isLoading = false;
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
-                  duration: 3000,
-                  permanent: false
+      createDataGroup() {
+        if(this.selectedDataGroup) {
+            let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
+            let userIdList = checkedNodes.filter(node => node.isUser).map(node => node.userId);
+            this.isLoading = true;
+            getApiManager()
+                .post(`${apiBaseUrl}/permission-management/permission-control/data-group/create`, {
+                    'dataGroupNumber': this.dataGroupForm.dataGroupNumber,
+                    'dataGroupName': this.dataGroupForm.dataGroupName,
+                    'userIdList': userIdList
+                })
+                .then((response) => {
+                    this.isLoading = false;
+                    let message = response.data.message;
+                    let data = response.data.data;
+                    switch (message) {
+                        case responseMessages['ok']: // okay
+                            this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-created`), {
+                                duration: 3000,
+                                permanent: false
+                            });
+                            this.dataGroupForm.dataGroupName = '';
+                            this.dataGroupForm.dataGroupNumber = '';
+                            this.$refs.dataGroupVuetable.refresh();
+                            break;
+                        default:
+
+                    }
+                })
+                .catch((error) => {
+                    this.isLoading = false;
                 });
-                this.dataGroupForm.dataGroupName = '';
-                this.dataGroupForm.note = '';
-                this.$refs.dataGroupVuetable.refresh();
-                break;
-              default:
-
-            }
-          })
-          .catch((error) => {
-            this.isLoading = false;
-          });
+        }
       },
       onClickSaveDataGroup() {
           if(this.selectedDataGroup) {
@@ -778,7 +1009,7 @@
                                   permanent: false
                               });
                               this.$refs.dataGroupVuetable.refresh();
-                              this.hideModal('modal-delete-data-group')
+                              this.hideModal('modal-delete-data-group');
                               break;
                           default:
 
@@ -814,11 +1045,12 @@
         };
         this.orgUserTreeData = nest(this.orgList, this.userList, pseudoRootId);
       },
-      onGroupFlagChanged(value) {
+      searchDataGroup() {
           this.$refs.dataGroupVuetable.refresh();
       },
-      onGroupKeywordChanged(value) {
-          this.$refs.dataGroupVuetable.refresh();
+      resetDataGroupSearchForm() {
+          this.groupKeyword = '';
+          this.dataRangeKeyword = '';
       },
       dataGroupVuetableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {
@@ -826,7 +1058,6 @@
           perPage: this.dataGroupVuetableItems.perPage,
           filter: {
               dataGroupName: this.groupKeyword,
-              flag: this.groupFlag
           }
         });
       },
@@ -841,7 +1072,8 @@
             return '';
         }
       },
-      onDataGroupRowClicked(dataItem, event) {
+      onDataGroupNumberClicked(dataItem) {
+        this.dataGroupDetailStatus = 'modify';
         this.selectedDataGroup = JSON.parse(JSON.stringify(dataItem));
       },
       onDataGroupChangePage(page) {

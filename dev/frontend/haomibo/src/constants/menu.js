@@ -15,28 +15,28 @@ const data = [
     subs: [
       {
         id: 'permission-management-*-organization-management',
-        icon: "simple-icon-organization",
+        icon: "icofont-caret-right",
         label: "menu.organization-management",
         to: "/app/permission-management/organization-management",
         newWindow: false
       },
       {
         id: 'permission-management-*-user-management',
-        icon: "simple-icon-user",
+        icon: "icofont-caret-right",
         label: "menu.user-management",
         to: "/app/permission-management/user-management",
         newWindow: false
       },
       {
         id: 'permission-management-*-permission-control',
-        icon: "simple-icon-game-controller",
+        icon: "icofont-caret-right",
         label: "menu.permission-control",
         to: "/app/permission-management/permission-control",
         newWindow: false
       },
       {
         id: 'permission-management-*-assign-permission-management',
-        icon: "simple-icon-magic-wand",
+        icon: "icofont-caret-right",
         label: "menu.assign-permission-management",
         to: "/app/permission-management/assign-permission-management",
         newWindow: false
@@ -115,6 +115,29 @@ const data = [
         icon: "simple-icon-settings",
         label: "menu.site-management",
         to: "/app/system-setting/site-management",
+        newWindow: false
+      },
+    ]
+  },
+  {
+    id: "log-management",
+    icon: "simple-icon-note",
+    label: "menu.log-management",
+    to: "/app/log-management",
+    newWindow: false,
+    subs: [
+      {
+        id: 'log-management-*-operating-log',
+        icon: "simple-icon-equalizer",
+        label: "menu.operating-log",
+        to: "/app/log-management/operating-log",
+        newWindow: false
+      },
+      {
+        id: 'log-management-*-device-log',
+        icon: "simple-icon-settings",
+        label: "menu.device-log",
+        to: "/app/log-management/device-log",
         newWindow: false
       },
     ]

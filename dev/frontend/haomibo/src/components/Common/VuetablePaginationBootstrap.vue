@@ -37,14 +37,14 @@
 
         </ul>
       </div>
-      <div style="flex: 1;display: flex; justify-content: flex-end;align-items: center;">
+      <div style="display: flex; justify-content: flex-end;align-items: center;">
 
         <div>
           <span class="mr-3">{{$t('vuetable.every-page-showing')}}</span>
           <select
             v-model="perPage"
-            class="mr-3 form-control d-inline"
-            style="width: 48px;">
+            class="mr-3 form-control d-inline font-weight-bold"
+            style="width: 80px;">
             <option>5</option>
             <option>10</option>
             <option>15</option>
@@ -54,7 +54,7 @@
           <span class="mr-3">{{$t('vuetable.items')}}</span>
           <span class="mr-3">/</span>
           <span class="mr-3">{{$t('vuetable.total')}}</span>
-          <span class="mr-3">{{tablePagination ? tablePagination.total : 0}}</span>
+          <span class="mr-3 font-weight-bold">{{tablePagination ? tablePagination.total : 0}}</span>
           <span class="mr-3">{{$t('vuetable.record')}}</span>
         </div>
 

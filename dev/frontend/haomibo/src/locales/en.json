@@ -111,11 +111,13 @@
     "action-reset-password": "reset password",
 
     "permission-control": {
+      "role": "Role",
       "role-setting": "Role setting",
       "data-grouping": "Data grouping",
       "role-name": "Role name",
+      "role-number": "Role Number",
       "note": "Note",
-      "role-flag": "Role flag",
+      "role-flag": "Feature",
       "all": "All",
       "system-management": "System management",
       "business-operating": "Business operating",
@@ -123,13 +125,20 @@
       "serial-number": "No.",
       "operating": "Operating",
       "select-all": "Select all",
+      "data-group": "Data group",
       "data-group-name": "Data group name",
+      "data-group-number": "Data group number",
+      "data-range": "Data range",
+      "data-group-range": "Data group range",
       "group-flag": "Group flag",
       "grouped": "Grouped",
       "ungrouped": "Ungrouped",
 
+      "enter-role-number": "请输入角色编号",
       "enter-role-name": "Please enter the role name",
       "enter-note": "Please enter the note",
+      "enter-data-group-number": "Enter data group number",
+      "enter-data-group-name": "Enter data group name",
       "required-field": "This field is required.",
       "success": "Success",
       "role-created": "A role is created.",
@@ -141,6 +150,7 @@
       "data-group-deleted": "The data group has deleted.",
       "delete-data-group-prompt": "Do you want to delete this data group?",
       "save": "Save",
+      "delete": "Delete",
       "prompt": "Prompt"
     }
   },

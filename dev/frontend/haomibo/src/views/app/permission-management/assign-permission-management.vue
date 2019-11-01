@@ -1,49 +1,82 @@
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.organization-management')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
+      </b-row>
+    </div>
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
         <b-row v-if="pageStatus==='table'">
-          <b-col cols="7">
-            <b-card class="mb-4">
+          <b-col cols="12">
+            <div class="p-2">
 
               <b-row>
-                <b-col cols="5">
-                  <b-form-group :label="$t('permission-management.assign-permission-management.assign-flag')">
-                    <b-form-select :options="assignFlagSelectOptions" v-model="filter.assignFlag" plain/>
-                  </b-form-group>
+                <b-col cols="6">
+                  <b-row>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.user')">
+                        <b-form-input v-model="userFilter.userName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
+                        <b-form-select :options="assignFlagSelectOptions" v-model="userFilter.assignFlag" plain/>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
+                        <b-form-input v-model="groupFilter.role" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
+                        <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
                 </b-col>
 
-                <b-col cols="7">
-                  <b-form-group class="search-form-group">
-                    <template slot="label">&nbsp;</template>
-                    <b-form-input :placeholder="$t('permission-management.assign-permission-management.please-input-user-name')" v-model="filter.userName"></b-form-input>
-
-                    <i class="search-input-icon simple-icon-magnifier"></i>
-
-                  </b-form-group>
+                <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
                 </b-col>
               </b-row>
 
               <b-row>
                 <b-col >
                   <vuetable
-                    ref="vuetable"
-                    :api-url="vuetableItems.apiUrl"
-                    :fields="vuetableItems.fields"
-                    :http-fetch="vuetableHttpFetch"
-                    :per-page="vuetableItems.perPage"
-                    pagination-path="pagination"
+                    ref="userVuetable"
+                    :api-mode="false"
+                    :api-url="userVuetableItems.apiUrl"
+                    :fields="userVuetableItems.fields"
+                    :per-page="userVuetableItems.perPage"
                     class="table-striped"
 
-                    @vuetable:pagination-data="onPaginationData"
+                    @vuetable:pagination-data="onUserPaginationData"
                   >
 
                     <template slot="actions" slot-scope="props">
@@ -108,10 +141,10 @@
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
-                    :initial-per-page="vuetableItems.perPage"
-                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                    ref="userPagination"
+                    @vuetable-pagination:change-page="onUserChangePage"
+                    :initial-per-page="userVuetableItems.perPage"
+                    @onUpdatePerPage="userVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
 
                   <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
@@ -141,12 +174,7 @@
                 </b-col>
               </b-row>
 
-            </b-card>
-          </b-col>
-          <b-col cols="5">
-            <b-card :title="'TODO'">
-              <h1>Hello world</h1>
-            </b-card>
+            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='create'">
@@ -363,13 +391,233 @@
       </b-tab>
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
-        <b-row>
-          <b-col >
-            <b-card class="mb-4" >
-              <b-row>
+        <b-row v-if="groupPageStatus==='table'">
+          <b-col cols="12">
+            <div class="p-2">
 
+              <b-row>
+                <b-col cols="6">
+                  <b-row>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.user-group')">
+                        <b-form-input v-model="groupFilter.groupName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.groupMember')">
+                        <b-form-input v-model="groupFilter.userName" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
+                        <b-form-input v-model="groupFilter.role" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
+                        <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                  <div>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                    </b-button>
+                  </div>
+                </b-col>
               </b-row>
-            </b-card>
+
+              <b-row>
+                <b-col cols="12">
+                  <vuetable
+                    ref="userGroupTable"
+                    :api-url="userGroupTableItems.apiUrl"
+                    :fields="userGroupTableItems.fields"
+                    :http-fetch="userGroupTableHttpFetch"
+                    pagination-path="userGroupPagination"
+                    class="table-hover"
+                    @vuetable:pagination-data="onUserGroupTablePaginationData"
+                  >
+                    <template slot="userNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
+                    </template>
+                    <template slot="actions" slot-scope="props">
+                      <div >
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="primary default btn-square"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          <i class="icofont-edit"></i>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive'"
+                          size="sm"
+                          variant="primary default btn-square"
+                          disabled>
+                          <i class="icofont-edit"></i>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="success default btn-square"
+                          @click="onAction('active', props.rowData, props.rowIndex)">
+                          <i class="icofont-check-circled"></i>
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='active'"
+                          size="sm"
+                          variant="warning default btn-square"
+                          @click="onAction('inactive', props.rowData, props.rowIndex)">
+                          <i class="icofont-ban"></i>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          size="sm"
+                          variant="success default btn-square"
+                          disabled>
+                          <i class="icofont-ban"></i>
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="danger default btn-square"
+                          @click="onAction('blocked', props.rowData, props.rowIndex)">
+                          <i class="icofont-minus-circle"></i>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status=='blocked'"
+                          size="sm"
+                          variant="success default btn-square"
+                          @click="onAction('unblock', props.rowData, props.rowIndex)">
+                          <i class="icofont-power"></i>
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          size="sm"
+                          variant="danger default btn-square"
+                          disabled>
+                          <i class="icofont-minus-circle"></i>
+                        </b-button>
+
+
+                        <b-button
+                          v-if="props.rowData.status=='pending'"
+                          size="sm"
+                          variant="purple default btn-square"
+                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                          <i class="icofont-ui-password"></i>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status!='pending'"
+                          size="sm"
+                          variant="purple default btn-square"
+                          disabled>
+                          <i class="icofont-ui-password"></i>
+                        </b-button>
+
+
+                      </div>
+                    </template>
+
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="userGroupPagination"
+                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                    :initial-per-page="userGroupTableItems.perPage"
+                    @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
+                  ></vuetable-pagination-bootstrap>
+                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+                    {{$t('permission-management.user.user-group-delete-prompt')}}
+                    <template slot="modal-footer">
+                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
+                        {{$t('permission-management.modal-ok')}}
+                      </b-button>
+                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">
+                        {{$t('permission-management.modal-cancel')}}
+                      </b-button>
+                    </template>
+                  </b-modal>
+                </b-col>
+              </b-row>
+            </div>
+          </b-col>
+        </b-row>
+        <b-row v-else-if="groupPageStatus==='create'">
+          <b-col cols="12" class="form-section">
+            <b-row>
+              <b-col cols="4">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-select v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain />
+                </b-form-group>
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.member')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <label class=""></label>
+                </b-form-group>
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+
+                  <v-select v-model="groupForm.role" multiple :options="roleOptions" :dir="direction"/>
+
+                </b-form-group>
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <div class="d-flex ">
+                    <div>
+                      <b-form-radio-group  stacked>
+                        <b-form-radio value="first">{{$t('permission-management.assign-permission-management.group.one-user-data')}}</b-form-radio>
+                        <b-form-radio value="second">{{$t('permission-management.assign-permission-management.group.group-user-data')}}</b-form-radio>
+                        <b-form-radio value="third">{{$t('permission-management.assign-permission-management.group.all-user-data')}}</b-form-radio>
+                        <b-form-radio value="four">{{$t('permission-management.assign-permission-management.group.select-data-group')}}</b-form-radio>
+                      </b-form-radio-group>
+                    </div>
+                    <div class="align-self-end flex-grow-1 pl-2">
+                      <b-form-select v-model="groupForm.filterGroup" :options="filterGroupOptions" plain/>
+                    </div>
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col cols="12 text-right">
+                <b-button variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
       </b-tab>
@@ -385,7 +633,9 @@
   import {apiBaseUrl} from '../../../constants/config';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
-
+  import vSelect from 'vue-select'
+  import 'vue-select/dist/vue-select.css'
+  import {getDirection} from "../../../utils";
 
   import Vue2OrgTree from 'vue2-org-tree'
   import {getApiManager} from '../../../api';
@@ -402,15 +652,14 @@
 
   export default {
     components: {
+      'v-select': vSelect,
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       Vue2OrgTree
     },
     mounted() {
 
-      this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -425,16 +674,74 @@
     },
     data() {
       return {
+        direction: getDirection().direction,
         assignFlagSelectOptions: [ // on the filtering
           {value: null, text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.all')},
           {value: 'assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.assigned')},
           {value: 'not_assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.not-assigned')}
         ],
-        filter: {
+        userFilter: {
           assignFlag: null,
           userName: ''
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
+          userVuetableItems: { // main table options
+              apiUrl: `${apiBaseUrl}/permission-management/...`,
+              fields: [
+                  {
+                      name: 'userId',
+                      title: this.$t('permission-management.th-no'),
+                      sortField: 'userId',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'userName',
+                      title: this.$t('permission-management.assign-permission-management.user'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'gender',
+                      title: this.$t('permission-management.gender'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: 'account',
+                      title: this.$t('permission-management.th-account'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'affiliatedOrg',
+                      title: this.$t('permission-management.assign-permission-management.affiliated-org'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'role',
+                      title: this.$t('permission-management.assign-permission-management.group.role'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center',
+                  },
+                  {
+                      name: 'groupRange',
+                      title: this.$t('permission-management.assign-permission-management.group.data-range'),
+                      sortField: 'leader',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
+                      name: '__slot:actions',
+                      title: this.$t('permission-management.th-org-actions'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+
+              ],
+              perPage: 5,
+          },
         createPage: { // create page
           orgName: '',
           orgNumber: '',
@@ -458,7 +765,7 @@
 
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization-management/get-by-filter-and-page`,
+          apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
             {
               name: 'orgId',
@@ -549,7 +856,69 @@
           perPage: 5,
         },
         treeData: { // holds tree data for org diagram
-        }
+        },
+
+        //TODO assign permission management for user group part
+        groupForm:{
+          userGroup:null,
+          role:null,
+        },
+        groupUserGroupOptions:[
+          '组1',
+          '组2',
+          '组3',
+        ],
+        roleOptions:[
+          '角色1',
+          '角色2',
+          '角色3',
+        ],
+        filterGroupOptions:[
+          '组1',
+          '组2',
+          '组3',
+        ],
+        groupPageStatus:'table', //table, create
+        groupFilter:{
+          groupName:null,
+          userName:null,
+          role:null,
+          dataRange:null,
+          filterGroup:null
+        },
+        userGroupTableItems: {
+          apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
+          perPage: 5,
+          fields: [
+            {
+              name: 'userGroupId',
+              title: this.$t('permission-management.th-no'),
+              sortField: 'userGroupId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: '__slot:userGroupNumber',
+              title: this.$t('permission-management.user.user-group-number'),
+              sortField: 'groupNumber',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'groupName',
+              title: this.$t('permission-management.user.user-group-name'),
+              sortField: 'userGroupName',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: '__slot:operating',
+              title: this.$t('permission-management.user.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            }
+          ],
+        },
 
       }
     },
@@ -568,6 +937,9 @@
       }
     },
     watch: {
+        'userVuetableItems.perPage': function (newVal) {
+            this.$refs.userVuetable.refresh();
+        },
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
@@ -679,11 +1051,17 @@
           }
         });
       },
+      onUserPaginationData(paginationData) {
+          this.$refs.userPagination.setPaginationData(paginationData)
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)
       },
+      onUserChangePage(page) {
+        this.$refs.userVuetable.changePage(page)
+      },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page)
+          this.$refs.vuetable.changePage(page)
       },
       onAction(action, data, index) { // called when any action button is called from table
 
@@ -809,7 +1187,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/create`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/create`, {
             'orgName': this.createPage.orgName,
             'orgNumber': this.createPage.orgNumber,
             'parentOrgId': this.createPage.parentOrgId,
@@ -881,7 +1259,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/modify`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/modify`, {
             'orgId': this.modifyPage.selectedOrg.orgId,
             'orgName': this.modifyPage.orgName,
             'orgNumber': this.modifyPage.orgNumber,
@@ -925,7 +1303,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/delete`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/delete`, {
             'orgId': org.orgId,
           })
           .then((response) => {
@@ -964,7 +1342,7 @@
 
         // call api
         getApiManager()
-          .post(`${apiBaseUrl}/permission-management/organization-management/update-status`, {
+          .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
             'orgId': org.orgId,
             'status': 'inactive',
           })
@@ -989,6 +1367,136 @@
             this.$refs['modal-deactivate'].hide();
           });
 
+      },
+
+      //TODO assign user group point
+      onActionGroup(value){
+        console.log(value);
+        switch (value) {
+          case 'show-list':
+            this.groupPageStatus = 'table';
+            break;
+          case 'delete-item':
+            break;
+        }
+      },
+      onAssignUserGroupSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onAssignUserGroupResetButton() {
+        this.filter = {
+          userName: '',
+          status: null,
+          orgId: '',
+          category: null
+        };
+        if (this.defaultOrgId !== '')
+          this.filter.orgId = this.defaultOrgId;
+        this.$refs.vuetable.refresh();
+      },
+
+      onAssignUserGroupCreatePage(){
+        this.groupPageStatus = 'create';
+      },
+      userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.userGroupTableItems.perPage,
+          filter: {
+            groupName: this.groupFilter.name,
+          }
+        });
+      },
+      onUserGroupTablePaginationData(paginationData) {
+        this.$refs.userGroupPagination.setPaginationData(paginationData)
+      },
+
+      onUserGroupTableChangePage(page) {
+        this.$refs.userGroupTable.changePage(page)
+      },
+      fnShowUserGroupConfDiaglog(userGroupItem) {
+        this.selectedUserGroupItem = userGroupItem;
+        this.$refs['modal-prompt-group'].show();
+      },
+      fnDeleteUserGroupItem() {
+        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
+          this.$refs['modal-prompt-group'].hide();
+          getApiManager()
+            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+
+                  this.$refs.userGroupTable.refresh();
+                  this.selectedUserGroupItem = null;
+                  break;
+                case responseMessages['has-children']: // okay
+                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+
+              }
+            })
+            .catch((error) => {
+            })
+            .finally(() => {
+
+            });
+        }
+      },
+      fnTransformUserGroupTable(response) {
+        this.selectedUserGroupItem = null;
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.userGroupPagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.vuetableItems.perPage,
+          filter: {
+            userName: this.filter.userName,
+            status: this.filter.status,
+            orgId: this.filter.orgId,
+            category: this.filter.category,
+          }
+        });
+      },
+      onUserTablePaginationData(paginationData) {
+        this.$refs.pagination.setPaginationData(paginationData)
+      },
+      onUserTableChangePage(page) {
+        this.$refs.vuetable.changePage(page)
       },
     }
   }
