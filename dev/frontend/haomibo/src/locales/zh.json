@@ -240,6 +240,13 @@
       "please-input-user-name": "请输入人员姓名",
       "user": "人员",
       "affiliated-org": "隶属机构",
+      "user-form": {
+        "one-user-data":"个人数据",
+        "affiliated-org-user-data":"隶属机构所有人数据",
+        "affiliated-org-all-user-data":"隶属机构及下级机构所有人数据",
+        "all-user-data":"所有人数据",
+        "select-data-group":"选定数据组数据"
+      },
       "group": {
         "user-group": "人员组",
         "groupMember": "组员",
