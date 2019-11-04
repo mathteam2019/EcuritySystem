@@ -191,7 +191,7 @@
                   </b-col>
                   <b-col cols="6">
                     <b-form-group>
-                      <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
+                      <template slot="label">{{$t('permission-management.assign-permission-management.user')}}&nbsp;<span
                         class="text-danger">*</span></template>
                       <b-form-select v-model="userForm.user" :options="users" plain />
                     </b-form-group>
