@@ -555,6 +555,11 @@
           data: _.slice(local, from, to)
         };
       }
+    },
+    watch: {
+      'vuetableItems.perPage': function (newVal) {
+        this.$refs.vuetable.refresh();
+      }
     }
   }
 </script>
