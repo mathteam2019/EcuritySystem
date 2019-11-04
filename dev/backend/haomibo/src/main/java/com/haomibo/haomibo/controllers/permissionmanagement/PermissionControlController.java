@@ -4,6 +4,7 @@ package com.haomibo.haomibo.controllers.permissionmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.controllers.BaseController;
 import com.haomibo.haomibo.enums.ResponseMessage;
 import com.haomibo.haomibo.enums.Role;
@@ -50,7 +51,13 @@ public class PermissionControlController extends BaseController {
     private static class RoleCreateRequestBody {
 
         @NotNull
+        String roleNumber;
+
+        @NotNull
         String roleName;
+
+        @NotNull
+        List<Long> resourceIdList;
 
         String note;
 
@@ -58,8 +65,8 @@ public class PermissionControlController extends BaseController {
 
             return SysRole
                     .builder()
+                    .roleNumber(this.getRoleNumber())
                     .roleName(this.getRoleName())
-                    .roleFlag(SysRole.Flag.UNSET)
                     .note(this.note)
                     .build();
 
@@ -97,11 +104,6 @@ public class PermissionControlController extends BaseController {
         @AllArgsConstructor
         static class Filter {
 
-            @Pattern(regexp = SysRole.Flag.SET + "|" +
-                    SysRole.Flag.UNSET + "|" +
-                    SysRole.Flag.ADMIN + "|" +
-                    SysRole.Flag.USER)
-            String category;
             String roleName;
         }
 
@@ -176,12 +178,19 @@ public class PermissionControlController extends BaseController {
         @NotNull
         String dataGroupName;
 
+        @NotNull
+        String dataGroupNumber;
+
+        @NotNull
+        List<Long> userIdList;
+
         String note;
 
         SysDataGroup convert2SysDataGroup() {
 
             return SysDataGroup
                     .builder()
+                    .dataGroupNumber(this.getDataGroupNumber())
                     .dataGroupName(this.getDataGroupName())
                     .note(this.note)
                     .build();
@@ -219,6 +228,28 @@ public class PermissionControlController extends BaseController {
 
     }
 
+
+    /**
+     * DataGroup get all request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DataGroupGetAllRequestBody {
+
+        static class GetAllType {
+            static final String BARE = "bare";
+            static final String WITH_USERS = "with_users";
+        }
+
+        @Pattern(regexp = GetAllType.BARE + "|" + GetAllType.WITH_USERS)
+        String type = GetAllType.BARE;
+
+
+    }
+
     /**
      * Role create request.
      */
@@ -232,9 +263,60 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysRole sysRole = requestBody.convert2SysRole();
+        // Create first.
+        SysRole sysRole = sysRoleRepository.save(requestBody.convert2SysRole());
 
-        sysRoleRepository.save(sysRole);
+        // Get resource Id list from request.
+        List<Long> resourceIdList = requestBody.getResourceIdList();
+
+        // Get valid resource list from request resource id list.
+        List<SysResource> sysResourceList = StreamSupport
+                .stream(sysResourceRepository.findAll(
+                        QSysResource.sysResource.resourceId.in(resourceIdList)
+                        ).spliterator(),
+                        false
+                )
+                .collect(Collectors.toList());
+
+        if (sysResourceList.size() == 0) {
+            sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+
+        // The category will be gained from the first resource.
+        String category = sysResourceList.get(0).getResourceCategory();
+
+        // if category value is neither 'admin' nor 'user', this is invalid request.
+        if (!(SysResource.Category.ADMIN.equals(category) || SysResource.Category.USER.equals(category))) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Check if all the resource has same category.
+        boolean hasInvalidResource = false;
+        for (SysResource iterator : sysResourceList) {
+            if (!category.equals(iterator.getResourceCategory())) {
+                hasInvalidResource = true;
+                break;
+            }
+        }
+
+        if (hasInvalidResource) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Delete all relations.
+        sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
+
+        // Save relation.
+        List<SysRoleResource> relationList = sysResourceList.stream()
+                .map(sysResource -> SysRoleResource
+                        .builder()
+                        .roleId(sysRole.getRoleId())
+                        .resourceId(sysResource.getResourceId())
+                        .build()).collect(Collectors.toList());
+
+        sysRoleResourceRepository.saveAll(relationList);
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -260,20 +342,8 @@ public class PermissionControlController extends BaseController {
         RoleGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
-            if (SysRole.Flag.ADMIN.equals(filter.getCategory())) {
-                predicate.and(builder.roleFlag.eq(SysRole.Flag.ADMIN));
-            }
-            if (SysRole.Flag.USER.equals(filter.getCategory())) {
-                predicate.and(builder.roleFlag.eq(SysRole.Flag.USER));
-            }
-            if (SysRole.Flag.SET.equals(filter.getCategory())) {
-                predicate.and(builder.roleFlag.eq(SysRole.Flag.ADMIN).or(builder.roleFlag.eq(SysRole.Flag.USER)));
-            }
-            if (SysRole.Flag.UNSET.equals(filter.getCategory())) {
-                predicate.and(builder.roleFlag.isNull().or(builder.roleFlag.ne(SysRole.Flag.ADMIN).and(builder.roleFlag.ne(SysRole.Flag.USER))));
-            }
             if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roleName.eq(filter.getRoleName()));
+                predicate.and(builder.roleName.contains(filter.getRoleName()));
             }
         }
 
@@ -345,9 +415,7 @@ public class PermissionControlController extends BaseController {
 
         if (sysResourceList.size() == 0) {
             sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
-            // If no resource is assigned to role, this role's flag value is 'unset'.
-            sysRole.setRoleFlag(SysRole.Flag.UNSET);
-            sysRoleRepository.save(sysRole);
+
             return new CommonResponseBody(ResponseMessage.OK);
         }
 
@@ -355,7 +423,7 @@ public class PermissionControlController extends BaseController {
         String category = sysResourceList.get(0).getResourceCategory();
 
         // if category value is neither 'admin' nor 'user', this is invalid request.
-        if (!(SysRole.Flag.ADMIN.equals(category) || SysRole.Flag.USER.equals(category))) {
+        if (!(SysResource.Category.ADMIN.equals(category) || SysResource.Category.USER.equals(category))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -371,12 +439,6 @@ public class PermissionControlController extends BaseController {
         if (hasInvalidResource) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Set role flag value as category.
-        sysRole.setRoleFlag(category);
-
-        // Save role.
-        sysRoleRepository.save(sysRole);
 
         // Delete all relations.
         sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
@@ -447,9 +509,25 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDataGroup sysDataGroup = requestBody.convert2SysDataGroup();
+        // Create data group first.
+        SysDataGroup sysDataGroup = sysDataGroupRepository.save(requestBody.convert2SysDataGroup());
 
-        sysDataGroupRepository.save(sysDataGroup);
+        // Get user Id list from the request.
+        List<Long> userIdList = requestBody.getUserIdList();
+
+
+        // Generate relation list with valid UserIds which are filtered by comparing to database.
+        List<SysDataGroupUser> relationList = StreamSupport.stream(
+                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
+                false)
+                .map(sysUser -> SysDataGroupUser
+                        .builder()
+                        .dataGroupId(sysDataGroup.getDataGroupId())
+                        .userId(sysUser.getUserId())
+                        .build()).collect(Collectors.toList());
+
+        // Save.
+        sysDataGroupUserRepository.saveAll(relationList);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -599,6 +677,48 @@ public class PermissionControlController extends BaseController {
 
 
     }
+
+
+    /**
+     * Data group get all request.
+     */
+    @RequestMapping(value = "/data-group/get-all", method = RequestMethod.POST)
+    public Object dataGroupGetAll(@RequestBody @Valid DataGroupGetAllRequestBody requestBody,
+                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Get all first.
+        List<SysDataGroup> sysDataGroupList = sysDataGroupRepository.findAll();
+
+        // Filter. Type can be BARE or WITH_USERS.
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDataGroupList));
+
+        String type = requestBody.getType();
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        switch (type) {
+            case DataGroupGetAllRequestBody.GetAllType.BARE:
+                filters.addFilter(ModelJsonFilters.FILTER_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"));
+                break;
+            case DataGroupGetAllRequestBody.GetAllType.WITH_USERS:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+                break;
+            default:
+                break;
+        }
+
+
+        value.setFilters(filters);
+
+        return value;
+
+
+    }
+
 
     /**
      * Resource get all request.

@@ -42,6 +42,19 @@ public class SysUser implements Serializable {
         public static final String NORMAL = "normal";
     }
 
+    @AllArgsConstructor
+    @Getter
+    public enum DataRangeCategory {
+        PERSON("person"),
+        ORG("org"),
+        ORG_DESC("org_desc"),
+        ALL("all"),
+        SPECIFIED("specified");
+
+        String value;
+
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID", nullable = false)
@@ -59,6 +72,9 @@ public class SysUser implements Serializable {
     @JsonIgnore
     @Column(name = "PASSWORD", length = 20)
     String password;
+
+    @Column(name = "DATA_RANGE_CATEGORY", length = 10)
+    String dataRangeCategory;
 
     @Column(name = "USER_NUMBER", length = 50)
     String userNumber;

@@ -60,6 +60,7 @@ public class UserManagementController extends BaseController {
         @NotNull
         String userName;
 
+        @NotNull
         String userAccount;
 
         @NotNull
@@ -160,6 +161,7 @@ public class UserManagementController extends BaseController {
         SysUser convert2SysUser() {
 
             return SysUser.builder()
+                    .userId(this.getUserId())
                     .orgId(this.getOrgId())
                     .userName(this.getUserName())
                     .userAccount(this.getUserAccount())
@@ -275,18 +277,10 @@ public class UserManagementController extends BaseController {
         @NotNull
         String groupName;
 
+        @NotNull
+        List<Long> userIdList;
+
         String note;
-
-        SysUserGroup convert2SysUserGroup() {
-
-            return SysUserGroup
-                    .builder()
-                    .groupNumber(this.getGroupNumber())
-                    .groupName(this.getGroupName())
-                    .note(this.note)
-                    .build();
-
-        }
 
     }
 
@@ -619,7 +613,8 @@ public class UserManagementController extends BaseController {
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
             case UserGetAllRequestBody.GetAllType.WITH_ORG_TREE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("roles"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
                 break;
             default:
                 break;
@@ -644,9 +639,30 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUserGroup sysUserGroup = requestBody.convert2SysUserGroup();
+        // Create user group.
+        SysUserGroup sysUserGroup = sysUserGroupRepository.save(
+                SysUserGroup
+                        .builder()
+                        .groupName(requestBody.getGroupName())
+                        .groupNumber(requestBody.getGroupNumber())
+                        .note(requestBody.getNote())
+                        .build()
+        );
 
-        sysUserGroupRepository.save(sysUserGroup);
+        List<Long> userIdList = requestBody.getUserIdList();
+
+        // Build relation array which are valid only.
+        List<SysUserGroupUser> relationList = StreamSupport.stream(
+                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
+                false)
+                .map(sysUser -> SysUserGroupUser
+                        .builder()
+                        .userGroupId(sysUserGroup.getUserGroupId())
+                        .userId(sysUser.getUserId())
+                        .build()).collect(Collectors.toList());
+
+        // Save.
+        sysUserGroupUserRepository.saveAll(relationList);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

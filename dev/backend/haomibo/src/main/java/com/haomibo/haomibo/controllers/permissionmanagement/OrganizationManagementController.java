@@ -45,7 +45,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class CreateRequestBody {
+    private static class OrganizationCreateRequestBody {
 
         @NotNull
         String orgName;
@@ -87,7 +87,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class DeleteRequestBody {
+    private static class OrganizationDeleteRequestBody {
 
         @NotNull
         Long orgId;
@@ -102,7 +102,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class GetByFilterAndPageRequestBody {
+    private static class OrganizationGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
@@ -134,7 +134,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class ModifyRequestBody {
+    private static class OrganizationModifyRequestBody {
 
         @NotNull
         Long orgId;
@@ -178,7 +178,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class UpdateStatusRequestBody {
+    private static class OrganizationUpdateStatusRequestBody {
 
         @NotNull
         Long orgId;
@@ -198,7 +198,7 @@ public class OrganizationManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class GetAllRequestBody {
+    private static class OrganizationGetAllRequestBody {
 
         static class GetAllType {
             static final String BARE = "bare";
@@ -224,9 +224,9 @@ public class OrganizationManagementController extends BaseController {
      * Organization create request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_CREATE)
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public Object create(
-            @RequestBody @Valid CreateRequestBody requestBody,
+    @RequestMapping(value = "/organization/create", method = RequestMethod.POST)
+    public Object organizationCreate(
+            @RequestBody @Valid OrganizationCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -250,9 +250,9 @@ public class OrganizationManagementController extends BaseController {
      * Organization modify request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_MODIFY)
-    @RequestMapping(value = "/modify", method = RequestMethod.POST)
-    public Object modify(
-            @RequestBody @Valid ModifyRequestBody requestBody,
+    @RequestMapping(value = "/organization/modify", method = RequestMethod.POST)
+    public Object organizationModify(
+            @RequestBody @Valid OrganizationModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -281,9 +281,9 @@ public class OrganizationManagementController extends BaseController {
      * Organization delete request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_DELETE)
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public Object delete(
-            @RequestBody @Valid DeleteRequestBody requestBody,
+    @RequestMapping(value = "/organization/delete", method = RequestMethod.POST)
+    public Object organizationDelete(
+            @RequestBody @Valid OrganizationDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -306,9 +306,9 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization update status request.
      */
-    @RequestMapping(value = "/update-status", method = RequestMethod.POST)
-    public Object updateStatus(
-            @RequestBody @Valid UpdateStatusRequestBody requestBody,
+    @RequestMapping(value = "/organization/update-status", method = RequestMethod.POST)
+    public Object organizationUpdateStatus(
+            @RequestBody @Valid OrganizationUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -336,8 +336,8 @@ public class OrganizationManagementController extends BaseController {
      * Organization get all request.
      * BARE, WITH_PARENT, WITH_CHILDREN, WITH_USERS, WITH_PARENT_AND_USERS, WITH_CHILDREN_AND_USERS.
      */
-    @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public Object getAll(@RequestBody @Valid GetAllRequestBody requestBody,
+    @RequestMapping(value = "/organization/get-all", method = RequestMethod.POST)
+    public Object organizationGetAll(@RequestBody @Valid OrganizationGetAllRequestBody requestBody,
                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -356,24 +356,24 @@ public class OrganizationManagementController extends BaseController {
         // Set filters for different type.
         switch (type) {
 
-            case GetAllRequestBody.GetAllType.BARE:
+            case OrganizationGetAllRequestBody.GetAllType.BARE:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
                 break;
-            case GetAllRequestBody.GetAllType.WITH_PARENT:
+            case OrganizationGetAllRequestBody.GetAllType.WITH_PARENT:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
                 break;
-            case GetAllRequestBody.GetAllType.WITH_CHILDREN:
+            case OrganizationGetAllRequestBody.GetAllType.WITH_CHILDREN:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users"));
                 break;
-            case GetAllRequestBody.GetAllType.WITH_USERS:
+            case OrganizationGetAllRequestBody.GetAllType.WITH_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
-            case GetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
+            case OrganizationGetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
-            case GetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
+            case OrganizationGetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
                 break;
@@ -391,9 +391,9 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization datatable data.
      */
-    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object getByFilterAndPage(
-            @RequestBody @Valid GetByFilterAndPageRequestBody requestBody,
+    @RequestMapping(value = "/organization/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object organizationGetByFilterAndPage(
+            @RequestBody @Valid OrganizationGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
 
@@ -406,7 +406,7 @@ public class OrganizationManagementController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        GetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        OrganizationGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getOrgName())) {
                 predicate.and(builder.orgName.contains(filter.getOrgName()));

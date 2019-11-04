@@ -3,6 +3,8 @@ package com.haomibo.haomibo.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,6 +26,18 @@ public class SysUserGroup implements Serializable {
         public static final String SET = "set";
         public static final String UNSET = "unset";
     }
+
+    @AllArgsConstructor
+    @Getter
+    public enum DataRangeCategory {
+        PERSON("person"),
+        GROUP("group"),
+        ALL("all"),
+        SPECIFIED("specified");
+
+        String value;
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,6 +72,7 @@ public class SysUserGroup implements Serializable {
     private String note;
 
     @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "sys_user_group_user",
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},

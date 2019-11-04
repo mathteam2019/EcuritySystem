@@ -238,12 +238,18 @@
       "summary-table": "授权对照表",
       "assign-flag": "授权标记",
       "please-input-user-name": "请输入人员姓名",
+      "user": "人员",
+      "affiliated-org": "隶属机构",
       "group": {
         "user-group": "人员组",
         "groupMember": "组员",
         "role": "角色",
         "data-range": "数据范围",
-        "member": "组员"
+        "member": "组员",
+        "one-user-data":"个人数据",
+        "group-user-data":"组内所有人数据",
+        "all-user-data":"所有人数据",
+        "select-data-group":"选定数据组数据"
       },
       "assign-flag-select-options": {
         "all": "全部",
@@ -339,9 +345,11 @@
     "device-classify-placeholder": "请选择设备分类",
     "manufacture": "生产厂商",
     "origin-model": "原厂型号",
+    "device-model":"设备型号",
     "origin-model-placeholder": "请输入原厂型号",
     "save": "保存",
-    "remove": "删除",
+    "delete": "删除",
+    "return": "返回",
     "no": "序号",
     "setting": "设置",
     "all": "全部",
@@ -378,6 +386,9 @@
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
+    },
+    "archive":{
+      "technical-indicator":"技术指标"
     }
   },
   "system-setting": {

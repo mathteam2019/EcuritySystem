@@ -30,6 +30,12 @@ public class ErrorHandlingController extends BaseController implements ErrorCont
         if (status == HttpStatus.FORBIDDEN.value()) {
             // Forbidden error.
             utils.writeResponse(response, ResponseMessage.FORBIDDEN);
+            return null;
+        }
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            // Bad request. Usually this is from validation error.
+            utils.writeResponse(response, ResponseMessage.BAD_REQUEST);
+            return null;
         }
 
         return null;

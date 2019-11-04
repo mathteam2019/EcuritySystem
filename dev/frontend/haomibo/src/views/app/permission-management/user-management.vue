@@ -1649,7 +1649,6 @@
             if(node.isUser)userGroupUserIds.push(node.userId);
           });
           if(userGroupUserIds.length==0){
-            console.log('this is empty for users');
             return ;
           }
           getApiManager()
