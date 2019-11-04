@@ -55,10 +55,13 @@
           border-bottom-right-radius: unset;
           outline: none;
           background: transparent !important;
-          color: white;
+          color: white!important;
           font-size: 16px;
           &::placeholder {
             color: $text-color;
+          }
+          &:-webkit-autofill {
+            -webkit-text-fill-color: $text-color!important;
           }
         }
       }

@@ -352,9 +352,11 @@
     "device-classify-placeholder": "请选择设备分类",
     "manufacture": "生产厂商",
     "origin-model": "原厂型号",
+    "device-model":"设备型号",
     "origin-model-placeholder": "请输入原厂型号",
     "save": "保存",
-    "remove": "删除",
+    "delete": "删除",
+    "return": "返回",
     "no": "序号",
     "setting": "设置",
     "all": "全部",
@@ -391,6 +393,9 @@
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
+    },
+    "archive":{
+      "technical-indicator":"技术指标"
     }
   },
   "system-setting": {

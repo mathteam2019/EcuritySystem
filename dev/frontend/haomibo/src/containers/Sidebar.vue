@@ -132,7 +132,6 @@ export default {
         },
 
         openSubMenu(e, menuItem,index) {
-          console.log('index==='+index);
           this.subMenuIndex = index;
             const selectedParent = menuItem.id;
             const hasSubMenu = menuItem.subs && menuItem.subs.length > 0;

@@ -18,12 +18,13 @@
 </style>
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.device-config')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
+    <div class="breadcrumb-container">
+      <b-row>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
+      </b-row>
+    </div>
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.site-config')">
         <b-row>
