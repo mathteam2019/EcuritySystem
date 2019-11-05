@@ -1,24 +1,4 @@
 <style lang="scss">
-  .search-form-group {
-    [role="group"] {
-      position: relative;
-
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-    }
-  }
-  .selected-row {
-    background-color: #0000ff20 !important;
-  }
-
   .rounded-span{
     width: 20px;
     height: 20px;
@@ -26,8 +6,6 @@
     cursor: pointer;
     background-color: #007bff;
   }
-
-
 </style>
 <template>
   <div>
