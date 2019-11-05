@@ -87,7 +87,7 @@
                                        :options="orgNameSelectData"
                                        plain/>
                       </b-form-group>
-                    </b-col>                     
+                    </b-col>
                   </b-row>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-end align-items-center">
