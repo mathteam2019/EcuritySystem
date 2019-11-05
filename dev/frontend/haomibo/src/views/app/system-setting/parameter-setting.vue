@@ -1,215 +1,175 @@
 <template>
   <div>
-    <b-row>
-      <b-colxx xxs="12">
-        <piaf-breadcrumb :heading="$t('menu.parameter-setting')"/>
-        <div class="separator mb-5"></div>
-      </b-colxx>
-    </b-row>
-
-    <b-form @submit.prevent="onHorizontalSubmit">
-
+    <div class="breadcrumb-container">
       <b-row>
-        <b-col cols="6">
-          <b-row>
-            <b-col cols="12">
-              <b-card class="mb-4">
-                <b-row>
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.standby-time')">
-                      <b-input-group :append="$t('system-setting.minutes')">
-                        <b-form-input v-model="formData.standbyTime" type="number" min="0" />
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-            <b-col cols="12">
-              <b-card class="mb-4">
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.auto-recognition')">
-                      <switches theme="custom" color="primary" v-model="formData.autoRecognition"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.recognition-rate')">
-                      <b-form-input v-model="formData.recognitionRate" type="number" min="-1" max="1"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.atr-rect-color')">
-                      <colorpicker :color="formData.atrRectColor.hex" v-model="formData.atrRectColor.hex" />
-<!--                      <b-form-input v-model="formData.atrRectColor.hex" readonly @click="toggleColorPicker"></b-form-input>-->
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row>
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.record-delete-rect')">
-                      <switches theme="custom" color="primary" v-model="formData.recordDeleteRect"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-            <b-col cols="12">
-              <b-card class="mb-4">
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.check-disk-period')">
-                      <b-input-group :append="$t('system-setting.minutes')">
-                        <b-form-input v-model="formData.checkDiskPeriod" type="number" min="0"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.warn-disk-space')">
-                      <b-input-group append="G">
-                        <b-form-input v-model="formData.warnDiskSpace" type="number" min="0"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.history-image-delete-period')">
-                      <b-input-group :append="$t('system-setting.hours')">
-                        <b-form-input v-model="formData.historyImageDeletePeriod" type="number" min="0"></b-form-input>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.save-scan-data')">
-                      <switches theme="custom" color="primary" v-model="formData.saveScanData"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row >
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.save-suspect-data')">
-                      <switches theme="custom" color="primary" v-model="formData.saveSuspectData"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-col>
-        <b-col cols="6">
-          <b-row>
-            <b-col cols="12">
-              <b-card class="mb-4">
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.alarm-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.alarmSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.pass-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.passSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.pos-error-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.posErrorSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.start-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.startSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.scan-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.scanSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row>
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.scan-complete-sound')">
-                      <switches theme="custom" color="primary" v-model="formData.scanCompleteSound"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-            <b-col cols="12">
-              <b-card class="mb-4">
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.facial-blurring')">
-                      <switches theme="custom" color="primary" v-model="formData.facialBlurring"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.chest-blurring')">
-                      <switches theme="custom" color="primary" v-model="formData.chestBlurring"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row class="mb-3">
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.hip-blurring')">
-                      <switches theme="custom" color="primary" v-model="formData.hipBlurring"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row>
-                  <b-col cols="12">
-                    <b-form-group label-cols="4" horizontal :label="$t('system-setting.groin-blurring')">
-                      <switches theme="custom" color="primary" v-model="formData.groinBlurring"></switches>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row>
-                  <b-col class="d-flex justify-content-end">
-                    <b-button type="submit" variant="info" class="mt-4">{{ $t('system-setting.save') }}</b-button>
-                  </b-col>
-                </b-row>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-col>
+        <b-colxx xxs="12">
+          <piaf-breadcrumb />
+        </b-colxx>
       </b-row>
-    </b-form>
+    </div>
+
+    <b-tabs nav-class="ml-2" :no-fade="true">
+      <b-tab :title="$t('system-setting.parameter-setting.platform-parameter')">
+        <div class="pl-5 pr-5">
+          <b-row>
+            <b-col cols="9">
+              <b-row>
+                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
+                <b-col><hr /></b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('permission-management.password')">
+                    <b-form-input type="password"></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.login-fail-count')">
+                    <label>7</label>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
+                <b-col><hr /></b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.log-export-number')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
+                <b-col><hr /></b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="2">
+                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.scan')}}</label>
+                </b-col>
+                <b-col cols="4">
+                  <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="2">
+                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.judgement')}}</label>
+                </b-col>
+                <b-col cols="4">
+                  <b-form-group :label="$t('system-setting.parameter-setting.dispatch-timeout')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.processing-timeout-period')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="2">
+                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.history-task')}}</label>
+                </b-col>
+                <b-col cols="4">
+                  <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
+                    <b-form-select plain></b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
+                    <b-form-select plain></b-form-select>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.seized-item-classification')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.seized-items')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.check-item-level')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="auto" class="d-flex align-items-center">{{$t('system-setting.parameter-setting.knowledge-base')}}</b-col>
+                <b-col><hr /></b-col>
+              </b-row>
+
+              <b-row>
+                <b-col>
+                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.knowledge-base-history-task')}}</label>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+              <b-row>
+                <b-col cols="4" offset="2">
+                  <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-setting')">
+                    <b-form-select plain></b-form-select>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+
+            </b-col>
+          </b-row>
+        </div>
+      </b-tab>
+
+      <b-tab :title="$t('system-setting.parameter-setting.security-instrument')"></b-tab>
+    </b-tabs>
   </div>
 </template>
 

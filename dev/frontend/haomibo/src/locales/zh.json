@@ -458,7 +458,32 @@
     "hip-blurring": "臀部模糊处理",
     "groin-blurring": "腹股沟模糊处理",
     "minutes": "分钟",
-    "hours": "小时"
+    "hours": "小时",
+
+    "parameter-setting": {
+      "platform-parameter": "平台参数",
+      "security-instrument": "安检仪",
+      "login-fail-count": "登录失败次数",
+      "log-export-number": "日志导出条数",
+      "scan": "扫描",
+      "atr-suspect-box-color": "ATR嫌疑框颜色",
+      "work-timeout-reminder": "工作超时提醒",
+      "judgement": "判图",
+      "dispatch-timeout": "分派超时时长",
+      "processing-timeout-period": "处理超时时长",
+      "judgement-frame-color": "判图嫌疑框颜色",
+      "history-task": "历史任务",
+      "data-storage": "数据存储",
+      "data-output": "数据导出",
+      "seized-item-classification": "查获物品分类",
+      "seized-items": "查获物品",
+      "check-item-level": "查获物品等级",
+      "hand-process-history": "手检、过程任务、历史任务",
+      "show-deleted-suspected-box": "显示被删除的嫌疑框",
+      "knowledge-base": "知识库",
+      "knowledge-base-history-task": "知识库和历史任务",
+      "security-instrument-flow-setting": "安检仪流量设置"
+    }
   },
   "log-management": {
     "access-log": "访问日志",

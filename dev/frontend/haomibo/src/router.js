@@ -106,6 +106,21 @@ const routes = [
           }
         ]
       },
+      {
+        path: 'app/log-management',
+        component: () => import('./views/app/log-management'),
+        redirect: '/app/log-management/operating-log',
+        children: [
+          {
+            path: 'operating-log',
+            component: () => import('./views/app/log-management/operating-log')
+          },
+          {
+            path: 'device-log',
+            component: () => import('./views/app/log-management/device-log')
+          }
+        ]
+      },
     ]
   },
   {
