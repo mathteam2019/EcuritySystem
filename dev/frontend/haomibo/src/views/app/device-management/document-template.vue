@@ -140,7 +140,7 @@
                       :fields="deviceShowingTableItems.fields"
                       :data-manager="deviceShowingTableDataManager"
                       :per-page="deviceShowingTableItems.perPage"
-                      pagination-path="deviceShowingTablePagination"
+                      pagination-path="pagination"
                       @vuetable:pagination-data="onDeviceShowingTablePaginationData"
                       class="table-striped text-center"
                     >
