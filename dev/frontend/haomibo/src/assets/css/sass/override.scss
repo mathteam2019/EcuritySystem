@@ -282,11 +282,13 @@ $theme-color-purple-2: #881aff;
           font-size: $btn-square-font-size;
           line-height: $btn-square-length - 3px;
           border-radius: 4px!important;
-          margin-left: 20px;
           &:disabled {
             background-color: #cccccc;
             border-color: transparent;
           }
+        }
+        button.btn-square:not(:first-child) {
+          margin-left: 20px;
         }
       }
     }

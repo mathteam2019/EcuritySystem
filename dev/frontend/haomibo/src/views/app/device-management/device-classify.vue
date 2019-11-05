@@ -7,330 +7,198 @@
         </b-colxx>
       </b-row>
     </div>
-
-    <b-tabs  nav-class="ml-2" :no-fade="true">
-      <b-tab :title="$t('device-management.device-classify')">
-        <b-row v-if="pageStatus==='table'">
-          <b-col cols="12" class="mb-4">
-            <b-card class="mb-4" no-body>
-              <b-card-body>
-                <b-row>
-                  <b-col class="d-flex">
-                    <div class="flex-grow-1">
-
-                      <b-row>
-
-                        <b-col >
-                          <b-form-group :label="$t('device-management.device-name')">
-                            <b-form-input></b-form-input>
-                          </b-form-group>
-                        </b-col>
-
-                        <b-col >
-                          <b-form-group :label="$t('device-management.active')">
-                            <b-form-select :options="stateOptions" plain/>
-                          </b-form-group>
-                        </b-col>
-
-                        <b-col >
-                          <b-form-group :label="$t('system-setting.super-site-name')">
-                            <b-form-input></b-form-input>
-                          </b-form-group>
-                        </b-col>
-                        <b-col ></b-col>
-                      </b-row>
-
-                    </div>
-                    <div class="align-self-center">
-                      <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.search') }}</b-button>
-                      <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.reset') }}</b-button>
-                      <b-button size="sm" class="ml-2" v-on:click="showCreatePage" variant="success">{{ $t('system-setting.new') }}</b-button>
-                      <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.export') }}</b-button>
-                      <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.print') }}</b-button>
-                    </div>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <vuetable
-                      ref="vuetable"
-                      :api-mode="false"
-                      :fields="vuetableItems.fields"
-                      :data-manager="dataManager"
-                      :per-page="vuetableItems.perPage"
-                      pagination-path="pagination"
-                      @vuetable:pagination-data="onPaginationData"
-                      class="table-striped"
-                    >
-                      <div slot="operating" slot-scope="props">
-                        <b-button v-if="props.rowData.status === 'active'" size="xs" variant="info" disabled>{{$t('system-setting.modify')}}</b-button>
-                        <b-button v-if="props.rowData.status === 'active'" size="xs" variant="primary">{{$t('system-setting.status-inactive')}}</b-button>
-                        <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
-
-                        <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info">{{$t('system-setting.modify')}}</b-button>
-                        <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="success">{{$t('system-setting.status-active')}}</b-button>
-                        <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger">{{$t('system-setting.delete')}}</b-button>
-                      </div>
-                    </vuetable>
-                    <vuetable-pagination-bootstrap
-                      ref="pagination"
-                      @vuetable-pagination:change-page="onChangePage"
-                    ></vuetable-pagination-bootstrap>
-                  </b-col>
-                </b-row>
-              </b-card-body>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row v-if="pageStatus==='create'">
-          <b-col cols="12">
-            <b-card class="mb-4">
-              <b-row>
-                <b-col cols="6">
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="createPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="createPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="createPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col cols="12" class="text-right">
-                  <b-button variant="primary" @click="onCreatePageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onCreatePageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
-        <b-row v-if="pageStatus==='modify'">
-          <b-col cols="12">
-            <b-card class="mb-4">
-              <b-row>
-                <b-col cols="6">
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="modifyPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="modifyPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col cols="12" class="text-right">
-                  <b-button variant="primary" @click="onModifyPageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onModifyPageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
-      </b-tab>
-
-      <b-tab :title="$t('system-setting.site-architecture')">
+    <b-card>
+      <div v-if="pageStatus=='list'">
         <b-row>
-          <b-col cols="12">
-            <b-card class="mb-4" no-body>
-              <b-card-body>
-              </b-card-body>
-            </b-card>
+          <b-col cols="6">
+            <b-row>
+              <b-col >
+                <b-form-group :label="$t('device-management.device-classify.classify')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+
+              <b-col >
+                <b-form-group :label="$t('device-management.active')">
+                  <b-form-select :options="stateOptions" plain/>
+                </b-form-group>
+              </b-col>
+
+              <b-col >
+                <b-form-group :label="$t('device-management.device-classify.super-classify')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="6" class="d-flex justify-content-end align-items-center">
+            <div>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+                <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+              </b-button>
+            </div>
           </b-col>
         </b-row>
-      </b-tab>
-    </b-tabs>
+        <b-row>
+          <b-col>
+            <vuetable
+              ref="deviceClassifyTable"
+              :api-mode="false"
+              :fields="deviceClassifyTableItems.fields"
+              :data-manager="dataManager"
+              :per-page="deviceClassifyTableItems.perPage"
+              pagination-path="pagination"
+              @vuetable:pagination-data="onPaginationData"
+              class="table-striped"
+            >
+              <div slot="operating" slot-scope="props">
+                <b-button @click="onAction('edit')"
+                          size="sm"
+                          variant="primary default btn-square"
+                >
+                  <i class="icofont-edit"></i>
+                </b-button>
+                <b-button
+                  v-if="props.rowData.status=='inactive'"
+                  size="sm"
+                  variant="success default btn-square"
+                >
+                  <i class="icofont-check-circled"></i>
+                </b-button>
+                <b-button
+                  v-if="props.rowData.status=='active'"
+                  size="sm"
+                  variant="warning default btn-square"
+                >
+                  <i class="icofont-ban"></i>
+                </b-button>
+                <b-button
+                  size="sm"
+                  variant="danger default btn-square"
+                >
+                  <i class="icofont-bin"></i>
+                </b-button>
+              </div>
+            </vuetable>
+            <vuetable-pagination-bootstrap
+              ref="pagination"
+              @vuetable-pagination:change-page="onChangePage"
+            ></vuetable-pagination-bootstrap>
+          </b-col>
+        </b-row>
+      </div>
+      <div v-if="pageStatus=='create'">
+        <b-row class="form-section">
+          <b-col cols="5">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify.device-number')}}<span class="text-danger">*</span>
+                  </template>
+                  <b-form-input v-model="classifyForm.number"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify.device-number')}}<span class="text-danger">*</span>
+                  </template>
+                  <b-form-select v-model="classifyForm.orgId" :options="orgSelectData" plain/>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify.parent-device-number')}}<span class="text-danger">*</span>
+                  </template>
+                  <b-form-input v-model="classifyForm.parentNumber"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify.parent-device-number')}}<span class="text-danger">*</span>
+                  </template>
+                  <b-form-select v-model="classifyForm.parentOrgId" :options="parentOrgSelectData" plain/>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify.remark')}}
+                  </template>
+                  <b-form-textarea :rows="3" v-model="classifyForm.note"></b-form-textarea>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12 text-right mt-3">
+            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
+            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
+            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+          </b-col>
+        </b-row>
+      </div>
+    </b-card>
   </div>
 </template>
 
 <script>
   import _ from 'lodash';
-  import InputTag from '../../../components/Form/InputTag';
-  import vSelect from 'vue-select'
+  import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import 'vue-select/dist/vue-select.css'
+  import {responseMessages} from '../../../constants/response-messages';
+  import {getApiManager} from '../../../api';
 
   export default {
     components: {
-      'input-tag' : InputTag,
-      'vuetable' : Vuetable,
+      'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
-      'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+    },
+    mounted(){
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
+        type: 'with_parent'
+      }).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.orgData = data;
+            break;
+        }
+      });
     },
     data () {
       return {
-        pageStatus:'table',
+        orgData:[],
+        orgSelectData:[],
+        parentOrgSelectData:[],
+        pageStatus:'list',
         selectedStatus: 'all',
-        createPageSelectedParentOrganizationNumber:'',
-        parentOrganizationNameSelectOptions:{},
-        vuetableItems: {
+        classifyForm:{
+         number:null,
+         orgId:null,
+         parentNumber:null,
+         parentOrgId:null,
+         note:null
+        },
+        deviceClassifyTableItems: {
           perPage: 5,
           fields: [
             {
@@ -343,14 +211,14 @@
             {
               name: 'site-no',
               sortField: 'site-no',
-              title: this.$t('device-management.device-no'),
+              title: this.$t('device-management.device-classify.classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'site-name',
               sortField: 'site-name',
-              title: this.$t('device-management.device-name'),
+              title: this.$t('device-management.device-classify.classify'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -372,7 +240,7 @@
             {
               name: 'super-site-no',
               sortField: 'super-site-no',
-              title: this.$t('system-setting.super-site-no'),
+              title: this.$t('device-management.device-classify.super-classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -386,7 +254,7 @@
             {
               name: 'super-site-name',
               sortField: 'super-site-name',
-              title: this.$t('system-setting.super-site-name'),
+              title: this.$t('device-management.device-classify.super-classify'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -396,20 +264,6 @@
                   return this.$t('system-setting.none');
                 }
               }
-            },
-            {
-              name: 'manager',
-              sortField: 'manager',
-              title: this.$t('system-setting.manager'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'contact-info',
-              sortField: 'contact-info',
-              title: this.$t('system-setting.contact-info'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
             },
             {
               name: 'remarks',
@@ -513,11 +367,27 @@
       }
     },
     methods: {
+      onSearchButton(){
+
+      },
+      onResetButton(){
+
+      },
+      onAction(value) {
+        switch (value) {
+          case 'create':
+            this.pageStatus = 'create';
+            break;
+          case 'show-list':
+            this.pageStatus = 'list';
+            break;
+        }
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
       },
       onChangePage(page) {
-        this.$refs.vuetable.changePage(page);
+        this.$refs.deviceClassifyTable.changePage(page);
       },
       dataManager(sortOrder, pagination) {
         let local = this.tempData;
@@ -531,13 +401,13 @@
           );
         }
 
-        pagination = this.$refs.vuetable.makePagination(
+        pagination = this.$refs.deviceClassifyTable.makePagination(
           local.length,
-          this.vuetableItems.perPage
+          this.deviceClassifyTableItems.perPage
         );
 
         let from = pagination.from - 1;
-        let to = from + this.vuetableItems.perPage;
+        let to = from + this.deviceClassifyTableItems.perPage;
 
         return {
           pagination: pagination,
@@ -546,7 +416,7 @@
       },
       showCreatePage() { // move to create page
         // reset models
-        this.createPage = {
+        this.classifyForm = {
           orgName: '',
           orgNumber: '',
           parentOrgId: null,
@@ -557,66 +427,51 @@
         // change page to create
         this.pageStatus = 'create';
       },
-      onCreatePageSaveButton() { // save button is clicked from create page
-
-        // validate inputs
-        if (this.createPage.orgName == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.createPage.orgNumber == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-number`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.createPage.parentOrgId == null) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-parent-organization`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        // call api
-        getApiManager()
-          .post(`${apiUrl}/permission-management/new-organization`, {
-            'orgName': this.createPage.orgName,
-            'orgNumber': this.createPage.orgNumber,
-            'parentOrgId': this.createPage.parentOrgId,
-            'leader': this.createPage.leader,
-            'mobile': this.createPage.mobile,
-            'note': this.createPage.note
-          })
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-created-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                // back to table
-                // TODO: reload table
-                this.pageStatus = 'table';
-                break;
-            }
-          })
-          .catch((error) => {
-          });
-
-
+    },
+    watch: {
+      'deviceClassifyTableItems.perPage': function (newVal) {
+        this.$refs.deviceClassifyTable.refresh();
       },
-      onCreatePageBackButton() {
-        // move to table
-        this.pageStatus = 'table';
+      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let getLevel = (org) => {
+
+          let getParent = (org) => {
+            for (let i = 0; i < newVal.length; i++) {
+              if (newVal[i].orgId == org.parentOrgId) {
+                return newVal[i];
+              }
+            }
+            return null;
+          };
+
+          let stepValue = org;
+          let level = 0;
+          while (getParent(stepValue) !== null) {
+            stepValue = getParent(stepValue);
+            level++;
+          }
+          return level;
+        };
+
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
+
+        let selectOptions = [];
+
+        newVal.forEach((org) => {
+          selectOptions.push({
+            value: org.orgId,
+            html: `${generateSpace(getLevel(org))}${org.orgName}`
+          });
+        });
+        this.orgSelectData = selectOptions;
+        this.parentOrgSelectData = JSON.parse(JSON.stringify(selectOptions));
+        this.parentOrgSelectData.push({value:null,html:`${this.$t('device-management.device-classify.no-classify')}`});
       },
     }
   }

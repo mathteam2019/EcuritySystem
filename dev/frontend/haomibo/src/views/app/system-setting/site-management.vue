@@ -1,135 +1,261 @@
 <template>
 <div>
-  <b-row>
-    <b-colxx xxs="12">
-      <piaf-breadcrumb :heading="$t('menu.site-management')"/>
-      <div class="separator mb-5"></div>
-    </b-colxx>
-  </b-row>
+  <div class="breadcrumb-container">
+    <b-row>
+      <b-colxx xxs="12">
+        <piaf-breadcrumb />
+      </b-colxx>
+    </b-row>
+  </div>
 
   <b-tabs nav-class="ml-2" :no-fade="true">
     <b-tab :title="$t('system-setting.site-list')">
-      <b-row v-if="!detailMode">
-        <b-col cols="12" class="mb-4">
-          <b-card class="mb-4" no-body>
-            <b-card-body>
-                      <b-row>
-                        <b-col class="d-flex">
-                          <div class="flex-grow-1">
+      <b-row v-if="pageStatus === 'table'">
+        <b-col cols="12">
+          <div class="mb-4">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
+                  <b-col >
+                    <b-form-group :label="$t('system-setting.site')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                            <b-row>
+                  <b-col >
+                    <b-form-group :label="$t('system-setting.status-active')">
+                      <b-form-select :options="stateOptions" plain />
+                    </b-form-group>
+                  </b-col>
 
-                      <b-col >
-                        <b-form-group :label="$t('system-setting.site-name')">
-                          <b-form-input></b-form-input>
-                        </b-form-group>
-                      </b-col>
+                  <b-col >
+                    <b-form-group :label="$t('system-setting.super-site')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
 
-                      <b-col >
-                        <b-form-group :label="$t('system-setting.status')">
-                          <v-select :options="stateOptions" v-model="selectedStatus" plain/>
-                        </b-form-group>
-                      </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" @click="onNewClicked()" variant="success default">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <vuetable
+                  ref="vuetable"
+                  :api-mode="false"
+                  :fields="vuetableItems.fields"
+                  :data-manager="dataManager"
+                  :per-page="vuetableItems.perPage"
+                  pagination-path="pagination"
+                  @vuetable:pagination-data="onPaginationData"
+                  class="table-striped"
+                >
 
-                      <b-col >
-                        <b-form-group :label="$t('system-setting.super-site-name')">
-                          <b-form-input></b-form-input>
-                        </b-form-group>
-                      </b-col>
-                      <b-col ></b-col>
-                    </b-row>
+                  <template slot="siteNumber" slot-scope="props">
+                    <span class="cursor-p text-primary" @click="onSiteTableRowClick(props.rowData)">{{ props.rowData.siteNumber }}</span>
+                  </template>
 
+                  <div slot="operating" slot-scope="props">
+
+                    <b-button
+                      v-if="props.rowData.status === 'active'"
+                      size="sm"
+                      variant="primary default btn-square"
+                      disabled>
+                      <i class="icofont-edit"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status === 'inactive'"
+                      size="sm"
+                      @click="editRow(props.rowData)"
+                      variant="primary default btn-square">
+                      <i class="icofont-edit"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status === 'inactive'"
+                      size="sm"
+                      variant="success default btn-square">
+                      <i class="icofont-check-circled"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status === 'active'"
+                      size="sm"
+                      variant="warning default btn-square"
+                      v-b-modal.modal-inactive>
+                      <i class="icofont-ban"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status === 'inactive+'"
+                      size="sm"
+                      variant="success default btn-square"
+                      disabled>
+                      <i class="icofont-ban"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status==='inactive'"
+                      size="sm"
+                      variant="danger default btn-square"
+                      v-b-modal.modal-delete  >
+                      <i class="icofont-bin"></i>
+                    </b-button>
+
+                    <b-button
+                      v-if="props.rowData.status==='active'"
+                      size="sm"
+                      variant="primary default btn-square"
+                      disabled>
+                      <i class="icofont-bin"></i>
+                    </b-button>
                   </div>
-                  <div class="align-self-center">
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.search') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="info">{{ $t('system-setting.reset') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="success" v-on:click="onNewClicked">{{ $t('system-setting.new') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.export') }}</b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info">{{ $t('system-setting.print') }}</b-button>
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col>
-                  <vuetable
-                    ref="vuetable"
-                    :api-mode="false"
-                    :fields="vuetableItems.fields"
-                    :data-manager="dataManager"
-                    :per-page="vuetableItems.perPage"
-                    pagination-path="pagination"
-                    @vuetable:pagination-data="onPaginationData"
-                    class="table-striped"
-                  >
-                    <div slot="operating" slot-scope="props">
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="info" disabled>{{$t('system-setting.modify')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="warning" v-b-modal.modal-inactive>{{$t('system-setting.status-inactive')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'active'" size="xs" variant="danger" disabled>{{$t('system-setting.delete')}}</b-button>
+                </vuetable>
+                <vuetable-pagination-bootstrap
+                  ref="pagination"
+                  @vuetable-pagination:change-page="onChangePage"
+                ></vuetable-pagination-bootstrap>
 
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="info" @click="editRow(props.rowData)">{{$t('system-setting.modify')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="success">{{$t('system-setting.status-active')}}</b-button>
-                      <b-button v-if="props.rowData.status === 'inactive'" size="xs" variant="danger" v-b-modal.modal-delete>{{$t('system-setting.delete')}}</b-button>
-                    </div>
-                  </vuetable>
-                  <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onChangePage"
-                  ></vuetable-pagination-bootstrap>
+                <b-modal id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
+                  {{$t('system-setting.make-inactive-prompt')}}
+                  <template slot="modal-footer">
+                    <b-button variant="primary" @click="inactiveRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                    <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}</b-button>
+                  </template>
+                </b-modal>
 
-                  <b-modal id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
-                    {{$t('system-setting.make-inactive-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="inactiveRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
-                      <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}</b-button>
-                    </template>
-                  </b-modal>
+                <b-modal id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
+                  {{$t('system-setting.delete-prompt')}}
+                  <template slot="modal-footer">
+                    <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+                    <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
+                  </template>
+                </b-modal>
 
-                  <b-modal id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
-                    {{$t('system-setting.delete-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
-                      <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
-                    </template>
-                  </b-modal>
-
-                </b-col>
-              </b-row>
-            </b-card-body>
-          </b-card>
+              </b-col>
+            </b-row>
+          </div>
         </b-col>
       </b-row>
-      <b-row v-if="detailMode">
-        <b-colxx xxs="12">
-          <b-card ref="detailsCard" class="mb-4">
-            <b-form @submit.prevent="onHorizontalSubmit">
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.site-name')">
-                <b-form-input :placeholder="$t('system-setting.please-enter-site-name')"></b-form-input>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.site-no')">
-                <b-form-input :placeholder="$t('system-setting.please-enter-site-no')"></b-form-input>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.super-site-name')">
-                <v-select :options="superSiteOptions" v-model="selectedStatus"  plain  />
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.super-site-no')">
-                <b-form-input :disabled="true" v-model="selectedStatus.value"></b-form-input>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.manager')">
-                <b-form-input :placeholder="$t('system-setting.please-enter-manager')"></b-form-input>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.contact-info')">
-                <b-form-input :placeholder="$t('system-setting.please-enter-manager-contact-info')"></b-form-input>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal :label="$t('system-setting.remarks')">
-                <b-form-textarea rows="6" :placeholder="$t('system-setting.please-enter-remarks')"></b-form-textarea>
-              </b-form-group>
-              <b-form-group label-cols="2" horizontal>
-                <b-button type="submit" variant="info" class="mt-4">{{ $t('system-setting.save') }}</b-button>
-                <b-button variant="info" class="mt-4 ml-2" v-on:click="onReturnClicked">{{ $t('system-setting.return') }}</b-button>
-              </b-form-group>
-            </b-form>
-          </b-card>
-        </b-colxx>
+      <b-row v-if="pageStatus !== 'table'">
+        <b-col cols="12">
+          <div class="mb-4">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.site-no')}}&nbsp;
+                        <span class="text-danger">*</span>
+                      </template>
+                      <b-form-input type="text" v-model="siteForm.siteNumber"
+                                    :state="!$v.siteForm.siteNumber.$invalid"
+                                    :placeholder="$t('system-setting.please-enter-site-no')"></b-form-input>
+                      <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.site')}}&nbsp;
+                        <span class="text-danger">*</span>
+                      </template>
+                      <b-form-input type="text" v-model="siteForm.siteName"
+                                    :state="!$v.siteForm.siteName.$invalid"
+                                    :placeholder="$t('system-setting.please-enter-site-name')"></b-form-input>
+                      <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.super-site-no')}}&nbsp;
+                        <span class="text-danger">*</span>
+                      </template>
+                      <b-form-input type="text" v-model="selectedStatus" disabled></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.super-site')}}&nbsp;
+                        <span class="text-danger">*</span>
+                      </template>
+                      <b-form-select :options="superSiteOptions" v-model="selectedStatus" plain />
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.manager')}}
+                      </template>
+                      <b-form-input type="text" :placeholder="$t('system-setting.please-enter-manager')"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('system-setting.system-phone')}}
+                      </template>
+                      <b-form-input type="text" :placeholder="''"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6">
+                    <b-form-group :label="$t('system-setting.remarks')">
+                      <b-form-textarea rows="4" :placeholder="$t('system-setting.please-enter-remarks')"></b-form-textarea>
+                    </b-form-group>
+                  </b-col>
+
+                </b-row>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="12" class="text-right pt-3">
+                <b-form-group>
+                  <b-button @click="" variant="info default" v-if="pageStatus !== 'show'">
+                    <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                  <b-button @click="" variant="warning default" v-if="pageStatus !== 'create'">
+                    <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
+                  </b-button>
+                  <b-button @click="" variant="danger default" v-if="pageStatus !== 'create'">
+                    <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+                  </b-button>
+                  <b-button @click="onReturnClicked" variant="info default">
+                    <i class="icofont-arrow-left"></i> {{$t('system-setting.return')}}
+                  </b-button>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </div>
+        </b-col>
       </b-row>
     </b-tab>
 
@@ -156,6 +282,12 @@
   </div>
 </template>
 
+<style>
+  span.cursor-p {
+    cursor: pointer !important;
+  }
+</style>
+
 <script>
   import _ from 'lodash';
   import InputTag from '../../../components/Form/InputTag';
@@ -165,6 +297,8 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import Vue2OrgTree from 'vue2-org-tree'
   import 'vue-select/dist/vue-select.css'
+  import { validationMixin } from 'vuelidate';
+  const { required } = require('vuelidate/lib/validators');
 
   export default {
       components: {
@@ -175,6 +309,7 @@
           'vuetable-pagination-bootstrap' : VuetablePaginationBootstrap,
           Vue2OrgTree
       },
+      mixins: [validationMixin],
       data () {
           return {
               selectedStatus: '',
@@ -189,8 +324,8 @@
                           dataClass: 'text-center'
                       },
                       {
-                          name: 'site-no',
-                          sortField: 'site-no',
+                          name: '__slot:siteNumber',
+                          sortField: 'siteNumber',
                           title: this.$t('system-setting.site-no'),
                           titleClass: 'text-center',
                           dataClass: 'text-center'
@@ -198,14 +333,14 @@
                       {
                           name: 'site-name',
                           sortField: 'site-name',
-                          title: this.$t('system-setting.site-name'),
+                          title: this.$t('system-setting.site'),
                           titleClass: 'text-center',
                           dataClass: 'text-center'
                       },
                       {
                           name: 'status',
                           sortField: 'status',
-                          title: this.$t('system-setting.status'),
+                          title: this.$t('system-setting.status-active'),
                           titleClass: 'text-center',
                           dataClass: 'text-center',
                           callback: (value) => {
@@ -234,7 +369,7 @@
                       {
                           name: 'super-site-name',
                           sortField: 'super-site-name',
-                          title: this.$t('system-setting.super-site-name'),
+                          title: this.$t('system-setting.super-site'),
                           titleClass: 'text-center',
                           dataClass: 'text-center',
                           callback: (value) => {
@@ -255,7 +390,7 @@
                       {
                           name: 'contact-info',
                           sortField: 'contact-info',
-                          title: this.$t('system-setting.contact-info'),
+                          title: this.$t('system-setting.system-phone'),
                           titleClass: 'text-center',
                           dataClass: 'text-center'
                       },
@@ -277,7 +412,7 @@
               tempData: [
                   {
                       "no": 1,
-                      "site-no": "0000",
+                      "siteNumber": "0000",
                       "site-name": "首都机场",
                       "status": "active",
                       "super-site-no": null,
@@ -288,7 +423,7 @@
                   },
                   {
                       "no": 2,
-                      "site-no": "0100",
+                      "siteNumber": "0100",
                       "site-name": "1号航站楼",
                       "status": "active",
                       "super-site-no": "0000",
@@ -299,7 +434,7 @@
                   },
                   {
                       "no": 3,
-                      "site-no": "0200",
+                      "siteNumber": "0200",
                       "site-name": "2号航站楼",
                       "status": "active",
                       "super-site-no": "0000",
@@ -310,7 +445,7 @@
                   },
                   {
                       "no": 4,
-                      "site-no": "0201",
+                      "siteNumber": "0201",
                       "site-name": "通道1",
                       "status": "active",
                       "super-site-no": "0200",
@@ -321,7 +456,7 @@
                   },
                   {
                       "no": 5,
-                      "site-no": "0202",
+                      "siteNumber": "0202",
                       "site-name": "通道2",
                       "status": "inactive",
                       "super-site-no": "0200",
@@ -332,7 +467,7 @@
                   },
                   {
                       "no": 6,
-                      "site-no": "0300",
+                      "siteNumber": "0300",
                       "site-name": "3号航站楼",
                       "status": "active",
                       "super-site-no": "0000",
@@ -343,7 +478,7 @@
                   },
                   {
                       "no": 7,
-                      "site-no": "0301",
+                      "siteNumber": "0301",
                       "site-name": "通道001",
                       "status": "inactive",
                       "super-site-no": "0300",
@@ -354,20 +489,20 @@
                   },
               ],
               stateOptions: [
-                  {value: "all", label: this.$t('system-setting.status-all')},
-                  {value: "valid", label: this.$t('system-setting.status-active')},
-                  {value: "invalid", label: this.$t('system-setting.status-inactive')},
+                  {value: "all", text: this.$t('system-setting.status-all')},
+                  {value: "valid", text: this.$t('system-setting.status-active')},
+                  {value: "invalid", text: this.$t('system-setting.status-inactive')},
               ],
-              detailMode: false,
+              pageStatus: 'table', // table, create, edit, show
               selectedSite: '0000',
               superSiteOptions: [
-                  {value: "0000", label: '首都机场'},
-                  {value: "0001", label: '1号航站楼'},
-                  {value: "0002", label: '2号航站楼'},
-                  {value: "0003", label: '通道1'},
-                  {value: "0004", label: '通道2'},
-                  {value: "0020", label: '3号航站楼'},
-                  {value: "0030", label: '通道001'},
+                  {value: "0000", text: '首都机场'},
+                  {value: "0001", text: '1号航站楼'},
+                  {value: "0002", text: '2号航站楼'},
+                  {value: "0003", text: '通道1'},
+                  {value: "0004", text: '通道2'},
+                  {value: "0020", text: '3号航站楼'},
+                  {value: "0030", text: '通道001'},
               ],
               treeData: {
                   id: 0,
@@ -402,18 +537,40 @@
                           ]
                       }
                   ]
+              },
+              siteForm: {
+                  siteNumber: '',
+                  siteName: '',
+                  parentSiteNumber: '',
+                  parentSiteName: '',
+                  admin: '',
+                  phone: '',
+                  remarks: ''
+              }
+          }
+      },
+      validations: {
+          siteForm: {
+              siteNumber: {
+                  required
+              },
+              siteName: {
+                  required
               }
           }
       },
       methods: {
           onNewClicked() {
-              this.detailMode = true;
+              this.pageStatus = 'create';
           },
           onPaginationData(paginationData) {
               this.$refs.pagination.setPaginationData(paginationData);
           },
           onChangePage(page) {
               this.$refs.vuetable.changePage(page);
+          },
+          onSiteTableRowClick(rowData) {
+              this.pageStatus = 'show';
           },
           dataManager(sortOrder, pagination) {
               let local = this.tempData;
@@ -442,7 +599,7 @@
           },
           editRow(data) {
               console.log(data);
-              this.detailMode = true;
+              this.pageStatus = 'edit';
           },
           inactiveRow(data) {
             console.log(data);
@@ -456,7 +613,7 @@
               this.$refs[modal].hide();
           },
           onReturnClicked() {
-              this.detailMode = false;
+              this.pageStatus = 'table';
           },
           onHorizontalSubmit() {
               console.log('submit form');

@@ -59,7 +59,7 @@
                     <b-button size="sm" class="ml-2" variant="outline-info default">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -177,109 +177,74 @@
             </div>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus==='create'">
-          <b-col >
-            <b-card class="mb-4">
-              <b-row>
-                <b-col cols="6">
+        <b-row v-else-if="pageStatus==='create'">
+          <b-col cols="12" class="form-section">
+            <b-row>
+              <b-col cols="4">
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">{{$t('permission-management.assign-permission-management.affiliated-org')}}&nbsp;<span class="danger">*</span></template>
+                      <b-form-input></b-form-input>
+                    </b-form-group>
 
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
+                  </b-col>
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">{{$t('permission-management.assign-permission-management.user')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <b-form-select v-model="userForm.user" :options="users" plain />
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">{{$t('menu.account')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <label class="">zhangsan</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="6">
+                    <b-form-group>
+                      <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <label class="">{{$t('permission-management.male')}}</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
+                    class="text-danger">*</span></template>
 
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
+                  <v-select v-model="groupForm.role" multiple :options="roleOptions" :dir="direction"/>
 
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="createPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="createPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="createPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col  class="text-right">
-                  <b-button variant="primary" @click="onCreatePageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onCreatePageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-card>
+                </b-form-group>
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <div class="d-flex ">
+                    <div>
+                      <b-form-radio-group  stacked>
+                        <b-form-radio value="first">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
+                        <b-form-radio value="second">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
+                        <b-form-radio value="third">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
+                        <b-form-radio value="fourth">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
+                        <b-form-radio value="fifth">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
+                      </b-form-radio-group>
+                    </div>
+                    <div class="align-self-end flex-grow-1 pl-2">
+                      <b-form-select v-model="groupForm.filterGroup" :options="filterGroupOptions" plain/>
+                    </div>
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col cols="12 text-right">
+                <b-button variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='modify'">
@@ -761,7 +726,11 @@
         },
         orgData: [], // loaded from server when the page is mounted
         pageStatus: 'table', // table, create, modify -> it will change the page
+        userForm: {
+            user: null,
 
+        },
+        users: ['张一', '张二', '张三'],
 
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
@@ -1394,6 +1363,10 @@
           this.filter.orgId = this.defaultOrgId;
         this.$refs.vuetable.refresh();
       },
+
+        onAssignUserCreatePage(){
+            this.pageStatus = 'create';
+        },
 
       onAssignUserGroupCreatePage(){
         this.groupPageStatus = 'create';

@@ -240,6 +240,13 @@
       "please-input-user-name": "请输入人员姓名",
       "user": "人员",
       "affiliated-org": "隶属机构",
+      "user-form": {
+        "one-user-data":"个人数据",
+        "affiliated-org-user-data":"隶属机构所有人数据",
+        "affiliated-org-all-user-data":"隶属机构及下级机构所有人数据",
+        "all-user-data":"所有人数据",
+        "select-data-group":"选定数据组数据"
+      },
       "group": {
         "user-group": "人员组",
         "groupMember": "组员",
@@ -433,6 +440,7 @@
     }
   },
   "system-setting": {
+    "site": "场地",
     "site-list": "场地列表",
     "site-architecture": "场地架构",
     "site-name": "场地名称",
@@ -440,6 +448,7 @@
     "status-all": "全部",
     "status-active": "生效",
     "status-inactive": "失效",
+    "super-site": "上级场地",
     "super-site-name": "上级场地名称",
     "search": "检索",
     "reset": "重置",
@@ -450,6 +459,7 @@
     "site-no": "场地编号",
     "super-site-no": "上级场地编号",
     "manager": "负责人",
+    "system-phone": "联系电话",
     "contact-info": "联系方式",
     "remarks": "备注",
     "operating": "操作",

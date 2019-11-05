@@ -1592,7 +1592,7 @@ button {
 
 .nav-tabs .nav-link {
   border: initial;
-  padding-top: 1rem;
+  //padding-top: 1rem;
 }
 
 .nav-tabs .nav-link.active,
@@ -1632,7 +1632,6 @@ button {
 
 .nav-tabs.separator-tabs .nav-link {
   border: initial;
-  padding-top: 1rem;
   background: initial;
   padding-left: 0;
   padding-top: 0.5rem;
@@ -2256,17 +2255,17 @@ button {
 
     @include respond-below(xl) {
       width: $main-menu-width-lg;
-      height: calc(100% - #{$navbar-height-lg});
+      //height: calc(100% - #{$navbar-height-lg});
     }
 
     @include respond-below(lg) {
       width: $main-menu-width-md;
-      height: calc(100% - #{$navbar-height-md});
+      //height: calc(100% - #{$navbar-height-md});
     }
 
     @include respond-below(sm) {
       width: $main-menu-width-xs;
-      height: calc(100% - #{$navbar-height-xs});
+      //height: calc(100% - #{$navbar-height-xs});
 
       ul li i {
         font-size: 28px;
