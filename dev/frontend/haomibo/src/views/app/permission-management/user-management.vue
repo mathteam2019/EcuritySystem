@@ -395,9 +395,6 @@
                         <div class="invalid-feedback d-block">
                           {{ (submitted && !$v.profileForm.userAccount.required) ?
                           $t('permission-management.user.account-field-is-mandatory') :
-                          (!$v.profileForm.userAccount.alphaNum) ?
-                          $t('permission-management.user.account-should-be-numerical-or-characters'):(!$v.profileForm.userAccount.maxLength)?$t('permission-management.user.account-should-less-50-letter'):"&nbsp;"
-                          }}
                         </div>
                       </b-form-group>
                     </b-col>
@@ -405,20 +402,22 @@
                       <b-form-group>
                         <template slot="label">{{$t('permission-management.password')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <div>
-                          <b-form-radio-group inline v-model="profileForm.passwordType">
-                            <b-form-radio value="default">
-                              {{$t('permission-management.password-basic')}}
-                            </b-form-radio>
-                            <b-form-radio value="other">
-                              {{$t('permission-management.password-other')}}
-                            </b-form-radio>
-                          </b-form-radio-group>
-                        </div>
-                        <div>
-                          <b-form-input type="password" v-model="profileForm.passwordValue"
-                                        :disabled="profileForm.passwordType==='default'"
-                                        :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
+                        <div class="d-flex ">
+                          <div>
+                            <b-form-radio-group v-model="profileForm.passwordType" stacked>
+                              <b-form-radio value="default" class="pb-2">
+                                {{$t('permission-management.password-basic')}}
+                              </b-form-radio>
+                              <b-form-radio value="other" class="pb-2">
+                                {{$t('permission-management.password-other')}}
+                              </b-form-radio>
+                            </b-form-radio-group>
+                          </div>
+                          <div class="align-self-end flex-grow-1 pl-3">
+                            <b-form-input type="password" v-model="profileForm.passwordValue"
+                                          :disabled="profileForm.passwordType==='default'"
+                                          :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
+                          </div>
                         </div>
                       </b-form-group>
                     </b-col>
@@ -585,20 +584,22 @@
                       <b-form-group>
                         <template slot="label">{{$t('permission-management.password')}}&nbsp;<span
                           class="text-danger">*</span></template>
-                        <div>
-                          <b-form-radio-group inline v-model="profileForm.passwordType">
-                            <b-form-radio value="default">
-                              {{$t('permission-management.password-basic')}}
-                            </b-form-radio>
-                            <b-form-radio value="other">
-                              {{$t('permission-management.password-other')}}
-                            </b-form-radio>
-                          </b-form-radio-group>
-                        </div>
-                        <div>
-                          <b-form-input type="password" v-model="profileForm.passwordValue"
-                                        :disabled="profileForm.passwordType==='default'"
-                                        :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
+                        <div class="d-flex ">
+                          <div>
+                            <b-form-radio-group v-model="profileForm.passwordType" stacked>
+                              <b-form-radio value="default">
+                                {{$t('permission-management.password-basic')}}
+                              </b-form-radio>
+                              <b-form-radio value="other">
+                                {{$t('permission-management.password-other')}}
+                              </b-form-radio>
+                            </b-form-radio-group>
+                          </div>
+                          <div class="align-self-end flex-grow-1 pl-2">
+                            <b-form-input type="password" v-model="profileForm.passwordValue"
+                                          :disabled="profileForm.passwordType==='default'"
+                                          :placeholder="$t('permission-management.please-enter-password')"></b-form-input>
+                          </div>
                         </div>
                       </b-form-group>
                     </b-col>
@@ -751,7 +752,7 @@
                       {{$t('permission-management.user.group-number')}}&nbsp;
                       <span class="text-danger">*</span>
                     </template>
-                   <label class="col-form-label">
+                   <label >
                      {{selectedUserGroupItem.groupNumber}}
                    </label>
 
@@ -762,7 +763,7 @@
                       {{$t('permission-management.user.group-name')}}&nbsp;
                       <span class="text-danger">*</span>
                     </template>
-                    <label class="col-form-label">
+                    <label >
                       {{selectedUserGroupItem.groupName}}
                     </label>
 
@@ -878,7 +879,7 @@
           email
         },
         userAccount: {
-          required, alphaNum, maxLength: maxLength(50)
+          required,maxLength: maxLength(50)
         },
         category: {
           required
@@ -1022,6 +1023,22 @@
               sortField: 'userName',
               titleClass: 'text-center',
               dataClass: 'text-center'
+            },
+            {
+              name: 'gender',
+              title: this.$t('permission-management.gender'),
+              sortField: 'gender',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "male": `<span>${this.$t('permission-management.male')}</span>`,
+                  "female": `<span>${this.$t('permission-management.female')}</span>`,
+                  "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'status',

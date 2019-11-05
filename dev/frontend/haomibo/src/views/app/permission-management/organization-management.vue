@@ -204,214 +204,168 @@
             </div>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus==='create'">
-          <b-col cols="12">
-            <div class="p-5">
-              <b-row>
-                <b-col cols="6">
+        <b-row v-if="pageStatus==='create'" class="form-section">
+          <b-col cols="5">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="createPage.orgName"
+                                :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="createPage.orgNumber"
+                                :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text" disabled v-model="createPageSelectedParentOrganizationNumber"
+                                :placeholder="$t('permission-management.please-select-parent-organization')"/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 v-model="createPage.parentOrgId" plain/>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-leader')}}</template>
+                  <b-form-input type="text"
+                                v-model="createPage.leader"
+                                :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
+                  <b-form-input type="text"
+                                v-model="createPage.mobile"
+                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-note')}}</template>
 
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
+                  <b-form-textarea
+                    v-model="createPage.note"
+                    :placeholder="$t('permission-management.please-enter-organization-note')"
+                    :rows="3"
+                    :max-rows="6"/>
 
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="createPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="createPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="createPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="createPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="createPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col cols="12" class="text-right">
-                  <b-button variant="primary" @click="onCreatePageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onCreatePageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </div>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12" class="text-right">
+            <b-button variant="primary default" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
+              $t('permission-management.save-button') }}
+            </b-button>
+            <b-button variant="primary default" @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+              $t('permission-management.back-button') }}
+            </b-button>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus==='modify'">
-          <b-col cols="12">
-            <div class="p-5">
-              <b-row>
-                <b-col cols="6">
+        <b-row v-if="pageStatus==='modify'" class="form-section">
+          <b-col cols="5">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.orgNumber"
+                                :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.orgName"
+                                :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
+                                :placeholder="$t('permission-management.please-select-parent-organization')"/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 v-model="modifyPage.parentOrgId" plain/>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-leader')}}</template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.leader"
+                                :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.mobile"
+                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group >
+                  <template slot="label">{{$t('permission-management.organization-note')}}</template>
 
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
+                  <b-form-textarea
+                    v-model="modifyPage.note"
+                    :placeholder="$t('permission-management.please-enter-organization-note')"
+                    :rows="3"
+                    :max-rows="6"/>
 
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="modifyPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col cols="12">
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="modifyPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col cols="12" class="text-right">
-                  <b-button variant="primary" @click="onModifyPageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onModifyPageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </div>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12" class="text-right">
+            <b-button variant="primary default" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
+              $t('permission-management.save-button') }}
+            </b-button>
+            <b-button variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+              $t('permission-management.back-button') }}
+            </b-button>
           </b-col>
         </b-row>
 

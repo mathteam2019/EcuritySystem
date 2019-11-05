@@ -142,6 +142,119 @@ const data = [
       },
     ]
   },
+  {
+    id: "personal-inspection",
+    icon: "simple-icon-user-following",
+    label: "menu.personal-inspection",
+    to: "/app/personal-inspection",
+    newWindow: false,
+    subs: [
+      {
+        id: 'personal-inspection-*-process-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.process-task",
+        to: "/app/personal-inspection/process-task",
+        newWindow: false
+      },
+      {
+        id: 'personal-inspection-*-history-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.history-task",
+        to: "/app/personal-inspection/history-task",
+        newWindow: false
+      },
+      {
+        id: 'personal-inspection-*-invalid-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.invalid-task",
+        to: "/app/personal-inspection/invalid-task",
+        newWindow: false
+      },
+    ]
+  },
+  {
+    id: "black-list",
+    icon: "simple-icon-user-unfollow",
+    label: "menu.black-list",
+    to: "/app/black-list",
+    newWindow: false,
+    subs: [
+      {
+        id: 'black-list-*-personal-black-list',
+        icon: "simple-icon-equalizer",
+        label: "menu.personal-black-list",
+        to: "/app/black-list/personal-black-list",
+        newWindow: false
+      },
+    ]
+  },
+  {
+    id: "knowledge-base",
+    icon: "simple-icon-layers",
+    label: "menu.knowledge-base",
+    to: "/app/knowledge-base",
+    newWindow: false,
+    subs: [
+      {
+        id: 'knowledge-base-*-pending-case',
+        icon: "simple-icon-equalizer",
+        label: "menu.pending-case",
+        to: "/app/knowledge-base/pending-case",
+        newWindow: false
+      },
+      {
+        id: 'knowledge-base-*-personal-case',
+        icon: "simple-icon-equalizer",
+        label: "menu.personal-case",
+        to: "/app/knowledge-base/personal-case",
+        newWindow: false
+      },
+    ]
+  },
+  {
+    id: "maintenance-management",
+    icon: "simple-icon-wrench",
+    label: "menu.maintenance-management",
+    to: "/app/maintenance-management",
+    newWindow: false,
+    subs: [
+      {
+        id: 'maintenance-management-*-time-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.time-task",
+        to: "/app/maintenance-management/time-task",
+        newWindow: false
+      },
+      {
+        id: 'maintenance-management-*-routine-plan',
+        icon: "simple-icon-equalizer",
+        label: "menu.routine-plan",
+        to: "/app/maintenance-management/routine-plan",
+        newWindow: false
+      },
+      {
+        id: 'maintenance-management-*-maintenance-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.maintenance-task",
+        to: "/app/maintenance-management/maintenance-task",
+        newWindow: false
+      },
+      {
+        id: 'maintenance-management-*-process-task',
+        icon: "simple-icon-equalizer",
+        label: "menu.process-task",
+        to: "/app/maintenance-management/process-task",
+        newWindow: false
+      },
+      {
+        id: 'maintenance-management-*-history-record',
+        icon: "simple-icon-equalizer",
+        label: "menu.history-record",
+        to: "/app/maintenance-management/history-record",
+        newWindow: false
+      },
+    ]
+  },
 ];
 
 export default data;

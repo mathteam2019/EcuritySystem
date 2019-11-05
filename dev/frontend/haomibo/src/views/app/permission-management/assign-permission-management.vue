@@ -565,10 +565,10 @@
                   <div class="d-flex ">
                     <div>
                       <b-form-radio-group  stacked>
-                        <b-form-radio value="first">{{$t('permission-management.assign-permission-management.group.one-user-data')}}</b-form-radio>
-                        <b-form-radio value="second">{{$t('permission-management.assign-permission-management.group.group-user-data')}}</b-form-radio>
-                        <b-form-radio value="third">{{$t('permission-management.assign-permission-management.group.all-user-data')}}</b-form-radio>
-                        <b-form-radio value="four">{{$t('permission-management.assign-permission-management.group.select-data-group')}}</b-form-radio>
+                        <b-form-radio value="first" class="pb-2">{{$t('permission-management.assign-permission-management.group.one-user-data')}}</b-form-radio>
+                        <b-form-radio value="second" class="pb-2">{{$t('permission-management.assign-permission-management.group.group-user-data')}}</b-form-radio>
+                        <b-form-radio value="third" class="pb-2">{{$t('permission-management.assign-permission-management.group.all-user-data')}}</b-form-radio>
+                        <b-form-radio value="four" class="pb-2">{{$t('permission-management.assign-permission-management.group.select-data-group')}}</b-form-radio>
                       </b-form-radio-group>
                     </div>
                     <div class="align-self-end flex-grow-1 pl-2">

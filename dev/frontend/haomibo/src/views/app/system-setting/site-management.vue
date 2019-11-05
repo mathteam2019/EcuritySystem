@@ -249,7 +249,7 @@
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
                   <b-button @click="onReturnClicked" variant="info default">
-                    <i class="icofont-arrow-left"></i> {{$t('system-setting.return')}}
+                    <i class="icofont-long-arrow-left"></i> {{$t('system-setting.return')}}
                   </b-button>
                 </b-form-group>
               </b-col>

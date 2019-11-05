@@ -273,7 +273,7 @@
             <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
             <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
             <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
           </b-col>
         </b-row>
       </div>

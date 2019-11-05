@@ -106,6 +106,79 @@ const routes = [
           }
         ]
       },
+      {
+        path: 'app/personal-inspection',
+        component: () => import('./views/app/personal-inspection'),
+        redirect: '/app/personal-inspection/process-task',
+        children: [
+          {
+            path: 'process-task',
+            component: () => import('./views/app/personal-inspection/process-task')
+          },
+          {
+            path: 'history-task',
+            component: () => import('./views/app/personal-inspection/history-task')
+          },
+          {
+            path: 'invalid-task',
+            component: () => import('./views/app/personal-inspection/invalid-task')
+          },
+        ]
+      },
+      {
+        path: 'app/black-list',
+        component: () => import('./views/app/black-list'),
+        redirect: '/app/black-list/personal-black-list',
+        children: [
+          {
+            path: 'personal-black-list',
+            component: () => import('./views/app/black-list/personal-black-list')
+          }
+        ]
+      },
+      {
+        path: 'app/knowledge-base',
+        component: () => import('./views/app/knowledge-base'),
+        redirect: '/app/knowledge-base/pending-case',
+        children: [
+          {
+            path: 'pending-case',
+            component: () => import('./views/app/knowledge-base/pending-case')
+          },
+          {
+            path: 'personal-case',
+            component: () => import('./views/app/knowledge-base/personal-case')
+          }
+        ]
+      },
+      {
+        path: 'app/maintenance-management',
+        component: () => import('./views/app/maintenance-management'),
+        redirect: '/app/maintenance-management/time-task',
+        children: [
+          {
+            path: 'time-task',
+            component: () => import('./views/app/maintenance-management/time-task')
+          },
+          {
+            path: 'routine-plan',
+            component: () => import('./views/app/maintenance-management/routine-plan')
+          },
+          {
+            path: 'maintenance-task',
+            component: () => import('./views/app/maintenance-management/maintenance-task')
+          },
+          {
+            path: 'process-task',
+            component: () => import('./views/app/maintenance-management/process-task')
+          },
+          {
+            path: 'history-record',
+            component: () => import('./views/app/maintenance-management/history-record')
+          },
+
+        ]
+      },
     ]
   },
   {
