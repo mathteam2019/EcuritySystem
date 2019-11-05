@@ -76,18 +76,18 @@
                     </b-col>
 
                     <b-col>
+                      <b-form-group :label="$t('permission-management.user-category')">
+                        <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
+                      </b-form-group>
+                    </b-col>
+
+                    <b-col>
                       <b-form-group :label="$t('permission-management.affiliated-institution')">
                         <b-form-select v-model="filter.orgId"
                                        :options="orgNameSelectData"
                                        plain/>
                       </b-form-group>
-                    </b-col>
-
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.user-category')">
-                        <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
-                      </b-form-group>
-                    </b-col>
+                    </b-col>                     
                   </b-row>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-end align-items-center">
