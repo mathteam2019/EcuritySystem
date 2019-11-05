@@ -13,7 +13,7 @@
           <b-col cols="6">
             <b-row>
               <b-col >
-                <b-form-group :label="$t('device-management.device-classify.classify')">
+                <b-form-group :label="$t('device-management.device-classify-item.classify')">
                   <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
@@ -25,7 +25,7 @@
               </b-col>
 
               <b-col >
-                <b-form-group :label="$t('device-management.device-classify.super-classify')">
+                <b-form-group :label="$t('device-management.device-classify-item.super-classify')">
                   <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
@@ -105,14 +105,14 @@
             <b-row>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify.device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-input v-model="classifyForm.number"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify.device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.device')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-select v-model="classifyForm.orgId" :options="orgSelectData" plain/>
                 </b-form-group>
@@ -121,14 +121,14 @@
             <b-row>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify.parent-device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-input v-model="classifyForm.parentNumber"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify.parent-device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-select v-model="classifyForm.parentOrgId" :options="parentOrgSelectData" plain/>
                 </b-form-group>
@@ -137,7 +137,7 @@
             <b-row>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify.remark')}}
+                  <template slot="label">{{$t('device-management.device-classify-item.remark')}}
                   </template>
                   <b-form-textarea :rows="3" v-model="classifyForm.note"></b-form-textarea>
                 </b-form-group>
@@ -211,14 +211,14 @@
             {
               name: 'site-no',
               sortField: 'site-no',
-              title: this.$t('device-management.device-classify.classify-number'),
+              title: this.$t('device-management.device-classify-item.classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'site-name',
               sortField: 'site-name',
-              title: this.$t('device-management.device-classify.classify'),
+              title: this.$t('device-management.device-classify-item.classify'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -240,7 +240,7 @@
             {
               name: 'super-site-no',
               sortField: 'super-site-no',
-              title: this.$t('device-management.device-classify.super-classify-number'),
+              title: this.$t('device-management.device-classify-item.super-classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -254,7 +254,7 @@
             {
               name: 'super-site-name',
               sortField: 'super-site-name',
-              title: this.$t('device-management.device-classify.super-classify'),
+              title: this.$t('device-management.device-classify-item.super-classify'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
@@ -471,7 +471,7 @@
         });
         this.orgSelectData = selectOptions;
         this.parentOrgSelectData = JSON.parse(JSON.stringify(selectOptions));
-        this.parentOrgSelectData.push({value:null,html:`${this.$t('device-management.device-classify.no-classify')}`});
+        this.parentOrgSelectData.push({value:null,html:`${this.$t('device-management.device-classify-item.no-classify')}`});
       },
     }
   }

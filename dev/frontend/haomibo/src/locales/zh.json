@@ -390,6 +390,29 @@
     "file-name": "档案",
     "file-list": "档案列表",
     "file-no": "档案编号",
+    "action": "操作",
+    "device-classify-item":{
+      "classify": "分类",
+      "super-classify": "上级分类",
+      "classify-number": "设备编号",
+      "super-classify-number": "上级机构编号",
+      "device-number": "分类编号",
+      "device": "分类",
+      "parent-device-number": "上级分类编号",
+      "parent-device": "上级分类",
+      "remark": "备注",
+      "no-classify": "没有上级分类"
+    },
+    "document-template": {
+      "device-show-list": "设备指标项",
+      "add-indicator": "增加指标",
+      "indicator": "指标",
+      "classify": "分类",
+      "unit": "单位",
+      "required": "必填",
+      "yes": "YES",
+      "no": "NO"
+    },
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
@@ -499,14 +522,39 @@
     "hip-blurring": "臀部模糊处理",
     "groin-blurring": "腹股沟模糊处理",
     "minutes": "分钟",
-    "hours": "小时"
+    "hours": "小时",
+
+    "parameter-setting": {
+      "platform-parameter": "平台参数",
+      "security-instrument": "安检仪",
+      "login-fail-count": "登录失败次数",
+      "log-export-number": "日志导出条数",
+      "scan": "扫描",
+      "atr-suspect-box-color": "ATR嫌疑框颜色",
+      "work-timeout-reminder": "工作超时提醒",
+      "judgement": "判图",
+      "dispatch-timeout": "分派超时时长",
+      "processing-timeout-period": "处理超时时长",
+      "judgement-frame-color": "判图嫌疑框颜色",
+      "history-task": "历史任务",
+      "data-storage": "数据存储",
+      "data-output": "数据导出",
+      "seized-item-classification": "查获物品分类",
+      "seized-items": "查获物品",
+      "check-item-level": "查获物品等级",
+      "hand-process-history": "手检、过程任务、历史任务",
+      "show-deleted-suspected-box": "显示被删除的嫌疑框",
+      "knowledge-base": "知识库",
+      "knowledge-base-history-task": "知识库和历史任务",
+      "security-instrument-flow-setting": "安检仪流量设置"
+    }
   },
   "log-management": {
     "operating-log": {
       "access-log": "访问日志",
       "operating-log": "操作日志",
       "access-ip": "访问ip",
-      "starting-time": "开始时间",
+      "start-time": "开始时间",
       "end-time": "结束时间",
       "access-user": "访问用户",
       "number": "序号",
@@ -529,12 +577,19 @@
     },
     "device-log": {
       "security-log": "安检仪日志",
-      "decision-log": "判图站日志"
+      "decision-log": "判图站日志",
+      "hand-check-log": "手检端日志",
+      "device": "设备",
+      "user": "用户",
+      "category": "类别",
+      "level": "级别",
+      "start-time": "开始时间",
+      "end-time": "结束时间",
+      "number": "序号",
+      "device-number": "账号",
+      "content": "内容",
+      "operating-time": "操作时间"
     },
-    "hand-check": "手检端",
-    "approved": "审图端",
-    "remote": "远程端",
-    "device": "设备",
     "operating-object": "操作对象",
     "operating-account": "操作账号",
     "timelimit": "时间范围",

@@ -139,7 +139,11 @@
 
                 <b-row class="mt-4">
                   <b-col cols="12" class="text-right">
-                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="primary">{{ $t('permission-management.permission-control.save') }}</b-button>
+
+                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="info default">
+                      <i class="icofont-save"></i>
+                      {{ $t('permission-management.permission-control.save') }}
+                    </b-button>
                   </b-col>
                 </b-row>
 
