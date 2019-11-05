@@ -125,7 +125,7 @@
             {
               name: 'no',
               sortField: 'no',
-              title: this.$t('permission-management.no'),
+              title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
