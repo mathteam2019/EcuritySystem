@@ -671,6 +671,31 @@
       "hand-checker": "手检员"
     }
   },
+  "maintenance-management": {
+    "time-task": {
+      "time-task-name": "定时任务",
+      "status": "生效",
+      "no": "序号",
+      "task-number": "定时任务编号",
+      "created-time": "创建时间",
+      "estimated-start-time": "预计开始时间",
+      "number-of-execute": "执行次数",
+      "timing-active-start-time": "定时生效起始时间",
+      "timing-active-end-time": "定时生效截至时间",
+      "create-time": "创建时间",
+      "by-time": "按时",
+      "by-day": "按天",
+      "by-week": "按周",
+      "by-month": "按月",
+      "every":"每",
+      "hour": "时",
+      "day": "天",
+      "week": "周",
+      "month": "月",
+      "guide-for-time-task": "日期范围为1-31日，如果当月没有29、30或31日，则默认为最后一天",
+      "after-task-created": "任务创建后"
+    }
+  },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
   },

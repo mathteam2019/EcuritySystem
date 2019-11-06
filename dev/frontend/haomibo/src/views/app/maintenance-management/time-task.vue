@@ -139,12 +139,12 @@
         <b-row>
           <b-col cols="6" class="pr-5">
             <b-form-group>
-              <template slot="label">{{$t('maintenance-management.task-number')}}&nbsp;<span
+              <template slot="label">{{$t('maintenance-management.time-task.task-number')}}&nbsp;<span
                 class="text-danger">*</span></template>
               <b-form-input type="text" ></b-form-input>
             </b-form-group>
             <b-form-group>
-              <template slot="label">{{$t('maintenance-management.time-task-name')}}&nbsp;<span
+              <template slot="label">{{$t('maintenance-management.time-task.time-task-name')}}&nbsp;<span
                 class="text-danger">*</span></template>
               <b-form-input type="text" ></b-form-input>
             </b-form-group>
@@ -168,10 +168,10 @@
                     <span class=" px-2">{{$t('maintenance-management.time-task.every')}} </span><b-form-input type="number"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.day')}} </span><b-form-input type="time" class="w-130-px"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span>
                   </div>
                   <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.time-task.every')}} </span><b-form-input type="number"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.day')}} </span><b-form-select class="w-130-px" :options="weekDayOptions" plain/><span class=" px-2">&nbsp;&nbsp;&nbsp; </span><b-form-input type="time" class="w-130-px"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span>
+                    <span class=" px-2">{{$t('maintenance-management.time-task.every')}} </span><b-form-input type="number"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.week')}} </span><b-form-select class="w-130-px" :options="weekDayOptions" plain/><span class=" px-2">&nbsp;&nbsp;&nbsp; </span><b-form-input type="time" class="w-130-px"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span>
                   </div>
                   <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.time-task.every')}} </span><b-form-input type="number" ></b-form-input ><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span><div class="front-icon"><b-form-input type="number" class="w-130-px"></b-form-input><i class="icofont-calendar"></i></div> <span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span><b-form-input type="time" class="w-130-px"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span>
+                    <span class=" px-2">{{$t('maintenance-management.time-task.every')}} </span><b-form-input type="number" ></b-form-input ><span class=" px-2">{{$t('maintenance-management.time-task.month')}} </span><div class="front-icon"><b-form-input type="number" class="w-130-px"></b-form-input><i class="icofont-calendar"></i></div> <span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span><b-form-input type="time" class="w-130-px"></b-form-input><span class=" px-2">{{$t('maintenance-management.time-task.hour')}} </span>
                   </div>
                 </div>
               </div>
@@ -180,14 +180,14 @@
           </b-col>
           <b-col cols="6" class="pl-5 inline-label-form-section">
             <b-form-group>
-              <template slot="label">{{$t('maintenance-management.estimated-start-time')}}&nbsp;<span
+              <template slot="label">{{$t('maintenance-management.time-task.estimated-start-time')}}&nbsp;<span
                 class="text-danger">*</span></template>
               <div class="d-flex align-items-center">
-                <span class="px-2 pr-5">{{$t('maintenance-management.after-task-created')}}</span><b-form-input type="number" ></b-form-input><span class="px-2">{{$t('maintenance-management.time-task.day')}}</span><b-form-input type="time" class="w-130-px"></b-form-input><span class="px-2">{{$t('maintenance-management.time-task.hour')}}</span>
+                <span class="px-2 pr-5">{{$t('maintenance-management.time-task.after-task-created')}}</span><b-form-input type="number" ></b-form-input><span class="px-2">{{$t('maintenance-management.time-task.day')}}</span><b-form-input type="time" class="w-130-px"></b-form-input><span class="px-2">{{$t('maintenance-management.time-task.hour')}}</span>
               </div>
             </b-form-group>
             <b-form-group>
-              <template slot="label">{{$t('maintenance-management.time-task-name')}}&nbsp;<span
+              <template slot="label">{{$t('maintenance-management.time-task.number-of-execute')}}&nbsp;<span
                 class="text-danger"></span></template>
               <b-form-input type="number" style="width: 100px"></b-form-input>
             </b-form-group>
@@ -272,8 +272,8 @@
               dataClass: 'text-center'
             },
             {
-              name: 'manufacturer',
-              sortField: 'manufacturer',
+              name: 'timeTaskName',
+              sortField: 'timeTaskName',
               title: this.$t('maintenance-management.time-task.time-task-name'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -294,36 +294,36 @@
               }
             },
             {
-              name: 'manufacturer',
-              sortField: 'manufacturer',
+              name: 'createTime',
+              sortField: 'createTime',
               title: this.$t('maintenance-management.time-task.created-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'origin-no',
-              sortField: 'origin-no',
+              name: 'estimatedStartTime',
+              sortField: 'estimatedStartTime',
               title: this.$t('maintenance-management.time-task.estimated-start-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'origin-no',
-              sortField: 'origin-no',
+              name: 'numberExecute',
+              sortField: 'numberExecute',
               title: this.$t('maintenance-management.time-task.number-of-execute'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'origin-no',
-              sortField: 'origin-no',
+              name: 'activeStartTime',
+              sortField: 'activeStartTime',
               title: this.$t('maintenance-management.time-task.timing-active-start-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'origin-no',
-              sortField: 'origin-no',
+              name: 'activeEndTime',
+              sortField: 'activeEndTime',
               title: this.$t('maintenance-management.time-task.timing-active-end-time'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -339,87 +339,87 @@
         tempData: [
           {
             "no": 1,
-            "number": "0000",
+            "number": "D0001",
             "device-name": "首都机场",
-            "setting": null,
-            "status": "inactive",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 2,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "inactive",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 3,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
+            "createTime": "每 3天 00:00:00 时",
             "status": "active",
-            "archive": "MW毫米波安检仪",
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
+            "estimatedStartTime": "1 天 00:00:00 时 后",
+            "numberExecute": 0,
+            "timeTaskName": "任务1",
+            "activeStartTime": "20191020 00:00:00",
+            "activeEndTime": "20191020 00:00:00",
           },
           {
-            "no": 4,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": "华为M6平板",
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
+              "no": 2,
+              "number": "D0002",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
           },
           {
-            "no": 5,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
+              "no": 3,
+              "number": "D0003",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
           },
           {
-            "no": 6,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
+              "no": 4,
+              "number": "D0004",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
           },
           {
-            "no": 7,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
+              "no": 5,
+              "number": "D0005",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
+          },
+          {
+              "no": 6,
+              "number": "D0006",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
+          },
+          {
+              "no": 7,
+              "number": "D0007",
+              "device-name": "首都机场",
+              "createTime": "每 2周 星期二 09:00:00 时",
+              "status": "inactive",
+              "estimatedStartTime": "2 天 00:00:00 时 后",
+              "numberExecute": 3,
+              "timeTaskName": "任务2",
+              "activeStartTime": "20191020 00:00:00",
+              "activeEndTime": "20191020 00:00:00",
           },
         ],
       }
