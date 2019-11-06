@@ -31,13 +31,13 @@
           <b-col cols="6">
             <b-row>
               <b-col>
-                <b-form-group :label="$t('device-management.active')">
-                  <b-form-select :options="stateOptions" plain/>
+                <b-form-group :label="$t('device-management.file-name')">
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group :label="$t('device-management.file-name')">
-                  <b-form-select :options="fileData" plain/>
+                <b-form-group :label="$t('device-management.active')">
+                  <b-form-select :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -328,7 +328,7 @@
             {
               name: 'archive',
               sortField: 'archive',
-              title: this.$t('device-management.device-list.archive'),
+              title: this.$t('device-management.device-list.template'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -364,7 +364,7 @@
             {
               name: 'origin-no',
               sortField: 'origin-no',
-              title: this.$t('device-management.origin-model'),
+              title: this.$t('device-management.device-model'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
