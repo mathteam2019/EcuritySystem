@@ -229,7 +229,7 @@
       <b-tab :title="$t('permission-management.permission-control.data-grouping')">
         <b-row>
           <b-col cols="8">
-            <b-card class="mb-4">
+            <div class="section">
               <b-row>
                 <b-col cols="2" class="pr-3">
                   <b-form-group class="search-form-group">
@@ -304,7 +304,7 @@
                   ></vuetable-pagination-bootstrap>
                 </b-col>
               </b-row>
-            </b-card>
+            </div>
           </b-col>
           <b-col cols="4">
             <div class="section" v-if="selectedDataGroup">
