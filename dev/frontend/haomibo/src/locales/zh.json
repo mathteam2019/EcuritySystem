@@ -401,7 +401,7 @@
     "pending-device": " 待分派设备",
     "device-no": "设备编号",
     "number": "账号",
-    "file-name": "档案",
+    "file-name": "档案名称",
     "file-list": "档案列表",
     "file-no": "档案编号",
     "action": "操作",
@@ -473,7 +473,8 @@
       "supplier-contact-information": "供应商联系方式",
       "ip": "IP",
       "wave-security-device": "MW毫米波安检仪",
-      "huawei-m6-tablet": "华为M6平板"
+      "huawei-m6-tablet": "华为M6平板",
+      "template": "模板"
     }
   },
   "system-setting": {

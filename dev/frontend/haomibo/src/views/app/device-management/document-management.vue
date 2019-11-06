@@ -360,14 +360,7 @@
             {
               name: 'filename',
               sortField: 'filename',
-              title: this.$t('device-management.file-name'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'setting',
-              sortField: 'setting',
-              title: this.$t('device-management.setting'),
+              title: this.$t('device-management.device-list.template'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -403,7 +396,7 @@
             {
               name: 'origin-no',
               sortField: 'origin-no',
-              title: this.$t('device-management.origin-model'),
+              title: this.$t('device-management.device-model'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -419,7 +412,7 @@
           {
             "no": 1,
             "file-no": "0000",
-            "file-name": "首都机场",
+            "filename": "MW毫米波安检仪",
             "setting": null,
             "status": "active",
             "classify": null,
@@ -430,7 +423,7 @@
           {
             "no": 2,
             "file-no": "0001",
-            "file-name": "首都机场",
+            "filename": "华为M6平板",
             "setting": null,
             "status": "active",
             "classify": null,
@@ -441,7 +434,7 @@
           {
             "no": 3,
             "file-no": "0002",
-            "file-name": "首都机场",
+            "filename": "华为M6平板",
             "setting": null,
             "status": "active",
             "classify": null,
@@ -452,7 +445,7 @@
           {
             "no": 4,
             "file-no": "0004",
-            "file-name": "首都机场",
+            "filename": "首都机场",
             "setting": null,
             "status": "active",
             "classify": null,
