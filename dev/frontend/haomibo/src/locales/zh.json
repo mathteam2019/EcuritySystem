@@ -649,7 +649,14 @@
     "hand-inspection-station": "手检站",
     "channel": "通道",
     "no-suspect": "无嫌疑",
-    "seized": "有查获"
+    "seized": "有查获",
+    "all": "全部",
+    "airport": "机场",
+    "port": "港口",
+    "land-border": "陆路边境",
+    "no-seized": "无查获",
+    "security-instrument-and-hand-test": "安检仪+手检",
+    "security-instrument-and-hand-test-and-device": "安检仪+手检+设备端"
   },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"

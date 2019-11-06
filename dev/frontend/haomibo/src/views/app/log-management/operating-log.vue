@@ -1,23 +1,4 @@
 <style lang="scss">
-  .search-form-group {
-    [role="group"] {
-      position: relative;
-
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-    }
-  }
-  .selected-row {
-    background-color: #0000ff20 !important;
-  }
 
   .rounded-span{
     width: 20px;
@@ -97,21 +78,20 @@
               <b-row>
                 <b-col cols="12">
                   <vuetable
-                    ref="vuetable"
-                    :api-url="vuetableItems.apiUrl"
-                    :fields="vuetableItems.fields"
-                    :http-fetch="userTableHttpFetch"
-                    :per-page="vuetableItems.perPage"
+                    ref="vueTable"
+                    :api-mode="false"
+                    :fields="vueTableItems.fields"
+                    :data-manager="vueTableDataManager"
+                    :per-page="vueTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
-                    @vuetable:pagination-data="onUserTablePaginationData"
+                    @vuetable:pagination-data="onvueTablePaginationData"
                   >
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="pagination"
-                    @vuetable-pagination:change-page="onUserTableChangePage"
-                    :initial-per-page="vuetableItems.perPage"
-                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                    ref="vueTablePagination"
+                    @vuetable-pagination:change-page="onvueTableChangePage"
+                    :initial-per-page="vueTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
 
                 </b-col>
@@ -241,69 +221,20 @@
   </div>
 </template>
 <script>
-
+    import _ from 'lodash';
     import {apiBaseUrl} from "../../../constants/config";
     import Vuetable from 'vuetable-2/src/components/Vuetable'
+    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
     import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getDirection} from "../../../utils";
-    import _ from "lodash";
     import {getApiManager} from '../../../api';
     import {responseMessages} from '../../../constants/response-messages';
-    import {validationMixin} from 'vuelidate';
-    import VTree from 'vue-tree-halower';
-    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
 
-    const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
-
-
-    /**
-     * getting orgFull name with parent org
-     * @param orgData
-     * @returns {*}
-     */
-    let fnGetOrgFullName = orgData => {
-        let orgFullName = '';
-        if (orgData == null)
-            return orgFullName;
-        while (orgData.parent != null) {
-            orgFullName += '/' + orgData.orgName;
-            orgData = orgData.parent;
-        }
-        orgFullName = orgData.orgName + orgFullName;
-        return orgFullName;
-    };
 
     export default {
         components: {
             'vuetable': Vuetable,
+            'vuetable-pagination': VuetablePagination,
             'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-        },
-        mounted() {
-            this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-            this.$refs.operatingLogTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
-            getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
-                type: 'with_parent'
-            }).then((response) => {
-                let message = response.data.message;
-                let data = response.data.data;
-                switch (message) {
-                    case responseMessages['ok']:
-                        this.orgData = data;
-                        break;
-                }
-            });
-            getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
-                type: 'with_org_tree'
-            }).then((response) => {
-                let message = response.data.message;
-                let data = response.data.data;
-                switch (message) {
-                    case responseMessages['ok']:
-                        this.userData = data;
-                        break;
-                }
-            })
-
         },
         data() {
             return {
@@ -329,8 +260,7 @@
                     {value: 'active', text: this.$t('log-management.operating-log.status-success')},
                     {value: 'inactive', text: this.$t('log-management.operating-log.status-failure')},
                 ],
-                vuetableItems: {
-                    apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
+                vueTableItems: {
                     fields: [
                         {
                             name: 'number',
@@ -347,29 +277,81 @@
                             dataClass: 'text-center',
                         },
                         {
-                            name: 'start-time',
+                            name: 'action',
                             title: this.$t('log-management.operating-log.action'),
-                            sortField: 'start-time',
+                            sortField: 'action',
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'processing-time',
+                            name: 'accessIp',
                             title: this.$t('log-management.operating-log.access-ip'),
-                            sortField: 'processing-time',
+                            sortField: 'accessIp',
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'node-type',
+                            name: 'accessUser',
                             title: this.$t('log-management.operating-log.access-user'),
-                            sortField: 'node-type',
+                            sortField: 'accessUser',
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                     ],
                     perPage: 5,
+
                 },
+                tempData: [
+                    {
+                        "number": 1,
+                        "access-time": "00:00",
+                        "action": "success",
+                        "accessIp": "170.108.49.5",
+                        "accessUser": "2139910831",
+                    },
+                    {
+                        "number": 2,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                    {
+                        "number": 3,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                    {
+                        "number": 4,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                    {
+                        "number": 5,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                    {
+                        "number": 6,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                    {
+                        "number": 7,
+                        "access-time": "07:00",
+                        "action": "failure",
+                        "accessIp": "106.134.49.5",
+                        "accessUser": "5436576754",
+                    },
+                ],
                 //second tab content
                 operatingLogTableItems: {
                     apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
@@ -455,97 +437,6 @@
                     ],
                 },
 
-            }
-        },
-        watch: {
-            'vuetableItems.perPage': function (newVal) {
-                this.$refs.vuetable.refresh();
-            },
-            'operatingLogTableItems.perPage': function (newVal) {
-                this.$refs.operatingLogTable.refresh();
-            },
-            orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
-
-                let nest = (items, id = 0) =>
-                    items
-                        .filter(item => item.parentOrgId == id)
-                        .map(item => ({
-                            ...item,
-                            children: nest(items, item.orgId),
-                            id: id++,
-                            label: `${item.orgNumber} ${item.orgName}`
-                        }));
-
-                this.treeData = nest(newVal)[0];
-                let getLevel = (org) => {
-
-                    let getParent = (org) => {
-                        for (let i = 0; i < newVal.length; i++) {
-                            if (newVal[i].orgId == org.parentOrgId) {
-                                return newVal[i];
-                            }
-                        }
-                        return null;
-                    };
-
-                    let stepValue = org;
-                    let level = 0;
-                    while (getParent(stepValue) !== null) {
-                        stepValue = getParent(stepValue);
-                        level++;
-                    }
-
-                    return level;
-
-                };
-
-                let generateSpace = (count) => {
-                    let string = '';
-                    while (count--) {
-                        string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-                    }
-                    return string;
-                };
-
-                let selectOptions = [];
-
-                newVal.forEach((org) => {
-                    selectOptions.push({
-                        value: org.orgId,
-                        html: `${generateSpace(getLevel(org))}${org.orgName}`
-                    });
-                });
-
-                this.orgNameSelectData = selectOptions;
-
-                this.filter.orgId = this.treeData.orgId;
-                this.defaultOrgId = this.treeData.orgId;
-                this.fnRefreshOrgUserTreeData();
-            },
-            userData(newVal) {
-                this.fnRefreshOrgUserTreeData();
-            },
-            selectedUserGroupItem(newVal) {
-                if (newVal) {
-                    let userGroupList = [];
-                    newVal.users.forEach((user) => {
-                        userGroupList.push(user.userId);
-                    });
-                    this.userData.forEach((user) => {
-                        user.selected = userGroupList.includes(user.userId);
-                    });
-                    this.fnRefreshOrgUserTreeData();
-                }
-            },
-            isSelectedAllUsersForDataGroup(newVal) {
-
-                if (this.selectedUserGroupItem) {
-                    let tempSelectedUserGroup = this.selectedUserGroupItem;
-                    tempSelectedUserGroup.users = newVal ? this.userData : [];
-                    this.selectedUserGroupItem = null;
-                    this.selectedUserGroupItem = tempSelectedUserGroup;
-                }
             }
         },
         methods: {
@@ -915,129 +806,37 @@
                 this.groupForm.status = 'modify';
                 console.log(this.selectedUserGroupItem);
             },
-            // user tree group
-            fnRefreshOrgUserTreeData() {
-                let pseudoRootId = 0;
-                let nest = (orgData, userData, rootId = pseudoRootId) => {
-                    let childrenOrgList = orgData
-                        .filter(org => org.parentOrgId === rootId)
-                        .map(org => ({
-                            ...org,
-                            title: org.orgName,
-                            expanded: true,
-                            children: nest(orgData, userData, org.orgId)
-                        }));
-                    let childrenUserList = userData
-                        .filter(user => user.orgId === rootId)
-                        .map(user => ({
-                            ...user,
-                            isUser: true,
-                            title: user.userName,
-                            expanded: true,
-                            checked: user.selected,
-                            children: []
-                        }));
-                    return [...childrenOrgList, ...childrenUserList];
-                };
-                this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
-            },
-            onUserGroupSearchButton() {
-                this.$refs.userGroupTable.refresh();
-            },
-            onUserGroupResetButton() {
-                this.groupFilter = {
-                    name:null
-                };
-                this.$refs.userGroupTable.refresh();
-            },
-            onUserGroupCreateButton(){
-                this.selectedUserGroupItem = {
-                    users:[]
-                };
-                this.groupForm = {
-                    groupNumber:null,
-                    groupName:null,
-                    status:'create'
+
+
+            vueTableDataManager(sortOrder, pagination) {
+                let local = this.tempData;
+
+                // sortOrder can be empty, so we have to check for that as well
+                if (sortOrder.length > 0) {
+                    local = _.orderBy(
+                        local,
+                        sortOrder[0].sortField,
+                        sortOrder[0].direction
+                    );
                 }
+                pagination = this.$refs.vueTable.makePagination(
+                    local.length,
+                    this.vueTableItems.perPage
+                );
+
+                let from = pagination.from - 1;
+                let to = from + this.vueTableItems.perPage;
+                return {
+                    pagination: pagination,
+                    data: _.slice(local, from, to)
+                };
             },
-            onClickDeleteUserGroup(){
-                this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
+            onvueTablePaginationData(paginationData) {
+                this.$refs.vueTablePagination.setPaginationData(paginationData);
             },
-            onClickCreateUserGroup() {
-                if(this.selectedUserGroupItem) {
-                    let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-                    let userGroupUserIds = [];
-                    checkedNodes.forEach((node) => {
-                        if(node.isUser)userGroupUserIds.push(node.userId);
-                    });
-                    if(userGroupUserIds.length==0){
-                        return ;
-                    }
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
-                            'groupName':this.groupForm.groupName,
-                            'groupNumber':this.groupForm.groupNumber,
-                            'userIdList': userGroupUserIds
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    this.$refs.userGroupTable.refresh();
-                                    break;
-                                default:
-
-                            }
-                        })
-                        .catch((error) => {
-
-                        }).finally(() => {
-                        //
-                        this.groupForm = {
-                            groupName: null,
-                            groupNumber: null,
-                            status:'create'
-                        };
-                    });
-                }
+            onvueTableChangePage(page) {
+                this.$refs.vueTable.changePage(page);
             },
-            onClickModifyUserGroup() {
-                if(this.selectedUserGroupItem) {
-                    let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-                    let userGroupUserIds = [];
-                    checkedNodes.forEach((node) => {
-                        if(node.isUser)userGroupUserIds.push(node.userId);
-                    });
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
-                            'userGroupId': this.selectedUserGroupItem.userGroupId,
-                            'userIdList': userGroupUserIds
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    this.$refs.userGroupTable.refresh();
-                                    break;
-                                default:
-
-                            }
-                        })
-                        .catch((error) => {
-
-                        });
-                }
-            }
         }
     }
 </script>
