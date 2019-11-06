@@ -248,7 +248,7 @@
     "user-change-status-successfully": "User Status changed successfully.",
     "assign-permission-management": {
       "assign-to-user": "人员授权",
-      "assign-to-group": "分组授权",
+      "assign-to-group": "人员组授权",
       "summary-table": "授权对照表",
       "assign-flag": "授权标记",
       "please-input-user-name": "请输入人员姓名",
