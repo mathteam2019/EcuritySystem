@@ -623,6 +623,34 @@
     "missing-alarm-rate": "漏报率",
     "false-alarm-rate": "误报率"
   },
+  "black-list": {
+    "personal-black-list": "人员黑名单",
+    "statics": "业务统计",
+    "user-name": "姓名",
+    "license-number": "证件号",
+    "grade":"等级",
+    "number": "编号",
+    "gender": "性别",
+    "country": "国籍",
+    "license-type": "证件类型",
+    "date-of-birthday": "出生日期",
+    "count-of-seized": "查获次数"
+  },
+  "knowledge-base": {
+    "task-number": "任务编号",
+    "operating-mode": "工作模式",
+    "task-result": "任务结论",
+    "site": "现场",
+    "seized-item": "查获物品",
+    "th-no": "序号",
+    "image": "图像",
+    "security-instrument": "安检仪",
+    "inspection-station": "判图站",
+    "hand-inspection-station": "手检站",
+    "channel": "通道",
+    "no-suspect": "无嫌疑",
+    "seized": "有查获"
+  },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
   },
