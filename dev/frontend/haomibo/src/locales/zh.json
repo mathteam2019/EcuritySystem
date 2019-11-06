@@ -613,17 +613,7 @@
     "reset": "重置",
     "export": "导出",
     "import": "导入",
-    "print": "打印",
-    "node-type": "节点类型",
-    "node-name": "节点名称",
-    "start-time": "环节开始时间",
-    "processing-time": "环节处理时间",
-    "boot-time": "开机时间",
-    "scan-count":"扫描次数",
-    "alarm-count": "报警次数",
-    "invalid-scan": "无效扫描次数",
-    "missing-alarm-rate": "漏报率",
-    "false-alarm-rate": "误报率"
+    "print": "打印"
   },
   "black-list": {
     "personal-black-list": "人员黑名单",
