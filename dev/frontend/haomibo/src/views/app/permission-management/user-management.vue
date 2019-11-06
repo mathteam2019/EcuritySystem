@@ -57,8 +57,6 @@
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'">
           <b-col cols="12">
-            <div class="mb-4">
-
               <b-row>
                 <b-col cols="6">
                   <b-row>
@@ -110,7 +108,6 @@
                   </div>
                 </b-col>
               </b-row>
-
               <b-row>
                 <b-col cols="12">
                   <vuetable
@@ -238,7 +235,6 @@
                   </b-modal>
                 </b-col>
               </b-row>
-            </div>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus=='create'">
@@ -466,7 +462,7 @@
         </b-row>
         <b-row v-if="pageStatus=='show'">
           <b-col cols="12">
-            <b-card class="mb-4">
+            <b-card >
               <b-row>
                 <b-col cols="10">
                   <b-row class="mb-2">

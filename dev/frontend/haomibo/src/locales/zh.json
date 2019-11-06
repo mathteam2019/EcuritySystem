@@ -402,7 +402,7 @@
     "pending-device": " 待分派设备",
     "device-no": "设备编号",
     "number": "账号",
-    "file-name": "档案名称",
+    "file-name": "档案",
     "file-list": "档案列表",
     "file-no": "档案编号",
     "action": "操作",
@@ -659,6 +659,27 @@
     "no-seized": "无查获",
     "security-instrument-and-hand-test": "安检仪+手检",
     "security-instrument-and-hand-test-and-device": "安检仪+手检+设备端"
+  },
+  "personal-inspection": {
+    "process-task": {
+      "serial-number": "序号",
+      "task-number": "任务编号",
+      "operation-mode": "工作模式",
+      "status": "状态",
+      "on-site": "现场",
+      "user": "人员",
+      "time": "时间",
+      "security-instrument": "安检仪",
+      "guide": "引导员",
+      "scan-start-time": "扫描开始时间",
+      "scan-end-time": "扫描结束时间",
+      "judgement-station": "判图站",
+      "judge": "判图员",
+      "judgement-start-time": "判图开始时间",
+      "judgement-end-time": "判图结束时间",
+      "hand-check-station": "手检站",
+      "hand-checker": "手检员"
+    }
   },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"

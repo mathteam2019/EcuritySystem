@@ -14,7 +14,6 @@
         <b-row v-if="pageStatus==='table'">
           <b-col cols="12">
             <div class="p-2">
-
               <b-row>
                 <b-col cols="6">
                   <b-row>

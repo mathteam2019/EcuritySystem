@@ -35,7 +35,6 @@
         <b-row v-if="pageStatus==='table'">
           <b-col cols="12">
             <div class="">
-
               <b-row>
                 <b-col class="d-flex">
                   <div class="flex-grow-1">

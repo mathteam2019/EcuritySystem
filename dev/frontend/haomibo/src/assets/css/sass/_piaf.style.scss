@@ -1603,6 +1603,15 @@ button {
 
 .nav-tabs .nav-link:not(.active) {
   box-shadow: 0 0 6px -5px #888888;
+  background-color: #F8F8F8;
+}
+
+.nav-tabs .nav-link:not(.active)::before {
+  height: 3px;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
 }
 
 .nav-tabs .nav-link.active::before,

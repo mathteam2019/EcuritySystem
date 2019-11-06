@@ -5,7 +5,7 @@
       <b-img src="/assets/img/home_main_banner.png" fluid-grow class="shadow-sm" />
     </b-col>
   </b-row>
-  <b-row class="mt-5">
+  <b-row class="mt-5 bottom-section">
     <b-col cols="5">
       <b-img src="/assets/img/home_bottom_banner.png" fluid-grow class="shadow-sm" />
     </b-col>
@@ -54,3 +54,9 @@
   </b-row>
   </div>
 </template>
+
+<style>
+  .bottom-section {
+    margin-bottom: 5rem;
+  }
+</style>
