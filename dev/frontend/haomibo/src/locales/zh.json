@@ -74,7 +74,7 @@
     "user-management": "人员管理",
     "device-management": "设备管理",
     "device-classify": "设备分类",
-    "document-template": "档案模板",
+    "document-template": "模板设置",
     "document-management": "档案管理",
     "device-table": "设备列表",
     "device-config": "设备配置",
@@ -358,6 +358,7 @@
   "device-management": {
     "file-template": "档案模板",
     "business-stat": "业务统计",
+    "template": "模板",
     "template-number": "模板编号",
     "template-number-placeholder": "请输入模板编号",
     "template-name": "模板名称",
@@ -479,7 +480,7 @@
   },
   "system-setting": {
     "site": "场地",
-    "site-list": "场地列表",
+    "site-list": "场地管理",
     "site-architecture": "场地架构",
     "site-name": "场地名称",
     "status": "状态",

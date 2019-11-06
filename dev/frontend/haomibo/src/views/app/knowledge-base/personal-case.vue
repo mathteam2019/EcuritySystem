@@ -184,13 +184,6 @@
             {
               name: 'status',
               sortField: 'status',
-              title: this.$t('knowledge-base.operating-mode'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: 'status',
-              sortField: 'status',
               title: this.$t('knowledge-base.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',

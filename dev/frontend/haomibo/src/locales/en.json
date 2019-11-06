@@ -54,7 +54,8 @@
     "condition-monitoring": "Monitoring",
     "system-setting": "Configuration",
     "parameter-setting": "Globals",
-    "site-management": "Site Settings"
+    "site-management": "Site Settings",
+    "assign-permission-management": "Authorization"
   },
   "pages": {
     "project-name": "MAGIC IS IN THE DETAILS",
@@ -66,7 +67,15 @@
   },
   "permission-management": {
     "organization-table": "organization table",
+    "organization-name": "organization name",
+    "organization-number": "organization number",
+    "active-state": "active state",
+    "parent-organization-name": "parent organization name",
+    "parent-organization-number": "parent organization number",
     "organization-structure": "organization structure",
+    "organization-leader": "organization leader",
+    "organization-mobile": "organization mobile",
+    "organization-note": "organization note",
     "member-table": "member table",
     "organization-user-compare-table": "organization user compare table",
     "user-group": "user group",
@@ -93,6 +102,11 @@
     "sales-planing-department": "sales planing department",
     "admin": "admin",
     "normal-staff": "normal staff",
+    "org-status-active": "active",
+    "org-status-inactive": "inactive",
+    "gender": "gender",
+    "save": "save",
+    "return": "return",
 
     "th-no": "no",
     "th-user-id": "user id",
@@ -102,6 +116,15 @@
     "th-user-category": "user category",
     "th-account": "account",
     "th-action": "action",
+    "th-org-number": "organization number",
+    "th-org-name": "organization name",
+    "th-org-status": "organization status",
+    "th-org-parent-org-number": "parent organization number",
+    "th-org-parent-org-name": "parent organization name",
+    "th-org-leader": "organization leader",
+    "th-org-mobile": "organization mobile",
+    "th-org-note": "organization note",
+    "th-org-actions": "organization actions",
 
     "action-modify": "modify",
     "action-make-active": "make active",
@@ -152,6 +175,9 @@
       "save": "Save",
       "delete": "Delete",
       "prompt": "Prompt"
+    },
+    "user": {
+      "user-group-name": "user group name"
     }
   },
   "device-management": {
