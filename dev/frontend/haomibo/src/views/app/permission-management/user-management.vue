@@ -1050,7 +1050,7 @@
 
                 const dictionary = {
                   "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
-                  "inactive": `<span class="text-dark">${this.$t('permission-management.inactive')}</span>`,
+                  "inactive": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
                   "blocked": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
                   "pending": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
                 };

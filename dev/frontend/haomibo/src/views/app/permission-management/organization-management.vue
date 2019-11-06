@@ -519,7 +519,7 @@
 
                 const dictionary = {
                   'active': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
-                  'inactive': `<span class="text-dark">${this.$t('permission-management.org-status-inactive')}</span>`,
+                  'inactive': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
