@@ -211,7 +211,7 @@
             {
               name: 'site-no',
               sortField: 'site-no',
-              title: this.$t('device-management.device-classify-item.classify-number'),
+              title: this.$t('device-management.device-classify-item.device-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
