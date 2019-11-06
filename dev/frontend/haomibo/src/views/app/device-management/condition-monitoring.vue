@@ -19,8 +19,7 @@
       <b-tab :title="$t('device-management.condition-monitoring')">
         <b-row>
           <b-col cols="12">
-            <b-card class="mb-4">
-
+            <b-card>
               <b-row>
                 <b-col xs="12" md="10"  class="d-flex justify-content-between">
                   <div class="w-70">
@@ -167,7 +166,7 @@
       <b-tab :title="$t('device-management.business-stat')">
         <b-row>
           <b-col cols="12">
-            <b-card class="mb-4" :title="$t('device-management.business-stat')">
+            <b-card  :title="$t('device-management.business-stat')">
               <h1>It will be soon!</h1>
             </b-card>
           </b-col>

@@ -196,7 +196,7 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "1": `<span class="text-success">${this.$t('knowledge-base.no-suspect')}</span>`,
+                  "1": `<span class="text-successc ">${this.$t('knowledge-base.no-suspect')}</span>`,
                   "2": `<span class="text-danger">${this.$t('knowledge-base.seized')}</span>`,
                   "3": `<span class="text-warning">${this.$t('knowledge-base.no-seized')}</span>`,
                 };
