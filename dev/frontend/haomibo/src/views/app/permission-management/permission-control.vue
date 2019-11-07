@@ -344,7 +344,7 @@
                       {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
                       <span class="text-danger">*</span>
                     </template>
-                    <label class="col-form-label">
+                    <label>
                       {{selectedDataGroup.dataGroupNumber}}
                     </label>
                   </b-form-group>
@@ -354,7 +354,7 @@
                       {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
                       <span class="text-danger">*</span>
                     </template>
-                    <label class="col-form-label">
+                    <label>
                       {{selectedDataGroup.dataGroupName}}
                     </label>
                   </b-form-group>
