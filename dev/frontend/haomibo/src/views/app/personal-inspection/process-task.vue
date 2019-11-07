@@ -8,7 +8,7 @@
       </b-row>
     </div>
 
-    <b-card>
+    <b-card v-if="pageStatus === 'table'">
       <b-row>
         <b-col cols="12">
           <div class="mb-4">
@@ -24,19 +24,19 @@
 
                   <b-col>
                     <b-form-group :label="$t('personal-inspection.process-task.operation-mode')">
-                      <b-form-select plain/>
+                      <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('personal-inspection.process-task.status')">
-                      <b-form-select plain/>
+                      <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('personal-inspection.process-task.on-site')">
-                      <b-form-select plain/>
+                      <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -91,10 +91,21 @@
                 <vuetable
                   ref="taskVuetable"
                   :api-mode="false"
+                  :data="tempData"
                   :fields="taskVuetableItems.fields"
                   class="table-hover"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
                 >
+                  <template slot="taskNumber" slot-scope="props">
+                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
+                      {{props.rowData.taskNumber}}
+                    </span>
+                  </template>
+                  <template slot="operationMode" slot-scope="props">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                  </template>
                 </vuetable>
                 <vuetable-pagination-bootstrap
                   ref="taskVuetablePagination"
@@ -120,30 +131,418 @@
       </b-row>
     </b-card>
 
+    <div v-if="pageStatus === 'show'">
+      <b-row>
+        <b-col cols="4">
+          <b-card class="pt-4">
+            <b-row class="mb-1">
+              <b-col>
+                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2" />
+                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2" />
+              </b-col>
+              <b-col class="text-right icon-container">
+                <span><i class="icofont-star"></i></span>
+                <span><i class="icofont-search-user"></i></span>
+                <span><i class="icofont-female"></i></span>
+              </b-col>
+            </b-row>
+
+            <b-row class="mb-4">
+              <b-col>
+                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
+              </b-col>
+              <b-col>
+                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
+              </b-col>
+            </b-row>
+
+            <b-row class="mb-2">
+              <b-col cols="10">
+                <b-row>
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/contrast_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.contrast')}}</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/brightness_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.brightness')}}</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/color_inverse_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.color-inverse')}}</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/pseudo_color1_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}1</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/pseudo_color2_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}2</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/pseudo_color3_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}3</span>
+                    </div>
+                  </b-col>
+
+                </b-row>
+              </b-col>
+              <b-col cols="2">
+                <div class="d-inline" style="width: 2px; height: 27px; background-color: red;"></div>
+                <switches v-model="power" theme="custom" color="info"></switches>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col cols="10">
+                <b-row>
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/pseudo_color4_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}4</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/enhance_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}1</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/enhance_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}2</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/enhance_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}3</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+                    <div class="control-btn">
+                      <b-img src="/assets/img/edge_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.edge')}}</span>
+                    </div>
+                  </b-col>
+
+                  <b-col cols="2" class="text-center">
+
+                    <div class="control-btn">
+                      <b-img src="/assets/img/reduction_btn.png" />
+                      <br />
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.reduction')}}</span>
+                    </div>
+                  </b-col>
+
+                </b-row>
+              </b-col>
+              <b-col cols="2">
+              </b-col>
+            </b-row>
+
+          </b-card>
+        </b-col>
+        <b-col cols="8">
+          <b-card>
+            <b-row class="history-chart mb-4">
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.task-number')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>HR201909010001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.on-site')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>北京首都机场</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.security-instrument')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>安检仪001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.image-gender')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>男</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.scanned-image')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>ATR</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.operation-mode')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <div>
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2" />
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2" />
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.status')}}
+                  </template>
+                  <label>全部</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.guide')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>张三</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.atr-conclusion')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无嫌疑</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.foot-alarm')}}
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.scan-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:40:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.scan-end-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:40:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.dispatch-timeout')}}
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>TC0001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-conclusion-type')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>ATR</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-conclusion')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无嫌疑</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-timeout')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:41:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-station-identification')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>全部</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judgement-end-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:41:05</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.judge')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>李四</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.hand-check-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>张三</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.hand-check-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:42:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.process-task.hand-checker')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>男</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col class="text-right">
+                <b-button variant="info default" @click="pageStatus='table'">
+                  <i class="icofont-long-arrow-left"></i>
+                  {{ $t('personal-inspection.return') }}
+                </b-button>
+
+              </b-col>
+            </b-row>
+
+          </b-card>
+        </b-col>
+      </b-row>
+    </div>
+
 
 
   </div>
 </template>
 
 <style lang="scss">
-  .search-form-group {
-    [role="group"] {
-      position: relative;
-
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-    }
-  }
-  .selected-row {
-    background-color: #0000ff20 !important;
+  span.cursor-p {
+    cursor: pointer !important;
   }
 
   .rounded-span{
@@ -154,6 +553,40 @@
     background-color: #007bff;
   }
 
+  .operation-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .icon-container {
+    font-size: 20px;
+
+    .icofont-star {
+      color: #ffe400;
+    }
+
+    .icofont-search-user {
+      color: #ff9c0e;
+    }
+
+    .icofont-female {
+      color: #fe687f;
+    }
+  }
+
+  .control-btn {
+    img {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .history-chart {
+    background: url("/assets/img/history_chart.png") no-repeat;
+    background-size: contain;
+    width: calc(100% + 30px);
+    padding-bottom: 8%;
+  }
 
 </style>
 
@@ -169,6 +602,7 @@
     import {validationMixin} from 'vuelidate';
     import VTree from 'vue-tree-halower';
     import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+    import Switches from 'vue-switches';
 
     const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -176,6 +610,7 @@
         components: {
             'vuetable': Vuetable,
             'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+            'switches': Switches
         },
         mounted() {
 
@@ -185,9 +620,38 @@
                 isExpanded:false,
                 pageStatus: 'table',
                 filter: {
+                    operationMode: null,
+                    status: null,
+                    onSite: null
                     // TODO: search filter
                 },
                 // TODO: select options
+                operationModeOptions: [
+                    {value: null, text: this.$t('personal-inspection.process-task.all')},
+                    {value: 'security', text: this.$t('personal-inspection.process-task.security-instrument')},
+                    {value: 'security+hand', text: this.$t('personal-inspection.process-task.security-instrument-and-hand-test')},
+                    {value: 'security+hand+device', text: this.$t('personal-inspection.process-task.security-instrument-and-hand-test-and-device')},
+                ],
+                statusOptions: [
+                    {value: null, text: this.$t('personal-inspection.process-task.all')},
+                    {value: 'pending-dispatch', text: this.$t('personal-inspection.process-task.pending-dispatch')},
+                    {value: 'pending-review', text: this.$t('personal-inspection.process-task.pending-review')},
+                    {value: 'while-review', text: this.$t('personal-inspection.process-task.while-review')},
+                    {value: 'pending-inspection', text: this.$t('personal-inspection.process-task.pending-inspection')},
+                    {value: 'while-inspection', text: this.$t('personal-inspection.process-task.while-inspection')}
+                ],
+                onSiteOptions: [
+                    {value: null, text: this.$t('personal-inspection.process-task.all')},
+                    {value: 'pending-dispatch', text: this.$t('personal-inspection.process-task.task-pending-dispatch')},
+                    {value: 'dispatch', text: this.$t('personal-inspection.process-task.task-dispatched')},
+                    {value: 'while-review', text: this.$t('personal-inspection.process-task.while-review')},
+                    {value: 'reviewed', text: this.$t('personal-inspection.process-task.reviewed')},
+                    {value: 'while-inspection', text: this.$t('personal-inspection.process-task.while-inspection')},
+                ],
+                // TODO: refactor temp table data to api mode
+                tempData: [
+                    {id: 1, taskNumber: 'HR201909210001'}
+                ],
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [
@@ -199,13 +663,13 @@
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'taskNumber',
+                            name: '__slot:taskNumber',
                             title: this.$t('personal-inspection.process-task.task-number'),
                             titleClass: 'text-center',
                             dataClass: 'text-center',
                         },
                         {
-                            name: 'operationMode',
+                            name: '__slot:operationMode',
                             title: this.$t('personal-inspection.process-task.operation-mode'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
@@ -270,9 +734,28 @@
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
+                        {
+                            name: 'handCheckStation',
+                            title: this.$t('personal-inspection.process-task.hand-check-station'),
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: 'handChecker',
+                            title: this.$t('personal-inspection.process-task.hand-checker'),
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: 'handCheckStartTime',
+                            title: this.$t('personal-inspection.process-task.hand-check-start-time'),
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
                     ],
                     perPage: 5,
                 },
+                power: true
 
             }
         },
@@ -370,6 +853,9 @@
         methods: {
             onTableListPage() {
                 this.pageStatus = 'table';
+            },
+            onRowClicked() {
+                this.pageStatus = 'show';
             },
             onSaveUserPage() {
                 this.submitted = true;
@@ -713,14 +1199,6 @@
             onTaskVuetableChangePage(page) {
                 this.$refs.taskVuetable.changePage(page)
             },
-            onDataGroupRowClass(dataItem, index) {
-                let selectedItem = this.selectedUserGroupItem;
-                if (selectedItem && selectedItem.userGroupId === dataItem.userGroupId) {
-                    return 'selected-row';
-                } else {
-                    return '';
-                }
-            },
             onUserGroupTableRowClick(dataItems) {
                 this.selectedUserGroupItem = dataItems;
                 this.groupForm.status = 'modify';
@@ -852,35 +1330,3 @@
         }
     }
 </script>
-
-<style lang="scss">
-  .search-form-group {
-    [role="group"] {
-      position: relative;
-
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-    }
-  }
-  .selected-row {
-    background-color: #0000ff20 !important;
-  }
-
-  .rounded-span{
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #007bff;
-  }
-
-
-</style>
