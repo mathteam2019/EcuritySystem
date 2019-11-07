@@ -1739,7 +1739,7 @@ button {
 
 /* 09.Navbar*/
 .navbar {
-  background: url($nav-background) no-repeat;
+  background: $nav-background-color url($nav-background) no-repeat;
   background-position: right;
   height: $navbar-height;
   padding: 1.5rem 0 1.5rem 0;
@@ -4785,6 +4785,29 @@ select.form-control:not([size]):not([multiple]) {
 
       &:after {
         background: $theme-color-2;
+      }
+    }
+
+    &.vue-switcher--unchecked {
+      div {
+        background: $separator-color;
+        border: 1px solid $separator-color;
+
+        &:after {
+          background: $input-background;
+        }
+      }
+    }
+  }
+}
+
+.vue-switcher-theme--custom {
+  &.vue-switcher-color--info {
+    div {
+      background: #1782d4;
+
+      &:after {
+        background: $input-background;
       }
     }
 
@@ -8619,7 +8642,7 @@ i.large-icon {
 
   /*Navbar */
   .navbar {
-    background: url($nav-background-mirror) no-repeat;
+    background: $nav-background-color url($nav-background-mirror) no-repeat;
     background-position: left;
 
     .navbar-logo {
