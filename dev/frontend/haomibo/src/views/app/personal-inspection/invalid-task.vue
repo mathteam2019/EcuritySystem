@@ -29,22 +29,17 @@
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.status')">
-                      <b-form-select v-model="filter.status" :options="statusOptions" plain/>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
                     <b-form-group :label="$t('personal-inspection.on-site')">
                       <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
                     </b-form-group>
                   </b-col>
 
-                  <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
-                      </span>
+                  <b-col>
+                    <b-form-group :label="$t('personal-inspection.user')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
                   </b-col>
+
                 </b-row>
               </b-col>
               <b-col cols="8" v-if="isExpanded">
@@ -669,14 +664,14 @@
                             dataClass: 'text-center',
                         },
                         {
-                            name: '__slot:operationMode',
-                            title: this.$t('personal-inspection.operation-mode'),
+                            name: 'image',
+                            title: this.$t('personal-inspection.image'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'status',
-                            title: this.$t('personal-inspection.status'),
+                            name: '__slot:operationMode',
+                            title: this.$t('personal-inspection.operation-mode'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
@@ -707,48 +702,6 @@
                         {
                             name: 'scanEndTime',
                             title: this.$t('personal-inspection.scan-end-time'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'judgementStation',
-                            title: this.$t('personal-inspection.judgement-station'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'judge',
-                            title: this.$t('personal-inspection.judge'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'judgementStartTime',
-                            title: this.$t('personal-inspection.judgement-start-time'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'judgementEndTime',
-                            title: this.$t('personal-inspection.judgement-end-time'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'handCheckStation',
-                            title: this.$t('personal-inspection.hand-check-station'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'handChecker',
-                            title: this.$t('personal-inspection.hand-checker'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'handCheckStartTime',
-                            title: this.$t('personal-inspection.hand-check-start-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
