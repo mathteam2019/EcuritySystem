@@ -15,7 +15,7 @@
 
               <b-row>
                 <b-col>
-                  <b-form-group :label="$t('device-management.file-name')">
+                  <b-form-group :label="$t('device-management.template')">
                     <b-form-input></b-form-input>
                   </b-form-group>
                 </b-col>
@@ -108,21 +108,27 @@
         <b-row>
           <b-col xxs="12" md="4" lg="4">
                 <b-form @submit.prevent="onBasicSubmit">
-                  <b-form-group :label="$t('device-management.template-number')">
+                  <b-form-group >
+                    <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
+                    </template>
                     <b-form-input type="text" v-model="basicForm.templateNumber"
                                   :placeholder="$t('device-management.template-number-placeholder')"/>
                   </b-form-group>
-                  <b-form-group :label="$t('device-management.template-name')">
+                  <b-form-group>
+                    <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
+                    </template>
                     <b-form-input type="text" v-model="basicForm.templateName"
                                   :placeholder="$t('device-management.template-name-placeholder')"/>
                   </b-form-group>
-                  <b-form-group :label="$t('device-management.device-classify')">
+                  <b-form-group >
+                    <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                    </template>
                     <b-form-select v-model="basicForm.deviceClassify" :options="deviceClassifyData" :placeholder="$t('device-management.device-classify-placeholder')" plain/>
                   </b-form-group>
                   <b-form-group :label="$t('device-management.manufacture')">
                     <b-form-select v-model="basicForm.manufacture" :options="selectData" plain />
                   </b-form-group>
-                  <b-form-group :label="$t('device-management.origin-model')">
+                  <b-form-group :label="$t('device-management.device-model')">
                     <b-form-input type="text" v-model="basicForm.originModel"
                                   :placeholder="$t('device-management.origin-model-placeholder')"/>
                   </b-form-group>
@@ -238,21 +244,14 @@
             {
               name: '__slot:number',
               sortField: 'number',
-              title: this.$t('device-management.file-no'),
+              title: this.$t('device-management.template-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'filename',
               sortField: 'filename',
-              title: this.$t('device-management.file-name'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'setting',
-              sortField: 'setting',
-              title: this.$t('device-management.setting'),
+              title: this.$t('device-management.template'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -288,7 +287,7 @@
             {
               name: 'origin-no',
               sortField: 'origin-no',
-              title: this.$t('device-management.origin-model'),
+              title: this.$t('device-management.device-model'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },

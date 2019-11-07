@@ -140,11 +140,18 @@
     }
 
   }
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .auth-content-only-ie {
+      margin-top: 20%!important;
+    }
+  }
 </style>
+
+
 <template>
   <b-row class="h-100">
     <img class="position-absolute logo" src="../../assets/img/logo-white.png" />
-    <b-col md=10 class="mx-auto my-auto">
+    <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
         <b-col cols="9">

@@ -413,113 +413,39 @@
                 <b-col cols="12">
                   <vuetable
                     ref="userGroupTable"
-                    :api-url="userGroupTableItems.apiUrl"
+                    :api-mode="false"
                     :fields="userGroupTableItems.fields"
-                    :http-fetch="userGroupTableHttpFetch"
-                    pagination-path="userGroupPagination"
+                    :data-manager="userGroupTableDataManager"
+                    pagination-path="pagination"
                     class="table-hover"
-                    @vuetable:pagination-data="onUserGroupTablePaginationData"
+                    @vuetable:pagination-data="onuserGroupTablePaginationData"
                   >
                     <template slot="userNumber" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                     </template>
-                    <template slot="actions" slot-scope="props">
+                    <template slot="operating" slot-scope="props">
                       <div >
 
                         <b-button
-                          v-if="props.rowData.status=='inactive'"
                           size="sm"
-                          variant="primary default btn-square"
-                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          variant="primary default btn-square">
                           <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='inactive'"
                           size="sm"
-                          variant="primary default btn-square"
-                          disabled>
-                          <i class="icofont-edit"></i>
+                          variant="danger default btn-square">
+                          <i class="icofont-bin"></i>
                         </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="success default btn-square"
-                          @click="onAction('active', props.rowData, props.rowIndex)">
-                          <i class="icofont-check-circled"></i>
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='active'"
-                          size="sm"
-                          variant="warning default btn-square"
-                          @click="onAction('inactive', props.rowData, props.rowIndex)">
-                          <i class="icofont-ban"></i>
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                          size="sm"
-                          variant="success default btn-square"
-                          disabled>
-                          <i class="icofont-ban"></i>
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='inactive'"
-                          size="sm"
-                          variant="danger default btn-square"
-                          @click="onAction('blocked', props.rowData, props.rowIndex)">
-                          <i class="icofont-minus-circle"></i>
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status=='blocked'"
-                          size="sm"
-                          variant="success default btn-square"
-                          @click="onAction('unblock', props.rowData, props.rowIndex)">
-                          <i class="icofont-power"></i>
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                          size="sm"
-                          variant="danger default btn-square"
-                          disabled>
-                          <i class="icofont-minus-circle"></i>
-                        </b-button>
-
-
-                        <b-button
-                          v-if="props.rowData.status=='pending'"
-                          size="sm"
-                          variant="purple default btn-square"
-                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                          <i class="icofont-ui-password"></i>
-                        </b-button>
-
-                        <b-button
-                          v-if="props.rowData.status!='pending'"
-                          size="sm"
-                          variant="purple default btn-square"
-                          disabled>
-                          <i class="icofont-ui-password"></i>
-                        </b-button>
-
 
                       </div>
                     </template>
 
                   </vuetable>
                   <vuetable-pagination-bootstrap
-                    ref="userGroupPagination"
-                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                    ref="userGroupTablePagination"
+                    @vuetable-pagination:change-page="onuserGroupTableChangePage"
                     :initial-per-page="userGroupTableItems.perPage"
-                    @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                   <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
                     {{$t('permission-management.user.user-group-delete-prompt')}}
@@ -594,8 +520,10 @@
 </template>
 <script>
 
+  import _ from 'lodash';
   import {apiBaseUrl} from '../../../constants/config';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
@@ -618,6 +546,7 @@
     components: {
       'v-select': vSelect,
       'vuetable': Vuetable,
+      'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       Vue2OrgTree
     },
@@ -859,35 +788,99 @@
           perPage: 5,
           fields: [
             {
-              name: 'userGroupId',
+              name: 'number',
               title: this.$t('permission-management.th-no'),
-              sortField: 'userGroupId',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: '__slot:userGroupNumber',
-              title: this.$t('permission-management.user.user-group-number'),
-              sortField: 'groupNumber',
+              sortField: 'number',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
               name: 'groupName',
-              title: this.$t('permission-management.user.user-group-name'),
-              sortField: 'userGroupName',
+              title: this.$t('permission-management.assign-permission-management.group.user-group'),
+              sortField: 'groupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:operating',
-              title: this.$t('permission-management.user.operating'),
+              name: 'groupMember',
+              title: this.$t('permission-management.assign-permission-management.group.groupMember'),
+              sortField: 'groupMember',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'gruopRole',
+              title: this.$t('permission-management.assign-permission-management.group.role'),
+              sortField: 'gruopRole',
               titleClass: 'text-center',
               dataClass: 'text-center'
+            },
+            {
+                name: 'groupRange',
+                title: this.$t('permission-management.assign-permission-management.group.data-range'),
+                sortField: 'groupRange',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
+            },
+            {
+                name: '__slot:operating',
+                title: this.$t('permission-management.user.operating'),
+                titleClass: 'text-center',
+                dataClass: 'text-center'
             }
           ],
         },
-
+        tempData:[
+            {
+                "number": 1,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 2,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 3,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 4,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 5,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 6,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+            {
+                "number": 7,
+                "groupName": "人员组",
+                "groupMember": "张三，李四",
+                "gruopRole": "管理员",
+                "groupRange": "个人数据",
+            },
+        ]
       }
     },
     computed: {
@@ -970,6 +963,37 @@
       }
     },
     methods: {
+
+      userGroupTableDataManager(sortOrder, pagination) {
+          let local = this.tempData;
+
+          // sortOrder can be empty, so we have to check for that as well
+          if (sortOrder.length > 0) {
+              local = _.orderBy(
+                  local,
+                  sortOrder[0].sortField,
+                  sortOrder[0].direction
+              );
+          }
+
+          pagination = this.$refs.userGroupTable.makePagination(
+              local.length,
+              this.userGroupTableItems.perPage
+          );
+
+          let from = pagination.from - 1;
+          let to = from + this.userGroupTableItems.perPage;
+          return {
+              pagination: pagination,
+              data: _.slice(local, from, to)
+          };
+      },
+      onuserGroupTablePaginationData(paginationData) {
+          this.$refs.userGroupTablePagination.setPaginationData(paginationData);
+      },
+      onuserGroupTableChangePage(page) {
+          this.$refs.userGroupTable.changePage(page);
+      },
 
       onSearchButton() {
         this.$refs.vuetable.refresh();

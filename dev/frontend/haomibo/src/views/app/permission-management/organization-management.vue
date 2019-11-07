@@ -212,7 +212,7 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="createPage.orgName"
-                                :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                                :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -221,7 +221,7 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="createPage.orgNumber"
-                                :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                                :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>

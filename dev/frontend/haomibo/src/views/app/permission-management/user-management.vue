@@ -447,10 +447,10 @@
                 <b-col cols="12">
                   <b-row>
                     <b-col cols="12" class="text-right">
-                      <b-button class="mb-1" @click="onSaveUserPage()" variant="info default">{{
+                      <b-button class="mb-1" @click="onSaveUserPage()" variant="info default"><i class="icofont-save"></i> {{
                         $t('permission-management.save') }}
                       </b-button>
-                      <b-button class="mb-1" @click="onTableListPage()" variant="danger default">{{
+                      <b-button class="mb-1" @click="onTableListPage()" variant="danger default"><i class="icofont-long-arrow-left"></i> {{
                         $t('permission-management.return') }}
                       </b-button>
                     </b-col>
