@@ -29,70 +29,69 @@
     </div>
 
 
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs nav-class="ml-2" :no-fade="true" class="h-100">
 
       <b-tab :title="$t('permission-management.organization-table')">
-        <b-row v-if="pageStatus==='table'">
-          <b-col cols="12">
-            <div class="">
-              <b-row>
-                <b-col class="d-flex">
-                  <div class="flex-grow-1">
+        <b-row v-if="pageStatus==='table'" class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col class="d-flex">
+                <div class="flex-grow-1">
 
-                    <b-row>
+                  <b-row>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.organization-name')">
-                          <b-form-input v-model="filter.orgName"></b-form-input>
-                        </b-form-group>
-                      </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.organization-name')">
+                        <b-form-input v-model="filter.orgName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.active-state')">
-                          <b-form-select :options="statusSelectOptions" v-model="filter.status" plain/>
-                        </b-form-group>
-                      </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.active-state')">
+                        <b-form-select :options="statusSelectOptions" v-model="filter.status" plain/>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col>
-                        <b-form-group :label="$t('permission-management.parent-organization-name')">
-                          <b-form-input v-model="filter.parentOrgName"></b-form-input>
-                        </b-form-group>
-                      </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('permission-management.parent-organization-name')">
+                        <b-form-input v-model="filter.parentOrgName"></b-form-input>
+                      </b-form-group>
+                    </b-col>
 
-                      <b-col></b-col>
-                    </b-row>
+                    <b-col></b-col>
+                  </b-row>
 
-                  </div>
-                  <div class="align-self-center">
-                    <b-button
-                      size="sm"
-                      class="ml-2"
-                      variant="info default"
-                      @click="onSearchButton()"><i class="icofont-search-1"></i>&nbsp;
-                      {{ $t('permission-management.search') }}
-                    </b-button>
-                    <b-button
-                      size="sm"
-                      class="ml-2"
-                      variant="info default"
-                      @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
-                      {{ $t('permission-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
-                      {{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
-                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col cols="12">
+                </div>
+                <div class="align-self-center">
+                  <b-button
+                    size="sm"
+                    class="ml-2"
+                    variant="info default"
+                    @click="onSearchButton()"><i class="icofont-search-1"></i>&nbsp;
+                    {{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button
+                    size="sm"
+                    class="ml-2"
+                    variant="info default"
+                    @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
+                    {{ $t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                    {{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+            <b-row class="flex-grow-1">
+              <b-col cols="12" class="d-flex flex-column">
+                <div class="table-wrapper table-responsive flex-grow-1">
                   <vuetable
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
@@ -166,6 +165,8 @@
                     </template>
 
                   </vuetable>
+                </div>
+                <div>
                   <vuetable-pagination-bootstrap
                     ref="pagination"
                     @vuetable-pagination:change-page="onChangePage"
@@ -196,11 +197,9 @@
                       </b-button>
                     </template>
                   </b-modal>
-
-                </b-col>
-              </b-row>
-
-            </div>
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus==='create'" class="form-section">

@@ -11,7 +11,7 @@
         <b-card class="mb-4" :title="$t('form-components.custom-inputs')">
           <b-form-group :label="$t('form-components.checkboxes')">
             <b-form-checkbox-group stacked>
-              <b-form-checkbox value="first">Check this custom checkbox</b-form-checkbox>
+              <b-form-checkbox value="first"></b-form-checkbox>
               <b-form-checkbox value="second">Or this one</b-form-checkbox>
               <b-form-checkbox value="third" disabled>But not this disabled one</b-form-checkbox>
             </b-form-checkbox-group>

@@ -153,11 +153,11 @@
                 class="text-danger">*</span></template>
               <div class="d-flex ">
                 <div>
-                  <b-form-radio-group  stacked>
-                    <b-form-radio class="py-2" value="first">{{$t('maintenance-management.time-task.by-time')}}</b-form-radio>
-                    <b-form-radio class="py-2" value="second">{{$t('maintenance-management.time-task.by-day')}}</b-form-radio>
-                    <b-form-radio class="py-2" value="third">{{$t('maintenance-management.time-task.by-week')}}</b-form-radio>
-                    <b-form-radio class="py-2" value="fourth">{{$t('maintenance-management.time-task.by-month')}}</b-form-radio>
+                  <b-form-radio-group  stacked style="width: 60px">
+                    <b-form-radio class="py-2 mb-1" value="first">{{$t('maintenance-management.time-task.by-time')}}</b-form-radio>
+                    <b-form-radio class="py-2 mb-1" value="second">{{$t('maintenance-management.time-task.by-day')}}</b-form-radio>
+                    <b-form-radio class="py-2 mb-1" value="third">{{$t('maintenance-management.time-task.by-week')}}</b-form-radio>
+                    <b-form-radio class="py-2 mb-1" value="fourth">{{$t('maintenance-management.time-task.by-month')}}</b-form-radio>
                   </b-form-radio-group>
                 </div>
                 <div class="pl-4 inline-label-form-section">
@@ -176,7 +176,7 @@
                 </div>
               </div>
             </b-form-group>
-            <div class="text-center text-muted">({{$t('maintenance-management.time-task.guide-for-time-task')}})</div>
+            <div class="pl-4 text-muted">({{$t('maintenance-management.time-task.guide-for-time-task')}})</div>
           </b-col>
           <b-col cols="6" class="pl-5 inline-label-form-section">
             <b-form-group>
