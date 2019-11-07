@@ -17,25 +17,25 @@
                 <b-row>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.task-number')">
+                    <b-form-group :label="$t('personal-inspection.task-number')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.operation-mode')">
+                    <b-form-group :label="$t('personal-inspection.operation-mode')">
                       <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.status')">
+                    <b-form-group :label="$t('personal-inspection.status')">
                       <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.on-site')">
+                    <b-form-group :label="$t('personal-inspection.on-site')">
                       <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
                     </b-form-group>
                   </b-col>
@@ -51,13 +51,13 @@
                 <b-row>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.user')">
+                    <b-form-group :label="$t('personal-inspection.user')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
-                    <b-form-group :label="$t('personal-inspection.process-task.time')">
+                    <b-form-group :label="$t('personal-inspection.time')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
@@ -164,7 +164,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/contrast_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.contrast')}}</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                     </div>
                   </b-col>
 
@@ -172,7 +172,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/brightness_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.brightness')}}</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                     </div>
                   </b-col>
 
@@ -180,7 +180,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/color_inverse_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.color-inverse')}}</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                     </div>
                   </b-col>
 
@@ -188,7 +188,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/pseudo_color1_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}1</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                     </div>
                   </b-col>
 
@@ -196,7 +196,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/pseudo_color2_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}2</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                     </div>
                   </b-col>
 
@@ -204,7 +204,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/pseudo_color3_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}3</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                     </div>
                   </b-col>
 
@@ -223,7 +223,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/pseudo_color4_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.pseudo-color')}}4</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                     </div>
                   </b-col>
 
@@ -231,7 +231,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/enhance_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}1</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                     </div>
                   </b-col>
 
@@ -239,7 +239,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/enhance_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}2</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                     </div>
                   </b-col>
 
@@ -247,7 +247,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/enhance_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.enhance')}}3</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                     </div>
                   </b-col>
 
@@ -255,7 +255,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/edge_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.edge')}}</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                     </div>
                   </b-col>
 
@@ -264,7 +264,7 @@
                     <div class="control-btn">
                       <b-img src="/assets/img/reduction_btn.png" />
                       <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.process-task.reduction')}}</span>
+                      <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                     </div>
                   </b-col>
 
@@ -290,7 +290,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.task-number')}}&nbsp
+                    {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>HR201909010001</label>
@@ -299,7 +299,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.on-site')}}&nbsp
+                    {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>北京首都机场</label>
@@ -308,7 +308,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.security-instrument')}}&nbsp
+                    {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>安检仪001</label>
@@ -317,7 +317,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.image-gender')}}&nbsp
+                    {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>男</label>
@@ -326,7 +326,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.scanned-image')}}&nbsp
+                    {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>ATR</label>
@@ -338,7 +338,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.operation-mode')}}&nbsp
+                    {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <div>
@@ -351,7 +351,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.status')}}
+                    {{$t('personal-inspection.status')}}
                   </template>
                   <label>全部</label>
                 </b-form-group>
@@ -359,7 +359,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.guide')}}&nbsp
+                    {{$t('personal-inspection.guide')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>张三</label>
@@ -368,7 +368,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.atr-conclusion')}}&nbsp
+                    {{$t('personal-inspection.atr-conclusion')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>无嫌疑</label>
@@ -377,7 +377,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.foot-alarm')}}
+                    {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label>无</label>
                 </b-form-group>
@@ -388,7 +388,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.scan-start-time')}}&nbsp
+                    {{$t('personal-inspection.scan-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>20190921 10:40:05</label>
@@ -397,7 +397,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.scan-end-time')}}&nbsp
+                    {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>20190921 10:40:05</label>
@@ -406,7 +406,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.dispatch-timeout')}}
+                    {{$t('personal-inspection.dispatch-timeout')}}
                   </template>
                   <label>无</label>
                 </b-form-group>
@@ -414,7 +414,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-station')}}&nbsp
+                    {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>TC0001</label>
@@ -423,7 +423,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-conclusion-type')}}&nbsp
+                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>ATR</label>
@@ -435,7 +435,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-conclusion')}}&nbsp
+                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>无嫌疑</label>
@@ -444,7 +444,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-timeout')}}&nbsp
+                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>无</label>
@@ -453,7 +453,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-start-time')}}&nbsp
+                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>20190921 10:41:05</label>
@@ -462,7 +462,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-station-identification')}}&nbsp
+                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>全部</label>
@@ -471,7 +471,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judgement-end-time')}}&nbsp
+                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>20190921 10:41:05</label>
@@ -483,7 +483,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.judge')}}&nbsp
+                    {{$t('personal-inspection.judge')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>李四</label>
@@ -492,7 +492,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.hand-check-station')}}&nbsp
+                    {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>张三</label>
@@ -501,7 +501,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.hand-check-start-time')}}&nbsp
+                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>20190921 10:42:05</label>
@@ -510,7 +510,7 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.process-task.hand-checker')}}&nbsp
+                    {{$t('personal-inspection.hand-checker')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>男</label>
@@ -627,26 +627,26 @@
                 },
                 // TODO: select options
                 operationModeOptions: [
-                    {value: null, text: this.$t('personal-inspection.process-task.all')},
-                    {value: 'security', text: this.$t('personal-inspection.process-task.security-instrument')},
-                    {value: 'security+hand', text: this.$t('personal-inspection.process-task.security-instrument-and-hand-test')},
-                    {value: 'security+hand+device', text: this.$t('personal-inspection.process-task.security-instrument-and-hand-test-and-device')},
+                    {value: null, text: this.$t('personal-inspection.all')},
+                    {value: 'security', text: this.$t('personal-inspection.security-instrument')},
+                    {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+                    {value: 'security+hand+device', text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')},
                 ],
                 statusOptions: [
-                    {value: null, text: this.$t('personal-inspection.process-task.all')},
-                    {value: 'pending-dispatch', text: this.$t('personal-inspection.process-task.pending-dispatch')},
-                    {value: 'pending-review', text: this.$t('personal-inspection.process-task.pending-review')},
-                    {value: 'while-review', text: this.$t('personal-inspection.process-task.while-review')},
-                    {value: 'pending-inspection', text: this.$t('personal-inspection.process-task.pending-inspection')},
-                    {value: 'while-inspection', text: this.$t('personal-inspection.process-task.while-inspection')}
+                    {value: null, text: this.$t('personal-inspection.all')},
+                    {value: 'pending-dispatch', text: this.$t('personal-inspection.pending-dispatch')},
+                    {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
+                    {value: 'while-review', text: this.$t('personal-inspection.while-review')},
+                    {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
+                    {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
                 ],
                 onSiteOptions: [
-                    {value: null, text: this.$t('personal-inspection.process-task.all')},
-                    {value: 'pending-dispatch', text: this.$t('personal-inspection.process-task.task-pending-dispatch')},
-                    {value: 'dispatch', text: this.$t('personal-inspection.process-task.task-dispatched')},
-                    {value: 'while-review', text: this.$t('personal-inspection.process-task.while-review')},
-                    {value: 'reviewed', text: this.$t('personal-inspection.process-task.reviewed')},
-                    {value: 'while-inspection', text: this.$t('personal-inspection.process-task.while-inspection')},
+                    {value: null, text: this.$t('personal-inspection.all')},
+                    {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
+                    {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
+                    {value: 'while-review', text: this.$t('personal-inspection.while-review')},
+                    {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
+                    {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
                 ],
                 // TODO: refactor temp table data to api mode
                 tempData: [
@@ -657,98 +657,98 @@
                     fields: [
                         {
                             name: 'id',
-                            title: this.$t('personal-inspection.process-task.serial-number'),
+                            title: this.$t('personal-inspection.serial-number'),
                             sortField: 'id',
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: '__slot:taskNumber',
-                            title: this.$t('personal-inspection.process-task.task-number'),
+                            title: this.$t('personal-inspection.task-number'),
                             titleClass: 'text-center',
                             dataClass: 'text-center',
                         },
                         {
                             name: '__slot:operationMode',
-                            title: this.$t('personal-inspection.process-task.operation-mode'),
+                            title: this.$t('personal-inspection.operation-mode'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'status',
-                            title: this.$t('personal-inspection.process-task.status'),
+                            title: this.$t('personal-inspection.status'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'onSite',
-                            title: this.$t('personal-inspection.process-task.on-site'),
+                            title: this.$t('personal-inspection.on-site'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'securityInstrument',
-                            title: this.$t('personal-inspection.process-task.security-instrument'),
+                            title: this.$t('personal-inspection.security-instrument'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'guide',
-                            title: this.$t('personal-inspection.process-task.guide'),
+                            title: this.$t('personal-inspection.guide'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'scanStartTime',
-                            title: this.$t('personal-inspection.process-task.scan-start-time'),
+                            title: this.$t('personal-inspection.scan-start-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'scanEndTime',
-                            title: this.$t('personal-inspection.process-task.scan-end-time'),
+                            title: this.$t('personal-inspection.scan-end-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'judgementStation',
-                            title: this.$t('personal-inspection.process-task.judgement-station'),
+                            title: this.$t('personal-inspection.judgement-station'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'judge',
-                            title: this.$t('personal-inspection.process-task.judge'),
+                            title: this.$t('personal-inspection.judge'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'judgementStartTime',
-                            title: this.$t('personal-inspection.process-task.judgement-start-time'),
+                            title: this.$t('personal-inspection.judgement-start-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'judgementEndTime',
-                            title: this.$t('personal-inspection.process-task.judgement-end-time'),
+                            title: this.$t('personal-inspection.judgement-end-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'handCheckStation',
-                            title: this.$t('personal-inspection.process-task.hand-check-station'),
+                            title: this.$t('personal-inspection.hand-check-station'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'handChecker',
-                            title: this.$t('personal-inspection.process-task.hand-checker'),
+                            title: this.$t('personal-inspection.hand-checker'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
                             name: 'handCheckStartTime',
-                            title: this.$t('personal-inspection.process-task.hand-check-start-time'),
+                            title: this.$t('personal-inspection.hand-check-start-time'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
