@@ -118,9 +118,6 @@
                       class="table-striped"
                       @vuetable:pagination-data="onUserTablePaginationData"
                     >
-                      <template slot="switchBox" slot-scope="props">
-                        <b-form-checkbox value="first">&nbsp;&nbsp;</b-form-checkbox>
-                      </template>
                       <template slot="userNumber" slot-scope="props">
                         <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                       </template>
@@ -1006,9 +1003,8 @@
           fields: [
             {
               name: '__checkbox',
-
-              titleClass: 'text-center cell-check-box',
-              dataClass: 'text-center cell-check-box'
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
             {
               name: 'userId',
