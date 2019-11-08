@@ -1005,11 +1005,10 @@
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
           fields: [
             {
-              name: '__slot:switchBox',
-              title: `<input type="checkbox" >`,
-              sortField: 'userId',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
+              name: '__checkbox',
+
+              titleClass: 'text-center cell-check-box',
+              dataClass: 'text-center cell-check-box'
             },
             {
               name: 'userId',

@@ -59,6 +59,10 @@ main {
       height: calc(100vh - #{$nav-height + $bread-height + 65px});
       &>div.tab-pane.active {
         height: calc(100vh - #{$nav-height + $bread-height + 65px + $tab-padding-1 + $tab-padding-2});
+        overflow-y: auto;
+        &>div.row {
+          margin: 0!important;
+        }
         div.table-wrapper {
           position: absolute;
           width: calc(98% + 3px);
@@ -384,6 +388,11 @@ $theme-color-purple-2: #881aff;
         z-index: 4;
         &.btn-actions {
           width: 230px;
+        }
+        &.vuetable-th-checkbox-id {
+          &:before {
+
+          }
         }
       }
     }
