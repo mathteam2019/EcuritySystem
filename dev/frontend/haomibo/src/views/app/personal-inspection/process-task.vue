@@ -650,11 +650,17 @@
                 ],
                 // TODO: refactor temp table data to api mode
                 tempData: [
-                    {id: 1, taskNumber: 'HR201909210001'}
+                    {id: 1, taskNumber: 'HR201909210001'},
+                    {id: 2, taskNumber: 'HR201909210002'},
                 ],
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
                         {
                             name: 'id',
                             title: this.$t('personal-inspection.serial-number'),
