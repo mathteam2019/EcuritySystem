@@ -11,81 +11,88 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('black-list.personal-black-list')">
-        <div v-if="pageStatus==='list'">
-          <b-row>
-            <b-col cols="6">
-              <b-row>
-                <b-col>
-                  <b-form-group :label="$t('black-list.user-name')">
-                    <b-form-input v-model="filterForm.userName"></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group :label="$t('black-list.license-number')">
-                    <b-form-input v-model="filterForm.licenseNumber"></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group :label="$t('black-list.grade')">
-                    <b-form-select v-model="filterForm.grade" :options="gradeOptions" plain/>
-                  </b-form-group>
-                </b-col>
-              </b-row>
-            </b-col>
-            <b-col cols="6" class="d-flex justify-content-end align-items-center">
-              <div>
-                <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                  <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                  <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
-                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
-                  <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
-                  <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                </b-button>
-              </div>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <vuetable
-                ref="blackListTable"
-                :api-mode="false"
-                :fields="blackListTableItems.fields"
-                :data-manager="blackListTableDataManager"
-                :per-page="blackListTableItems.perPage"
-                pagination-path="pagination"
-                @vuetable:pagination-data="onBlackListTablePaginationData"
-                class="table-striped"
-              >
-                <div slot="number" slot-scope="props">
-                  <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
-                </div>
-                <div slot="operating" slot-scope="props">
-                  <b-button
-                    size="sm"
-                    variant="danger default btn-square">
-                    <i class="icofont-bin"></i>
+        <b-row v-if="pageStatus==='list'" class="h-100">
+          <b-col cols="12" class="d-flex flex-column">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('black-list.user-name')">
+                      <b-form-input v-model="filterForm.userName"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('black-list.license-number')">
+                      <b-form-input v-model="filterForm.licenseNumber"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('black-list.grade')">
+                      <b-form-select v-model="filterForm.grade" :options="gradeOptions" plain/>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
-              </vuetable>
-              <vuetable-pagination-bootstrap
-                ref="blackListTablePagination"
-                :initial-per-page="blackListTableItems.perPage"
-                @vuetable-pagination:change-page="onBlackListTableChangePage"
-              ></vuetable-pagination-bootstrap>
-            </b-col>
-          </b-row>
-        </div>
-        <div v-if="pageStatus==='create'" class="form-section">
+              </b-col>
+            </b-row>
 
-        </div>
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
+                  <vuetable
+                    ref="blackListTable"
+                    :api-mode="false"
+                    :fields="blackListTableItems.fields"
+                    :data-manager="blackListTableDataManager"
+                    :per-page="blackListTableItems.perPage"
+                    pagination-path="pagination"
+                    @vuetable:pagination-data="onBlackListTablePaginationData"
+                    class="table-striped"
+                  >
+                    <div slot="number" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
+                    </div>
+                    <div slot="operating" slot-scope="props">
+                      <b-button
+                        size="sm"
+                        variant="danger default btn-square">
+                        <i class="icofont-bin"></i>
+                      </b-button>
+                    </div>
+                  </vuetable>
+                </div>
+                <div class="pagination-wrapper">
+                  <vuetable-pagination-bootstrap
+                    ref="blackListTablePagination"
+                    :initial-per-page="blackListTableItems.perPage"
+                    @vuetable-pagination:change-page="onBlackListTableChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+        <b-row v-if="pageStatus==='create'" class="form-section">
+
+        </b-row>
       </b-tab>
       <b-tab :title="$t('black-list.statics')">
 
@@ -123,6 +130,11 @@
         blackListTableItems: {
           perPage: 5,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'no',
               sortField: 'no',

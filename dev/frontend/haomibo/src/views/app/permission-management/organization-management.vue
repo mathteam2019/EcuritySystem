@@ -90,8 +90,8 @@
               </b-col>
             </b-row>
             <b-row class="flex-grow-1">
-              <b-col cols="12" class="d-flex flex-column">
-                <div class="table-wrapper table-responsive flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="vuetable"
                     :api-url="vuetableItems.apiUrl"
@@ -166,7 +166,7 @@
 
                   </vuetable>
                 </div>
-                <div>
+                <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="pagination"
                     @vuetable-pagination:change-page="onChangePage"
@@ -487,6 +487,11 @@
         vuetableItems: { // main table options
           apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'orgId',
               title: this.$t('permission-management.th-no'),

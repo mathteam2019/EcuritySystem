@@ -24,59 +24,58 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('log-management.operating-log.access-log')">
-        <b-row v-if="pageStatus=='table'">
-          <b-col cols="12">
-            <div class="mb-4">
+        <b-row v-if="pageStatus=='table'" class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
 
-              <b-row>
-                <b-col cols="6">
-                  <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="filter.startingTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.start-time')">
-                        <b-form-input v-model="filter.startingTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="filter.endingTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.end-time')">
-                        <b-form-input v-model="filter.endingTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.access-ip')">
+                      <b-form-input v-model="filter.accessIp"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.access-ip')">
-                        <b-form-input v-model="filter.accessIp"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.access-user')">
+                      <b-form-input v-model="filter.accessUser"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.access-user')">
-                        <b-form-input v-model="filter.accessUser"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col cols="12">
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="vueTable"
                     :api-mode="false"
@@ -88,93 +87,96 @@
                     @vuetable:pagination-data="onvueTablePaginationData"
                   >
                   </vuetable>
+                </div>
+                <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="vueTablePagination"
                     @vuetable-pagination:change-page="onvueTableChangePage"
                     :initial-per-page="vueTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
+                </div>
+              </b-col>
+            </b-row>
 
-                </b-col>
-              </b-row>
-            </div>
           </b-col>
         </b-row>
       </b-tab>
 
       <b-tab :title="$t('log-management.operating-log.operating-log')">
-        <b-row>
-          <b-col cols="12">
-            <div class="mb-4">
-              <b-row>
-                <b-col cols="8">
-                  <b-row>
+        <b-row class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="8">
+                <b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.account-number')">
-                        <b-form-input v-model="filter.accountNumber"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.account-number')">
+                      <b-form-input v-model="filter.accountNumber"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.client-ip')">
-                        <b-form-input v-model="filter.clientIp"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.client-ip')">
+                      <b-form-input v-model="filter.clientIp"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.object')">
-                        <b-form-input v-model="filter.object"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.object')">
+                      <b-form-input v-model="filter.object"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.operating-result')">
-                        <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
-                      </b-form-group>
-                    </b-col>
-                    <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.operating-result')">
+                      <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="8" v-if="isExpanded">
-                  <b-row>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.start-time')">
-                        <b-form-input v-model="filter.startTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.end-time')">
-                        <b-form-input v-model="filter.endTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="4" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12" class="table-responsive">
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="8" v-if="isExpanded">
+                <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="filter.startTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="filter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="operatingLogTable"
                     :api-url="operatingLogTableItems.apiUrl"
@@ -184,33 +186,19 @@
                     class="table-hover"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                   >
-<!--                    <template slot="userGroupNumber" slot-scope="props">-->
-<!--                      <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>-->
-<!--                    </template>-->
-<!--                    <template slot="operating" slot-scope="props">-->
-<!--                      <b-button variant="danger default btn-square" class="m-0" @click="onAction('group-remove', props.rowData, props.rowIndex)"><i class="icofont-bin"></i> </b-button>-->
-<!--                    </template>-->
                   </vuetable>
+                </div>
+                <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="operatingLogPagination"
                     @vuetable-pagination:change-page="onUserGroupTableChangePage"
                     :initial-per-page="operatingLogTableItems.perPage"
                     @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
-<!--                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">-->
-<!--                    {{$t('permission-management.user.user-group-delete-prompt')}}-->
-<!--                    <template slot="modal-footer">-->
-<!--                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">-->
-<!--                        {{$t('permission-management.modal-ok')}}-->
-<!--                      </b-button>-->
-<!--                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">-->
-<!--                        {{$t('permission-management.modal-cancel')}}-->
-<!--                      </b-button>-->
-<!--                    </template>-->
-<!--                  </b-modal>-->
-                </b-col>
-              </b-row>
-            </div>
+                </div>
+              </b-col>
+            </b-row>
+
           </b-col>
         </b-row>
       </b-tab>

@@ -21,98 +21,100 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('log-management.device-log.security-log')">
-        <b-row v-if="pageStatus=='table'">
-          <b-col cols="12">
-            <div class="mb-4">
-              <b-row>
-                <b-col cols="8">
-                  <b-row>
+        <b-row v-if="pageStatus=='table'" class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="8">
+                <b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.device')">
-                        <b-form-input v-model="filter.device"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.device')">
+                      <b-form-input v-model="filter.device"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.user')">
-                        <b-form-input v-model="filter.user"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.user')">
+                      <b-form-input v-model="filter.user"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.category')">
-                        <b-form-input v-model="filter.category"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.category')">
+                      <b-form-input v-model="filter.category"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.level')">
-                        <b-form-input v-model="filter.level"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.level')">
+                      <b-form-input v-model="filter.level"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="8" v-if="isExpanded">
-                  <b-row>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.start-time')">
-                        <b-form-input v-model="filter.startTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.end-time')">
-                        <b-form-input v-model="filter.endTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="4" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12" class="table-responsive">
-                  <vuetable
-                    ref="operatingLogTable"
-                    :api-url="operatingLogTableItems.apiUrl"
-                    :fields="operatingLogTableItems.fields"
-                    :http-fetch="userGroupTableHttpFetch"
-                    pagination-path="operatingLogPagination"
-                    class="table-hover"
-                    @vuetable:pagination-data="onUserGroupTablePaginationData"
-                  >
-                  </vuetable>
-                  <vuetable-pagination-bootstrap
-                    ref="operatingLogPagination"
-                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
-                    :initial-per-page="operatingLogTableItems.perPage"
-                    @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
-                  ></vuetable-pagination-bootstrap>
-                </b-col>
-              </b-row>
-            </div>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="8" v-if="isExpanded">
+                <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.start-time')">
+                      <b-form-input v-model="filter.startTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.end-time')">
+                      <b-form-input v-model="filter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col cols="12" class="table-responsive">
+                <vuetable
+                  ref="operatingLogTable"
+                  :api-url="operatingLogTableItems.apiUrl"
+                  :fields="operatingLogTableItems.fields"
+                  :http-fetch="userGroupTableHttpFetch"
+                  pagination-path="operatingLogPagination"
+                  class="table-hover"
+                  @vuetable:pagination-data="onUserGroupTablePaginationData"
+                >
+                </vuetable>
+                <vuetable-pagination-bootstrap
+                  ref="operatingLogPagination"
+                  @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                  :initial-per-page="operatingLogTableItems.perPage"
+                  @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
+                ></vuetable-pagination-bootstrap>
+              </b-col>
+            </b-row>
+
+
+
           </b-col>
         </b-row>
       </b-tab>
@@ -120,113 +122,112 @@
       <b-tab :title="$t('log-management.device-log.decision-log')">
         <b-row>
           <b-col cols="12">
-            <div class="mb-4">
-              <b-row>
-                <b-col cols="8">
-                  <b-row>
+            <b-row>
+              <b-col cols="8">
+                <b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.device')">
-                        <b-form-input v-model="filter.device"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.device')">
+                      <b-form-input v-model="filter.device"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.user')">
-                        <b-form-input v-model="filter.user"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.user')">
+                      <b-form-input v-model="filter.user"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.category')">
-                        <b-form-input v-model="filter.category"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.category')">
+                      <b-form-input v-model="filter.category"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('log-management.device-log.level')">
-                        <b-form-input v-model="filter.level"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.level')">
+                      <b-form-input v-model="filter.level"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="8" v-if="isExpanded">
-                  <b-row>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.start-time')">
-                        <b-form-input v-model="filter.startTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col>
-                      <b-form-group :label="$t('log-management.operating-log.end-time')">
-                        <b-form-input v-model="filter.endTime"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                    <b-col></b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="4" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row>
-                <b-col cols="12" class="table-responsive">
-                  <vuetable
-                    ref="operatingLogTable"
-                    :api-url="operatingLogTableItems.apiUrl"
-                    :fields="operatingLogTableItems.fields"
-                    :http-fetch="userGroupTableHttpFetch"
-                    pagination-path="operatingLogPagination"
-                    class="table-hover"
-                    @vuetable:pagination-data="onUserGroupTablePaginationData"
-                  >
-                    <!--                    <template slot="userGroupNumber" slot-scope="props">-->
-                    <!--                      <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>-->
-                    <!--                    </template>-->
-                    <!--                    <template slot="operating" slot-scope="props">-->
-                    <!--                      <b-button variant="danger default btn-square" class="m-0" @click="onAction('group-remove', props.rowData, props.rowIndex)"><i class="icofont-bin"></i> </b-button>-->
-                    <!--                    </template>-->
-                  </vuetable>
-                  <vuetable-pagination-bootstrap
-                    ref="operatingLogPagination"
-                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
-                    :initial-per-page="operatingLogTableItems.perPage"
-                    @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
-                  ></vuetable-pagination-bootstrap>
-                  <!--                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">-->
-                  <!--                    {{$t('permission-management.user.user-group-delete-prompt')}}-->
-                  <!--                    <template slot="modal-footer">-->
-                  <!--                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">-->
-                  <!--                        {{$t('permission-management.modal-ok')}}-->
-                  <!--                      </b-button>-->
-                  <!--                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">-->
-                  <!--                        {{$t('permission-management.modal-cancel')}}-->
-                  <!--                      </b-button>-->
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="8" v-if="isExpanded">
+                <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="filter.startTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="filter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col cols="12" class="table-responsive">
+                <vuetable
+                  ref="operatingLogTable"
+                  :api-url="operatingLogTableItems.apiUrl"
+                  :fields="operatingLogTableItems.fields"
+                  :http-fetch="userGroupTableHttpFetch"
+                  pagination-path="operatingLogPagination"
+                  class="table-hover"
+                  @vuetable:pagination-data="onUserGroupTablePaginationData"
+                >
+                  <!--                    <template slot="userGroupNumber" slot-scope="props">-->
+                  <!--                      <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>-->
                   <!--                    </template>-->
-                  <!--                  </b-modal>-->
-                </b-col>
-              </b-row>
-            </div>
+                  <!--                    <template slot="operating" slot-scope="props">-->
+                  <!--                      <b-button variant="danger default btn-square" class="m-0" @click="onAction('group-remove', props.rowData, props.rowIndex)"><i class="icofont-bin"></i> </b-button>-->
+                  <!--                    </template>-->
+                </vuetable>
+                <vuetable-pagination-bootstrap
+                  ref="operatingLogPagination"
+                  @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                  :initial-per-page="operatingLogTableItems.perPage"
+                  @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
+                ></vuetable-pagination-bootstrap>
+                <!--                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">-->
+                <!--                    {{$t('permission-management.user.user-group-delete-prompt')}}-->
+                <!--                    <template slot="modal-footer">-->
+                <!--                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">-->
+                <!--                        {{$t('permission-management.modal-ok')}}-->
+                <!--                      </b-button>-->
+                <!--                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">-->
+                <!--                        {{$t('permission-management.modal-cancel')}}-->
+                <!--                      </b-button>-->
+                <!--                    </template>-->
+                <!--                  </b-modal>-->
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
       </b-tab>
@@ -434,6 +435,11 @@
                 vuetableItems: {
                     apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
                     fields: [
+                      {
+                        name: '__checkbox',
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                      },
                         {
                             name: 'number',
                             title: this.$t('log-management.device-log.number'),
@@ -477,6 +483,11 @@
                     apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
                     perPage: 5,
                     fields: [
+                      {
+                        name: '__checkbox',
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                      },
                         {
                             name: 'number',
                             title: this.$t('log-management.device-log.number'),

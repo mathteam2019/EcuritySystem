@@ -11,62 +11,62 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
-        <b-row v-if="pageStatus==='table'">
-          <b-col cols="12">
-            <div class="p-2">
-              <b-row>
-                <b-col cols="6">
-                  <b-row>
+        <b-row v-if="pageStatus==='table'" class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.user')">
-                        <b-form-input v-model="userFilter.userName"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.user')">
+                      <b-form-input v-model="userFilter.userName"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                        <b-form-select :options="assignFlagSelectOptions" v-model="userFilter.assignFlag" plain/>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
+                      <b-form-select :options="assignFlagSelectOptions" v-model="userFilter.assignFlag" plain/>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
-                        <b-form-input v-model="groupFilter.role" ></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
+                      <b-form-input v-model="groupFilter.role" ></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
-                        <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-                </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
+                      <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
 
-                <b-col cols="6" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
-                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
 
-              <b-row>
-                <b-col >
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="userVuetable"
                     :api-mode="false"
@@ -139,6 +139,8 @@
                     </template>
 
                   </vuetable>
+                </div>
+                <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="userPagination"
                     @vuetable-pagination:change-page="onUserChangePage"
@@ -169,11 +171,10 @@
                       </b-button>
                     </template>
                   </b-modal>
+                </div>
+              </b-col>
+            </b-row>
 
-                </b-col>
-              </b-row>
-
-            </div>
           </b-col>
         </b-row>
         <b-row v-else-if="pageStatus==='create'">
@@ -355,62 +356,61 @@
       </b-tab>
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
-        <b-row v-if="groupPageStatus==='table'">
-          <b-col cols="12">
-            <div class="p-2">
+        <b-row v-if="groupPageStatus==='table'" class="h-100">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="6">
+                <b-row>
 
-              <b-row>
-                <b-col cols="6">
-                  <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.user-group')">
+                      <b-form-input v-model="groupFilter.groupName"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.user-group')">
-                        <b-form-input v-model="groupFilter.groupName"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.groupMember')">
+                      <b-form-input v-model="groupFilter.userName" ></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.groupMember')">
-                        <b-form-input v-model="groupFilter.userName" ></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
+                      <b-form-input v-model="groupFilter.role" ></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
-                        <b-form-input v-model="groupFilter.role" ></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
+                      <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
-                        <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
-                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-
-              <b-row>
-                <b-col cols="12">
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="userGroupTable"
                     :api-mode="false"
@@ -442,6 +442,8 @@
                     </template>
 
                   </vuetable>
+                </div>
+                <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="userGroupTablePagination"
                     @vuetable-pagination:change-page="onuserGroupTableChangePage"
@@ -458,9 +460,9 @@
                       </b-button>
                     </template>
                   </b-modal>
-                </b-col>
-              </b-row>
-            </div>
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
         <b-row v-else-if="groupPageStatus==='create'">
@@ -581,6 +583,11 @@
           userVuetableItems: { // main table options
               apiUrl: `${apiBaseUrl}/permission-management/...`,
               fields: [
+                {
+                  name: '__checkbox',
+                  titleClass: 'text-center',
+                  dataClass: 'text-center'
+                },
                   {
                       name: 'userId',
                       title: this.$t('permission-management.th-no'),
@@ -664,6 +671,11 @@
         vuetableItems: { // main table options
           apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'orgId',
               title: this.$t('permission-management.th-no'),
@@ -787,6 +799,11 @@
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
           perPage: 5,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'number',
               title: this.$t('permission-management.th-no'),

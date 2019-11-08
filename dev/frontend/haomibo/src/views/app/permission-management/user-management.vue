@@ -391,7 +391,7 @@
                                       :placeholder="$t('permission-management.please-enter-user-account')"></b-form-input>
                         <div class="invalid-feedback d-block">
                           {{ (submitted && !$v.profileForm.userAccount.required) ?
-                          $t('permission-management.user.account-field-is-mandatory') :
+                          $t('permission-management.user.account-field-is-mandatory') : " " }}
                         </div>
                       </b-form-group>
                     </b-col>

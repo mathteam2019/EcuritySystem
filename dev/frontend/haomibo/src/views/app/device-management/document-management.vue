@@ -25,8 +25,8 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card>
-      <div v-if="pageStatus==='list'">
+    <b-card class="main-without-tab">
+      <div v-if="pageStatus=='list'" class="h-100 d-flex flex-column">
         <b-row>
           <b-col class="d-flex">
             <div class="flex-grow-1">
@@ -70,52 +70,57 @@
             </div>
           </b-col>
         </b-row>
-        <b-row>
-          <b-col>
-            <vuetable
-              ref="vuetable"
-              :api-mode="false"
-              :fields="vuetableItems.fields"
-              :data-manager="dataManager"
-              :per-page="vuetableItems.perPage"
-              pagination-path="pagination"
-              @vuetable:pagination-data="onPaginationData"
-              class="table-striped"
-            >
-              <div slot="operating" slot-scope="props">
-                <b-button @click="onAction('edit')"
-                          size="sm"
-                          variant="primary default btn-square"
-                >
-                  <i class="icofont-edit"></i>
-                </b-button>
-                <b-button
-                  v-if="props.rowData.status=='inactive'"
-                  size="sm"
-                  variant="success default btn-square"
-                >
-                  <i class="icofont-check-circled"></i>
-                </b-button>
-                <b-button
-                  v-if="props.rowData.status=='active'"
-                  size="sm"
-                  variant="warning default btn-square"
-                >
-                  <i class="icofont-ban"></i>
-                </b-button>
-                <b-button
-                  size="sm"
-                  variant="danger default btn-square"
-                >
-                  <i class="icofont-bin"></i>
-                </b-button>
 
-              </div>
-            </vuetable>
-            <vuetable-pagination-bootstrap
-              ref="pagination"
-              @vuetable-pagination:change-page="onChangePage"
-            ></vuetable-pagination-bootstrap>
+        <b-row class="flex-grow-1">
+          <b-col cols="12">
+            <div class="table-wrapper table-responsive">
+              <vuetable
+                ref="vuetable"
+                :api-mode="false"
+                :fields="vuetableItems.fields"
+                :data-manager="dataManager"
+                :per-page="vuetableItems.perPage"
+                pagination-path="pagination"
+                @vuetable:pagination-data="onPaginationData"
+                class="table-striped"
+              >
+                <div slot="operating" slot-scope="props">
+                  <b-button @click="onAction('edit')"
+                            size="sm"
+                            variant="primary default btn-square"
+                  >
+                    <i class="icofont-edit"></i>
+                  </b-button>
+                  <b-button
+                    v-if="props.rowData.status=='inactive'"
+                    size="sm"
+                    variant="success default btn-square"
+                  >
+                    <i class="icofont-check-circled"></i>
+                  </b-button>
+                  <b-button
+                    v-if="props.rowData.status=='active'"
+                    size="sm"
+                    variant="warning default btn-square"
+                  >
+                    <i class="icofont-ban"></i>
+                  </b-button>
+                  <b-button
+                    size="sm"
+                    variant="danger default btn-square"
+                  >
+                    <i class="icofont-bin"></i>
+                  </b-button>
+
+                </div>
+              </vuetable>
+            </div>
+            <div class="pagination-wrapper">
+              <vuetable-pagination-bootstrap
+                ref="pagination"
+                @vuetable-pagination:change-page="onChangePage"
+              ></vuetable-pagination-bootstrap>
+            </div>
           </b-col>
         </b-row>
       </div>
@@ -343,6 +348,11 @@
         vuetableItems: {
           perPage: 5,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'no',
               sortField: 'no',

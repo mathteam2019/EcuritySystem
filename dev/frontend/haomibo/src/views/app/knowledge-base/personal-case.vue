@@ -1,5 +1,5 @@
 <style lang="scss">
-  .rounded-span{
+  .rounded-span {
     width: 20px;
     height: 20px;
     border-radius: 10px;
@@ -12,108 +12,116 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
-    <b-card>
-      <b-row>
-        <b-col cols="8">
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('knowledge-base.task-number')">
-                <b-form-input v-model="filterForm.number"></b-form-input>
-              </b-form-group>
-            </b-col>
+    <b-card class="main-without-tab">
+      <div class="h-100 d-flex flex-column">
+        <b-row>
+          <b-col cols="8">
+            <b-row>
+              <b-col>
+                <b-form-group :label="$t('knowledge-base.task-number')">
+                  <b-form-input v-model="filterForm.number"></b-form-input>
+                </b-form-group>
+              </b-col>
 
-            <b-col>
-              <b-form-group :label="$t('knowledge-base.operating-mode')">
-                <b-form-select v-model="filterForm.mode"  :options="modeOptions" plain/>
-              </b-form-group>
-            </b-col>
+              <b-col>
+                <b-form-group :label="$t('knowledge-base.operating-mode')">
+                  <b-form-select v-model="filterForm.mode" :options="modeOptions" plain/>
+                </b-form-group>
+              </b-col>
 
-            <b-col>
-              <b-form-group :label="$t('knowledge-base.task-result')">
-                <b-form-select v-model="filterForm.result"  :options="resultTypeOptions" plain/>
-              </b-form-group>
-            </b-col>
-            <b-col>
-              <b-form-group :label="$t('knowledge-base.site')">
-                <b-form-select v-model="filterForm.site"  :options="siteOptions" plain/>
-              </b-form-group>
-            </b-col>
-            <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
+              <b-col>
+                <b-form-group :label="$t('knowledge-base.task-result')">
+                  <b-form-select v-model="filterForm.result" :options="resultTypeOptions" plain/>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group :label="$t('knowledge-base.site')">
+                  <b-form-select v-model="filterForm.site" :options="siteOptions" plain/>
+                </b-form-group>
+              </b-col>
+              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-            </b-col>
-          </b-row>
-        </b-col>
-        <b-col cols="8" v-if="isExpanded">
-          <b-row>
-            <b-col>
-              <b-form-group :label="$t('knowledge-base.seized-item')">
-                <b-form-input v-model="filterForm.seizedItem"></b-form-input>
-              </b-form-group>
-            </b-col>
-            <b-col></b-col>
-            <b-col></b-col>
-            <b-col></b-col>
-            <b-col></b-col>
-          </b-row>
-        </b-col>
-        <b-col cols="4" class="d-flex justify-content-end align-items-center">
-          <div>
-            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-              <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-            </b-button>
-            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-              <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-            </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default">
-              <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-            </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default">
-              <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-            </b-button>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <vuetable
-            ref="pendingListTable"
-            :api-mode="false"
-            :fields="pendingListTableItems.fields"
-            :data-manager="pendingListTableDataManager"
-            :per-page="pendingListTableItems.perPage"
-            pagination-path="pagination"
-            @vuetable:pagination-data="onBlackListTablePaginationData"
-            class="table-striped"
-          >
-            <div slot="number" slot-scope="props">
-              <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
-            </div>
-            <div slot="operating" slot-scope="props">
-              <b-button
-                size="sm"
-                variant="success default btn-square">
-                <i class="icofont-check-alt"></i>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="8" v-if="isExpanded">
+            <b-row>
+              <b-col>
+                <b-form-group :label="$t('knowledge-base.seized-item')">
+                  <b-form-input v-model="filterForm.seizedItem"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
+            <div>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
               </b-button>
-              <b-button
-                size="sm"
-                variant="danger default btn-square">
-                <i class="icofont-ban"></i>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
-          </vuetable>
-          <vuetable-pagination-bootstrap
-            ref="pendingListTablePagination"
-            :initial-per-page="pendingListTableItems.perPage"
-            @vuetable-pagination:change-page="onBlackListTableChangePage"
-          ></vuetable-pagination-bootstrap>
-        </b-col>
-      </b-row>
+          </b-col>
+        </b-row>
+
+        <b-row class="flex-grow-1">
+          <b-col cols="12">
+            <div class="table-wrapper table-responsive">
+              <vuetable
+                ref="pendingListTable"
+                :api-mode="false"
+                :fields="pendingListTableItems.fields"
+                :data-manager="pendingListTableDataManager"
+                :per-page="pendingListTableItems.perPage"
+                pagination-path="pagination"
+                @vuetable:pagination-data="onBlackListTablePaginationData"
+                class="table-striped"
+              >
+                <div slot="number" slot-scope="props">
+                <span class="cursor-p text-primary"
+                      @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
+                </div>
+                <div slot="operating" slot-scope="props">
+                  <b-button
+                    size="sm"
+                    variant="success default btn-square">
+                    <i class="icofont-check-alt"></i>
+                  </b-button>
+                  <b-button
+                    size="sm"
+                    variant="danger default btn-square">
+                    <i class="icofont-ban"></i>
+                  </b-button>
+                </div>
+              </vuetable>
+            </div>
+            <div class="pagination-wrapper">
+              <vuetable-pagination-bootstrap
+                ref="pendingListTablePagination"
+                :initial-per-page="pendingListTableItems.perPage"
+                @vuetable-pagination:change-page="onBlackListTableChangePage"
+              ></vuetable-pagination-bootstrap>
+            </div>
+          </b-col>
+        </b-row>
+      </div>
     </b-card>
 
   </div>
@@ -133,26 +141,26 @@
     data() {
       return {
         pageStatus: 'list',
-        isExpanded:false,
+        isExpanded: false,
         filterForm: {
           number: null,
           mode: null,
           result: null,
-          seizedItem:null,
-          site:null,
+          seizedItem: null,
+          site: null,
         },
-        modeOptions:[
+        modeOptions: [
           {value: '1', text: this.$t('knowledge-base.security-instrument')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test-and-device')},
         ],
-        siteOptions:[
+        siteOptions: [
           {value: 'male', text: this.$t('knowledge-base.all')},
           {value: 'female', text: this.$t('knowledge-base.airport')},
           {value: 'unknown', text: this.$t('knowledge-base.port')},
           {value: 'unknown', text: this.$t('knowledge-base.land-border')},
         ],
-        resultTypeOptions:[
+        resultTypeOptions: [
           {value: 'male', text: this.$t('knowledge-base.no-suspect')},
           {value: 'female', text: this.$t('knowledge-base.seized')},
           {value: 'unknown', text: this.$t('knowledge-base.no-seized')},
@@ -160,6 +168,11 @@
         pendingListTableItems: {
           perPage: 5,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
             {
               name: 'no',
               sortField: 'no',
@@ -316,10 +329,10 @@
       }
     },
     methods: {
-      onSearchButton(){
+      onSearchButton() {
 
       },
-      onResetButton(){
+      onResetButton() {
 
       },
       pendingListTableDataManager(sortOrder, pagination) {
