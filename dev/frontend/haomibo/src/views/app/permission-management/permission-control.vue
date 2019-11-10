@@ -19,7 +19,6 @@
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
                     <b-form-input v-model="roleKeyword"></b-form-input>
-                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
                 <b-col cols="9" class="d-flex justify-content-end align-items-center">
@@ -52,6 +51,7 @@
                       :api-url="roleVuetableItems.apiUrl"
                       :http-fetch="roleVuetableHttpFetch"
                       :per-page="roleVuetableItems.perPage"
+                      track-by="roleId"
                       pagination-path="data"
                       data-path="data.data"
                       class="table-hover"
@@ -63,7 +63,7 @@
                       </span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteRole(props.rowData)">
+                        <b-button size="sm" variant="danger default btn-square" class="m-0" @click="onClickDeleteRole(props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </template>
@@ -84,8 +84,8 @@
           </b-col>
           <b-col cols="4" class="pl-0" v-if="selectedRole || roleForm.visible">
             <div class="section d-flex flex-column h-100 px-3">
-              <div v-if="roleForm.visible">
-                <b-form @submit.prevent="onRoleFormSubmit">
+              <div v-if="roleForm.visible" class="flex-grow-1">
+                <b-form @submit.prevent="onRoleFormSubmit" class="h-100 d-flex flex-column">
                   <b-form-group>
                     <template slot="label">
                       {{$t('permission-management.permission-control.role-number')}}
@@ -119,7 +119,7 @@
                     </label>
                   </div>
 
-                  <div class="text-center">
+                  <div>
                     <b-form-group>
                       <b-form-radio-group>
                         <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
@@ -134,13 +134,15 @@
                     </b-form-group>
                   </div>
 
-                  <div class="h-35vh">
-                    <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
+                  <div class="flex-grow-1 overflow-auto" style="height: 0px;">
+                    <div>
+                      <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
+                    </div>
                   </div>
 
-                  <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3">
+                  <div class="d-flex align-items-end justify-content-end pt-3">
                     <div>
-                      <b-button type="submit" variant="info default">
+                      <b-button size="sm" type="submit" variant="info default">
                         <i class="icofont-save"></i>
                         {{ $t('permission-management.permission-control.save') }}
                       </b-button>
@@ -150,7 +152,7 @@
                 </b-form>
               </div>
 
-              <div v-if="selectedRole">
+              <div v-if="selectedRole" class="flex-grow-1 flex-column d-flex">
 
                 <div>
                   <b-form-group>
@@ -183,7 +185,7 @@
                   </label>
                 </div>
 
-                <div class="text-center">
+                <div>
                   <b-form-group>
                     <b-form-radio-group>
                       <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
@@ -198,21 +200,23 @@
                   </b-form-group>
                 </div>
 
-                <div class="h-35vh" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
-                  <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
+                <div class="flex-grow-1 overflow-auto" style="height: 0;">
+                  <div v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
+                    <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
+                  </div>
                 </div>
 
                 <div class="text-right pt-3">
-                  <b-form-group>
-                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" @click="onClickSaveRole" variant="info default" class="mr-3">
+                  <div>
+                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" @click="onClickSaveRole" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"></i>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
-                    <b-button @click="onClickDeleteRole(selectedRole)" variant="danger default">
+                    <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default">
                       <i class="icofont-bin"></i>
                       {{$t('permission-management.permission-control.delete')}}
                     </b-button>
-                  </b-form-group>
+                  </div>
                 </div>
               </div>
             </div>
@@ -229,7 +233,6 @@
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
                     <b-form-input v-model="groupKeyword"></b-form-input>
-                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
 
@@ -237,7 +240,6 @@
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
                     <b-form-input v-model="dataRangeKeyword"></b-form-input>
-                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
 
@@ -285,7 +287,7 @@
                       </template>
 
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup(props.rowData)">
+                        <b-button size="sm" variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup(props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </template>
@@ -305,7 +307,7 @@
             </div>
           </b-col>
           <b-col cols="4" class="pl-0" v-if="selectedDataGroup">
-            <div class="section d-flex flex-column h-100 pl-5 pt-4">
+            <div class="section d-flex flex-column h-100 px-3">
               <div v-if="dataGroupDetailStatus === 'create'">
                 <b-form-group>
                   <template slot="label">
@@ -368,24 +370,26 @@
                 </b-form-group>
               </div>
 
-              <div class="h-35vh">
-                <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+              <div class="flex-grow-1 overflow-auto" style="height: 0;">
+                <div>
+                  <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+                </div>
               </div>
 
               <div class="text-right pt-3" v-if="dataGroupDetailStatus==='create'">
-                <b-form-group>
-                  <b-button @click="createDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                <div>
+                  <b-button @click="createDataGroup()" size="sm" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                </b-form-group>
+                </div>
               </div>
 
               <div class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
-                <b-form-group>
-                  <b-button @click="onClickSaveDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                <div>
+                  <b-button @click="onClickSaveDataGroup()" size="sm" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteDataGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
+                  <b-button @click="onClickDeleteDataGroup" size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
                   </b-button>
-                </b-form-group>
+                </div>
               </div>
             </div>
           </b-col>
@@ -399,16 +403,16 @@
     <b-modal id="modal-delete-role" ref="modal-delete-role" :title="$t('permission-management.permission-control.prompt')">
       {{$t('permission-management.permission-control.delete-role-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="deleteRole" class="mr-1">{{$t('system-setting.ok')}}</b-button>
-        <b-button variant="danger" @click="hideModal('modal-delete-role')">{{$t('system-setting.cancel')}}</b-button>
+        <b-button size="sm" variant="primary" @click="deleteRole" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button size="sm" variant="danger" @click="hideModal('modal-delete-role')">{{$t('system-setting.cancel')}}</b-button>
       </template>
     </b-modal>
 
     <b-modal id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
       {{$t('permission-management.permission-control.delete-data-group-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}</b-button>
-        <b-button variant="danger" @click="hideModal('modal-delete-data-group')">{{$t('system-setting.cancel')}}</b-button>
+        <b-button size="sm" variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button size="sm" variant="danger" @click="hideModal('modal-delete-data-group')">{{$t('system-setting.cancel')}}</b-button>
       </template>
     </b-modal>
 
@@ -553,6 +557,11 @@
             apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
               perPage: 10,
               fields: [
+                  {
+                      name: '__checkbox',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
                   {
                       name: 'roleId',
                       title: this.$t('permission-management.permission-control.serial-number'),
@@ -765,6 +774,7 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.$refs.roleVuetable.reload();
                 this.roleForm.roleNumber = '';
                 this.roleForm.roleName = '';
                 this.roleFormFlag = null;

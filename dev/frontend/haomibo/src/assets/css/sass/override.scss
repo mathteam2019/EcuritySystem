@@ -463,7 +463,7 @@ $theme-color-purple-2: #881aff;
 }
 
 .vuetable {
-  thead>tr>th.vuetable-th-checkbox-id,tbody>tr>td.vuetable-checkboxes {
+  thead>tr>th[class*='vuetable-th-checkbox-'],tbody>tr>td.vuetable-checkboxes {
     position: relative;
     width: 2rem;
     input[type=checkbox]{
