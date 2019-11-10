@@ -567,3 +567,41 @@ $theme-color-purple-2: #881aff;
   cursor: pointer;
 }
 
+.dashboard-container {
+  position: absolute;
+  top: $nav-height;
+  left: $side-bar-width;
+  right: 0px;
+  bottom: 0px;
+  padding: 20px;
+
+  .kcb-mt-20 {
+    margin-top: 20px;
+  }
+
+  .article {
+    align-items: start;
+
+    h5 {
+      color: #1782d4;
+    }
+
+    h6 {
+      color: #757575;
+      font-size: 0.9rem;
+      line-height: 1.4rem;
+      word-break: keep-all;
+    }
+  }
+
+  .article-icon-container {
+    padding: 36px;
+    border-radius: 5px;
+    background-color: #1782D4;
+
+    img {
+      width: 38px;
+      height: 38px;
+    }
+  }
+}
