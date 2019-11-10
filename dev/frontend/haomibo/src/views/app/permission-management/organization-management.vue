@@ -6,6 +6,7 @@
   .bg-organization-structure {
     background: url("../../../assets/img/bg-china-map.png") no-repeat center;
     background-size: contain;
+    height: calc(100% - 50px);
     &>div {
       background: transparent!important;
     }
@@ -382,12 +383,12 @@
 
       <b-tab :title="$t('permission-management.organization-structure')">
 
-        <b-row>
+        <b-row class="h-100">
           <b-col cols="12">
-            <div class="table-responsive" >
+            <div class="table-responsive h-100" >
               <div class="bg-organization-structure text-center">
                 <h3 style="font-size: 2rem;color: #1a3035" class="font-weight-bold my-4 mb-5 pb-4">
-                  <span>统一管理平台</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
+                  <span>{{$t('login.title')}}</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
                 </h3>
                 <vue2-org-tree
                   :data="treeData"
