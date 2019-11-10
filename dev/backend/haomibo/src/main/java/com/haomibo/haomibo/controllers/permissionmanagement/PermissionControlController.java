@@ -5,6 +5,7 @@ package com.haomibo.haomibo.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.common.collect.Lists;
 import com.haomibo.haomibo.controllers.BaseController;
 import com.haomibo.haomibo.enums.ResponseMessage;
 import com.haomibo.haomibo.enums.Role;
@@ -12,6 +13,8 @@ import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
+import com.haomibo.haomibo.validation.annotations.ResourceId;
+import com.haomibo.haomibo.validation.annotations.RoleId;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -82,10 +85,11 @@ public class PermissionControlController extends BaseController {
     @AllArgsConstructor
     private static class RoleModifyRequestBody {
         @NotNull
+        @RoleId
         long roleId;
 
         @NotNull
-        List<Long> resourceIdList;
+        List<@ResourceId Long> resourceIdList;
     }
 
 
@@ -149,8 +153,6 @@ public class PermissionControlController extends BaseController {
         @AllArgsConstructor
         static class Filter {
 
-            @Pattern(regexp = SysDataGroup.Flag.SET + "|" + SysDataGroup.Flag.UNSET)
-            String flag;
             String dataGroupName;
         }
 
@@ -393,25 +395,18 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Try to get role.
-        Optional<SysRole> optionalSysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(requestBody.getRoleId()));
+        // Get role from database.
+        SysRole sysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(requestBody.getRoleId())).orElse(null);
 
-        if (!optionalSysRole.isPresent()) {
+        if (sysRole == null) {
             // If role is not found, it's invalid parameter.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysRole sysRole = optionalSysRole.get();
         List<Long> resourceIdList = requestBody.getResourceIdList();
 
         // Get valid resource list from request resource id list.
-        List<SysResource> sysResourceList = StreamSupport
-                .stream(sysResourceRepository.findAll(
-                        QSysResource.sysResource.resourceId.in(resourceIdList)
-                        ).spliterator(),
-                        false
-                )
-                .collect(Collectors.toList());
+        List<SysResource> sysResourceList = Lists.newArrayList(sysResourceRepository.findAll(QSysResource.sysResource.resourceId.in(resourceIdList)));
 
         if (sysResourceList.size() == 0) {
             sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
@@ -555,12 +550,6 @@ public class PermissionControlController extends BaseController {
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getDataGroupName())) {
                 predicate.and(builder.dataGroupName.contains(filter.getDataGroupName()));
-            }
-            if (SysDataGroup.Flag.SET.equals(filter.getFlag())) {
-                predicate.and(builder.users.isNotEmpty());
-            }
-            if (SysDataGroup.Flag.UNSET.equals(filter.getFlag())) {
-                predicate.and(builder.users.isEmpty());
             }
         }
 

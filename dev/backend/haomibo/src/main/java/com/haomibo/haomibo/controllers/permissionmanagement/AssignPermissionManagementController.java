@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/permission-management/assign-permission-management")
 public class AssignPermissionManagementController extends BaseController {
 
+    /**
+     * Request body for assigning role and data range to user.
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -38,6 +41,30 @@ public class AssignPermissionManagementController extends BaseController {
         @NotNull
         @UserId
         Long userId;
+
+        @NotNull
+        List<@RoleId Long> roleIdList;
+
+        @NotNull
+        @UserDataRangeCategory
+        String dataRangeCategory;
+
+        long selectedDataGroupId;
+
+    }
+
+    /**
+     * Request body for assigning role and data range to user group.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserGroupAssignRoleAndDataRangeRequestBody {
+
+        @NotNull
+        @UserId
+        Long userGroupId;
 
         @NotNull
         List<@RoleId Long> roleIdList;
@@ -77,7 +104,7 @@ public class AssignPermissionManagementController extends BaseController {
             }
         }
 
-        // Delete assigned roles for use first.
+        // Delete assigned roles for user first.
         sysRoleUserRepository.deleteAll(sysRoleUserRepository.findAll(QSysRoleUser.sysRoleUser.userId.eq(sysUser.getUserId())));
 
         // Generate role relation list.
@@ -106,6 +133,68 @@ public class AssignPermissionManagementController extends BaseController {
         if (SysUser.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
             // If data range category is SPECIFIED, need to save data group id too.
             sysUserLookupRepository.save(SysUserLookup.builder().userId(sysUser.getUserId()).dataGroupId(requestBody.getSelectedDataGroupId()).build());
+        }
+
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+
+    /**
+     * User group assign role and data range request.
+     */
+    @RequestMapping(value = "/user-group/assign-role-and-data-range", method = RequestMethod.POST)
+    public Object userGroupAssignRoleAndDataRange(
+            @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Get user group.
+        SysUserGroup sysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId())).orElse(null);
+        if (sysUserGroup == null) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // If data range category is SPECIFIED and data group id is invalid, this is invalid request.
+        if (SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
+            long selectedDataGroupId = requestBody.getSelectedDataGroupId();
+            SysDataGroup sysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(selectedDataGroupId)).orElse(null);
+            if (sysDataGroup == null) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
+        // Delete assigned roles for user group first.
+        sysUserGroupRoleRepository.deleteAll(sysUserGroupRoleRepository.findAll(QSysUserGroupRole.sysUserGroupRole.userGroupId.eq(sysUserGroup.getUserGroupId())));
+
+        // Generate role relation list.
+        List<SysUserGroupRole> sysUserGroupRoleList = requestBody
+                .getRoleIdList()
+                .stream()
+                .map(roleId ->
+                        SysUserGroupRole
+                                .builder()
+                                .roleId(roleId)
+                                .userGroupId(sysUserGroup.getUserGroupId())
+                                .build())
+                .collect(Collectors.toList());
+
+        // Save role relations for user group.
+        sysUserGroupRoleRepository.saveAll(sysUserGroupRoleList);
+
+        // Set and save data range category for user.
+        sysUserGroup.setDataRangeCategory(requestBody.getDataRangeCategory());
+
+        sysUserGroupRepository.save(sysUserGroup);
+
+        // Delete all specifically assigned data group from userGroup-dataGroup relation table.
+        sysUserGroupLookupRepository.deleteAll(sysUserGroupLookupRepository.findAll(QSysUserGroupLookup.sysUserGroupLookup.userGroupId.eq(sysUserGroup.getUserGroupId())));
+
+        if (SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
+            // If data range category is SPECIFIED, need to save data group id too.
+            sysUserGroupLookupRepository.save(SysUserGroupLookup.builder().userGroupId(sysUserGroup.getUserGroupId()).dataGroupId(requestBody.getSelectedDataGroupId()).build());
         }
 
         return new CommonResponseBody(ResponseMessage.OK);

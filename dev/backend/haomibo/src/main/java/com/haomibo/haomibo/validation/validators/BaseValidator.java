@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.validation.validators;
 
 import com.haomibo.haomibo.repositories.SysDataGroupRepository;
+import com.haomibo.haomibo.repositories.SysResourceRepository;
 import com.haomibo.haomibo.repositories.SysRoleRepository;
 import com.haomibo.haomibo.repositories.SysUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,4 +19,7 @@ public class BaseValidator {
 
     @Autowired
     SysRoleRepository sysRoleRepository;
+
+    @Autowired
+    SysResourceRepository sysResourceRepository;
 }
