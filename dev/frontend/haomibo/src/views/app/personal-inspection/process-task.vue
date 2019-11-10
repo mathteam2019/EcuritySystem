@@ -138,7 +138,7 @@
     </b-card>
     <div v-if="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="4">
+        <b-col cols="3">
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
@@ -240,316 +240,316 @@
 
           </b-card>
         </b-col>
-        <b-col cols="8">
+        <b-col cols="9">
           <b-card class="h-100 d-flex flex-column right-card">
 
-              <div class="history-chart">
-                <div>
+            <div class="history-chart">
+              <div>
 
-                  <div class="part">
-                    <div class="left">
-                      <div>开始</div>
-                    </div>
-                    <div class="right">
-                      <div>Start</div>
-                    </div>
+                <div class="part">
+                  <div class="left">
+                    <div>开始</div>
                   </div>
-
-                  <div class="part">
-                    <div class="left">
-                      <div>扫描</div>
-                      <div>张三</div>
-                    </div>
-                    <div class="right">
-                      <div>Scanning</div>
-                      <div>zhang san</div>
-                    </div>
-                    <div class="top-date">2019-09-21 11:43:55</div>
-                    <div class="bottom-date">2019-09-21 11:43:55</div>
+                  <div class="right">
+                    <div>Start</div>
                   </div>
+                </div>
 
-                  <div class="part">
-                    <div class="left">
-                      <div>判图</div>
-                      <div>李四</div>
-                    </div>
-                    <div class="right">
-                      <div>Decision diagram</div>
-                      <div>Li si</div>
-                    </div>
-                    <div class="top-date">2019-09-21 11:43:55</div>
-                    <div class="bottom-date">2019-09-21 11:43:55</div>
+                <div class="part">
+                  <div class="left">
+                    <div>扫描</div>
+                    <div>张三</div>
                   </div>
-
-                  <div class="part">
-                    <div class="left">
-                      <div>查验</div>
-                      <div>王五</div>
-                    </div>
-                    <div class="right">
-                      <div>Inspection</div>
-                      <div>Wang wu</div>
-                    </div>
-                    <div class="top-date">2019-09-21 11:43:55</div>
-                    <div class="bottom-date">2019-09-21 11:43:55</div>
+                  <div class="right">
+                    <div>Scanning</div>
+                    <div>zhang san</div>
                   </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
 
-                  <div class="part">
-                    <div class="left">
-                      <div>结束</div>
-                    </div>
-                    <div class="right">
-                      <div>End</div>
-                    </div>
+                <div class="part">
+                  <div class="left">
+                    <div>判图</div>
+                    <div>李四</div>
                   </div>
+                  <div class="right">
+                    <div>Decision diagram</div>
+                    <div>Li si</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
 
+                <div class="part">
+                  <div class="left">
+                    <div>查验</div>
+                    <div>王五</div>
+                  </div>
+                  <div class="right">
+                    <div>Inspection</div>
+                    <div>Wang wu</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>结束</div>
+                  </div>
+                  <div class="right">
+                    <div>End</div>
+                  </div>
                 </div>
 
               </div>
 
-              <b-row>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.task-number')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>HR201909010001</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.on-site')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>北京首都机场</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.security-instrument')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>安检仪001</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.image-gender')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>男</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.scanned-image')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>ATR</label>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+            </div>
 
-              <b-row>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.operation-mode')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <div>
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
-                    </div>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.status')}}
-                    </template>
-                    <label>全部</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.guide')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>张三</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.atr-conclusion')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>无嫌疑</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.foot-alarm')}}
-                    </template>
-                    <label>无</label>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.task-number')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>HR201909010001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.on-site')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>北京首都机场</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.security-instrument')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>安检仪001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.image-gender')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>男</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.scanned-image')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>ATR</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
 
-              <b-row>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.scan-start-time')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>20190921 10:40:05</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.scan-end-time')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>20190921 10:40:05</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.dispatch-timeout')}}
-                    </template>
-                    <label>无</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-station')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>TC0001</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>ATR</label>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.operation-mode')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <div>
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                  </div>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.status')}}
+                  </template>
+                  <label>全部</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.guide')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>张三</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.atr-conclusion')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无嫌疑</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.foot-alarm')}}
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
 
-              <b-row>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>无嫌疑</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>无</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>20190921 10:41:05</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-station-identification')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>全部</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>20190921 10:41:05</label>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.scan-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:40:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.scan-end-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:40:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.dispatch-timeout')}}
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>TC0001</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>ATR</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
 
-              <b-row>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.judge')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>李四</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.hand-check-station')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>张三</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>20190921 10:42:05</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group>
-                    <template slot="label">
-                      {{$t('personal-inspection.hand-checker')}}&nbsp
-                      <span class="text-danger">*</span>
-                    </template>
-                    <label>男</label>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                </b-col>
-              </b-row>
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无嫌疑</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:41:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>全部</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:41:05</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
 
-              <b-row class="flex-grow-1 d-flex align-items-end">
-                <b-col class="text-right">
-                  <b-button variant="info default" @click="pageStatus='table'">
-                    <i class="icofont-long-arrow-left"></i>
-                    {{ $t('personal-inspection.return') }}
-                  </b-button>
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judge')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>李四</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.hand-check-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>张三</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>20190921 10:42:05</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.hand-checker')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>男</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+              </b-col>
+            </b-row>
 
-                </b-col>
-              </b-row>
+            <b-row class="flex-grow-1 d-flex align-items-end">
+              <b-col class="text-right">
+                <b-button variant="info default" @click="pageStatus='table'">
+                  <i class="icofont-long-arrow-left"></i>
+                  {{ $t('personal-inspection.return') }}
+                </b-button>
+
+              </b-col>
+            </b-row>
 
           </b-card>
         </b-col>
@@ -610,12 +610,16 @@
         align-items: center;
         margin-bottom: 24px;
 
+
         img {
+
           $size: 40px;
           width: $size;
           height: $size;
+
           margin-bottom: 6px;
         }
+
 
         span {
           display: block;
@@ -645,6 +649,26 @@
           transform: scale(0.8);
         }
       }
+    }
+
+    @media screen and (max-width: 1700px) {
+
+      .control-btn-wrapper {
+        .control-btn {
+          img {
+            $size: 28px;
+            width: $size !important;
+            height: $size !important;
+          }
+        }
+      }
+      .switch-wrapper{
+        height: 28px;
+        .separator {
+          height: 28px;
+        }
+      }
+
     }
   }
 
@@ -708,6 +732,7 @@
 
   .fill-main {
     height: calc(100vh - 180px);
+
     .right-card {
       .card-body {
         display: flex;
