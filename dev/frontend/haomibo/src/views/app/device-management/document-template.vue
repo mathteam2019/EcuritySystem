@@ -9,10 +9,9 @@
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-4">
           <b-col class="d-flex">
             <div class="flex-grow-1">
-
               <b-row>
                 <b-col>
                   <b-form-group :label="$t('device-management.template')">
@@ -109,7 +108,7 @@
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus==='create'" class="form-section">
+      <div v-if="pageStatus==='create'" class="form-section d-flex flex-column">
         <b-row>
           <b-col xxs="12" md="4" lg="3">
             <b-form @submit.prevent="onBasicSubmit">
@@ -142,7 +141,8 @@
           </b-col>
           <b-col xxs="12" md="8" lg="9">
             <b-row>
-              <b-col cols="12" class="d-flex justify-content-between"><label class="font-weight-bold">{{$t('device-management.document-template.device-show-list')}}</label>
+              <b-col cols="12" class="d-flex justify-content-between mb-2">
+                <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
                 <b-button size="sm" variant="success default">
                   <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
                 </b-button>
@@ -189,6 +189,8 @@
               </b-col>
             </b-row>
           </b-col>
+        </b-row>
+        <b-row class="flex-grow-1 align-items-end">
           <b-col cols="12 text-right mt-3">
             <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}
             </b-button>
@@ -315,8 +317,8 @@
             {
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
+              titleClass: 'text-center btn-actions',
+              dataClass: 'text-center '
             }
           ]
         },

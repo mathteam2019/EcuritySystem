@@ -1,19 +1,17 @@
-<style>
+
+<style lang="scss">
   .img-wrapper {
     padding: 5px;
     border: solid 1px #bdbaba;
     border-radius: 3px;
+    width: 190px;
+    height: 270px;
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
   }
-
-  .h-35vh {
-    height: 33vh;
-    max-height: 33vh;
-    overflow: auto;
-  }
-
-
-</style>
-<style lang="scss">
   .search-form-group {
     [role="group"] {
       position: relative;
@@ -72,8 +70,8 @@
                     </b-col>
 
                     <b-col>
-                      <b-form-group :label="$t('permission-management.user-category')">
-                        <b-form-select v-model="filter.category" :options="categorySelectData" plain/>
+                      <b-form-group :label="$t('permission-management.gender')">
+                        <b-form-select v-model="filter.gender" :options="genderFilterOptions" plain />
                       </b-form-group>
                     </b-col>
 
@@ -252,8 +250,7 @@
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.userName.required) ?
                     $t('permission-management.user.username-field-is-mandatory') :
-                    (!$v.profileForm.userName.alphaNum)
-                    ?$t('permission-management.user.username-should-be-numerical-or-characters'):(!$v.profileForm.userName.maxLength)?$t('permission-management.user.account-should-less-50-letter'):"&nbsp;"
+                    (!$v.profileForm.userName.maxLength)?$t('permission-management.user.account-should-less-50-letter'):"&nbsp;"
                     }}
                   </div>
                 </b-form-group>
@@ -409,13 +406,14 @@
             </b-row>
 
           </b-col>
-          <b-col cols="2" class="text-center">
-            <div class="mb-4 img-wrapper" >
-              <div class="position-relative  p-1" >
+          <b-col cols="2" class="d-flex align-items-center flex-column">
+            <div class="mb-4 img-wrapper position-relative" >
+              <div class=" p-1" >
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
-                <div class="position-absolute" style="bottom: -18%;left: -50%">
-                  <img src="../../../assets/img/active_stamp.png">
-                </div>
+              </div>
+              <div class="position-absolute" style="bottom: -18%;left: -50%">
+                <img v-if="profileForm.status==='active'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="profileForm.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -568,12 +566,13 @@
 
           </b-col>
           <b-col cols="2" class="text-right">
-            <div class="mb-4 img-wrapper" >
-              <div class="position-relative  p-1" >
+            <div class="mb-4 img-wrapper position-relative" >
+              <div class=" p-1" >
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
-                <div class="position-absolute" style="bottom: -18%;left: -50%">
-                  <img src="../../../assets/img/active_stamp.png">
-                </div>
+              </div>
+              <div class="position-absolute" style="bottom: -18%;left: -50%">
+                <img v-if="profileForm.status==='active'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="profileForm.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -596,7 +595,6 @@
                     <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
                     <b-form-input :placeholder="$t('permission-management.user.please-enter-group-name')"
                                   v-model="groupFilter.name"></b-form-input>
-                    <i class="search-input-icon simple-icon-magnifier"></i>
                   </b-form-group>
                 </b-col>
                 <b-col cols="9" class="d-flex justify-content-end align-items-center">
@@ -739,7 +737,7 @@
                   </b-button>
                 </div>
               </div>
-              <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status!='create'">
+              <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status!='create'">
                 <div>
                   <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
@@ -802,7 +800,7 @@
     validations: {
       profileForm: {
         userName: {
-          required, alphaNum, maxLength: maxLength(50)
+          required,  maxLength: maxLength(50)
         },
         userNumber: {
           required, alphaNum, maxLength: maxLength(50)
@@ -869,7 +867,7 @@
           userName: '',
           status: null,
           orgId: '',
-          category: null
+          gender: null
         },
         promptTemp: {
           userId: 0,
@@ -882,7 +880,13 @@
         genderOptions: [
           {value: 'male', text: this.$t('permission-management.male')},
           {value: 'female', text: this.$t('permission-management.female')},
-          {value: 'unknown', text: this.$t('permission-management.unknown')},
+          {value: 'other', text: this.$t('permission-management.unknown')},
+        ],
+        genderFilterOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'male', text: this.$t('permission-management.male')},
+          {value: 'female', text: this.$t('permission-management.female')},
+          {value: 'other', text: this.$t('permission-management.unknown')},
         ],
         statusSelectData: [
           {value: null, text: this.$t('permission-management.all')},
@@ -926,7 +930,6 @@
           email: '',
           mobile: '',
           address: '',
-          category: '',
           userAccount: '',
           passwordType: 'default',
           passwordValue: '',
@@ -1192,11 +1195,12 @@
       },
       onSaveUserPage() {
         this.submitted = true;
-        this.$v.$touch();
-        if (this.$v.$invalid) {
+        this.$v.profileForm.$touch();
+        if (this.$v.profileForm.$invalid) {
+          console.log(this.$v.profileForm);
           return;
         }
-
+        console.log('submit');
         const formData = new FormData();
         for (let key in this.profileForm) {
           if (key !== 'portrait')
@@ -1375,7 +1379,6 @@
           email: '',
           mobile: '',
           address: '',
-          category: '',
           userAccount: '',
           passwordType: 'default',
           passwordValue: '',
@@ -1484,7 +1487,7 @@
             userName: this.filter.userName,
             status: this.filter.status,
             orgId: this.filter.orgId,
-            category: this.filter.category,
+            gender: this.filter.gender,
           }
         });
       },

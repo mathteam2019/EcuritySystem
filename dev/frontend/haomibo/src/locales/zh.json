@@ -428,6 +428,10 @@
       "yes": "YES",
       "no": "NO"
     },
+    "device-table": {
+      "device-info": "设备信息",
+      "archive-info": "档案信息"
+    },
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
@@ -560,9 +564,11 @@
       "check-item-level": "查获物品等级",
       "hand-process-history": "手检、过程任务、历史任务",
       "show-deleted-suspected-box": "显示被删除的嫌疑框",
+      "deleted-suspected-box-color": "被删除嫌疑框的颜色",
       "knowledge-base": "知识库",
       "knowledge-base-history-task": "知识库和历史任务",
-      "security-instrument-flow-setting": "安检仪流量设置"
+      "security-instrument-flow-setting": "安检仪流量设置",
+      "business-statistics": "综合统计"
     }
   },
   "log-management": {
@@ -712,6 +718,75 @@
       "timing-active-start-time": "定时生效起始时间",
       "timing-active-end-time": "定时生效截至时间",
       "create-time": "创建时间",
+      "by-time": "按时",
+      "by-day": "按天",
+      "by-week": "按周",
+      "by-month": "按月",
+      "every":"每",
+      "hour": "时",
+      "day": "天",
+      "week": "周",
+      "month": "月",
+      "guide-for-time-task": "日期范围为1-31日，如果当月没有29、30或31日，则默认为最后一天",
+      "after-task-created": "任务创建后"
+    },
+    "maintenance-task": {
+      "task": "任务",
+      "status": "任务状态",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "no": "序号",
+      "number": "任务编号",
+      "plan": "计划",
+      "category": "任务类别",
+      "completed": "待处理",
+      "processing": "处理中"
+    },
+    "process-task": {
+      "task": "任务",
+      "status": "任务状态",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "no": "序号",
+      "number": "任务编号",
+      "plan": "计划",
+      "category": "任务类别",
+      "completed": "待处理",
+      "processing": "处理中",
+      "security-user": "维保员",
+      "estimated-start-time": "预计开发时间",
+      "real-start-time": "预计开发时间"
+    },
+    "history-record": {
+      "task": "任务",
+      "status": "任务状态",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "no": "序号",
+      "number": "任务编号",
+      "plan": "计划",
+      "security-department": "维保部门",
+      "security-user": "维保员",
+      "estimated-start-time": "预计开发时间",
+      "real-start-time": "预计开发时间",
+      "complete-time": "完成时间"
+    },
+    "routine-plan": {
+      "plan": "计划",
+      "status": "生效",
+      "no": "序号",
+      "number": "计划编号",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "security-department": "维保部门",
+      "security-user": "维保员",
+      "real-time-task": "实时任务",
+      "created-user": "创建员",
+      "created-time": "创建时间",
       "by-time": "按时",
       "by-day": "按天",
       "by-week": "按周",

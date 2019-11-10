@@ -6,10 +6,11 @@
   }
   div.img-wrapper {
     width: 270px;
-    height: 440px;
+    height: 420px;
     padding: 30px;
     border: solid 1px #bdbaba;
     border-radius: 3px;
+    position: relative;
     img {
       width: 100%;
       object-fit: scale-down;
@@ -27,7 +28,7 @@
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus=='list'" class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-4">
           <b-col class="d-flex">
             <div class="flex-grow-1">
 
@@ -84,6 +85,9 @@
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
+                <div slot="number" slot-scope="props">
+                  <span class="cursor-p text-primary" @click="onAction('edit')">{{ props.rowData.number }}</span>
+                </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit')"
                             size="sm"
@@ -125,7 +129,7 @@
         </b-row>
       </div>
       <div v-if="pageStatus==='create'" class="form-section">
-        <b-row>
+        <b-row class="h-100">
           <b-col cols="8">
             <b-row>
               <b-col cols="4">
@@ -167,7 +171,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mb-3">
+            <b-row class="mb-5">
               <b-col cols="12" class="d-flex align-items-center">
                 <label class="pr-2 m-0 "
                        style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
@@ -301,18 +305,24 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
               <div class="img-wrapper">
-                <img :src="archivesForm.image" alt="img" />
+                <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
+                <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')" src="../../../assets/img/device.png">
+                <div class="position-absolute" style="bottom: -18%;left: -41%">
+                  <img src="../../../assets/img/active_stamp.png">
+                </div>
               </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
             <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
             </b-button>
           </b-col>
-          <b-col cols="12 text-right mt-3">
-            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+          <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
+            <div>
+              <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
+              <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
+              <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
+              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+            </div>
           </b-col>
         </b-row>
       </div>
@@ -361,8 +371,8 @@
               dataClass: 'text-center'
             },
             {
-              name: 'file-no',
-              sortField: 'device-no',
+              name: '__slot:number',
+              sortField: 'number',
               title: this.$t('device-management.file-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -413,7 +423,7 @@
             {
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
-              titleClass: 'text-center',
+              titleClass: 'text-center btn-actions',
               dataClass: 'text-center'
             }
           ]
@@ -421,7 +431,7 @@
         tempData: [
           {
             "no": 1,
-            "file-no": "0000",
+            "number": "0000",
             "filename": "MW毫米波安检仪",
             "setting": null,
             "status": "active",
@@ -545,6 +555,9 @@
       onAction(value) {
         switch (value) {
           case 'create':
+            this.pageStatus = 'create';
+            break;
+          case 'edit':
             this.pageStatus = 'create';
             break;
           case 'show-list':

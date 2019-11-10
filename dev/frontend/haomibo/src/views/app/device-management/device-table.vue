@@ -4,12 +4,14 @@
       line-height: 36px;
     }
   }
+
   div.img-wrapper {
     width: 270px;
-    height: 440px;
+    height: 420px;
     padding: 30px;
     border: solid 1px #bdbaba;
     border-radius: 3px;
+    position: relative;
     img {
       width: 100%;
       object-fit: scale-down;
@@ -21,13 +23,13 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-4">
           <b-col cols="6">
             <b-row>
               <b-col>
@@ -81,6 +83,9 @@
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
+                <div slot="number" slot-scope="props">
+                  <span class="cursor-p text-primary" @click="onAction('edit')">{{ props.rowData.number }}</span>
+                </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit')"
                             size="sm"
@@ -121,7 +126,7 @@
         </b-row>
       </div>
       <div v-if="pageStatus==='create'" class="form-section">
-        <b-row>
+        <b-row class="h-100">
           <b-col cols="8">
             <b-row>
               <b-col cols="4">
@@ -140,7 +145,8 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-list.archive')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-list.archive')}}<span
+                    class="text-danger">*</span>
                   </template>
                   <b-form-select v-model="mainForm.templateId" :options="templateOptions" plain/>
                 </b-form-group>
@@ -163,7 +169,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mb-3">
+            <b-row class="mb-5">
               <b-col cols="12" class="d-flex align-items-center">
                 <label class="pr-2 m-0 "
                        style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
@@ -173,17 +179,17 @@
             <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.original-number')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.production-date')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.purchase-date')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -193,95 +199,473 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.ip')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
             <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.battery-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.running-memory')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.screen-size')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.storage-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.front-camera')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.rear-camera')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.scalable-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.operating-system')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.cpu-model')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.dimension')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.body-weight')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
+                  <b-form-input ></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
-              <img :src="mainForm.image" alt="img" />
+              <img src="../../../assets/img/device.png">
+              <div class="position-absolute" style="bottom: -18%;left: -41%">
+                <img src="../../../assets/img/active_stamp.png">
+              </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
             <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
             </b-button>
           </b-col>
-          <b-col cols="12 text-right mt-3">
-            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+          <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
+            <div>
+              <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}
+              </b-button>
+              <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i>
+                {{$t('device-management.active')}}
+              </b-button>
+              <b-button size="sm" variant="danger default"><i class="icofont-bin"></i>
+                {{$t('device-management.delete')}}
+              </b-button>
+              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+              </b-button>
+            </div>
           </b-col>
         </b-row>
       </div>
+      <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column pb-3">
+        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                 :no-fade="true">
+          <b-tab :title="$t('device-management.device-table.device-info')">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">A000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-name')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">MW毫米波安检仪000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-list.archive')}}<span
+                        class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">MW毫米波安检仪</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">监管查验设备 / 人体查验设备</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-classify')">
+                      <label class="input-label">同方威视</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.origin-model')">
+                      <label class="input-label">MW1000AA</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.original-number')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.production-date')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.purchase-date')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier')">
+                      <b-form-select v-model="deviceForm.supplier" :options="supplierOptions" plain/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier-contact')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-list.ip')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.battery-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.running-memory')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.screen-size')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.storage-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.front-camera')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.rear-camera')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.scalable-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.operating-system')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.cpu-model')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.dimension')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.body-weight')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img src="../../../assets/img/device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
+                </div>
+                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
+                <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
+                  $t('permission-management.upload-image')}}
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-tab>
+          <b-tab :title="$t('device-management.device-table.archive-info')" style="height: 200px">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">0000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.file-name')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">MW毫米波安检仪</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">毫米波安检仪</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">监管查验设备 / 人体查验设备</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.device-classify')">
+                      <label class="input-label">同方威视</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.origin-model')">
+                      <label class="input-label">MW1000AA</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.inspection-method')">
+                      <label class="input-label">非接触式</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.single-scan-time')">
+                      <label class="input-label">2</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.number-of-operator')">
+                      <label class="input-label">1</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.detectable-item-type')">
+                      <label class="input-label">金属，非金属，爆炸物</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.automatic-identification')">
+                      <label class="input-label">有</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.privacy-protection')">
+                      <label class="input-label">有</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.equipment-size')">
+                      <label class="input-label">2400*1400*1706</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.channel-size')">
+                      <label class="input-label">2200*750*1188</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.equipment-weight')">
+                      <label class="input-label">550</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.power-by')">
+                      <label class="input-label">110/220，50/60</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.rated-power')">
+                      <label class="input-label">2200*750*1188</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.operating-temperature-humidity')">
+                      <label class="input-label">0-40，0-93</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.storage-temperature-humidity')">
+                      <label class="input-label">0-40，0-93</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.battery-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.running-memory')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.screen-size')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.storage-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.front-camera')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.rear-camera')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.scalable-capacity')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.operating-system')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.cpu-model')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.dimension')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group :label="$t('device-management.archive.body-weight')">
+                      <b-form-input ></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img  src="../../../assets/img/device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
+                </div>
+                <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
+                <b-button  class="mt-3" variant="info skyblue default" size="sm">{{
+                  $t('permission-management.upload-image')}}
+                </b-button>
+              </b-col>
+            </b-row>
+          </b-tab>
+        </b-tabs>
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
+          <div>
+
+            <b-button size="sm" variant="warning default"><i class="icofont-check-circled"></i>
+              {{$t('device-management.active')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
+          </div>
+        </div>
+      </div>
+
     </b-card>
 
   </div>
@@ -301,7 +685,7 @@
     },
     data() {
       return {
-        pageStatus:'list',
+        pageStatus: 'list',
         fileData: [
           '档案-1',
           '档案-2',
@@ -329,7 +713,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'device-no',
+              name: '__slot:number',
               sortField: 'device-no',
               title: this.$t('device-management.device-no'),
               titleClass: 'text-center',
@@ -389,7 +773,7 @@
         tempData: [
           {
             "no": 1,
-            "device-no": "0000",
+            "number": "0000",
             "device-name": "首都机场",
             "setting": null,
             "status": "active",
@@ -477,24 +861,30 @@
           {value: "active", text: this.$t('system-setting.status-active')},
           {value: "inactive", text: this.$t('system-setting.status-inactive')},
         ],
+
         mainForm: {
           number: null,
           name: null,
-          image:null,
+          image: null,
           templateId: 'waveSecurityDevice',
         },
         deviceForm: {
           method: null,
-          supplier:null
+          supplier: null
         },
         extraForm: {
           method: null,
+        },
+        archivesForm: {
+
+          templateId: 'waveSecurityDevice',
+
         },
         templateOptions: [
           {value: "waveSecurityDevice", text: this.$t('device-management.device-list.wave-security-device')},
           {value: "mobileTablet", text: this.$t('device-management.device-list.huawei-m6-tablet')},
         ],
-        supplierOptions:[
+        supplierOptions: [
           '同方威视代理',
           '华为产品部'
         ],
@@ -502,16 +892,19 @@
     },
     methods: {
 
-      onSearchButton(){
+      onSearchButton() {
 
       },
-      onResetButton(){
+      onResetButton() {
 
       },
       onAction(value) {
         switch (value) {
           case 'create':
             this.pageStatus = 'create';
+            break;
+          case 'edit':
+            this.pageStatus = 'show';
             break;
           case 'show-list':
             this.pageStatus = 'list';
