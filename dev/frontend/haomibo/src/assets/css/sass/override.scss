@@ -91,7 +91,7 @@ main {
         padding: 0!important;
         div.table-wrapper {
           position: absolute;
-          width: calc(98% + 3px);
+          width: calc(100% - 30px);
           height: calc(100% - 52px);
           overflow: auto;
 
@@ -100,7 +100,7 @@ main {
           position: absolute;
           bottom: 0;
           padding-top: 10px;
-          width: calc(98% + 3px);
+          width: calc(100% - 30px);
           &>nav {
             width: 100%;
           }
