@@ -10,54 +10,55 @@
 
   <b-tabs nav-class="ml-2" :no-fade="true">
     <b-tab :title="$t('system-setting.site-list')">
-      <b-row v-if="pageStatus === 'table'">
-        <b-col cols="12">
-          <div class="mb-4">
-            <b-row>
-              <b-col cols="6">
-                <b-row>
-                  <b-col >
-                    <b-form-group :label="$t('system-setting.site')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
 
-                  <b-col >
-                    <b-form-group :label="$t('system-setting.status-active')">
-                      <b-form-select :options="stateOptions" plain />
-                    </b-form-group>
-                  </b-col>
+      <b-row v-if="pageStatus=='table'" class="h-100">
+        <b-col cols="12 d-flex flex-column">
+          <b-row>
+            <b-col cols="6">
+              <b-row>
+                <b-col >
+                  <b-form-group :label="$t('system-setting.site')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col >
-                    <b-form-group :label="$t('system-setting.super-site')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-              </b-col>
+                <b-col >
+                  <b-form-group :label="$t('system-setting.status-active')">
+                    <b-form-select :options="stateOptions" plain />
+                  </b-form-group>
+                </b-col>
 
-              <b-col cols="6" class="d-flex justify-content-end align-items-center">
-                <div>
-                  <b-button size="sm" class="ml-2" variant="info default">
-                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default">
-                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" @click="onNewClicked()" variant="success default">
-                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                  </b-button>
-                </div>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col>
+                <b-col >
+                  <b-form-group :label="$t('system-setting.super-site')">
+                    <b-form-input></b-form-input>
+                  </b-form-group>
+                </b-col>
+              </b-row>
+            </b-col>
+
+            <b-col cols="6" class="d-flex justify-content-end align-items-center">
+              <div>
+                <b-button size="sm" class="ml-2" variant="info default">
+                  <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="info default">
+                  <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" @click="onNewClicked()" variant="success default">
+                  <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                </b-button>
+              </div>
+            </b-col>
+          </b-row>
+          <b-row class="flex-grow-1">
+            <b-col cols="12">
+              <div class="table-wrapper table-responsive">
                 <vuetable
                   ref="vuetable"
                   :api-mode="false"
@@ -131,6 +132,8 @@
                     </b-button>
                   </div>
                 </vuetable>
+              </div>
+              <div class="pagination-wrapper">
                 <vuetable-pagination-bootstrap
                   ref="pagination"
                   @vuetable-pagination:change-page="onChangePage"
@@ -151,12 +154,12 @@
                     <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}</b-button>
                   </template>
                 </b-modal>
-
-              </b-col>
-            </b-row>
-          </div>
+              </div>
+            </b-col>
+          </b-row>
         </b-col>
       </b-row>
+
       <b-row v-if="pageStatus !== 'table'">
         <b-col cols="12">
           <div class="mb-4">
@@ -262,19 +265,17 @@
     <b-tab :title="$t('system-setting.site-architecture')">
       <b-row>
         <b-col cols="12">
-          <b-card class="mb-4" no-body>
-            <b-card-body class="text-center">
-              <vue2-org-tree
-                :data="treeData"
-                :horizontal="false"
-                :collapsable="false"
-                :label-class-name="treeLabelClass"
-                :render-content="renderTreeContent"
-                @on-expand="() => {}"
-                @on-node-click="() => {}"
-              />
-            </b-card-body>
-          </b-card>
+          <div class="text-center">
+            <vue2-org-tree
+              :data="treeData"
+              :horizontal="false"
+              :collapsable="false"
+              :label-class-name="treeLabelClass"
+              :render-content="renderTreeContent"
+              @on-expand="() => {}"
+              @on-node-click="() => {}"
+            />
+          </div>
         </b-col>
       </b-row>
     </b-tab>
@@ -282,11 +283,6 @@
   </div>
 </template>
 
-<style>
-  span.cursor-p {
-    cursor: pointer !important;
-  }
-</style>
 
 <script>
   import _ from 'lodash';
@@ -316,6 +312,11 @@
               vuetableItems: {
                   perPage: 5,
                   fields: [
+                    {
+                      name: '__checkbox',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                    },
                       {
                           name: 'no',
                           sortField: 'no',

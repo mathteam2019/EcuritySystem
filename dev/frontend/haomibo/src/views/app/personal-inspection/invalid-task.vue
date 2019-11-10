@@ -8,125 +8,115 @@
       </b-row>
     </div>
 
-    <b-card v-if="pageStatus === 'table'">
-      <b-row>
-        <b-col cols="12">
-          <div class="mb-4">
+    <b-card class="main-without-tab" v-if="pageStatus==='table'">
+      <div  class="h-100 d-flex flex-column">
+        <b-row>
+          <b-col cols="8">
             <b-row>
-              <b-col cols="8">
-                <b-row>
 
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.task-number')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.operation-mode')">
-                      <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.on-site')">
-                      <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.user')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
-                </b-row>
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.task-number')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
               </b-col>
-              <b-col cols="8" v-if="isExpanded">
-                <b-row>
 
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.user')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('personal-inspection.time')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col></b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
-
-
-                </b-row>
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.operation-mode')">
+                  <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
+                </b-form-group>
               </b-col>
-              <b-col cols="4" class="d-flex justify-content-end align-items-center">
-                <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                    <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-                  </b-button>
-                </div>
+
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.on-site')">
+                  <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
+                </b-form-group>
               </b-col>
+
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.user')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+
             </b-row>
+          </b-col>
+          <b-col cols="8" v-if="isExpanded">
             <b-row>
-              <b-col cols="12" class="table-responsive">
-                <vuetable
-                  ref="taskVuetable"
-                  :api-mode="false"
-                  :data="tempData"
-                  :fields="taskVuetableItems.fields"
-                  class="table-hover"
-                  @vuetable:pagination-data="onTaskVuetablePaginationData"
-                >
-                  <template slot="taskNumber" slot-scope="props">
+
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.user')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+
+              <b-col>
+                <b-form-group :label="$t('personal-inspection.time')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+
+
+            </b-row>
+          </b-col>
+          <b-col cols="4" class="d-flex justify-content-end align-items-center">
+            <div>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+              </b-button>
+              <b-button size="sm" class="ml-2" variant="outline-info default">
+                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+              </b-button>
+            </div>
+          </b-col>
+        </b-row>
+
+        <b-row class="flex-grow-1">
+          <b-col cols="12">
+            <div class="table-wrapper table-responsive">
+              <vuetable
+                ref="taskVuetable"
+                :api-mode="false"
+                :data="tempData"
+                :fields="taskVuetableItems.fields"
+                class="table-hover"
+                @vuetable:pagination-data="onTaskVuetablePaginationData"
+              >
+                <template slot="taskNumber" slot-scope="props">
                     <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
                       {{props.rowData.taskNumber}}
                     </span>
-                  </template>
-                  <template slot="operationMode" slot-scope="props">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
-                  </template>
-                </vuetable>
-                <vuetable-pagination-bootstrap
-                  ref="taskVuetablePagination"
-                  @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                  :initial-per-page="taskVuetableItems.perPage"
-                  @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-                ></vuetable-pagination-bootstrap>
-                <!--                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">-->
-                <!--                    {{$t('permission-management.user.user-group-delete-prompt')}}-->
-                <!--                    <template slot="modal-footer">-->
-                <!--                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">-->
-                <!--                        {{$t('permission-management.modal-ok')}}-->
-                <!--                      </b-button>-->
-                <!--                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">-->
-                <!--                        {{$t('permission-management.modal-cancel')}}-->
-                <!--                      </b-button>-->
-                <!--                    </template>-->
-                <!--                  </b-modal>-->
-              </b-col>
-            </b-row>
-          </div>
-        </b-col>
-      </b-row>
+                </template>
+                <template slot="operationMode" slot-scope="props">
+                  <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                  <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                  <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                </template>
+              </vuetable>
+            </div>
+            <div class="pagination-wrapper">
+              <vuetable-pagination-bootstrap
+                ref="taskVuetablePagination"
+                @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                :initial-per-page="taskVuetableItems.perPage"
+                @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+              ></vuetable-pagination-bootstrap>
+            </div>
+          </b-col>
+        </b-row>
+      </div>
     </b-card>
 
-    <div v-if="pageStatus === 'show'">
+    <div v-if="pageStatus === 'show'" >
       <b-row>
         <b-col cols="4">
           <b-card class="pt-4">
@@ -650,6 +640,11 @@
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [
+                      {
+                        name: '__checkbox',
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                      },
                         {
                             name: 'id',
                             title: this.$t('personal-inspection.serial-number'),

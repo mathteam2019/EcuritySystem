@@ -1,3 +1,13 @@
+<style lang="scss">
+  .v-select-custom-style {
+    height: 38px;
+    border-radius: 0.3rem!important;
+    &>div.vs__dropdown-toggle {
+      height: 100%;
+      border-radius: 0.3rem!important;
+    }
+  }
+</style>
 <template>
   <div>
     <div class="breadcrumb-container">
@@ -465,9 +475,9 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-else-if="groupPageStatus==='create'">
+        <b-row v-else-if="groupPageStatus==='create'" class="h-100">
           <b-col cols="12" class="form-section">
-            <b-row>
+            <b-row class="h-100">
               <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
@@ -483,7 +493,7 @@
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
                     class="text-danger">*</span></template>
 
-                  <v-select v-model="groupForm.role" multiple :options="roleOptions" :dir="direction"/>
+                  <v-select class="v-select-custom-style" v-model="groupForm.role" multiple :options="roleOptions" :dir="direction"/>
 
                 </b-form-group>
                 <b-form-group>
@@ -504,7 +514,7 @@
                   </div>
                 </b-form-group>
               </b-col>
-              <b-col cols="12 text-right">
+              <b-col cols="12" class="align-self-end text-right">
                 <b-button variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
                 <b-button variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
                 <b-button variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>

@@ -274,6 +274,7 @@
             permanent: false
           });
           setTimeout(() => {
+            console.log('this redirect');
             this.$router.push('/')
           }, 100)
         }

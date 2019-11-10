@@ -132,7 +132,7 @@
                       <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="12" class="h-30vh">
+                  <b-col cols="12" class="h-35vh">
                     <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
                   </b-col>
                 </b-row>
@@ -202,7 +202,7 @@
                     <b-form-checkbox v-model="isSelectedAllResourcesForRole">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
                   </b-form-group>
                 </b-col>
-                <b-col cols="12" class="h-30vh">
+                <b-col cols="12" class="h-35vh">
                   <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
@@ -376,7 +376,7 @@
               </b-row>
 
               <b-row>
-                <b-col class="h-30vh">
+                <b-col class="h-35vh">
                   <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
                 </b-col>
               </b-row>
@@ -445,9 +445,9 @@
   span.cursor-p {
     cursor: pointer !important;
   }
-  .h-30vh {
-    height: 30vh;
-    max-height: 30vh;
+  .h-35vh {
+    height: 35vh;
+    max-height: 35vh;
     overflow: auto;
   }
 </style>

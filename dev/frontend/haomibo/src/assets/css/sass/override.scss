@@ -51,12 +51,42 @@ main {
         color: $info-color !important;
       }
     }
+    .breadcrumb-container {
+      position: fixed;
+      background: white;
+      height: $bread-height;
+      left: $bread-height;
+      top: $nav-height;
+      width: 100%;
+      z-index: 10;
+      div.row {
+        height: 100%;
+        div.col-12 {
+          display: flex;
+          align-items: center;
+          ol.breadcrumb {
+            margin: 0;
+            font-size: 19px;
+            li a, li span {
+              color: $info-color !important;
+            }
+          }
+        }
+      }
+      .breadcrumb-item + .breadcrumb-item::before {
+        content: "/";
+        color: $info-color !important;
+      }
+    }
     div.main-without-tab {
       margin-bottom: 1rem !important;
       padding: $tab-padding-1 $tab-padding-2 $tab-padding-2 $tab-padding-2 !important;
       min-height: calc(100vh - #{$nav-height + $bread-height + 35px});
       max-height: calc(100vh - #{$nav-height + $bread-height + 35px});
       height: calc(100vh - #{$nav-height + $bread-height + 35px});
+      &.p-0 {
+        padding: 0!important;
+      }
       & .card-body {
         padding: 0!important;
         div.table-wrapper {
@@ -286,8 +316,8 @@ $theme-color-purple-2: #881aff;
   padding: 30px 40px 20px 90px;
   height: 100%;
   .form-group {
-    max-width: 200px;
-    margin-bottom: 2rem;
+    max-width: 250px;
+    margin-bottom: 1.3rem;
   }
 
 }
