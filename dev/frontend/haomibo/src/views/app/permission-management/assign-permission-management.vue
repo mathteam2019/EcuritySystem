@@ -515,9 +515,9 @@
                 </b-form-group>
               </b-col>
               <b-col cols="12" class="align-self-end text-right">
-                <b-button variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
-                <b-button variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
-                <b-button variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
+                <b-button variant="info default" size="sm" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button variant="info default" size="sm" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
           </b-col>
@@ -645,7 +645,7 @@
                   {
                       name: '__slot:actions',
                       title: this.$t('permission-management.th-org-actions'),
-                      titleClass: 'text-center',
+                      titleClass: 'text-center btn-actions',
                       dataClass: 'text-center'
                   },
 
@@ -678,102 +678,6 @@
         users: ['张一', '张二', '张三'],
 
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
-        vuetableItems: { // main table options
-          apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
-          fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'orgId',
-              title: this.$t('permission-management.th-no'),
-              sortField: 'orgId',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'orgNumber',
-              title: this.$t('permission-management.th-org-number'),
-              sortField: 'orgNumber',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'orgName',
-              title: this.$t('permission-management.th-org-name'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'status',
-              title: this.$t('permission-management.th-org-status'),
-              sortField: 'status',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (value) => {
-
-                const dictionary = {
-                  'active': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
-                  'inactive': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-
-              }
-            },
-            {
-              name: 'parent',
-              title: this.$t('permission-management.th-org-parent-org-number'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (value) => {
-
-                return value ? value.orgNumber : this.$t('permission-management.org-none');
-
-              }
-            },
-            {
-              name: 'parent',
-              title: this.$t('permission-management.th-org-parent-org-name'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (value) => {
-
-                return value ? value.orgName : this.$t('permission-management.org-none');
-
-              }
-            },
-            {
-              name: 'leader',
-              title: this.$t('permission-management.th-org-leader'),
-              sortField: 'leader',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'mobile',
-              title: this.$t('permission-management.th-org-mobile'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'note',
-              title: this.$t('permission-management.th-org-note'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__slot:actions',
-              title: this.$t('permission-management.th-org-actions'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-
-          ],
-          perPage: 5,
-        },
         treeData: { // holds tree data for org diagram
         },
 
@@ -852,7 +756,7 @@
             {
                 name: '__slot:operating',
                 title: this.$t('permission-management.user.operating'),
-                titleClass: 'text-center',
+                titleClass: 'text-center btn-actions',
                 dataClass: 'text-center'
             }
           ],
@@ -1502,18 +1406,6 @@
 
         return transformed
 
-      },
-      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.vuetableItems.perPage,
-          filter: {
-            userName: this.filter.userName,
-            status: this.filter.status,
-            orgId: this.filter.orgId,
-            category: this.filter.category,
-          }
-        });
       },
       onUserTablePaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData)

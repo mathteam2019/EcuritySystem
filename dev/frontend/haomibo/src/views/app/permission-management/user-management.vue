@@ -425,10 +425,10 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button class="mb-1" @click="onSaveUserPage()" variant="info default"><i class="icofont-save"></i> {{
+              <b-button class="mb-1" @click="onSaveUserPage()" variant="info default" size="sm"><i class="icofont-save"></i> {{
                 $t('permission-management.save') }}
               </b-button>
-              <b-button class="mb-1" @click="onTableListPage()" variant="danger default"><i class="icofont-long-arrow-left"></i> {{
+              <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
             </div>
@@ -579,7 +579,7 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button class="mb-1" @click="onTableListPage()" variant="danger default"><i class="icofont-long-arrow-left"></i> {{
+            <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.return') }}
             </b-button>
           </b-col>
@@ -733,15 +733,15 @@
               </div>
               <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status=='create'">
                 <div>
-                  <b-button @click="onClickCreateUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  <b-button @click="onClickCreateUserGroup" variant="info default" size="sm"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
                 </div>
               </div>
               <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status!='create'">
                 <div>
-                  <b-button @click="onClickModifyUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteUserGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
+                  <b-button @click="onClickDeleteUserGroup" variant="danger default" size="sm"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
                   </b-button>
 
                 </div>
