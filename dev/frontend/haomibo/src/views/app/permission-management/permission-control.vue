@@ -14,7 +14,7 @@
         <b-row class="h-100">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
-              <b-row>
+              <b-row class="m-0">
                 <b-col cols="3" class="pr-3">
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
@@ -82,141 +82,143 @@
               </b-row>
             </div>
           </b-col>
-          <b-col cols="4" class="section d-flex flex-column" v-if="selectedRole || roleForm.visible">
-            <div class="form-width-250" v-if="roleForm.visible">
-              <b-form @submit.prevent="onRoleFormSubmit">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.role-number')}}
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="roleForm.roleNumber"
-                    :state="!$v.roleForm.roleNumber.$invalid"
-                    :placeholder="$t('permission-management.permission-control.enter-role-number')" />
-                  <div v-if="!$v.roleForm.roleNumber.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-                </b-form-group>
-
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.role')}}
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-input
-                    v-model="roleForm.roleName"
-                    :state="!$v.roleForm.roleName.$invalid"
-                    :placeholder="$t('permission-management.permission-control.enter-role-name')" />
-                  <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-                </b-form-group>
-
-                <b-row>
-
-                  <b-col cols="12">
-                    <label class="font-weight-bold">
-                      {{$t('permission-management.permission-control.role-flag')}}
+          <b-col cols="4" class="pl-0" v-if="selectedRole || roleForm.visible">
+            <div class="section d-flex flex-column h-100 pl-5 pt-4">
+              <div class="form-width-250" v-if="roleForm.visible">
+                <b-form @submit.prevent="onRoleFormSubmit">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role-number')}}
                       <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="roleForm.roleNumber"
+                      :state="!$v.roleForm.roleNumber.$invalid"
+                      :placeholder="$t('permission-management.permission-control.enter-role-number')" />
+                    <div v-if="!$v.roleForm.roleNumber.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                  </b-form-group>
+
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role')}}
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input
+                      v-model="roleForm.roleName"
+                      :state="!$v.roleForm.roleName.$invalid"
+                      :placeholder="$t('permission-management.permission-control.enter-role-name')" />
+                    <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                  </b-form-group>
+
+                  <b-row>
+
+                    <b-col cols="12">
+                      <label class="font-weight-bold">
+                        {{$t('permission-management.permission-control.role-flag')}}
+                        <span class="text-danger">*</span>
+                      </label>
+                    </b-col>
+
+                    <b-col cols="12" class="text-center">
+                      <b-form-group>
+                        <b-form-radio-group>
+                          <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                          <b-form-radio v-model="roleFormFlag" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                        </b-form-radio-group>
+                      </b-form-group>
+                    </b-col>
+                  </b-row>
+
+                  <b-row v-if="['admin', 'user'].includes(roleFormFlag)">
+                    <b-col cols="12" class="text-right">
+                      <b-form-group>
+                        <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                      </b-form-group>
+                    </b-col>
+                    <b-col cols="12" class="h-35vh">
+                      <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
+                    </b-col>
+                  </b-row>
+
+                  <b-row class="mt-4">
+                    <b-col cols="12" class="text-right">
+
+                      <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="info default">
+                        <i class="icofont-save"></i>
+                        {{ $t('permission-management.permission-control.save') }}
+                      </b-button>
+                    </b-col>
+                  </b-row>
+
+                </b-form>
+              </div>
+
+              <div v-if="selectedRole">
+
+                <div>
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role-number')}}
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label>
+                      {{selectedRole.roleNumber}}
                     </label>
-                  </b-col>
+                  </b-form-group>
+                </div>
 
-                  <b-col cols="12" class="text-center">
-                    <b-form-group>
-                      <b-form-radio-group>
-                        <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                        <b-form-radio v-model="roleFormFlag" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
-                      </b-form-radio-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
+                <div>
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('permission-management.permission-control.role')}}
+                      <span class="text-danger">*</span>
+                    </template>
+                    <label>
+                      {{selectedRole.roleName}}
+                    </label>
+                  </b-form-group>
+                </div>
 
-                <b-row v-if="['admin', 'user'].includes(roleFormFlag)">
-                  <b-col cols="12" class="text-right">
-                    <b-form-group>
-                      <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
-                    </b-form-group>
-                  </b-col>
-                  <b-col cols="12" class="h-35vh">
-                    <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true" :halfcheck='true' />
-                  </b-col>
-                </b-row>
+                <div>
+                  <label class="font-weight-bold">
+                    {{$t('permission-management.permission-control.role-flag')}}
+                    <span class="text-danger">*</span>
+                  </label>
+                </div>
 
-                <b-row class="mt-4">
-                  <b-col cols="12" class="text-right">
+                <div class="text-center">
+                  <b-form-group>
+                    <b-form-radio-group>
+                      <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                      <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                    </b-form-radio-group>
+                  </b-form-group>
+                </div>
 
-                    <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="info default">
+                <div class="text-right" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
+                  <b-form-group>
+                    <b-form-checkbox v-model="isSelectedAllResourcesForRole">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
+                  </b-form-group>
+                </div>
+
+                <div class="h-35vh" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
+                  <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
+                </div>
+
+                <div class="text-right pt-3">
+                  <b-form-group>
+                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" @click="onClickSaveRole" variant="info default" class="mr-3">
                       <i class="icofont-save"></i>
-                      {{ $t('permission-management.permission-control.save') }}
+                      {{$t('permission-management.permission-control.save')}}
                     </b-button>
-                  </b-col>
-                </b-row>
-
-              </b-form>
-            </div>
-
-            <div v-if="selectedRole">
-
-              <div>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.role-number')}}
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>
-                    {{selectedRole.roleNumber}}
-                  </label>
-                </b-form-group>
-              </div>
-
-              <div>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('permission-management.permission-control.role')}}
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>
-                    {{selectedRole.roleName}}
-                  </label>
-                </b-form-group>
-              </div>
-
-              <div>
-                <label class="font-weight-bold">
-                  {{$t('permission-management.permission-control.role-flag')}}
-                  <span class="text-danger">*</span>
-                </label>
-              </div>
-
-              <div class="text-center">
-                <b-form-group>
-                  <b-form-radio-group>
-                    <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                    <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
-                  </b-form-radio-group>
-                </b-form-group>
-              </div>
-
-              <div class="text-right" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
-                <b-form-group>
-                  <b-form-checkbox v-model="isSelectedAllResourcesForRole">{{$t('permission-management.permission-control.select-all')}}</b-form-checkbox>
-                </b-form-group>
-              </div>
-
-              <div class="h-35vh" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
-                <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true' />
-              </div>
-
-              <div class="text-right pt-3">
-                <b-form-group>
-                  <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" @click="onClickSaveRole" variant="info default" class="mr-3">
-                    <i class="icofont-save"></i>
-                    {{$t('permission-management.permission-control.save')}}
-                  </b-button>
-                  <b-button @click="onClickDeleteRole(selectedRole)" variant="danger default">
-                    <i class="icofont-bin"></i>
-                    {{$t('permission-management.permission-control.delete')}}
-                  </b-button>
-                </b-form-group>
+                    <b-button @click="onClickDeleteRole(selectedRole)" variant="danger default">
+                      <i class="icofont-bin"></i>
+                      {{$t('permission-management.permission-control.delete')}}
+                    </b-button>
+                  </b-form-group>
+                </div>
               </div>
             </div>
           </b-col>
@@ -227,7 +229,7 @@
         <b-row class="h-100">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
-              <b-row>
+              <b-row class="m-0">
                 <b-col cols="2" class="pr-3">
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
@@ -307,87 +309,89 @@
               </b-row>
             </div>
           </b-col>
-          <b-col cols="4" class="section d-flex flex-column" v-if="selectedDataGroup">
-            <div class="form-width-250" v-if="dataGroupDetailStatus === 'create'">
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <b-form-input
-                  v-model="dataGroupForm.dataGroupNumber"
-                  :state="!$v.dataGroupForm.dataGroupNumber.$invalid" />
-                <div v-if="!$v.dataGroupForm.dataGroupNumber.$invalid">&nbsp;</div>
-                <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-number')}}
-                </b-form-invalid-feedback>
-              </b-form-group>
+          <b-col cols="4" class="pl-0" v-if="selectedDataGroup">
+            <div class="section d-flex flex-column h-100 pl-5 pt-4">
+              <div class="form-width-250" v-if="dataGroupDetailStatus === 'create'">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="dataGroupForm.dataGroupNumber"
+                    :state="!$v.dataGroupForm.dataGroupNumber.$invalid" />
+                  <div v-if="!$v.dataGroupForm.dataGroupNumber.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-number')}}
+                  </b-form-invalid-feedback>
+                </b-form-group>
 
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.permission-control.data-group')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <b-form-input
-                  v-model="dataGroupForm.dataGroupName"
-                  :state="!$v.dataGroupForm.dataGroupName.$invalid" />
-                <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
-                <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-name')}}
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </div>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="dataGroupForm.dataGroupName"
+                    :state="!$v.dataGroupForm.dataGroupName.$invalid" />
+                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-name')}}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </div>
 
-            <div class="form-width-250" v-if="dataGroupDetailStatus !== 'create'">
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <label>
-                  {{selectedDataGroup.dataGroupNumber}}
-                </label>
-              </b-form-group>
+              <div class="form-width-250" v-if="dataGroupDetailStatus !== 'create'">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group-number')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>
+                    {{selectedDataGroup.dataGroupNumber}}
+                  </label>
+                </b-form-group>
 
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <label>
-                  {{selectedDataGroup.dataGroupName}}
-                </label>
-              </b-form-group>
-            </div>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.permission-control.data-group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>
+                    {{selectedDataGroup.dataGroupName}}
+                  </label>
+                </b-form-group>
+              </div>
 
-            <div>
-              <label class="font-weight-bold">{{$t('permission-management.permission-control.data-range')}}<span class="text-danger">*</span></label>
-            </div>
+              <div>
+                <label class="font-weight-bold">{{$t('permission-management.permission-control.data-range')}}<span class="text-danger">*</span></label>
+              </div>
 
-            <div class="text-right">
-              <b-form-group>
-                <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
-                  {{$t('permission-management.permission-control.select-all')}}
-                </b-form-checkbox>
-              </b-form-group>
-            </div>
+              <div class="text-right">
+                <b-form-group>
+                  <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                    {{$t('permission-management.permission-control.select-all')}}
+                  </b-form-checkbox>
+                </b-form-group>
+              </div>
 
-            <div class="h-35vh">
-              <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
-            </div>
+              <div class="h-35vh">
+                <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true' />
+              </div>
 
-            <div class="text-right pt-3" v-if="dataGroupDetailStatus==='create'">
-              <b-form-group>
-                <b-button @click="createDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
-                </b-button>
-              </b-form-group>
-            </div>
+              <div class="text-right pt-3" v-if="dataGroupDetailStatus==='create'">
+                <b-form-group>
+                  <b-button @click="createDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                </b-form-group>
+              </div>
 
-            <div class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
-              <b-form-group>
-                <b-button @click="onClickSaveDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
-                </b-button>
-                <b-button @click="onClickDeleteDataGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
-                </b-button>
-              </b-form-group>
+              <div class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
+                <b-form-group>
+                  <b-button @click="onClickSaveDataGroup()" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                  <b-button @click="onClickDeleteDataGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
+                  </b-button>
+                </b-form-group>
+              </div>
             </div>
           </b-col>
         </b-row>
