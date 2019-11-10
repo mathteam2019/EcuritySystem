@@ -1736,6 +1736,7 @@ button {
   background: $nav-background-color url($nav-background) no-repeat;
   background-position: right;
   height: $navbar-height;
+  background-size: cover;
   padding: 1.5rem 0 1.5rem 0;
   @include depth(1);
 

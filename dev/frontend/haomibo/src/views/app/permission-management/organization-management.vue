@@ -216,7 +216,7 @@
                   <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
-                                v-model="createPage.orgName"
+                                v-model="createPage.orgNumber"
                                 :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
                 </b-form-group>
               </b-col>
@@ -225,7 +225,7 @@
                   <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
-                                v-model="createPage.orgNumber"
+                                v-model="createPage.orgName"
                                 :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
                 </b-form-group>
               </b-col>
