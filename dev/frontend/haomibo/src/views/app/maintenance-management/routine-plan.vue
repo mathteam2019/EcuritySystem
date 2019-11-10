@@ -1,4 +1,9 @@
 <style lang="scss">
+  .inline-form-no-margin {
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
   .inline-label-form-section {
     .w-130-px {
       width: 130px !important;
@@ -34,6 +39,24 @@
         font-size: 19px;
         color: #9c9999;
       }
+    }
+  }
+  .form-group {
+    label.input-label {
+      line-height: 36px;
+    }
+  }
+
+  div.img-wrapper {
+    width: 270px;
+    height: 420px;
+    padding: 30px;
+    border: solid 1px #bdbaba;
+    border-radius: 3px;
+    position: relative;
+    img {
+      width: 100%;
+      object-fit: scale-down;
     }
   }
 </style>
