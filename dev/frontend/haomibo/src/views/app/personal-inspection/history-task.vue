@@ -10,7 +10,7 @@
 
     <b-card class="main-without-tab" v-if="pageStatus === 'table'">
       <div class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-4">
           <b-col cols="8">
             <b-row>
 
