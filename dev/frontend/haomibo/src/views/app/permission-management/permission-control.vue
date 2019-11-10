@@ -439,8 +439,8 @@
     cursor: pointer !important;
   }
   .h-35vh {
-    height: 35vh;
-    max-height: 35vh;
+    height: 33vh;
+    max-height: 33vh;
     overflow: auto;
   }
 </style>
