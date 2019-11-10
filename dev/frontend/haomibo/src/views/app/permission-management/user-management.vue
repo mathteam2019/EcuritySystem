@@ -408,19 +408,17 @@
             </b-row>
 
           </b-col>
-          <b-col cols="2" class="text-right">
+          <b-col cols="2" class="text-center">
             <b-card class="mb-4" no-body>
-              <div class="position-relative img-wrapper p-1" style="min-height: 180px">
+              <div class="position-relative img-wrapper p-1" style="min-height: 280px">
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
-                <b-badge
-                  :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
-                  pill class="position-absolute badge-bottom-left">
-                  {{$t('permission-management.' + profileForm.status)}}
-                </b-badge>
+                <div class="position-absolute badge-bottom-left">
+                  <img src="../../../assets/img/active_stamp.png">
+                </div>
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </b-card>
-            <b-button @click="$refs.profileFile.click()" class="mb-1" variant="light default" size="sm">{{
+            <b-button @click="$refs.profileFile.click()" class="mb-1" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
             </b-button>
           </b-col>

@@ -1,10 +1,6 @@
 <style lang="scss">
   .form-section {
     height: 100%;
-    .form-group {
-      max-width: 200px;
-      margin-bottom: 2rem;
-    }
     .stamp-wrapper {
       bottom: 17%;
       left: 3%;
