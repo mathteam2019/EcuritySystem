@@ -13,7 +13,7 @@
 
       <b-row v-if="pageStatus=='table'" class="h-100">
         <b-col cols="12 d-flex flex-column">
-          <b-row>
+          <b-row class="pt-4">
             <b-col cols="6">
               <b-row>
                 <b-col >
@@ -160,103 +160,104 @@
         </b-col>
       </b-row>
 
-      <b-row v-if="pageStatus !== 'table'">
-        <b-col cols="12">
-          <div class="mb-4">
-            <b-row>
-              <b-col cols="6">
-                <b-row>
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.site-no')}}&nbsp;
-                        <span class="text-danger">*</span>
-                      </template>
-                      <b-form-input type="text" v-model="siteForm.siteNumber"
-                                    :state="!$v.siteForm.siteNumber.$invalid"
-                                    :placeholder="$t('system-setting.please-enter-site-no')"></b-form-input>
-                      <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-                    </b-form-group>
-                  </b-col>
+      <b-row v-if="pageStatus !== 'table'" class="h-100">
+        <b-col cols="12 d-flex flex-column form-section " class="position-relative">
+          <b-row>
+            <b-col cols="6">
+              <b-row>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.site-no')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input type="text" v-model="siteForm.siteNumber"
+                                  :state="!$v.siteForm.siteNumber.$invalid"
+                                  :placeholder="$t('system-setting.please-enter-site-no')"></b-form-input>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.site')}}&nbsp;
-                        <span class="text-danger">*</span>
-                      </template>
-                      <b-form-input type="text" v-model="siteForm.siteName"
-                                    :state="!$v.siteForm.siteName.$invalid"
-                                    :placeholder="$t('system-setting.please-enter-site-name')"></b-form-input>
-                      <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.site')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input type="text" v-model="siteForm.siteName"
+                                  :state="!$v.siteForm.siteName.$invalid"
+                                  :placeholder="$t('system-setting.please-enter-site-name')"></b-form-input>
+                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}</b-form-invalid-feedback>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.super-site-no')}}&nbsp;
-                        <span class="text-danger">*</span>
-                      </template>
-                      <b-form-input type="text" v-model="selectedStatus" disabled></b-form-input>
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.super-site-no')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-input type="text" v-model="selectedStatus" disabled></b-form-input>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.super-site')}}&nbsp;
-                        <span class="text-danger">*</span>
-                      </template>
-                      <b-form-select :options="superSiteOptions" v-model="selectedStatus" plain />
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.super-site')}}&nbsp;
+                      <span class="text-danger">*</span>
+                    </template>
+                    <b-form-select :options="superSiteOptions" v-model="selectedStatus" plain />
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.manager')}}
-                      </template>
-                      <b-form-input type="text" :placeholder="$t('system-setting.please-enter-manager')"></b-form-input>
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.manager')}}
+                    </template>
+                    <b-form-input type="text" :placeholder="$t('system-setting.please-enter-manager')"></b-form-input>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('system-setting.system-phone')}}
-                      </template>
-                      <b-form-input type="text" :placeholder="''"></b-form-input>
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group>
+                    <template slot="label">
+                      {{$t('system-setting.system-phone')}}
+                    </template>
+                    <b-form-input type="text" :placeholder="''"></b-form-input>
+                  </b-form-group>
+                </b-col>
 
-                  <b-col cols="6">
-                    <b-form-group :label="$t('system-setting.remarks')">
-                      <b-form-textarea rows="4" :placeholder="$t('system-setting.please-enter-remarks')"></b-form-textarea>
-                    </b-form-group>
-                  </b-col>
+                <b-col cols="6">
+                  <b-form-group :label="$t('system-setting.remarks')">
+                    <b-form-textarea rows="4" :placeholder="$t('system-setting.please-enter-remarks')"></b-form-textarea>
+                  </b-form-group>
+                </b-col>
 
-                </b-row>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12" class="text-right pt-3">
-                <b-form-group>
-                  <b-button @click="" variant="info default" v-if="pageStatus !== 'show'">
-                    <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
-                  </b-button>
-                  <b-button @click="" variant="warning default" v-if="pageStatus !== 'create'">
-                    <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
-                  </b-button>
-                  <b-button @click="" variant="danger default" v-if="pageStatus !== 'create'">
-                    <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
-                  </b-button>
-                  <b-button @click="onReturnClicked" variant="info default">
-                    <i class="icofont-long-arrow-left"></i> {{$t('system-setting.return')}}
-                  </b-button>
-                </b-form-group>
-              </b-col>
-            </b-row>
+              </b-row>
+            </b-col>
+          </b-row>
+          <b-row class="flex-grow-1 align-items-end">
+            <b-col cols="12" class="d-flex justify-content-end">
+              <div class="mr-3">
+                <b-button @click="" size="sm" variant="success default" v-if="pageStatus !== 'show'">
+                  <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                </b-button>
+                <b-button @click="" size="sm" variant="warning default" v-if="pageStatus !== 'create'">
+                  <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
+                </b-button>
+                <b-button @click="" size="sm" variant="danger default" v-if="pageStatus !== 'create'">
+                  <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+                </b-button>
+                <b-button @click="onReturnClicked" size="sm" variant="info default">
+                  <i class="icofont-long-arrow-left"></i> {{$t('system-setting.return')}}
+                </b-button>
+              </div>
+            </b-col>
+          </b-row>
+          <div class="position-absolute" style="bottom: 20%;left: 2%">
+            <img  src="../../../assets/img/active_stamp.png">
           </div>
         </b-col>
       </b-row>
