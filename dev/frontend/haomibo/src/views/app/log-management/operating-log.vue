@@ -179,21 +179,20 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="operatingLogTable"
-                    :api-url="operatingLogTableItems.apiUrl"
+                    :api-mode="false"
                     :fields="operatingLogTableItems.fields"
-                    :http-fetch="userGroupTableHttpFetch"
-                    pagination-path="operatingLogPagination"
+                    :data-manager="operatingLogDataManager"
+                    pagination-path="pagination"
                     class="table-hover"
-                    @vuetable:pagination-data="onUserGroupTablePaginationData"
+                    @vuetable:pagination-data="onOperatingLogTablePaginationData"
                   >
                   </vuetable>
                 </div>
                 <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="operatingLogPagination"
-                    @vuetable-pagination:change-page="onUserGroupTableChangePage"
+                    @vuetable-pagination:change-page="onOperatingLogTableChangePage"
                     :initial-per-page="operatingLogTableItems.perPage"
-                    @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -240,9 +239,6 @@
                     endTime: '',
 
                 },
-                groupFilter:{
-                  name:null
-                },
                 statusSelectData: [
                     {value: null, text: this.$t('log-management.operating-log.status-all')},
                     {value: 'active', text: this.$t('log-management.operating-log.status-success')},
@@ -250,6 +246,11 @@
                 ],
                 vueTableItems: {
                     fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
                         {
                             name: 'number',
                             title: this.$t('log-management.operating-log.number'),
@@ -340,11 +341,16 @@
                         "accessUser": "5436576754",
                     },
                 ],
+
                 //second tab content
                 operatingLogTableItems: {
-                    apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
                     perPage: 5,
                     fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
                         {
                             name: 'number',
                             title: this.$t('log-management.operating-log.number'),
@@ -424,378 +430,102 @@
                         }
                     ],
                 },
-
+                operatingLogtempData: [
+                    {
+                        "number": 1,
+                        "userId": "100",
+                        "userNumber": "246",
+                        "clientIp": "170.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 2,
+                        "userId": "731",
+                        "userNumber": "45",
+                        "clientIp": "102.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 3,
+                        "userId": "100",
+                        "userNumber": "246",
+                        "clientIp": "170.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 4,
+                        "userId": "132",
+                        "userNumber": "246",
+                        "clientIp": "170.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 5,
+                        "userId": "12",
+                        "userNumber": "246",
+                        "clientIp": "102.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 6,
+                        "userId": "498",
+                        "userNumber": "341",
+                        "clientIp": "170.135.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                    {
+                        "number": 7,
+                        "userId": "369",
+                        "userNumber": "100",
+                        "clientIp": "151.108.49.5",
+                        "operatingObject": "2139910831",
+                        "operatingNumber": "2139910831",
+                        "operating": "test",
+                        "operatingContent": null,
+                        "operatingResult": null,
+                        "failureCode": null,
+                        "operatingTime": null,
+                    },
+                ],
             }
         },
         methods: {
-            onTableListPage() {
-                this.pageStatus = 'table';
-            },
-            onSaveUserPage() {
-                this.submitted = true;
-                this.$v.$touch();
-                if (this.$v.$invalid) {
-                    return;
-                }
-
-                const formData = new FormData();
-                for (let key in this.profileForm) {
-                    if (key !== 'portrait')
-                        formData.append(key, this.profileForm[key]);
-                    else if (this.profileForm['portrait'] !== null)
-                        formData.append(key, this.profileForm[key], this.profileForm[key].name);
-                }
-                // call api
-                let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
-                getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user/` + finalLink, formData)
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                this.onInitialUserData();
-                                // back to table
-                                this.pageStatus = 'table';
-                                break;
-                            case responseMessages['used-user-account']://duplicated user account
-                                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                break;
-                        }
-                    })
-                    .catch((error) => {
-                    });
-            },
-            onAction(action, data, index) {
-                let userId = data.userId;
-                switch (action) {
-                    case 'modify':
-                        this.fnModifyItem(data);
-                        break;
-                    case 'show':
-                        this.fnShowItem(data);
-                        break;
-                    case 'reset-password':
-                    case 'active':
-                    case 'unblock':
-                        this.fnChangeItemStatus(userId, action);
-                        break;
-                    case 'inactive':
-                    case 'blocked':
-                        this.fnShowConfDiaglog(userId, action);
-                        break;
-                    case 'group-remove':
-                        this.fnShowUserGroupConfDiaglog(data);
-                        break;
-                }
-            },
-            fnHideModal(modal) {
-                // hide modal
-                this.$refs[modal].hide();
-                this.promptTemp = {
-                    userId: 0,
-                    action: ''
-                }
-            },
-            fnShowConfDiaglog(userId, action) {
-                this.promptTemp.userId = userId;
-                this.promptTemp.action = action;
-                this.$refs['modal-prompt'].show();
-            },
-            fnModifyItem(data) {
-                this.onInitialUserData();
-                for (let key in this.profileForm) {
-                    if (Object.keys(data).includes(key)) {
-                        if (key !== 'portrait' && key !== 'avatar')
-                            this.profileForm[key] = data[key];
-                        else if (key === 'portrait')
-                            this.profileForm.avatar = apiBaseUrl + data['portrait'];
-                    }
-                }
-                this.profileForm.portrait = null;
-                this.profileForm.passwordType = 'default';
-                this.pageStatus = 'create';
-            },
-            fnShowItem(data) {
-                this.onInitialUserData();
-                for (let key in this.profileForm) {
-                    if (Object.keys(data).includes(key))
-                        if (key !== 'portrait' && key !== 'avatar')
-                            this.profileForm[key] = data[key];
-                        else if (key === 'portrait')
-                            this.profileForm.avatar = apiBaseUrl + data['portrait'];
-                }
-                this.profileForm.portrait = null;
-                this.profileForm.passwordType = 'default';
-                this.pageStatus = 'show';
-            },
-            fnChangeItemStatus(userId = 0, action = '') {
-                if (userId === 0)
-                    userId = this.promptTemp.userId;
-                if (action === '')
-                    action = this.promptTemp.action;
-                let status = action;
-                if (status === 'unblock' || status === 'reset-password')
-                    status = 'inactive';
-                getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
-                        'userId': userId,
-                        'status': status,
-                    })
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-change-status-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-
-                                this.$refs.vuetable.refresh();
-
-                                break;
-                        }
-                    })
-                    .catch((error) => {
-                    })
-                    .finally(() => {
-                        this.$refs['modal-prompt'].hide();
-                    });
-
-            },
-            onFileChange(e) {
-                let files = e.target.files || e.dataTransfer.files;
-                if (!files.length)
-                    return;
-                this.onCreateImage(files[0]);
-            },
-            onCreateImage(file) {
-                this.profileForm.avatar = new Image();
-                let reader = new FileReader();
-                reader.onload = (e) => {
-                    this.profileForm.avatar = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                this.profileForm.portrait = file;
-            },
-            onSearchButton() {
-                this.$refs.vuetable.refresh();
-            },
-            onResetButton() {
-                this.filter = {
-                    userName: '',
-                    status: null,
-                    orgId: '',
-                    category: null
-                };
-                if (this.defaultOrgId !== '')
-                    this.filter.orgId = this.defaultOrgId;
-                this.$refs.vuetable.refresh();
-            },
-            onInitialUserData() {
-                this.profileForm = {
-                    status: 'inactive',
-                    userId: 0,
-                    avatar: '',
-                    userName: '',
-                    userNumber: '',
-                    gender: '',
-                    identityCard: '',
-                    orgId: '',
-                    post: '',
-                    education: '',
-                    degree: '',
-                    email: '',
-                    mobile: '',
-                    address: '',
-                    category: '',
-                    userAccount: '',
-                    passwordType: 'default',
-                    passwordValue: '',
-                    note: '',
-                    portrait: null
-                }
-            },
-            transform(response) {
-
-                let transformed = {};
-
-                let data = response.data;
-
-                transformed.pagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
-
-                transformed.data = [];
-                let temp;
-                for (let i = 0; i < data.data.length; i++) {
-                    temp = data.data[i];
-                    temp.orgName = fnGetOrgFullName(temp.org);
-                    transformed.data.push(temp)
-                }
-
-                return transformed
-
-            },
-
-            //second tab content
-            fnShowUserGroupConfDiaglog(userGroupItem) {
-                this.selectedUserGroupItem = userGroupItem;
-                this.$refs['modal-prompt-group'].show();
-            },
-            fnDeleteUserGroupItem() {
-                if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
-                    this.$refs['modal-prompt-group'].hide();
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-                            userGroupId: this.selectedUserGroupItem.userGroupId
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']: // okay
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-
-                                    this.$refs.userGroupTable.refresh();
-                                    this.selectedUserGroupItem = null;
-                                    break;
-                                case responseMessages['has-children']: // okay
-                                    this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    break;
-
-                            }
-                        })
-                        .catch((error) => {
-                        })
-                        .finally(() => {
-
-                        });
-                }
-            },
-            fnTransformUserGroupTable(response) {
-                this.selectedUserGroupItem = null;
-                let transformed = {};
-
-                let data = response.data;
-
-                transformed.operatingLogPagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
-
-                transformed.data = [];
-                let temp;
-                for (let i = 0; i < data.data.length; i++) {
-                    temp = data.data[i];
-                    transformed.data.push(temp)
-                }
-
-                return transformed
-
-            },
-            userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-                return getApiManager().post(apiUrl, {
-                    currentPage: httpOptions.params.page,
-                    perPage: this.vuetableItems.perPage,
-                    filter: {
-                        userName: this.filter.userName,
-                        status: this.filter.status,
-                        orgId: this.filter.orgId,
-                        category: this.filter.category,
-                    }
-                });
-            },
-            onUserTablePaginationData(paginationData) {
-                this.$refs.pagination.setPaginationData(paginationData)
-            },
-            onUserTableChangePage(page) {
-                this.$refs.vuetable.changePage(page)
-            },
-            onGroupFormSubmit() {
-                getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-
-                                this.$refs.userGroupTable.refresh();
-
-                                break;
-
-                        }
-                    })
-                    .catch((error) => {
-                    })
-                    .finally(() => {
-                        //
-                        this.groupForm = {
-                            groupName: null,
-                            groupNumber: null,
-                            status:'create'
-                        };
-                    });
-            },
-            userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-                return getApiManager().post(apiUrl, {
-                    currentPage: httpOptions.params.page,
-                    perPage: this.operatingLogTableItems.perPage,
-                    filter: {
-                        groupName: this.groupFilter.name,
-                    }
-                });
-            },
-            onUserGroupTablePaginationData(paginationData) {
-                this.$refs.operatingLogPagination.setPaginationData(paginationData)
-            },
-            onUserGroupTableChangePage(page) {
-                this.$refs.userGroupTable.changePage(page)
-            },
-            onDataGroupRowClass(dataItem, index) {
-                let selectedItem = this.selectedUserGroupItem;
-                if (selectedItem && selectedItem.userGroupId === dataItem.userGroupId) {
-                    return 'selected-row';
-                } else {
-                    return '';
-                }
-            },
-            onUserGroupTableRowClick(dataItems) {
-                this.selectedUserGroupItem = dataItems;
-                this.groupForm.status = 'modify';
-                console.log(this.selectedUserGroupItem);
-            },
-
-
             vueTableDataManager(sortOrder, pagination) {
                 let local = this.tempData;
 
@@ -824,6 +554,36 @@
             },
             onvueTableChangePage(page) {
                 this.$refs.vueTable.changePage(page);
+            },
+
+            operatingLogDataManager(sortOrder, pagination) {
+                let local = this.operatingLogtempData;
+
+                // sortOrder can be empty, so we have to check for that as well
+                if (sortOrder.length > 0) {
+                    local = _.orderBy(
+                        local,
+                        sortOrder[0].sortField,
+                        sortOrder[0].direction
+                    );
+                }
+                pagination = this.$refs.operatingLogTable.makePagination(
+                    local.length,
+                    this.operatingLogTableItems.perPage
+                );
+
+                let from = pagination.from - 1;
+                let to = from + this.operatingLogTableItems.perPage;
+                return {
+                    pagination: pagination,
+                    data: _.slice(local, from, to)
+                };
+            },
+            onOperatingLogTablePaginationData(paginationData) {
+                this.$refs.operatingLogPagination.setPaginationData(paginationData);
+            },
+            onOperatingLogTableChangePage(page) {
+                this.$refs.operatingLogTable.changePage(page);
             },
         }
     }

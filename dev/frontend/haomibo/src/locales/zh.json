@@ -39,7 +39,7 @@
   },
   "login":{
     "title":"统一权限管理系统",
-    "enter-user-email": "请输入人员邮箱",
+    "enter-user-email": "输入用户账号",
     "enter-user-password": "请输入人员密码"
   },
   "menu": {
