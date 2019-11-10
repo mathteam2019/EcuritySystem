@@ -6,7 +6,7 @@
   }
   div.img-wrapper {
     width: 270px;
-    height: 440px;
+    height: 420px;
     padding: 30px;
     border: solid 1px #bdbaba;
     border-radius: 3px;

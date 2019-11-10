@@ -6,10 +6,11 @@
   }
   div.img-wrapper {
     width: 270px;
-    height: 440px;
+    height: 420px;
     padding: 30px;
     border: solid 1px #bdbaba;
     border-radius: 3px;
+    position: relative;
     img {
       width: 100%;
       object-fit: scale-down;
@@ -301,7 +302,11 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
               <div class="img-wrapper">
-                <img :src="archivesForm.image" alt="img" />
+                <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
+                <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')" src="../../../assets/img/device.png">
+                <div class="position-absolute" style="bottom: -18%;left: -50%">
+                  <img src="../../../assets/img/active_stamp.png">
+                </div>
               </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
             <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
