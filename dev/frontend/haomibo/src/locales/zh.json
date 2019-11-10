@@ -560,9 +560,11 @@
       "check-item-level": "查获物品等级",
       "hand-process-history": "手检、过程任务、历史任务",
       "show-deleted-suspected-box": "显示被删除的嫌疑框",
+      "deleted-suspected-box-color": "被删除嫌疑框的颜色",
       "knowledge-base": "知识库",
       "knowledge-base-history-task": "知识库和历史任务",
-      "security-instrument-flow-setting": "安检仪流量设置"
+      "security-instrument-flow-setting": "安检仪流量设置",
+      "business-statistics": "综合统计"
     }
   },
   "log-management": {

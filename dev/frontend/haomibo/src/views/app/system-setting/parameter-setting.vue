@@ -10,170 +10,243 @@
 
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('system-setting.parameter-setting.platform-parameter')">
-        <div class="pl-5 pr-5">
-          <b-row>
-            <b-col cols="9">
-              <b-row>
-                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
-                <b-col><hr /></b-col>
-              </b-row>
 
-              <b-row>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('permission-management.password')">
-                    <b-form-input type="password"></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.login-fail-count')">
-                    <label>7</label>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+        <div class="section pt-0 mt-4 mx-3">
+          <b-tabs card>
+            <b-tab :title="$t('menu.personal-inspection')">
+              <div>
 
-              <b-row>
-                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
-                <b-col><hr /></b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="1">
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.scan')}}</label>
+                  </b-col>
+                  <b-col cols="2">
+                    <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.log-export-number')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="1">
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.judgement')}}</label>
+                  </b-col>
+                  <b-col cols="2">
+                    <b-form-group :label="$t('system-setting.parameter-setting.dispatch-timeout')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.processing-timeout-period')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="auto" class="d-flex align-items-center">{{$t('menu.permission-management')}}</b-col>
-                <b-col><hr /></b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="1">
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.history-task')}}</label>
+                  </b-col>
+                  <b-col cols="2">
+                    <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
+                      <b-form-select plain></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
+                      <b-form-select plain></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.seized-item-classification')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.seized-items')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.check-item-level')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="2">
-                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.scan')}}</label>
-                </b-col>
-                <b-col cols="4">
-                  <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="2">
-                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.judgement')}}</label>
-                </b-col>
-                <b-col cols="4">
-                  <b-form-group :label="$t('system-setting.parameter-setting.dispatch-timeout')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.processing-timeout-period')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="2">
-                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.history-task')}}</label>
-                </b-col>
-                <b-col cols="4">
-                  <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
-                    <b-form-select plain></b-form-select>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
-                    <b-form-select plain></b-form-select>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.seized-item-classification')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.seized-items')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.check-item-level')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col>
-                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </div>
+            </b-tab>
+            <b-tab :title="$t('permission-management.other')">
+              <div>
+                <b-row class="mb-3">
+                  <b-col cols="7">
+                    <b-row>
+                      <b-col cols="auto" class="d-flex align-items-center">
+                        <span class="font-weight-bold">
+                          {{$t('menu.permission-management')}}
+                        </span>
+                      </b-col>
+                      <b-col><hr /></b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('permission-management.password')">
+                      <b-form-input type="password"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.login-fail-count')">
+                      <label>7</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="auto" class="d-flex align-items-center">{{$t('system-setting.parameter-setting.knowledge-base')}}</b-col>
-                <b-col><hr /></b-col>
-              </b-row>
+                <b-row class="mb-3 mt-2">
+                  <b-col cols="7">
+                    <b-row>
+                      <b-col cols="auto" class="d-flex align-items-center">
+                        <span class="font-weight-bold">
+                          {{$t('menu.log-management')}}
+                        </span>
+                      </b-col>
+                      <b-col><hr /></b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col>
-                  <label class="font-weight-bold">{{$t('system-setting.parameter-setting.knowledge-base-history-task')}}</label>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.log-export-number')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row class="mb-3 mt-2">
+                  <b-col cols="7">
+                    <b-row>
+                      <b-col cols="auto" class="d-flex align-items-center">
+                        <span class="font-weight-bold">
+                          {{$t('system-setting.parameter-setting.business-statistics')}}
+                        </span>
+                      </b-col>
+                      <b-col><hr /></b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
 
-              <b-row>
-                <b-col cols="4" offset="2">
-                  <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-setting')">
-                    <b-form-select plain></b-form-select>
-                  </b-form-group>
-                </b-col>
-              </b-row>
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-setting')">
+                      <b-form-select plain></b-form-select>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
 
-            </b-col>
-          </b-row>
+                <b-row class="mb-3 mt-2">
+                  <b-col cols="7">
+                    <b-row>
+                      <b-col cols="auto" class="d-flex align-items-center">
+                        <span class="font-weight-bold">
+                          {{$t('permission-management.other')}}
+                        </span>
+                      </b-col>
+                      <b-col><hr /></b-col>
+                    </b-row>
+                  </b-col>
+                </b-row>
+
+                <b-row>
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
+                  </b-col>
+                </b-row>
+
+                <b-row>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+
+              </div>
+            </b-tab>
+          </b-tabs>
         </div>
+
       </b-tab>
 
-      <b-tab :title="$t('system-setting.parameter-setting.security-instrument')"></b-tab>
+      <b-tab :title="$t('system-setting.parameter-setting.security-instrument')">
+      </b-tab>
     </b-tabs>
   </div>
 </template>
 
-<style>
+<style lang="scss">
+  $internal-tab-content-height-offset: 400px;
+
   .vc-chrome {
     position: absolute;
     top: 35px;
@@ -186,6 +259,47 @@
     height: 16px;
     background-color: #000;
     cursor: pointer;
+  }
+
+  .section.pt-0 {
+
+    .nav-tabs .nav-link {
+      &.active {
+        box-shadow: none!important;
+        border-left: 1px #cccccc solid;
+        border-right: 1px #cccccc solid;
+
+        &::before {
+          height: 0px;
+        }
+      }
+      &:not(.active) {
+        background-color: transparent!important;
+      }
+    }
+
+    .card-header-tabs {
+      margin-left: calc(-1.25rem - 1px);
+    }
+
+    .tab-content {
+      box-shadow: none!important;
+      border-top: 1px #cccccc solid;
+      border-top-left-radius: 0px!important;
+      border-top-right-radius: 0px!important;
+      padding-top: 0px!important;
+      min-height: calc(100vh - #{$internal-tab-content-height-offset});
+      max-height: calc(100vh - #{$internal-tab-content-height-offset});
+
+
+      .font-weight-bold {
+        color: #acacac;
+      }
+
+      div.tab-pane.active {
+        height: calc(100vh - #{$internal-tab-content-height-offset - 30px});
+      }
+    }
   }
 </style>
 
