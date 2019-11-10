@@ -42,19 +42,19 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                      <b-form-select :options="assignFlagSelectOptions" v-model="userFilter.assignFlag" plain/>
+                      <b-form-select :options="affiliatedOrgSelectOptions" v-model="userFilter.affiliatedOrg" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
-                      <b-form-input v-model="groupFilter.role" ></b-form-input>
+                      <b-form-input v-model="userFilter.role" ></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
-                      <b-form-input v-model="groupFilter.dataRange" ></b-form-input>
+                      <b-form-input v-model="userFilter.dataRange" ></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -62,10 +62,10 @@
 
               <b-col cols="6" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -87,6 +87,7 @@
                   <vuetable
                     ref="userVuetable"
                     :api-mode="false"
+                    :data="userTempData"
                     :api-url="userVuetableItems.apiUrl"
                     :fields="userVuetableItems.fields"
                     :per-page="userVuetableItems.perPage"
@@ -97,61 +98,17 @@
 
                     <template slot="actions" slot-scope="props">
                       <div>
-                        <template v-if="props.rowData.status=='inactive'">
-                          <b-button
-                            size="sm"
-                            variant="info"
-                            @click="onAction('modify', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-modify') }}
-                          </b-button>
-                          <b-button
-                            size="sm"
-                            variant="success"
-                            @click="onAction('activate', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-activate') }}
-                          </b-button>
-                          <b-button
-                            size="sm"
-                            variant="danger"
-                            @click="onAction('delete', props.rowData, props.rowIndex)">
-                            {{ $t('permission-management.org-action-delete') }}
-                          </b-button>
-                        </template>
+                        <b-button
+                          size="sm"
+                          variant="primary default btn-square">
+                          <i class="icofont-edit"></i>
+                        </b-button>
 
-                        <template v-if="props.rowData.status=='active'">
-                          <b-button
-                            size="sm"
-                            variant="info"
-                            disabled>
-                            {{ $t('permission-management.org-action-modify') }}
-                          </b-button>
-
-                          <template v-if="props.rowData.parentOrgId==0">
-                            <b-button
-                              size="sm"
-                              variant="warning"
-                              disabled>
-                              {{ $t('permission-management.org-action-deactivate') }}
-                            </b-button>
-                          </template>
-                          <template v-else>
-                            <b-button
-                              size="sm"
-                              variant="warning"
-                              @click="onAction('deactivate', props.rowData, props.rowIndex)">
-                              {{ $t('permission-management.org-action-deactivate') }}
-                            </b-button>
-                          </template>
-
-
-                          <b-button
-                            size="sm"
-                            variant="danger"
-                            disabled>
-                            {{ $t('permission-management.org-action-delete') }}
-                          </b-button>
-                        </template>
-
+                        <b-button
+                          size="sm"
+                          variant="danger default btn-square">
+                          <i class="icofont-bin"></i>
+                        </b-button>
                       </div>
                     </template>
 
@@ -266,9 +223,9 @@
 
               </b-col>
               <b-col cols="12 " class="align-self-end text-right">
-                <b-button size="sm" variant="info default" @click="onActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
-                <b-button size="sm" variant="danger default" @click="onActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
-                <b-button size="sm" variant="info default" @click="onActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
+                <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button size="sm" variant="info default" @click="onUserActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
           </b-col>
@@ -596,14 +553,16 @@
     data() {
       return {
         direction: getDirection().direction,
-        assignFlagSelectOptions: [ // on the filtering
+        affiliatedOrgSelectOptions: [ // on the filtering
           {value: null, text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.all')},
-          {value: 'assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.assigned')},
-          {value: 'not_assigned', text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.not-assigned')}
+          {value: 1, text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.assigned')},
+          {value: 2, text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.not-assigned')}
         ],
         userFilter: {
-          assignFlag: null,
-          userName: ''
+          userName: '',
+          affiliatedOrg: null,
+          role: '',
+          dataRange: ''
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
           userVuetableItems: { // main table options
@@ -614,60 +573,79 @@
                   titleClass: 'text-center',
                   dataClass: 'text-center'
                 },
-                  {
-                      name: 'userId',
-                      title: this.$t('permission-management.th-no'),
-                      sortField: 'userId',
-                      titleClass: 'text-center',
-                      dataClass: 'text-center'
-                  },
-                  {
-                      name: 'userName',
-                      title: this.$t('permission-management.assign-permission-management.user'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center'
-                  },
-                  {
-                      name: 'gender',
-                      title: this.$t('permission-management.gender'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center'
-                  },
-                  {
-                      name: 'account',
-                      title: this.$t('permission-management.th-account'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center',
-                  },
-                  {
-                      name: 'affiliatedOrg',
-                      title: this.$t('permission-management.assign-permission-management.affiliated-org'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center',
-                  },
-                  {
-                      name: 'role',
-                      title: this.$t('permission-management.assign-permission-management.group.role'),
-                      titleClass: 'text-center',
-                      dataClass: 'text-center',
-                  },
-                  {
-                      name: 'groupRange',
-                      title: this.$t('permission-management.assign-permission-management.group.data-range'),
-                      sortField: 'leader',
-                      titleClass: 'text-center',
-                      dataClass: 'text-center'
-                  },
-                  {
-                      name: '__slot:actions',
-                      title: this.$t('permission-management.th-org-actions'),
-                      titleClass: 'text-center btn-actions',
-                      dataClass: 'text-center'
-                  },
-
+                {
+                  name: 'userId',
+                  title: this.$t('permission-management.th-no'),
+                  sortField: 'userId',
+                  titleClass: 'text-center',
+                  dataClass: 'text-center'
+                },
+                {
+                  name: 'userName',
+                  title: this.$t('permission-management.assign-permission-management.user'),
+                  titleClass: 'text-center',
+                  dataClass: 'text-center'
+                },
+                {
+                  name: 'gender',
+                  title: this.$t('permission-management.gender'),
+                  titleClass: 'text-center',
+                  dataClass: 'text-center',
+                  callback: (value) => {
+                      const dictionary = {
+                          "male": `<span>${this.$t('permission-management.male')}</span>`,
+                          "female": `<span>${this.$t('permission-management.female')}</span>`,
+                          "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+                      };
+                      if (!dictionary.hasOwnProperty(value)) return '';
+                      return dictionary[value];
+                  }
+                },
+                {
+                  name: 'userAccount',
+                  title: this.$t('permission-management.th-account'),
+                  titleClass: 'text-center',
+                  dataClass: 'text-center',
+                },
+                {
+                    name: 'affiliatedOrg',
+                    title: this.$t('permission-management.assign-permission-management.affiliated-org'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center',
+                },
+                {
+                    name: 'role',
+                    title: this.$t('permission-management.assign-permission-management.group.role'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center',
+                },
+                {
+                    name: 'dataRange',
+                    title: this.$t('permission-management.assign-permission-management.group.data-range'),
+                    sortField: 'leader',
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: '__slot:actions',
+                    title: this.$t('permission-management.th-org-actions'),
+                    titleClass: 'text-center btn-actions',
+                    dataClass: 'text-center'
+                },
               ],
               perPage: 5,
           },
+        userTempData: [
+          {
+              userId: 1,
+              userName: 'user1',
+              gender: 'male',
+              userAccount: 'u-1',
+              affiliatedOrg: '总部/生产部',
+              role: 'role-1',
+              dataRange: '个人数据',
+          }
+        ],
         createPage: { // create page
           orgName: '',
           orgNumber: '',
@@ -1308,9 +1286,18 @@
 
       },
 
+      onUserActionGroup(value){
+          switch (value) {
+              case 'show-list':
+                  this.pageStatus = 'table';
+                  break;
+              case 'delete-item':
+                  break;
+          }
+      },
+
       //TODO assign user group point
       onActionGroup(value){
-        console.log(value);
         switch (value) {
           case 'show-list':
             this.groupPageStatus = 'table';
@@ -1429,6 +1416,21 @@
       onUserTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
+      onClickUserSearchButton() {
+          // TODO: search user
+          console.log('search user');
+      },
+      onClickUserResetButton() {
+          console.log('hello, world');
+          this.userFilter = {
+              userName: '',
+              affiliatedOrg: null,
+              role: '',
+              dataRange: ''
+          };
+          this.$refs.userVuetable.refresh();
+      },
+
     }
   }
 </script>
