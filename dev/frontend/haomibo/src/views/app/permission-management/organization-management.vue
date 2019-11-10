@@ -1,9 +1,14 @@
 <style lang="scss">
+  .stamp-wrapper {
+    left: 10%;
+    bottom: 20%;
+  }
   .bg-organization-structure {
+    background: url("../../../assets/img/bg-china-map.png") no-repeat center;
+    background-size: contain;
+    height: calc(100% - 50px);
     &>div {
-      background: url("../../../assets/img/bg-china-map.png") no-repeat center;
-      background-size: contain;
-      min-height: 60vh;
+      background: transparent!important;
     }
 
       .bg-level-1 {
@@ -17,6 +22,7 @@
       }
   }
 </style>
+
 <template>
   <div>
     <div class="breadcrumb-container">
@@ -202,8 +208,8 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus==='create'" class="form-section">
-          <b-col cols="5">
+        <b-row v-if="pageStatus==='create'" class="h-100 form-section">
+          <b-col cols="6">
             <b-row>
               <b-col cols="6">
                 <b-form-group >
@@ -268,24 +274,27 @@
                   <b-form-textarea
                     v-model="createPage.note"
                     :placeholder="$t('permission-management.please-enter-organization-note')"
-                    :rows="3"
-                    :max-rows="6"/>
+                    />
 
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="12" class="text-right">
-            <b-button variant="primary default" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
+          <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button variant="success default mr-1" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button variant="primary default" @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+            <b-button variant="primary default " @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
+          <div class="position-absolute stamp-wrapper">
+            <img src="../../../assets/img/active_stamp.png">
+          </div>
+
         </b-row>
-        <b-row v-if="pageStatus==='modify'" class="form-section">
-          <b-col cols="5">
+        <b-row v-if="pageStatus==='modify'" class="h-100 form-section">
+          <b-col cols="6">
             <b-row>
               <b-col cols="6">
                 <b-form-group >
@@ -357,24 +366,30 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="12" class="text-right">
-            <b-button variant="primary default" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
+          <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button variant="success default mr-1" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
             <b-button variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
+          <div class="position-absolute stamp-wrapper">
+            <img src="../../../assets/img/active_stamp.png">
+          </div>
         </b-row>
 
       </b-tab>
 
       <b-tab :title="$t('permission-management.organization-structure')">
 
-        <b-row>
+        <b-row class="h-100">
           <b-col cols="12">
-            <div class="table-responsive" >
+            <div class="table-responsive h-100" >
               <div class="bg-organization-structure text-center">
+                <h3 style="font-size: 2rem;color: #1a3035" class="font-weight-bold my-4 mb-5 pb-4">
+                  <span>{{$t('login.title')}}</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
+                </h3>
                 <vue2-org-tree
                   :data="treeData"
                   :horizontal="false"
