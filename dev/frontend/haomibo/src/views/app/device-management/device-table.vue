@@ -300,7 +300,7 @@
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column pb-3 pr-3">
+      <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column pb-3">
         <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
                  :no-fade="true">
           <b-tab :title="$t('device-management.device-table.device-info')">
