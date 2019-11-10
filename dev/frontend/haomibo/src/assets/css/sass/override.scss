@@ -114,12 +114,12 @@ main {
     div.tab-content {
       margin-bottom: 1rem !important;
       padding: $tab-padding-1 0 $tab-padding-2 0;
-      min-height: calc(100vh - #{$nav-height + $bread-height + 65px});
+      min-height: calc(100vh - #{$nav-height + $bread-height + 65px} );
       max-height: calc(100vh - #{$nav-height + $bread-height + 65px});
       height: calc(100vh - #{$nav-height + $bread-height + 65px});
       border-top: 1px #eaeaea solid;
       &>div.tab-pane.active {
-        height: calc(100vh - #{$nav-height + $bread-height + 65px + $tab-padding-1 + $tab-padding-2});
+        height: calc(100vh - #{$nav-height + $bread-height + 65px + $tab-padding-1 + $tab-padding-2} );
         overflow-y: auto;
         &>div.row {
           margin: 0;
