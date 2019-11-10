@@ -411,7 +411,7 @@
           </b-col>
           <b-col cols="2" class="text-center">
             <div class="mb-4 img-wrapper" >
-              <div class="position-relative  p-1" style="min-height: 280px">
+              <div class="position-relative  p-1" >
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
                 <div class="position-absolute" style="bottom: -18%;left: -50%">
                   <img src="../../../assets/img/active_stamp.png">
@@ -569,7 +569,7 @@
           </b-col>
           <b-col cols="2" class="text-right">
             <div class="mb-4 img-wrapper" >
-              <div class="position-relative  p-1" style="min-height: 280px">
+              <div class="position-relative  p-1" >
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
                 <div class="position-absolute" style="bottom: -18%;left: -50%">
                   <img src="../../../assets/img/active_stamp.png">
