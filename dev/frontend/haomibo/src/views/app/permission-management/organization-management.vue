@@ -1,7 +1,7 @@
 <style lang="scss">
   .stamp-wrapper {
-    left: 10%;
-    bottom: 20%;
+    left: 8%;
+    bottom: 17%;
   }
   .bg-organization-structure {
     background: url("../../../assets/img/bg-china-map.png") no-repeat center;
@@ -359,8 +359,7 @@
                   <b-form-textarea
                     v-model="modifyPage.note"
                     :placeholder="$t('permission-management.please-enter-organization-note')"
-                    :rows="3"
-                    :max-rows="6"/>
+                    />
 
                 </b-form-group>
               </b-col>
