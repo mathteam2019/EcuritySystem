@@ -38,9 +38,9 @@
     <b-tabs nav-class="ml-2" :no-fade="true" class="h-100">
 
       <b-tab :title="$t('permission-management.organization-table')">
-        <b-row v-if="pageStatus==='table'" class="h-100 mt-4">
+        <b-row v-if="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row>
+            <b-row class="pt-4">
               <b-col class="d-flex">
                 <div class="flex-grow-1">
 
