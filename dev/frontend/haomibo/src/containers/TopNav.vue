@@ -24,7 +24,7 @@
 
     <div class="navbar-right">
       <div class="d-inline-block mr-2">
-        <b-dropdown id="langddm" variant="empty" size="sm" toggle-class="language-button">
+        <b-dropdown id="langddm" variant="empty" size="sm" toggle-class="language-button" class="mr-4">
           <template slot="button-content">
             <span>
                 <img class="locale" :alt="$i18n.locale.toUpperCase()" :src="getLocaleIcon()"/>
@@ -48,7 +48,7 @@
         </b-dropdown>
       </div>
       <div class="d-inline-block">
-        <img src="/assets/img/turn_on_icon.svg" class="ml-4 mb-1 logout" @click="logout" />
+        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="logout" />
       </div>
     </div>
   </nav>
