@@ -5,8 +5,8 @@
   }
 
   .h-35vh {
-    height: 35vh;
-    max-height: 35vh;
+    height: 33vh;
+    max-height: 33vh;
     overflow: auto;
   }
 
@@ -590,10 +590,10 @@
       </b-tab>
 
       <b-tab :title="$t('permission-management.user-group')">
-        <b-row class="h-100">
+        <b-row class="h-100 ">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
-              <b-row>
+              <b-row class="m-0">
                 <b-col cols="3" class="pr-3">
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
@@ -666,86 +666,88 @@
               </b-row>
             </div>
           </b-col>
-          <b-col cols="4" class="section d-flex flex-column" v-if="selectedUserGroupItem">
-            <div class="form-width-250" v-if="groupForm.status=='create'">
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.user.group-number')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <b-form-input
-                  v-model="groupForm.groupNumber"
-                  :state="!$v.groupForm.groupNumber.$invalid" />
-                <div v-if="!$v.groupForm.groupNumber.$invalid">&nbsp;</div>
-                <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
-                </b-form-invalid-feedback>
+          <b-col cols="4" class="pl-0 " v-if="selectedUserGroupItem">
+            <div class="section d-flex flex-column h-100 pl-5 pt-4">
+              <div  v-if="groupForm.status=='create'">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.user.group-number')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="groupForm.groupNumber"
+                    :state="!$v.groupForm.groupNumber.$invalid" />
+                  <div v-if="!$v.groupForm.groupNumber.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
+                  </b-form-invalid-feedback>
 
-              </b-form-group>
+                </b-form-group>
 
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.user.group-name')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <b-form-input v-if="groupForm.status=='create'"
-                              v-model="groupForm.groupName"
-                              :state="!$v.groupForm.groupName.$invalid" />
-                <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
-                <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
-                </b-form-invalid-feedback>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.user.group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-input v-if="groupForm.status=='create'"
+                                v-model="groupForm.groupName"
+                                :state="!$v.groupForm.groupName.$invalid" />
+                  <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
+                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
+                  </b-form-invalid-feedback>
 
-              </b-form-group>
-            </div>
-            <div class="form-width-250" v-if="groupForm.status!='create'">
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.user.group-number')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <label >
-                  {{selectedUserGroupItem.groupNumber}}
-                </label>
-
-              </b-form-group>
-
-              <b-form-group>
-                <template slot="label">
-                  {{$t('permission-management.user.group-name')}}&nbsp;
-                  <span class="text-danger">*</span>
-                </template>
-                <label >
-                  {{selectedUserGroupItem.groupName}}
-                </label>
-
-              </b-form-group>
-            </div>
-            <div >
-              <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span class="text-danger">*</span></label>
-            </div>
-            <div class="text-right">
-              <b-form-group>
-                <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
-                  {{$t('permission-management.permission-control.select-all')}}
-                </b-form-checkbox>
-              </b-form-group>
-            </div>
-            <div class="h-35vh">
-
-              <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true'/>
-            </div>
-            <div class="text-right pt-3" v-if="groupForm.status=='create'">
-              <div>
-                <b-button @click="onClickCreateUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
-                </b-button>
+                </b-form-group>
               </div>
-            </div>
-            <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status!='create'">
-              <div>
-                <b-button @click="onClickModifyUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
-                </b-button>
-                <b-button @click="onClickDeleteUserGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
-                </b-button>
+              <div  v-if="groupForm.status!='create'">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.user.group-number')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label >
+                    {{selectedUserGroupItem.groupNumber}}
+                  </label>
 
+                </b-form-group>
+
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('permission-management.user.group-name')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label >
+                    {{selectedUserGroupItem.groupName}}
+                  </label>
+
+                </b-form-group>
+              </div>
+              <div >
+                <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span class="text-danger">*</span></label>
+              </div>
+              <div class="text-right">
+                <b-form-group>
+                  <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
+                    {{$t('permission-management.permission-control.select-all')}}
+                  </b-form-checkbox>
+                </b-form-group>
+              </div>
+              <div class="h-35vh">
+
+                <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true'/>
+              </div>
+              <div class="text-right pt-3" v-if="groupForm.status=='create'">
+                <div>
+                  <b-button @click="onClickCreateUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                </div>
+              </div>
+              <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status!='create'">
+                <div>
+                  <b-button @click="onClickModifyUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  </b-button>
+                  <b-button @click="onClickDeleteUserGroup" variant="danger default"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
+                  </b-button>
+
+                </div>
               </div>
             </div>
           </b-col>
