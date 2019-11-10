@@ -1,3 +1,16 @@
+<style lang="scss">
+  .form-section {
+    height: 100%;
+    .form-group {
+      max-width: 200px;
+      margin-bottom: 2rem;
+    }
+    .stamp-wrapper {
+      bottom: 17%;
+      left: 3%;
+    }
+  }
+</style>
 <template>
   <div>
     <div class="breadcrumb-container">
@@ -105,18 +118,18 @@
         </b-row>
 
       </div>
-      <div v-if="pageStatus=='create'">
-        <b-row class="form-section">
-          <b-col cols="5">
+      <div v-if="pageStatus=='create'" class="h-100 d-flex flex-column">
+        <b-row class="form-section d-flex">
+          <b-col cols="6">
             <b-row>
-              <b-col cols="6">
+              <b-col cols="6" >
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-input v-model="classifyForm.number"></b-form-input>
                 </b-form-group>
               </b-col>
-              <b-col cols="6">
+              <b-col cols="6" >
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify-item.device')}}<span class="text-danger">*</span>
                   </template>
@@ -150,12 +163,15 @@
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="12 text-right mt-3">
+          <b-col cols="12 text-right mt-3 " class="align-self-end">
             <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
             <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
             <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
           </b-col>
+          <div class="position-absolute stamp-wrapper">
+            <img src="../../../assets/img/active_stamp.png">
+          </div>
         </b-row>
       </div>
     </b-card>
