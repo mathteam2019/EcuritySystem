@@ -428,6 +428,10 @@
       "yes": "YES",
       "no": "NO"
     },
+    "device-table": {
+      "device-info": "设备信息",
+      "archive-info": "档案信息"
+    },
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计"
