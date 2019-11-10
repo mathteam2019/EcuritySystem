@@ -3,7 +3,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -111,85 +111,95 @@
       </div>
       <div v-if="pageStatus==='create'" class="form-section">
         <b-row>
-          <b-col xxs="12" md="4" lg="4">
-                <b-form @submit.prevent="onBasicSubmit">
-                  <b-form-group >
-                    <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
-                    </template>
-                    <b-form-input type="text" v-model="basicForm.templateNumber"
-                                  :placeholder="$t('device-management.template-number-placeholder')"/>
-                  </b-form-group>
-                  <b-form-group>
-                    <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
-                    </template>
-                    <b-form-input type="text" v-model="basicForm.templateName"
-                                  :placeholder="$t('device-management.template-name-placeholder')"/>
-                  </b-form-group>
-                  <b-form-group >
-                    <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
-                    </template>
-                    <b-form-select v-model="basicForm.deviceClassify" :options="deviceClassifyData" :placeholder="$t('device-management.device-classify-placeholder')" plain/>
-                  </b-form-group>
-                  <b-form-group :label="$t('device-management.manufacture')">
-                    <b-form-select v-model="basicForm.manufacture" :options="selectData" plain />
-                  </b-form-group>
-                  <b-form-group :label="$t('device-management.device-model')">
-                    <b-form-input type="text" v-model="basicForm.originModel"
-                                  :placeholder="$t('device-management.origin-model-placeholder')"/>
-                  </b-form-group>
-                </b-form>
+          <b-col xxs="12" md="4" lg="3">
+            <b-form @submit.prevent="onBasicSubmit">
+              <b-form-group>
+                <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-input type="text" v-model="basicForm.templateNumber"
+                              :placeholder="$t('device-management.template-number-placeholder')"/>
+              </b-form-group>
+              <b-form-group>
+                <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-input type="text" v-model="basicForm.templateName"
+                              :placeholder="$t('device-management.template-name-placeholder')"/>
+              </b-form-group>
+              <b-form-group>
+                <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-select v-model="basicForm.deviceClassify" :options="deviceClassifyData"
+                               :placeholder="$t('device-management.device-classify-placeholder')" plain/>
+              </b-form-group>
+              <b-form-group :label="$t('device-management.manufacture')">
+                <b-form-select v-model="basicForm.manufacture" :options="selectData" plain/>
+              </b-form-group>
+              <b-form-group :label="$t('device-management.device-model')">
+                <b-form-input type="text" v-model="basicForm.originModel"
+                              :placeholder="$t('device-management.origin-model-placeholder')"/>
+              </b-form-group>
+            </b-form>
           </b-col>
-          <b-col xxs="12" md="8" lg="8">
-                <b-row>
-                  <b-col cols="12" class="mb-2 d-flex justify-content-between align-items-baseline"><label class="font-weight-bold">{{$t('device-management.document-template.device-show-list')}}</label> <b-button size="sm" variant="success default">
-                    <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}</b-button></b-col>
-                  <b-col cols="12" class="table-responsive text-center">
+          <b-col xxs="12" md="8" lg="9">
+            <b-row>
+              <b-col cols="12" class="d-flex justify-content-between"><label class="font-weight-bold">{{$t('device-management.document-template.device-show-list')}}</label>
+                <b-button size="sm" variant="success default">
+                  <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
+                </b-button>
+              </b-col>
+              <b-col cols="12" class="table-responsive text-center">
 
-                    <vuetable
-                      ref="deviceShowingTable"
-                      :api-mode="false"
-                      :fields="deviceShowingTableItems.fields"
-                      :data-manager="deviceShowingTableDataManager"
-                      :per-page="deviceShowingTableItems.perPage"
-                      pagination-path="pagination"
-                      @vuetable:pagination-data="onDeviceShowingTablePaginationData"
-                      class="table-striped text-center"
-                    >
-                      <div slot="number" slot-scope="props">
-                        <span class="cursor-p text-primary" >{{ props.rowData.number }}</span>
-                      </div>
-                      <div slot="required" slot-scope="props">
-                        <b-button v-if="props.rowData.status"
-                          size="xs"
-                          variant="success default" >
-                          <i class="icofont-check-alt"></i>&nbsp;{{$t('device-management.document-template.yes')}}
-                        </b-button>
-                        <b-button v-if="!props.rowData.status"
-                                  size="xs"
-                                  variant="light default" >
-                          <i class="icofont-close-line"></i>&nbsp;{{$t('device-management.document-template.no')}}
-                        </b-button>
-                      </div>
-                      <div slot="action" slot-scope="props">
-                        <b-button
-                          size="sm"
-                          variant="danger default btn-square" >
-                          <i class="icofont-bin"></i>
-                        </b-button>
-                      </div>
-                    </vuetable>
-                    <vuetable-pagination-bootstrap
-                      ref="deviceShowingTablePagination"
-                      @vuetable-pagination:change-page="onDeviceShowingTableChangePage"
-                    ></vuetable-pagination-bootstrap>
-                  </b-col>
-                </b-row>
+                <vuetable
+                  ref="deviceShowingTable"
+                  :api-mode="false"
+                  :fields="deviceShowingTableItems.fields"
+                  :data-manager="deviceShowingTableDataManager"
+                  :per-page="deviceShowingTableItems.perPage"
+                  pagination-path="pagination"
+                  @vuetable:pagination-data="onDeviceShowingTablePaginationData"
+                  class="table-striped text-center"
+                >
+                  <div slot="number" slot-scope="props">
+                    <span class="cursor-p text-primary">{{ props.rowData.number }}</span>
+                  </div>
+                  <div slot="required" slot-scope="props">
+                    <b-button v-if="props.rowData.status"
+                              size="xs"
+                              variant="success default">
+                      <i class="icofont-check-alt"></i>&nbsp;{{$t('device-management.document-template.yes')}}
+                    </b-button>
+                    <b-button v-if="!props.rowData.status"
+                              size="xs"
+                              variant="light default">
+                      <i class="icofont-close-line"></i>&nbsp;{{$t('device-management.document-template.no')}}
+                    </b-button>
+                  </div>
+                  <div slot="action" slot-scope="props">
+                    <b-button
+                      size="sm"
+                      variant="danger default btn-square">
+                      <i class="icofont-bin"></i>
+                    </b-button>
+                  </div>
+                </vuetable>
+                <vuetable-pagination-bootstrap
+                  ref="deviceShowingTablePagination"
+                  @vuetable-pagination:change-page="onDeviceShowingTableChangePage"
+                ></vuetable-pagination-bootstrap>
+              </b-col>
+            </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3">
-            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}
+            </b-button>
+            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i>
+              {{$t('device-management.active')}}
+            </b-button>
+            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
           </b-col>
         </b-row>
       </div>
@@ -201,6 +211,7 @@
   import {apiBaseUrl} from '../../../constants/config'
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+
   export default {
     components: {
       'vuetable': Vuetable,
@@ -208,7 +219,7 @@
     },
     data() {
       return {
-        pageStatus:'list',
+        pageStatus: 'list',
         searchType: '全部',
         typeData: [
           {label: this.$t('device-management.all'), value: ''},
@@ -216,9 +227,9 @@
           {label: this.$t('device-management.inactive'), value: 'Inactive'}
         ],
         stateOptions: {
-          'all':this.$t('system-setting.status-all'),
-          'valid':this.$t('system-setting.status-active'),
-          'invalid':this.$t('system-setting.status-inactive')
+          'all': this.$t('system-setting.status-all'),
+          'valid': this.$t('system-setting.status-active'),
+          'invalid': this.$t('system-setting.status-inactive')
         },
         basicForm: {
           templateName: '',
@@ -436,66 +447,66 @@
               dataClass: 'text-center'
             }
           ],
-          perPage:5
+          perPage: 5
         },
         tempData2: [
           {
             "no": 1,
             "number": "0000",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
           {
             "no": 2,
             "number": "0000",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
           {
             "no": 3,
             "number": "0000",
             "name": "首都机场",
-            "status":false,
+            "status": false,
             "classify": "张三",
           },
           {
             "no": 4,
             "number": "0000",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
           {
             "no": 5,
             "number": "0000",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
           {
             "no": 6,
             "number": "0003",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
           {
             "no": 7,
             "number": "0005",
             "name": "首都机场",
-            "status":true,
+            "status": true,
             "classify": "张三",
           },
         ],
       }
     },
     methods: {
-      onSearchButton(){
+      onSearchButton() {
 
       },
-      onResetButton(){
+      onResetButton() {
 
       },
       onAction(value) {
