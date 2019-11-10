@@ -202,22 +202,22 @@
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
                   <vuetable
-                    ref="securityLogTable"
+                    ref="decisionLogTable"
                     :api-mode="false"
-                    :fields="securityLogTableItems.fields"
-                    :data-manager="securityLogTableDataManager"
-                    :per-page="securityLogTableItems.perPage"
+                    :fields="decisionLogTableItems.fields"
+                    :data-manager="decisionLogTableDataManager"
+                    :per-page="decisionLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
-                    @vuetable:pagination-data="onSecurityLogTablePaginationData"
+                    @vuetable:pagination-data="ondecisionLogTablePaginationData"
                   >
                   </vuetable>
                 </div>
                 <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
-                    ref="securityLogPagination"
-                    @vuetable-pagination:change-page="onsecurityLogTableChangePage"
-                    :initial-per-page="securityLogTableItems.perPage"
+                    ref="decisionLogPagination"
+                    @vuetable-pagination:change-page="ondecisionLogTableChangePage"
+                    :initial-per-page="decisionLogTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -305,22 +305,22 @@
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
                   <vuetable
-                    ref="securityLogTable"
+                    ref="handCheckLogTable"
                     :api-mode="false"
-                    :fields="securityLogTableItems.fields"
-                    :data-manager="securityLogTableDataManager"
-                    :per-page="securityLogTableItems.perPage"
+                    :fields="handCheckLogTableItems.fields"
+                    :data-manager="handCheckLogTableDataManager"
+                    :per-page="handCheckLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
-                    @vuetable:pagination-data="onSecurityLogTablePaginationData"
+                    @vuetable:pagination-data="onhandCheckLogTablePaginationData"
                   >
                   </vuetable>
                 </div>
                 <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
-                    ref="securityLogPagination"
-                    @vuetable-pagination:change-page="onsecurityLogTableChangePage"
-                    :initial-per-page="securityLogTableItems.perPage"
+                    ref="handCheckLogPagination"
+                    @vuetable-pagination:change-page="onhandCheckLogTableChangePage"
+                    :initial-per-page="handCheckLogTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -508,6 +508,141 @@
                         "operatingTime": "00:00:00",
                     },
                 ],
+
+                //second tab
+                decisionLogTableItems: {
+                    fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: 'number',
+                            title: this.$t('log-management.device-log.number'),
+                            sortField: 'number',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'device',
+                            title: this.$t('log-management.device-log.device'),
+                            sortField: 'device',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'deviceNumber',
+                            title: this.$t('log-management.device-log.device-number'),
+                            sortField: 'deviceNumber',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'user',
+                            title: this.$t('log-management.device-log.user'),
+                            sortField: 'user',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'category',
+                            title: this.$t('log-management.device-log.category'),
+                            sortField: 'category',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'level',
+                            title: this.$t('log-management.device-log.level'),
+                            sortField: 'level',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'content',
+                            title: this.$t('log-management.device-log.content'),
+                            sortField: 'content',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'operatingTime',
+                            title: this.$t('log-management.device-log.operating-time'),
+                            sortField: 'operatingTime',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        }
+                    ],
+                    perPage: 5,
+                },
+                //third tab
+                handCheckLogTableItems: {
+                    fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: 'number',
+                            title: this.$t('log-management.device-log.number'),
+                            sortField: 'number',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'device',
+                            title: this.$t('log-management.device-log.device'),
+                            sortField: 'device',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'deviceNumber',
+                            title: this.$t('log-management.device-log.device-number'),
+                            sortField: 'deviceNumber',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'user',
+                            title: this.$t('log-management.device-log.user'),
+                            sortField: 'user',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'category',
+                            title: this.$t('log-management.device-log.category'),
+                            sortField: 'category',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'level',
+                            title: this.$t('log-management.device-log.level'),
+                            sortField: 'level',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'content',
+                            title: this.$t('log-management.device-log.content'),
+                            sortField: 'content',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'operatingTime',
+                            title: this.$t('log-management.device-log.operating-time'),
+                            sortField: 'operatingTime',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        }
+                    ],
+                    perPage: 5,
+                },
             }
         },
         methods: {
@@ -539,6 +674,68 @@
             },
             onsecurityLogTableChangePage(page) {
                 this.$refs.securityLogTable.changePage(page);
+            },
+
+            //second tab
+            decisionLogTableDataManager(sortOrder, pagination) {
+                let local = this.tempData;
+
+                // sortOrder can be empty, so we have to check for that as well
+                if (sortOrder.length > 0) {
+                    local = _.orderBy(
+                        local,
+                        sortOrder[0].sortField,
+                        sortOrder[0].direction
+                    );
+                }
+                pagination = this.$refs.decisionLogTable.makePagination(
+                    local.length,
+                    this.decisionLogTableItems.perPage
+                );
+
+                let from = pagination.from - 1;
+                let to = from + this.decisionLogTableItems.perPage;
+                return {
+                    pagination: pagination,
+                    data: _.slice(local, from, to)
+                };
+            },
+            ondecisionLogTablePaginationData(paginationData) {
+                this.$refs.decisionLogPagination.setPaginationData(paginationData);
+            },
+            ondecisionLogTableChangePage(page) {
+                this.$refs.decisionLogTable.changePage(page);
+            },
+
+            //third tab
+            handCheckLogTableDataManager(sortOrder, pagination) {
+                let local = this.tempData;
+
+                // sortOrder can be empty, so we have to check for that as well
+                if (sortOrder.length > 0) {
+                    local = _.orderBy(
+                        local,
+                        sortOrder[0].sortField,
+                        sortOrder[0].direction
+                    );
+                }
+                pagination = this.$refs.handCheckLogTable.makePagination(
+                    local.length,
+                    this.handCheckLogTableItems.perPage
+                );
+
+                let from = pagination.from - 1;
+                let to = from + this.handCheckLogTableItems.perPage;
+                return {
+                    pagination: pagination,
+                    data: _.slice(local, from, to)
+                };
+            },
+            onhandCheckLogTablePaginationData(paginationData) {
+                this.$refs.handCheckLogPagination.setPaginationData(paginationData);
+            },
+            onhandCheckLogTableChangePage(page) {
+                this.$refs.handCheckLogTable.changePage(page);
             },
         }
     }
