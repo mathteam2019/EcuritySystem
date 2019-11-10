@@ -1,7 +1,8 @@
 <style>
-  .badge-bottom-left {
-    left: -7px;
-    bottom: 0px;
+  .img-wrapper {
+    padding: 5px;
+    border: solid 1px #bdbaba;
+    border-radius: 3px;
   }
 
   .h-35vh {
@@ -52,7 +53,7 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.member-table')">
-        <b-row v-if="pageStatus=='table'" class="h-100">
+        <b-row v-if="pageStatus=='table'" class="h-100 mt-4">
           <b-col cols="12 d-flex flex-column">
               <b-row>
                 <b-col cols="6">
@@ -409,15 +410,15 @@
 
           </b-col>
           <b-col cols="2" class="text-center">
-            <b-card class="mb-4" no-body>
-              <div class="position-relative img-wrapper p-1" style="min-height: 280px">
-                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
-                <div class="position-absolute badge-bottom-left">
+            <div class="mb-4 img-wrapper" >
+              <div class="position-relative  p-1" style="min-height: 280px">
+                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
+                <div class="position-absolute" style="bottom: -18%;left: -50%">
                   <img src="../../../assets/img/active_stamp.png">
                 </div>
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
-            </b-card>
+            </div>
             <b-button @click="$refs.profileFile.click()" class="mb-1" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
             </b-button>
@@ -567,17 +568,15 @@
 
           </b-col>
           <b-col cols="2" class="text-right">
-            <b-card class="mb-4" no-body>
-              <div class="position-relative img-wrapper p-1" style="min-height: 180px">
-                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.jpg'" class="card-img-top"/>
-                <b-badge
-                  :variant="profileForm.status === 'active' ? 'success' : profileForm.status === 'inactive' ? 'light':profileForm.status === 'pending' ? 'primary':'danger'"
-                  pill class="position-absolute badge-bottom-left">
-                  {{$t('permission-management.' + profileForm.status)}}
-                </b-badge>
+            <div class="mb-4 img-wrapper" >
+              <div class="position-relative  p-1" style="min-height: 280px">
+                <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
+                <div class="position-absolute" style="bottom: -18%;left: -50%">
+                  <img src="../../../assets/img/active_stamp.png">
+                </div>
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
-            </b-card>
+            </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <b-button class="mb-1" @click="onTableListPage()" variant="danger default"><i class="icofont-long-arrow-left"></i> {{
@@ -665,7 +664,7 @@
             </div>
           </b-col>
           <b-col cols="4" class="pl-0 " v-if="selectedUserGroupItem">
-            <div class="section d-flex flex-column h-100 pl-5 pt-4">
+            <div class="section d-flex flex-column h-100 px-3">
               <div  v-if="groupForm.status=='create'">
                 <b-form-group>
                   <template slot="label">
@@ -721,7 +720,7 @@
               <div >
                 <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span class="text-danger">*</span></label>
               </div>
-              <div class="text-right">
+              <div class="text-left">
                 <b-form-group>
                   <b-form-checkbox v-model="isSelectedAllUsersForDataGroup">
                     {{$t('permission-management.permission-control.select-all')}}
@@ -732,7 +731,7 @@
 
                 <v-tree ref='orgUserTree' :data='orgUserTreeData' :multiple="true" :halfcheck='true'/>
               </div>
-              <div class="text-right pt-3" v-if="groupForm.status=='create'">
+              <div class="d-flex align-items-end justify-content-end flex-grow-1 pt-3" v-if="groupForm.status=='create'">
                 <div>
                   <b-button @click="onClickCreateUserGroup" variant="info default"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
