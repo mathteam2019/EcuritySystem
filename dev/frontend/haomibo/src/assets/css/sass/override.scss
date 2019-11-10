@@ -84,6 +84,7 @@ main {
       min-height: calc(100vh - #{$nav-height + $bread-height + 35px});
       max-height: calc(100vh - #{$nav-height + $bread-height + 35px});
       height: calc(100vh - #{$nav-height + $bread-height + 35px});
+      overflow: auto;
       &.p-0 {
         padding: 0!important;
       }

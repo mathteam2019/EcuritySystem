@@ -36,6 +36,18 @@
       }
     }
   }
+  div.img-wrapper {
+    width: 270px;
+    height: 420px;
+    padding: 30px;
+    border: solid 1px #bdbaba;
+    border-radius: 3px;
+    position: relative;
+    img {
+      width: 100%;
+      object-fit: scale-down;
+    }
+  }
 </style>
 <template>
   <div>
@@ -114,7 +126,7 @@
               >
                 <div slot="number" slot-scope="props">
                 <span class="cursor-p text-primary"
-                      @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
+                      @click="onAction('show')">{{ props.rowData.number}}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
                   <b-button
@@ -274,6 +286,438 @@
           </b-col>
         </b-row>
 
+      </div>
+      <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column">
+        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                 :no-fade="true">
+          <b-tab :title="$t('device-management.device-table.device-info')">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.on-site')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>北京首都机场</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.security-instrument')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>安检仪001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.on-site')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>北京首都机场</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.security-instrument')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>安检仪001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.on-site')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>北京首都机场</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.security-instrument')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>安检仪001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('personal-inspection.on-site')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>北京首都机场</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
+                </div>
+              </b-col>
+
+            </b-row>
+          </b-tab>
+          <b-tab :title="$t('device-management.device-table.archive-info')">
+            <b-row class="h-100 form-section inline-form-no-margin">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-3">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-3">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('personal-inspection.task-number')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">HR201909010001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="img-wrapper">
+                  <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/no_active_stamp.png">
+                  </div>
+                </div>
+              </b-col>
+
+            </b-row>
+          </b-tab>
+        </b-tabs>
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
+          <div>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
+          </div>
+        </div>
       </div>
     </b-card>
 
@@ -458,6 +902,9 @@
             },
             onAction(value) {
                 switch (value) {
+                    case 'show':
+                        this.pageStatus = 'show';
+                        break;
                     case 'create':
                         this.pageStatus = 'create';
                         break;

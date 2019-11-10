@@ -26,7 +26,7 @@
       <b-tab :title="$t('log-management.operating-log.access-log')">
         <b-row v-if="pageStatus=='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row>
+            <b-row class="pt-4">
               <b-col cols="6">
                 <b-row>
 
@@ -105,7 +105,7 @@
       <b-tab :title="$t('log-management.operating-log.operating-log')">
         <b-row class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row>
+            <b-row class="pt-4">
               <b-col cols="8">
                 <b-row>
 
