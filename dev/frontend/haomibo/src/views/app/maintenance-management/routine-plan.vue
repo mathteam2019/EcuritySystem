@@ -36,6 +36,18 @@
       }
     }
   }
+  div.img-wrapper {
+    width: 270px;
+    height: 420px;
+    padding: 30px;
+    border: solid 1px #bdbaba;
+    border-radius: 3px;
+    position: relative;
+    img {
+      width: 100%;
+      object-fit: scale-down;
+    }
+  }
 </style>
 <template>
   <div>
@@ -394,6 +406,9 @@
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
                 </div>
               </b-col>
 
@@ -687,13 +702,16 @@
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/no_active_stamp.png">
+                  </div>
                 </div>
               </b-col>
 
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
           <div>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
