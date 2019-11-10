@@ -51,6 +51,7 @@
                       :api-url="roleVuetableItems.apiUrl"
                       :http-fetch="roleVuetableHttpFetch"
                       :per-page="roleVuetableItems.perPage"
+                      track-by="roleId"
                       pagination-path="data"
                       data-path="data.data"
                       class="table-hover"
@@ -557,6 +558,11 @@
               perPage: 10,
               fields: [
                   {
+                      name: '__checkbox',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                  },
+                  {
                       name: 'roleId',
                       title: this.$t('permission-management.permission-control.serial-number'),
                       // sortField: 'roleId,
@@ -768,6 +774,7 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.$refs.roleVuetable.reload();
                 this.roleForm.roleNumber = '';
                 this.roleForm.roleName = '';
                 this.roleFormFlag = null;
