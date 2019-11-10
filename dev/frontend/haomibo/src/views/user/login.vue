@@ -5,7 +5,10 @@
     font-weight: bold;
     text-shadow: 3px 4px 0px black;
   }
-  body.ltr {
+  .form-control {
+    max-width: unset!important;
+  }
+  body {
     img.logo {
       top: 50px;
       left: 50px;
@@ -150,7 +153,7 @@
 
 <template>
   <b-row class="h-100">
-    <img class="position-absolute logo" src="../../assets/img/logo-white.png" />
+    <img class="position-absolute logo" src="../../assets/img/logo.png" />
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
