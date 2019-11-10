@@ -9,7 +9,7 @@
     <b-col cols="5">
       <b-img src="/assets/img/home_bottom_banner.png" fluid-grow class="shadow-sm" />
     </b-col>
-    <b-col cols="7" class="pt-3 pl-5">
+    <b-col cols="7" class="pl-5">
       <b-row>
         <b-col cols="6" class="article d-flex">
           <div class="article-icon-container">

@@ -135,7 +135,7 @@ public class SysUser implements Serializable {
     @JoinColumn(name = "ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("org")
-    private SysOrg org;
+    private SysOrg org; // Relation to SysOrg table.
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -143,5 +143,5 @@ public class SysUser implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
-    Set<SysRole> roles;
+    Set<SysRole> roles; // Relation to SysRole table.
 }

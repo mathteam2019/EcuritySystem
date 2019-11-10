@@ -317,10 +317,6 @@ public class UserManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String groupName;
-
-            @Pattern(regexp = SysUserGroup.Flag.SET + "|" +
-                    SysUserGroup.Flag.UNSET)
-            String flag;
         }
 
         @NotNull
@@ -692,13 +688,6 @@ public class UserManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getGroupName())) {
                 predicate.and(builder.groupName.contains(filter.getGroupName()));
             }
-            if (SysUserGroup.Flag.SET.equals(filter.getFlag())) {
-                predicate.and(builder.users.isNotEmpty());
-            }
-            if (SysUserGroup.Flag.UNSET.equals(filter.getFlag())) {
-                predicate.and(builder.users.isEmpty());
-            }
-
         }
 
         // Pagination.
