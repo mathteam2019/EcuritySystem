@@ -281,10 +281,10 @@
             </b-row>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button variant="success default mr-1" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
+            <b-button size="sm" variant="success default mr-1" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button variant="primary default " @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+            <b-button size="sm" variant="primary default " @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
@@ -366,10 +366,10 @@
             </b-row>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button variant="success default mr-1" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
+            <b-button size="sm" variant="success default mr-1" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+            <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
