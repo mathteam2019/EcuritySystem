@@ -145,7 +145,7 @@
                   <b-row class="mt-4">
                     <b-col cols="12" class="text-right">
 
-                      <b-button type="submit" :disabled="$v.roleForm.$invalid" variant="info default">
+                      <b-button type="submit" variant="info default">
                         <i class="icofont-save"></i>
                         {{ $t('permission-management.permission-control.save') }}
                       </b-button>
@@ -290,7 +290,7 @@
                       </template>
 
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup()">
+                        <b-button variant="danger default btn-square" class="m-0" @click="onClickDeleteDataGroup(props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </template>
@@ -552,6 +552,7 @@
           currentResourceTreeData: [],
           roleCategory: null,
           selectedRole: null,
+          deletingRole: null,
           isSelectedAllResourcesForRole: false,
           roleVuetableItems: {
             apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
@@ -604,6 +605,7 @@
         orgUserTreeData: [],
         dataGroupDetailStatus: null,
         selectedDataGroup: null,
+        deletingDataGroup: null,
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
@@ -710,11 +712,9 @@
             }
         },
         isSelectedAllResourcesForRoleForm(newVal, oldVal) {
-            console.log(this.resourceList);
             this.resourceList.forEach((resource) => {
                   resource.selected = newVal && (resource.resourceCategory === this.roleFormFlag);
             });
-            console.log(this.resourceList);
             this.refreshResourceTreeData();
         },
       orgList(newVal, oldVal) {
@@ -750,12 +750,15 @@
         },
 
         onRoleFormSubmit() {
+            if(this.$v.roleForm.$invalid) {
+                return;
+            }
         this.isLoading = true;
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/permission-control/role/create`, {
             'roleNumber': this.roleForm.roleNumber,
             'roleName': this.roleForm.roleName,
-            'resourceIdList': this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId),
+            'resourceIdList': this.$refs.resourceTreeRoleForm?this.$refs.resourceTreeRoleForm.getCheckedNodes().map(node => node.resourceId):[],
           })
           .then((response) => {
             this.isLoading = false;
@@ -825,17 +828,19 @@
                     });
             }
         },
-        onClickDeleteRole(dataGroup) {
+        onClickDeleteRole(role) {
+            this.deletingRole = role;
             this.$refs['modal-delete-role'].show();
         },
         deleteRole() {
-            if(this.selectedRole) {
+            if(this.deletingRole) {
                 getApiManager()
                     .post(`${apiBaseUrl}/permission-management/permission-control/role/delete`, {
-                        'roleId': this.selectedRole.roleId
+                        'roleId': this.deletingRole.roleId
                     })
                     .then((response) => {
                         this.isLoading = false;
+                        this.hideModal('modal-delete-role')
                         let message = response.data.message;
                         let data = response.data.data;
                         switch (message) {
@@ -844,9 +849,14 @@
                                     duration: 3000,
                                     permanent: false
                                 });
-                                this.selectedRole = null;
+                                this.deletingRole = null;
                                 this.$refs.roleVuetable.refresh();
-                                this.hideModal('modal-delete-role')
+                                break;
+                            case responseMessages['has-children']: // okay
+                                this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                                    duration: 3000,
+                                    permanent: false
+                                });
                                 break;
                             default:
 
@@ -919,6 +929,11 @@
       },
 
       createDataGroup() {
+
+        if(this.$v.dataGroupForm.$invalid) {
+            return;
+        }
+
         if(this.selectedDataGroup) {
             let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
             let userIdList = checkedNodes.filter(node => node.isUser).map(node => node.userId);
@@ -987,26 +1002,34 @@
           }
       },
         onClickDeleteDataGroup(dataGroup) {
+          this.deletingDataGroup = dataGroup;
           this.$refs['modal-delete-data-group'].show();
         },
         deleteDataGroup() {
-          if(this.selectedDataGroup) {
+          if(this.deletingDataGroup) {
               getApiManager()
                   .post(`${apiBaseUrl}/permission-management/permission-control/data-group/delete`, {
-                      'dataGroupId': this.selectedDataGroup.dataGroupId
+                      'dataGroupId': this.deletingDataGroup.dataGroupId
                   })
                   .then((response) => {
+                      this.hideModal('modal-delete-data-group');
                       this.isLoading = false;
                       let message = response.data.message;
                       let data = response.data.data;
                       switch (message) {
                           case responseMessages['ok']:
+                              this.deletingDataGroup = null;
                               this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.data-group-deleted`), {
                                   duration: 3000,
                                   permanent: false
                               });
                               this.$refs.dataGroupVuetable.refresh();
-                              this.hideModal('modal-delete-data-group');
+                              break;
+                          case responseMessages['has-children']: // okay
+                              this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                                  duration: 3000,
+                                  permanent: false
+                              });
                               break;
                           default:
 
