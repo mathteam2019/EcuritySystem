@@ -22,10 +22,6 @@ import java.util.Set;
 @Table(name = "sys_user_group")
 public class SysUserGroup implements Serializable {
 
-    public static class Flag {
-        public static final String SET = "set";
-        public static final String UNSET = "unset";
-    }
 
     @AllArgsConstructor
     @Getter
@@ -46,6 +42,9 @@ public class SysUserGroup implements Serializable {
 
     @Column(name = "ORG_ID", length = 20)
     Long orgId;
+
+    @Column(name = "DATA_RANGE_CATEGORY", length = 10)
+    String dataRangeCategory;
 
     @Column(name = "GROUP_NUMBER", length = 50)
     String groupNumber;
@@ -78,7 +77,7 @@ public class SysUserGroup implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
-    Set<SysUser> users;
+    Set<SysUser> users; // Relation to sysUser table.
 
 
 }

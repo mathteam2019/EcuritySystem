@@ -50,7 +50,13 @@ public class BaseController {
     public SysRoleUserRepository sysRoleUserRepository;
 
     @Autowired
+    public SysUserGroupRoleRepository sysUserGroupRoleRepository;
+
+    @Autowired
     public SysUserLookupRepository sysUserLookupRepository;
+
+    @Autowired
+    public SysUserGroupLookupRepository sysUserGroupLookupRepository;
 
 
 }

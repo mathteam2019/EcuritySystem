@@ -20,11 +20,6 @@ import java.util.Set;
 @Table(name = "sys_data_group")
 public class SysDataGroup implements Serializable {
 
-    public static class Flag {
-        public static final String SET = "set";
-        public static final String UNSET = "unset";
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DATA_GROUP_ID", length = 20, nullable = false)
