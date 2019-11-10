@@ -593,7 +593,7 @@
         <b-row class="h-100">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
-              <b-row>
+              <b-row class="m-0">
                 <b-col cols="3" class="pr-3">
                   <b-form-group class="search-form-group">
                     <template slot="label">{{$t('permission-management.user.user-group-name')}}</template>
