@@ -417,6 +417,9 @@
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
                 </div>
               </b-col>
 
@@ -710,6 +713,9 @@
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
                 </div>
               </b-col>
 
