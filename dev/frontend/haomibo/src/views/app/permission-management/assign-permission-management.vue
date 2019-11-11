@@ -582,6 +582,27 @@
         }
       });
 
+      ///////////////////////////////////////////////////////////
+      ////////////// Load user group list from server /////////////////
+      ///////////////////////////////////////////////////////////
+      getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/get-all`, {}).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userGroupData = data;
+            data.forEach(group => {
+              this.groupUserGroupOptions.push(
+                {text: group.groupName, value: group.userGroupId}
+              )
+            });
+            break;
+          default:
+        }
+      });
+
+      this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
+
     },
     data() {
       return {
@@ -775,9 +796,22 @@
             {
               name: 'dataRangeCategory',
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
-              sortField: 'dataRangeCategory',
+              sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (dataRangeCategory) => {
+                if(dataRangeCategory === 'person') {
+                  return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+                } else if(dataRangeCategory === 'group') {
+                  return this.$t('permission-management.assign-permission-management.group.group-user-data');
+                } else if(dataRangeCategory === 'all') {
+                  return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+                } else if(dataRangeCategory === 'specified') {
+                  return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
+                } else {
+                  return '';
+                }
+              }
             },
             {
               name: '__slot:operating',
