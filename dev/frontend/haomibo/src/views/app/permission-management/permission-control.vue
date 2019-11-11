@@ -16,7 +16,7 @@
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
                 <b-col cols="3" class="pr-3">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
                     <b-form-input v-model="roleKeyword"></b-form-input>
                   </b-form-group>
@@ -121,9 +121,9 @@
 
                   <div>
                     <b-form-group>
-                      <b-form-radio-group>
-                        <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                        <b-form-radio v-model="roleFormFlag" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                      <b-form-radio-group v-model="roleFormFlag">
+                        <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                        <b-form-radio value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
                   </div>
@@ -187,9 +187,9 @@
 
                 <div>
                   <b-form-group>
-                    <b-form-radio-group>
-                      <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                      <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                    <b-form-radio-group v-model="roleCategory">
+                      <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                      <b-form-radio value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
                     </b-form-radio-group>
                   </b-form-group>
                 </div>
@@ -230,14 +230,14 @@
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
                 <b-col cols="2" class="pr-3">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
                     <b-form-input v-model="groupKeyword"></b-form-input>
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="2">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
                     <b-form-input v-model="dataRangeKeyword"></b-form-input>
                   </b-form-group>
@@ -701,7 +701,12 @@
                 this.resourceList.forEach((resource) => {
                     resource.selected = roleResourceIds.includes(resource.resourceId);
                 });
-                this.roleCategory = newVal.roleFlag;
+                if(newVal.resources.length > 0) {
+                    this.roleCategory = newVal.resources[0].resourceCategory;
+                } else {
+                    this.roleCategory = null;
+                }
+                newVal.roleFlag = this.roleCategory;
                 this.refreshResourceTreeData();
             }
         },

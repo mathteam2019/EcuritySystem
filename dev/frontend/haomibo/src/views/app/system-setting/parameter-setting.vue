@@ -250,6 +250,90 @@
       </b-tab>
 
       <b-tab :title="$t('system-setting.parameter-setting.security-instrument')">
+        <b-row v-if="pageStatus === 'table'" class="h-100 ">
+          <b-col cols="12 d-flex flex-column">
+            <b-row class="pt-4">
+              <b-col cols="6">
+                <b-row>
+
+                  <b-col>
+                    <b-form-group :label="$t('log-management.device-log.device')">
+                      <b-form-input v-model="filter.deviceName"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col>
+                    <b-form-group :label="$t('system-setting.site')">
+                      <b-form-select v-model="filter.siteName" :options="[]" plain/>
+                    </b-form-group>
+                  </b-col>
+
+                </b-row>
+              </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
+                  <vuetable
+                    ref="vuetable"
+                    :api-mode="false"
+                    :fields="vuetableItems.fields"
+                    :per-page="vuetableItems.perPage"
+                    :data="tempData"
+                    data-path="data"
+                    pagination-path="pagination"
+                    :data-total="tempData.data.length"
+                    track-by="deviceId"
+                    class="table-striped"
+                    @vuetable:pagination-data="onTablePaginationData"
+                  >
+                    <template slot="deviceNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.deviceNumber }}</span>
+                    </template>
+                    <template slot="operating" slot-scope="props">
+                      <div >
+
+                        <b-button
+                          size="sm"
+                          variant="info default btn-square"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          <i class="icofont-edit"></i>
+                        </b-button>
+
+                        <b-button
+                          size="sm"
+                          variant="success default btn-square">
+                          <i class="icofont-refresh"></i>
+                        </b-button>
+
+                      </div>
+                    </template>
+
+                  </vuetable>
+                </div>
+                <div class="pagination-wrapper">
+                  <vuetable-pagination-bootstrap
+                    ref="pagination"
+                    @vuetable-pagination:change-page="onTableChangePage"
+                    :initial-per-page="vuetableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                  ></vuetable-pagination-bootstrap>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+
       </b-tab>
     </b-tabs>
   </div>
@@ -424,6 +508,86 @@
         },
         data () {
             return {
+                pageStatus: 'table',
+                filter: {
+                  deviceName: '',
+                  siteName: ''
+                },
+                tempData: {
+                    pagination: {
+                        "total": 4,
+                        "per_page": 5,
+                        "current_page": 1,
+                        "last_page": 1,
+                        "from": 1,
+                        "to": 4,
+                    },
+                    data: [
+                        {
+                            deviceId: 1,
+                            deviceNumber: '0001'
+                        },
+                        {
+                            deviceId: 2,
+                            deviceNumber: '0002'
+                        },
+                        {
+                            deviceId: 3,
+                            deviceNumber: '0003'
+                        },
+                        {
+                            deviceId: 4,
+                            deviceNumber: '0004'
+                        },
+                    ]
+                },
+                vuetableItems: {
+                  perPage: 5,
+                  fields: [
+                    {
+                      name: '__checkbox',
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                    },
+                    {
+                      name: 'deviceId',
+                      title: this.$t('permission-management.th-no'),
+                      titleClass: 'text-center',
+                      dataClass: 'text-center'
+                    },
+                    {
+                        name: '__slot:deviceNumber',
+                        title: this.$t('device-management.device-classify-item.classify-number'),
+                        titleClass: 'text-center',
+                        dataClass: 'text-center',
+                    },
+                    {
+                        name: 'deviceName',
+                        title: this.$t('log-management.device-log.device'),
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                    },
+                    {
+                        name: 'siteName',
+                        title: this.$t('system-setting.site'),
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                    },
+                    {
+                        name: 'config',
+                        title: this.$t('system-setting.parameter-setting.configuration'),
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                    },
+                    {
+                        name: '__slot:operating',
+                        title: this.$t('permission-management.th-org-actions'),
+                        titleClass: 'text-center',
+                        dataClass: 'text-center'
+                    },
+
+                  ]
+                },
                 switchValue: false,
                 showColorPicker: false,
                 formData: {
@@ -453,6 +617,13 @@
             }
         },
         methods: {
+            onTablePaginationData(paginationData) {
+                this.$refs.pagination.setPaginationData(paginationData)
+            },
+            onTableChangePage(page) {
+                this.$refs.vuetable.changePage(page)
+            },
+
             toggleColorPicker() {
                 this.showColorPicker = !this.showColorPicker;
             },
