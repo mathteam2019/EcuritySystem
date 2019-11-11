@@ -271,7 +271,13 @@
         "group-user-data":"组内所有人数据",
         "all-user-data":"所有人数据",
         "select-data-group":"选定数据组数据",
-        "user-group-delete-prompt": "是否删除该人员组"
+        "user-group-delete-prompt": "是否删除该人员组",
+        "user-group-mandatory": "人员组是必需的",
+        "group-member-not-exit": "组员不存在",
+        "role-mandatory": "角色是必需的",
+        "data-range-mandatory": "数据范围是必需的",
+        "group-assigned-successfully": "人员组授权成功",
+        "group-assigned-removed-successfully": "人员组授权删除成功"
       },
       "assign-flag-select-options": {
         "all": "全部",
