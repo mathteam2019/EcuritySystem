@@ -319,17 +319,7 @@
                     @vuetable-pagination:change-page="onUserGroupTableChangePage"
                     :initial-per-page="userGroupTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
-                  <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.assign-permission-management.group.user-group-delete-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
+
                 </div>
               </b-col>
             </b-row>
@@ -405,7 +395,7 @@
                 <b-button v-if="groupPageStatus !== 'show'" variant="info default" size="sm" @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button v-if="groupPageStatus === 'edit'" variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i
+                <b-button v-if="groupPageStatus === 'edit'" variant="danger default" size="sm" @click="onActionGroup('delete-item',selectedUserGroupItem)"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
                 <b-button variant="info default" size="sm" @click="onActionGroup('show-list')"><i
@@ -430,6 +420,17 @@
       </template>
     </b-modal>
 
+    <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+      {{$t('permission-management.assign-permission-management.group.user-group-delete-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-prompt-group')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -1084,7 +1085,7 @@
       fnShowUserGroupItem(userGroupItem) {
         this.groupForm.userGroup = userGroupItem.userGroupId;
         this.groupForm.dataRange = userGroupItem.dataRangeCategory;
-        this.groupForm.filterGroup = userGroupItem.dataGroups.length>0?null:userGroupItem.dataGroups[0].dataGroupId;
+        this.groupForm.filterGroup = userGroupItem.dataGroups.length===0?null:userGroupItem.dataGroups[0].dataGroupId;
         this.selectedUserGroupMember = "";
         this.groupForm.selectedUserGroupMembers = [];
         this.groupForm.role = [];
@@ -1134,6 +1135,9 @@
 
             });
         }
+        else
+          console.log('this not selected');
+        console.log(this.selectedUserGroupItem);
       },
 
       fnAssignUserGroupItem() {

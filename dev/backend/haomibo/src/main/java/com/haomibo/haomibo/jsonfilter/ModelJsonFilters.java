@@ -13,7 +13,7 @@ public class ModelJsonFilters {
     public final static String FILTER_SYS_USER_GROUP = "filter_sys_user_group";
     public final static String FILTER_SYS_RESOURCE = "filter_sys_resource";
     public final static String FILTER_SYS_ROLE = "filter_sys_role";
-    public final static String FILTER_DATA_GROUP = "filter_data_group";
+    public final static String FILTER_SYS_DATA_GROUP = "filter_sys_data_group";
 
     /**
      * Used to get default filter
