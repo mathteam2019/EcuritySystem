@@ -569,7 +569,11 @@
       "knowledge-base": "知识库",
       "knowledge-base-history-task": "知识库和历史任务",
       "security-instrument-flow-setting": "安检仪流量设置",
-      "business-statistics": "综合统计"
+      "business-statistics": "综合统计",
+      "platform-security-instrument": "平台、安检仪",
+      "storage-check-period": "存储空间检测周期",
+      "storage-warning-size": "存储空间预警",
+      "history-save-period": "历史数据保存周期"
     }
   },
   "log-management": {

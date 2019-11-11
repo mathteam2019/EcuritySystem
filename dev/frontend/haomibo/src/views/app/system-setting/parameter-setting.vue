@@ -115,7 +115,7 @@
 
                 <b-row>
                   <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                    <b-form-group class="mb-0" :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
@@ -207,25 +207,25 @@
 
                 <b-row>
                   <b-col>
-                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>
+                    <label class="font-weight-bold">{{$t('system-setting.parameter-setting.platform-security-instrument')}}</label>
                   </b-col>
                 </b-row>
 
                 <b-row>
                   <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                    <b-form-group :label="$t('system-setting.parameter-setting.storage-check-period')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                    <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
+                    <b-form-group :label="$t('system-setting.parameter-setting.history-save-period')">
                       <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
@@ -234,6 +234,17 @@
               </div>
             </b-tab>
           </b-tabs>
+        </div>
+
+        <div class="text-right mr-3 mt-3">
+          <b-button size="sm" variant="info default" class="mr-3">
+            <i class="icofont-save"></i>
+            {{$t('permission-management.permission-control.save')}}
+          </b-button>
+          <b-button size="sm" variant="info default">
+            <i class="icofont-long-arrow-left"></i>
+            {{$t('permission-management.return')}}
+          </b-button>
         </div>
 
       </b-tab>
@@ -291,6 +302,8 @@
       border-top-left-radius: 0px!important;
       border-top-right-radius: 0px!important;
       padding-top: 0px!important;
+      height: calc(100vh - 337px);
+      overflow: auto;
 
       .font-weight-bold {
         color: #acacac;
