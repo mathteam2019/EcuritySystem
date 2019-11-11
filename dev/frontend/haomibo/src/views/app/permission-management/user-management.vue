@@ -546,6 +546,12 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button v-if="profileForm.status==='active'" class="mb-1 mr-1" @click="onAction('inactive', profileForm)" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+              $t('permission-management.action-make-inactive') }}
+            </b-button>
+            <b-button v-if="profileForm.status==='inactive'" class="mb-1 mr-1" @click="onAction('active', profileForm)" variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
+              $t('permission-management.action-unblock') }}
+            </b-button>
             <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.return') }}
             </b-button>
@@ -1299,7 +1305,7 @@
                   duration: 3000,
                   permanent: false
                 });
-
+                this.profileForm.status = status;
                 this.$refs.vuetable.refresh();
 
                 break;
