@@ -290,8 +290,8 @@
                     class="table-hover"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                   >
-                    <template slot="userNumber" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.userNumber }}</span>
+                    <template slot="groupName" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <div>
@@ -304,7 +304,7 @@
 
                         <b-button
                           size="sm"
-                          variant="danger default btn-square">
+                          variant="danger default btn-square" @click="onActionGroup('delete-item',props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
 
@@ -320,12 +320,12 @@
                     :initial-per-page="userGroupTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
                   <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.user.user-group-delete-prompt')}}
+                    {{$t('permission-management.assign-permission-management.group.user-group-delete-prompt')}}
                     <template slot="modal-footer">
                       <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">
+                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -335,7 +335,7 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-else-if="groupPageStatus==='create'" class="h-100">
+        <b-row v-else-if="groupPageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="4">
@@ -402,10 +402,10 @@
                 </b-form-group>
               </b-col>
               <b-col cols="12" class="align-self-end text-right">
-                <b-button variant="info default" size="sm" @click="onActionGroup('save-item')"><i
+                <b-button v-if="groupPageStatus !== 'show'" variant="info default" size="sm" @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i
+                <b-button v-if="groupPageStatus === 'edit'" variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
                 <b-button variant="info default" size="sm" @click="onActionGroup('show-list')"><i
@@ -780,7 +780,7 @@
               dataClass: 'text-center',
             },
             {
-              name: 'groupName',
+              name: '__slot:groupName',
               title: this.$t('permission-management.assign-permission-management.group.user-group'),
               sortField: 'groupName',
               titleClass: 'text-center',
@@ -1028,11 +1028,14 @@
             break;
           case 'show-item':
             this.groupPageStatus = 'show';
+            this.fnShowUserGroupItem(data);
             break;
           case 'edit-item':
             this.groupPageStatus = 'edit';
+            this.fnShowUserGroupItem(data);
             break;
           case 'delete-item':
+            this.fnShowUserGroupConfDiaglog(data);
             break;
         }
       },
@@ -1076,6 +1079,23 @@
       onUserGroupTableChangePage(page) {
         this.$refs.userGroupTable.changePage(page)
       },
+      fnShowUserGroupItem(userGroupItem) {
+        this.groupForm.userGroup = userGroupItem.userGroupId;
+        this.groupForm.dataRange = userGroupItem.dataRangeCategory;
+        this.groupForm.filterGroup = null;
+        this.selectedUserGroupMember = "";
+        this.groupForm.selectedUserGroupMembers = [];
+        this.groupForm.role = [];
+        userGroupItem.users.forEach(user => {
+          this.groupForm.selectedUserGroupMembers.push(user.userName)
+        });
+        this.selectedUserGroupMember = this.groupForm.selectedUserGroupMembers.join(',');
+        userGroupItem.roles.forEach(role => {
+          this.groupForm.role.push({
+            label:role.roleName,value:role.roleId
+          })
+        });
+      },
       fnShowUserGroupConfDiaglog(userGroupItem) {
         this.selectedUserGroupItem = userGroupItem;
         this.$refs['modal-prompt-group'].show();
@@ -1083,6 +1103,7 @@
       fnDeleteUserGroupItem() {
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
+          return ;
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
               userGroupId: this.selectedUserGroupItem.userGroupId
@@ -1118,6 +1139,7 @@
       },
 
       fnAssignUserGroupItem() {
+
         this.submitted = true;
         this.$v.groupForm.$touch();
         if (this.$v.groupForm.$invalid) {
