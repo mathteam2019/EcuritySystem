@@ -317,6 +317,7 @@ $btn-square-length: 30px;
 $btn-square-padding: 0;
 $btn-square-font-size: 17px;
 $theme-color-purple-2: #881aff;
+$btn-orange-color: #ff5e00;
 
 .btn.default {
   border-radius: 0.3rem;
@@ -350,6 +351,11 @@ $theme-color-purple-2: #881aff;
 
 .btn-danger {
   background-color: $error-color;
+}
+
+.btn-orange {
+  background-color: $btn-orange-color;
+  color: white;
 }
 
 .btn-info {
