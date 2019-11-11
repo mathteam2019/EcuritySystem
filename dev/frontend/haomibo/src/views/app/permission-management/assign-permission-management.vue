@@ -42,13 +42,13 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.affiliated-org')">
-                      <b-form-select :options="affiliatedOrgSelectOptions" v-model="userFilter.affiliatedOrg" plain/>
+                      <b-form-select :options="orgNameSelectData" v-model="userFilter.orgId" plain/>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.group.role')">
-                      <b-form-input v-model="userFilter.role" ></b-form-input>
+                      <b-form-input v-model="userFilter.roleName" ></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -86,13 +86,14 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="userVuetable"
-                    :api-mode="false"
-                    :data="userTempData"
                     :api-url="userVuetableItems.apiUrl"
                     :fields="userVuetableItems.fields"
                     :per-page="userVuetableItems.perPage"
                     class="table-striped"
-
+                    :http-fetch="userVuetableFetch"
+                    data-path="data.data"
+                    pagination-path="data"
+                    track-by="userId"
                     @vuetable:pagination-data="onUserPaginationData"
                   >
 
@@ -174,7 +175,13 @@
                     <b-form-group>
                       <template slot="label">{{$t('permission-management.assign-permission-management.user')}}&nbsp;<span
                         class="text-danger">*</span></template>
-                      <b-form-select v-model="userForm.userId" :options="userSelectData" plain />
+                      <b-form-select
+                        v-model="userForm.userId"
+                        :options="userSelectData" plain
+                        :state="!$v.userForm.userId.$invalid"/>
+                      <b-form-invalid-feedback>
+                        {{ $t('permission-management.user.userId-field-is-mandatory') }}
+                      </b-form-invalid-feedback>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -213,15 +220,15 @@
                       <div class="d-flex ">
                         <div>
                           <b-form-radio-group  stacked>
-                            <b-form-radio class="pb-2" value="first">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
-                            <b-form-radio class="pb-2" value="second">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
-                            <b-form-radio class="pb-2" value="third">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
-                            <b-form-radio class="pb-2" value="fourth">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
-                            <b-form-radio class="pb-2" value="fifth">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
+                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="person">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
+                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="org">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
+                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="org_desc">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
+                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="all">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
+                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="specified">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2">
-                          <b-form-select v-model="groupForm.filterGroup" :options="filterGroupOptions" plain/>
+                          <b-form-select v-model="userForm.selectedDataGroupId" :options="dataGroupSelectData" plain/>
                         </div>
                       </div>
                     </b-form-group>
@@ -231,7 +238,7 @@
               </b-col>
               <b-col cols="12 " class="align-self-end text-right">
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
-                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" v-if="pageStatus === 'modify'"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
@@ -549,6 +556,9 @@
       userForm: {
         orgId: {
           required
+        },
+        userId: {
+          required
         }
       }
     },
@@ -621,21 +631,42 @@
       //////////// Load role list from server ////////////////////
       ////////////////////////////////////////////////////////////
 
-        getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/role/get-all`, {}).then((response) => {
-          let message = response.data.message;
-          let data = response.data.data;
-          switch (message) {
-            case responseMessages['ok']:
-              this.roleData = data;
-              this.roleSelectData = this.roleData.map(role => ({
-                label: role.roleName,
-                value: role.roleId
-              }));
-              break;
-            default:
+      getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/role/get-all`, {}).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.roleData = data;
+            this.roleSelectData = this.roleData.map(role => ({
+              label: role.roleName,
+              value: role.roleId
+            }));
+            break;
+          default:
 
-          }
-        });
+        }
+      });
+
+      ////////////////////////////////////////////////////////////
+      //////////// Load data group from the server ///////////////
+      ////////////////////////////////////////////////////////////
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/permission-control/data-group/get-all`, {}).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.dataGroupList = data;
+            this.dataGroupSelectData = this.dataGroupList.map(dataGroup => ({
+              value: dataGroup.dataGroupId,
+              text: dataGroup.dataGroupName
+            }));
+            break;
+          default:
+
+        }
+      });
+
     },
     data() {
       return {
@@ -647,13 +678,13 @@
         ],
         userFilter: {
           userName: '',
-          affiliatedOrg: null,
-          role: '',
+          orgId: null,
+          roleName: '',
           dataRange: ''
         }, // used for filtering table
         selectedOrg: {}, // this is used for holding data while delete and update status modals
           userVuetableItems: { // main table options
-              apiUrl: `${apiBaseUrl}/permission-management/...`,
+              apiUrl: `${apiBaseUrl}/permission-management/assign-permission-management/user/get-by-filter-and-page`,
               fields: [
                 {
                   name: '__checkbox',
@@ -695,23 +726,44 @@
                   dataClass: 'text-center',
                 },
                 {
-                    name: 'affiliatedOrg',
+                    name: 'org',
                     title: this.$t('permission-management.assign-permission-management.affiliated-org'),
                     titleClass: 'text-center',
                     dataClass: 'text-center',
+                    callback: (org) => {
+                        return org.orgName;
+                    }
                 },
                 {
-                    name: 'role',
+                    name: 'roles',
                     title: this.$t('permission-management.assign-permission-management.group.role'),
                     titleClass: 'text-center',
                     dataClass: 'text-center',
+                    callback: (roles) => {
+                        return roles.map((role) => role.roleName).join(', ');
+                    }
                 },
                 {
-                    name: 'dataRange',
+                    name: 'dataRangeCategory',
                     title: this.$t('permission-management.assign-permission-management.group.data-range'),
                     sortField: 'leader',
                     titleClass: 'text-center',
-                    dataClass: 'text-center'
+                    dataClass: 'text-center',
+                    callback: (dataRangeCategory) => {
+                        if(dataRangeCategory === 'person') {
+                            return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+                        } else if(dataRangeCategory === 'org') {
+                            return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
+                        }else if (dataRangeCategory === 'org_desc') {
+                            return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
+                        } else if(dataRangeCategory === 'all') {
+                            return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+                        } else if(dataRangeCategory === 'specified') {
+                            return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
+                        } else {
+                            return '';
+                        }
+                    }
                 },
                 {
                     name: '__slot:actions',
@@ -755,17 +807,20 @@
         userList: [],
         pageStatus: 'table', // table, create, modify -> it will change the page
         roleData: [],
+        dataGroupList: [],
         orgNameSelectData: [],
         userSelectData: [],
+        roleSelectData: [],
+        dataGroupSelectData: [],
+        userForm: {
+          orgId: null,
+          userId: null,
+          roles: [],
+          dataRangeCategory: null,
+          selectedDataGroupId: null
+        },
         selectedUser: {},
         selectedUserGender: '',
-        roleSelectData: [],
-        userForm: {
-            orgId: null,
-            userId: null,
-            roles: [],
-
-        },
         users: ['张一', '张二', '张三'],
 
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
@@ -932,6 +987,7 @@
             value: user.userId,
             text: user.userName,
           }));
+        this.userForm.userId = null;
       },
       'userForm.userId': function(newVal) {
         this.selectedUser = {};
@@ -1021,15 +1077,15 @@
 
       },
 
-      vuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+      userVuetableFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
-          perPage: this.vuetableItems.perPage,
+          perPage: this.userVuetableItems.perPage,
           filter: {
-            orgName: this.filter.orgName,
-            status: this.filter.status,
-            parentOrgName: this.filter.parentOrgName
+            userName: this.userFilter.userName,
+            orgId: this.userFilter.orgId,
+            roleName: this.userFilter.roleName
           }
         });
       },
@@ -1353,6 +1409,41 @@
 
       onUserActionGroup(value){
           switch (value) {
+              case 'save-item':
+                  if(this.userForm.dataRangeCategory) {
+                      getApiManager()
+                          .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
+                              userId: this.userForm.userId,
+                              roleIdList: this.userForm.roles.map(selectedRole => selectedRole.value),
+                              dataRangeCategory: this.userForm.dataRangeCategory,
+                              selectedDataGroupId: this.userForm.selectedDataGroupId
+                          }).then((response) => {
+                              let message = response.data.message;
+                              let data = response.data.data;
+                              switch (message) {
+                                  case responseMessages['ok']:
+                                      this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                                          duration: 3000,
+                                          permanent: false
+                                      });
+                                      this.userForm = {
+                                          orgId: null,
+                                          userId: null,
+                                          roles: [],
+                                          dataRangeCategory: null,
+                                          selectedDataGroupId: null
+                                     };
+                                      this.selectedUser = {};
+                                      this.selectedUserGender = '';
+
+
+                                      break;
+                                  default:
+
+                              }
+                      })
+                  }
+                  break;
               case 'show-list':
                   this.pageStatus = 'table';
                   break;
@@ -1482,8 +1573,7 @@
         this.$refs.vuetable.changePage(page)
       },
       onClickUserSearchButton() {
-          // TODO: search user
-          console.log('search user');
+          this.$refs.userVuetable.refresh();
       },
       onClickUserResetButton() {
           console.log('hello, world');
