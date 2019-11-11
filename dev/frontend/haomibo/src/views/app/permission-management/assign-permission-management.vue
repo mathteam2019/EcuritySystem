@@ -226,111 +226,6 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus==='modify'">
-          <b-col >
-            <b-card class="mb-4">
-              <b-row>
-                <b-col cols="6">
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgName"
-                                      :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.orgNumber"
-                                      :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-select :options="parentOrganizationNameSelectOptions"
-                                       v-model="modifyPage.parentOrgId" plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
-                          class="text-danger">*</span></template>
-                        <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
-                                      :placeholder="$t('permission-management.please-select-parent-organization')"/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-leader')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.leader"
-                                      :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
-                        <b-form-input type="text"
-                                      v-model="modifyPage.mobile"
-                                      :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-                  <b-row class="mb-3">
-                    <b-col >
-                      <b-form-group label-cols="4" horizontal>
-                        <template slot="label">{{$t('permission-management.organization-note')}}</template>
-
-                        <b-form-textarea
-                          v-model="modifyPage.note"
-                          :placeholder="$t('permission-management.please-enter-organization-note')"
-                          :rows="3"
-                          :max-rows="6"/>
-
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-
-
-                </b-col>
-              </b-row>
-              <b-row class="mb-3">
-                <b-col  class="text-right">
-                  <b-button variant="primary" @click="onModifyPageSaveButton()">{{
-                    $t('permission-management.save-button') }}
-                  </b-button>
-                  <b-button variant="secondary" @click="onModifyPageBackButton()">{{
-                    $t('permission-management.back-button') }}
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-card>
-          </b-col>
-        </b-row>
 
       </b-tab>
 
@@ -549,15 +444,6 @@
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
-  let getOrgById = (orgData, orgId) => {
-    for (let i = 0; i < orgData.length; i++) {
-      if (orgData[i].orgId == orgId) {
-        return orgData[i];
-      }
-    }
-    return 0;
-  };
-
   export default {
     components: {
       'v-select': vSelect,
@@ -700,20 +586,6 @@
     data() {
       return {
         direction: getDirection().direction,
-        affiliatedOrgSelectOptions: [ // on the filtering
-          {
-            value: null,
-            text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.all')
-          },
-          {
-            value: 1,
-            text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.assigned')
-          },
-          {
-            value: 2,
-            text: this.$t('permission-management.assign-permission-management.assign-flag-select-options.not-assigned')
-          }
-        ],
         userFilter: {
           userName: '',
           orgId: null,
@@ -823,23 +695,6 @@
               dataRange: '个人数据',
           }
         ],
-        createPage: { // create page
-          orgName: '',
-          orgNumber: '',
-          parentOrgId: null,
-          leader: '',
-          mobile: '',
-          note: ''
-        },
-        modifyPage: { // modify page
-          selectedOrg: {},
-          orgName: '',
-          orgNumber: '',
-          parentOrgId: null,
-          leader: '',
-          mobile: '',
-          note: ''
-        },
         orgData: [], // loaded from server when the page is mounted
         orgTreeData: [],
         userList: [],
@@ -859,11 +714,6 @@
         },
         selectedUser: {},
         selectedUserGender: '',
-        users: ['张一', '张二', '张三'],
-
-        parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
-        treeData: { // holds tree data for org diagram
-        },
 
         //TODO assign permission management for user group part
         groupForm: {
@@ -939,20 +789,6 @@
         }
       }
     },
-    computed: {
-      createPageSelectedParentOrganizationNumber: { // create page selected parent org number ( disabled input but automatically change)
-        get() {
-          let org = getOrgById(this.orgData, this.createPage.parentOrgId);
-          return org ? org.orgNumber : "";
-        }
-      },
-      modifyPageSelectedParentOrganizationNumber: { // modify page selected parent org number ( disabled input but automatically change)
-        get() {
-          let org = getOrgById(this.orgData, this.modifyPage.parentOrgId);
-          return org ? org.orgNumber : "";
-        }
-      }
-    },
     watch: {
       'userVuetableItems.perPage': function (newVal) {
           this.$refs.userVuetable.refresh();
@@ -1009,42 +845,6 @@
     },
     methods: {
 
-      onSearchButton() {
-        this.$refs.vuetable.refresh();
-      },
-      onResetButton() {
-        this.filter = {
-          orgName: '',
-          status: null,
-          parentOrgName: ''
-        };
-        this.$refs.vuetable.refresh();
-      },
-      transform(response) {
-
-        let transformed = {};
-
-        let data = response.data;
-
-        transformed.pagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-
-        transformed.data = [];
-
-        for (let i = 0; i < data.data.length; i++) {
-          transformed.data.push(data.data[i])
-        }
-
-        return transformed
-
-      },
-
       userVuetableFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
@@ -1060,95 +860,8 @@
       onUserPaginationData(paginationData) {
           this.$refs.userPagination.setPaginationData(paginationData)
       },
-      onPaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
-      },
       onUserChangePage(page) {
         this.$refs.userVuetable.changePage(page)
-      },
-      onChangePage(page) {
-          this.$refs.vuetable.changePage(page)
-      },
-      onAction(action, data, index) { // called when any action button is called from table
-
-        let modifyItem = () => {
-
-          // rest models
-          this.modifyPage = {
-            selectedOrg: data,
-            orgName: data.orgName,
-            orgNumber: data.orgNumber,
-            parentOrgId: data.parent.orgId,
-            leader: data.leader,
-            mobile: data.mobile,
-            note: data.note
-          };
-
-          // change page to modify
-          this.pageStatus = 'modify';
-
-        };
-
-        let deleteItem = () => {
-          this.selectedOrg = data;
-          this.$refs['modal-delete'].show();
-        };
-
-        let activateItem = () => {
-
-          // call api
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/update-organization-status`, {
-              'orgId': data.orgId,
-              'status': 'active',
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-
-                  this.$refs.vuetable.refresh();
-
-                  break;
-              }
-            })
-            .catch((error) => {
-            });
-
-
-        };
-
-        let deactivateItem = () => {
-          this.selectedOrg = data;
-          this.$refs['modal-deactivate'].show();
-        };
-
-        switch (action) {
-          case 'modify':
-            modifyItem();
-            break;
-          case 'delete':
-            deleteItem();
-            break;
-          case 'activate':
-            activateItem();
-            break;
-          case 'deactivate':
-            deactivateItem();
-            break;
-        }
-      },
-      renderTreeContent: function (h, data) { // diagram page settings
-        return data.label;
-      },
-      treeLabelClass: function (data) {
-        const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
-        return `${labelClasses[data.id % 6]} text-white`;
       },
       hideModal(modal) {
         // hide modal
@@ -1343,20 +1056,16 @@
 
       },
       onUserTablePaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
-      },
-      onUserTableChangePage(page) {
-        this.$refs.vuetable.changePage(page)
+        this.$refs.userGroupTablePagination.setPaginationData(paginationData)
       },
       onClickUserSearchButton() {
           this.$refs.userVuetable.refresh();
       },
       onClickUserResetButton() {
-          console.log('hello, world');
           this.userFilter = {
               userName: '',
-              affiliatedOrg: null,
-              role: '',
+              orgId: null,
+              roleName: '',
               dataRange: ''
           };
           this.$refs.userVuetable.refresh();
