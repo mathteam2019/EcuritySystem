@@ -144,4 +144,13 @@ public class SysUser implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
     Set<SysRole> roles; // Relation to SysRole table.
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_user_lookup",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
+    )
+    Set<SysDataGroup> dataGroups;
+
 }
