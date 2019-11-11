@@ -1,4 +1,9 @@
 <style lang="scss">
+  .inline-form-no-margin {
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
   .inline-label-form-section {
     .w-130-px {
       width: 130px !important;
@@ -36,6 +41,12 @@
       }
     }
   }
+  .form-group {
+    label.input-label {
+      line-height: 36px;
+    }
+  }
+
   div.img-wrapper {
     width: 270px;
     height: 420px;
