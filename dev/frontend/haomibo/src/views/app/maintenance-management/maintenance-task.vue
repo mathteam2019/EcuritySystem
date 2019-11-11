@@ -1,9 +1,19 @@
 <style lang="scss">
+  .form-section {
+    .form-group {
+      max-width: unset;
+      .form-control {
+        max-width: 400px;
+      }
+    }
+  }
   .inline-form-no-margin {
     .form-group {
       margin-bottom: 0;
+      label.input-label {
+        line-height: unset;
+      }
     }
-
     .col-form-label {
       padding-top: 0;
     }
@@ -285,6 +295,32 @@
                         <span class="text-danger">*</span>
                       </template>
                       <label>20191024 06:03</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="8">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.process-task.plan-works')}}&nbsp
+                      </template>
+                      <label>1.整体检查;</label>
+                      <label>2.添加机油;</label>
+                      <label>3.设备试运行</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="8">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.process-task.real-works')}}&nbsp
+                      </template>
+                      <b-form-textarea type="text" :placeholder="$t('maintenance-management.process-task.real-works')"/>
                     </b-form-group>
                   </b-col>
                   <b-col>

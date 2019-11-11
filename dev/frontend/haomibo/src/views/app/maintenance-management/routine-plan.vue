@@ -2,8 +2,10 @@
   .inline-form-no-margin {
     .form-group {
       margin-bottom: 0;
+      label.input-label {
+        line-height: unset;
+      }
     }
-
     .col-form-label {
       padding-top: 0;
     }
@@ -751,8 +753,11 @@
         </b-tabs>
         <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
           <div>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
-              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            <b-button size="sm" variant="orange default">
+              <i class="icofont-check-circled"></i> {{$t('device-management.active')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')">
+              <i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
             </b-button>
           </div>
         </div>
