@@ -123,14 +123,14 @@
     </b-card>
 
     <div v-if="pageStatus === 'show'">
-      <b-row>
-        <b-col cols="4">
-          <b-card class="pt-4">
+      <b-row class="fill-main">
+        <b-col cols="3">
+          <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2" />
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2" />
+                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
+                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -149,133 +149,148 @@
             </b-row>
 
             <b-row class="mb-2">
-              <b-col cols="10">
-                <b-row>
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/contrast_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
-                    </div>
-                  </b-col>
+              <b-col class="control-group">
+                <div class="control-btn-wrapper">
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/brightness_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/color_inverse_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/pseudo_color1_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/pseudo_color2_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/pseudo_color3_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
+                  </div>
 
-                </b-row>
-              </b-col>
-              <b-col cols="2">
-                <div class="d-inline" style="width: 2px; height: 27px; background-color: red;"></div>
-                <switches v-model="power" theme="custom" color="info"></switches>
-              </b-col>
-            </b-row>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
+                  </div>
 
-            <b-row>
-              <b-col cols="10">
-                <b-row>
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/pseudo_color4_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/enhance_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/enhance_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/enhance_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
-                    <div class="control-btn">
-                      <b-img src="/assets/img/edge_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/edge_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
+                  </div>
 
-                  <b-col cols="2" class="text-center">
 
-                    <div class="control-btn">
-                      <b-img src="/assets/img/reduction_btn.png" />
-                      <br />
-                      <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
-                    </div>
-                  </b-col>
+                  <div class="control-btn">
+                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
+                  </div>
+                </div>
 
-                </b-row>
-              </b-col>
-              <b-col cols="2">
+                <div class="switch-wrapper">
+                  <div class="separator"></div>
+                  <div class="switch">
+                    <switches v-model="power" theme="custom" color="info"></switches>
+                  </div>
+                </div>
               </b-col>
             </b-row>
+
 
           </b-card>
         </b-col>
-        <b-col cols="8">
-          <b-card>
-            <b-row class="history-chart mb-4">
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-            </b-row>
+        <b-col cols="9">
+          <b-card class="h-100 d-flex flex-column right-card">
+            <div class="history-chart">
+              <div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>开始</div>
+                  </div>
+                  <div class="right">
+                    <div>Start</div>
+                  </div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>扫描</div>
+                    <div>张三</div>
+                  </div>
+                  <div class="right">
+                    <div>Scanning</div>
+                    <div>zhang san</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>判图</div>
+                    <div>李四</div>
+                  </div>
+                  <div class="right">
+                    <div>Decision diagram</div>
+                    <div>Li si</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>查验</div>
+                    <div>王五</div>
+                  </div>
+                  <div class="right">
+                    <div>Inspection</div>
+                    <div>Wang wu</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>结束</div>
+                  </div>
+                  <div class="right">
+                    <div>End</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
 
             <b-row>
               <b-col>
@@ -511,7 +526,7 @@
               </b-col>
             </b-row>
 
-            <b-row>
+            <b-row class="flex-grow-1 d-flex align-items-end">
               <b-col class="text-right">
                 <b-button variant="info default" @click="pageStatus='table'">
                   <i class="icofont-long-arrow-left"></i>
@@ -536,7 +551,7 @@
     cursor: pointer !important;
   }
 
-  .rounded-span{
+  .rounded-span {
     width: 20px;
     height: 20px;
     border-radius: 10px;
@@ -565,18 +580,146 @@
     }
   }
 
-  .control-btn {
-    img {
-      width: 30px;
-      height: 30px;
+  .control-group {
+    display: flex;
+    align-items: start;
+
+    .control-btn-wrapper {
+      display: flex;
+      flex-grow: 1;
+      flex-wrap: wrap;
+
+      .control-btn {
+        width: calc(100% / 6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 24px;
+
+        img {
+          $size: 40px;
+          width: $size;
+          height: $size;
+          margin-bottom: 6px;
+        }
+
+        span {
+          display: block;
+        }
+      }
+    }
+
+    .switch-wrapper {
+      width: 60px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+
+      .separator {
+        border: 0;
+        width: 1px;
+        height: 30px;
+        background: #1e9dd2;
+        flex-shrink: 0;
+      }
+
+      .switch {
+        .vue-switcher {
+          display: flex;
+          height: 100%;
+          margin: 0;
+          transform: scale(0.8);
+        }
+      }
+    }
+
+    @media screen and (max-width: 1700px) {
+
+      .control-btn-wrapper {
+        .control-btn {
+          img {
+            $size: 28px;
+            width: $size !important;
+            height: $size !important;
+          }
+        }
+      }
+      .switch-wrapper{
+        height: 28px;
+        .separator {
+          height: 28px;
+        }
+      }
+
     }
   }
 
+
   .history-chart {
-    background: url("/assets/img/history_chart.png") no-repeat;
-    background-size: contain;
-    width: calc(100% + 30px);
-    padding-bottom: 8%;
+
+    $ratio: 12.8;
+
+    width: 100%;
+    padding-bottom: 100% / $ratio;
+    position: relative;
+
+    margin-bottom: 24px;
+
+    & > :first-child {
+      left: 0;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      width: 100%;
+
+      background: url("/assets/img/history_chart.png") no-repeat;
+      background-size: contain;
+
+
+      $elements: 5;
+      @for $i from 0 to $elements {
+        .part:nth-child(#{$i + 1}) {
+          position: absolute;
+          top: 25%;
+          bottom: 25%;
+          left: 2% + 20% * $i;
+          width: 20% - 4%;
+          display: flex;
+          color: white;
+          align-items: center;
+          justify-content: space-between;
+
+          $date-color: #0c70ab;
+
+          .top-date {
+            color: $date-color;
+            position: absolute;
+            top: 104%;
+            left: -6%;
+          }
+
+          .bottom-date {
+            color: $date-color;
+            position: absolute;
+            bottom: 104%;
+            right: 2%;
+          }
+        }
+      }
+
+    }
+
+
+  }
+
+  .fill-main {
+    height: calc(100vh - 180px);
+    .right-card {
+      .card-body {
+        display: flex;
+        flex-direction: column;
+      }
+    }
   }
 
 </style>

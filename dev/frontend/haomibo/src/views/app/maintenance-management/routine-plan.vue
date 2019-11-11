@@ -1,4 +1,9 @@
 <style lang="scss">
+  .inline-form-no-margin {
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
   .inline-label-form-section {
     .w-130-px {
       width: 130px !important;
@@ -36,6 +41,12 @@
       }
     }
   }
+  .form-group {
+    label.input-label {
+      line-height: 36px;
+    }
+  }
+
   div.img-wrapper {
     width: 270px;
     height: 420px;
@@ -703,7 +714,7 @@
                 <div class="img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
                   <div class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img src="../../../assets/img/no_active_stamp.png">
+                    <img src="../../../assets/img/active_stamp.png">
                   </div>
                 </div>
               </b-col>
@@ -711,7 +722,7 @@
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
           <div>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}

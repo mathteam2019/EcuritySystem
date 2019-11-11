@@ -263,6 +263,8 @@
 
   .section.pt-0 {
 
+    background-color: #f3f3f3;
+
     .nav-tabs .nav-link {
       &.active {
         box-shadow: none!important;
@@ -290,7 +292,6 @@
       padding-top: 0px!important;
       min-height: calc(100vh - #{$internal-tab-content-height-offset});
       max-height: calc(100vh - #{$internal-tab-content-height-offset});
-
 
       .font-weight-bold {
         color: #acacac;
