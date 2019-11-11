@@ -11,8 +11,8 @@
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('system-setting.parameter-setting.platform-parameter')">
 
-        <div class="section pt-0 mt-4 mx-3">
-          <b-tabs card>
+        <div class="section pt-0 mx-3">
+          <b-tabs class="sub-tabs" card>
             <b-tab :title="$t('menu.personal-inspection')">
               <div>
 
@@ -264,6 +264,7 @@
   .section.pt-0 {
 
     background-color: #f3f3f3;
+    padding-bottom: 0px!important;
 
     .nav-tabs .nav-link {
       &.active {
@@ -290,16 +291,11 @@
       border-top-left-radius: 0px!important;
       border-top-right-radius: 0px!important;
       padding-top: 0px!important;
-      min-height: calc(100vh - #{$internal-tab-content-height-offset});
-      max-height: calc(100vh - #{$internal-tab-content-height-offset});
 
       .font-weight-bold {
         color: #acacac;
       }
 
-      div.tab-pane.active {
-        height: calc(100vh - #{$internal-tab-content-height-offset - 30px});
-      }
     }
   }
 </style>
