@@ -757,7 +757,8 @@
       "processing": "处理中",
       "security-user": "维保员",
       "estimated-start-time": "预计开发时间",
-      "real-start-time": "预计开发时间"
+      "real-start-time": "预计开发时间",
+      "plan-works": "计划工作"
     },
     "history-record": {
       "task": "任务",
@@ -806,7 +807,9 @@
       "power-by": "供电(VAC，Hz)",
       "rated-power": "额定功率(mm)",
       "operating-temperature-humidity": "运行温/湿度(℃，%)",
-      "storage-temperature-humidity": "存储温/湿度(℃，%)"
+      "storage-temperature-humidity": "存储温/湿度(℃，%)",
+      "plan-works": "计划工作",
+      "real-works": "实际工作"
     },
     "routine-plan": {
       "plan": "计划",
