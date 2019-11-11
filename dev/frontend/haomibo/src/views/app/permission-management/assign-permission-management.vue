@@ -90,7 +90,7 @@
                         <b-button
                           size="sm"
                           variant="danger default btn-square"
-                          @click="promptDeleteUserRole(props.rowData.userId)">
+                          @click="promptDeleteUserRoles(props.rowData.userId)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </div>
@@ -922,7 +922,7 @@
                                 break;
                             default:
                         }
-                    })
+                    });
                 }
                 break;
           case 'show-list':
@@ -940,7 +940,31 @@
 
       deleteUserRole() {
         this.hideModal('modal-user-role-delete');
-        // TODO: delete user role
+
+        if(this.selectedUserId) {
+            getApiManager()
+                .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
+                    userId: this.selectedUserId,
+                    roleIdList: [],
+                    dataRangeCategory: '',
+                    selectedDataGroupId: null
+                }).then((response) => {
+                    let message = response.data.message;
+                    let data = response.data.data;
+                    switch (message) {
+                        case responseMessages['ok']:
+                            this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-deleted`), {
+                                duration: 3000,
+                                permanent: false
+                            });
+                            this.selectedUserId = null;
+                            this.$refs.userVuetable.refresh();
+                            break;
+                        default:
+                    }
+            });
+
+        }
       },
 
       //TODO assign user group point
