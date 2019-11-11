@@ -110,7 +110,7 @@
                 <div slot="operating" slot-scope="props">
                   <b-button
                     size="sm"
-                    variant="info default btn-square" @click="onAction('create',props.rowData)">
+                    variant="info default btn-square" @click="onAction('show',props.rowData)">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button v-if="props.rowData.status==='active'"
@@ -147,19 +147,25 @@
         </b-row>
 
       </div>
-      <div v-if="pageStatus==='create'" class="form-section">
+      <div v-if="pageStatus!=='list'" class="form-section">
         <b-row class="h-100">
           <b-col cols="6" class="pr-5">
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.time-task.task-number')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <b-form-input type="text"></b-form-input>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.time-task.time-task-name')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <b-form-input type="text"></b-form-input>
-            </b-form-group>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('maintenance-management.time-task.task-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <label>D00001</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('maintenance-management.time-task.task-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <label>任务1</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
             <b-form-group>
               <template slot="label">{{$t('maintenance-management.time-task.create-time')}}&nbsp;<span
                 class="text-danger">*</span></template>
@@ -493,6 +499,9 @@
         switch (value) {
           case 'create':
             this.pageStatus = 'create';
+            break;
+          case 'show':
+            this.pageStatus = 'show';
             break;
           case 'show-list':
             this.pageStatus = 'list';
