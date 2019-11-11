@@ -89,7 +89,8 @@
 
                         <b-button
                           size="sm"
-                          variant="danger default btn-square">
+                          variant="danger default btn-square"
+                          @click="promptDeleteUserRole(props.rowData.userId)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </div>
@@ -105,25 +106,13 @@
                     @onUpdatePerPage="userVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
 
-                  <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
+                  <b-modal ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
                     {{$t('permission-management.organization-delete-prompt')}}
                     <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteOrg()" class="mr-1">
+                      <b-button variant="primary" @click="deleteUserRole()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-delete')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
-
-                  <b-modal ref="modal-deactivate" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-deactivate-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deactivateOrg()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-deactivate')">
+                      <b-button variant="danger" @click="hideModal('modal-user-role-delete')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -134,7 +123,7 @@
 
           </b-col>
         </b-row>
-        <b-row v-else-if="pageStatus==='create'" class="h-100">
+        <b-row v-else-if="pageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="5">
@@ -613,7 +602,7 @@
           roleName: '',
           dataRange: ''
         }, // used for filtering table
-        selectedOrg: {}, // this is used for holding data while delete and update status modals
+        selectedUserId: null, // this is used for holding data while delete and update status modals
           userVuetableItems: { // main table options
               apiUrl: `${apiBaseUrl}/permission-management/assign-permission-management/user/get-by-filter-and-page`,
               fields: [
@@ -903,12 +892,54 @@
       },
       onUserActionGroup(value) {
         switch (value) {
+            case 'save-item':
+                if(this.userForm.dataRangeCategory) {
+                    getApiManager()
+                        .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
+                            userId: this.userForm.userId,
+                            roleIdList: this.userForm.roles.map(selectedRole => selectedRole.value),
+                            dataRangeCategory: this.userForm.dataRangeCategory,
+                            selectedDataGroupId: this.userForm.selectedDataGroupId
+                        }).then((response) => {
+                        let message = response.data.message;
+                        let data = response.data.data;
+                        switch (message) {
+                            case responseMessages['ok']:
+                                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                                    duration: 3000,
+                                    permanent: false
+                                });
+                                this.userForm = {
+                                    orgId: null,
+                                    userId: null,
+                                    roles: [],
+                                    dataRangeCategory: null,
+                                    selectedDataGroupId: null
+                                };
+                                this.selectedUser = {};
+                                this.selectedUserGender = '';
+                                break;
+                            default:
+                        }
+                    })
+                }
+                break;
           case 'show-list':
             this.pageStatus = 'table';
             break;
           case 'delete-item':
             break;
         }
+      },
+
+      promptDeleteUserRoles(userId) {
+        this.selectedUserId = userId;
+        this.$refs['modal-user-role-delete'].show();
+      },
+
+      deleteUserRole() {
+        this.hideModal('modal-user-role-delete');
+        // TODO: delete user role
       },
 
       //TODO assign user group point
