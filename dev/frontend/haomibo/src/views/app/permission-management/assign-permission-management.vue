@@ -342,7 +342,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
+                  <b-form-select :disabled="groupPageStatus !== 'create'" v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted &&!$v.groupForm.userGroup.required) ?
                     $t('permission-management.assign-permission-management.group.user-group-mandatory') : "&nbsp;" }}
@@ -392,7 +392,7 @@
                     </div>
                     <div class="align-self-end flex-grow-1 pl-2">
                       <b-form-select :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
-                                     :options="groupUserGroupOptions" plain/>
+                                     :options="dataGroupSelectData" plain/>
                     </div>
                   </div>
                   <div class="invalid-feedback d-block">
@@ -710,17 +710,6 @@
               ],
               perPage: 5,
           },
-        userTempData: [
-          {
-              userId: 1,
-              userName: 'user1',
-              gender: 'male',
-              userAccount: 'u-1',
-              affiliatedOrg: '总部/生产部',
-              role: 'role-1',
-              dataRange: '个人数据',
-          }
-        ],
         orgData: [], // loaded from server when the page is mounted
         orgTreeData: [],
         userList: [],
@@ -1080,7 +1069,7 @@
       fnShowUserGroupItem(userGroupItem) {
         this.groupForm.userGroup = userGroupItem.userGroupId;
         this.groupForm.dataRange = userGroupItem.dataRangeCategory;
-        this.groupForm.filterGroup = null;
+        this.groupForm.filterGroup = userGroupItem.dataGroups.length>0?null:userGroupItem.dataGroups[0].dataGroupId;
         this.selectedUserGroupMember = "";
         this.groupForm.selectedUserGroupMembers = [];
         this.groupForm.role = [];
@@ -1101,17 +1090,19 @@
       fnDeleteUserGroupItem() {
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
-          return ;
           getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-              userGroupId: this.selectedUserGroupItem.userGroupId
+            .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/assign-role-and-data-range`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId,
+              dataRangeCategory: "person",
+              selectedDataGroupId: 0,
+              roleIdList: []
             })
             .then((response) => {
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-removed-successfully`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1119,18 +1110,12 @@
                   this.$refs.userGroupTable.refresh();
                   this.selectedUserGroupItem = null;
                   break;
-                case responseMessages['has-children']: // okay
-                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-
               }
             })
             .catch((error) => {
             })
             .finally(() => {
+              this.groupPageStatus = 'table';
 
             });
         }
@@ -1162,7 +1147,7 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-successfully`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -1170,13 +1155,6 @@
                 this.$refs.userGroupTable.refresh();
                 this.selectedUserGroupItem = null;
                 break;
-              case responseMessages['has-children']: // okay
-                this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-
             }
           })
           .catch((error) => {
