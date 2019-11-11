@@ -158,16 +158,23 @@
                 <b-row>
                   <b-col cols="6">
                     <b-form-group>
-                      <template slot="label">{{$t('permission-management.assign-permission-management.affiliated-org')}}&nbsp;<span class="danger">*</span></template>
-                      <b-form-input></b-form-input>
+                      <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <b-form-select
+                        v-model="userForm.orgId"
+                        :options="orgNameSelectData" plain
+                        :state="!$v.userForm.orgId.$invalid"/>
+                      <b-form-invalid-feedback>
+                        {{ $t('permission-management.user.orgId-field-is-mandatory') }}
+                      </b-form-invalid-feedback>
                     </b-form-group>
-
                   </b-col>
+
                   <b-col cols="6">
                     <b-form-group>
                       <template slot="label">{{$t('permission-management.assign-permission-management.user')}}&nbsp;<span
                         class="text-danger">*</span></template>
-                      <b-form-select v-model="userForm.user" :options="users" plain />
+                      <b-form-select v-model="userForm.userId" :options="userSelectData" plain />
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -176,14 +183,14 @@
                     <b-form-group>
                       <template slot="label">{{$t('menu.account')}}&nbsp;<span
                         class="text-danger">*</span></template>
-                      <label class="">zhangsan</label>
+                      <label>{{selectedUser.userAccount}}</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="6">
                     <b-form-group>
                       <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                         class="text-danger">*</span></template>
-                      <label class="">{{$t('permission-management.male')}}</label>
+                      <label class="">{{selectedUserGender}}</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -193,7 +200,7 @@
                       <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
                         class="text-danger">*</span></template>
 
-                      <v-select class="v-select-custom-style" v-model="groupForm.role" multiple :options="roleOptions" :dir="direction"/>
+                      <v-select class="v-select-custom-style" v-model="userForm.roles" multiple :options="roleSelectData" :dir="direction"/>
 
                     </b-form-group>
                   </b-col>
@@ -206,11 +213,11 @@
                       <div class="d-flex ">
                         <div>
                           <b-form-radio-group  stacked>
-                            <b-form-radio value="first">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
-                            <b-form-radio value="second">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
-                            <b-form-radio value="third">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
-                            <b-form-radio value="fourth">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
-                            <b-form-radio value="fifth">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="first">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="second">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="third">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="fourth">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="fifth">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2">
@@ -513,6 +520,8 @@
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
+  import {validationMixin} from 'vuelidate';
+  const { required } = require('vuelidate/lib/validators');
 
   import Vue2OrgTree from 'vue2-org-tree'
   import {getApiManager} from '../../../api';
@@ -535,7 +544,48 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       Vue2OrgTree
     },
+    mixins: [validationMixin],
+    validations: {
+      userForm: {
+        orgId: {
+          required
+        }
+      }
+    },
     mounted() {
+
+      /////////////////////////////////////////////////
+      /////////// Load org data from server ///////////
+      /////////////////////////////////////////////////
+
+      let rootOrgId = 0;
+      let nest = (items, rootId) =>
+        items
+          .filter(item => item.parentOrgId == rootId)
+          .map(item => ({
+            ...item,
+            children: nest(items, item.orgId),
+          }));
+
+      let generateSpace = (count) => {
+        let string = '';
+        while (count--) {
+          string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+        return string;
+      };
+
+      let indentData = (orgTreeData, level) => {
+        let result = [];
+        orgTreeData.forEach((org) => {
+          result.push({
+            value: org.orgId,
+            html: `${generateSpace(level)}${org.orgName}`
+          });
+          result.push(...indentData(org.children, level + 1));
+        });
+        return result;
+      };
 
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
         type: 'with_parent'
@@ -543,12 +593,49 @@
         let message = response.data.message;
         let data = response.data.data;
         switch (message) {
-          case responseMessages['ok']:
+            case responseMessages['ok']:
             this.orgData = data;
+            this.orgTreeData = nest(this.orgData, rootOrgId);
+            this.orgNameSelectData = indentData(this.orgTreeData, 0);
             break;
         }
-      })
+      });
 
+      ///////////////////////////////////////////////////////////
+      ////////////// Load user list from server /////////////////
+      ///////////////////////////////////////////////////////////
+
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userList = data;
+            break;
+          default:
+
+        }
+      });
+
+      ////////////////////////////////////////////////////////////
+      //////////// Load role list from server ////////////////////
+      ////////////////////////////////////////////////////////////
+
+        getApiManager().post(`${apiBaseUrl}/permission-management/assign-permission-management/role/get-all`, {}).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.roleData = data;
+              this.roleSelectData = this.roleData.map(role => ({
+                label: role.roleName,
+                value: role.roleId
+              }));
+              break;
+            default:
+
+          }
+        });
     },
     data() {
       return {
@@ -664,9 +751,19 @@
           note: ''
         },
         orgData: [], // loaded from server when the page is mounted
+        orgTreeData: [],
+        userList: [],
         pageStatus: 'table', // table, create, modify -> it will change the page
+        roleData: [],
+        orgNameSelectData: [],
+        userSelectData: [],
+        selectedUser: {},
+        selectedUserGender: '',
+        roleSelectData: [],
         userForm: {
-            user: null,
+            orgId: null,
+            userId: null,
+            roles: [],
 
         },
         users: ['张一', '张二', '张三'],
@@ -823,68 +920,36 @@
       }
     },
     watch: {
-        'userVuetableItems.perPage': function (newVal) {
-            this.$refs.userVuetable.refresh();
-        },
+      'userVuetableItems.perPage': function (newVal) {
+          this.$refs.userVuetable.refresh();
+      },
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
-      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
-        let id = 0;
-        let nest = (items, id = 0) =>
-          items
-            .filter(item => item.parentOrgId == id)
-            .map(item => ({
-              ...item,
-              children: nest(items, item.orgId),
-              id: id++,
-              label: `${item.orgNumber} ${item.orgName}`
-            }));
-
-        this.treeData = nest(newVal)[0];
-
-        let getLevel = (org) => {
-
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].orgId == org.parentOrgId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
+      'userForm.orgId': function(newVal) {
+        this.userSelectData = this.userList.filter(user => user.orgId === newVal)
+          .map(user => ({
+            value: user.userId,
+            text: user.userName,
+          }));
+      },
+      'userForm.userId': function(newVal) {
+        this.selectedUser = {};
+        this.userList.forEach(user => {
+          if(user.userId === newVal) {
+            this.selectedUser = user;
           }
-
-          return level;
-
-        };
-
-        let generateSpace = (count) => {
-          let string = '';
-          while (count--) {
-            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-          }
-          return string;
-        };
-
-        let selectOptions = [];
-
-        newVal.forEach((org) => {
-          selectOptions.push({
-            value: org.orgId,
-            html: `${generateSpace(getLevel(org))}${org.orgName}`
-          });
         });
 
-        this.parentOrganizationNameSelectOptions = selectOptions;
-
+        if (this.selectedUser.gender === 'male') {
+          this.selectedUserGender = this.$t('permission-management.male');
+        } else if (this.selectedUser.gender === 'female') {
+          this.selectedUserGender = this.$t('permission-management.female');
+        } else if (this.selectedUser.gender === 'other') {
+          this.selectedUserGender = this.$t('permission-management.unknown');
+        } else {
+            this.selectedUserGender = '';
+        }
       }
     },
     methods: {
