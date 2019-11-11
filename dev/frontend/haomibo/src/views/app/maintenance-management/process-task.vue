@@ -1,7 +1,19 @@
 <style lang="scss">
+  .form-section {
+    .form-group {
+      max-width: unset;
+      .form-control {
+        max-width: unset;
+      }
+    }
+  }
   .inline-form-no-margin {
     .form-group {
       margin-bottom: 0;
+    }
+
+    .col-form-label {
+      padding-top: 0;
     }
   }
   .inline-label-form-section {
@@ -10,21 +22,6 @@
     }
     .w-200-px {
       width: 200px !important;
-    }
-    input[type=time] {
-      padding-left: 30px;
-      position: relative;
-      &:after {
-        font-family: 'IcoFont' !important;
-        content: "\eedc";
-        position: absolute;
-        left: 5px;
-        font-size: 19px;
-        color: #9c9999;
-      }
-    }
-    input[type=number]:not(.full-width) {
-      width: 60px;
     }
     div.front-icon {
       position: relative;
@@ -41,13 +38,8 @@
       }
     }
   }
-  .form-group {
-    label.input-label {
-      line-height: 36px;
-    }
-  }
 
-  div.img-wrapper {
+  div.process-task-img-wrapper {
     width: 270px;
     height: 420px;
     padding: 30px;
@@ -264,9 +256,35 @@
                   <b-col>
                   </b-col>
                 </b-row>
+                <b-row>
+                  <b-col cols="8">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.process-task.plan-works')}}&nbsp
+                      </template>
+                      <label>1.整体检查;</label>
+                      <label>2.添加机油;</label>
+                      <label>3.设备试运行</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="8">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.process-task.real-works')}}&nbsp
+                      </template>
+                      <b-form-textarea type="text" :placeholder="$t('maintenance-management.process-task.real-works')"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
-                <div class="img-wrapper">
+                <div class="process-task-img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
                 </div>
               </b-col>
@@ -277,7 +295,7 @@
             <b-row class="h-100 form-section inline-form-no-margin">
               <b-col cols="8">
                 <b-row>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.device-no')}}&nbsp
@@ -286,7 +304,7 @@
                       <label class="input-label">A000</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.device-name')}}&nbsp
@@ -295,7 +313,7 @@
                       <label class="input-label">MW毫米波安检仪000</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.file-name')}}&nbsp
@@ -304,7 +322,7 @@
                       <label class="input-label">MW毫米波安检仪</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.device-classification')}}&nbsp
@@ -313,7 +331,7 @@
                       <label class="input-label">监管查验设备 / 人体查验设备</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.manufacturer')}}&nbsp
@@ -321,7 +339,7 @@
                       <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.origianl-model')}}&nbsp
@@ -330,7 +348,7 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <b-row class="mb-3">
+                <b-row class="mb-5">
                   <b-col cols="12" class="d-flex align-items-center">
                     <label class="pr-2 m-0 "
                            style="color: #bdbaba">{{$t('maintenance-management.history-record.device-info')}}</label>
@@ -338,7 +356,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.original-no')}}&nbsp
@@ -346,7 +364,7 @@
                       <label class="input-label">H20190002</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.product-date')}}&nbsp
@@ -354,7 +372,7 @@
                       <label class="input-label">20190201</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.purchase-date')}}&nbsp
@@ -362,7 +380,7 @@
                       <label class="input-label">20190201</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.supplier')}}&nbsp
@@ -370,7 +388,7 @@
                       <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.supplier-contact')}}&nbsp
@@ -378,7 +396,7 @@
                       <label class="input-label">小明</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.supplier-contact-information')}}&nbsp
@@ -386,7 +404,7 @@
                       <label class="input-label">13800003001</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.maintenance-department')}}&nbsp
@@ -394,7 +412,7 @@
                       <label class="input-label">生产一部</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.maintenance-user')}}&nbsp
@@ -402,7 +420,7 @@
                       <label class="input-label">张三</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.maintenance-contact-info')}}&nbsp
@@ -410,7 +428,7 @@
                       <label class="input-label">13800000002</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.regular-task')}}&nbsp
@@ -419,7 +437,7 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <b-row class="mb-3">
+                <b-row class="mb-5">
                   <b-col cols="12" class="d-flex align-items-center">
                     <label class="pr-2 m-0 "
                            style="color: #bdbaba">{{$t('maintenance-management.history-record.technical-indicator')}}</label>
@@ -427,7 +445,7 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.inspection-method')}}&nbsp
@@ -435,7 +453,7 @@
                       <label class="input-label">非接触式</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.single-scan-time')}}&nbsp
@@ -443,7 +461,7 @@
                       <label class="input-label">2</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.number-of-operator')}}&nbsp
@@ -451,7 +469,7 @@
                       <label class="input-label">1</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.detectable-item-type')}}&nbsp
@@ -459,7 +477,7 @@
                       <label class="input-label">金属，非金属，爆炸物，毒品，液体</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.automatic-identification')}}&nbsp
@@ -467,7 +485,7 @@
                       <label class="input-label">有</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.privacy-protection')}}&nbsp
@@ -475,7 +493,7 @@
                       <label class="input-label">有</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.equipment-size')}}&nbsp
@@ -483,7 +501,7 @@
                       <label class="input-label">2400*1400*1706</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.channel-size')}}&nbsp
@@ -491,7 +509,7 @@
                       <label class="input-label">2200*750*1188</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.equipment-weight')}}&nbsp
@@ -499,7 +517,7 @@
                       <label class="input-label">550</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.power-by')}}&nbsp
@@ -507,7 +525,7 @@
                       <label class="input-label">110/220，50/60</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.rated-power')}}&nbsp
@@ -515,7 +533,7 @@
                       <label class="input-label">2200*750*1188</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.operating-temperature-humidity')}}&nbsp
@@ -523,7 +541,7 @@
                       <label class="input-label">0-40，0-93</label>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="4">
+                  <b-col cols="4" class="mb-2">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
                         {{$t('maintenance-management.history-record.storage-temperature-humidity')}}&nbsp
@@ -534,7 +552,7 @@
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
-                <div class="img-wrapper">
+                <div class="process-task-img-wrapper">
                   <img src="../../../assets/img/man-in-device.png">
                 </div>
               </b-col>
