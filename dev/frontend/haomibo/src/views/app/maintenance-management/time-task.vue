@@ -1,5 +1,8 @@
 <style lang="scss">
   .inline-label-form-section {
+    .form-group {
+      max-width: unset;
+    }
     .w-130-px {
       width: 130px !important;
     }
@@ -36,6 +39,8 @@
       }
     }
   }
+
+
 </style>
 <template>
   <div>
@@ -143,7 +148,7 @@
 
       </div>
       <div v-if="pageStatus==='create'" class="form-section">
-        <b-row>
+        <b-row class="h-100">
           <b-col cols="6" class="pr-5">
             <b-form-group>
               <template slot="label">{{$t('maintenance-management.time-task.task-number')}}&nbsp;<span
@@ -209,7 +214,7 @@
             </b-form-group>
             <div class="pl-4 text-muted">({{$t('maintenance-management.time-task.guide-for-time-task')}})</div>
           </b-col>
-          <b-col cols="6" class="pl-5 inline-label-form-section">
+          <b-col cols="6" class="inline-label-form-section">
             <b-form-group>
               <template slot="label">{{$t('maintenance-management.time-task.estimated-start-time')}}&nbsp;<span
                 class="text-danger">*</span></template>
@@ -247,7 +252,7 @@
               </div>
             </b-form-group>
           </b-col>
-          <b-col cols="12 text-right">
+          <b-col cols="12 text-right" class="align-self-end">
             <b-button variant="info default" @click="onAction('save-item')"><i class="icofont-save"></i>
               {{$t('permission-management.save')}}
             </b-button>
@@ -258,6 +263,9 @@
               {{$t('permission-management.return')}}
             </b-button>
           </b-col>
+          <div class="position-absolute" style="bottom: 20%;left: 45%">
+            <img  src="../../../assets/img/active_stamp.png">
+          </div>
         </b-row>
 
       </div>
