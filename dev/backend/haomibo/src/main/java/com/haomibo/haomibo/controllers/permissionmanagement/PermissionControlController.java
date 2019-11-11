@@ -579,7 +579,7 @@ public class PermissionControlController extends BaseController {
                 .getDefaultFilters()
                 .addFilter(
                         ModelJsonFilters.FILTER_SYS_USER,
-                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
 
         value.setFilters(filters);
 
@@ -691,10 +691,10 @@ public class PermissionControlController extends BaseController {
 
         switch (type) {
             case DataGroupGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"));
                 break;
             case DataGroupGetAllRequestBody.GetAllType.WITH_USERS:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
                 break;
             default:
                 break;

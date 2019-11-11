@@ -727,7 +727,8 @@
           nextUserId: null, // when edit or show user's role, userId should be stored here.
           roles: [],
           dataRangeCategory: "person",
-          selectedDataGroupId: null
+          selectedDataGroupId: null,
+          nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         },
         selectedUser: {},
         selectedUserGender: '',
@@ -855,7 +856,8 @@
         }
       },
       'userForm.dataRangeCategory': function (newVal) {
-        this.userForm.selectedDataGroupId = null;
+        this.userForm.selectedDataGroupId = this.userForm.nextSelectedDataGroupId;
+        this.userForm.nextSelectedDataGroupId = null;
       },
       'groupForm.userGroup': function (newVal, oldVal) {
         this.groupForm.selectedUserGroupMembers = null;
@@ -917,19 +919,26 @@
                         let data = response.data.data;
                         switch (message) {
                             case responseMessages['ok']:
-                                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                this.userForm = {
-                                    orgId: null,
-                                    userId: null,
-                                    roles: [],
-                                    dataRangeCategory: "person",
-                                    selectedDataGroupId: null
-                                };
-                                this.selectedUser = {};
-                                this.selectedUserGender = '';
+                                if(this.pageStatus === 'create') {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                                        duration: 3000,
+                                        permanent: false
+                                    });
+                                    this.userForm = {
+                                        orgId: null,
+                                        userId: null,
+                                        roles: [],
+                                        dataRangeCategory: "person",
+                                        selectedDataGroupId: null
+                                    };
+                                    this.selectedUser = {};
+                                    this.selectedUserGender = '';
+                                } else {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
+                                        duration: 3000,
+                                        permanent: false
+                                    });
+                                }
                                 break;
                             default:
                         }
@@ -954,7 +963,9 @@
         }));
         if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        // TODO: determine this.userForm.selectedDataGroupId
+        if(this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+            this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        }
         this.pageStatus = 'show';
       },
 
@@ -1002,7 +1013,9 @@
         }));
         if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        // TODO: determine this.userForm.selectedDataGroupId
+        if(this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+          this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        }
         this.pageStatus = 'modify';
       },
 

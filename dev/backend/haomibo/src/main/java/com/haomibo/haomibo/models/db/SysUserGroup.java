@@ -79,6 +79,21 @@ public class SysUserGroup implements Serializable {
     )
     Set<SysUser> users; // Relation to sysUser table.
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_user_group_role",
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
+    )
+    Set<SysRole> roles; // Relation to SysRole table.
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "sys_user_group_lookup",
+            joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
+    )
+    Set<SysDataGroup> dataGroups;
 
 }
 

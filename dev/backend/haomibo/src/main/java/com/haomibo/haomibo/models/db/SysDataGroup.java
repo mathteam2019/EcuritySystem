@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_DATA_GROUP)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP)
 @Table(name = "sys_data_group")
 public class SysDataGroup implements Serializable {
 

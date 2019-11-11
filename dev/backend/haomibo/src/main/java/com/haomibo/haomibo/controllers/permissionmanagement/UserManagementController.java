@@ -86,9 +86,7 @@ public class UserManagementController extends BaseController {
         String mobile;
         String address;
 
-        @NotNull
-        @Pattern(regexp = SysUser.Category.ADMIN + "|" + SysUser.Category.NORMAL)
-        String category;
+
         String note;
 
         private MultipartFile portrait;
@@ -109,7 +107,7 @@ public class UserManagementController extends BaseController {
                     .email(this.getEmail())
                     .mobile(this.getMobile())
                     .address(this.getAddress())
-                    .category(this.getCategory())
+                    .category(SysUser.Category.NORMAL)
                     .status(SysUser.Status.INACTIVE)
                     .note(this.getNote())
                     .build();
@@ -153,7 +151,6 @@ public class UserManagementController extends BaseController {
         String email;
         String mobile;
         String address;
-        String category;
         String note;
 
         private MultipartFile portrait;
@@ -174,7 +171,7 @@ public class UserManagementController extends BaseController {
                     .email(this.getEmail())
                     .mobile(this.getMobile())
                     .address(this.getAddress())
-                    .category(this.getCategory())
+                    .category(SysUser.Category.NORMAL)
                     .status(SysUser.Status.INACTIVE)
                     .note(this.getNote())
                     .build();
@@ -220,13 +217,22 @@ public class UserManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String userName;
+
             Long orgId;
+
             @Pattern(regexp = SysUser.Status.ACTIVE + "|" +
                     SysUser.Status.INACTIVE + "|" +
                     SysUser.Status.PENDING + "|" +
                     SysUser.Status.BLOCKED)
             String status;
-            String category;
+
+            @Pattern(regexp = SysUser.Gender.MALE + "|" +
+                    SysUser.Gender.FEMALE + "|" +
+                    SysUser.Gender.OTHER)
+            String gender;
+
+
+
         }
 
         @NotNull
@@ -499,8 +505,8 @@ public class UserManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.eq(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategory())) {
-                predicate.and(builder.category.contains(filter.getCategory()));
+            if (!StringUtils.isEmpty(filter.getGender())) {
+                predicate.and(builder.gender.eq(filter.getGender()));
             }
             if (filter.getOrgId() != null) {
 
@@ -545,7 +551,10 @@ public class UserManagementController extends BaseController {
                 .getDefaultFilters()
                 .addFilter(
                         ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
+                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"))
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
+                        SimpleBeanPropertyFilter.serializeAllExcept("users"));
 
         value.setFilters(filters);
 
@@ -606,10 +615,10 @@ public class UserManagementController extends BaseController {
 
         switch (type) {
             case UserGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
                 break;
             case UserGetAllRequestBody.GetAllType.WITH_ORG_TREE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("roles"))
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("roles", "dataGroups"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
                 break;
             default:
@@ -717,7 +726,13 @@ public class UserManagementController extends BaseController {
                 .getDefaultFilters()
                 .addFilter(
                         ModelJsonFilters.FILTER_SYS_USER,
-                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles"));
+                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"))
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
+                        SimpleBeanPropertyFilter.serializeAllExcept("users"))
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ROLE,
+                        SimpleBeanPropertyFilter.serializeAllExcept("resources"));
 
         value.setFilters(filters);
 
