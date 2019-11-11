@@ -260,7 +260,7 @@
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
-          <div class="position-absolute" style="left: 8%;bottom: 17%">
+          <div class="position-absolute" style="left: 8%;bottom: 8%">
             <img  src="../../../assets/img/no_active_stamp.png">
           </div>
 

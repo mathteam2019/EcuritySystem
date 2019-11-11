@@ -513,6 +513,10 @@
               </b-button>
             </div>
           </b-col>
+          <div class="position-absolute" style="left: 8%;bottom: 17%">
+            <img  src="../../../assets/img/no_active_stamp.png">
+          </div>
+
         </b-row>
       </b-tab>
     </b-tabs>
