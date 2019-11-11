@@ -347,7 +347,10 @@
                     $t('permission-management.assign-permission-management.group.group-member-not-exit') : "&nbsp;" }}
                   </div>
                 </b-form-group>
-                <b-form-group>
+              </b-col>
+              <b-col cols="8"></b-col>
+              <b-col cols="6">
+                <b-form-group class="mw-100">
                   <template slot="label">
                     {{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
                     class="text-danger">*</span></template>
@@ -360,7 +363,7 @@
                   </div>
 
                 </b-form-group>
-                <b-form-group>
+                <b-form-group class="mw-100">
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <div class="d-flex ">
@@ -380,8 +383,8 @@
                         </b-form-radio>
                       </b-form-radio-group>
                     </div>
-                    <div class="align-self-end flex-grow-1 pl-2">
-                      <b-form-select :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
+                    <div class="align-self-end flex-grow-1 pl-5">
+                      <b-form-select class="mw-100" :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
                                      :options="dataGroupSelectData" plain/>
                     </div>
                   </div>
@@ -395,7 +398,7 @@
                 <b-button v-if="groupPageStatus !== 'show'" variant="info default" size="sm" @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button v-if="groupPageStatus === 'edit'" variant="danger default" size="sm" @click="onActionGroup('delete-item',selectedUserGroupItem)"><i
+                <b-button v-if="groupPageStatus !== 'create'" variant="danger default" size="sm" @click="onActionGroup('delete-item',selectedUserGroupItem)"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
                 <b-button variant="info default" size="sm" @click="onActionGroup('show-list')"><i
@@ -1061,6 +1064,13 @@
         },
 
       onAssignUserGroupCreatePage(){
+        this.groupForm = {
+          userGroup: null,
+          role: null,
+          dataRange: "person",
+          filterGroup: null,
+          selectedUserGroupMembers: [],
+        };
         this.groupPageStatus = 'create';
       },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
@@ -1237,28 +1247,4 @@
     }
   }
 </script>
-<style lang="scss">
-  .search-form-group {
-    [role="group"] {
-      position: relative;
 
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-
-    }
-
-  }
-
-  span.cursor-p {
-    cursor: pointer !important;
-  }
-
-</style>

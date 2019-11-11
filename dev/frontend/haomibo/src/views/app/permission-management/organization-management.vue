@@ -1,8 +1,4 @@
 <style lang="scss">
-  .stamp-wrapper {
-    left: 8%;
-    bottom: 17%;
-  }
   .bg-organization-structure {
     background: url("../../../assets/img/bg-china-map.png") no-repeat center;
     background-size: contain;
@@ -179,30 +175,6 @@
                     :initial-per-page="vuetableItems.perPage"
                     @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
-
-                  <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-delete-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteOrg()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-delete')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
-
-                  <b-modal ref="modal-deactivate" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-deactivate-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deactivateOrg()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-deactivate')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
                 </div>
               </b-col>
             </b-row>
@@ -288,8 +260,8 @@
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
-          <div class="position-absolute stamp-wrapper">
-            <img src="../../../assets/img/active_stamp.png">
+          <div class="position-absolute" style="left: 8%;bottom: 17%">
+            <img  src="../../../assets/img/no_active_stamp.png">
           </div>
 
         </b-row>
@@ -369,12 +341,22 @@
             <b-button size="sm" variant="success default mr-1" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
+            <b-button v-if="modifyPage.selectedOrg.status==='inactive'" size="sm" variant="warning default mr-1"  @click="onAction('activate')"><i class="icofont-check-circled"></i> {{
+              $t('permission-management.active')}}
+            </b-button>
+            <b-button v-else-if="modifyPage.selectedOrg.status==='active'" size="sm" variant="warning default mr-1"  @click="onAction('deactivate')"><i class="icofont-ban"></i> {{
+              $t('permission-management.action-make-inactive')}}
+            </b-button>
+            <b-button size="sm" variant="danger default mr-1"  @click="onAction('delete')"><i class="icofont-bin"></i> {{
+              $t('permission-management.delete')}}
+            </b-button>
             <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
-          <div class="position-absolute stamp-wrapper">
-            <img src="../../../assets/img/active_stamp.png">
+          <div class="position-absolute" style="left: 8%;bottom: 17%">
+            <img v-if="modifyPage.selectedOrg.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="modifyPage.selectedOrg.status==='active'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
 
@@ -407,7 +389,29 @@
 
     </b-tabs>
 
+    <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
+      {{$t('permission-management.organization-delete-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deleteOrg()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-delete')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
 
+    <b-modal ref="modal-deactivate" :title="$t('permission-management.prompt')">
+      {{$t('permission-management.organization-deactivate-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deactivateOrg()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-deactivate')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -731,7 +735,7 @@
       onChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
-      onAction(action, data, index) { // called when any action button is called from table
+      onAction(action, data = null, index) { // called when any action button is called from table
 
         let modifyItem = () => {
 
@@ -753,15 +757,21 @@
 
         let deleteItem = () => {
           this.selectedOrg = data;
+          if(data==null)
+            this.selectedOrg = this.modifyPage.selectedOrg;
           this.$refs['modal-delete'].show();
         };
 
         let activateItem = () => {
-
+          let selectedOrgId = 0;
+          if(data==null)
+            selectedOrgId = this.modifyPage.selectedOrg.orgId;
+          else
+            selectedOrgId = data.orgId;
           // call api
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
-              'orgId': data.orgId,
+              'orgId': selectedOrgId,
               'status': 'active',
             })
             .then((response) => {
@@ -773,7 +783,8 @@
                     duration: 3000,
                     permanent: false
                   });
-
+                  if(this.modifyPage!=null)
+                    this.modifyPage.selectedOrg.status = 'active';
                   this.$refs.vuetable.refresh();
 
                   break;
@@ -787,6 +798,8 @@
 
         let deactivateItem = () => {
           this.selectedOrg = data;
+          if(data==null)
+            this.selectedOrg = this.modifyPage.selectedOrg;
           this.$refs['modal-deactivate'].show();
         };
 
@@ -985,7 +998,7 @@
                   duration: 3000,
                   permanent: false
                 });
-
+                this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
 
                 break;
@@ -1024,7 +1037,8 @@
                   duration: 3000,
                   permanent: false
                 });
-
+                if(this.modifyPage!=null)
+                  this.modifyPage.selectedOrg.status = 'inactive';
                 this.$refs.vuetable.refresh();
 
                 break;
