@@ -16,7 +16,7 @@
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
                 <b-col cols="3" class="pr-3">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.role')}}</template>
                     <b-form-input v-model="roleKeyword"></b-form-input>
                   </b-form-group>
@@ -230,14 +230,14 @@
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
                 <b-col cols="2" class="pr-3">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.data-group')}}</template>
                     <b-form-input v-model="groupKeyword"></b-form-input>
                   </b-form-group>
                 </b-col>
 
                 <b-col cols="2">
-                  <b-form-group class="search-form-group">
+                  <b-form-group>
                     <template slot="label">{{$t('permission-management.permission-control.data-range')}}</template>
                     <b-form-input v-model="dataRangeKeyword"></b-form-input>
                   </b-form-group>

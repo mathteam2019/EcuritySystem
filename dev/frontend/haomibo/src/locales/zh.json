@@ -579,7 +579,8 @@
       "platform-security-instrument": "平台、安检仪",
       "storage-check-period": "存储空间检测周期",
       "storage-warning-size": "存储空间预警",
-      "history-save-period": "历史数据保存周期"
+      "history-save-period": "历史数据保存周期",
+      "configuration": "配置"
     }
   },
   "log-management": {
