@@ -78,19 +78,25 @@
                     track-by="userId"
                     @vuetable:pagination-data="onUserPaginationData"
                   >
+                    <template slot="userName" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onUserNameClicked(props.rowData)">
+                        {{props.rowData.userName}}
+                      </span>
+                    </template>
 
                     <template slot="actions" slot-scope="props">
                       <div>
                         <b-button
                           size="sm"
-                          variant="primary default btn-square">
+                          variant="primary default btn-square"
+                          @click="editUserRoles(props.rowData)">
                           <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
                           size="sm"
                           variant="danger default btn-square"
-                          @click="promptDeleteUserRole(props.rowData.userId)">
+                          @click="promptDeleteUserRoles(props.rowData.userId)">
                           <i class="icofont-bin"></i>
                         </b-button>
                       </div>
@@ -105,18 +111,6 @@
                     :initial-per-page="userVuetableItems.perPage"
                     @onUpdatePerPage="userVuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
-
-                  <b-modal ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.organization-delete-prompt')}}
-                    <template slot="modal-footer">
-                      <b-button variant="primary" @click="deleteUserRole()" class="mr-1">
-                        {{$t('permission-management.modal-ok')}}
-                      </b-button>
-                      <b-button variant="danger" @click="hideModal('modal-user-role-delete')">
-                        {{$t('permission-management.modal-cancel')}}
-                      </b-button>
-                    </template>
-                  </b-modal>
                 </div>
               </b-col>
             </b-row>
@@ -135,7 +129,9 @@
                       <b-form-select
                         v-model="userForm.orgId"
                         :options="orgNameSelectData" plain
-                        :state="!$v.userForm.orgId.$invalid"/>
+                        :state="!$v.userForm.orgId.$invalid"
+                        :disabled="pageStatus !== 'create'"
+                      />
                       <b-form-invalid-feedback>
                         {{ $t('permission-management.user.orgId-field-is-mandatory') }}
                       </b-form-invalid-feedback>
@@ -149,7 +145,9 @@
                       <b-form-select
                         v-model="userForm.userId"
                         :options="userSelectData" plain
-                        :state="!$v.userForm.userId.$invalid"/>
+                        :state="!$v.userForm.userId.$invalid"
+                        :disabled="pageStatus !== 'create'"
+                      />
                       <b-form-invalid-feedback>
                         {{ $t('permission-management.user.userId-field-is-mandatory') }}
                       </b-form-invalid-feedback>
@@ -178,7 +176,12 @@
                       <template slot="label">{{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
                         class="text-danger">*</span></template>
 
-                      <v-select class="v-select-custom-style" v-model="userForm.roles" multiple :options="roleSelectData" :dir="direction"/>
+                      <v-select
+                        class="v-select-custom-style"
+                        v-model="userForm.roles" multiple
+                        :options="roleSelectData" :dir="direction"
+                        :disabled="pageStatus === 'show'"
+                      />
 
                     </b-form-group>
                   </b-col>
@@ -190,16 +193,20 @@
                         class="text-danger">*</span></template>
                       <div class="d-flex ">
                         <div>
-                          <b-form-radio-group  stacked>
-                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="person">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
-                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="org">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
-                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="org_desc">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
-                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="all">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
-                            <b-form-radio v-model="userForm.dataRangeCategory" class="pb-2" value="specified">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
+                          <b-form-radio-group v-model="userForm.dataRangeCategory" stacked>
+                            <b-form-radio class="pb-2" value="person">{{$t('permission-management.assign-permission-management.user-form.one-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="org">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="org_desc">{{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="all">{{$t('permission-management.assign-permission-management.user-form.all-user-data')}}</b-form-radio>
+                            <b-form-radio class="pb-2" value="specified">{{$t('permission-management.assign-permission-management.user-form.select-data-group')}}</b-form-radio>
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2">
-                          <b-form-select v-model="userForm.selectedDataGroupId" :options="dataGroupSelectData" plain/>
+                          <b-form-select
+                            v-model="userForm.selectedDataGroupId"
+                            :options="dataGroupSelectData" plain
+                            :disabled="userForm.dataRangeCategory !== 'specified'"
+                          />
                         </div>
                       </div>
                     </b-form-group>
@@ -208,8 +215,8 @@
 
               </b-col>
               <b-col cols="12 " class="align-self-end text-right">
-                <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
-                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" v-if="pageStatus === 'modify'"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')" v-if="pageStatus !== 'show'"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" v-if="pageStatus !== 'create'"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
@@ -283,8 +290,8 @@
                     class="table-hover"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                   >
-                    <template slot="userNumber" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.userNumber }}</span>
+                    <template slot="groupName" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <div>
@@ -297,7 +304,7 @@
 
                         <b-button
                           size="sm"
-                          variant="danger default btn-square">
+                          variant="danger default btn-square" @click="onActionGroup('delete-item',props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
 
@@ -313,12 +320,12 @@
                     :initial-per-page="userGroupTableItems.perPage"
                   ></vuetable-pagination-bootstrap>
                   <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
-                    {{$t('permission-management.user.user-group-delete-prompt')}}
+                    {{$t('permission-management.assign-permission-management.group.user-group-delete-prompt')}}
                     <template slot="modal-footer">
                       <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
                         {{$t('permission-management.modal-ok')}}
                       </b-button>
-                      <b-button variant="danger" @click="fnHideModal('modal-prompt-group')">
+                      <b-button variant="danger" @click="hideModal('modal-prompt-group')">
                         {{$t('permission-management.modal-cancel')}}
                       </b-button>
                     </template>
@@ -328,14 +335,14 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-else-if="groupPageStatus==='create'" class="h-100">
+        <b-row v-else-if="groupPageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
+                  <b-form-select :disabled="groupPageStatus !== 'create'" v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted &&!$v.groupForm.userGroup.required) ?
                     $t('permission-management.assign-permission-management.group.user-group-mandatory') : "&nbsp;" }}
@@ -385,7 +392,7 @@
                     </div>
                     <div class="align-self-end flex-grow-1 pl-2">
                       <b-form-select :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
-                                     :options="groupUserGroupOptions" plain/>
+                                     :options="dataGroupSelectData" plain/>
                     </div>
                   </div>
                   <div class="invalid-feedback d-block">
@@ -395,10 +402,10 @@
                 </b-form-group>
               </b-col>
               <b-col cols="12" class="align-self-end text-right">
-                <b-button variant="info default" size="sm" @click="onActionGroup('save-item')"><i
+                <b-button v-if="groupPageStatus !== 'show'" variant="info default" size="sm" @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i
+                <b-button v-if="groupPageStatus === 'edit'" variant="danger default" size="sm" @click="onActionGroup('delete-item')"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
                 <b-button variant="info default" size="sm" @click="onActionGroup('show-list')"><i
@@ -409,10 +416,19 @@
           </b-col>
         </b-row>
       </b-tab>
-
-
     </b-tabs>
 
+    <b-modal ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
+      {{$t('permission-management.organization-delete-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="deleteUserRole()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-user-role-delete')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
 
   </div>
 </template>
@@ -619,7 +635,7 @@
                   dataClass: 'text-center'
                 },
                 {
-                  name: 'userName',
+                  name: '__slot:userName',
                   title: this.$t('permission-management.assign-permission-management.user'),
                   titleClass: 'text-center',
                   dataClass: 'text-center'
@@ -670,7 +686,7 @@
                     titleClass: 'text-center',
                     dataClass: 'text-center',
                     callback: (dataRangeCategory) => {
-                        if(dataRangeCategory === 'person') {
+                        if(dataRangeCategory === 'person' || dataRangeCategory === null) {
                             return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
                         } else if(dataRangeCategory === 'org') {
                             return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
@@ -694,17 +710,6 @@
               ],
               perPage: 5,
           },
-        userTempData: [
-          {
-              userId: 1,
-              userName: 'user1',
-              gender: 'male',
-              userAccount: 'u-1',
-              affiliatedOrg: '总部/生产部',
-              role: 'role-1',
-              dataRange: '个人数据',
-          }
-        ],
         orgData: [], // loaded from server when the page is mounted
         orgTreeData: [],
         userList: [],
@@ -718,9 +723,11 @@
         userForm: {
           orgId: null,
           userId: null,
+          nextUserId: null, // when edit or show user's role, userId should be stored here.
           roles: [],
-          dataRangeCategory: null,
-          selectedDataGroupId: null
+          dataRangeCategory: "person",
+          selectedDataGroupId: null,
+          nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         },
         selectedUser: {},
         selectedUserGender: '',
@@ -763,7 +770,7 @@
               dataClass: 'text-center',
             },
             {
-              name: 'groupName',
+              name: '__slot:groupName',
               title: this.$t('permission-management.assign-permission-management.group.user-group'),
               sortField: 'groupName',
               titleClass: 'text-center',
@@ -826,7 +833,8 @@
             value: user.userId,
             text: user.userName,
           }));
-        this.userForm.userId = null;
+        this.userForm.userId = this.userForm.nextUserId;
+        this.userForm.nextUserId = null;
       },
       'userForm.userId': function(newVal) {
         this.selectedUser = {};
@@ -845,6 +853,10 @@
         } else {
             this.selectedUserGender = '';
         }
+      },
+      'userForm.dataRangeCategory': function (newVal) {
+        this.userForm.selectedDataGroupId = this.userForm.nextSelectedDataGroupId;
+        this.userForm.nextSelectedDataGroupId = null;
       },
       'groupForm.userGroup': function (newVal, oldVal) {
         this.groupForm.selectedUserGroupMembers = null;
@@ -894,7 +906,7 @@
       onUserActionGroup(value) {
         switch (value) {
             case 'save-item':
-                if(this.userForm.dataRangeCategory) {
+                if(!this.$v.userForm.$invalid && this.userForm.dataRangeCategory) {
                     getApiManager()
                         .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
                             userId: this.userForm.userId,
@@ -906,31 +918,54 @@
                         let data = response.data.data;
                         switch (message) {
                             case responseMessages['ok']:
-                                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                this.userForm = {
-                                    orgId: null,
-                                    userId: null,
-                                    roles: [],
-                                    dataRangeCategory: null,
-                                    selectedDataGroupId: null
-                                };
-                                this.selectedUser = {};
-                                this.selectedUserGender = '';
+                                if(this.pageStatus === 'create') {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-created`), {
+                                        duration: 3000,
+                                        permanent: false
+                                    });
+                                    this.userForm = {
+                                        orgId: null,
+                                        userId: null,
+                                        roles: [],
+                                        dataRangeCategory: "person",
+                                        selectedDataGroupId: null
+                                    };
+                                    this.selectedUser = {};
+                                    this.selectedUserGender = '';
+                                } else {
+                                    this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
+                                        duration: 3000,
+                                        permanent: false
+                                    });
+                                }
                                 break;
                             default:
                         }
-                    })
+                    });
                 }
                 break;
           case 'show-list':
             this.pageStatus = 'table';
             break;
           case 'delete-item':
+            this.promptDeleteUserRoles(this.userForm.userId);
             break;
         }
+      },
+
+      onUserNameClicked(userWithRole) {
+        this.userForm.orgId = userWithRole.org.orgId;
+        this.userForm.nextUserId = userWithRole.userId;
+        this.userForm.roles = userWithRole.roles.map(role => ({
+          label: role.roleName,
+          value: role.roleId
+        }));
+        if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
+        if(this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+            this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        }
+        this.pageStatus = 'show';
       },
 
       promptDeleteUserRoles(userId) {
@@ -940,7 +975,47 @@
 
       deleteUserRole() {
         this.hideModal('modal-user-role-delete');
-        // TODO: delete user role
+
+        if(this.selectedUserId) {
+            getApiManager()
+                .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
+                    userId: this.selectedUserId,
+                    roleIdList: [],
+                    dataRangeCategory: '',
+                    selectedDataGroupId: null
+                }).then((response) => {
+                    let message = response.data.message;
+                    let data = response.data.data;
+                    switch (message) {
+                        case responseMessages['ok']:
+                            this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-deleted`), {
+                                duration: 3000,
+                                permanent: false
+                            });
+                            this.selectedUserId = null;
+                            this.pageStatus = 'table';
+                            this.$refs.userVuetable.refresh();
+                            break;
+                        default:
+                    }
+            });
+
+        }
+      },
+
+      editUserRoles(userWithRole) {
+        this.userForm.orgId = userWithRole.org.orgId;
+        this.userForm.nextUserId = userWithRole.userId;
+        this.userForm.roles = userWithRole.roles.map(role => ({
+            label: role.roleName,
+            value: role.roleId
+        }));
+        if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
+        if(this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+          this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
+        }
+        this.pageStatus = 'modify';
       },
 
       //TODO assign user group point
@@ -955,11 +1030,14 @@
             break;
           case 'show-item':
             this.groupPageStatus = 'show';
+            this.fnShowUserGroupItem(data);
             break;
           case 'edit-item':
             this.groupPageStatus = 'edit';
+            this.fnShowUserGroupItem(data);
             break;
           case 'delete-item':
+            this.fnShowUserGroupConfDiaglog(data);
             break;
         }
       },
@@ -1003,6 +1081,23 @@
       onUserGroupTableChangePage(page) {
         this.$refs.userGroupTable.changePage(page)
       },
+      fnShowUserGroupItem(userGroupItem) {
+        this.groupForm.userGroup = userGroupItem.userGroupId;
+        this.groupForm.dataRange = userGroupItem.dataRangeCategory;
+        this.groupForm.filterGroup = userGroupItem.dataGroups.length>0?null:userGroupItem.dataGroups[0].dataGroupId;
+        this.selectedUserGroupMember = "";
+        this.groupForm.selectedUserGroupMembers = [];
+        this.groupForm.role = [];
+        userGroupItem.users.forEach(user => {
+          this.groupForm.selectedUserGroupMembers.push(user.userName)
+        });
+        this.selectedUserGroupMember = this.groupForm.selectedUserGroupMembers.join(',');
+        userGroupItem.roles.forEach(role => {
+          this.groupForm.role.push({
+            label:role.roleName,value:role.roleId
+          })
+        });
+      },
       fnShowUserGroupConfDiaglog(userGroupItem) {
         this.selectedUserGroupItem = userGroupItem;
         this.$refs['modal-prompt-group'].show();
@@ -1011,15 +1106,18 @@
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
           getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-              userGroupId: this.selectedUserGroupItem.userGroupId
+            .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/assign-role-and-data-range`, {
+              userGroupId: this.selectedUserGroupItem.userGroupId,
+              dataRangeCategory: "person",
+              selectedDataGroupId: 0,
+              roleIdList: []
             })
             .then((response) => {
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-removed-successfully`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1027,24 +1125,19 @@
                   this.$refs.userGroupTable.refresh();
                   this.selectedUserGroupItem = null;
                   break;
-                case responseMessages['has-children']: // okay
-                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-
               }
             })
             .catch((error) => {
             })
             .finally(() => {
+              this.groupPageStatus = 'table';
 
             });
         }
       },
 
       fnAssignUserGroupItem() {
+
         this.submitted = true;
         this.$v.groupForm.$touch();
         if (this.$v.groupForm.$invalid) {
@@ -1069,7 +1162,7 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-successfully`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -1077,13 +1170,6 @@
                 this.$refs.userGroupTable.refresh();
                 this.selectedUserGroupItem = null;
                 break;
-              case responseMessages['has-children']: // okay
-                this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-
             }
           })
           .catch((error) => {
@@ -1167,5 +1253,8 @@
 
   }
 
+  span.cursor-p {
+    cursor: pointer !important;
+  }
 
 </style>
