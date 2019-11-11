@@ -3,15 +3,17 @@
     .form-group {
       max-width: unset;
       .form-control {
-        max-width: unset;
+        max-width: 400px;
       }
     }
   }
   .inline-form-no-margin {
     .form-group {
       margin-bottom: 0;
+      label.input-label {
+        line-height: unset;
+      }
     }
-
     .col-form-label {
       padding-top: 0;
     }
