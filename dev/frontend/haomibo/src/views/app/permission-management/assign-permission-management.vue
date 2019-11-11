@@ -686,7 +686,7 @@
                     titleClass: 'text-center',
                     dataClass: 'text-center',
                     callback: (dataRangeCategory) => {
-                        if(dataRangeCategory === 'person') {
+                        if(dataRangeCategory === 'person' || dataRangeCategory === null) {
                             return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
                         } else if(dataRangeCategory === 'org') {
                             return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
@@ -924,7 +924,7 @@
                                     orgId: null,
                                     userId: null,
                                     roles: [],
-                                    dataRangeCategory: null,
+                                    dataRangeCategory: "person",
                                     selectedDataGroupId: null
                                 };
                                 this.selectedUser = {};
@@ -951,6 +951,7 @@
           label: role.roleName,
           value: role.roleId
         }));
+        if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
         // TODO: determine this.userForm.selectedDataGroupId
         this.pageStatus = 'show';
@@ -998,6 +999,7 @@
             label: role.roleName,
             value: role.roleId
         }));
+        if(userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
         // TODO: determine this.userForm.selectedDataGroupId
         this.pageStatus = 'modify';
