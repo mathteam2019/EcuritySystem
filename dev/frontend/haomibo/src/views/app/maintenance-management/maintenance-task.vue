@@ -179,14 +179,14 @@
       <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column">
         <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
                  :no-fade="true">
-          <b-tab :title="$t('device-management.device-table.device-info')">
+          <b-tab :title="$t('maintenance-management.history-record.maintenance-info')">
             <b-row class="h-100 form-section">
               <b-col cols="8">
                 <b-row>
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.number')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
                       <label>HR201909010001</label>
@@ -195,19 +195,19 @@
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.on-site')}}&nbsp
+                        {{$t('maintenance-management.history-record.task')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>北京首都机场</label>
+                      <label>毫米波安检仪001巡检</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.security-instrument')}}&nbsp
+                        {{$t('maintenance-management.history-record.site')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>安检仪001</label>
+                      <label>通道001</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -215,57 +215,28 @@
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.device-classification')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>HR201909010001</label>
+                      <label>监管查验设备 / 人体查验设备</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.on-site')}}&nbsp
+                        {{$t('maintenance-management.history-record.device')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>北京首都机场</label>
+                      <label>MW毫米波安检仪000</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.security-instrument')}}&nbsp
+                        {{$t('maintenance-management.history-record.plan')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>安检仪001</label>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
-                      </template>
-                      <label>HR201909010001</label>
-                    </b-form-group>
-                  </b-col>
-                  <b-col>
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('personal-inspection.on-site')}}&nbsp
-                        <span class="text-danger">*</span>
-                      </template>
-                      <label>北京首都机场</label>
-                    </b-form-group>
-                  </b-col>
-                  <b-col>
-                    <b-form-group>
-                      <template slot="label">
-                        {{$t('personal-inspection.security-instrument')}}&nbsp
-                        <span class="text-danger">*</span>
-                      </template>
-                      <label>安检仪001</label>
+                      <label>HR201909200001</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -273,19 +244,48 @@
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.security-department')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>HR201909010001</label>
+                      <label>生产一部</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group>
                       <template slot="label">
-                        {{$t('personal-inspection.on-site')}}&nbsp
+                        {{$t('maintenance-management.history-record.security-user')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>北京首都机场</label>
+                      <label>张三</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.creat-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20191022 00:00</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.estimated-start-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20191024 00:00</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.actual-start-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20191024 06:03</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -300,69 +300,67 @@
 
             </b-row>
           </b-tab>
-          <b-tab :title="$t('device-management.device-table.archive-info')">
+          <b-tab :title="$t('maintenance-management.history-record.device-info')">
             <b-row class="h-100 form-section inline-form-no-margin">
               <b-col cols="8">
                 <b-row>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.device-no')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">A000</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.device-name')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">MW毫米波安检仪000</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.file-name')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">MW毫米波安检仪</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
+                        {{$t('maintenance-management.history-record.device-classification')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">监管查验设备 / 人体查验设备</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.manufacturer')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.origianl-model')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">MW1000AA</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
                 <b-row class="mb-3">
                   <b-col cols="12" class="d-flex align-items-center">
                     <label class="pr-2 m-0 "
-                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                           style="color: #bdbaba">{{$t('maintenance-management.history-record.device-info')}}</label>
                     <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
                   </b-col>
                 </b-row>
@@ -370,98 +368,88 @@
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.original-no')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">H20190002</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.product-date')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">20190201</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.purchase-date')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">20190201</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.supplier')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.supplier-contact')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">小明</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.supplier-contact-information')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">13800003001</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.maintenance-department')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">生产一部</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.maintenance-user')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">张三</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.maintenance-contact-info')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">13800000002</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.regular-task')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">任务1、任务2</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
                 <b-row class="mb-3">
                   <b-col cols="12" class="d-flex align-items-center">
                     <label class="pr-2 m-0 "
-                           style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
+                           style="color: #bdbaba">{{$t('maintenance-management.history-record.technical-indicator')}}</label>
                     <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
                   </b-col>
                 </b-row>
@@ -469,118 +457,105 @@
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.inspection-method')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">非接触式</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.single-scan-time')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">2</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.number-of-operator')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">1</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.detectable-item-type')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">金属，非金属，爆炸物，毒品，液体</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.automatic-identification')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">有</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.privacy-protection')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">有</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.equipment-size')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">2400*1400*1706</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.channel-size')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">2200*750*1188</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.equipment-weight')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">550</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.power-by')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">110/220，50/60</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.rated-power')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">2200*750*1188</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.operating-temperature-humidity')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">0-40，0-93</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group horizontal label-cols="5">
                       <template slot="label">
-                        {{$t('personal-inspection.task-number')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.history-record.storage-temperature-humidity')}}&nbsp
                       </template>
-                      <label class="input-label">HR201909010001</label>
+                      <label class="input-label">-20-55，0-93</label>
                     </b-form-group>
                   </b-col>
                 </b-row>
