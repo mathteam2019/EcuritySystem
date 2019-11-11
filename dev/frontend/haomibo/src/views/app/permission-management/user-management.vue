@@ -1,44 +1,22 @@
 
 <style lang="scss">
-  .img-wrapper {
-    padding: 5px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    width: 190px;
-    height: 270px;
-    img {
-      width: 100%;
-      height: auto;
-      object-fit: contain;
+  .user-management {
+    .img-wrapper {
+      padding: 5px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
+      width: 190px;
+      height: 270px;
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
     }
   }
-  .search-form-group {
-    [role="group"] {
-      position: relative;
-
-      .form-control {
-        padding-right: 30px;
-      }
-
-      .search-input-icon {
-        position: absolute;
-        top: 50%;
-        right: 1em;
-        transform: translateY(-50%);
-      }
-
-    }
-
-  }
-
-  .selected-row {
-    background-color: #0000ff20 !important;
-  }
-
-
 </style>
 <template>
-  <div>
+  <div class="user-management">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -221,17 +199,7 @@
                       @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                     ></vuetable-pagination-bootstrap>
 
-                    <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
-                      {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
-                      <template slot="modal-footer">
-                        <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
-                          {{$t('permission-management.modal-ok')}}
-                        </b-button>
-                        <b-button variant="danger" @click="fnHideModal('modal-prompt')">
-                          {{$t('permission-management.modal-cancel')}}
-                        </b-button>
-                      </template>
-                    </b-modal>
+
                   </div>
                 </b-col>
               </b-row>
@@ -578,6 +546,12 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button v-if="profileForm.status==='active'" class="mb-1 mr-1" @click="onAction('inactive', profileForm)" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+              $t('permission-management.action-make-inactive') }}
+            </b-button>
+            <b-button v-if="profileForm.status==='inactive'" class="mb-1 mr-1" @click="onAction('active', profileForm)" variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
+              $t('permission-management.action-unblock') }}
+            </b-button>
             <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
               $t('permission-management.return') }}
             </b-button>
@@ -753,7 +727,17 @@
 
     </b-tabs>
 
-
+    <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
+      {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
+          {{$t('permission-management.modal-ok')}}
+        </b-button>
+        <b-button variant="danger" @click="fnHideModal('modal-prompt')">
+          {{$t('permission-management.modal-cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -1321,7 +1305,7 @@
                   duration: 3000,
                   permanent: false
                 });
-
+                this.profileForm.status = status;
                 this.$refs.vuetable.refresh();
 
                 break;
