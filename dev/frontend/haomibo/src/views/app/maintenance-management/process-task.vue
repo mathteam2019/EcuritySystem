@@ -1,4 +1,12 @@
 <style lang="scss">
+  .form-section {
+    .form-group {
+      max-width: unset;
+      .form-control {
+        max-width: unset;
+      }
+    }
+  }
   .inline-form-no-margin {
     .form-group {
       margin-bottom: 0;
@@ -14,21 +22,6 @@
     }
     .w-200-px {
       width: 200px !important;
-    }
-    input[type=time] {
-      padding-left: 30px;
-      position: relative;
-      &:after {
-        font-family: 'IcoFont' !important;
-        content: "\eedc";
-        position: absolute;
-        left: 5px;
-        font-size: 19px;
-        color: #9c9999;
-      }
-    }
-    input[type=number]:not(.full-width) {
-      width: 60px;
     }
     div.front-icon {
       position: relative;
@@ -268,7 +261,6 @@
                     <b-form-group>
                       <template slot="label">
                         {{$t('maintenance-management.process-task.plan-works')}}&nbsp
-                        <span class="text-danger">*</span>
                       </template>
                       <label>1.整体检查;</label>
                       <label>2.添加机油;</label>
@@ -282,10 +274,9 @@
                   <b-col cols="8">
                     <b-form-group>
                       <template slot="label">
-                        {{$t('maintenance-management.process-task.plan-works')}}&nbsp
-                        <span class="text-danger">*</span>
+                        {{$t('maintenance-management.process-task.real-works')}}&nbsp
                       </template>
-                      <b-form-textarea type="text" :placeholder="$t('permission-management.please-enter-note')"/>
+                      <b-form-textarea type="text" :placeholder="$t('maintenance-management.process-task.real-works')"/>
                     </b-form-group>
                   </b-col>
                   <b-col>

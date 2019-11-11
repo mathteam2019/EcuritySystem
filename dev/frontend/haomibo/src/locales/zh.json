@@ -758,7 +758,8 @@
       "security-user": "维保员",
       "estimated-start-time": "预计开发时间",
       "real-start-time": "预计开发时间",
-      "plan-works": "计划工作"
+      "plan-works": "计划工作",
+      "real-works": "实际工作"
     },
     "history-record": {
       "task": "任务",
