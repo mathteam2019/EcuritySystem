@@ -8,5 +8,6 @@ export const responseMessages = {
   'used-email': 'used_email',
   'server-error': 'server_error',
   'has-children': 'has_children',
-  'used-user-account':'used_user_account'
+  'used-user-account':'used_user_account',
+  'has-users': 'has_users',
 };

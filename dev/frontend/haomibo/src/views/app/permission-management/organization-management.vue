@@ -786,8 +786,8 @@
                   if(this.modifyPage!=null)
                     this.modifyPage.selectedOrg.status = 'active';
                   this.$refs.vuetable.refresh();
-
                   break;
+
               }
             })
             .catch((error) => {
@@ -1004,6 +1004,12 @@
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-users']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-user`), {
                   duration: 3000,
                   permanent: false
                 });
