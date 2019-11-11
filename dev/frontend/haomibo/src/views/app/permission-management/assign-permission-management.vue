@@ -78,6 +78,11 @@
                     track-by="userId"
                     @vuetable:pagination-data="onUserPaginationData"
                   >
+                    <template slot="userName" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onUserNameClicked(props.rowData)">
+                        {{props.rowData.userName}}
+                      </span>
+                    </template>
 
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -211,7 +216,7 @@
               </b-col>
               <b-col cols="12 " class="align-self-end text-right">
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')" v-if="pageStatus !== 'show'"><i class="icofont-save"></i> {{$t('permission-management.save')}}</b-button>
-                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" v-if="pageStatus === 'modify'"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" v-if="pageStatus !== 'create'"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}</b-button>
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('permission-management.return')}}</b-button>
               </b-col>
             </b-row>
@@ -630,7 +635,7 @@
                   dataClass: 'text-center'
                 },
                 {
-                  name: 'userName',
+                  name: '__slot:userName',
                   title: this.$t('permission-management.assign-permission-management.user'),
                   titleClass: 'text-center',
                   dataClass: 'text-center'
@@ -950,6 +955,18 @@
         }
       },
 
+      onUserNameClicked(userWithRole) {
+        this.userForm.orgId = userWithRole.org.orgId;
+        this.userForm.nextUserId = userWithRole.userId;
+        this.userForm.roles = userWithRole.roles.map(role => ({
+          label: role.roleName,
+          value: role.roleId
+        }));
+        this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
+        // TODO: determine this.userForm.selectedDataGroupId
+        this.pageStatus = 'show';
+      },
+
       promptDeleteUserRoles(userId) {
         this.selectedUserId = userId;
         this.$refs['modal-user-role-delete'].show();
@@ -1221,5 +1238,8 @@
 
   }
 
+  span.cursor-p {
+    cursor: pointer !important;
+  }
 
 </style>
