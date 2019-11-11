@@ -202,7 +202,7 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2">
-                          <b-form-select
+                          <b-form-select class="mw-100"
                             v-model="userForm.selectedDataGroupId"
                             :options="dataGroupSelectData" plain
                             :disabled="userForm.dataRangeCategory !== 'specified'"
@@ -328,71 +328,76 @@
         <b-row v-else-if="groupPageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
-                    class="text-danger">*</span></template>
-                  <b-form-select :disabled="groupPageStatus !== 'create'" v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted &&!$v.groupForm.userGroup.required) ?
-                    $t('permission-management.assign-permission-management.group.user-group-mandatory') : "&nbsp;" }}
-                  </div>
-                </b-form-group>
-                <b-form-group>
-                  <template slot="label">{{$t('permission-management.assign-permission-management.group.member')}}&nbsp;<span
-                    class="text-danger">*</span></template>
-                  <label class="">{{selectedUserGroupMember}}</label>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted &&!$v.groupForm.selectedUserGroupMembers.required) ?
-                    $t('permission-management.assign-permission-management.group.group-member-not-exit') : "&nbsp;" }}
-                  </div>
-                </b-form-group>
-              </b-col>
-              <b-col cols="8"></b-col>
-              <b-col cols="6">
-                <b-form-group class="mw-100">
-                  <template slot="label">
-                    {{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
-                    class="text-danger">*</span></template>
+              <b-col cols="5">
+                <b-row>
+                  <b-col cols="6">
+                    <b-form-group class="mb-0">
+                      <template slot="label">{{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <b-form-select :disabled="groupPageStatus !== 'create'" v-model="groupForm.userGroup" :options="groupUserGroupOptions" plain/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted &&!$v.groupForm.userGroup.required) ?
+                        $t('permission-management.assign-permission-management.group.user-group-mandatory') : "&nbsp;" }}
+                      </div>
+                    </b-form-group>
+                    <b-form-group class="mb-0">
+                      <template slot="label">{{$t('permission-management.assign-permission-management.group.member')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <label class="">{{selectedUserGroupMember?selectedUserGroupMember:" "}}</label>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted &&!$v.groupForm.selectedUserGroupMembers.required) ?
+                        $t('permission-management.assign-permission-management.group.group-member-not-exit') : "&nbsp;" }}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="9">
+                    <b-form-group class="mw-100 mb-0">
+                      <template slot="label">
+                        {{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
+                        class="text-danger">*</span></template>
 
-                  <v-select class="v-select-custom-style" v-model="groupForm.role" multiple :options="roleSelectData"
-                            :dir="direction"/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted &&!$v.groupForm.role.required) ?
-                    $t('permission-management.assign-permission-management.group.role-mandatory') : "&nbsp;" }}
-                  </div>
+                      <v-select :disabled="groupPageStatus === 'show'" class="v-select-custom-style" v-model="groupForm.role" multiple :options="roleSelectData"
+                                :dir="direction"/>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted &&!$v.groupForm.role.required) ?
+                        $t('permission-management.assign-permission-management.group.role-mandatory') : "&nbsp;" }}
+                      </div>
 
-                </b-form-group>
-                <b-form-group class="mw-100">
-                  <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
-                    class="text-danger">*</span></template>
-                  <div class="d-flex ">
-                    <div>
-                      <b-form-radio-group stacked v-model="groupForm.dataRange">
-                        <b-form-radio value="person" class="pb-2">
-                          {{$t('permission-management.assign-permission-management.group.one-user-data')}}
-                        </b-form-radio>
-                        <b-form-radio value="group" class="pb-2">
-                          {{$t('permission-management.assign-permission-management.group.group-user-data')}}
-                        </b-form-radio>
-                        <b-form-radio value="all" class="pb-2">
-                          {{$t('permission-management.assign-permission-management.group.all-user-data')}}
-                        </b-form-radio>
-                        <b-form-radio value="specified" class="pb-2">
-                          {{$t('permission-management.assign-permission-management.group.select-data-group')}}
-                        </b-form-radio>
-                      </b-form-radio-group>
-                    </div>
-                    <div class="align-self-end flex-grow-1 pl-5">
-                      <b-form-select class="mw-100" :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
-                                     :options="dataGroupSelectData" plain/>
-                    </div>
-                  </div>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted &&!$v.groupForm.dataRange.required) ?
-                    $t('permission-management.assign-permission-management.group.data-range-mandatory') : "&nbsp;" }}
-                  </div>
-                </b-form-group>
+                    </b-form-group>
+                    <b-form-group class="mw-100 mb-0">
+                      <template slot="label">{{$t('permission-management.assign-permission-management.group.data-range')}}&nbsp;<span
+                        class="text-danger">*</span></template>
+                      <div class="d-flex ">
+                        <div>
+                          <b-form-radio-group stacked v-model="groupForm.dataRange">
+                            <b-form-radio value="person" class="pb-2">
+                              {{$t('permission-management.assign-permission-management.group.one-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio value="group" class="pb-2">
+                              {{$t('permission-management.assign-permission-management.group.group-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio value="all" class="pb-2">
+                              {{$t('permission-management.assign-permission-management.group.all-user-data')}}
+                            </b-form-radio>
+                            <b-form-radio value="specified" class="pb-2">
+                              {{$t('permission-management.assign-permission-management.group.select-data-group')}}
+                            </b-form-radio>
+                          </b-form-radio-group>
+                        </div>
+                        <div class="align-self-end flex-grow-1 pl-5">
+                          <b-form-select class="mw-100" :disabled="groupForm.dataRange!='specified'" v-model="groupForm.filterGroup"
+                                         :options="dataGroupSelectData" plain/>
+                        </div>
+                      </div>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted &&!$v.groupForm.dataRange.required) ?
+                        $t('permission-management.assign-permission-management.group.data-range-mandatory') : "&nbsp;" }}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
               </b-col>
               <b-col cols="12" class="align-self-end text-right">
                 <b-button v-if="groupPageStatus !== 'show'" variant="info default" size="sm" @click="onActionGroup('save-item')"><i
