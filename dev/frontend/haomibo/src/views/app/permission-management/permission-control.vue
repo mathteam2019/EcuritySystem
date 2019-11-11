@@ -121,9 +121,9 @@
 
                   <div>
                     <b-form-group>
-                      <b-form-radio-group>
-                        <b-form-radio v-model="roleFormFlag" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                        <b-form-radio v-model="roleFormFlag" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                      <b-form-radio-group v-model="roleFormFlag">
+                        <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                        <b-form-radio value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
                       </b-form-radio-group>
                     </b-form-group>
                   </div>
@@ -187,9 +187,9 @@
 
                 <div>
                   <b-form-group>
-                    <b-form-radio-group>
-                      <b-form-radio v-model="roleCategory" value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
-                      <b-form-radio v-model="roleCategory" value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
+                    <b-form-radio-group v-model="roleCategory">
+                      <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}</b-form-radio>
+                      <b-form-radio value="user">{{$t('permission-management.permission-control.business-operating')}}</b-form-radio>
                     </b-form-radio-group>
                   </b-form-group>
                 </div>
@@ -701,7 +701,12 @@
                 this.resourceList.forEach((resource) => {
                     resource.selected = roleResourceIds.includes(resource.resourceId);
                 });
-                this.roleCategory = newVal.roleFlag;
+                if(newVal.resources.length > 0) {
+                    this.roleCategory = newVal.resources[0].resourceCategory;
+                } else {
+                    this.roleCategory = null;
+                }
+                newVal.roleFlag = this.roleCategory;
                 this.refreshResourceTreeData();
             }
         },
