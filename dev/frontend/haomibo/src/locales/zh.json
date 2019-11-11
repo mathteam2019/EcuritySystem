@@ -580,7 +580,21 @@
       "storage-check-period": "存储空间检测周期",
       "storage-warning-size": "存储空间预警",
       "history-save-period": "历史数据保存周期",
-      "configuration": "配置"
+      "configuration": "配置",
+      "cover-correction-time": "罩板校正时间",
+      "alarm-prompt": "报警提示",
+      "pass-prompt": "通过提示",
+      "pos-error-prompt": "站姿错误提示",
+      "start-scan-remind": "开始扫描提醒",
+      "while-scan": "扫描过程",
+      "complete-scan-prompt": "扫描完成提示",
+      "auxiliary-recognition": "辅助识别",
+      "auxiliary-recognition-level": "辅助识别等级",
+      "save-history-image": "保存历史图像",
+      "save-only-suspected-image": "仅保存嫌疑图像",
+      "suitable-for": "适用于",
+      "yes": "是",
+      "no": "不"
     }
   },
   "log-management": {

@@ -312,7 +312,8 @@
 
                         <b-button
                           size="sm"
-                          variant="success default btn-square">
+                          variant="success default btn-square"
+                          @click="onAction('restart', props.rowData, props.rowIndex)">
                           <i class="icofont-refresh"></i>
                         </b-button>
 
@@ -333,7 +334,186 @@
             </b-row>
           </b-col>
         </b-row>
+        <b-row v-if="pageStatus !== 'table'" class="h-100 form-section">
+          <b-col cols="10">
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.cover-correction-time')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.standby-time')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.alarm-prompt')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.pass-prompt')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.pos-error-prompt')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.start-scan-remind')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.while-scan')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.complete-scan-prompt')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.auxiliary-recognition')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.auxiliary-recognition-level')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.save-history-image')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.save-only-suspected-image')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.facial-blurring')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.chest-blurring')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.hip-blurring')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.groin-blurring')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="yesNoOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
 
+          </b-col>
+          <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <div>
+              <b-button class="mb-1" @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+                $t('permission-management.action-make-inactive') }}
+              </b-button>
+              <b-button class="mb-1" @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+                $t('permission-management.return') }}
+              </b-button>
+            </div>
+          </b-col>
+        </b-row>
       </b-tab>
     </b-tabs>
   </div>
@@ -588,6 +768,10 @@
 
                   ]
                 },
+                yesNoOptions: [
+                    this.$t('system-setting.parameter-setting.yes'),
+                    this.$t('system-setting.parameter-setting.no')
+                ],
                 switchValue: false,
                 showColorPicker: false,
                 formData: {
@@ -622,6 +806,33 @@
             },
             onTableChangePage(page) {
                 this.$refs.vuetable.changePage(page)
+            },
+            onAction(action, data, index) {
+                switch (action) {
+                    case 'show':
+                        this.pageStatus = 'show';
+                        break;
+                    case 'modify':
+                        this.pageStatus = 'modify';
+                        break;
+                    case 'restart':
+
+                        break;
+                    default:
+                }
+            },
+
+            onDetailAction(action) {
+                switch (action) {
+                    case 'deactivate':
+
+                        break;
+                    case 'back':
+                        this.pageStatus = 'table';
+                        break;
+                    default:
+
+                }
             },
 
             toggleColorPicker() {
