@@ -295,14 +295,14 @@
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                   >
                     <template slot="userNumber" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
+                      <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.userNumber }}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <div>
 
                         <b-button
                           size="sm"
-                          variant="primary default btn-square">
+                          variant="primary default btn-square" @click="onActionGroup('edit-item',props.rowData)">
                           <i class="icofont-edit"></i>
                         </b-button>
 
@@ -744,6 +744,7 @@
           filterGroup: null,
           selectedUserGroupMembers: [],
         },
+        selectedUserGroupItem:null,
         submitted: false,
         userGroupData: [],
         selectedUserGroupMember: "",
@@ -912,13 +913,20 @@
       },
 
       //TODO assign user group point
-      onActionGroup(value) {
+      onActionGroup(value,data = null) {
+        this.selectedUserGroupItem = data;
         switch (value) {
           case 'show-list':
             this.groupPageStatus = 'table';
             break;
           case 'save-item':
             this.fnAssignUserGroupItem();
+            break;
+          case 'show-item':
+            this.groupPageStatus = 'show';
+            break;
+          case 'edit-item':
+            this.groupPageStatus = 'edit';
             break;
           case 'delete-item':
             break;
