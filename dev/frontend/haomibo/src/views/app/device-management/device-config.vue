@@ -5,6 +5,14 @@
 
     $cyan-button-color: #178af7;
 
+    .second-row {
+      height: calc(100% - 54px);
+      &.list {
+        margin-top: -23px!important;
+        height: calc(100% - 29px);
+      }
+    }
+
     .search-box {
       div[role='group'] {
         display: flex;
@@ -32,7 +40,8 @@
     }
 
     .btn.btn-outline-cyan {
-      border-color: $cyan-button-color;
+      border-color: #cbcbcb;
+      background-color: #ededed;
     }
 
     div.label-center label {
@@ -67,7 +76,7 @@
             <b-button squared size="sm" :variant="`${switchStatus==='list'?'cyan':'outline-cyan'} default`" @click="changeSwitchStatus('list')"><i class="icofont-listine-dots"></i></b-button>
           </b-col>
         </b-row>
-        <b-row v-if="switchStatus==='config'" style="height: calc(100% - 54px)">
+        <b-row v-if="switchStatus==='config'" class="second-row" >
           <b-col cols="4" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
               <b-row class="m-0">
@@ -110,6 +119,74 @@
                 </b-col>
               </b-row>
             </div>
+          </b-col>
+        </b-row>
+
+        <b-row v-if="switchStatus==='list'" class="second-row list">
+          <b-col cols="12 d-flex flex-column">
+            <b-row>
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('device-management.device-name')">
+                      <b-form-input></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('maintenance-management.maintenance-task.device-classification')">
+                      <b-form-select v-model="filterForm.deviceClassification" :options="deviceClassificationOptions"
+                                     plain/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('maintenance-management.maintenance-task.position')">
+                      <b-form-select v-model="filterForm.position" :options="positionOptions" plain/>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex justify-content-end align-items-center">
+                <b-button size="sm" class="ml-2" variant="info default">
+                  <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="info default">
+                  <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                  {{ $t('permission-management.export') }}
+                </b-button>
+              </b-col>
+            </b-row>
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
+                  <vuetable
+                    ref="configListTable"
+                    :api-mode="false"
+                    :fields="configListTableItems.fields"
+                    :data-manager="configListTableDataManager"
+                    :per-page="configListTableItems.perPage"
+                    pagination-path="pagination"
+                    @vuetable:pagination-data="onConfigTablePaginationData"
+                    class="table-striped"
+                  >
+                    <div slot="number" slot-scope="props">
+                      <span class="cursor-p text-primary">{{ props.rowData.number}}</span>
+                    </div>
+                  </vuetable>
+                </div>
+                <div class="pagination-wrapper">
+                  <vuetable-pagination-bootstrap
+                    ref="configListTablePagination"
+                    :initial-per-page="configListTableItems.perPage"
+                    @vuetable-pagination:change-page="onConfigTableChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
       </b-tab>
@@ -428,10 +505,6 @@
         options: {
           label: this.$t('device-management.filter'),
           inputOptions: {uppercase: false, isRequired: false},
-          buttonOption: {
-            textLeft: this.$t('device-management.move_left'),
-            textRight: this.$t('device-management.move_right')
-          },
           isLtr: getDirection().direction,
           resizeBox: "md",
           items: [
@@ -521,6 +594,78 @@
             "number": "H201909200004",
           },
         ],
+
+        configListTableItems: {
+            perPage: 5,
+            fields: [
+                {
+                    name: '__checkbox',
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: 'no',
+                    sortField: 'no',
+                    title: this.$t('maintenance-management.maintenance-task.no'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: '__slot:number',
+                    sortField: 'number',
+                    title: this.$t('device-management.device-no'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: 'device',
+                    sortField: 'device',
+                    title: this.$t('maintenance-management.maintenance-task.device'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: 'device-classification',
+                    sortField: 'position',
+                    title: this.$t('menu.device-classify'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+                {
+                    name: 'site',
+                    sortField: 'applied',
+                    title: this.$t('device-management.site'),
+                    titleClass: 'text-center',
+                    dataClass: 'text-center'
+                },
+            ]
+        },
+        configTempData: [
+            {
+                "no": 1,
+                "number": "0000",
+                "device": "平板32",
+                "site": "首都机场/1号航站楼"
+            },
+            {
+                "no": 2,
+                "number": "0100",
+                "device": "摄像头12",
+                "site": "首都机场/1号航站楼"
+            },
+            {
+                "no": 3,
+                "number": "0200",
+                "device": "安检仪01",
+                "site": "首都机场/2号航站楼/通道2"
+            },
+            {
+                "no": 4,
+                "number": "0300",
+                "device": "平板021",
+                "site": "首都机场/2号航站楼/通道2"
+            },
+        ],
         switchStatus: 'config', // config / list
 
         genderFilterOptions: [
@@ -601,8 +746,38 @@
 
       changeSwitchStatus(status) {
         this.switchStatus = status;
-      }
+      },
 
+      configListTableDataManager(sortOrder, pagination) {
+          let local = this.configTempData;
+
+          // sortOrder can be empty, so we have to check for that as well
+          if (sortOrder.length > 0) {
+              local = _.orderBy(
+                  local,
+                  sortOrder[0].sortField,
+                  sortOrder[0].direction
+              );
+          }
+
+          pagination = this.$refs.pendingListTable.makePagination(
+              local.length,
+              this.configListTableItems.perPage
+          );
+
+          let from = pagination.from - 1;
+          let to = from + this.configListTableItems.perPage;
+          return {
+              pagination: pagination,
+              data: _.slice(local, from, to)
+          };
+      },
+      onConfigTablePaginationData(paginationData) {
+          this.$refs.configListTablePagination.setPaginationData(paginationData);
+      },
+      onConfigTableChangePage(page) {
+          this.$refs.configListTable.changePage(page);
+      },
     }
   }
 </script>
