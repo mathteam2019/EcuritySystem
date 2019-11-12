@@ -613,12 +613,15 @@
             </b-row>
 
             <b-row>
-              <b-col class="text-right">
+              <b-col cols="12" class="align-self-end text-right mt-3">
+                <b-button size="sm" variant="orange default" @click="pageStatus='table'">
+                  <i class="icofont-gift"></i>
+                  {{ $t('personal-inspection.collection') }}
+                </b-button>
                 <b-button size="sm" variant="info default" @click="pageStatus='table'">
                   <i class="icofont-long-arrow-left"></i>
                   {{ $t('personal-inspection.return') }}
                 </b-button>
-
               </b-col>
             </b-row>
 
