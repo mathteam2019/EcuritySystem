@@ -231,11 +231,18 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2" style="margin-left: -50px">
-                          <b-form-select class="mw-100"
-                                         v-model="userForm.selectedDataGroupId"
-                                         :options="dataGroupSelectData" plain
-                                         :disabled="userForm.dataRangeCategory !== 'specified'"
-                          />
+                          <b-form-group style="margin-bottom: -19px;">
+                            <b-form-select class="mw-100"
+                                           v-model="userForm.selectedDataGroupId"
+                                           :options="dataGroupSelectData" plain
+                                           :state="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid"
+                                           :disabled="userForm.dataRangeCategory !== 'specified'"
+                            />
+                            <div v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">&nbsp;</div>
+                            <b-form-invalid-feedback>
+                              {{ $t('permission-management.user.orgId-field-is-mandatory') }}
+                            </b-form-invalid-feedback>
+                          </b-form-group>
                         </div>
                       </div>
                     </b-form-group>
@@ -521,6 +528,9 @@
           required
         },
         userId: {
+          required
+        },
+        selectedDataGroupId: {
           required
         }
       },
@@ -978,7 +988,7 @@
       onUserActionGroup(value) {
         switch (value) {
           case 'save-item':
-            if (!this.$v.userForm.$invalid && this.userForm.dataRangeCategory) {
+            if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== 'specified' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
                   userId: this.userForm.userId,
@@ -1046,7 +1056,7 @@
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
               userId: this.selectedUserId,
               roleIdList: [],
-              dataRangeCategory: '',
+              dataRangeCategory: 'person',
               selectedDataGroupId: null
             }).then((response) => {
             let message = response.data.message;
