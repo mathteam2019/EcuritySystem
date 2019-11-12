@@ -1422,7 +1422,7 @@
                   this.$refs.userGroupTable.refresh();
                   this.selectedUserGroupItem = null;
                   break;
-                case responseMessages['has-children']: // okay
+                case responseMessages['has-users']: // okay
                   this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                     duration: 3000,
                     permanent: false
