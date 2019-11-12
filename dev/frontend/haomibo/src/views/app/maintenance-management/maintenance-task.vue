@@ -111,20 +111,18 @@
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
-            <div>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-              </b-button>
-            </div>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+              <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+              <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+            </b-button>
           </b-col>
         </b-row>
 
