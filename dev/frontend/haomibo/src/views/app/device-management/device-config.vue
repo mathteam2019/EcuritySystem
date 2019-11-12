@@ -1,23 +1,26 @@
-<style>
+<style lang="scss">
   @import '../../../assets/css/dual-list.css';
 
-  .search-sm > input {
-    font-size: 1.1rem;
-    padding-left: 1rem;
-  }
+  .device-config {
+    .search-sm > input {
+      font-size: 1.1rem;
+      padding-left: 1rem;
+    }
 
-  .search-sm:after {
-    top: 6px;
-    right: 8px;
-  }
-  div.label-center label {
-    display: flex;
-    align-self: center;
+    .search-sm:after {
+      top: 6px;
+      right: 8px;
+    }
+
+    div.label-center label {
+      display: flex;
+      align-self: center;
+    }
   }
 
 </style>
 <template>
-  <div>
+  <div class="device-config">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
