@@ -46,6 +46,13 @@ const data = [
     ]
   },
   {
+    id: "site-management",
+    icon: "simple-icon-location-pin",
+    label: "menu.site-management",
+    to: "/app/system-setting/site-management",
+    newWindow: false,
+  },
+  {
     id: "device-management",
     icon: "simple-icon-puzzle",
     label: "menu.device-management",
@@ -100,24 +107,8 @@ const data = [
     id: "system-setting",
     icon: "simple-icon-settings",
     label: "menu.system-setting",
-    to: "/app/system-setting",
+    to: "/app/system-setting/parameter-setting",
     newWindow: false,
-    subs: [
-      {
-        id: 'system-setting-*-parameter-setting',
-        icon: "simple-icon-equalizer",
-        label: "menu.parameter-setting",
-        to: "/app/system-setting/parameter-setting",
-        newWindow: false
-      },
-      {
-        id: 'system-setting-*-site-management',
-        icon: "simple-icon-settings",
-        label: "menu.site-management",
-        to: "/app/system-setting/site-management",
-        newWindow: false
-      },
-    ]
   },
   {
     id: "log-management",
