@@ -1,17 +1,18 @@
 <style lang="scss">
 
-  .rounded-span{
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #007bff;
+  .device-log {
+    .rounded-span {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+    }
   }
-
 
 </style>
 <template>
-  <div>
+  <div class="device-log">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -62,19 +63,11 @@
               </b-col>
               <b-col cols="8" v-if="isExpanded">
                 <b-row>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.start-time')">
-                      <b-form-input v-model="filter.startTime"></b-form-input>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('log-management.device-log.operating-time')">
+                      <b-form-input v-model="filter.operatingTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.end-time')">
-                      <b-form-input v-model="filter.endTime"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
@@ -165,19 +158,11 @@
               </b-col>
               <b-col cols="8" v-if="isExpanded">
                 <b-row>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.start-time')">
-                      <b-form-input v-model="filter.startTime"></b-form-input>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('log-management.device-log.operating-time')">
+                      <b-form-input v-model="filter.operatingTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.end-time')">
-                      <b-form-input v-model="filter.endTime"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
@@ -268,19 +253,11 @@
               </b-col>
               <b-col cols="8" v-if="isExpanded">
                 <b-row>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.start-time')">
-                      <b-form-input v-model="filter.startTime"></b-form-input>
+                  <b-col cols="3">
+                    <b-form-group :label="$t('log-management.device-log.operating-time')">
+                      <b-form-input v-model="filter.operatingTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.device-log.end-time')">
-                      <b-form-input v-model="filter.endTime"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
-                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
@@ -361,8 +338,7 @@
                 isExpanded:false,
                 pageStatus: 'table',
                 filter: {
-                    startTime: '',
-                    endTime:'',
+                    operatingTime: '',
                     device:'',
                     user:'',
                     category:'',
