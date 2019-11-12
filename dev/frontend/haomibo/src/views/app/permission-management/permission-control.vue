@@ -862,7 +862,7 @@
                                 this.deletingRole = null;
                                 this.$refs.roleVuetable.refresh();
                                 break;
-                            case responseMessages['has-children']: // okay
+                            case responseMessages['has-resources']: // okay
                                 this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                                     duration: 3000,
                                     permanent: false
@@ -1035,7 +1035,7 @@
                               });
                               this.$refs.dataGroupVuetable.refresh();
                               break;
-                          case responseMessages['has-children']: // okay
+                          case responseMessages['has-users']: // okay
                               this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                                   duration: 3000,
                                   permanent: false

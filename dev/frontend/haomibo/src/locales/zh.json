@@ -571,6 +571,7 @@
       "seized-item-classification": "查获物品分类",
       "seized-items": "查获物品",
       "check-item-level": "查获物品等级",
+      "item-level": "物品等级",
       "hand-process-history": "手检、过程任务、历史任务",
       "show-deleted-suspected-box": "显示被删除的嫌疑框",
       "deleted-suspected-box-color": "被删除嫌疑框的颜色",
@@ -733,7 +734,13 @@
     "judgement-station-identification": "判图站标识",
     "image": "图像",
     "task-result": "任务结论",
-    "obtained-evidence": "取证"
+    "obtained-evidence": "取证",
+    "seized-contraband": "查获违禁品",
+    "firearms": "枪支",
+    "drug": "毒品",
+    "dagger": "匕首",
+    "cigarette": "香烟",
+    "evaluation-chart": "评价判图"
   },
   "maintenance-management": {
     "time-task": {
