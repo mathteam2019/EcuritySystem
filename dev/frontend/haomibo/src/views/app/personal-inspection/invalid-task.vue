@@ -655,7 +655,41 @@
                 ],
                 // TODO: refactor temp table data to api mode
                 tempData: [
-                    {id: 1, taskNumber: 'HR201909210001'}
+                    {
+                        id: 1,
+                        taskNumber: 'HR201909210001',
+                        securityInstrument: "张三",
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 2,
+                        taskNumber: 'HR201909210001',
+                        securityInstrument: "张三",
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 3,
+                        taskNumber: 'HR201909210001',
+                        securityInstrument: "张三",
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 4,
+                        taskNumber: 'HR201909210001',
+                        securityInstrument: "张三",
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 5,
+                        taskNumber: 'HR201909210001',
+                        securityInstrument: "张三",
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30'
+                    },
                 ],
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
