@@ -801,16 +801,6 @@
 
   }
 
-  .fill-main {
-    height: calc(100vh - 180px);
-    .right-card {
-      .card-body {
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
-
   .evidence-gallery {
     .col-auto {
       padding-right: 0px;

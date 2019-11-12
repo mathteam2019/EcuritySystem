@@ -168,7 +168,57 @@ main {
     div.card {
       border-radius: 4px;
     }
+    div.system-setting {
+      .section.pt-0 {
 
+        background-color: #f3f3f3;
+        padding-bottom: 0px!important;
+
+        .nav-tabs .nav-link {
+          &.active {
+            box-shadow: none!important;
+            border-left: 1px #cccccc solid;
+            border-right: 1px #cccccc solid;
+
+            &::before {
+              height: 0px;
+            }
+          }
+          &:not(.active) {
+            background-color: transparent!important;
+          }
+        }
+
+        .card-header-tabs {
+          margin-left: calc(-1.25rem - 1px);
+        }
+
+        .tab-content {
+          box-shadow: none!important;
+          border-top: 1px #cccccc solid;
+          border-top-left-radius: 0px!important;
+          border-top-right-radius: 0px!important;
+          padding-top: 0px!important;
+          height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + 155px});
+          overflow: auto;
+
+          .font-weight-bold {
+            color: #acacac;
+          }
+
+        }
+      }
+    }
+    .fill-main {
+      height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical});
+
+      .right-card {
+        .card-body {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
   }
 }
 
