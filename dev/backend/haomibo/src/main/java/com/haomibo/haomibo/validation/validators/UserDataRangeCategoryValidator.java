@@ -1,7 +1,7 @@
 package com.haomibo.haomibo.validation.validators;
 
 import com.haomibo.haomibo.models.db.SysUser;
-import com.haomibo.haomibo.validation.annotations.UserDataRangeCategoryValue;
+import com.haomibo.haomibo.validation.annotations.UserDataRangeCategory;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -9,7 +9,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * User's data range category validator.
  */
-public class UserDataRangeCategoryValueValidator extends BaseValidator implements ConstraintValidator<UserDataRangeCategoryValue, String> {
+public class UserDataRangeCategoryValidator extends BaseValidator implements ConstraintValidator<UserDataRangeCategory, String> {
 
     @Override
     public boolean isValid(String dataRangeCategory, ConstraintValidatorContext constraintValidatorContext) {

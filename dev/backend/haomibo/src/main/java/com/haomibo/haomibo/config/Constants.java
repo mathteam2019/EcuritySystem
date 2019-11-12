@@ -16,6 +16,10 @@ public class Constants {
     public static final String PORTRAIT_FILE_SERVING_BASE_URL = "/portrait/";
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
+            "/",
+            "/csrf",
+            "/Auth/**",
+            "/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**",
             "/auth/login",
             "/auth/register",
             Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
