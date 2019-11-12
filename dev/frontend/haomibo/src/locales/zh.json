@@ -730,7 +730,8 @@
     "judgement-timeout": "判图超时",
     "judgement-station-identification": "判图站标识",
     "image": "图像",
-    "task-result": "任务结论"
+    "task-result": "任务结论",
+    "obtained-evidence": "取证"
   },
   "maintenance-management": {
     "time-task": {

@@ -527,8 +527,31 @@
             </b-row>
 
             <b-row class="flex-grow-1 d-flex align-items-end">
+              <b-col>
+                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                <b-row class="evidence-gallery">
+                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                    <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                    <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                  </b-col>
+                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                </b-row>
+              </b-col>
+              <b-col class="d-none">
+                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                <b-row class="evidence-gallery justify-content-end">
+                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                    <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                    <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                  </b-col>
+                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                </b-row>
+              </b-col>
+            </b-row>
+
+            <b-row>
               <b-col class="text-right">
-                <b-button variant="info default" @click="pageStatus='table'">
+                <b-button size="sm" variant="info default" @click="pageStatus='table'">
                   <i class="icofont-long-arrow-left"></i>
                   {{ $t('personal-inspection.return') }}
                 </b-button>
@@ -722,6 +745,12 @@
     }
   }
 
+  .evidence-gallery {
+    .col-auto {
+      padding-right: 0px;
+    }
+  }
+
 </style>
 
 <script>
@@ -737,6 +766,7 @@
     import VTree from 'vue-tree-halower';
     import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
     import Switches from 'vue-switches';
+    import {LightGallery} from 'vue-light-gallery';
 
     const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -744,7 +774,8 @@
         components: {
             'vuetable': Vuetable,
             'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-            'switches': Switches
+            'switches': Switches,
+            'light-gallery': LightGallery
         },
         mounted() {
 
@@ -895,7 +926,24 @@
                     ],
                     perPage: 5,
                 },
-                power: true
+                power: true,
+
+                thumbs: [
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+                ],
+                images: [
+                    '/assets/img/drug.jpg',
+                    '/assets/img/drug.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                ],
+                photoIndex: null
+
 
             }
         },
@@ -1061,6 +1109,12 @@
                         this.fnShowUserGroupConfDiaglog(data);
                         break;
                 }
+            },
+            onThumbClick(index) {
+                this.photoIndex = index;
+            },
+            handleHide() {
+                this.photoIndex = null;
             },
             fnHideModal(modal) {
                 // hide modal
