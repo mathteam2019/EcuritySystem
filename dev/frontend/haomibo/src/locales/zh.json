@@ -415,6 +415,8 @@
     "file-list": "档案列表",
     "file-no": "档案编号",
     "action": "操作",
+    "before-selected": "待选",
+    "selected": "己选",
     "device-classify-item":{
       "classify": "分类",
       "super-classify": "上级分类",
