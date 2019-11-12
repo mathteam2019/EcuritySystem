@@ -294,7 +294,7 @@
                   <b-col>
                     <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
                     <b-row class="evidence-gallery">
-                      <b-col class="gallery-item" cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                      <b-col class="gallery-item" cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`" @click="onThumbClick(thumbIndex)">
                         <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
                         <label class="d-block text-center mt-2">{{thumb.name}}</label>
                       </b-col>
