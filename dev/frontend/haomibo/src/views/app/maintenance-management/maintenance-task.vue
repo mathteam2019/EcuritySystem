@@ -80,7 +80,7 @@
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-2">
           <b-col cols="8">
             <b-row>
               <b-col>
@@ -111,20 +111,18 @@
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
-            <div>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-              </b-button>
-            </div>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+              <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+              <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+            </b-button>
           </b-col>
         </b-row>
 
@@ -148,28 +146,15 @@
                 <div slot="operating" slot-scope="props">
                   <b-button
                     size="sm"
-                    variant="info default btn-square" @click="onAction('create',props.rowData)">
-                    <i class="icofont-edit"></i>
-                  </b-button>
-                  <b-button v-if="props.rowData.status==='active'"
-                            size="sm"
-                            variant="warning default btn-square" @click="onAction('block',props.rowData)">
-                    <i class="icofont-ban"></i>
-                  </b-button>
-                  <b-button v-else-if="props.rowData.status==='inactive'"
-                            size="sm"
-                            variant="success default btn-square" @click="onAction('unblock',props.rowData)">
+                    variant="success default btn-square"
+                  >
                     <i class="icofont-check-circled"></i>
-                  </b-button>
-                  <b-button v-else-if="props.rowData.status===''||props.rowData.status==null"
-                            size="sm"
-                            variant="warning default btn-square" @click="onAction('block',props.rowData)" diabled>
-                    <i class="icofont-ban"></i>
                   </b-button>
                   <b-button
                     size="sm"
-                    variant="danger default btn-square">
-                    <i class="icofont-bin" @click="onAction('delete',props.rowData)"></i>
+                    variant="primary default btn-square"
+                  >
+                    <i class="icofont-recycle"></i>
                   </b-button>
                 </div>
               </vuetable>
@@ -198,7 +183,7 @@
                         {{$t('maintenance-management.history-record.number')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>HR201909010001</label>
+                      <label class="text-primary">HR201909010001</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -236,7 +221,7 @@
                         {{$t('maintenance-management.history-record.device')}}&nbsp
                         <span class="text-danger">*</span>
                       </template>
-                      <label>MW毫米波安检仪000</label>
+                      <label class="text-primary">A000</label>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -321,6 +306,20 @@
                         {{$t('maintenance-management.process-task.real-works')}}&nbsp
                       </template>
                       <b-form-textarea type="text" :placeholder="$t('maintenance-management.process-task.real-works')"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4">
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.process-task.real-works')}}&nbsp
+                      </template>
+                      <b-button class="mt-2" variant="info skyblue default" size="sm">
+                        <i class="icofont-upload-alt mr-1"></i>{{$t('permission-management.upload-image')}}
+                      </b-button>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -606,6 +605,9 @@
         </b-tabs>
         <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
           <div>
+            <b-button size="sm" variant="info default">
+              <i class="icofont-save"></i> {{$t('device-management.save')}}
+            </b-button>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
             </b-button>
@@ -774,7 +776,7 @@
                         "number": "H201909200004",
                         "status": "processing",
                     },
-                ],
+                ]
             }
         },
         methods: {

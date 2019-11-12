@@ -1,61 +1,69 @@
 <style lang="scss">
-  .form-section {
-    .form-group {
-      max-width: unset;
-      .form-control {
-        max-width: 400px;
+
+  .process-task {
+    .gallery-item {
+      cursor: pointer;
+    }
+
+    .form-section {
+      .form-group {
+        max-width: unset;
+        .form-control {
+          max-width: 400px;
+        }
       }
     }
-  }
-  .inline-form-no-margin {
-    .form-group {
-      margin-bottom: 0;
-      label.input-label {
-        line-height: unset;
+    .inline-form-no-margin {
+      .form-group {
+        margin-bottom: 0;
+        label.input-label {
+          line-height: unset;
+        }
+      }
+      .col-form-label {
+        padding-top: 0;
       }
     }
-    .col-form-label {
-      padding-top: 0;
+    .inline-label-form-section {
+      .w-130-px {
+        width: 130px !important;
+      }
+      .w-200-px {
+        width: 200px !important;
+      }
+      div.front-icon {
+        position: relative;
+        display: flex;
+        input {
+          padding-left: 30px;
+        }
+        i {
+          position: absolute;
+          left: 5px;
+          line-height: 39px;
+          font-size: 19px;
+          color: #9c9999;
+        }
+      }
     }
-  }
-  .inline-label-form-section {
-    .w-130-px {
-      width: 130px !important;
-    }
-    .w-200-px {
-      width: 200px !important;
-    }
-    div.front-icon {
+
+    div.process-task-img-wrapper {
+      width: 270px;
+      height: 420px;
+      padding: 30px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
       position: relative;
-      display: flex;
-      input {
-        padding-left: 30px;
-      }
-      i {
-        position: absolute;
-        left: 5px;
-        line-height: 39px;
-        font-size: 19px;
-        color: #9c9999;
+      img {
+        width: 100%;
+        object-fit: scale-down;
       }
     }
   }
 
-  div.process-task-img-wrapper {
-    width: 270px;
-    height: 420px;
-    padding: 30px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    position: relative;
-    img {
-      width: 100%;
-      object-fit: scale-down;
-    }
-  }
 </style>
 <template>
-  <div>
+  <div class="process-task">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -65,7 +73,7 @@
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
-        <b-row>
+        <b-row class="pt-2">
           <b-col cols="8">
             <b-row>
               <b-col>
@@ -96,20 +104,18 @@
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
-            <div>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-              </b-button>
-            </div>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+              <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+              <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+            </b-button>
           </b-col>
         </b-row>
 
@@ -282,6 +288,18 @@
                     </b-form-group>
                   </b-col>
                   <b-col>
+                  </b-col>
+                </b-row>
+                <b-row class="mt-3">
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                    <b-row class="evidence-gallery">
+                      <b-col class="gallery-item" cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                        <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                        <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                      </b-col>
+                      <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                    </b-row>
                   </b-col>
                 </b-row>
               </b-col>
@@ -562,7 +580,7 @@
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
           <div>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
@@ -579,12 +597,14 @@
     import Vuetable from 'vuetable-2/src/components/Vuetable'
     import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
     import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+    import {LightGallery} from 'vue-light-gallery';
 
     export default {
         components: {
             'vuetable': Vuetable,
             'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+            'light-gallery': LightGallery
         },
         data() {
             return {
@@ -741,6 +761,21 @@
                         "status": "processing",
                     },
                 ],
+                thumbs: [
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+                ],
+                images: [
+                    '/assets/img/drug.jpg',
+                    '/assets/img/drug.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                ],
+                photoIndex: null
             }
         },
         methods: {
@@ -789,6 +824,12 @@
             },
             onBlackListTableChangePage(page) {
                 this.$refs.pendingListTable.changePage(page);
+            },
+            onThumbClick(index) {
+                this.photoIndex = index;
+            },
+            handleHide() {
+                this.photoIndex = null;
             },
         }
     }

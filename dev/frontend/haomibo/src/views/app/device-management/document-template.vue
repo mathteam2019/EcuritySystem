@@ -9,49 +9,44 @@
     </div>
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
-        <b-row class="pt-4">
-          <b-col class="d-flex">
-            <div class="flex-grow-1">
-              <b-row>
-                <b-col>
-                  <b-form-group :label="$t('device-management.template')">
-                    <b-form-input></b-form-input>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group :label="$t('device-management.active')">
-                    <b-form-select :options="stateOptions" plain/>
-                  </b-form-group>
-                </b-col>
-                <b-col>
-                  <b-form-group :label="$t('device-management.device-classify')">
-                    <b-form-select :options="deviceClassifyData" plain/>
-                  </b-form-group>
-                </b-col>
-                <b-col></b-col>
-              </b-row>
-
-            </div>
-            <div class="align-self-center">
-              <b-button size="sm" class="ml-2" variant="info default">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
-                <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-              </b-button>
-            </div>
+        <b-row class="pt-2">
+          <b-col cols="6">
+            <b-row>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.template')">
+                  <b-form-input></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.active')">
+                  <b-form-select :options="stateOptions" plain/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="4">
+                <b-form-group :label="$t('device-management.device-classify')">
+                  <b-form-select :options="deviceClassifyData" plain/>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="6" class="d-flex justify-content-end align-items-center">
+            <b-button size="sm" class="ml-2" variant="info default">
+              <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="info default">
+              <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" variant="outline-info default">
+              <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+            </b-button>
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+              <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+            </b-button>
           </b-col>
         </b-row>
-
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
@@ -71,8 +66,7 @@
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit')"
                             size="sm"
-                            variant="primary default btn-square"
-                  >
+                            variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button

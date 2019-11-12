@@ -31,7 +31,7 @@
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-              <b-row class="pt-4">
+              <b-row class="pt-2">
                 <b-col cols="6">
                   <b-row>
 
@@ -1422,7 +1422,7 @@
                   this.$refs.userGroupTable.refresh();
                   this.selectedUserGroupItem = null;
                   break;
-                case responseMessages['has-children']: // okay
+                case responseMessages['has-users']: // okay
                   this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
                     duration: 3000,
                     permanent: false
