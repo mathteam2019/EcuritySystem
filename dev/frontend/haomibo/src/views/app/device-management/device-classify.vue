@@ -1,14 +1,12 @@
 <style lang="scss">
-  .form-section {
-    height: 100%;
-    .stamp-wrapper {
-      bottom: 17%;
-      left: 3%;
+  .device-classify {
+    .form-section {
+      height: 100%;
     }
   }
 </style>
 <template>
-  <div>
+  <div class="device-classify">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -74,6 +72,9 @@
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
+                <div slot="number" slot-scope="props">
+                  <span class="cursor-p text-primary" @click="onAction('edit')">{{ props.rowData.number }}</span>
+                </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit')"
                             size="sm"
@@ -165,8 +166,8 @@
             <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
           </b-col>
-          <div class="position-absolute stamp-wrapper">
-            <img src="../../../assets/img/active_stamp.png">
+          <div class="position-absolute" style="left: 3%;bottom: 17%">
+            <img src="../../../assets/img/no_active_stamp.png">
           </div>
         </b-row>
       </div>
@@ -232,7 +233,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'site-no',
+              name: '__slot:number',
               sortField: 'site-no',
               title: this.$t('device-management.device-classify-item.device-number'),
               titleClass: 'text-center',
@@ -306,7 +307,7 @@
         tempData: [
           {
             "no": 1,
-            "site-no": "0000",
+            "number": "0000",
             "site-name": "首都机场",
             "status": "active",
             "super-site-no": null,
@@ -399,6 +400,9 @@
       onAction(value) {
         switch (value) {
           case 'create':
+            this.pageStatus = 'create';
+            break;
+          case 'edit':
             this.pageStatus = 'create';
             break;
           case 'show-list':
