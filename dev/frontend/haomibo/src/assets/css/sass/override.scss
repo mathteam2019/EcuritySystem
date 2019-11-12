@@ -17,11 +17,8 @@ $menu-main-color-2: #307fcf;
 
 $bread-height: 70px;
 $side-bar-width: 70px;
-$tab-padding-1: 15px;
-$tab-padding-2: 15px;
-$page-padding-horizontal: 20px;
-$page-padding-vertical: 20px;
-$tab-nav-item-height: 35px;
+$tab-padding-1:15px;
+$tab-padding-2:15px;
 //breadcrumb style point
 main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;
@@ -82,16 +79,17 @@ main {
       }
     }
     div.main-without-tab {
+      margin-bottom: 1rem !important;
       padding: $tab-padding-1 $tab-padding-2 $tab-padding-2 $tab-padding-2;
-      min-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical});
-      max-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical});
-      height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical});
+      min-height: calc(100vh - #{$nav-height + $bread-height + 35px});
+      max-height: calc(100vh - #{$nav-height + $bread-height + 35px});
+      height: calc(100vh - #{$nav-height + $bread-height + 35px});
       overflow: auto;
       &.p-0 {
-        padding: 0 !important;
+        padding: 0!important;
       }
       & .card-body {
-        padding: 0 !important;
+        padding: 0!important;
         div.table-wrapper {
           position: absolute;
           width: calc(100% - 30px);
@@ -104,28 +102,28 @@ main {
           bottom: 0;
           padding-top: 10px;
           width: calc(100% - 30px);
-          & > nav {
+          &>nav {
             width: 100%;
           }
         }
       }
-      & > div.row {
+      &>div.row {
         margin: 0;
       }
 
     }
-    div.tabs:not(.sub-tabs) {
-      & > div.tab-content {
+    div.tabs:not(.sub-tabs){
+      &>div.tab-content {
         margin-bottom: 1rem !important;
         padding: $tab-padding-1 0 $tab-padding-2 0;
-        min-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
-        max-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
-        height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
+        min-height: calc(100vh - #{$nav-height + $bread-height + 65px} );
+        max-height: calc(100vh - #{$nav-height + $bread-height + 65px});
+        height: calc(100vh - #{$nav-height + $bread-height + 65px});
         border-top: 1px #eaeaea solid;
-        & > div.tab-pane.active {
-          height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height + $tab-padding-1 + $tab-padding-2});
+        &>div.tab-pane.active {
+          height: calc(100vh - #{$nav-height + $bread-height + 65px + $tab-padding-1 + $tab-padding-2} );
           overflow-y: auto;
-          & > div.row {
+          &>div.row {
             margin: 0;
           }
           div.table-wrapper {
@@ -140,7 +138,7 @@ main {
             bottom: 0;
             padding-top: 10px;
             width: calc(100% - 30px);
-            & > nav {
+            &>nav {
               width: 100%;
             }
           }
@@ -152,7 +150,7 @@ main {
         border-bottom: 1px solid #d7d7d7;
         .nav-item {
           .nav-link {
-            box-shadow: none !important;
+            box-shadow: none!important;
             &.active {
               color: $info-color;
             }
@@ -271,7 +269,7 @@ body.rtl {
     }
   }
   main {
-    margin: $nav-height + $bread-height +10px, $side-bar-width+20px 0 20px !important;
+    margin: $nav-height + $bread-height +10px , $side-bar-width+20px 0 20px!important;
     div.container-fluid {
       .breadcrumb-container {
         position: fixed;
@@ -471,12 +469,12 @@ $btn-orange-color: #ff5e00;
 }
 
 .vuetable {
-  thead > tr > th[class*='vuetable-th-checkbox-'], tbody > tr > td.vuetable-checkboxes {
+  thead>tr>th[class*='vuetable-th-checkbox-'],tbody>tr>td.vuetable-checkboxes {
     position: relative;
     width: 2rem;
-    input[type=checkbox] {
+    input[type=checkbox]{
       width: 0;
-      &::before {
+      &::before{
         content: "";
         position: absolute;
         left: .5rem;
@@ -487,7 +485,7 @@ $btn-orange-color: #ff5e00;
         border: 1px solid #909090;
         border-radius: .25rem;
       }
-      &:checked, &:indeterminate {
+      &:checked,&:indeterminate {
         &::before {
           content: "";
           position: absolute;
@@ -524,10 +522,10 @@ $btn-orange-color: #ff5e00;
       th {
         padding: 14px 0 !important;
         border: solid 1px #e7e7e7 !important;
-        background-color: #f1f1f1 !important;
+        background-color: #f1f1f1!important;
         /*position: sticky;
         top: -1px;*/
-        /* z-index: 4;*/
+       /* z-index: 4;*/
         &.btn-actions {
           width: 230px;
         }

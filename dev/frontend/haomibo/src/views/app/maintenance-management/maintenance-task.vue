@@ -320,7 +320,6 @@
                       <b-button class="mt-2" variant="info skyblue default" size="sm">
                         <i class="icofont-upload-alt mr-1"></i>{{$t('permission-management.upload-image')}}
                       </b-button>
-
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -777,7 +776,7 @@
                         "number": "H201909200004",
                         "status": "processing",
                     },
-                ],
+                ]
             }
         },
         methods: {

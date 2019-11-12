@@ -282,6 +282,18 @@
                   <b-col>
                   </b-col>
                 </b-row>
+                <b-row class="mt-3">
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                    <b-row class="evidence-gallery">
+                      <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                        <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                        <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                      </b-col>
+                      <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                    </b-row>
+                  </b-col>
+                </b-row>
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="process-task-img-wrapper">
@@ -560,7 +572,7 @@
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
           <div>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
@@ -577,12 +589,14 @@
     import Vuetable from 'vuetable-2/src/components/Vuetable'
     import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
     import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+    import {LightGallery} from 'vue-light-gallery';
 
     export default {
         components: {
             'vuetable': Vuetable,
             'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+            'light-gallery': LightGallery
         },
         data() {
             return {
@@ -739,6 +753,21 @@
                         "status": "processing",
                     },
                 ],
+                thumbs: [
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+                ],
+                images: [
+                    '/assets/img/drug.jpg',
+                    '/assets/img/drug.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                ],
+                photoIndex: null
             }
         },
         methods: {
@@ -787,6 +816,12 @@
             },
             onBlackListTableChangePage(page) {
                 this.$refs.pendingListTable.changePage(page);
+            },
+            onThumbClick(index) {
+                this.photoIndex = index;
+            },
+            handleHide() {
+                this.photoIndex = null;
             },
         }
     }

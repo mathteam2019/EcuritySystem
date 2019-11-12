@@ -560,7 +560,7 @@
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1  position-absolute" style="right: 30px;bottom: 30px;">
           <div>
             <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
               class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
