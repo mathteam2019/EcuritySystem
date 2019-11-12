@@ -87,6 +87,10 @@
                 ref="taskVuetable"
                 :api-mode="false"
                 :data="tempData"
+                data-path="data"
+                pagination-path="pagination"
+                :data-total="tempData.data.length"
+                :per-page="taskVuetableItems.perPage"
                 :fields="taskVuetableItems.fields"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -644,43 +648,53 @@
                     {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
                 ],
                 // TODO: refactor temp table data to api mode
-                tempData: [
-                    {
-                        id: 1,
-                        taskNumber: 'HR201909210001',
-                        securityInstrument: "张三",
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30'
+                tempData: {
+                    pagination: {
+                        "total": 5,
+                        "per_page": 5,
+                        "current_page": 1,
+                        "last_page": 1,
+                        "from": 1,
+                        "to": 5,
                     },
-                    {
-                        id: 2,
-                        taskNumber: 'HR201909210001',
-                        securityInstrument: "张三",
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 3,
-                        taskNumber: 'HR201909210001',
-                        securityInstrument: "张三",
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 4,
-                        taskNumber: 'HR201909210001',
-                        securityInstrument: "张三",
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 5,
-                        taskNumber: 'HR201909210001',
-                        securityInstrument: "张三",
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30'
-                    },
-                ],
+                    data: [
+                        {
+                            id: 1,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 2,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 3,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 4,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 5,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                    ]
+                },
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [

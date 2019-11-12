@@ -92,6 +92,10 @@
                 ref="taskVuetable"
                 :api-mode="false"
                 :data="tempData"
+                data-path="data"
+                pagination-path="pagination"
+                :data-total="5"
+                :per-page="5"
                 :fields="taskVuetableItems.fields"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -916,101 +920,116 @@
                     {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
                 ],
                 // TODO: refactor temp table data to api mode
-                tempData: [
-                    {
-                        id: 1,
-                        taskNumber: 'HR201909210001',
-                        image: '',
-                        taskResult: 'no-suspect', // or 'seized'
-                        onSize: '',
-                        securityInstrument: '',
-                        guide: '张三',
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30',
-                        judgementStation: '丹东站',
-                        judge: '张三',
-                        judgementStartTime: '2019-10-23. 10:30',
-                        judgementEndTime: '2019-10-23. 10:30',
-                        handCheckStation: '丹东站',
-                        handChecker: '张三',
-                        handCheckStartTime: '2019-10-23. 10:30'
+                tempData: {
+                    pagination: {
+                        total: 5,
+                        per_page: 5,
+                        current_page: 1,
+                        last_page: 1,
+                        from: 1,
+                        to: 5
                     },
-                    {
-                        id: 2,
-                        taskNumber: 'HR201909210001',
-                        image: '',
-                        taskResult: 'no-suspect', // or 'seized'
-                        onSize: '',
-                        securityInstrument: '',
-                        guide: '张三',
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30',
-                        judgementStation: '丹东站',
-                        judge: '张三',
-                        judgementStartTime: '2019-10-23. 10:30',
-                        judgementEndTime: '2019-10-23. 10:30',
-                        handCheckStation: '丹东站',
-                        handChecker: '张三',
-                        handCheckStartTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 3,
-                        taskNumber: 'HR201909210001',
-                        image: '',
-                        taskResult: 'no-suspect', // or 'seized'
-                        onSize: '',
-                        securityInstrument: '',
-                        guide: '张三',
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30',
-                        judgementStation: '丹东站',
-                        judge: '张三',
-                        judgementStartTime: '2019-10-23. 10:30',
-                        judgementEndTime: '2019-10-23. 10:30',
-                        handCheckStation: '丹东站',
-                        handChecker: '张三',
-                        handCheckStartTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 4,
-                        taskNumber: 'HR201909210001',
-                        image: '',
-                        taskResult: 'seized',
-                        onSize: '',
-                        securityInstrument: '',
-                        guide: '张三',
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30',
-                        judgementStation: '丹东站',
-                        judge: '张三',
-                        judgementStartTime: '2019-10-23. 10:30',
-                        judgementEndTime: '2019-10-23. 10:30',
-                        handCheckStation: '丹东站',
-                        handChecker: '张三',
-                        handCheckStartTime: '2019-10-23. 10:30'
-                    },
-                    {
-                        id: 5,
-                        taskNumber: 'HR201909210001',
-                        image: '',
-                        taskResult: 'seized',
-                        onSize: '',
-                        securityInstrument: '',
-                        guide: '张三',
-                        scanStartTime: '2019-10-23. 10:30',
-                        scanEndTime: '2019-10-23. 10:30',
-                        judgementStation: '丹东站',
-                        judge: '张三',
-                        judgementStartTime: '2019-10-23. 10:30',
-                        judgementEndTime: '2019-10-23. 10:30',
-                        handCheckStation: '丹东站',
-                        handChecker: '张三',
-                        handCheckStartTime: '2019-10-23. 10:30'
-                    },
-                ],
+                    data: [
+                        {
+                            id: 1,
+                            taskNumber: 'HR201909210001',
+                            image: '',
+                            taskResult: 'no-suspect', // or 'seized'
+                            onSize: '',
+                            securityInstrument: '',
+                            guide: '张三',
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30',
+                            judgementStation: '丹东站',
+                            judge: '张三',
+                            judgementStartTime: '2019-10-23. 10:30',
+                            judgementEndTime: '2019-10-23. 10:30',
+                            handCheckStation: '丹东站',
+                            handChecker: '张三',
+                            handCheckStartTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 2,
+                            taskNumber: 'HR201909210001',
+                            image: '',
+                            taskResult: 'no-suspect', // or 'seized'
+                            onSize: '',
+                            securityInstrument: '',
+                            guide: '张三',
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30',
+                            judgementStation: '丹东站',
+                            judge: '张三',
+                            judgementStartTime: '2019-10-23. 10:30',
+                            judgementEndTime: '2019-10-23. 10:30',
+                            handCheckStation: '丹东站',
+                            handChecker: '张三',
+                            handCheckStartTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 3,
+                            taskNumber: 'HR201909210001',
+                            image: '',
+                            taskResult: 'no-suspect', // or 'seized'
+                            onSize: '',
+                            securityInstrument: '',
+                            guide: '张三',
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30',
+                            judgementStation: '丹东站',
+                            judge: '张三',
+                            judgementStartTime: '2019-10-23. 10:30',
+                            judgementEndTime: '2019-10-23. 10:30',
+                            handCheckStation: '丹东站',
+                            handChecker: '张三',
+                            handCheckStartTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 4,
+                            taskNumber: 'HR201909210001',
+                            image: '',
+                            taskResult: 'seized',
+                            onSize: '',
+                            securityInstrument: '',
+                            guide: '张三',
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30',
+                            judgementStation: '丹东站',
+                            judge: '张三',
+                            judgementStartTime: '2019-10-23. 10:30',
+                            judgementEndTime: '2019-10-23. 10:30',
+                            handCheckStation: '丹东站',
+                            handChecker: '张三',
+                            handCheckStartTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 5,
+                            taskNumber: 'HR201909210001',
+                            image: '',
+                            taskResult: 'seized',
+                            onSize: '',
+                            securityInstrument: '',
+                            guide: '张三',
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30',
+                            judgementStation: '丹东站',
+                            judge: '张三',
+                            judgementStartTime: '2019-10-23. 10:30',
+                            judgementEndTime: '2019-10-23. 10:30',
+                            handCheckStation: '丹东站',
+                            handChecker: '张三',
+                            handCheckStartTime: '2019-10-23. 10:30'
+                        },
+                    ]
+                },
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
                         {
                             name: 'id',
                             title: this.$t('personal-inspection.serial-number'),
