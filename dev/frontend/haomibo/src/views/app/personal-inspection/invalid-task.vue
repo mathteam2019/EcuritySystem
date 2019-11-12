@@ -87,6 +87,10 @@
                 ref="taskVuetable"
                 :api-mode="false"
                 :data="tempData"
+                data-path="data"
+                pagination-path="pagination"
+                :data-total="tempData.data.length"
+                :per-page="taskVuetableItems.perPage"
                 :fields="taskVuetableItems.fields"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -351,18 +355,19 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.status')}}
+                    {{$t('personal-inspection.scan-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
                   </template>
-                  <label>全部</label>
+                  <label>20190921 10:40:05</label>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.guide')}}&nbsp
+                    {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>张三</label>
+                  <label>20190921 10:40:05</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -388,135 +393,11 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.scan-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.dispatch-timeout')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>TC0001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judge')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>李四</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-station')}}&nbsp
+                    {{$t('personal-inspection.guide')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>张三</label>
                 </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:42:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-checker')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
               </b-col>
             </b-row>
 
@@ -706,16 +587,6 @@
 
   }
 
-  .fill-main {
-    height: calc(100vh - 180px);
-    .right-card {
-      .card-body {
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
-
 </style>
 
 <script>
@@ -777,9 +648,53 @@
                     {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
                 ],
                 // TODO: refactor temp table data to api mode
-                tempData: [
-                    {id: 1, taskNumber: 'HR201909210001'}
-                ],
+                tempData: {
+                    pagination: {
+                        "total": 5,
+                        "per_page": 5,
+                        "current_page": 1,
+                        "last_page": 1,
+                        "from": 1,
+                        "to": 5,
+                    },
+                    data: [
+                        {
+                            id: 1,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 2,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 3,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 4,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                        {
+                            id: 5,
+                            taskNumber: 'HR201909210001',
+                            securityInstrument: "张三",
+                            scanStartTime: '2019-10-23. 10:30',
+                            scanEndTime: '2019-10-23. 10:30'
+                        },
+                    ]
+                },
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
                     fields: [

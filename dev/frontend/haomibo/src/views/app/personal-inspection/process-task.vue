@@ -90,7 +90,11 @@
                 ref="taskVuetable"
                 :api-mode="false"
                 :data="tempData"
+                data-path="data"
+                pagination-path="pagination"
                 :fields="taskVuetableItems.fields"
+                :per-page="taskVuetableItems.perPage"
+                :data-total="tempData.data.length"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
@@ -730,17 +734,6 @@
 
   }
 
-  .fill-main {
-    height: calc(100vh - 180px);
-
-    .right-card {
-      .card-body {
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
-
 
 </style>
 
@@ -804,37 +797,48 @@
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
         ],
         // TODO: refactor temp table data to api mode
-        tempData: [1, 2, 3, 4, 5, 6, 7, 8, 9].map((e) => {
+        tempData: {
+            data: [1, 2, 3, 4, 5].map((e) => {
 
 
-          let statusSet = [
-            "pending_dispatch",
-            "pending_review",
-            "while_review",
-            "pending_inspection",
-            "while_inspection"
-          ];
+                let statusSet = [
+                    "pending_dispatch",
+                    "pending_review",
+                    "while_review",
+                    "pending_inspection",
+                    "while_inspection"
+                ];
 
-          return {
-            id: e,
-            taskNumber: 'HR201909210001',
-            // operationMode: 'HR201909210001',
-            status: _.sample(statusSet),
-            onSite: '',
-            securityInstrument: '',
-            guide: '张怡宁',
-            scanStartTime: '2019-10-23.10:30',
-            scanEndTime: '2019-10-23.10:30',
-            judgementStation: '丹东站',
-            judge: '张怡宁',
-            judgementStartTime: '2019-10-23.10:30',
-            judgementEndTime: '2019-10-23.10:30',
-            handCheckStation: '丹东站',
-            handChecker: '张怡宁',
-            handCheckStartTime: '2019-10-23.10:30'
+                return {
+                    id: e,
+                    taskNumber: 'HR201909210001',
+                    // operationMode: 'HR201909210001',
+                    status: _.sample(statusSet),
+                    onSite: '',
+                    securityInstrument: '',
+                    guide: '张怡宁',
+                    scanStartTime: '2019-10-23.10:30',
+                    scanEndTime: '2019-10-23.10:30',
+                    judgementStation: '丹东站',
+                    judge: '张怡宁',
+                    judgementStartTime: '2019-10-23.10:30',
+                    judgementEndTime: '2019-10-23.10:30',
+                    handCheckStation: '丹东站',
+                    handChecker: '张怡宁',
+                    handCheckStartTime: '2019-10-23.10:30'
 
-          }
-        }),
+                }
+            }),
+            pagination: {
+                total: 5,
+                per_page: 5,
+                current_page: 1,
+                last_page: 1,
+                from: 1,
+                to: 5
+            }
+        },
+
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/...`,
           fields: [

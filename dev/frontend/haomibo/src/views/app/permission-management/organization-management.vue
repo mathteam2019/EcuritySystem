@@ -3,19 +3,22 @@
     background: url("../../../assets/img/bg-china-map.png") no-repeat center;
     background-size: contain;
     height: calc(100% - 50px);
-    &>div {
-      background: transparent!important;
+
+    & > div {
+      background: transparent !important;
     }
 
-      .bg-level-1 {
-        background-color: #056aa5;
-      }
-      .bg-level-2 {
-        background-color: #047a98;
-      }
-      .bg-level-3 {
-        background-color: #576872;
-      }
+    .bg-level-1 {
+      background-color: #056aa5;
+    }
+
+    .bg-level-2 {
+      background-color: #047a98;
+    }
+
+    .bg-level-3 {
+      background-color: #576872;
+    }
   }
 </style>
 
@@ -102,10 +105,8 @@
                     :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
-
                     @vuetable:pagination-data="onPaginationData"
                   >
-
                     <template slot="actions" slot-scope="props">
                       <div>
                         <template v-if="props.rowData.status=='inactive'">
@@ -128,7 +129,6 @@
                             <i class="icofont-bin"></i>
                           </b-button>
                         </template>
-
                         <template v-if="props.rowData.status=='active'">
                           <b-button
                             size="sm"
@@ -153,8 +153,6 @@
                               <i class="icofont-ban"></i>
                             </b-button>
                           </template>
-
-
                           <b-button
                             size="sm"
                             variant="danger default btn-square"
@@ -162,10 +160,8 @@
                             <i class="icofont-bin"></i>
                           </b-button>
                         </template>
-
                       </div>
                     </template>
-
                   </vuetable>
                 </div>
                 <div class="pagination-wrapper">
@@ -184,7 +180,7 @@
           <b-col cols="6">
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
@@ -193,7 +189,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
@@ -204,7 +200,7 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text" disabled v-model="createPageSelectedParentOrganizationNumber"
@@ -212,7 +208,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
@@ -222,7 +218,7 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-leader')}}</template>
                   <b-form-input type="text"
                                 v-model="createPage.leader"
@@ -230,7 +226,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
                                 v-model="createPage.mobile"
@@ -240,28 +236,30 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-note')}}</template>
 
                   <b-form-textarea
                     v-model="createPage.note"
                     :placeholder="$t('permission-management.please-enter-organization-note')"
-                    />
+                  />
 
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button size="sm" variant="success default mr-1" @click="onCreatePageSaveButton()"><i class="icofont-save"></i> {{
+            <b-button size="sm" variant="success default mr-1" @click="onCreatePageSaveButton()"><i
+              class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button size="sm" variant="primary default " @click="onCreatePageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+            <b-button size="sm" variant="primary default " @click="onCreatePageBackButton()"><i
+              class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 8%;bottom: 8%">
-            <img  src="../../../assets/img/no_active_stamp.png">
+            <img src="../../../assets/img/no_active_stamp.png">
           </div>
 
         </b-row>
@@ -269,7 +267,7 @@
           <b-col cols="6">
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
@@ -278,7 +276,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
@@ -289,7 +287,7 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
@@ -297,7 +295,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
@@ -307,7 +305,7 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-leader')}}</template>
                   <b-form-input type="text"
                                 v-model="modifyPage.leader"
@@ -315,7 +313,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
                                 v-model="modifyPage.mobile"
@@ -325,32 +323,36 @@
             </b-row>
             <b-row>
               <b-col cols="6">
-                <b-form-group >
+                <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-note')}}</template>
 
                   <b-form-textarea
                     v-model="modifyPage.note"
                     :placeholder="$t('permission-management.please-enter-organization-note')"
-                    />
+                  />
 
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button size="sm" variant="success default mr-1" @click="onModifyPageSaveButton()"><i class="icofont-save"></i> {{
+            <b-button size="sm" variant="success default mr-1" @click="onModifyPageSaveButton()"><i
+              class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button v-if="modifyPage.selectedOrg.status==='inactive'" size="sm" variant="warning default mr-1"  @click="onAction('activate')"><i class="icofont-check-circled"></i> {{
+            <b-button v-if="modifyPage.selectedOrg.status==='inactive'" size="sm" variant="warning default mr-1"
+                      @click="onAction('activate')"><i class="icofont-check-circled"></i> {{
               $t('permission-management.active')}}
             </b-button>
-            <b-button v-else-if="modifyPage.selectedOrg.status==='active'" size="sm" variant="warning default mr-1"  @click="onAction('deactivate')"><i class="icofont-ban"></i> {{
+            <b-button v-else-if="modifyPage.selectedOrg.status==='active'" size="sm" variant="warning default mr-1"
+                      @click="onAction('deactivate')"><i class="icofont-ban"></i> {{
               $t('permission-management.action-make-inactive')}}
             </b-button>
-            <b-button size="sm" variant="danger default mr-1"  @click="onAction('delete')"><i class="icofont-bin"></i> {{
+            <b-button size="sm" variant="danger default mr-1" @click="onAction('delete')"><i class="icofont-bin"></i> {{
               $t('permission-management.delete')}}
             </b-button>
-            <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i class="icofont-long-arrow-left"></i> {{
+            <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i
+              class="icofont-long-arrow-left"></i> {{
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
@@ -366,7 +368,7 @@
 
         <b-row class="h-100">
           <b-col cols="12">
-            <div class="table-responsive h-100" >
+            <div class="table-responsive h-100">
               <div class="bg-organization-structure text-center">
                 <h3 style="font-size: 2rem;color: #1a3035" class="font-weight-bold my-4 mb-5 pb-4">
                   <span>{{$t('login.title')}}</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
@@ -439,7 +441,7 @@
     if (orgData == null)
       return level;
     while (orgData.parent != null) {
-      level ++;
+      level++;
       orgData = orgData.parent;
     }
     return level;
@@ -455,7 +457,7 @@
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`,{
+      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {
         let message = response.data.message;
@@ -757,14 +759,14 @@
 
         let deleteItem = () => {
           this.selectedOrg = data;
-          if(data==null)
+          if (data == null)
             this.selectedOrg = this.modifyPage.selectedOrg;
           this.$refs['modal-delete'].show();
         };
 
         let activateItem = () => {
           let selectedOrgId = 0;
-          if(data==null)
+          if (data == null)
             selectedOrgId = this.modifyPage.selectedOrg.orgId;
           else
             selectedOrgId = data.orgId;
@@ -783,7 +785,7 @@
                     duration: 3000,
                     permanent: false
                   });
-                  if(this.modifyPage!=null)
+                  if (this.modifyPage != null)
                     this.modifyPage.selectedOrg.status = 'active';
                   this.$refs.vuetable.refresh();
                   break;
@@ -798,7 +800,7 @@
 
         let deactivateItem = () => {
           this.selectedOrg = data;
-          if(data==null)
+          if (data == null)
             this.selectedOrg = this.modifyPage.selectedOrg;
           this.$refs['modal-deactivate'].show();
         };
@@ -1043,7 +1045,7 @@
                   duration: 3000,
                   permanent: false
                 });
-                if(this.modifyPage!=null)
+                if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = 'inactive';
                 this.$refs.vuetable.refresh();
 

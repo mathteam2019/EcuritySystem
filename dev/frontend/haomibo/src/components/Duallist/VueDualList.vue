@@ -1,34 +1,40 @@
 <template>
   <div class="vue-dual-list">
-    <b-row>
-      <b-col cols="5">
-        <label>{{$t('device-management.dispatched-device')}}</label>
-        <div class='list d-flex' v-bind:class="options.resizeBox">
+    <b-row class="h-100">
+      <b-col cols="5" class="d-flex flex-column">
+        <b-form-group class="mt-2" :label="$t('menu.device-classify')">
+          <b-form-select :options="[]" plain></b-form-select>
+        </b-form-group>
+        <div class='list' v-bind:class="options.resizeBox">
+          <div class="d-block">
+            {{$t('device-management.before-selected')}}
+          </div>
           <ul class='pd'>
-            <li class="mb-1" v-for='item in filtering' :key="item.name">
-              <a href='javascript:void(0)' class="badge badge-info" v-on:click='transferToRight(options.items.indexOf(item))'
-                 >
-                {{ item.name }}</a>
+            <li class="mb-1" v-for='item in filtering' :key="item.name" @click='transferToRight(options.items.indexOf(item))'>
+                {{ item.name }}
             </li>
           </ul>
         </div>
       </b-col>
       <b-col cols="2" class="d-flex justify-content-center align-items-center flex-column">
-        <b-button class="btn btn-info default m-1" @click='transferToRight(options.items.indexOf(item))'><i
-          v-bind:class="{'iconsminds-arrow-right-2': options.isLtr==='ltr','iconsminds-arrow-left-2':options.isLtr!=='ltr'}"></i>
+        <b-button size="sm" variant="info default m-1" @click='transferToRight(options.items.indexOf(item))'>
+          <i class="icofont-long-arrow-right"></i>
         </b-button>
-        <b-button class="btn btn-info default m-1" @click='transferToLeft(-1)'><i v-bind:class="{'iconsminds-arrow-right-2': options.isLtr!=='ltr','iconsminds-arrow-left-2':options.isLtr==='ltr'}"></i>
+          <b-button size="sm" variant="info default m-1" @click='transferToLeft(-1)'>
+          <i class="icofont-long-arrow-left"></i>
         </b-button>
       </b-col>
-      <b-col cols="5">
-        <label>{{$t('device-management.pending-device')}}</label>
-        <div class='list d-flex' v-bind:class="options.resizeBox">
+      <b-col cols="5" class="d-flex flex-column">
+        <b-form-group class="mt-2" :label="$t('menu.device-classify')">
+          <b-form-select :options="[]" plain></b-form-select>
+        </b-form-group>
+        <div class='list' v-bind:class="options.resizeBox">
+          <div class="d-block">
+            {{$t('device-management.selected')}}
+          </div>
           <ul class='pd'>
-            <li class="mb-1" v-for='item in options.selectedItems' :key="item.name">
-              <a href='javascript:void(0)' class="badge badge-danger" v-on:click='transferToLeft(options.selectedItems.indexOf(item))'
-                 >
-                {{ item.name }}
-              </a>
+            <li class="mb-1" v-for='item in options.selectedItems' :key="item.name" @click='transferToLeft(options.selectedItems.indexOf(item))'>
+              {{ item.name }}
             </li>
           </ul>
         </div>
@@ -37,22 +43,59 @@
   </div>
 </template>
 
-<style lang="css">
-  .vue-dual-list .list {
-    border: 1px solid #999;
-    border-radius: 4px;
-    padding: 10px;
-    overflow-y: auto;
-    max-height: 400px;
+<style lang="scss">
+  .vue-dual-list {
+
+    $item-horizontal-margin: .8rem;
+    $move-button-color: #178af7;
+
+    .form-control {
+      max-width: none!important;
+    }
+
+    button {
+      background-color: $move-button-color;
+      border-width: 0;
+      width: 36px;
+      padding-left: 13px!important;
+
+      &:hover {
+        background-color: $move-button-color;
+      }
+    }
+
+    .list {
+      border: 1px solid #999;
+      border-radius: 4px;
+      overflow-y: auto;
+      height: 100%;
+
+      &>div {
+        padding: $item-horizontal-margin/2 #{$item-horizontal-margin - .2rem};
+        font-size: 1rem;
+        background-color: #ebebeb;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      ul.pd {
+        padding-left: 0px;
+        list-style-type: none!important;
+        width: 100%;
+        font-size: 1rem;
+
+        li {
+          padding: $item-horizontal-margin/2 $item-horizontal-margin;
+          margin: 0px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #f4f4f4;
+          }
+        }
+      }
+    }
   }
 
-  .vue-dual-list ul.pd {
-    padding-left: 12px;
-    list-style-type: none!important;
-  }
-  .vue-dual-list ul>li>a:hover {
-    text-decoration: none!important;
-  }
 </style>
 
 <script>

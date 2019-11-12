@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="system-setting">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -503,15 +503,15 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button class="mb-1" @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+              <b-button @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
                 $t('permission-management.action-make-inactive') }}
               </b-button>
-              <b-button class="mb-1" @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+              <b-button @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
             </div>
           </b-col>
-          <div class="position-absolute" style="left: 8%;bottom: 17%">
+          <div class="position-absolute" style="left: 8%;bottom: 8%">
             <img  src="../../../assets/img/no_active_stamp.png">
           </div>
 
@@ -522,8 +522,6 @@
 </template>
 
 <style lang="scss">
-  $internal-tab-content-height-offset: 400px;
-
   .vc-chrome {
     position: absolute;
     top: 35px;
@@ -538,45 +536,6 @@
     cursor: pointer;
   }
 
-  .section.pt-0 {
-
-    background-color: #f3f3f3;
-    padding-bottom: 0px!important;
-
-    .nav-tabs .nav-link {
-      &.active {
-        box-shadow: none!important;
-        border-left: 1px #cccccc solid;
-        border-right: 1px #cccccc solid;
-
-        &::before {
-          height: 0px;
-        }
-      }
-      &:not(.active) {
-        background-color: transparent!important;
-      }
-    }
-
-    .card-header-tabs {
-      margin-left: calc(-1.25rem - 1px);
-    }
-
-    .tab-content {
-      box-shadow: none!important;
-      border-top: 1px #cccccc solid;
-      border-top-left-radius: 0px!important;
-      border-top-right-radius: 0px!important;
-      padding-top: 0px!important;
-      height: calc(100vh - 337px);
-      overflow: auto;
-
-      .font-weight-bold {
-        color: #acacac;
-      }
-
-    }
-  }
 </style>
 
 <script>
