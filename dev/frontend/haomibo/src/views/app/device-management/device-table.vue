@@ -36,7 +36,7 @@
           <b-col cols="6">
             <b-row>
               <b-col>
-                <b-form-group :label="$t('device-management.file-name')">
+                <b-form-group :label="$t('device-management.filename')">
                   <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
@@ -141,7 +141,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-name')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-input v-model="mainForm.name"></b-form-input>
                 </b-form-group>
@@ -162,7 +162,7 @@
                 </b-form-group>
               </b-col>
               <b-col cols="4">
-                <b-form-group :label="$t('device-management.device-classify')">
+                <b-form-group :label="$t('device-management.manufacture')">
                   <label class="input-label">同方威视</label>
                 </b-form-group>
               </b-col>
@@ -319,7 +319,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group>
-                      <template slot="label">{{$t('device-management.device-name')}}<span class="text-danger">*</span>
+                      <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
                       </template>
                       <label class="input-label">MW毫米波安检仪000</label>
                     </b-form-group>
@@ -340,12 +340,12 @@
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
-                    <b-form-group :label="$t('device-management.device-classify')">
+                    <b-form-group :label="$t('device-management.manufacture')">
                       <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
-                    <b-form-group :label="$t('device-management.origin-model')">
+                    <b-form-group :label="$t('device-management.device-model')">
                       <label class="input-label">MW1000AA</label>
                     </b-form-group>
                   </b-col>
@@ -479,7 +479,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group>
-                      <template slot="label">{{$t('device-management.file-name')}}<span class="text-danger">*</span>
+                      <template slot="label">{{$t('device-management.filename')}}<span class="text-danger">*</span>
                       </template>
                       <label class="input-label">MW毫米波安检仪</label>
                     </b-form-group>
@@ -499,7 +499,7 @@
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
-                    <b-form-group :label="$t('device-management.device-classify')">
+                    <b-form-group :label="$t('device-management.manufacture')">
                       <label class="input-label">同方威视</label>
                     </b-form-group>
                   </b-col>
