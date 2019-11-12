@@ -136,6 +136,7 @@
               <div class="pagination-wrapper">
                 <vuetable-pagination-bootstrap
                   ref="pagination"
+                  :initial-per-page="vuetableItems.perPage"
                   @vuetable-pagination:change-page="onChangePage"
                 ></vuetable-pagination-bootstrap>
 
@@ -256,8 +257,8 @@
               </div>
             </b-col>
           </b-row>
-          <div class="position-absolute" style="bottom: 20%;left: 2%">
-            <img  src="../../../assets/img/active_stamp.png">
+          <div class="position-absolute" style="top: 10%;right: 10%">
+            <img  src="../../../assets/img/no_active_stamp.png">
           </div>
         </b-col>
       </b-row>

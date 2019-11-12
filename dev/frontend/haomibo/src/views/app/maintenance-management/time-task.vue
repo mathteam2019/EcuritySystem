@@ -220,7 +220,6 @@
             </b-form-group>
             <div class="pl-4 mb-3 text-muted">({{$t('maintenance-management.time-task.guide-for-time-task')}})</div>
           </b-col>
-          <b-col cols="6" v-if="selectedStatus === 'inactive'"></b-col>
           <b-col cols="6" class="inline-label-form-section">
             <b-form-group>
               <template slot="label">{{$t('maintenance-management.time-task.estimated-start-time')}}&nbsp;<span
@@ -273,7 +272,7 @@
           <div v-if="selectedStatus === 'active'" class="position-absolute" style="bottom: 20%;left: 45%">
             <img  src="../../../assets/img/active_stamp.png">
           </div>
-          <div v-if="selectedStatus === 'inactive'" class="position-absolute" style="top: 5%;left: 45%">
+          <div v-if="selectedStatus === 'inactive'" class="position-absolute" style="bottom: 20%;left: 45%">
             <img  src="../../../assets/img/no_active_stamp.png">
           </div>
         </b-row>
