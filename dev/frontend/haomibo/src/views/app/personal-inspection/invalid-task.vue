@@ -576,7 +576,7 @@
 
   .control-group {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
 
     .control-btn-wrapper {
       display: flex;

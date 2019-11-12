@@ -106,6 +106,14 @@
                   <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
                   <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
                 </template>
+                <template slot="taskResult" slot-scope="props">
+                  <div v-if="props.rowData.taskResult === 'no-suspect'" style="color: green;">
+                    {{$t('knowledge-base.no-suspect')}}
+                  </div>
+                  <div v-if="props.rowData.taskResult === 'seized'" style="color: red;">
+                    {{$t('knowledge-base.seized')}}
+                  </div>
+                </template>
               </vuetable>
             </div>
             <div class="pagination-wrapper">
@@ -519,32 +527,87 @@
                     {{$t('personal-inspection.hand-checker')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>男</label>
+                  <label>王五</label>
                 </b-form-group>
               </b-col>
               <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.task-result')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>无嫌疑</label>
+                </b-form-group>
               </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.item-level')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>一级</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.evaluation-chart')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>误报</label>
+                </b-form-group>
+              </b-col>
+              <b-col></b-col>
+              <b-col></b-col>
+              <b-col></b-col>
             </b-row>
 
             <b-row class="flex-grow-1 d-flex align-items-end">
               <b-col>
                 <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery">
-                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`" @click="onThumbClick(thumbIndex)">
                     <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
                     <label class="d-block text-center mt-2">{{thumb.name}}</label>
                   </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
                 </b-row>
               </b-col>
-              <b-col class="d-none">
-                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
-                <b-row class="evidence-gallery justify-content-end">
-                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
-                    <label class="d-block text-center mt-2">{{thumb.name}}</label>
+
+              <b-col class="seized-list">
+                <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
+                <b-row class="d-flex justify-content-end">
+                  <b-col cols="auto">
+                    <div class="seized-item" style="background-color: #ff0000">
+                      <b-img src="/assets/img/pistol_icon.svg" class="contraband-icon" />
+                      <span class="contraband-count">2</span>
+                      <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
+                    </div>
                   </b-col>
-                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                  <b-col cols="auto">
+                    <div class="seized-item" style="background-color: #ff4e00">
+                      <b-img src="/assets/img/drug_icon.svg" class="contraband-icon" />
+                      <span class="contraband-count">1</span>
+                      <span class="contraband-category">{{$t('personal-inspection.drug')}}</span>
+                    </div>
+                  </b-col>
+                  <b-col cols="auto">
+                    <div class="seized-item" style="background-color: #ff7e00">
+                      <b-img src="/assets/img/knife_icon.svg" class="contraband-icon" />
+                      <span class="contraband-count">0</span>
+                      <span class="contraband-category">{{$t('personal-inspection.dagger')}}</span>
+                    </div>
+                  </b-col>
+                  <b-col cols="auto">
+                    <div class="seized-item" style="background-color: #ffae00">
+                      <b-img src="/assets/img/cigarette_icon.svg" class="contraband-icon" />
+                      <span class="contraband-count">9</span>
+                      <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
+                    </div>
+                  </b-col>
                 </b-row>
               </b-col>
             </b-row>
@@ -605,7 +668,7 @@
 
   .control-group {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
 
     .control-btn-wrapper {
       display: flex;
@@ -751,6 +814,52 @@
     }
   }
 
+  .seized-list {
+    label {
+      position: absolute;
+      top: -26px;
+      right: 291px;
+    }
+
+    .row {
+      padding-bottom: 34px;
+
+      .col-auto {
+        padding-left: 0px;
+        margin-left: -8px;
+      }
+
+      .seized-item {
+        width: 80px;
+        height: 62px;
+        border-radius: 5px;
+
+        .contraband-icon {
+          position: absolute;
+          top: 4px;
+          right: 20px;
+          width: 25px;
+          height: 18px;
+        }
+
+        span.contraband-count {
+          position: absolute;
+          top: 13px;
+          left: 32px;
+          color: white;
+          font-size: 1.5rem;
+        }
+
+        span.contraband-category {
+          position: absolute;
+          bottom: 1px;
+          left: 4px;
+          color: white
+        }
+      }
+    }
+  }
+
 </style>
 
 <script>
@@ -815,7 +924,96 @@
                 ],
                 // TODO: refactor temp table data to api mode
                 tempData: [
-                    {id: 1, taskNumber: 'HR201909210001'}
+                    {
+                        id: 1,
+                        taskNumber: 'HR201909210001',
+                        image: '',
+                        taskResult: 'no-suspect', // or 'seized'
+                        onSize: '',
+                        securityInstrument: '',
+                        guide: '张三',
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30',
+                        judgementStation: '丹东站',
+                        judge: '张三',
+                        judgementStartTime: '2019-10-23. 10:30',
+                        judgementEndTime: '2019-10-23. 10:30',
+                        handCheckStation: '丹东站',
+                        handChecker: '张三',
+                        handCheckStartTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 2,
+                        taskNumber: 'HR201909210001',
+                        image: '',
+                        taskResult: 'no-suspect', // or 'seized'
+                        onSize: '',
+                        securityInstrument: '',
+                        guide: '张三',
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30',
+                        judgementStation: '丹东站',
+                        judge: '张三',
+                        judgementStartTime: '2019-10-23. 10:30',
+                        judgementEndTime: '2019-10-23. 10:30',
+                        handCheckStation: '丹东站',
+                        handChecker: '张三',
+                        handCheckStartTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 3,
+                        taskNumber: 'HR201909210001',
+                        image: '',
+                        taskResult: 'no-suspect', // or 'seized'
+                        onSize: '',
+                        securityInstrument: '',
+                        guide: '张三',
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30',
+                        judgementStation: '丹东站',
+                        judge: '张三',
+                        judgementStartTime: '2019-10-23. 10:30',
+                        judgementEndTime: '2019-10-23. 10:30',
+                        handCheckStation: '丹东站',
+                        handChecker: '张三',
+                        handCheckStartTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 4,
+                        taskNumber: 'HR201909210001',
+                        image: '',
+                        taskResult: 'seized',
+                        onSize: '',
+                        securityInstrument: '',
+                        guide: '张三',
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30',
+                        judgementStation: '丹东站',
+                        judge: '张三',
+                        judgementStartTime: '2019-10-23. 10:30',
+                        judgementEndTime: '2019-10-23. 10:30',
+                        handCheckStation: '丹东站',
+                        handChecker: '张三',
+                        handCheckStartTime: '2019-10-23. 10:30'
+                    },
+                    {
+                        id: 5,
+                        taskNumber: 'HR201909210001',
+                        image: '',
+                        taskResult: 'seized',
+                        onSize: '',
+                        securityInstrument: '',
+                        guide: '张三',
+                        scanStartTime: '2019-10-23. 10:30',
+                        scanEndTime: '2019-10-23. 10:30',
+                        judgementStation: '丹东站',
+                        judge: '张三',
+                        judgementStartTime: '2019-10-23. 10:30',
+                        judgementEndTime: '2019-10-23. 10:30',
+                        handCheckStation: '丹东站',
+                        handChecker: '张三',
+                        handCheckStartTime: '2019-10-23. 10:30'
+                    },
                 ],
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/...`,
@@ -846,7 +1044,7 @@
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'taskResult',
+                            name: '__slot:taskResult',
                             title: this.$t('personal-inspection.task-result'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
