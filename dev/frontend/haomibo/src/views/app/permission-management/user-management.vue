@@ -1,4 +1,3 @@
-
 <style lang="scss">
   .user-management {
     .img-wrapper {
@@ -7,6 +6,7 @@
       border-radius: 3px;
       width: 190px;
       height: 270px;
+
       img {
         width: 100%;
         height: auto;
@@ -20,189 +20,182 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
-
 
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-              <b-row class="pt-2">
-                <b-col cols="6">
-                  <b-row>
+            <b-row class="pt-2">
+              <b-col cols="6">
+                <b-row>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.username')">
-                        <b-form-input v-model="filter.userName"></b-form-input>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.username')">
+                      <b-form-input v-model="filter.userName"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.status')">
-                        <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.status')">
+                      <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.gender')">
-                        <b-form-select v-model="filter.gender" :options="genderFilterOptions" plain />
-                      </b-form-group>
-                    </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.gender')">
+                      <b-form-select v-model="filter.gender" :options="genderFilterOptions" plain/>
+                    </b-form-group>
+                  </b-col>
 
-                    <b-col>
-                      <b-form-group :label="$t('permission-management.affiliated-institution')">
-                        <b-form-select v-model="filter.orgId"
-                                       :options="orgNameSelectData"
-                                       plain/>
-                      </b-form-group>
-                    </b-col>
-                  </b-row>
-                </b-col>
-                <b-col cols="6" class="d-flex justify-content-end align-items-center">
-                  <div>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                      <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                      <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
-                      <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                    </b-button>
-                    <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
-                      <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                    </b-button>
-                  </div>
-                </b-col>
-              </b-row>
-              <b-row class="flex-grow-1">
-                <b-col cols="12">
-                  <div class="table-wrapper table-responsive">
-                    <vuetable
-                      ref="vuetable"
-                      :api-url="vuetableItems.apiUrl"
-                      :fields="vuetableItems.fields"
-                      :http-fetch="userTableHttpFetch"
-                      :per-page="vuetableItems.perPage"
-                      pagination-path="pagination"
-                      class="table-striped"
-                      @vuetable:pagination-data="onUserTablePaginationData"
-                    >
-                      <template slot="userNumber" slot-scope="props">
-                        <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
-                      </template>
-                      <template slot="actions" slot-scope="props">
-                        <div >
+                  <b-col>
+                    <b-form-group :label="$t('permission-management.affiliated-institution')">
+                      <b-form-select v-model="filter.orgId"
+                                     :options="orgNameSelectData"
+                                     plain/>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+                <div>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                  </b-button>
+                  <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                  </b-button>
+                </div>
+              </b-col>
+            </b-row>
+            <b-row class="flex-grow-1">
+              <b-col cols="12">
+                <div class="table-wrapper table-responsive">
+                  <vuetable
+                    ref="vuetable"
+                    :api-url="vuetableItems.apiUrl"
+                    :fields="vuetableItems.fields"
+                    :http-fetch="userTableHttpFetch"
+                    :per-page="vuetableItems.perPage"
+                    pagination-path="pagination"
+                    class="table-striped"
+                    @vuetable:pagination-data="onUserTablePaginationData"
+                  >
+                    <template slot="userNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
+                    </template>
+                    <template slot="actions" slot-scope="props">
+                      <div>
 
-                          <b-button
-                            v-if="props.rowData.status=='inactive'"
-                            size="sm"
-                            variant="primary default btn-square"
-                            @click="onAction('modify', props.rowData, props.rowIndex)">
-                            <i class="icofont-edit"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="primary default btn-square"
+                          @click="onAction('modify', props.rowData, props.rowIndex)">
+                          <i class="icofont-edit"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status!='inactive'"
-                            size="sm"
-                            variant="primary default btn-square"
-                            disabled>
-                            <i class="icofont-edit"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status!='inactive'"
+                          size="sm"
+                          variant="primary default btn-square"
+                          disabled>
+                          <i class="icofont-edit"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status=='inactive'"
-                            size="sm"
-                            variant="success default btn-square"
-                            @click="onAction('active', props.rowData, props.rowIndex)">
-                            <i class="icofont-check-circled"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="success default btn-square"
+                          @click="onAction('active', props.rowData, props.rowIndex)">
+                          <i class="icofont-check-circled"></i>
+                        </b-button>
 
+                        <b-button
+                          v-if="props.rowData.status=='active'"
+                          size="sm"
+                          variant="warning default btn-square"
+                          @click="onAction('inactive', props.rowData, props.rowIndex)">
+                          <i class="icofont-ban"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status=='active'"
-                            size="sm"
-                            variant="warning default btn-square"
-                            @click="onAction('inactive', props.rowData, props.rowIndex)">
-                            <i class="icofont-ban"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          size="sm"
+                          variant="success default btn-square"
+                          disabled>
+                          <i class="icofont-ban"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
-                            size="sm"
-                            variant="success default btn-square"
-                            disabled>
-                            <i class="icofont-ban"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status=='inactive'"
+                          size="sm"
+                          variant="danger default btn-square"
+                          @click="onAction('blocked', props.rowData, props.rowIndex)">
+                          <i class="icofont-minus-circle"></i>
+                        </b-button>
 
+                        <b-button
+                          v-if="props.rowData.status=='blocked'"
+                          size="sm"
+                          variant="success default btn-square"
+                          @click="onAction('unblock', props.rowData, props.rowIndex)">
+                          <i class="icofont-power"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status=='inactive'"
-                            size="sm"
-                            variant="danger default btn-square"
-                            @click="onAction('blocked', props.rowData, props.rowIndex)">
-                            <i class="icofont-minus-circle"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          size="sm"
+                          variant="danger default btn-square"
+                          disabled>
+                          <i class="icofont-minus-circle"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status=='blocked'"
-                            size="sm"
-                            variant="success default btn-square"
-                            @click="onAction('unblock', props.rowData, props.rowIndex)">
-                            <i class="icofont-power"></i>
-                          </b-button>
+                        <b-button
+                          v-if="props.rowData.status=='pending'"
+                          size="sm"
+                          variant="purple default btn-square"
+                          @click="onAction('reset-password', props.rowData, props.rowIndex)">
+                          <i class="icofont-ui-password"></i>
+                        </b-button>
 
+                        <b-button
+                          v-if="props.rowData.status!='pending'"
+                          size="sm"
+                          variant="purple default btn-square"
+                          disabled>
+                          <i class="icofont-ui-password"></i>
+                        </b-button>
 
-                          <b-button
-                            v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
-                            size="sm"
-                            variant="danger default btn-square"
-                            disabled>
-                            <i class="icofont-minus-circle"></i>
-                          </b-button>
+                      </div>
+                    </template>
 
+                  </vuetable>
+                </div>
+                <div class="pagination-wrapper">
+                  <vuetable-pagination-bootstrap
+                    ref="pagination"
+                    @vuetable-pagination:change-page="onUserTableChangePage"
+                    :initial-per-page="vuetableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
+                  ></vuetable-pagination-bootstrap>
 
-                          <b-button
-                            v-if="props.rowData.status=='pending'"
-                            size="sm"
-                            variant="purple default btn-square"
-                            @click="onAction('reset-password', props.rowData, props.rowIndex)">
-                            <i class="icofont-ui-password"></i>
-                          </b-button>
-
-                          <b-button
-                            v-if="props.rowData.status!='pending'"
-                            size="sm"
-                            variant="purple default btn-square"
-                            disabled>
-                            <i class="icofont-ui-password"></i>
-                          </b-button>
-
-
-                        </div>
-                      </template>
-
-                    </vuetable>
-                  </div>
-                  <div class="pagination-wrapper">
-                    <vuetable-pagination-bootstrap
-                      ref="pagination"
-                      @vuetable-pagination:change-page="onUserTableChangePage"
-                      :initial-per-page="vuetableItems.perPage"
-                      @onUpdatePerPage="vuetableItems.perPage = Number($event)"
-                    ></vuetable-pagination-bootstrap>
-
-
-                  </div>
-                </b-col>
-              </b-row>
+                </div>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
         <b-row v-if="pageStatus=='create'" class="h-100 form-section">
@@ -375,8 +368,8 @@
 
           </b-col>
           <b-col cols="2" class="d-flex align-items-center flex-column">
-            <div class="mb-4 img-wrapper position-relative" >
-              <div class=" p-1" >
+            <div class="mb-4 img-wrapper position-relative">
+              <div class=" p-1">
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
               <div class="position-absolute" style="bottom: -18%;left: -50%">
@@ -391,10 +384,12 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button class="mb-1" @click="onSaveUserPage()" variant="info default" size="sm"><i class="icofont-save"></i> {{
+              <b-button @click="onSaveUserPage()" variant="info default" size="sm"><i
+                class="icofont-save"></i> {{
                 $t('permission-management.save') }}
               </b-button>
-              <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+              <b-button @click="onTableListPage()" variant="danger default" size="sm"><i
+                class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
             </div>
@@ -534,8 +529,8 @@
 
           </b-col>
           <b-col cols="2" class="text-right">
-            <div class="mb-4 img-wrapper position-relative" >
-              <div class=" p-1" >
+            <div class="mb-4 img-wrapper position-relative">
+              <div class=" p-1">
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
               <div class="position-absolute" style="bottom: -18%;left: -50%">
@@ -546,13 +541,16 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button v-if="profileForm.status==='active'" class="mb-1 mr-1" @click="onAction('inactive', profileForm)" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+            <b-button v-if="profileForm.status==='active'" class="mb-1 mr-1" @click="onAction('inactive', profileForm)"
+                      variant="warning default" size="sm"><i class="icofont-ban"></i> {{
               $t('permission-management.action-make-inactive') }}
             </b-button>
-            <b-button v-if="profileForm.status==='inactive'" class="mb-1 mr-1" @click="onAction('active', profileForm)" variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
+            <b-button v-if="profileForm.status==='inactive'" class="mb-1 mr-1" @click="onAction('active', profileForm)"
+                      variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
               $t('permission-management.action-unblock') }}
             </b-button>
-            <b-button class="mb-1" @click="onTableListPage()" variant="danger default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+            <b-button @click="onTableListPage()" variant="danger default" size="sm"><i
+              class="icofont-long-arrow-left"></i> {{
               $t('permission-management.return') }}
             </b-button>
           </b-col>
@@ -608,7 +606,9 @@
                         <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0" @click="onAction('group-remove', props.rowData, props.rowIndex)"><i class="icofont-bin"></i> </b-button>
+                        <b-button variant="danger default btn-square" class="m-0"
+                                  @click="onAction('group-remove', props.rowData, props.rowIndex)"><i
+                          class="icofont-bin"></i></b-button>
                       </template>
                     </vuetable>
                   </div>
@@ -637,7 +637,7 @@
           </b-col>
           <b-col cols="4" class="pl-0 " v-if="selectedUserGroupItem">
             <div class="section d-flex flex-column h-100 px-3">
-              <div  v-if="groupForm.status=='create'">
+              <div v-if="groupForm.status=='create'">
                 <b-form-group>
                   <template slot="label">
                     {{$t('permission-management.user.group-number')}}&nbsp;
@@ -645,7 +645,7 @@
                   </template>
                   <b-form-input
                     v-model="groupForm.groupNumber"
-                    :state="!$v.groupForm.groupNumber.$invalid" />
+                    :state="!$v.groupForm.groupNumber.$invalid"/>
                   <div v-if="!$v.groupForm.groupNumber.$invalid">&nbsp;</div>
                   <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
                   </b-form-invalid-feedback>
@@ -659,20 +659,20 @@
                   </template>
                   <b-form-input v-if="groupForm.status=='create'"
                                 v-model="groupForm.groupName"
-                                :state="!$v.groupForm.groupName.$invalid" />
+                                :state="!$v.groupForm.groupName.$invalid"/>
                   <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
                   <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
                   </b-form-invalid-feedback>
 
                 </b-form-group>
               </div>
-              <div  v-if="groupForm.status!='create'">
+              <div v-if="groupForm.status!='create'">
                 <b-form-group>
                   <template slot="label">
                     {{$t('permission-management.user.group-number')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <label >
+                  <label>
                     {{selectedUserGroupItem.groupNumber}}
                   </label>
 
@@ -683,14 +683,15 @@
                     {{$t('permission-management.user.group-name')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <label >
+                  <label>
                     {{selectedUserGroupItem.groupName}}
                   </label>
 
                 </b-form-group>
               </div>
-              <div >
-                <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span class="text-danger">*</span></label>
+              <div>
+                <label class="font-weight-bold">{{$t('permission-management.user.group-member')}}<span
+                  class="text-danger">*</span></label>
               </div>
               <div class="text-left">
                 <b-form-group>
@@ -707,15 +708,18 @@
               </div>
               <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status=='create'">
                 <div>
-                  <b-button @click="onClickCreateUserGroup" variant="info default" size="sm"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  <b-button @click="onClickCreateUserGroup" variant="info default" size="sm"><i
+                    class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
                 </div>
               </div>
               <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status!='create'">
                 <div>
-                  <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
+                  <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i
+                    class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteUserGroup" variant="danger default" size="sm"><i class="icofont-bin"></i> {{$t('permission-management.delete')}}
+                  <b-button @click="onClickDeleteUserGroup" variant="danger default" size="sm"><i
+                    class="icofont-bin"></i> {{$t('permission-management.delete')}}
                   </b-button>
 
                 </div>
@@ -755,7 +759,6 @@
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
-
   /**
    * getting orgFull name with parent org
    * @param orgData
@@ -784,7 +787,7 @@
     validations: {
       profileForm: {
         userName: {
-          required,  maxLength: maxLength(50)
+          required, maxLength: maxLength(50)
         },
         userNumber: {
           required, alphaNum, maxLength: maxLength(50)
@@ -802,7 +805,7 @@
           email
         },
         userAccount: {
-          required,maxLength: maxLength(50)
+          required, maxLength: maxLength(50)
         },
       },
       groupForm: {
@@ -1033,7 +1036,7 @@
         groupForm: {
           groupName: '',
           groupNumber: '',
-          status:'create'
+          status: 'create'
         },
         groupFilter: {
           name: ''
@@ -1083,7 +1086,6 @@
         this.$refs.userGroupTable.refresh();
       },
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
 
         let nest = (items, id = 0) =>
           items
@@ -1507,7 +1509,7 @@
             this.groupForm = {
               groupName: null,
               groupNumber: null,
-              status:'create'
+              status: 'create'
             };
           });
       },
@@ -1571,37 +1573,37 @@
       },
       onUserGroupResetButton() {
         this.groupFilter = {
-         name:null
+          name: null
         };
         this.$refs.userGroupTable.refresh();
       },
-      onUserGroupCreateButton(){
+      onUserGroupCreateButton() {
         this.selectedUserGroupItem = {
-          users:[]
+          users: []
         };
         this.groupForm = {
-          groupNumber:null,
-          groupName:null,
-          status:'create'
+          groupNumber: null,
+          groupName: null,
+          status: 'create'
         }
       },
-      onClickDeleteUserGroup(){
+      onClickDeleteUserGroup() {
         this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
       },
       onClickCreateUserGroup() {
-        if(this.selectedUserGroupItem) {
+        if (this.selectedUserGroupItem) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userGroupUserIds = [];
           checkedNodes.forEach((node) => {
-            if(node.isUser)userGroupUserIds.push(node.userId);
+            if (node.isUser) userGroupUserIds.push(node.userId);
           });
-          if(userGroupUserIds.length==0){
-            return ;
+          if (userGroupUserIds.length == 0) {
+            return;
           }
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
-              'groupName':this.groupForm.groupName,
-              'groupNumber':this.groupForm.groupNumber,
+              'groupName': this.groupForm.groupName,
+              'groupNumber': this.groupForm.groupNumber,
               'userIdList': userGroupUserIds
             })
             .then((response) => {
@@ -1626,17 +1628,17 @@
             this.groupForm = {
               groupName: null,
               groupNumber: null,
-              status:'create'
+              status: 'create'
             };
           });
         }
       },
       onClickModifyUserGroup() {
-        if(this.selectedUserGroupItem) {
+        if (this.selectedUserGroupItem) {
           let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
           let userGroupUserIds = [];
           checkedNodes.forEach((node) => {
-            if(node.isUser)userGroupUserIds.push(node.userId);
+            if (node.isUser) userGroupUserIds.push(node.userId);
           });
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
