@@ -933,7 +933,9 @@
   },
   "api-call-error-messages": {
     "error-title": "错误",
-    "network-error": "网路错误"
+    "network-error": "网路错误",
+    "forbidden": "That action is forbidden",
+    "invalid-parameter": "Unknown error is occurred"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

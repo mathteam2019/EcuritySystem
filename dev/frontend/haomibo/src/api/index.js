@@ -25,7 +25,7 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/').catch(error => {
+        app.$router.push('/user/login').catch(error => {
         });
         break;
       case responseMessages['token-expired']:
@@ -36,9 +36,28 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/').catch(error => {
+        app.$router.push('/user/login').catch(error => {
         });
         break;
+
+      case responseMessages['forbidden']:
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
+          duration: 3000,
+          permanent: false
+        });
+
+        break;
+
+      case responseMessages['invalid-parameter']:
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.invalid-parameter`), {
+          duration: 3000,
+          permanent: false
+        });
+
+        break;
+
+      default:
+
     }
 
     return response;
