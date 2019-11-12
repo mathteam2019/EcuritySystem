@@ -1,65 +1,100 @@
-<style>
-  @import '../../../assets/css/dual-list.css';
+<style lang="scss">
+  .device-config {
+    @import '../../../assets/css/dual-list.css';
 
-  .search-sm > input {
-    font-size: 1.1rem;
-    padding-left: 1rem;
+    div.label-center label {
+      display: flex;
+      align-self: center;
+    }
+    .switch-button {
+      justify-content: flex-end;
+      padding-right: 1rem;
+      span {
+        padding: 5px;
+        border: solid 1px #cccccc;
+        background: #ededed;
+        height: 32px;
+        width: 32px;
+        text-align: center;
+        cursor: pointer;
+        &:first-child {
+          border-right-color: transparent !important;
+        }
+        &:last-child {
+          border-left-color: transparent;
+        }
+        i {
+          font-size: 16px;
+        }
+        &.active {
+          border-color: #3182eb !important;
+          background: #3182eb;
+          color: white;
+        }
+      }
+    }
+    .card-section {
+      border-radius: 0.3rem;
+      background: #ededed;
+      padding: 1rem!important;
+      .input-group {
+        .form-control {
+          height: 38px;
+        }
+        .input-group-append {
+          height: 38px;
+          &>button {
+            line-height: 1;
+          }
+        }
+      }
+    }
   }
 
-  .search-sm:after {
-    top: 6px;
-    right: 8px;
-  }
-  div.label-center label {
-    display: flex;
-    align-self: center;
-  }
 
 </style>
 <template>
-  <div>
+  <div class="device-config">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.site-config')">
+        <div class="switch-button d-flex">
+          <span class="active"><i class="icofont-gear"></i></span><span><i class="icofont-listine-dots"></i></span>
+        </div>
         <b-row>
           <b-col xs="12" md="4">
-            <b-card class="mb-4 h-100" no-body>
-              <b-card-body>
-                <b-row>
-                  <b-colxx cols="12">
-                    <div class="search-sm d-inline-block float-md-left mr-1 align-top w-100">
-                      <b-input v-model="treeFilter0" :placeholder="$t('menu.search')"/>
-                    </div>
-
-                  </b-colxx>
-                  <b-colxx cols="12">
-                    <tree
-                      :filter="treeFilter0"
-                      :data="treeData"
-                      :options="treeOptions"
-                      @node:selected="onNodeSelected"
-                    />
-                  </b-colxx>
-                </b-row>
-              </b-card-body>
-            </b-card>
+            <div class="card-section">
+              <div>
+                <label class=""></label>
+                <b-input-group class="mb-3">
+                  <b-form-input/>
+                  <b-input-group-append>
+                    <b-button variant="info default"><i class="icofont-search"></i> {{ $t('device-management.search') }}</b-button>
+                  </b-input-group-append>
+                </b-input-group>
+                <div>
+                  <tree
+                    :filter="treeFilter0"
+                    :data="treeData"
+                    :options="treeOptions"
+                    @node:selected="onNodeSelected"
+                  />
+                </div>
+              </div>
+            </div>
           </b-col>
           <b-col xs="12" md="8">
-            <b-card class="mb-4 h-100" no-body>
-              <b-card-body>
-                <b-row>
-                  <b-colxx cols="12" id="dual_list_wrapper">
-                    <vue-dual-list :options="options"></vue-dual-list>
-                  </b-colxx>
-                </b-row>
-              </b-card-body>
-            </b-card>
+            <b-row>
+              <b-colxx cols="12" id="dual_list_wrapper">
+                <vue-dual-list :options="options"></vue-dual-list>
+              </b-colxx>
+            </b-row>
           </b-col>
         </b-row>
       </b-tab>
@@ -137,6 +172,7 @@
           </b-col>
         </b-row>
       </b-tab>
+
     </b-tabs>
   </div>
 </template>
@@ -211,7 +247,7 @@
             textLeft: this.$t('device-management.move_left'),
             textRight: this.$t('device-management.move_right')
           },
-          isLtr:getDirection().direction,
+          isLtr: getDirection().direction,
           resizeBox: "md",
           items: [
             {'id': '1', 'name': 'Alundra'},
@@ -236,7 +272,7 @@
         },
         treeFilter0: '',
         treeData: this.getData(),
-        treeOptions: {direction:getDirection().direction}
+        treeOptions: {direction: getDirection().direction}
 
       }
     },
@@ -262,7 +298,7 @@
       },
 
       onNodeSelected(node) {
-       // console.log(node.text)
+        // console.log(node.text)
       }
     }
   }
