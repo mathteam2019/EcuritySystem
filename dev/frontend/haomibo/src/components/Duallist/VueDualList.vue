@@ -1,7 +1,7 @@
 <template>
   <div class="vue-dual-list">
-    <b-row>
-      <b-col cols="5">
+    <b-row class="h-100">
+      <b-col cols="5" class="d-flex flex-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
           <b-form-select :options="[]" plain></b-form-select>
         </b-form-group>
@@ -24,7 +24,7 @@
           <i class="icofont-long-arrow-left"></i>
         </b-button>
       </b-col>
-      <b-col cols="5">
+      <b-col cols="5" class="d-flex flex-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
           <b-form-select :options="[]" plain></b-form-select>
         </b-form-group>

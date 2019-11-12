@@ -2,14 +2,37 @@
   @import '../../../assets/css/dual-list.css';
 
   .device-config {
-    .search-sm > input {
-      font-size: 1.1rem;
-      padding-left: 1rem;
+
+    $cyan-button-color: #178af7;
+
+    .search-box {
+      div[role='group'] {
+        display: flex;
+      }
+
+      .form-control {
+        max-width: calc(100% - 75px);
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+      }
+
+      .btn {
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+      }
     }
 
-    .search-sm:after {
-      top: 6px;
-      right: 8px;
+    .btn.btn-cyan {
+      background-color: $cyan-button-color;
+      color: white;
+
+      &:hover {
+        background-color: $cyan-button-color;
+      }
+    }
+
+    .btn.btn-outline-cyan {
+      border-color: $cyan-button-color;
     }
 
     div.label-center label {
@@ -30,39 +53,55 @@
     </div>
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.site-config')">
-        <b-row>
-          <b-col xs="12" md="4">
-            <b-card class="mb-4 h-100" no-body>
-              <b-card-body>
-                <b-row>
-                  <b-colxx cols="12">
-                    <div class="search-sm d-inline-block float-md-left mr-1 align-top w-100">
-                      <b-input v-model="treeFilter0" :placeholder="$t('menu.search')"/>
-                    </div>
-
-                  </b-colxx>
-                  <b-colxx cols="12">
-                    <tree
-                      :filter="treeFilter0"
-                      :data="treeData"
-                      :options="treeOptions"
-                      @node:selected="onNodeSelected"
-                    />
-                  </b-colxx>
-                </b-row>
-              </b-card-body>
-            </b-card>
+        <b-row class="mb-3">
+          <b-col class="d-flex justify-content-end">
+            <b-button squared size="sm" :variant="`${switchStatus==='config'?'cyan':'outline-cyan'} default`" @click="changeSwitchStatus('config')"><i class="icofont-gear"></i></b-button>
+            <b-button squared size="sm" :variant="`${switchStatus==='list'?'cyan':'outline-cyan'} default`" @click="changeSwitchStatus('list')"><i class="icofont-listine-dots"></i></b-button>
           </b-col>
-          <b-col xs="12" md="8">
-            <b-card class="mb-4 h-100" no-body>
-              <b-card-body>
-                <b-row>
-                  <b-colxx cols="12" id="dual_list_wrapper">
-                    <vue-dual-list :options="options"></vue-dual-list>
-                  </b-colxx>
-                </b-row>
-              </b-card-body>
-            </b-card>
+        </b-row>
+        <b-row v-if="switchStatus==='config'" style="height: calc(100% - 54px)">
+          <b-col cols="4" class="d-flex flex-column">
+            <div class="section d-flex flex-column h-100">
+              <b-row class="m-0">
+                <b-colxx cols="12">
+
+                  <label class="font-weight-bold mb-3">{{$t('device-management.site')}}</label>
+                  <b-form-group class="search-box">
+                    <b-form-input size="sm"></b-form-input>
+                    <b-button size="sm" variant="info default">
+                      <i class="icofont-search"></i>
+                      {{$t('device-management.search')}}
+                    </b-button>
+                  </b-form-group>
+
+                </b-colxx>
+                <b-colxx cols="12">
+                  <tree
+                    :filter="treeFilter0"
+                    :data="treeData"
+                    :options="treeOptions"
+                    @node:selected="onNodeSelected"
+                  />
+                </b-colxx>
+              </b-row>
+            </div>
+          </b-col>
+          <b-col cols="8" class="d-flex flex-column">
+            <div class="section d-flex flex-column h-100">
+              <b-row class="mx-4 flex-grow-1">
+                <b-col>
+                  <vue-dual-list class="h-100 pb-3" :options="options"></vue-dual-list>
+                </b-col>
+              </b-row>
+              <b-row class="mx-4">
+                <b-col cols="12" class="d-flex justify-content-end align-self-end">
+                  <b-button size="sm" variant="info default mr-1">
+                    <i class="icofont-save"></i>
+                    {{ $t('permission-management.save-button') }}
+                  </b-button>
+                </b-col>
+              </b-row>
+            </div>
           </b-col>
         </b-row>
       </b-tab>
@@ -435,12 +474,6 @@
             {'id': '7', 'name': 'Jack Van Burace'},
             {'id': '8', 'name': 'Hanpan'},
             {'id': '9', 'name': 'Cecilia Adlehyde'},
-
-            {'id': '10', 'name': 'Serge'},
-            {'id': '11', 'name': 'Kid'},
-            {'id': '12', 'name': 'Lynx'},
-            {'id': '13', 'name': 'Harle'},
-
           ],
           colorItems: '#1E90FF',
           selectedItems: []
@@ -516,7 +549,9 @@
             "no": 4,
             "number": "H201909200004",
           },
-        ]
+        ],
+
+        switchStatus: 'config' // config / list
       }
     },
     methods: {
@@ -585,6 +620,10 @@
       },
       onBlackListTableChangePage(page) {
         this.$refs.pendingListTable.changePage(page);
+      },
+
+      changeSwitchStatus(status) {
+        this.switchStatus = status;
       }
 
     }
