@@ -1,61 +1,69 @@
 <style lang="scss">
-  .form-section {
-    .form-group {
-      max-width: unset;
-      .form-control {
-        max-width: 400px;
+
+  .process-task {
+    .gallery-item {
+      cursor: pointer;
+    }
+
+    .form-section {
+      .form-group {
+        max-width: unset;
+        .form-control {
+          max-width: 400px;
+        }
       }
     }
-  }
-  .inline-form-no-margin {
-    .form-group {
-      margin-bottom: 0;
-      label.input-label {
-        line-height: unset;
+    .inline-form-no-margin {
+      .form-group {
+        margin-bottom: 0;
+        label.input-label {
+          line-height: unset;
+        }
+      }
+      .col-form-label {
+        padding-top: 0;
       }
     }
-    .col-form-label {
-      padding-top: 0;
+    .inline-label-form-section {
+      .w-130-px {
+        width: 130px !important;
+      }
+      .w-200-px {
+        width: 200px !important;
+      }
+      div.front-icon {
+        position: relative;
+        display: flex;
+        input {
+          padding-left: 30px;
+        }
+        i {
+          position: absolute;
+          left: 5px;
+          line-height: 39px;
+          font-size: 19px;
+          color: #9c9999;
+        }
+      }
     }
-  }
-  .inline-label-form-section {
-    .w-130-px {
-      width: 130px !important;
-    }
-    .w-200-px {
-      width: 200px !important;
-    }
-    div.front-icon {
+
+    div.process-task-img-wrapper {
+      width: 270px;
+      height: 420px;
+      padding: 30px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
       position: relative;
-      display: flex;
-      input {
-        padding-left: 30px;
-      }
-      i {
-        position: absolute;
-        left: 5px;
-        line-height: 39px;
-        font-size: 19px;
-        color: #9c9999;
+      img {
+        width: 100%;
+        object-fit: scale-down;
       }
     }
   }
 
-  div.process-task-img-wrapper {
-    width: 270px;
-    height: 420px;
-    padding: 30px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    position: relative;
-    img {
-      width: 100%;
-      object-fit: scale-down;
-    }
-  }
 </style>
 <template>
-  <div>
+  <div class="process-task">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -286,7 +294,7 @@
                   <b-col>
                     <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
                     <b-row class="evidence-gallery">
-                      <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                      <b-col class="gallery-item" cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
                         <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
                         <label class="d-block text-center mt-2">{{thumb.name}}</label>
                       </b-col>

@@ -1,66 +1,74 @@
 <style lang="scss">
-  .inline-form-no-margin {
-    .form-group {
-      margin-bottom: 0;
+
+  .history-record {
+    .gallery-item {
+      cursor: pointer;
     }
 
-    .col-form-label {
-      padding-top: 0;
-    }
-  }
-  .inline-label-form-section {
-    .w-130-px {
-      width: 130px !important;
-    }
-    .w-200-px {
-      width: 200px !important;
-    }
-    input[type=time] {
-      padding-left: 30px;
-      position: relative;
-      &:after {
-        font-family: 'IcoFont' !important;
-        content: "\eedc";
-        position: absolute;
-        left: 5px;
-        font-size: 19px;
-        color: #9c9999;
+    .inline-form-no-margin {
+      .form-group {
+        margin-bottom: 0;
+      }
+
+      .col-form-label {
+        padding-top: 0;
       }
     }
-    input[type=number]:not(.full-width) {
-      width: 60px;
-    }
-    div.front-icon {
-      position: relative;
-      display: flex;
-      input {
+    .inline-label-form-section {
+      .w-130-px {
+        width: 130px !important;
+      }
+      .w-200-px {
+        width: 200px !important;
+      }
+      input[type=time] {
         padding-left: 30px;
+        position: relative;
+        &:after {
+          font-family: 'IcoFont' !important;
+          content: "\eedc";
+          position: absolute;
+          left: 5px;
+          font-size: 19px;
+          color: #9c9999;
+        }
       }
-      i {
-        position: absolute;
-        left: 5px;
-        line-height: 39px;
-        font-size: 19px;
-        color: #9c9999;
+      input[type=number]:not(.full-width) {
+        width: 60px;
+      }
+      div.front-icon {
+        position: relative;
+        display: flex;
+        input {
+          padding-left: 30px;
+        }
+        i {
+          position: absolute;
+          left: 5px;
+          line-height: 39px;
+          font-size: 19px;
+          color: #9c9999;
+        }
+      }
+    }
+
+    div.history-record-img-wrapper {
+      width: 270px;
+      height: 420px;
+      padding: 30px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
+      position: relative;
+      img {
+        width: 100%;
+        object-fit: scale-down;
       }
     }
   }
 
-  div.history-record-img-wrapper {
-    width: 270px;
-    height: 420px;
-    padding: 30px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    position: relative;
-    img {
-      width: 100%;
-      object-fit: scale-down;
-    }
-  }
 </style>
 <template>
-  <div>
+  <div class="history-record">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -280,6 +288,18 @@
                     </b-form-group>
                   </b-col>
                   <b-col>
+                  </b-col>
+                </b-row>
+                <b-row class="mt-3">
+                  <b-col>
+                    <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                    <b-row class="evidence-gallery">
+                      <b-col class="gallery-item" cols="auto" v-for="(thumb, thumbIndex) in thumbs" @click="onThumbClick(thumbIndex)">
+                        <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                        <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                      </b-col>
+                      <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                    </b-row>
                   </b-col>
                 </b-row>
               </b-col>
@@ -577,12 +597,14 @@
     import Vuetable from 'vuetable-2/src/components/Vuetable'
     import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
     import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+    import {LightGallery} from 'vue-light-gallery';
 
     export default {
         components: {
             'vuetable': Vuetable,
             'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+            'light-gallery': LightGallery
         },
         data() {
             return {
@@ -726,6 +748,21 @@
                         "number": "C201909200004",
                     },
                 ],
+                thumbs: [
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+                ],
+                images: [
+                    '/assets/img/drug.jpg',
+                    '/assets/img/drug.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                    '/assets/img/glock.jpg',
+                ],
+                photoIndex: null
             }
         },
         methods: {
@@ -774,6 +811,12 @@
             },
             onBlackListTableChangePage(page) {
                 this.$refs.pendingListTable.changePage(page);
+            },
+            onThumbClick(index) {
+                this.photoIndex = index;
+            },
+            handleHide() {
+                this.photoIndex = null;
             },
         }
     }
