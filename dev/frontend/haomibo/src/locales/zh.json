@@ -315,7 +315,8 @@
       "category-field-is-mandatory": "类别是必需的",
       "user-group-delete-prompt":"是否删除该人员组",
       "inactive-prompt": "是否失效该",
-      "block-prompt": "block-prompt"
+      "block-prompt": "block-prompt",
+      "user-group-modified-successfully": "人员组修改成功"
     },
 
     "permission-control": {
