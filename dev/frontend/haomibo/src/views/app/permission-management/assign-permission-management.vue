@@ -26,7 +26,7 @@
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
         <b-row v-if="pageStatus==='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="6">
                 <b-row>
                   <b-col>
@@ -264,7 +264,7 @@
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
         <b-row v-if="groupPageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="6">
                 <b-row>
 

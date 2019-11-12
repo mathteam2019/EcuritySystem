@@ -18,7 +18,7 @@
     </div>
     <b-card class="main-without-tab">
       <div class="h-100 d-flex flex-column">
-        <b-row class="pt-4">
+        <b-row class="pt-2">
           <b-col cols="8">
             <b-row>
               <b-col>

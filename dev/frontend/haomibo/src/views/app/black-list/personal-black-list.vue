@@ -13,7 +13,7 @@
       <b-tab :title="$t('black-list.personal-black-list')">
         <b-row v-if="pageStatus==='list'" class="h-100">
           <b-col cols="12" class="d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="6">
                 <b-row>
                   <b-col>

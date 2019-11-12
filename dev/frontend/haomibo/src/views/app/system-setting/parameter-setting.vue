@@ -15,7 +15,6 @@
           <b-tabs class="sub-tabs" card>
             <b-tab :title="$t('menu.personal-inspection')">
               <div>
-
                 <b-row>
                   <b-col cols="1">
                     <label class="font-weight-bold">{{$t('system-setting.parameter-setting.scan')}}</label>
@@ -31,7 +30,6 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-
                 <b-row>
                   <b-col cols="1">
                     <label class="font-weight-bold">{{$t('system-setting.parameter-setting.judgement')}}</label>
@@ -252,7 +250,7 @@
       <b-tab :title="$t('system-setting.parameter-setting.security-instrument')">
         <b-row v-if="pageStatus === 'table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="6">
                 <b-row>
 

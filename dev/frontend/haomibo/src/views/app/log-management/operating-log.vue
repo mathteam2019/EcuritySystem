@@ -20,14 +20,12 @@
         </b-colxx>
       </b-row>
     </div>
-
-
     <b-tabs nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('log-management.operating-log.access-log')">
         <b-row v-if="pageStatus=='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="6">
                 <b-row>
                   <b-col>
@@ -35,19 +33,16 @@
                       <b-form-input v-model="filter.accessIp"></b-form-input>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
                       <b-form-input v-model="filter.startingTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
                       <b-form-input v-model="filter.endingTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-user')">
                       <b-form-input v-model="filter.accessUser"></b-form-input>
@@ -72,7 +67,6 @@
                 </div>
               </b-col>
             </b-row>
-
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
@@ -97,15 +91,13 @@
                 </div>
               </b-col>
             </b-row>
-
           </b-col>
         </b-row>
       </b-tab>
-
       <b-tab :title="$t('log-management.operating-log.operating-log')">
         <b-row class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="8">
                 <b-row>
                   <b-col>
@@ -169,7 +161,6 @@
                 </div>
               </b-col>
             </b-row>
-
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
@@ -193,14 +184,11 @@
                 </div>
               </b-col>
             </b-row>
-
           </b-col>
         </b-row>
       </b-tab>
 
     </b-tabs>
-
-
   </div>
 </template>
 <script>
@@ -211,7 +199,6 @@
     import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
     import {getApiManager} from '../../../api';
     import {responseMessages} from '../../../constants/response-messages';
-
 
     export default {
         components: {

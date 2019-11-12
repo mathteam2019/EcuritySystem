@@ -9,11 +9,11 @@
   </div>
 
   <b-tabs nav-class="ml-2" :no-fade="true">
-    <b-tab :title="$t('system-setting.site-list')">
 
+    <b-tab :title="$t('system-setting.site-list')">
       <b-row v-if="pageStatus=='table'" class="h-100">
         <b-col cols="12 d-flex flex-column">
-          <b-row class="pt-4">
+          <b-row class="pt-2">
             <b-col cols="6">
               <b-row>
                 <b-col >
@@ -160,7 +160,6 @@
           </b-row>
         </b-col>
       </b-row>
-
       <b-row v-if="pageStatus !== 'table'" class="h-100">
         <b-col cols="12 d-flex flex-column form-section " class="position-relative">
           <b-row>
@@ -263,7 +262,6 @@
         </b-col>
       </b-row>
     </b-tab>
-
     <b-tab :title="$t('system-setting.site-architecture')">
       <b-row>
         <b-col cols="12">
@@ -281,6 +279,7 @@
         </b-col>
       </b-row>
     </b-tab>
+
   </b-tabs>
   </div>
 </template>
