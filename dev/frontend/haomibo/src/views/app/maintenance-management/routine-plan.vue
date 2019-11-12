@@ -181,124 +181,466 @@
         </b-row>
 
       </div>
-      <div v-if="pageStatus==='create'" class="form-section">
-        <b-row>
-          <b-col cols="6" class="pr-5">
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.number')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <b-form-input type="text"></b-form-input>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.task')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <b-form-input type="text"></b-form-input>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.create-time')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <div class="d-flex ">
-                <div>
-                  <b-form-radio-group stacked style="width: 60px">
-                    <b-form-radio class="py-2 mb-1" value="first">{{$t('maintenance-management.routine-plan.by-time')}}
-                    </b-form-radio>
-                    <b-form-radio class="py-2 mb-1" value="second">{{$t('maintenance-management.routine-plan.by-day')}}
-                    </b-form-radio>
-                    <b-form-radio class="py-2 mb-1" value="third">{{$t('maintenance-management.routine-plan.by-week')}}
-                    </b-form-radio>
-                    <b-form-radio class="py-2 mb-1" value="fourth">{{$t('maintenance-management.routine-plan.by-month')}}
-                    </b-form-radio>
-                  </b-form-radio-group>
+      <div v-if="pageStatus==='create'" class="h-100 d-flex flex-grow-1 flex-column">
+        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                 :no-fade="true">
+          <b-tab :title="$t('maintenance-management.routine-plan.plan-info')">
+            <b-row class="h-100 form-section">
+              <b-col cols="8">
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.plan-no')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>J201909200001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.plan')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>毫米波安检仪001巡检</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.site')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>通道001</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.device-classification')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>监管查验设备 / 人体查验设备</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.device')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>MW毫米波安检仪000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.security-department')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>生产一部</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.security-user')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>张三</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.time-task')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>任务1</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.create-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>每 3 天 00:00 时</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.real-start-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>1 天 00:00 时 之后</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.execution-count')}}&nbsp
+                      </template>
+                      <label></label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.effective-start-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20191020 00:00</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.effective-deadline')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20991020 00:00</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.create-user')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>李四</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.create-time')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>20191020 00:00</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                </b-row>
+                <b-row>
+                  <b-col>
+                    <b-form-group>
+                      <template slot="label">
+                        {{$t('maintenance-management.routine-plan.plan-work')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label>1.整体检查；2.添加机油；3.设备试运行</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="routine-plan-img-wrapper">
+                  <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
                 </div>
-                <div class="pl-4 inline-label-form-section">
-                  <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.every')}} </span>
-                    <b-form-input type="time" class="w-130-px"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.hour')}} </span>
-                  </div>
-                  <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.every')}} </span>
-                    <b-form-input type="number"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.day')}} </span>
-                    <b-form-input type="time" class="w-130-px"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.hour')}} </span>
-                  </div>
-                  <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.every')}} </span>
-                    <b-form-input type="number"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.week')}} </span>
-                    <b-form-select class="w-130-px" :options="weekDayOptions" plain/>
-                    <span class=" px-2">&nbsp;&nbsp;&nbsp; </span>
-                    <b-form-input type="time" class="w-130-px"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.hour')}} </span>
-                  </div>
-                  <div class="d-flex align-items-center mb-1">
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.every')}} </span>
-                    <b-form-input type="number"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.month')}} </span>
-                    <div class="front-icon">
-                      <b-form-input type="number" class="w-130-px"></b-form-input>
-                      <i class="icofont-calendar"></i></div>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.hour')}} </span>
-                    <b-form-input type="time" class="w-130-px"></b-form-input>
-                    <span class=" px-2">{{$t('maintenance-management.routine-plan.hour')}} </span>
-                  </div>
-                </div>
-              </div>
-            </b-form-group>
-            <div class="pl-4 text-muted">({{$t('maintenance-management.routine-plan.guide-for-routine-plan')}})</div>
-          </b-col>
-          <b-col cols="6" class="pl-5 inline-label-form-section">
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.estimated-start-time')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <div class="d-flex align-items-center">
-                <span class="px-2 pr-5">{{$t('maintenance-management.routine-plan.after-task-created')}}</span>
-                <b-form-input type="number"></b-form-input>
-                <span class="px-2">{{$t('maintenance-management.routine-plan.day')}}</span>
-                <b-form-input type="time" class="w-130-px"></b-form-input>
-                <span class="px-2">{{$t('maintenance-management.routine-plan.hour')}}</span>
-              </div>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.number-of-execute')}}&nbsp;<span
-                class="text-danger"></span></template>
-              <b-form-input type="number" style="width: 100px"></b-form-input>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.timing-active-start-time')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <div class="d-flex">
-                <div class="front-icon mr-2 w-200-px">
-                  <b-form-input type="date" class="w-100"></b-form-input>
-                  <i class="icofont-calendar"></i></div>
-                <b-form-input class="w-200-px" type="time"></b-form-input>
-              </div>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('maintenance-management.routine-plan.timing-active-end-time')}}&nbsp;<span
-                class="text-danger">*</span></template>
-              <div class="d-flex">
-                <div class="front-icon mr-2 w-200-px">
-                  <b-form-input type="date" class="w-100"></b-form-input>
-                  <i class="icofont-calendar"></i></div>
-                <b-form-input class="w-200-px" type="time"></b-form-input>
-              </div>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12 text-right">
-            <b-button variant="info default" @click="onAction('save-item')"><i class="icofont-save"></i>
-              {{$t('permission-management.save')}}
-            </b-button>
-            <b-button variant="danger default" @click="onAction('delete-item')"><i class="icofont-bin"></i>
-              {{$t('permission-management.delete')}}
-            </b-button>
-            <b-button variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i>
-              {{$t('permission-management.return')}}
-            </b-button>
-          </b-col>
-        </b-row>
+              </b-col>
 
+            </b-row>
+          </b-tab>
+          <b-tab :title="$t('maintenance-management.history-record.device-info')">
+            <b-row class="h-100 form-section inline-form-no-margin">
+              <b-col cols="8">
+                <b-row>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.device-no')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">A000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.device-name')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">MW毫米波安检仪000</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.file-name')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">MW毫米波安检仪</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.device-classification')}}&nbsp
+                        <span class="text-danger">*</span>
+                      </template>
+                      <label class="input-label">监管查验设备 / 人体查验设备</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.manufacturer')}}&nbsp
+                      </template>
+                      <label class="input-label">同方威视</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.origianl-model')}}&nbsp
+                      </template>
+                      <label class="input-label">MW1000AA</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('maintenance-management.history-record.device-info')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.original-no')}}&nbsp
+                      </template>
+                      <label class="input-label">H20190002</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.product-date')}}&nbsp
+                      </template>
+                      <label class="input-label">20190201</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.purchase-date')}}&nbsp
+                      </template>
+                      <label class="input-label">20190201</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.supplier')}}&nbsp
+                      </template>
+                      <label class="input-label">同方威视</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.supplier-contact')}}&nbsp
+                      </template>
+                      <label class="input-label">小明</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.supplier-contact-information')}}&nbsp
+                      </template>
+                      <label class="input-label">13800003001</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.maintenance-department')}}&nbsp
+                      </template>
+                      <label class="input-label">生产一部</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.maintenance-user')}}&nbsp
+                      </template>
+                      <label class="input-label">张三</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.maintenance-contact-info')}}&nbsp
+                      </template>
+                      <label class="input-label">13800000002</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.regular-task')}}&nbsp
+                      </template>
+                      <label class="input-label">任务1、任务2</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+                <b-row class="mb-5">
+                  <b-col cols="12" class="d-flex align-items-center">
+                    <label class="pr-2 m-0 "
+                           style="color: #bdbaba">{{$t('maintenance-management.history-record.technical-indicator')}}</label>
+                    <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+                  </b-col>
+                </b-row>
+                <b-row>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.inspection-method')}}&nbsp
+                      </template>
+                      <label class="input-label">非接触式</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.single-scan-time')}}&nbsp
+                      </template>
+                      <label class="input-label">2</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.number-of-operator')}}&nbsp
+                      </template>
+                      <label class="input-label">1</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.detectable-item-type')}}&nbsp
+                      </template>
+                      <label class="input-label">金属，非金属，爆炸物，毒品，液体</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.automatic-identification')}}&nbsp
+                      </template>
+                      <label class="input-label">有</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.privacy-protection')}}&nbsp
+                      </template>
+                      <label class="input-label">有</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.equipment-size')}}&nbsp
+                      </template>
+                      <label class="input-label">2400*1400*1706</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.channel-size')}}&nbsp
+                      </template>
+                      <label class="input-label">2200*750*1188</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.equipment-weight')}}&nbsp
+                      </template>
+                      <label class="input-label">550</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.power-by')}}&nbsp
+                      </template>
+                      <label class="input-label">110/220，50/60</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.rated-power')}}&nbsp
+                      </template>
+                      <label class="input-label">2200*750*1188</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.operating-temperature-humidity')}}&nbsp
+                      </template>
+                      <label class="input-label">0-40，0-93</label>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="4" class="mb-2">
+                    <b-form-group horizontal label-cols="5">
+                      <template slot="label">
+                        {{$t('maintenance-management.history-record.storage-temperature-humidity')}}&nbsp
+                      </template>
+                      <label class="input-label">-20-55，0-93</label>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-col>
+              <b-col cols="4" class="d-flex flex-column align-items-center">
+                <div class="routine-plan-img-wrapper">
+                  <img src="../../../assets/img/man-in-device.png">
+                  <div class="position-absolute" style="bottom: -18%;left: -41%">
+                    <img src="../../../assets/img/active_stamp.png">
+                  </div>
+                </div>
+              </b-col>
+
+            </b-row>
+          </b-tab>
+        </b-tabs>
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
+          <div>
+            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
+            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
+            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+          </div>
+        </div>
       </div>
       <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column">
         <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
