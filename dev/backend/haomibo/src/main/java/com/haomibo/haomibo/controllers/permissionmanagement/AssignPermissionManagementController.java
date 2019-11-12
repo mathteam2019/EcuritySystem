@@ -10,7 +10,8 @@ import com.haomibo.haomibo.models.db.*;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
 import com.haomibo.haomibo.validation.annotations.RoleId;
-import com.haomibo.haomibo.validation.annotations.UserDataRangeCategory;
+import com.haomibo.haomibo.validation.annotations.UserDataRangeCategoryValue;
+import com.haomibo.haomibo.validation.annotations.UserGroupDataRangeCategoryValue;
 import com.haomibo.haomibo.validation.annotations.UserId;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
@@ -53,31 +54,7 @@ public class AssignPermissionManagementController extends BaseController {
         List<@RoleId Long> roleIdList;
 
         @NotNull
-        @UserDataRangeCategory
-        String dataRangeCategory;
-
-        long selectedDataGroupId;
-
-    }
-
-    /**
-     * Request body for assigning role and data range to user group.
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class UserGroupAssignRoleAndDataRangeRequestBody {
-
-        @NotNull
-        @UserId
-        Long userGroupId;
-
-        @NotNull
-        List<@RoleId Long> roleIdList;
-
-        @NotNull
-        @UserDataRangeCategory
+        @UserDataRangeCategoryValue
         String dataRangeCategory;
 
         long selectedDataGroupId;
@@ -100,12 +77,9 @@ public class AssignPermissionManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String userName;
-
             Long orgId;
-
             String roleName;
-
-
+            String dataRangeCategory;
         }
 
         @NotNull
@@ -116,6 +90,30 @@ public class AssignPermissionManagementController extends BaseController {
         int perPage;
 
         Filter filter;
+
+    }
+
+    /**
+     * Request body for assigning role and data range to user group.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class UserGroupAssignRoleAndDataRangeRequestBody {
+
+        @NotNull
+        @UserId
+        Long userGroupId;
+
+        @NotNull
+        List<@RoleId Long> roleIdList;
+
+        @NotNull
+        @UserGroupDataRangeCategoryValue
+        String dataRangeCategory;
+
+        long selectedDataGroupId;
 
     }
 
@@ -138,6 +136,7 @@ public class AssignPermissionManagementController extends BaseController {
             String groupName;
             String userName;
             String roleName;
+            String dataRangeCategory;
         }
 
         @NotNull
@@ -215,6 +214,119 @@ public class AssignPermissionManagementController extends BaseController {
 
 
     /**
+     * User with role datatable request.
+     */
+    @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object userGetByFilterAndPage(
+            @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Build query.
+        QSysUser builder = QSysUser.sysUser;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        UserGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getUserName())) {
+                predicate.and(builder.userName.contains(filter.getUserName()));
+            }
+            if (!StringUtils.isEmpty(filter.getRoleName())) {
+                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
+            }
+            if (!StringUtils.isEmpty(filter.getDataRangeCategory())) {
+                predicate.and(builder.dataRangeCategory.eq(filter.getDataRangeCategory()));
+            }
+
+            if (filter.getOrgId() != null) {
+
+                // Build query if the user's org is under the org.
+                sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
+
+                    List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
+                    List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
+
+                    predicate.and(builder.orgId.in(parentOrgIdList));
+
+                });
+            }
+        }
+
+        // Pagination.
+
+        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
+        int perPage = requestBody.getPerPage();
+
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
+        long total = sysUserRepository.count(predicate);
+        List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
+                ResponseMessage.OK,
+                FilteringAndPaginationResult
+                        .builder()
+                        .total(total)
+                        .perPage(perPage)
+                        .currentPage(currentPage + 1)
+                        .lastPage((int) Math.ceil(((double) total) / perPage))
+                        .from(perPage * currentPage + 1)
+                        .to(perPage * currentPage + data.size())
+                        .data(data)
+                        .build()));
+
+
+        // Set filters.
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters()
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ORG,
+                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children", "users"))
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_ROLE,
+                        SimpleBeanPropertyFilter.serializeAllExcept("resources"))
+                .addFilter(
+                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
+                        SimpleBeanPropertyFilter.serializeAllExcept("users"));
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+
+    /**
+     * Role get all request.
+     */
+    @RequestMapping(value = "/user-group/get-all", method = RequestMethod.POST)
+    public Object userGroupGetAll() {
+
+        // Get all sys user group list from DB.
+        List<SysUserGroup> sysUserGroupList = sysUserGroupRepository.findAll();
+
+        // Set filter for response json.
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserGroupList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        filters
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_ROLE, SimpleBeanPropertyFilter.serializeAllExcept("resources"));
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+
+    /**
      * User group assign role and data range request.
      */
     @RequestMapping(value = "/user-group/assign-role-and-data-range", method = RequestMethod.POST)
@@ -277,139 +389,6 @@ public class AssignPermissionManagementController extends BaseController {
 
 
     /**
-     * Role get all request.
-     */
-    @RequestMapping(value = "/role/get-all", method = RequestMethod.POST)
-    public Object roleGetAll() {
-
-        // Get all role list from DB.
-        List<SysRole> sysRoleList = sysRoleRepository.findAll();
-
-        // Set filter for response json.
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysRoleList));
-
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_ROLE, SimpleBeanPropertyFilter.serializeAllExcept("resources"));
-
-        value.setFilters(filters);
-
-        return value;
-    }
-
-
-    /**
-     * Role get all request.
-     */
-    @RequestMapping(value = "/user-group/get-all", method = RequestMethod.POST)
-    public Object userGroupGetAll() {
-
-        // Get all sys user group list from DB.
-        List<SysUserGroup> sysUserGroupList = sysUserGroupRepository.findAll();
-
-        // Set filter for response json.
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserGroupList));
-
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
-        filters
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_ROLE, SimpleBeanPropertyFilter.serializeAllExcept("resources"));
-
-        value.setFilters(filters);
-
-        return value;
-    }
-
-    /**
-     * User with role datatable request.
-     */
-    @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object userGetByFilterAndPage(
-            @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
-            BindingResult bindingResult) {
-
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        // Build query.
-        QSysUser builder = QSysUser.sysUser;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        UserGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.userName.contains(filter.getUserName()));
-            }
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
-            }
-
-            if (filter.getOrgId() != null) {
-
-                // Build query if the user's org is under the org.
-                sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
-
-                    List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
-                    List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
-
-                    predicate.and(builder.orgId.in(parentOrgIdList));
-
-                });
-            }
-        }
-
-        // Pagination.
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysUserRepository.count(predicate);
-        List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
-                FilteringAndPaginationResult
-                        .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
-                        .build()));
-
-
-        // Set filters.
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("parent", "children", "users"))
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ROLE,
-                        SimpleBeanPropertyFilter.serializeAllExcept("resources"))
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
-                        SimpleBeanPropertyFilter.serializeAllExcept("users"));
-
-        value.setFilters(filters);
-
-        return value;
-    }
-
-
-
-    /**
      * User group with role datatable request.
      */
     @RequestMapping(value = "/user-group/get-by-filter-and-page", method = RequestMethod.POST)
@@ -439,7 +418,9 @@ public class AssignPermissionManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getRoleName())) {
                 predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
             }
-
+            if (!StringUtils.isEmpty(filter.getDataRangeCategory())) {
+                predicate.and(builder.dataRangeCategory.eq(filter.getDataRangeCategory()));
+            }
         }
 
         // Pagination.
@@ -482,5 +463,26 @@ public class AssignPermissionManagementController extends BaseController {
         return value;
     }
 
+    /**
+     * Role get all request.
+     */
+    @RequestMapping(value = "/role/get-all", method = RequestMethod.POST)
+    public Object roleGetAll() {
+
+        // Get all role list from DB.
+        List<SysRole> sysRoleList = sysRoleRepository.findAll();
+
+        // Set filter for response json.
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysRoleList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_ROLE, SimpleBeanPropertyFilter.serializeAllExcept("resources"));
+
+        value.setFilters(filters);
+
+        return value;
+    }
 
 }
