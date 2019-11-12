@@ -334,7 +334,7 @@ public class PermissionControlController extends BaseController {
 
 
         if (bindingResult.hasErrors()) {
-            return null;
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         QSysRole builder = QSysRole.sysRole;
@@ -476,7 +476,7 @@ public class PermissionControlController extends BaseController {
         SysRole sysRole = optionalSysRole.get();
         if (!sysRole.getResources().isEmpty()) {
             // If the role has relation with resource, it can't be deleted.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_RESOURCES);
         }
 
         sysRoleRepository.delete(
@@ -652,7 +652,7 @@ public class PermissionControlController extends BaseController {
         SysDataGroup sysDataGroup = optionalSysDataGroup.get();
         if (!sysDataGroup.getUsers().isEmpty()) {
             // If data group has users, it can't be deleted.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
 
         sysDataGroupRepository.delete(

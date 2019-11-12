@@ -4,17 +4,38 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.haomibo.haomibo.controllers.BaseController;
+import com.haomibo.haomibo.enums.ExportType;
 import com.haomibo.haomibo.enums.ResponseMessage;
 import com.haomibo.haomibo.enums.Role;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.QSysOrg;
+import com.haomibo.haomibo.models.db.QSysUser;
 import com.haomibo.haomibo.models.db.SysOrg;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
+import com.haomibo.haomibo.validation.annotations.ExportTypeValue;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.docx4j.jaxb.Context;
+import org.docx4j.model.table.TblFactory;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
+import org.docx4j.wml.*;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -27,8 +48,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Organization management controller.
@@ -221,6 +247,21 @@ public class OrganizationManagementController extends BaseController {
     }
 
     /**
+     * Organization export request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class OrganizationExportRequestBody {
+
+        @ExportTypeValue
+        String exportType;
+
+    }
+
+    /**
      * Organization create request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_CREATE)
@@ -297,6 +338,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+        // Check if org has users.
+        boolean isHavingUsers = sysUserRepository.exists(QSysUser.sysUser.orgId.eq(requestBody.getOrgId()));
+        if (isHavingUsers) {
+            // Can't delete if org has users.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
         sysOrgRepository.delete(SysOrg.builder().orgId(requestBody.getOrgId()).build());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -338,7 +386,7 @@ public class OrganizationManagementController extends BaseController {
      */
     @RequestMapping(value = "/organization/get-all", method = RequestMethod.POST)
     public Object organizationGetAll(@RequestBody @Valid OrganizationGetAllRequestBody requestBody,
-                         BindingResult bindingResult) {
+                                     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -452,6 +500,213 @@ public class OrganizationManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    private InputStream organizationGenerateXlsx4Export() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            Workbook workbook = new XSSFWorkbook();
+
+            Sheet sheet = workbook.createSheet("Persons");
+            sheet.setColumnWidth(0, 6000);
+            sheet.setColumnWidth(1, 4000);
+
+            Row header = sheet.createRow(0);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
+            font.setFontName("Arial");
+            font.setFontHeightInPoints((short) 16);
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            Cell headerCell = header.createCell(0);
+            headerCell.setCellValue("Name");
+            headerCell.setCellStyle(headerStyle);
+
+            headerCell = header.createCell(1);
+            headerCell.setCellValue("Age");
+            headerCell.setCellStyle(headerStyle);
+
+            CellStyle style = workbook.createCellStyle();
+            style.setWrapText(true);
+
+            Row row = sheet.createRow(2);
+            Cell cell = row.createCell(0);
+            cell.setCellValue("John Smith");
+            cell.setCellStyle(style);
+
+            cell = row.createCell(1);
+            cell.setCellValue(20);
+            cell.setCellStyle(style);
+
+
+            workbook.write(out);
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return new ByteArrayInputStream(out.toByteArray());
+
+    }
+
+
+    private InputStream organizationGenerateDocx4Export() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
+            MainDocumentPart mainDocumentPart = wordPackage.getMainDocumentPart();
+            mainDocumentPart.addStyledParagraphOfText("Title", "Hello World!");
+            mainDocumentPart.addParagraphOfText("Hello world");
+
+
+            ObjectFactory factory = Context.getWmlObjectFactory();
+            P p = factory.createP();
+            R r = factory.createR();
+            Text t = factory.createText();
+            t.setValue("Hello world");
+            r.getContent().add(t);
+            p.getContent().add(r);
+
+            int writableWidthTwips = wordPackage.getDocumentModel()
+                    .getSections().get(0).getPageDimensions().getWritableWidthTwips();
+            int columnNumber = 3;
+            Tbl tbl = TblFactory.createTable(3, 3, writableWidthTwips / columnNumber);
+            List<Object> rows = tbl.getContent();
+            for (Object row : rows) {
+                Tr tr = (Tr) row;
+                List<Object> cells = tr.getContent();
+                for (Object cell : cells) {
+                    Tc td = (Tc) cell;
+                    td.getContent().add(p);
+                }
+            }
+
+            mainDocumentPart.getContent().add(tbl);
+
+
+            wordPackage.save(out);
+
+        } catch (Docx4JException e) {
+            e.printStackTrace();
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+
+    }
+
+    private InputStream organizationGeneratePdf4Export() {
+
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+
+        try {
+            PdfWriter.getInstance(document, out);
+
+            document.open();
+
+            PdfPTable table = new PdfPTable(3);
+            Stream.of("column header 1", "column header 2", "column header 3")
+                    .forEach(columnTitle -> {
+                        PdfPCell header = new PdfPCell();
+                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                        header.setBorderWidth(2);
+                        header.setPhrase(new Phrase(columnTitle));
+                        table.addCell(header);
+                    });
+
+            table.addCell("row 1, col 1");
+            table.addCell("row 1, col 2");
+            table.addCell("row 1, col 3");
+
+
+            PdfPCell horizontalAlignCell = new PdfPCell(new Phrase("row 2, col 2"));
+            horizontalAlignCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(horizontalAlignCell);
+
+            PdfPCell verticalAlignCell = new PdfPCell(new Phrase("row 2, col 3"));
+            verticalAlignCell.setVerticalAlignment(Element.ALIGN_BOTTOM);
+            table.addCell(verticalAlignCell);
+
+            document.add(table);
+
+            document.close();
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+
+    }
+
+    /**
+     * Organization export.
+     */
+    @RequestMapping(value = "/organization/export", method = RequestMethod.POST)
+    public Object organizationExport(
+            @RequestBody @Valid OrganizationExportRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if (ExportType.PDF.getValue().equals(requestBody.getExportType())) {
+            InputStream inputStream = organizationGeneratePdf4Export();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=test.pdf");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(inputStream));
+
+
+        }
+
+        if (ExportType.DOCX.getValue().equals(requestBody.getExportType())) {
+            InputStream inputStream = organizationGenerateDocx4Export();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=test.docx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/msword"))
+                    .body(new InputStreamResource(inputStream));
+
+
+        }
+
+        if (ExportType.XLSX.getValue().equals(requestBody.getExportType())) {
+            InputStream inputStream = organizationGenerateXlsx4Export();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=test.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+
+
+        }
+
+        return null;
+
     }
 
 }

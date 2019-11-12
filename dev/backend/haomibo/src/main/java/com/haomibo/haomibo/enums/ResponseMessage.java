@@ -20,7 +20,9 @@ public enum ResponseMessage {
     HAS_CHILDREN("has_children"),
     USED_USER_ACCOUNT("used_user_account"),
     FORBIDDEN("forbidden"),
-    BAD_REQUEST("bad_request");
+    BAD_REQUEST("bad_request"),
+    HAS_USERS("has_users"),
+    HAS_RESOURCES("has_resources");
 
     private final String value;
 

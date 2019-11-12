@@ -574,10 +574,10 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if org is existing.
+        // Check if user is existing.
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(sysUser.userId.eq(requestBody.getUserId()));
         if (!optionalSysUser.isPresent()) {
-            // If org is not found ,this is invalid request.
+            // If user is not found ,this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -806,7 +806,7 @@ public class UserManagementController extends BaseController {
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
         if (!sysUserGroup.getUsers().isEmpty()) {
             // If user group has users, it can't be delete.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
 
         // Delete.
