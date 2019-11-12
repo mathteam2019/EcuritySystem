@@ -479,6 +479,18 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+
+        if (sysRoleUserRepository.exists(QSysRoleUser.sysRoleUser.roleId.eq(sysRole.getRoleId()))) {
+            // If there are users assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (sysUserGroupRoleRepository.exists(QSysUserGroupRole.sysUserGroupRole.roleId.eq(sysRole.getRoleId()))) {
+            // If there are user groups assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+        }
+
+
         sysRoleRepository.delete(
                 SysRole
                         .builder()
@@ -653,6 +665,16 @@ public class PermissionControlController extends BaseController {
         if (!sysDataGroup.getUsers().isEmpty()) {
             // If data group has users, it can't be deleted.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
+
+        if (sysUserLookupRepository.exists(QSysUserLookup.sysUserLookup.dataGroupId.eq(sysDataGroup.getDataGroupId()))) {
+            // If there are users assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (sysUserGroupLookupRepository.exists(QSysUserGroupLookup.sysUserGroupLookup.dataGroupId.eq(sysDataGroup.getDataGroupId()))) {
+            // If there are user groups assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
 
         sysDataGroupRepository.delete(
