@@ -2,7 +2,11 @@ import { chartTooltip } from '../../utils'
 
 export const lineChartOptions = {
   legend: {
-    display: false
+    display: false,
+    labels: {
+      fontColor: "white",
+      fontSize: 11
+    }
   },
   responsive: true,
   maintainAspectRatio: false,
@@ -18,22 +22,24 @@ export const lineChartOptions = {
         gridLines: {
           display: true,
           lineWidth: 1,
-          color: 'rgba(0,0,0,0.1)',
-          drawBorder: false
+          color: '#cdcdcd',
+          drawBorder: false,
+          labelClass:'text-white'
         },
         ticks: {
           beginAtZero: true,
           stepSize: 5,
           min: 50,
           max: 70,
-          padding: 20
+          padding: 5
         }
       }
     ],
     xAxes: [
       {
         gridLines: {
-          display: false
+          display: false,
+          color: '#cdcdcd',
         }
       }
     ]
