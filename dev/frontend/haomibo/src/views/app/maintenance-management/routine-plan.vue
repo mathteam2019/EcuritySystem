@@ -1,68 +1,71 @@
 <style lang="scss">
-  .inline-form-no-margin {
-    .form-group {
-      margin-bottom: 0;
-      label.input-label {
-        line-height: unset;
+  .routine-plan {
+    .inline-form-no-margin {
+      .form-group {
+        margin-bottom: 0;
+        label.input-label {
+          line-height: unset;
+        }
+      }
+      .col-form-label {
+        padding-top: 0;
       }
     }
-    .col-form-label {
-      padding-top: 0;
-    }
-  }
-  .inline-label-form-section {
-    .w-130-px {
-      width: 130px !important;
-    }
-    .w-200-px {
-      width: 200px !important;
-    }
-    input[type=time] {
-      padding-left: 30px;
-      position: relative;
-      &:after {
-        font-family: 'IcoFont' !important;
-        content: "\eedc";
-        position: absolute;
-        left: 5px;
-        font-size: 19px;
-        color: #9c9999;
+    .inline-label-form-section {
+      .w-130-px {
+        width: 130px !important;
       }
-    }
-    input[type=number]:not(.full-width) {
-      width: 60px;
-    }
-    div.front-icon {
-      position: relative;
-      display: flex;
-      input {
+      .w-200-px {
+        width: 200px !important;
+      }
+      input[type=time] {
         padding-left: 30px;
+        position: relative;
+        &:after {
+          font-family: 'IcoFont' !important;
+          content: "\eedc";
+          position: absolute;
+          left: 5px;
+          font-size: 19px;
+          color: #9c9999;
+        }
       }
-      i {
-        position: absolute;
-        left: 5px;
-        line-height: 39px;
-        font-size: 19px;
-        color: #9c9999;
+      input[type=number]:not(.full-width) {
+        width: 60px;
+      }
+
+      .front-icon {
+        position: relative;
+        display: flex;
+        input {
+          padding-left: 30px;
+        }
+        i {
+          position: absolute;
+          left: 5px;
+          line-height: 39px;
+          font-size: 19px;
+          color: #9c9999;
+        }
       }
     }
-  }
 
-  div.routine-plan-img-wrapper {
-    width: 270px;
-    height: 420px;
-    padding: 30px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    position: relative;
-    img {
-      width: 100%;
-      object-fit: scale-down;
+    .routine-plan-img-wrapper {
+      width: 270px;
+      height: 420px;
+      padding: 30px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
+      position: relative;
+      img {
+        width: 100%;
+        object-fit: scale-down;
+      }
     }
   }
 </style>
 <template>
-  <div>
+  <div class="routine-plan">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
