@@ -206,7 +206,12 @@ export const getAuthTokenInfo = () => {
 export const isLoggedIn = () => {
   let loginInfo = getLoginInfo();
 
-  if (loginInfo.user && loginInfo.token) {
+  let now = Math.floor(Date.now() / 1000);
+
+  if (loginInfo.user
+    && loginInfo.token
+    && loginInfo.token.expirationTimestamp
+    && loginInfo.token.expirationTimestamp > now) {
     return true;
   }
 

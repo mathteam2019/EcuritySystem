@@ -879,10 +879,6 @@
       "plan-info": "计划信息",
       "plan-no": "计划编号",
       "site": "现场",
-      "device-classification": "设备分类",
-      "device": "设备",
-      "security-department": "维保部门",
-      "security-user": "维保员",
       "time-task": "定时任务",
       "real-start-time": "预计开发时间",
       "create-time": "创建时间",
@@ -890,7 +886,6 @@
       "effective-start-time": "定时生效起始时间",
       "effective-deadline": "定时生效截至时间",
       "create-user": "创建员",
-      "create-time": "创建时间",
       "plan-work": "计划工作",
       "estimated-start-time": "预计开始时间",
       "number-of-execute": "执行次数",
@@ -933,7 +928,9 @@
   },
   "api-call-error-messages": {
     "error-title": "错误",
-    "network-error": "网路错误"
+    "network-error": "网路错误",
+    "forbidden": "That action is forbidden",
+    "invalid-parameter": "Unknown error is occurred"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

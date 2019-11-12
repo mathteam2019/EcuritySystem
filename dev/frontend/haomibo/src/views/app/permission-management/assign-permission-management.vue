@@ -212,7 +212,7 @@
                         class="text-danger">*</span></template>
                       <div class="d-flex ">
                         <div>
-                          <b-form-radio-group v-model="userForm.dataRangeCategory" stacked>
+                          <b-form-radio-group :disabled="pageStatus === 'show'" v-model="userForm.dataRangeCategory" stacked>
                             <b-form-radio class="pb-2" value="person">
                               {{$t('permission-management.assign-permission-management.user-form.one-user-data')}}
                             </b-form-radio>
@@ -231,11 +231,18 @@
                           </b-form-radio-group>
                         </div>
                         <div class="align-self-end flex-grow-1 pl-2" style="margin-left: -50px">
-                          <b-form-select class="mw-100"
-                                         v-model="userForm.selectedDataGroupId"
-                                         :options="dataGroupSelectData" plain
-                                         :disabled="userForm.dataRangeCategory !== 'specified'"
-                          />
+                          <b-form-group style="margin-bottom: -19px;">
+                            <b-form-select class="mw-100"
+                                           v-model="userForm.selectedDataGroupId"
+                                           :options="dataGroupSelectData" plain
+                                           :state="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid"
+                                           :disabled="userForm.dataRangeCategory !== 'specified'"
+                            />
+                            <div v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">&nbsp;</div>
+                            <b-form-invalid-feedback>
+                              {{ $t('permission-management.user.orgId-field-is-mandatory') }}
+                            </b-form-invalid-feedback>
+                          </b-form-group>
                         </div>
                       </div>
                     </b-form-group>
@@ -521,6 +528,9 @@
           required
         },
         userId: {
+          required
+        },
+        selectedDataGroupId: {
           required
         }
       },
@@ -978,7 +988,7 @@
       onUserActionGroup(value) {
         switch (value) {
           case 'save-item':
-            if (!this.$v.userForm.$invalid && this.userForm.dataRangeCategory) {
+            if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== 'specified' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
                   userId: this.userForm.userId,
@@ -995,20 +1005,13 @@
                         duration: 3000,
                         permanent: false
                       });
-                      this.userForm = {
-                        orgId: null,
-                        userId: null,
-                        roles: [],
-                        dataRangeCategory: "person",
-                        selectedDataGroupId: null
-                      };
-                      this.selectedUser = {};
-                      this.selectedUserGender = '';
+                      this.initializeUserForm();
                     } else {
                       this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
                         duration: 3000,
                         permanent: false
                       });
+                      this.pageStatus = 'table';
                     }
                     break;
                   default:
@@ -1053,7 +1056,7 @@
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
               userId: this.selectedUserId,
               roleIdList: [],
-              dataRangeCategory: '',
+              dataRangeCategory: 'person',
               selectedDataGroupId: null
             }).then((response) => {
             let message = response.data.message;
@@ -1128,6 +1131,7 @@
       },
 
       onAssignUserCreatePage() {
+        this.initializeUserForm();
         this.pageStatus = 'create';
       },
 
@@ -1312,7 +1316,19 @@
         };
         this.$refs.userVuetable.refresh();
       },
-
+      initializeUserForm() {
+          this.userForm = {
+              orgId: null,
+              userId: null,
+              nextUserId: null, // when edit or show user's role, userId should be stored here.
+              roles: [],
+              dataRangeCategory: "person",
+              selectedDataGroupId: null,
+              nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
+          };
+          this.selectedUser = {};
+          this.selectedUserGender = '';
+      }
     }
   }
 </script>
