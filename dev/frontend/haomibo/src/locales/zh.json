@@ -900,7 +900,19 @@
   },
   "device-config": {
     "maintenance-config": {
-      "applied": "适用于"
+      "applied": "适用于",
+      "hand-check-position": "手检站",
+      "male-inspection-object": "男手检员手检对象",
+      "female-scan-object": "女审图员审图对象",
+      "suitable-for": "适用于",
+      "monitor-group": "判图组",
+      "male-guide-object": "男引导员手检对象",
+      "safety-hand-check": "安全仪手检",
+      "atr-insuspicion-process": "ATR无嫌疑处理",
+      "operate-mode": "运行模式",
+      "device": "设备",
+      "device-classification": "设备分类 ",
+      "position": "场地"
     }
   },
   "error-404": {
