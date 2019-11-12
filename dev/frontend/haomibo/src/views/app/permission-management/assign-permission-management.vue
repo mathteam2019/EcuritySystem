@@ -132,6 +132,7 @@
                         :state="!$v.userForm.orgId.$invalid"
                         :disabled="pageStatus !== 'create'"
                       />
+                      <div v-if="!$v.userForm.orgId.$invalid">&nbsp;</div>
                       <b-form-invalid-feedback>
                         {{ $t('permission-management.user.orgId-field-is-mandatory') }}
                       </b-form-invalid-feedback>
@@ -148,6 +149,7 @@
                         :state="!$v.userForm.userId.$invalid"
                         :disabled="pageStatus !== 'create'"
                       />
+                      <div v-if="!$v.userForm.userId">&nbsp;</div>
                       <b-form-invalid-feedback>
                         {{ $t('permission-management.user.userId-field-is-mandatory') }}
                       </b-form-invalid-feedback>
