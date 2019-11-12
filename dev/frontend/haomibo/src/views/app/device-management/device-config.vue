@@ -16,6 +16,14 @@
       display: flex;
       align-self: center;
     }
+
+    .form-section .form-group.full-width {
+      max-width: unset;
+      .form-control {
+        max-width: unset;
+      }
+    }
+
   }
 
 </style>
@@ -144,8 +152,33 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.parameter-setting.cover-correction-time')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.position')}}
+                  </template>
+                  <label>首都机场/1号航站楼</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.device-classification')}}
+                  </template>
+                  <label>监管查验设备 / 人体查验设备</label>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.device')}}
+                  </template>
+                  <label>安检仪001</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.operate-mode')}}
                   </template>
                   <b-form-select :options="[]" plain />
                 </b-form-group>
@@ -153,8 +186,7 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.standby-time')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.atr-insuspicion-process')}}
                   </template>
                   <b-form-select :options="[]" plain />
                 </b-form-group>
@@ -164,75 +196,7 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.parameter-setting.alarm-prompt')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.pass-prompt')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.pos-error-prompt')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.start-scan-remind')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.while-scan')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.complete-scan-prompt')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.auxiliary-recognition')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.auxiliary-recognition-level')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.safety-hand-check')}}
                   </template>
                   <b-form-select :options="[]" plain />
                 </b-form-group>
@@ -240,37 +204,7 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.parameter-setting.save-history-image')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.save-only-suspected-image')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.facial-blurring')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.chest-blurring')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.male-guide-object')}}
                   </template>
                   <b-form-select :options="[]" plain />
                 </b-form-group>
@@ -278,19 +212,9 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.hip-blurring')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
-                  <b-form-select :options="yesNoOptions" plain />
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.groin-blurring')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select :options="yesNoOptions" plain />
+                  <b-form-select :options="[]" plain />
                 </b-form-group>
               </b-col>
             </b-row>
@@ -298,8 +222,59 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
-                    <span class="text-danger">*</span>
+                    {{$t('device-config.maintenance-config.monitor-group')}}
+                  </template>
+                  <b-form-select :options="[]" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.male-inspection-object')}}
+                  </template>
+                  <b-form-select :options="genderFilterOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.female-scan-object')}}
+                  </template>
+                  <b-form-select :options="genderFilterOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.hand-check-position')}}
+                  </template>
+                  <b-form-input />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.male-inspection-object')}}
+                  </template>
+                  <b-form-select :options="genderFilterOptions" plain />
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.female-scan-object')}}&nbsp;
+                  </template>
+                  <b-form-select :options="genderFilterOptions" plain />
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="6">
+                <b-form-group class="full-width">
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
                   </template>
                   <b-form-select :options="[]" plain />
                 </b-form-group>
@@ -309,21 +284,17 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
-                $t('permission-management.action-make-inactive') }}
+              <b-button variant="info default" size="sm">
+                <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
               </b-button>
               <b-button variant="danger default" size="sm">
                 <i class="icofont-bin"></i> {{$t('permission-management.delete')}}
               </b-button>
-              <b-button @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+              <b-button @click="onAction('list')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
             </div>
           </b-col>
-          <div class="position-absolute" style="left: 8%;bottom: 8%">
-            <img  src="../../../assets/img/no_active_stamp.png">
-          </div>
-
         </b-row>
       </b-tab>
     </b-tabs>
@@ -516,7 +487,13 @@
             "no": 4,
             "number": "H201909200004",
           },
-        ]
+        ],
+        genderFilterOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'male', text: this.$t('permission-management.male')},
+          {value: 'female', text: this.$t('permission-management.female')},
+          {value: 'other', text: this.$t('permission-management.unknown')},
+        ],
       }
     },
     methods: {
