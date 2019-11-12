@@ -1,17 +1,18 @@
 <style lang="scss">
 
-  .rounded-span{
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #007bff;
+  .operating-log {
+    .rounded-span {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+    }
   }
-
 
 </style>
 <template>
-  <div>
+  <div class="operating-log">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -29,6 +30,11 @@
             <b-row class="pt-4">
               <b-col cols="6">
                 <b-row>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.access-ip')">
+                      <b-form-input v-model="filter.accessIp"></b-form-input>
+                    </b-form-group>
+                  </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
@@ -39,12 +45,6 @@
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
                       <b-form-input v-model="filter.endingTime"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.access-ip')">
-                      <b-form-input v-model="filter.accessIp"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -108,25 +108,21 @@
             <b-row class="pt-4">
               <b-col cols="8">
                 <b-row>
-
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.account-number')">
-                      <b-form-input v-model="filter.accountNumber"></b-form-input>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="filter.startTime"></b-form-input>
                     </b-form-group>
                   </b-col>
-
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="filter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.client-ip')">
                       <b-form-input v-model="filter.clientIp"></b-form-input>
                     </b-form-group>
                   </b-col>
-
-                  <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.object')">
-                      <b-form-input v-model="filter.object"></b-form-input>
-                    </b-form-group>
-                  </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating-result')">
                       <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
@@ -142,13 +138,13 @@
               <b-col cols="8" v-if="isExpanded">
                 <b-row>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="filter.startTime"></b-form-input>
+                    <b-form-group :label="$t('log-management.operating-log.object')">
+                      <b-form-input v-model="filter.object"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="filter.endTime"></b-form-input>
+                    <b-form-group :label="$t('log-management.operating-log.account-number')">
+                      <b-form-input v-model="filter.accountNumber"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
