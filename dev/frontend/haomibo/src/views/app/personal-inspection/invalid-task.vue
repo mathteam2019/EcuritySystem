@@ -351,18 +351,19 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.status')}}
+                    {{$t('personal-inspection.scan-start-time')}}&nbsp
+                    <span class="text-danger">*</span>
                   </template>
-                  <label>全部</label>
+                  <label>20190921 10:40:05</label>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.guide')}}&nbsp
+                    {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>张三</label>
+                  <label>20190921 10:40:05</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -388,135 +389,11 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.scan-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.dispatch-timeout')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>TC0001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judge')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>李四</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-station')}}&nbsp
+                    {{$t('personal-inspection.guide')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <label>张三</label>
                 </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:42:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-checker')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
               </b-col>
             </b-row>
 
