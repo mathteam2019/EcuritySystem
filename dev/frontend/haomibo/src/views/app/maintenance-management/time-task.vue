@@ -256,13 +256,13 @@
             </b-form-group>
           </b-col>
           <b-col cols="12 text-right" class="align-self-end">
-            <b-button variant="info default" @click="onAction('save-item')"><i class="icofont-save"></i>
+            <b-button size="sm" variant="info default" @click="onAction('save-item')"><i class="icofont-save"></i>
               {{$t('permission-management.save')}}
             </b-button>
-            <b-button variant="danger default" @click="onAction('delete-item')"><i class="icofont-bin"></i>
+            <b-button size="sm" variant="danger default" @click="onAction('delete-item')"><i class="icofont-bin"></i>
               {{$t('permission-management.delete')}}
             </b-button>
-            <b-button variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i>
               {{$t('permission-management.return')}}
             </b-button>
           </b-col>

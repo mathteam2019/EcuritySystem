@@ -522,7 +522,7 @@
 
             <b-row class="flex-grow-1 d-flex align-items-end">
               <b-col class="text-right">
-                <b-button variant="info default" @click="pageStatus='table'">
+                <b-button size="sm" variant="info default" @click="pageStatus='table'">
                   <i class="icofont-long-arrow-left"></i>
                   {{ $t('personal-inspection.return') }}
                 </b-button>
