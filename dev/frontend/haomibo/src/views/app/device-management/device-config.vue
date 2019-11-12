@@ -445,12 +445,6 @@
             {'id': '7', 'name': 'Jack Van Burace'},
             {'id': '8', 'name': 'Hanpan'},
             {'id': '9', 'name': 'Cecilia Adlehyde'},
-
-            {'id': '10', 'name': 'Serge'},
-            {'id': '11', 'name': 'Kid'},
-            {'id': '12', 'name': 'Lynx'},
-            {'id': '13', 'name': 'Harle'},
-
           ],
           colorItems: '#1E90FF',
           selectedItems: []
@@ -526,6 +520,14 @@
             "no": 4,
             "number": "H201909200004",
           },
+        ],
+        switchStatus: 'config', // config / list
+
+        genderFilterOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'male', text: this.$t('permission-management.male')},
+          {value: 'female', text: this.$t('permission-management.female')},
+          {value: 'other', text: this.$t('permission-management.unknown')},
         ]
       }
     },
@@ -595,6 +597,10 @@
       },
       onBlackListTableChangePage(page) {
         this.$refs.pendingListTable.changePage(page);
+      },
+
+      changeSwitchStatus(status) {
+        this.switchStatus = status;
       }
 
     }
