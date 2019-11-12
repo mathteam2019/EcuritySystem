@@ -555,7 +555,7 @@
           isSelectedAllResourcesForRole: false,
           roleVuetableItems: {
             apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
-              perPage: 10,
+              perPage: 5,
               fields: [
                   {
                       name: '__checkbox',
@@ -613,7 +613,7 @@
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
-          perPage: 10,
+          perPage: 5,
           fields: [
             {
               name: 'dataGroupId',

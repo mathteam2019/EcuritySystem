@@ -204,6 +204,9 @@
             </b-button>
           </b-col>
         </b-row>
+        <div class="position-absolute" style="left: 3%;bottom: 17%">
+          <img src="../../../assets/img/no_active_stamp.png">
+        </div>
       </div>
     </b-card>
   </div>
