@@ -896,6 +896,11 @@
       "timing-active-end-time": "定时生效截至时间"
     }
   },
+  "device-config": {
+    "maintenance-config": {
+      "applied": "适用于"
+    }
+  },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
   },

@@ -503,10 +503,10 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button class="mb-1" @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
+              <b-button @click="onDetailAction('deactivate')" variant="warning default" size="sm"><i class="icofont-ban"></i> {{
                 $t('permission-management.action-make-inactive') }}
               </b-button>
-              <b-button class="mb-1" @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
+              <b-button @click="onDetailAction('back')" variant="info default" size="sm"><i class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
             </div>
