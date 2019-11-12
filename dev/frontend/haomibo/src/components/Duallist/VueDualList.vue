@@ -17,12 +17,10 @@
         </div>
       </b-col>
       <b-col cols="2" class="d-flex justify-content-center align-items-center flex-column">
-        <b-button size="sm" variant="info default m-1" @click='transferToRight(options.items.indexOf(item))'>
-          <i class="icofont-long-arrow-right"></i>
-        </b-button>
-          <b-button size="sm" variant="info default m-1" @click='transferToLeft(-1)'>
-          <i class="icofont-long-arrow-left"></i>
-        </b-button>
+        <div class="move-button-container">
+          <span @click='transferToRight(options.items.indexOf(item))'><i class="icofont-long-arrow-right"></i></span>
+          <span @click='transferToLeft(-1)'><i class="icofont-long-arrow-left"></i></span>
+        </div>
       </b-col>
       <b-col cols="5" class="d-flex flex-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
@@ -53,19 +51,29 @@
       max-width: none!important;
     }
 
-    button {
-      background-color: $move-button-color;
-      border-width: 0;
-      width: 36px;
-      padding-left: 13px!important;
+    .move-button-container {
+      display: flex;
+      flex-direction: column;
 
-      &:hover {
-        background-color: $move-button-color;
+      span {
+        padding: 5px;
+        border: solid 1px #3182eb;
+        border-radius: 3px;
+        background: #3182eb;
+        height: 32px;
+        width: 32px;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+        margin: 14px;
+        i {
+          font-size: 22px;
+        }
       }
     }
 
     .list {
-      border: 1px solid #999;
+      border: 1px solid #cccccc;
       border-radius: 4px;
       overflow-y: auto;
       height: 100%;

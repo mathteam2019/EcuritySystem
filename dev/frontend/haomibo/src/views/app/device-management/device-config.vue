@@ -5,6 +5,37 @@
 
     $cyan-button-color: #178af7;
 
+    div.label-center label {
+      display: flex;
+      align-self: center;
+    }
+    .switch-button {
+      justify-content: flex-end;
+      padding-right: 1rem;
+      span {
+        padding: 5px;
+        border: solid 1px #cccccc;
+        background: #ededed;
+        height: 32px;
+        width: 32px;
+        text-align: center;
+        cursor: pointer;
+        &:first-child {
+          border-right-color: transparent !important;
+        }
+        &:last-child {
+          border-left-color: transparent;
+        }
+        i {
+          font-size: 16px;
+        }
+        &.active {
+          border-color: #3182eb !important;
+          background: #3182eb;
+          color: white;
+        }
+      }
+    }
     .second-row {
       height: calc(100% - 54px);
       &.list {
@@ -44,6 +75,10 @@
       background-color: #ededed;
     }
 
+    .section {
+      background-color: #f4f4f4;
+    }
+
     div.label-center label {
       display: flex;
       align-self: center;
@@ -70,12 +105,10 @@
     </div>
     <b-tabs nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.site-config')">
-        <b-row class="mb-3">
-          <b-col class="d-flex justify-content-end">
-            <b-button squared size="sm" :variant="`${switchStatus==='config'?'cyan':'outline-cyan'} default`" @click="changeSwitchStatus('config')"><i class="icofont-gear"></i></b-button>
-            <b-button squared size="sm" :variant="`${switchStatus==='list'?'cyan':'outline-cyan'} default`" @click="changeSwitchStatus('list')"><i class="icofont-listine-dots"></i></b-button>
-          </b-col>
-        </b-row>
+        <div class="switch-button d-flex mb-3">
+          <span :class="`${switchStatus==='config'?'active':''}`" @click="changeSwitchStatus('config')"><i class="icofont-gear"></i></span>
+          <span :class="`${switchStatus==='list'?'active':''}`" @click="changeSwitchStatus('list')"><i class="icofont-listine-dots"></i></span>
+        </div>
         <b-row v-if="switchStatus==='config'" class="second-row" >
           <b-col cols="4" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
@@ -103,7 +136,7 @@
               </b-row>
             </div>
           </b-col>
-          <b-col cols="8" class="d-flex flex-column">
+          <b-col cols="8" class="d-flex flex-column pl-0">
             <div class="section d-flex flex-column h-100">
               <b-row class="mx-4 flex-grow-1">
                 <b-col>
