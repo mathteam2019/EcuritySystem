@@ -49,7 +49,7 @@ const data = [
     id: "site-management",
     icon: "simple-icon-location-pin",
     label: "menu.site-management",
-    to: "/app/system-setting/site-management",
+    to: "/app/site-management",
     newWindow: false,
   },
   {
@@ -107,7 +107,7 @@ const data = [
     id: "system-setting",
     icon: "simple-icon-settings",
     label: "menu.system-setting",
-    to: "/app/system-setting/parameter-setting",
+    to: "/app/system-setting",
     newWindow: false,
   },
   {

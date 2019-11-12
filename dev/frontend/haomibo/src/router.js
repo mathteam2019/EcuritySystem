@@ -77,19 +77,12 @@ const routes = [
         ]
       },
       {
+        path: 'app/site-management',
+        component: () => import('./views/app/site-management')
+      },
+      {
         path: 'app/system-setting',
-        component: () => import('./views/app/system-setting'),
-        redirect: '/app/system-setting/paramenter-setting',
-        children: [
-          {
-            path: 'parameter-setting',
-            component: () => import('./views/app/system-setting/parameter-setting')
-          },
-          {
-            path: 'site-management',
-            component: () => import('./views/app/system-setting/site-management')
-          }
-        ]
+        component: () => import('./views/app/system-setting')
       },
       {
         path: 'app/log-management',
