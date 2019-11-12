@@ -1,24 +1,27 @@
 <style lang="scss">
-  .form-group {
-    label.input-label {
-      line-height: 36px;
+  .document-management {
+    .form-group {
+      label.input-label {
+        line-height: 36px;
+      }
+    }
+    div.img-wrapper {
+      width: 270px;
+      height: 420px;
+      padding: 30px;
+      border: solid 1px #bdbaba;
+      border-radius: 3px;
+      position: relative;
+      img {
+        width: 100%;
+        object-fit: scale-down;
+      }
     }
   }
-  div.img-wrapper {
-    width: 270px;
-    height: 420px;
-    padding: 30px;
-    border: solid 1px #bdbaba;
-    border-radius: 3px;
-    position: relative;
-    img {
-      width: 100%;
-      object-fit: scale-down;
-    }
-  }
+
 </style>
 <template>
-  <div>
+  <div class="document-management">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">

@@ -1,5 +1,18 @@
+<style lang="scss">
+  .assign-permission-management {
+    .v-select.v-select-custom-style {
+      &>div {
+        border-radius: 0.3rem!important;
+        &>div {
+          border-radius: 0.3rem!important;
+        }
+      }
+
+    }
+  }
+</style>
 <template>
-  <div>
+  <div class="assign-permission-management">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
