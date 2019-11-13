@@ -3,6 +3,7 @@ package com.haomibo.haomibo.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -16,10 +17,10 @@ import java.util.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
 @Table(name = "sys_org")
-public class SysOrg implements Serializable {
+public class SysOrg extends BaseEntity implements Serializable {
 
 
     public static class Status {
@@ -51,7 +52,6 @@ public class SysOrg implements Serializable {
         return children;
     }
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORG_ID", length = 20, nullable = false)
@@ -75,20 +75,6 @@ public class SysOrg implements Serializable {
     @Column(name = "STATUS", length = 10)
     String status;
 
-    @Column(name = "CREATEDBY", length = 20)
-    Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    String note;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -108,5 +94,5 @@ public class SysOrg implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     Set<SysUser> users;
 
-}
 
+}

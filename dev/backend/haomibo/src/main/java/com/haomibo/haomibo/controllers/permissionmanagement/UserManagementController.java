@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -82,6 +83,7 @@ public class UserManagementController extends BaseController {
         String post;
         String education;
         String degree;
+        @Email
         String email;
         String mobile;
         String address;
@@ -148,6 +150,7 @@ public class UserManagementController extends BaseController {
         String post;
         String education;
         String degree;
+        @Email
         String email;
         String mobile;
         String address;

@@ -9,6 +9,7 @@ import com.haomibo.haomibo.enums.Role;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import com.haomibo.haomibo.models.db.QSysOrg;
 import com.haomibo.haomibo.models.db.SysOrg;
+import com.haomibo.haomibo.models.db.SysUser;
 import com.haomibo.haomibo.models.response.CommonResponseBody;
 import com.haomibo.haomibo.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
@@ -239,6 +240,7 @@ public class OrganizationManagementController extends BaseController {
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
+        sysOrg.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
 
@@ -338,7 +340,7 @@ public class OrganizationManagementController extends BaseController {
      */
     @RequestMapping(value = "/organization/get-all", method = RequestMethod.POST)
     public Object organizationGetAll(@RequestBody @Valid OrganizationGetAllRequestBody requestBody,
-                         BindingResult bindingResult) {
+                                     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
