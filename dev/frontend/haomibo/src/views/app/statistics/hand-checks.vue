@@ -70,7 +70,6 @@
         </div>
       </b-col>
     </b-row>
-
     <b-row class="parameter-items">
       <b-col>
         <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
@@ -183,11 +182,10 @@
       </b-col>
 
     </b-row>
-
     <b-row class="mt-4 mb-2">
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
-          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
+          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
             <i class="icofont-exchange"></i>&nbsp;切换
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
@@ -199,9 +197,102 @@
         </div>
       </b-col>
     </b-row>
+    <b-row class="mt-3">
+      <b-col v-if="pageStatus1==='charts'" class="charts-part-1">
+        <b-row>
+          <b-col cols="4">
+            <b-card>
+              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
+                <div class="d-flex align-items-center justify-content-around">
+                  <div class="pie-chart">
+
+                    <v-chart :options="pieChart2Options" style="height: 300px" :autoresize="true"/>
+
+                  </div>
+                  <div class="legend-group part-2">
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">嫌疑</div>
+                      <div class="value">1500</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">无嫌疑</div>
+                      <div class="value">500</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
+
+              <b-card-header>
+                <h5>判图</h5>
+              </b-card-header>
+
+              <div class="w-100 flex-grow-1 d-flex flex-column ">
+                <div class="bar-chart-1-and-2">
+                  <v-chart :options="barChart2Options" style="height: 300px" :autoresize="true"/>
+                </div>
+              </div>
+
+            </b-card>
+          </b-col>
+        </b-row>
+      </b-col>
+      <b-col v-if="pageStatus1==='table'">
+        <b-card>
+          <b-card-header>
+            <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
+          </b-card-header>
+
+          <div class="table-wrapper table-responsive">
+            <vuetable
+              ref="taskVuetable"
+              :api-mode="false"
+              :data="tempData"
+              data-path="data"
+              pagination-path="pagination"
+              :fields="taskVuetableItems.fields"
+              :per-page="taskVuetableItems.perPage"
+              :data-total="tempData.data.length"
+              class="table-hover"
+              @vuetable:pagination-data="onTaskVuetablePaginationData"
+            >
+            </vuetable>
+          </div>
+          <div class="pagination-wrapper">
+            <vuetable-pagination-bootstrap
+              ref="taskVuetablePagination"
+              @vuetable-pagination:change-page="onTaskVuetableChangePage"
+              :initial-per-page="taskVuetableItems.perPage"
+              @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+            ></vuetable-pagination-bootstrap>
+          </div>
+        </b-card>
+      </b-col>
+    </b-row>
+    <b-row class="mt-4 mb-2">
+      <b-col class="d-flex justify-content-end align-items-center">
+        <div>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
+            <i class="icofont-exchange"></i>&nbsp;切换
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
     <b-row class="bottom-part mt-3 mb-3">
-      <b-col v-if="pageStatus==='charts-1'" class="charts-part">
+      <b-col v-if="pageStatus2==='charts'" class="charts-part-2">
         <b-row>
           <b-col cols="4">
             <b-card>
@@ -217,7 +308,7 @@
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
                 <div class="bar-3-chart">
-                  <v-chart :options="bar3ChartOptions" style="width: 100%" :autoresize="true"/>
+                  <v-chart :options="bar3ChartOptions" style="height: 300px; width: 100%" :autoresize="true"/>
                 </div>
               </div>
 
@@ -225,7 +316,7 @@
           </b-col>
         </b-row>
       </b-col>
-      <b-col v-if="pageStatus==='table-1'">
+      <b-col v-if="pageStatus2==='table'">
         <b-card>
           <b-card-header>
             <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
@@ -283,6 +374,8 @@
       </b-col>
     </b-row>
 
+
+
   </div>
 </template>
 
@@ -294,14 +387,12 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
-
-
   import ECharts from 'vue-echarts'
-
   import 'echarts/lib/chart/pie';
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
+  import _ from 'lodash'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -319,6 +410,116 @@
 
       return {
         isExpanded: false,
+        pieChart2Options: {
+          tooltip: {
+            trigger: 'item',
+            formatter: `
+<div style='position: relative'>
+<div style='position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right:8px solid #cccccc;'></div>
+<div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
+</div>
+`,
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
+            }
+          },
+          color: [
+            '#1989fa',
+            '#ff6600'
+          ],
+          series: [
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: false,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -34,
+                length2: -30
+              },
+              data: [
+                {value: 1500, name: '嫌疑'},
+                {value: 500, name: '无嫌疑'}
+              ]
+            },
+
+          ]
+        },
+        barChart2Options: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['判图超时', 'ATR'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#1989fa', '#ff6600'],
+          series: [
+            {
+              name: '判图超时',
+              type: 'bar',
+              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+            },
+            {
+              name: 'ATR',
+              type: 'bar',
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+            },
+          ]
+        },
         bar3ChartOptions: {
           tooltip: {
             trigger: 'axis',
@@ -365,12 +566,14 @@
               name: '安检仪',
               type: 'bar',
               stack: '总量',
+              barWidth: '30%',
               data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120]
             }
           ]
         },
 
-        pageStatus: 'charts-1',
+        pageStatus1: 'charts',
+        pageStatus2: 'charts',
 
         // TODO: refactor temp table data to api mode
         tempData: {
@@ -540,11 +743,18 @@
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
       },
-      onDisplaceButton() {
-        if (this.pageStatus === 'charts-1') {
-          this.pageStatus = 'table-1';
+      onDisplaceButton1() {
+        if (this.pageStatus1 === 'charts') {
+          this.pageStatus1 = 'table';
         } else {
-          this.pageStatus = 'charts-1';
+          this.pageStatus1 = 'charts';
+        }
+      },
+      onDisplaceButton2() {
+        if (this.pageStatus2 === 'charts') {
+          this.pageStatus2 = 'table';
+        } else {
+          this.pageStatus2 = 'charts';
         }
       },
     }
@@ -666,7 +876,7 @@
       display: flex;
       flex-grow: 1;
 
-      .charts-part {
+      .charts-part-2 {
 
         display: flex;
 
@@ -680,16 +890,9 @@
               flex-direction: column;
 
               .double-pie-chart {
-                width: 250px;
-                height: 250px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
               }
 
               .legend-item {
@@ -756,6 +959,158 @@
             width: 100%;
             height: 100%;
           }
+        }
+      }
+    }
+
+    .charts-part-1 {
+
+      display: flex;
+
+      flex-direction: column;
+
+      & > .row {
+
+        flex-grow: 1;
+
+        & > *:nth-child(1) {
+
+          .card-body {
+            display: flex;
+            flex-direction: column;
+
+            .pie-chart {
+              width: 250px;
+              height: 250px;
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+
+              .echarts {
+                width: 100%;
+                height: 100%;
+              }
+            }
+
+            .legend-group {
+              width: 160px;
+              display: flex;
+              flex-direction: column;
+
+              .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+
+                .legend-icon {
+                  $size: 12px;
+                  width: $size;
+                  height: $size;
+                  border-radius: 50%;
+                  position: relative;
+                  margin-right: $size;
+
+                  &:after {
+                    content: ' ';
+                    display: block;
+                    width: $size / 2;
+                    height: $size / 2;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #fff;
+                  }
+                }
+
+                .legend-name {
+                  flex-grow: 1;
+                }
+
+                .value {
+
+                }
+
+
+              }
+
+              &.part-1 {
+                .legend-item {
+
+                  &:nth-child(1) .legend-icon {
+                    background-color: #ff6600;
+                  }
+
+                  &:nth-child(2) .legend-icon {
+                    background-color: #1989fa;
+                  }
+
+                  &:nth-child(3) .legend-icon {
+                    background-color: #9900ff;
+                  }
+
+                  &:nth-child(4) .legend-icon {
+                    background-color: #009900;
+                  }
+                }
+              }
+
+
+              &.part-2 {
+                .legend-item {
+
+                  &:nth-child(1) .legend-icon {
+                    background-color: #1989fa;
+                  }
+
+                  &:nth-child(2) .legend-icon {
+                    background-color: #ff6600;
+                  }
+
+                }
+              }
+
+            }
+          }
+
+        }
+
+        & > *:nth-child(2) {
+
+
+          .card-body {
+            display: flex;
+            flex-direction: column;
+
+            .bar-chart-1-and-2 {
+
+              display: flex;
+
+              height: 100%;
+
+              .echarts {
+                width: 100%;
+                height: 100%;
+              }
+            }
+
+          }
+
+        }
+
+        .card {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .bar-chart-3 {
+        height: 300px;
+
+        .echarts {
+          width: 100%;
+          height: 100%;
         }
       }
     }
