@@ -142,6 +142,10 @@
         }
       }
     }
+
+    .btn-outline-info:hover {
+      color: #122881;
+    }
   }
 
 </style>
@@ -428,9 +432,9 @@
         <b-row class="mt-3">
           <b-col class="pr-0" cols="4">
             <b-card>
-              <b-row>
-                <b-col> 手检</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>手检</h5>
+              </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
@@ -449,9 +453,9 @@
           </b-col>
           <b-col cols="8">
             <b-card>
-              <b-row>
-                <b-col> 误报 漏报</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>误报 漏报</h5>
+              </b-card-header>
               <b-row>
                 <b-col>
                   <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
@@ -463,9 +467,9 @@
         <b-row class="mt-3">
           <b-col class="pr-0" cols="4">
             <b-card>
-              <b-row>
-                <b-col> 手检（人工判图）</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>手检（人工判图）</h5>
+              </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
@@ -484,9 +488,9 @@
           </b-col>
           <b-col cols="8">
             <b-card>
-              <b-row>
-                <b-col> 误报 漏报</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>误报 漏报</h5>
+              </b-card-header>
               <b-row>
                 <b-col>
                   <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
@@ -498,9 +502,9 @@
         <b-row class="mt-3">
           <b-col class="pr-0" cols="4">
             <b-card>
-              <b-row>
-                <b-col> 手检（智能判图）</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>手检（智能判图）</h5>
+              </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
@@ -519,9 +523,9 @@
           </b-col>
           <b-col cols="8">
             <b-card>
-              <b-row>
-                <b-col> 误报 漏报</b-col>
-              </b-row>
+              <b-card-header>
+                <h5>误报 漏报</h5>
+              </b-card-header>
               <b-row>
                 <b-col>
                   <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
@@ -535,6 +539,10 @@
         <b-row class="mt-3">
           <b-col>
             <b-card>
+              <b-card-header>
+                <h5 class="text-center my-4">毫米波人体查验评价判图统计</h5>
+              </b-card-header>
+
               <div class="table-wrapper table-responsive">
                 <vuetable
                   ref="taskVuetable"
