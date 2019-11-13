@@ -73,12 +73,6 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
             <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
-            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
-            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-          </b-button>
         </div>
       </b-col>
     </b-row>
@@ -225,10 +219,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" >
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -761,7 +755,7 @@
 
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 170px);
 
     .no-padding {
       .card-body {
