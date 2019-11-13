@@ -412,7 +412,7 @@
         </b-col>
         <b-col cols="4" class="d-flex justify-content-end align-items-center">
           <div>
-            <b-button size="sm" class="ml-2" variant="info default">
+            <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
               <i class="icofont-exchange"></i>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
             </b-button>
             <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white">
@@ -424,111 +424,144 @@
           </div>
         </b-col>
       </b-row>
-      <b-row class="mt-3">
-        <b-col class="pr-0" cols="4">
-          <b-card>
-            <b-row>
-              <b-col> 手检</b-col>
-            </b-row>
-            <b-row style="height: 300px;">
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  误报
-                </radial-progress-bar>
-              </b-col>
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  漏报
-                </radial-progress-bar>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-        <b-col cols="8">
-          <b-card>
-            <b-row>
-              <b-col> 误报 漏报</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row class="mt-3">
-        <b-col class="pr-0" cols="4">
-          <b-card>
-            <b-row>
-              <b-col> 手检（人工判图）</b-col>
-            </b-row>
-            <b-row style="height: 300px;">
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  误报
-                </radial-progress-bar>
-              </b-col>
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  漏报
-                </radial-progress-bar>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-        <b-col cols="8">
-          <b-card>
-            <b-row>
-              <b-col> 误报 漏报</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-      </b-row>
-      <b-row class="mt-3">
-        <b-col class="pr-0" cols="4">
-          <b-card>
-            <b-row>
-              <b-col> 手检（智能判图）</b-col>
-            </b-row>
-            <b-row style="height: 300px;">
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  误报
-                </radial-progress-bar>
-              </b-col>
-              <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                  <span class="chart percent clearfix">30%</span>
-                  漏报
-                </radial-progress-bar>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-        <b-col cols="8">
-          <b-card>
-            <b-row>
-              <b-col> 误报 漏报</b-col>
-            </b-row>
-            <b-row>
-              <b-col>
-                <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
-              </b-col>
-            </b-row>
-          </b-card>
-        </b-col>
-      </b-row>
+      <div v-if="!showTable">
+        <b-row class="mt-3">
+          <b-col class="pr-0" cols="4">
+            <b-card>
+              <b-row>
+                <b-col> 手检</b-col>
+              </b-row>
+              <b-row style="height: 300px;">
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    误报
+                  </radial-progress-bar>
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    漏报
+                  </radial-progress-bar>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
+              <b-row>
+                <b-col> 误报 漏报</b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row class="mt-3">
+          <b-col class="pr-0" cols="4">
+            <b-card>
+              <b-row>
+                <b-col> 手检（人工判图）</b-col>
+              </b-row>
+              <b-row style="height: 300px;">
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    误报
+                  </radial-progress-bar>
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    漏报
+                  </radial-progress-bar>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
+              <b-row>
+                <b-col> 误报 漏报</b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row class="mt-3">
+          <b-col class="pr-0" cols="4">
+            <b-card>
+              <b-row>
+                <b-col> 手检（智能判图）</b-col>
+              </b-row>
+              <b-row style="height: 300px;">
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    误报
+                  </radial-progress-bar>
+                </b-col>
+                <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
+                    <span class="chart percent clearfix">30%</span>
+                    漏报
+                  </radial-progress-bar>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
+              <b-row>
+                <b-col> 误报 漏报</b-col>
+              </b-row>
+              <b-row>
+                <b-col>
+                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                </b-col>
+              </b-row>
+            </b-card>
+          </b-col>
+        </b-row>
+      </div>
+      <div v-if="showTable">
+        <b-row class="mt-3">
+          <b-col>
+            <b-card>
+              <div class="table-wrapper table-responsive">
+                <vuetable
+                  ref="taskVuetable"
+                  :api-mode="false"
+                  :data="tempData"
+                  data-path="data"
+                  pagination-path="pagination"
+                  :fields="taskVuetableItems.fields"
+                  :per-page="taskVuetableItems.perPage"
+                  :data-total="tempData.data.length"
+                  class="table-hover"
+                  @vuetable:pagination-data="onTaskVuetablePaginationData"
+                >
+                </vuetable>
+              </div>
+              <div class="pagination-wrapper">
+                <vuetable-pagination-bootstrap
+                  ref="taskVuetablePagination"
+                  @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                  :initial-per-page="taskVuetableItems.perPage"
+                  @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                ></vuetable-pagination-bootstrap>
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+      </div>
       <b-row class="mt-3"></b-row>
     </div>
   </div>
@@ -536,15 +569,17 @@
 
 <script>
 
+  import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from 'vuetable-2/src/components/Vuetable'
-  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap"
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-  import Switches from 'vue-switches';
+  import Switches from 'vue-switches'
   import RadialProgressBar from 'vue-radial-progress'
   import ECharts from 'vue-echarts'
   import 'echarts/lib/chart/line'
   import 'echarts/lib/component/legend'
   import 'echarts/lib/component/tooltip'
+  import _ from 'lodash'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -561,6 +596,7 @@
     },
     data() {
       return {
+        showTable: false,
         lineChartOptions: {
           tooltip: {
             trigger: 'axis'
@@ -613,9 +649,164 @@
           {value: 'while-review', text: this.$t('personal-inspection.while-review')},
           {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
-        ]
+        ],
+        tempData: {
+          data: [1, 2, 3, 4, 5].map((e) => {
+            let statusSet = [
+              "pending_dispatch",
+              "pending_review",
+              "while_review",
+              "pending_inspection",
+              "while_inspection"
+            ];
+
+            return {
+              id: e,
+              taskNumber: 'HR201909210001',
+              // operationMode: 'HR201909210001',
+              status: _.sample(statusSet),
+              onSite: '',
+              securityInstrument: '',
+              guide: '张怡宁',
+              scanStartTime: '2019-10-23.10:30',
+              scanEndTime: '2019-10-23.10:30',
+              judgementStation: '丹东站',
+              judge: '张怡宁',
+              judgementStartTime: '2019-10-23.10:30',
+              judgementEndTime: '2019-10-23.10:30',
+              handCheckStation: '丹东站',
+              handChecker: '张怡宁',
+              handCheckStartTime: '2019-10-23.10:30'
+
+            }
+          }),
+          pagination: {
+            total: 5,
+            per_page: 5,
+            current_page: 1,
+            last_page: 1,
+            from: 1,
+            to: 5
+          }
+        },
+        taskVuetableItems: {
+          apiUrl: `${apiBaseUrl}/...`,
+          fields: [
+            {
+              name: 'id',
+              title: this.$t('personal-inspection.serial-number'),
+              sortField: 'id',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-1',
+              title: '时间段',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-2',
+              title: '手检总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-3',
+              title: '误报总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-4',
+              title: '误报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-5',
+              title: '漏报总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-6',
+              title: '漏报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-7',
+              title: '手检（人工判图）量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-8',
+              title: '人工判图误报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-9',
+              title: '人工判图误报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-10',
+              title: '人工判图漏报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-11',
+              title: '人工判图漏报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-12',
+              title: '手检（智能判图）量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-13',
+              title: '智能判图误报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-14',
+              title: '智能判图误报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-15',
+              title: '智能判图漏报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-16',
+              title: '智能判图漏报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            }
+          ],
+          perPage: 5,
+        }
       }
     },
-    methods: {}
+    methods: {
+      onTaskVuetableChangePage(page) {
+        this.$refs.taskVuetable.changePage(page)
+      },
+      onTaskVuetablePaginationData(paginationData) {
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+      }
+    }
   }
 </script>
