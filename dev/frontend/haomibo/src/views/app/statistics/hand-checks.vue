@@ -231,6 +231,31 @@
             <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
           </b-card-header>
 
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>现场:</b></b-col>
+            <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+          </b-row>
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>安检仪:</b></b-col>
+            <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+          </b-row>
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>操作员类型:</b></b-col>
+            <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+          </b-row>
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>操作员:</b></b-col>
+            <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+          </b-row>
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>时间:</b></b-col>
+            <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+          </b-row>
+          <b-row class="no-gutters mb-2">
+            <b-col cols="1"><b>统计步长:</b></b-col>
+            <b-col cols="11"><span>小时</span></b-col>
+          </b-row>
+
           <div class="table-wrapper table-responsive">
             <vuetable
               ref="taskVuetable"
