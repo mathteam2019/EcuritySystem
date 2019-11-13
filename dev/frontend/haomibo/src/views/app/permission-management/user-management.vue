@@ -1203,7 +1203,7 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
+                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-modify-successfully`) : this.$t(`permission-management.user-created-successfully`), {
                   duration: 3000,
                   permanent: false
                 });
