@@ -174,49 +174,49 @@ const data = [
         id: 'statistics-*-view',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-view",
-        to: "/app/personal-inspection/process-task",
+        to: "/app/statistics/view",
         newWindow: false
       },
       {
         id: 'statistics-*-scan-devices',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-scan-devices",
-        to: "/app/personal-inspection/history-task",
+        to: "/app/statistics/scan-devices",
         newWindow: false
       },
       {
         id: 'statistics-*-monitors',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-monitors",
-        to: "/app/personal-inspection/invalid-task",
+        to: "/app/statistics/monitors",
         newWindow: false
       },
       {
-        id: 'statistics-*-monitors',
+        id: 'statistics-*-hand-checks',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-hand-checks",
-        to: "/app/personal-inspection/invalid-task",
+        to: "/app/statistics/hand-checks",
         newWindow: false
       },
       {
         id: 'statistics-*-evaluate-monitors',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-evaluate-monitors",
-        to: "/app/personal-inspection/invalid-task",
+        to: "/app/statistics/evaluate-monitors",
         newWindow: false
       },
       {
         id: 'statistics-*-working-hours',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-working-hours",
-        to: "/app/personal-inspection/invalid-task",
+        to: "/app/statistics/working-hours",
         newWindow: false
       },
       {
         id: 'statistics-*-operating-hours',
         icon: "simple-icon-equalizer",
         label: "menu.statistics-operating-hours",
-        to: "/app/personal-inspection/invalid-task",
+        to: "/app/statistics/operating-hours",
         newWindow: false
       },
     ]

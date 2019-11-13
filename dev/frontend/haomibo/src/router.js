@@ -142,6 +142,49 @@ const routes = [
         ]
       },
       {
+        path: 'app/statistics',
+        beforeEnter: AuthRequired,
+        component: () => import('./views/app/statistics'),
+        redirect: 'app/statistics/view',
+        children: [
+          {
+            path: 'view',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/view')
+          },
+          {
+            path: 'scan-devices',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/scan-devices')
+          },
+          {
+            path: 'monitors',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/monitors')
+          },
+          {
+            path: 'hand-checks',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/hand-checks')
+          },
+          {
+            path: 'evaluate-monitors',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/evaluate-monitors')
+          },
+          {
+            path: 'working-hours',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/working-hours')
+          },
+          {
+            path: 'operating-hours',
+            beforeEnter: AuthRequired,
+            component: () => import('./views/app/statistics/operating-hours')
+          },
+        ]
+      },
+      {
         path: 'app/black-list',
         beforeEnter: AuthRequired,
         component: () => import('./views/app/black-list'),

@@ -106,7 +106,14 @@
     "statistics-hand-checks": "手检统计",
     "statistics-evaluate-monitors": "评价判图",
     "statistics-working-hours": "人员工时统计",
-    "statistics-operating-hours": "设备运行时长统计"
+    "statistics-operating-hours": "设备运行时长统计",
+    "view": "统计预览",
+    "scan-devices": "扫描统计",
+    "monitors": "判图统计",
+    "hand-checks": "手检统计",
+    "evaluate-monitors": "评价判图",
+    "working-hours": "人员工时统计",
+    "operating-hours": "设备运行时长统计"
   },
   "pages": {
     "project-name": "欢迎访问统一管理系统",
