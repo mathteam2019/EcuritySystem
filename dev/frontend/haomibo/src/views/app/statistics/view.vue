@@ -241,12 +241,40 @@
           <b-col>
             <b-card>
 
+              <b-card-header>
+                <h5>扫描</h5>
+              </b-card-header>
               <div class="w-100 h-100 d-flex align-items-center">
 
-                  <v-chart :options="polar"/>
+                <div class="double-pie-chart">
 
+                  <v-chart :options="doublePieChartOptions" :autoresize="true"/>
+
+                </div>
+                <div class="legend-group">
+                  <div class="legend-item">
+                    <div class="legend-icon"></div>
+                    <div class="legend-name">无效扫描</div>
+                    <div class="value">200</div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-icon"></div>
+                    <div class="legend-name">报警</div>
+                    <div class="value">200</div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-icon"></div>
+                    <div class="legend-name">通过</div>
+                    <div class="value">500</div>
+
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-icon"></div>
+                    <div class="legend-name">有效扫描</div>
+                    <div class="value">1500</div>
+                  </div>
+                </div>
               </div>
-
 
             </b-card>
           </b-col>
@@ -279,20 +307,9 @@
 
 
   import ECharts from 'vue-echarts'
-  import 'echarts/lib/chart/line'
-  import 'echarts/lib/component/polar'
 
-
-  import {
-    areaChartData,
-    barChartData,
-    doughnutChartData,
-    lineChartData,
-    pieChartData,
-    polarAreaChartData,
-    radarChartData,
-    scatterChartData
-  } from '../../../data/charts';
+  import 'echarts/lib/chart/pie';
+  import 'echarts/lib/component/tooltip';
 
   import DoughnutChart from '../../../components/Charts/Doughnut';
   import BarChart from '../../../components/Charts/Bar';
@@ -314,58 +331,100 @@
     },
     data() {
 
-      let data = []
 
-      for (let i = 0; i <= 360; i++) {
-        let t = i / 180 * Math.PI
-        let r = Math.sin(2 * t) * Math.cos(2 * t)
-        data.push([r, i])
-      }
+      let doublePieChartData = {
+        '无效扫描': {
+          value: 200,
+          color: '#cccccc'
+        },
+        '有效扫描': {
+          value: 1500,
+          color: '#1989fa',
+        },
+        '报警': {
+          value: 200,
+          color: '#ff6600',
+        },
+        '通过': {
+          value: 500,
+          color: '#009900'
+        },
+      };
 
       return {
-        lineChartData,
-        polarAreaChartData,
-        areaChartData,
-        scatterChartData,
-        barChartData,
-        radarChartData,
-        pieChartData,
-        doughnutChartData,
-
-
-        polar: {
-          title: {
-            text: '极坐标双数值轴'
-          },
-          legend: {
-            data: ['line']
-          },
-          polar: {
-            center: ['50%', '54%']
-          },
+        doublePieChartOptions: {
           tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-              type: 'cross'
+            trigger: 'item',
+            formatter: `
+<div style='position: relative'>
+<div style='position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right:8px solid #cccccc;'></div>
+<div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
+</div>
+`,
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
             }
           },
-          angleAxis: {
-            type: 'value',
-            startAngle: 0
-          },
-          radiusAxis: {
-            min: 0
-          },
+          color: [
+            doublePieChartData['无效扫描'].color,
+            doublePieChartData['有效扫描'].color,
+            doublePieChartData['报警'].color,
+            doublePieChartData['通过'].color,
+          ],
           series: [
             {
-              coordinateSystem: 'polar',
-              name: 'line',
-              type: 'line',
-              showSymbol: false,
-              data: data
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -50,
+                length2: -30
+              },
+              data: [
+                {value: doublePieChartData['无效扫描'].value, name: '无效扫描'},
+                {value: doublePieChartData['有效扫描'].value, name: '有效扫描'},
+              ]
+            },
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['40%', '50%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                  align: 'center'
+                }
+              },
+              labelLine: {
+                show: false,
+                length: -60,
+                length2: -15
+              },
+              data: [
+                {value: doublePieChartData['报警'].value, name: '报警'},
+                {value: doublePieChartData['通过'].value, name: '通过'},
+              ]
             }
-          ],
-          animationDuration: 2000
+          ]
         },
 
 
@@ -704,6 +763,76 @@
 
           & > .col:nth-child(1) {
             flex: 2 1 0;
+
+            display: flex;
+            align-items: center;
+
+            .double-pie-chart {
+              width: 70%;
+              height: 400px;
+              display: flex;
+              align-items: center;
+            }
+
+            .legend-group {
+              width: 30%;
+              display: flex;
+              flex-direction: column;
+
+              .legend-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+
+                .legend-icon {
+                  $size: 12px;
+                  width: $size;
+                  height: $size;
+                  border-radius: 50%;
+                  position: relative;
+                  margin-right: $size;
+
+                  &:after {
+                    content: ' ';
+                    display: block;
+                    width: $size / 2;
+                    height: $size / 2;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #fff;
+                  }
+                }
+
+                .legend-name {
+                  flex-grow: 1;
+                }
+
+                .value {
+
+                }
+
+                &:nth-child(1) .legend-icon {
+                  background-color: #cccccc;
+                }
+
+                &:nth-child(2) .legend-icon {
+                  background-color: #1989fa;
+                }
+
+                &:nth-child(3) .legend-icon {
+                  background-color: #ff6600;
+                }
+
+                &:nth-child(4) .legend-icon {
+                  background-color: #009900;
+                }
+              }
+
+            }
+
           }
 
           & > .col:nth-child(2) {
