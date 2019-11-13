@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="statistics-view-page">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -7,82 +7,222 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab" v-if="pageStatus === 'table'" style="margin-top: 20px;">
-      <div class="h-100 d-flex flex-column">
-        <b-row class="pt-2">
-          <b-col cols="8">
-            <b-row>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.task-number')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
+    <b-row class="pt-2">
+      <b-col cols="8">
+        <b-row>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.task-number')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.operation-mode')">
+              <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
+            </b-form-group>
+          </b-col>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.status')">
+              <b-form-select v-model="filter.status" :options="statusOptions" plain/>
+            </b-form-group>
+          </b-col>
 
-              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.on-site')">
+              <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
+            </b-form-group>
+          </b-col>
+
+          <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col cols="8" v-if="isExpanded">
-            <b-row>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.time')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
-
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-
-
-            </b-row>
-          </b-col>
-          <b-col cols="4" class="d-flex justify-content-end align-items-center">
-            <div>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-              </b-button>
-            </div>
           </b-col>
         </b-row>
+      </b-col>
+      <b-col cols="8" v-if="isExpanded">
+        <b-row>
+
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.user')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
+          <b-col>
+            <b-form-group :label="$t('personal-inspection.time')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
+          <b-col></b-col>
+          <b-col></b-col>
+          <b-col></b-col>
+
+
+        </b-row>
+      </b-col>
+      <b-col cols="4" class="d-flex justify-content-end align-items-center">
+        <div>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+            <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+            <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default">
+            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default">
+            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
+
+    <b-row>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #122881;">
+          <div class="statistics-item type-1">
+            <div>
+              <b-img src="/assets/img/scan.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #1989fa;">
+              <b-img src="/assets/img/check.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #009900;">
+              <b-img src="/assets/img/round_check.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #ff6600;">
+              <b-img src="/assets/img/bell_icon.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #cccccc;">
+              <b-img src="/assets/img/forbidden.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+    </b-row>
+
+    <b-row class="mt-4">
+      <b-col>
+        <b-card class="no-padding" style="background-color: #1989fa;">
+          <div class="statistics-item type-1">
+            <div>
+              <b-img src="/assets/img/picture.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #009900;">
+              <b-img src="/assets/img/round_check.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #2bace2;">
+          <div class="statistics-item type-1">
+            <div>
+              <b-img src="/assets/img/hand_check_icon.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #009900;">
+              <b-img src="/assets/img/glass_delete_icon.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-card class="no-padding" style="background-color: #fff;">
+          <div class="statistics-item type-2">
+            <div style="background-color: #ff0000;">
+              <b-img src="/assets/img/glass_check_icon.svg"/>
+            </div>
+            <div>
+              <div><span>2000</span></div>
+              <div><span>扫描</span></div>
+            </div>
+          </div>
+        </b-card>
+      </b-col>
+    </b-row>
+
+
+    <b-card class="main-without-tab" v-if="pageStatus === 'table'" style="margin-top: 20px;">
+      <div class="h-100 d-flex flex-column">
+
         <b-row class="flex-grow-1">
           <b-col cols="12">
             <div class="table-wrapper table-responsive">
@@ -565,176 +705,281 @@
 </template>
 
 <style lang="scss">
-  span.cursor-p {
-    cursor: pointer !important;
-  }
-
-  .rounded-span {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #007bff;
-  }
-
-  .operation-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .icon-container {
-    font-size: 20px;
-
-    .icofont-star {
-      color: #ffe400;
-    }
-
-    .icofont-search-user {
-      color: #ff9c0e;
-    }
-
-    .icofont-female {
-      color: #fe687f;
-    }
-  }
-
-  .control-group {
-    display: flex;
-    align-items: flex-start;
-
-    .control-btn-wrapper {
-      display: flex;
-      flex-grow: 1;
-      flex-wrap: wrap;
-
-      .control-btn {
-        width: calc(100% / 6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 24px;
-
-
-        img {
-
-          $size: 40px;
-          width: $size;
-          height: $size;
-
-          margin-bottom: 6px;
-        }
-
-
-        span {
-          display: block;
-        }
+  .statistics-view-page {
+    .no-padding {
+      .card-body {
+        padding: 0;
       }
     }
 
-    .switch-wrapper {
-      width: 60px;
-      height: 40px;
+    .statistics-item {
       display: flex;
       align-items: center;
+      $padding-x: 50px;
+      $padding-y: 20px;
+      padding: $padding-y $padding-x;
+      justify-content: stretch;
 
-      .separator {
-        border: 0;
-        width: 1px;
-        height: 30px;
-        background: #1e9dd2;
-        flex-shrink: 0;
+      & > div:nth-child(1) {
+        $size: 50px;
+        width: $size;
+        height: $size;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+
+        margin-right: 20px;
+
       }
 
-      .switch {
-        .vue-switcher {
+      & > div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+
+        & > div:nth-child(1) {
           display: flex;
-          height: 100%;
-          margin: 0;
-          transform: scale(0.8);
+
+          span {
+            font-size: 2rem;
+            font-weight: bold;
+          }
         }
+
+        & > div:nth-child(2) {
+          display: flex;
+
+          span {
+            font-size: 1.2rem;
+          }
+        }
+
+
+      }
+
+      &.type-1 {
+        & > div:nth-child(1) {
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        & > div:nth-child(2) {
+          & > div:nth-child(1) {
+            span {
+              color: white;
+            }
+          }
+
+          & > div:nth-child(2) {
+            span {
+              color: white;
+            }
+          }
+        }
+      }
+
+      &.type-2 {
+        & > div:nth-child(1) {
+
+          img {
+            width: 80%;
+            height: 80%;
+          }
+        }
+      }
+
+      & > div:nth-child(2) {
+        & > div:nth-child(1) {
+          span {
+            color: black;
+          }
+        }
+
+        & > div:nth-child(2) {
+          span {
+            color: #999999;
+          }
+        }
+      }
+
+
+    }
+
+
+    span.cursor-p {
+      cursor: pointer !important;
+    }
+
+    .rounded-span {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+    }
+
+    .operation-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .icon-container {
+      font-size: 20px;
+
+      .icofont-star {
+        color: #ffe400;
+      }
+
+      .icofont-search-user {
+        color: #ff9c0e;
+      }
+
+      .icofont-female {
+        color: #fe687f;
       }
     }
 
-    @media screen and (max-width: 1700px) {
+    .control-group {
+      display: flex;
+      align-items: flex-start;
 
       .control-btn-wrapper {
+        display: flex;
+        flex-grow: 1;
+        flex-wrap: wrap;
+
         .control-btn {
-          img {
-            $size: 28px;
-            width: $size !important;
-            height: $size !important;
-          }
-        }
-      }
-      .switch-wrapper{
-        height: 28px;
-        .separator {
-          height: 28px;
-        }
-      }
-
-    }
-  }
-
-
-  .history-chart {
-
-    $ratio: 12.8;
-
-    width: 100%;
-    padding-bottom: 100% / $ratio;
-    position: relative;
-
-    margin-bottom: 24px;
-
-    & > :first-child {
-      left: 0;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      width: 100%;
-
-      background: url("/assets/img/history_chart.png") no-repeat;
-      background-size: contain;
-
-
-      $elements: 5;
-      @for $i from 0 to $elements {
-        .part:nth-child(#{$i + 1}) {
-          position: absolute;
-          top: 25%;
-          bottom: 25%;
-          left: 2% + 20% * $i;
-          width: 20% - 4%;
+          width: calc(100% / 6);
           display: flex;
-          color: white;
+          flex-direction: column;
           align-items: center;
-          justify-content: space-between;
+          margin-bottom: 24px;
 
-          $date-color: #0c70ab;
 
-          .top-date {
-            color: $date-color;
-            position: absolute;
-            top: 104%;
-            left: -6%;
+          img {
+
+            $size: 40px;
+            width: $size;
+            height: $size;
+
+            margin-bottom: 6px;
           }
 
-          .bottom-date {
-            color: $date-color;
-            position: absolute;
-            bottom: 104%;
-            right: 2%;
+
+          span {
+            display: block;
           }
         }
       }
 
+      .switch-wrapper {
+        width: 60px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+
+        .separator {
+          border: 0;
+          width: 1px;
+          height: 30px;
+          background: #1e9dd2;
+          flex-shrink: 0;
+        }
+
+        .switch {
+          .vue-switcher {
+            display: flex;
+            height: 100%;
+            margin: 0;
+            transform: scale(0.8);
+          }
+        }
+      }
+
+      @media screen and (max-width: 1700px) {
+
+        .control-btn-wrapper {
+          .control-btn {
+            img {
+              $size: 28px;
+              width: $size !important;
+              height: $size !important;
+            }
+          }
+        }
+        .switch-wrapper {
+          height: 28px;
+
+          .separator {
+            height: 28px;
+          }
+        }
+
+      }
     }
 
 
+    .history-chart {
+
+      $ratio: 12.8;
+
+      width: 100%;
+      padding-bottom: 100% / $ratio;
+      position: relative;
+
+      margin-bottom: 24px;
+
+      & > :first-child {
+        left: 0;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        width: 100%;
+
+        background: url("/assets/img/history_chart.png") no-repeat;
+        background-size: contain;
+
+
+        $elements: 5;
+        @for $i from 0 to $elements {
+          .part:nth-child(#{$i + 1}) {
+            position: absolute;
+            top: 25%;
+            bottom: 25%;
+            left: 2% + 20% * $i;
+            width: 20% - 4%;
+            display: flex;
+            color: white;
+            align-items: center;
+            justify-content: space-between;
+
+            $date-color: #0c70ab;
+
+            .top-date {
+              color: $date-color;
+              position: absolute;
+              top: 104%;
+              left: -6%;
+            }
+
+            .bottom-date {
+              color: $date-color;
+              position: absolute;
+              bottom: 104%;
+              right: 2%;
+            }
+          }
+        }
+
+      }
+
+
+    }
+
   }
-
-
 </style>
 
 <script>
@@ -798,45 +1043,45 @@
         ],
         // TODO: refactor temp table data to api mode
         tempData: {
-            data: [1, 2, 3, 4, 5].map((e) => {
+          data: [1, 2, 3, 4, 5].map((e) => {
 
 
-                let statusSet = [
-                    "pending_dispatch",
-                    "pending_review",
-                    "while_review",
-                    "pending_inspection",
-                    "while_inspection"
-                ];
+            let statusSet = [
+              "pending_dispatch",
+              "pending_review",
+              "while_review",
+              "pending_inspection",
+              "while_inspection"
+            ];
 
-                return {
-                    id: e,
-                    taskNumber: 'HR201909210001',
-                    // operationMode: 'HR201909210001',
-                    status: _.sample(statusSet),
-                    onSite: '',
-                    securityInstrument: '',
-                    guide: '张怡宁',
-                    scanStartTime: '2019-10-23.10:30',
-                    scanEndTime: '2019-10-23.10:30',
-                    judgementStation: '丹东站',
-                    judge: '张怡宁',
-                    judgementStartTime: '2019-10-23.10:30',
-                    judgementEndTime: '2019-10-23.10:30',
-                    handCheckStation: '丹东站',
-                    handChecker: '张怡宁',
-                    handCheckStartTime: '2019-10-23.10:30'
+            return {
+              id: e,
+              taskNumber: 'HR201909210001',
+              // operationMode: 'HR201909210001',
+              status: _.sample(statusSet),
+              onSite: '',
+              securityInstrument: '',
+              guide: '张怡宁',
+              scanStartTime: '2019-10-23.10:30',
+              scanEndTime: '2019-10-23.10:30',
+              judgementStation: '丹东站',
+              judge: '张怡宁',
+              judgementStartTime: '2019-10-23.10:30',
+              judgementEndTime: '2019-10-23.10:30',
+              handCheckStation: '丹东站',
+              handChecker: '张怡宁',
+              handCheckStartTime: '2019-10-23.10:30'
 
-                }
-            }),
-            pagination: {
-                total: 5,
-                per_page: 5,
-                current_page: 1,
-                last_page: 1,
-                from: 1,
-                to: 5
             }
+          }),
+          pagination: {
+            total: 5,
+            per_page: 5,
+            current_page: 1,
+            last_page: 1,
+            from: 1,
+            to: 5
+          }
         },
 
         taskVuetableItems: {
