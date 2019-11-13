@@ -491,6 +491,17 @@
       "wave-security-device": "MW毫米波安检仪",
       "huawei-m6-tablet": "华为M6平板",
       "template": "模板"
+    },
+    "device-monitoring": {
+      "disk-space" :"磁盘空间",
+      "main-acquire-card":"主采集卡",
+      "from-acquire-card":"从采集卡",
+      "servo":"伺服",
+      "slider-position":"滑块位置",
+      "emergency-stop":"急停",
+      "footstep-alarm":"脚步报警",
+      "data-monitor":"流量监控",
+      "landing-time":"登陆时间"
     }
   },
   "system-setting": {

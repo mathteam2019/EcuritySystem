@@ -325,7 +325,7 @@
                         <label class="disabled">zhangshan</label>
                       </div>
                       <div class="w-100">
-                        <label>{{$t('device-management.condition-monitoring.landing-time')}}:</label>
+                        <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
                         <label>通道001</label>
                       </div>
                       <div class="w-100">
@@ -340,7 +340,7 @@
                         <label>{{$t('device-management.device-model')}}:</label>
                         <label>MW0001-001-000000</label></div>
                       <div class="w-100">
-                        <label >{{$t('device-management.condition-monitoring.disk-space')}}:</label>
+                        <label >{{$t('device-management.device-monitoring.disk-space')}}:</label>
                         <label></label>
                       </div>
                     </div>
@@ -355,31 +355,31 @@
                 <div><img src="../../../assets/img/radio_danger.png" /> <span class="danger">急停按下</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.main-acquire-card')}}:</div>
+                <div>{{$t('device-management.device-monitoring.main-acquire-card')}}:</div>
                 <div><img src="../../../assets/img/radio_succss.png" /> <span class="success">急停弹起</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.from-acquire-card')}}:</div>
+                <div>{{$t('device-management.device-monitoring.from-acquire-card')}}:</div>
                 <div><img src="../../../assets/img/radio_pending.png" /> <span class="pending">未知</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.servo')}}：</div>
+                <div>{{$t('device-management.device-monitoring.servo')}}：</div>
                 <div><span class="without">2000(mm)</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.slider-position')}}:</div>
+                <div>{{$t('device-management.device-monitoring.slider-position')}}:</div>
                 <div><img src="../../../assets/img/radio_danger.png" /> <span class="danger">就绪</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.emergency-stop')}}:</div>
+                <div>{{$t('device-management.device-monitoring.emergency-stop')}}:</div>
                 <div><img src="../../../assets/img/radio_pending.png" /> <span class="pending">急停按下</span> </div>
               </div>
               <div class="w-100 d-flex">
-                <div>{{$t('device-management.condition-monitoring.footstep-alarm')}}:</div>
+                <div>{{$t('device-management.device-monitoring.footstep-alarm')}}:</div>
                 <div><img src="../../../assets/img/radio_succss.png" /> <span class="success">不在线</span> </div>
               </div>
               <div class="w-100 d-flex flex-grow-1">
-                <div>{{$t('device-management.condition-monitoring.data-monitor')}}:</div>
+                <div>{{$t('device-management.device-monitoring.data-monitor')}}:</div>
                 <div>
                   <div class="chart-container">
                     <line-chart :data="lineChartData" :height="100"/>
