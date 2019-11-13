@@ -186,12 +186,14 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysRoleUser> sysRoleUserList = requestBody
                 .getRoleIdList()
                 .stream()
-                .map(roleId ->
-                        SysRoleUser
+                .map(
+                        roleId -> (SysRoleUser) SysRoleUser
                                 .builder()
                                 .roleId(roleId)
                                 .userId(sysUser.getUserId())
-                                .build())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
                 .collect(Collectors.toList());
 
         // Save role relations for user.
@@ -207,7 +209,14 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (SysUser.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
             // If data range category is SPECIFIED, need to save data group id too.
-            sysUserLookupRepository.save(SysUserLookup.builder().userId(sysUser.getUserId()).dataGroupId(requestBody.getSelectedDataGroupId()).build());
+            sysUserLookupRepository.save(
+                    (SysUserLookup) SysUserLookup
+                            .builder()
+                            .userId(sysUser.getUserId())
+                            .dataGroupId(requestBody.getSelectedDataGroupId())
+                            .build()
+                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+            );
         }
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -249,11 +258,13 @@ public class AssignPermissionManagementController extends BaseController {
                 .getRoleIdList()
                 .stream()
                 .map(roleId ->
-                        SysUserGroupRole
+                        (SysUserGroupRole) SysUserGroupRole
                                 .builder()
                                 .roleId(roleId)
                                 .userGroupId(sysUserGroup.getUserGroupId())
-                                .build())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
                 .collect(Collectors.toList());
 
         // Save role relations for user group.
@@ -269,7 +280,14 @@ public class AssignPermissionManagementController extends BaseController {
 
         if (SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
             // If data range category is SPECIFIED, need to save data group id too.
-            sysUserGroupLookupRepository.save(SysUserGroupLookup.builder().userGroupId(sysUserGroup.getUserGroupId()).dataGroupId(requestBody.getSelectedDataGroupId()).build());
+            sysUserGroupLookupRepository.save(
+                    (SysUserGroupLookup) SysUserGroupLookup
+                            .builder()
+                            .userGroupId(sysUserGroup.getUserGroupId())
+                            .dataGroupId(requestBody.getSelectedDataGroupId())
+                            .build()
+                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+            );
         }
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -406,7 +424,6 @@ public class AssignPermissionManagementController extends BaseController {
 
         return value;
     }
-
 
 
     /**

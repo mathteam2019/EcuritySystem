@@ -3,9 +3,7 @@ package com.haomibo.haomibo.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -18,10 +16,10 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_ROLE)
 @Table(name = "sys_role")
-public class SysRole implements Serializable {
+public class SysRole extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,21 +40,6 @@ public class SysRole implements Serializable {
 
     @Column(name = "STATUS", length = 10)
     String status;
-
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(

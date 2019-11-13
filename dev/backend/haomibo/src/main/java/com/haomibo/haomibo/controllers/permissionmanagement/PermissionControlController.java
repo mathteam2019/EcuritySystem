@@ -265,8 +265,12 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Create first.
-        SysRole sysRole = sysRoleRepository.save(requestBody.convert2SysRole());
+        // Create role with created info.
+        SysRole sysRole = sysRoleRepository.save(
+                (SysRole) requestBody
+                        .convert2SysRole()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+        );
 
         // Get resource Id list from request.
         List<Long> resourceIdList = requestBody.getResourceIdList();
@@ -311,11 +315,15 @@ public class PermissionControlController extends BaseController {
 
         // Save relation.
         List<SysRoleResource> relationList = sysResourceList.stream()
-                .map(sysResource -> SysRoleResource
-                        .builder()
-                        .roleId(sysRole.getRoleId())
-                        .resourceId(sysResource.getResourceId())
-                        .build()).collect(Collectors.toList());
+                .map(
+                        sysResource -> (SysRoleResource) SysRoleResource
+                                .builder()
+                                .roleId(sysRole.getRoleId())
+                                .resourceId(sysResource.getResourceId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         sysRoleResourceRepository.saveAll(relationList);
 
@@ -440,13 +448,21 @@ public class PermissionControlController extends BaseController {
 
         // Save relation.
         List<SysRoleResource> relationList = sysResourceList.stream()
-                .map(sysResource -> SysRoleResource
-                        .builder()
-                        .roleId(sysRole.getRoleId())
-                        .resourceId(sysResource.getResourceId())
-                        .build()).collect(Collectors.toList());
+                .map(
+                        sysResource -> (SysRoleResource) SysRoleResource
+                                .builder()
+                                .roleId(sysRole.getRoleId())
+                                .resourceId(sysResource.getResourceId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         sysRoleResourceRepository.saveAll(relationList);
+
+        // Add edited info.
+        sysRole.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysRoleRepository.save(sysRole);
 
         return new CommonResponseBody(ResponseMessage.OK);
 
@@ -516,8 +532,12 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Create data group first.
-        SysDataGroup sysDataGroup = sysDataGroupRepository.save(requestBody.convert2SysDataGroup());
+        // Create data group with created info.
+        SysDataGroup sysDataGroup = sysDataGroupRepository.save(
+                (SysDataGroup) requestBody
+                        .convert2SysDataGroup()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+        );
 
         // Get user Id list from the request.
         List<Long> userIdList = requestBody.getUserIdList();
@@ -526,12 +546,17 @@ public class PermissionControlController extends BaseController {
         // Generate relation list with valid UserIds which are filtered by comparing to database.
         List<SysDataGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> SysDataGroupUser
-                        .builder()
-                        .dataGroupId(sysDataGroup.getDataGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                false
+        )
+                .map(
+                        sysUser -> (SysDataGroupUser) SysDataGroupUser
+                                .builder()
+                                .dataGroupId(sysDataGroup.getDataGroupId())
+                                .userId(sysUser.getUserId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
@@ -627,15 +652,24 @@ public class PermissionControlController extends BaseController {
         // Generate relation list with valid UserIds which are filtered by comparing to database.
         List<SysDataGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> SysDataGroupUser
-                        .builder()
-                        .dataGroupId(sysDataGroup.getDataGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                false
+        )
+                .map(
+                        sysUser -> (SysDataGroupUser) SysDataGroupUser
+                                .builder()
+                                .dataGroupId(sysDataGroup.getDataGroupId())
+                                .userId(sysUser.getUserId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
+
+        // Add edited info.
+        sysDataGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDataGroupRepository.save(sysDataGroup);
 
         return new CommonResponseBody(ResponseMessage.OK);
 

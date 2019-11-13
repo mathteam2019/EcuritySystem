@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
@@ -31,14 +30,28 @@ public class BaseEntity {
     @Column(name = "NOTE", length = 500, nullable = false)
     String note;
 
-    public void addCreatedInfo(SysUser sysUser) {
+    /**
+     * Adds created info.
+     *
+     * @param sysUser Represents editor's information
+     * @return itself
+     */
+    public BaseEntity addCreatedInfo(SysUser sysUser) {
         this.createdBy = sysUser.getUserId();
         this.createdTime = new Date();
+        return this;
     }
 
-    public void addEditedInfo(SysUser sysUser) {
+    /**
+     * Adds Edited info
+     *
+     * @param sysUser Represents editor's information
+     * @return itself
+     */
+    public BaseEntity addEditedInfo(SysUser sysUser) {
         this.editedBy = sysUser.getUserId();
         this.editedTime = new Date();
+        return this;
     }
 
 }

@@ -240,6 +240,8 @@ public class OrganizationManagementController extends BaseController {
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
+
+        // Add createdInfo.
         sysOrg.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
@@ -272,6 +274,9 @@ public class OrganizationManagementController extends BaseController {
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
+
+        // Add edited info.
+        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
 
@@ -327,6 +332,9 @@ public class OrganizationManagementController extends BaseController {
 
         // Update status.
         sysOrg.setStatus(requestBody.getStatus());
+
+        // Add edited info.
+        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
 

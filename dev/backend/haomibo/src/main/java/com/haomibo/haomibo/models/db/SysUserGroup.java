@@ -3,6 +3,7 @@ package com.haomibo.haomibo.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.haomibo.haomibo.jsonfilter.ModelJsonFilters;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -17,10 +18,10 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_USER_GROUP)
 @Table(name = "sys_user_group")
-public class SysUserGroup implements Serializable {
+public class SysUserGroup extends BaseEntity implements Serializable {
 
 
     @AllArgsConstructor
@@ -54,21 +55,6 @@ public class SysUserGroup implements Serializable {
 
     @Column(name = "GROUP_FLAG", length = 10)
     String groupFlag;
-
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
 
     @OneToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
