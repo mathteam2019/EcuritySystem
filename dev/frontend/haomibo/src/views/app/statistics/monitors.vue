@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="statistics-monitors">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -7,747 +7,497 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab" v-if="pageStatus === 'table'" style="margin-top: 20px;">
-      <div class="h-100 d-flex flex-column">
-        <b-row class="pt-2">
-          <b-col cols="8">
-            <b-row>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.task-number')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
+    <b-row class="pt-2">
+      <b-col cols="8">
+        <b-row>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="'现场'">
+              <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
+            </b-form-group>
+          </b-col>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="'安检仪'">
+              <b-form-select v-model="filter.securityDevice" :options="securityDeviceOptions" plain/>
+            </b-form-group>
+          </b-col>
 
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
-                </b-form-group>
-              </b-col>
+          <b-col>
+            <b-form-group :label="'判图员'">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
 
-              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
+          <b-col>
+            <b-form-group :label="'时间'">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
+          <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col cols="8" v-if="isExpanded">
-            <b-row>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.time')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
-
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-
-
-            </b-row>
-          </b-col>
-          <b-col cols="4" class="d-flex justify-content-end align-items-center">
-            <div>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-              </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
-              </b-button>
-            </div>
           </b-col>
         </b-row>
-        <b-row class="flex-grow-1">
-          <b-col cols="12">
-            <div class="table-wrapper table-responsive">
-              <vuetable
-                ref="taskVuetable"
-                :api-mode="false"
-                :data="tempData"
-                data-path="data"
-                pagination-path="pagination"
-                :fields="taskVuetableItems.fields"
-                :per-page="taskVuetableItems.perPage"
-                :data-total="tempData.data.length"
-                class="table-hover"
-                @vuetable:pagination-data="onTaskVuetablePaginationData"
-              >
-                <template slot="taskNumber" slot-scope="props">
-                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                      {{props.rowData.taskNumber}}
-                    </span>
-                </template>
-                <template slot="operationMode" slot-scope="props">
-                  <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                  <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                  <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                </template>
-                <template slot="status" slot-scope="props">
-                  <div v-if="props.rowData.status === 'pending_dispatch'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-dispatch')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'pending_review'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-review')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'while_review'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-review')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'pending_inspection'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-inspection')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'while_inspection'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-inspection')}}
-                  </div>
+      </b-col>
+      <b-col cols="8" v-if="isExpanded">
+        <b-row>
 
-                </template>
-              </vuetable>
+
+          <b-col>
+            <b-form-group :label="'统计步长'">
+              <b-form-select v-model="filter.statisticalStepSize" :options="statisticalStepSizeOptions" plain/>
+            </b-form-group>
+          </b-col>
+
+          <b-col></b-col>
+          <b-col></b-col>
+          <b-col></b-col>
+          <b-col></b-col>
+
+
+        </b-row>
+      </b-col>
+      <b-col cols="4" class="d-flex justify-content-end align-items-center">
+        <div>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+            <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+            <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
+
+    <b-row class="parameter-items">
+      <b-col>
+        <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
+          <div class="statistics-item type-3">
+            <div style="">
+              <b-img src="/assets/img/picture.svg"/>
             </div>
-            <div class="pagination-wrapper">
-              <vuetable-pagination-bootstrap
-                ref="taskVuetablePagination"
-                @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                :initial-per-page="taskVuetableItems.perPage"
-                @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
-            </div>
+            <div><span>2000</span></div>
+            <div><span>判图</span></div>
+          </div>
+        </b-card>
+      </b-col>
+      <b-col>
+        <b-row class="mb-4">
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #344bf3">
+                  <b-img src="/assets/img/person.svg"/>
+                </div>
+                <div>
+                  <div><span>1000</span></div>
+                  <div><span>人工结论</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #1989fa">
+                  <b-img src="/assets/img/user_group.svg"/>
+                </div>
+                <div>
+                  <div><span>100</span></div>
+                  <div><span>分低超时结论</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #19b8fa;">
+                  <b-img src="/assets/img/picture.svg"/>
+                </div>
+                <div>
+                  <div><span>100</span></div>
+                  <div><span>判图超时结论</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #00bbb0">
+                  <b-img src="/assets/img/atr.svg"/>
+                </div>
+                <div>
+                  <div><span>300</span></div>
+                  <div><span>ATR结论</span></div>
+                </div>
+              </div>
+            </b-card>
           </b-col>
         </b-row>
-      </div>
-    </b-card>
-    <div v-if="pageStatus === 'show'">
-      <b-row class="fill-main">
-        <b-col cols="3">
-          <b-card class="pt-4 h-100">
-            <b-row class="mb-1">
-              <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
-              </b-col>
-              <b-col class="text-right icon-container">
-                <span><i class="icofont-star"></i></span>
-                <span><i class="icofont-search-user"></i></span>
-                <span><i class="icofont-female"></i></span>
-              </b-col>
-            </b-row>
+        <b-row class="mb-4">
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img src="/assets/img/round_check.svg"/>
+                </div>
+                <div>
+                  <div><span>1200</span></div>
+                  <div><span>无嫌疑</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
 
-            <b-row class="mb-4">
-              <b-col>
-                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
-              </b-col>
-              <b-col>
-                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
-              </b-col>
-            </b-row>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #009900;">
+                  <b-img src="/assets/img/round_check.svg"/>
+                </div>
+                <div>
+                  <div><span>83%</span></div>
+                  <div><span>无嫌疑率</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
 
-            <b-row class="mb-2">
-              <b-col class="control-group">
-                <div class="control-btn-wrapper">
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #ff0000;">
+                  <b-img src="/assets/img/question_mark.svg"/>
+                </div>
+                <div>
+                  <div><span>24</span></div>
+                  <div><span>嫌疑</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
 
-                  <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
+          <b-col>
+            <b-card class="no-padding" style="background-color: #fff;">
+              <div class="statistics-item type-2">
+                <div style="background-color: #ff0000;">
+                  <b-img src="/assets/img/question_mark.svg"/>
+                </div>
+                <div>
+                  <div><span>17%</span></div>
+                  <div><span>嫌疑率</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #344bf3;">
+                  <b-img src="/assets/img/time_icon.svg"/>
+                </div>
+                <div>
+                  <div><span>20s</span></div>
+                  <div><span>人工判图时长阈值</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #1989fa;">
+                  <b-img src="/assets/img/right_arrow_icon2.svg"/>
+                </div>
+                <div>
+                  <div><span>10s</span></div>
+                  <div><span>人工判图平均时长</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #19b8fa;">
+                  <b-img src="/assets/img/up_arrow_icon2.svg"/>
+                </div>
+                <div>
+                  <div><span>18s</span></div>
+                  <div><span>人工判图最高时长</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card class="no-padding">
+              <div class="statistics-item type-2">
+                <div style="background-color: #00bbb0;">
+                  <b-img src="/assets/img/down_arrow_icon.svg"/>
+                </div>
+                <div>
+                  <div><span>5s</span></div>
+                  <div><span>人工判图最低时长</span></div>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+        </b-row>
+      </b-col>
+
+    </b-row>
+
+
+    <b-row class="mt-4 mb-3">
+      <b-col class="d-flex justify-content-end align-items-center">
+        <div>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
+            <i class="icofont-exchange"></i>&nbsp;切换
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
+
+    <b-row class="bottom-part mb-3">
+      <b-col v-if="pageStatus==='charts'" class="charts-part">
+        <b-row class="mb-3">
+          <b-col cols="4">
+            <b-card>
+
+              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
+
+                <div class="d-flex align-items-center justify-content-around">
+                  <div class="pie-chart">
+
+                    <v-chart :options="pieChart1Options" :autoresize="true"/>
+
                   </div>
 
-                  <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
-                  </div>
 
-                  <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
-                  </div>
+                  <div class="legend-group part-1">
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">人工判图</div>
+                      <div class="value">1500</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">分派超时</div>
+                      <div class="value">500</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">判图超时</div>
+                      <div class="value">500</div>
 
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
-                  </div>
-
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">ATR</div>
+                      <div class="value">500</div>
+                    </div>
                   </div>
                 </div>
-
-                <div class="switch-wrapper">
-                  <div class="separator"></div>
-                  <div class="switch">
-                    <switches v-model="power" theme="custom" color="info"></switches>
-                  </div>
-                </div>
-              </b-col>
-            </b-row>
-
-
-          </b-card>
-        </b-col>
-        <b-col cols="9">
-          <b-card class="h-100 d-flex flex-column right-card">
-
-            <div class="history-chart">
-              <div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>开始</div>
-                  </div>
-                  <div class="right">
-                    <div>Start</div>
-                  </div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>扫描</div>
-                    <div>张三</div>
-                  </div>
-                  <div class="right">
-                    <div>Scanning</div>
-                    <div>zhang san</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>判图</div>
-                    <div>李四</div>
-                  </div>
-                  <div class="right">
-                    <div>Decision diagram</div>
-                    <div>Li si</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>查验</div>
-                    <div>王五</div>
-                  </div>
-                  <div class="right">
-                    <div>Inspection</div>
-                    <div>Wang wu</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>结束</div>
-                  </div>
-                  <div class="right">
-                    <div>End</div>
-                  </div>
-                </div>
-
               </div>
 
-            </div>
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
+              <b-card-header>
+                <h5>判图</h5>
+              </b-card-header>
+              <div class="w-100 flex-grow-1 d-flex flex-column ">
+                <div class="bar-chart-1-and-2">
 
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.task-number')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>HR201909010001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.on-site')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>北京首都机场</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.security-instrument')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>安检仪001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.image-gender')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scanned-image')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
+                  <v-chart :options="barChart1Options" :autoresize="true"/>
 
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.operation-mode')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <div>
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                </div>
+              </div>
+
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row class="mb-3">
+          <b-col cols="4">
+            <b-card>
+
+
+              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
+
+                <div class="d-flex align-items-center justify-content-around">
+                  <div class="pie-chart">
+
+                    <v-chart :options="pieChart2Options" :autoresize="true"/>
+
                   </div>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.status')}}
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.guide')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>张三</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.atr-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.foot-alarm')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
+                  <div class="legend-group part-2">
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">嫌疑</div>
+                      <div class="value">1500</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">无嫌疑</div>
+                      <div class="value">500</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.dispatch-timeout')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>TC0001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
+            </b-card>
+          </b-col>
+          <b-col cols="8">
+            <b-card>
 
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
+              <b-card-header>
+                <h5>判图</h5>
+              </b-card-header>
 
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judge')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>李四</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>张三</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:42:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-checker')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-              </b-col>
-            </b-row>
+              <div class="w-100 flex-grow-1 d-flex flex-column ">
+                <div class="bar-chart-1-and-2">
 
-            <b-row class="flex-grow-1 d-flex align-items-end">
-              <b-col class="text-right">
-                <b-button size="sm" variant="info default" @click="pageStatus='table'">
-                  <i class="icofont-long-arrow-left"></i>
-                  {{ $t('personal-inspection.return') }}
-                </b-button>
+                  <v-chart :options="barChart2Options" :autoresize="true"/>
 
-              </b-col>
-            </b-row>
+                </div>
+              </div>
 
-          </b-card>
-        </b-col>
-      </b-row>
-    </div>
+            </b-card>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-card>
+
+              <b-card-header>
+                <h5>判图</h5>
+              </b-card-header>
+
+              <div class="w-100 flex-grow-1 d-flex flex-column ">
+                <div class="bar-chart-3">
+
+                  <v-chart :options="barChart3Options" :autoresize="true"/>
+
+                </div>
+              </div>
+
+            </b-card>
+          </b-col>
+
+        </b-row>
+      </b-col>
+      <b-col v-if="pageStatus==='table'" class="table-part">
+        <b-card class="flex-grow-1 ">
+          <b-card-header>
+
+            <h5 class="text-center my-4">人体查验综合统计</h5>
+
+          </b-card-header>
+
+          <div class="flex-grow-1 ">
+            <div class="container-fluid">
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>现场:</b></b-col>
+                <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+              </b-row>
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>安检仪:</b></b-col>
+                <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+              </b-row>
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>操作员类型:</b></b-col>
+                <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+              </b-row>
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>操作员:</b></b-col>
+                <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+              </b-row>
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>时间:</b></b-col>
+                <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+              </b-row>
+              <b-row class="no-gutters mb-2">
+                <b-col cols="1"><b>统计步长:</b></b-col>
+                <b-col cols="11"><span>小时</span></b-col>
+              </b-row>
+              <b-row class="no-gutters">
+
+                <b-col cols>
+
+                  <div class="table-wrapper table-responsive">
+                    <vuetable
+                      ref="taskVuetable"
+                      :api-mode="false"
+                      :data="tempData"
+                      data-path="data"
+                      pagination-path="pagination"
+                      :fields="taskVuetableItems.fields"
+                      :per-page="taskVuetableItems.perPage"
+                      :data-total="tempData.data.length"
+                      class="table-hover"
+                      @vuetable:pagination-data="onTaskVuetablePaginationData"
+                    >
+                      <template slot="period" slot-scope="props">
+                          <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
+                            {{props.rowData.period}}
+                          </span>
+                      </template>
+                    </vuetable>
+                  </div>
+                  <div class="pagination-wrapper">
+                    <vuetable-pagination-bootstrap
+                      ref="taskVuetablePagination"
+                      @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                      :initial-per-page="taskVuetableItems.perPage"
+                      @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                    ></vuetable-pagination-bootstrap>
+                  </div>
+
+                </b-col>
+
+              </b-row>
+            </div>
+          </div>
+        </b-card>
+
+      </b-col>
+    </b-row>
 
 
   </div>
 </template>
 
-<style lang="scss">
-  span.cursor-p {
-    cursor: pointer !important;
-  }
-
-  .rounded-span {
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color: #007bff;
-  }
-
-  .operation-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .icon-container {
-    font-size: 20px;
-
-    .icofont-star {
-      color: #ffe400;
-    }
-
-    .icofont-search-user {
-      color: #ff9c0e;
-    }
-
-    .icofont-female {
-      color: #fe687f;
-    }
-  }
-
-  .control-group {
-    display: flex;
-    align-items: flex-start;
-
-    .control-btn-wrapper {
-      display: flex;
-      flex-grow: 1;
-      flex-wrap: wrap;
-
-      .control-btn {
-        width: calc(100% / 6);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 24px;
-
-
-        img {
-
-          $size: 40px;
-          width: $size;
-          height: $size;
-
-          margin-bottom: 6px;
-        }
-
-
-        span {
-          display: block;
-        }
-      }
-    }
-
-    .switch-wrapper {
-      width: 60px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-
-      .separator {
-        border: 0;
-        width: 1px;
-        height: 30px;
-        background: #1e9dd2;
-        flex-shrink: 0;
-      }
-
-      .switch {
-        .vue-switcher {
-          display: flex;
-          height: 100%;
-          margin: 0;
-          transform: scale(0.8);
-        }
-      }
-    }
-
-    @media screen and (max-width: 1700px) {
-
-      .control-btn-wrapper {
-        .control-btn {
-          img {
-            $size: 28px;
-            width: $size !important;
-            height: $size !important;
-          }
-        }
-      }
-      .switch-wrapper{
-        height: 28px;
-        .separator {
-          height: 28px;
-        }
-      }
-
-    }
-  }
-
-
-  .history-chart {
-
-    $ratio: 12.8;
-
-    width: 100%;
-    padding-bottom: 100% / $ratio;
-    position: relative;
-
-    margin-bottom: 24px;
-
-    & > :first-child {
-      left: 0;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      width: 100%;
-
-      background: url("/assets/img/history_chart.png") no-repeat;
-      background-size: contain;
-
-
-      $elements: 5;
-      @for $i from 0 to $elements {
-        .part:nth-child(#{$i + 1}) {
-          position: absolute;
-          top: 25%;
-          bottom: 25%;
-          left: 2% + 20% * $i;
-          width: 20% - 4%;
-          display: flex;
-          color: white;
-          align-items: center;
-          justify-content: space-between;
-
-          $date-color: #0c70ab;
-
-          .top-date {
-            color: $date-color;
-            position: absolute;
-            top: 104%;
-            left: -6%;
-          }
-
-          .bottom-date {
-            color: $date-color;
-            position: absolute;
-            bottom: 104%;
-            right: 2%;
-          }
-        }
-      }
-
-    }
-
-
-  }
-
-
-</style>
 
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager} from '../../../api';
-  import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
 
-  import _ from 'lodash';
+
+  import ECharts from 'vue-echarts'
+
+  import 'echarts/lib/chart/pie';
+  import 'echarts/lib/chart/bar';
+  import 'echarts/lib/component/tooltip';
+  import 'echarts/lib/component/legend';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -755,88 +505,373 @@
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'switches': Switches
+      'switches': Switches,
+      'v-chart': ECharts
     },
     mounted() {
 
     },
     data() {
+
       return {
-        isExpanded: false,
-        pageStatus: 'table',
-        filter: {
-          operationMode: null,
-          status: null,
-          onSite: null
-          // TODO: search filter
-        },
-        // TODO: select options
-        operationModeOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'security', text: this.$t('personal-inspection.security-instrument')},
-          {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
-          {
-            value: 'security+hand+device',
-            text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')
+        pieChart1Options: {
+          tooltip: {
+            trigger: 'item',
+            formatter: `
+<div style='position: relative'>
+<div style='position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right:8px solid #cccccc;'></div>
+<div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
+</div>
+`,
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
+            }
           },
-        ],
-        statusOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
-        ],
+          color: [
+            '#ff6600',
+            '#1989fa',
+            '#9900ff',
+            '#009900',
+          ],
+          series: [
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: false,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -34,
+                length2: -30
+              },
+              data: [
+                {value: 1500, name: '人工判图'},
+                {value: 500, name: '分派超时'},
+                {value: 500, name: '判图超时'},
+                {value: 500, name: 'ATR'},
+              ]
+            },
+
+          ]
+        },
+        pieChart2Options: {
+          tooltip: {
+            trigger: 'item',
+            formatter: `
+<div style='position: relative'>
+<div style='position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right:8px solid #cccccc;'></div>
+<div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
+</div>
+`,
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
+            }
+          },
+          color: [
+            '#1989fa',
+            '#ff6600'
+          ],
+          series: [
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: false,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -34,
+                length2: -30
+              },
+              data: [
+                {value: 1500, name: '嫌疑'},
+                {value: 500, name: '无嫌疑'}
+              ]
+            },
+
+          ]
+        },
+        barChart1Options: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['人工', '分派超时', '判图超时', 'ATR'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#009900', '#9900ff', '#1989fa', '#ff6600'],
+          series: [
+            {
+              name: '人工',
+              type: 'bar',
+              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+            },
+            {
+              name: '分派超时',
+              type: 'bar',
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+            },
+            {
+              name: '判图超时',
+              type: 'bar',
+              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
+            },
+            {
+              name: 'ATR',
+              type: 'bar',
+              data: [270, 132, 151, 274, 220, 300, 350, 350, 240, 120, 130, 220]
+            }
+          ]
+        },
+
+        barChart2Options: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['判图超时', 'ATR'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#1989fa', '#ff6600'],
+          series: [
+            {
+              name: '判图超时',
+              type: 'bar',
+              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+            },
+            {
+              name: 'ATR',
+              type: 'bar',
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+            },
+          ]
+        },
+
+        barChart3Options: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['平均时长', '最高时长', '最低时长'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#009900', '#ff6600', '#1989fa'],
+          series: [
+            {
+              name: '平均时长',
+              type: 'bar',
+              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+            },
+            {
+              name: '最高时长',
+              type: 'bar',
+
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+            },
+            {
+              name: '最低时长',
+              type: 'bar',
+              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
+            }
+          ]
+        },
+
+
+        isExpanded: false,
+        pageStatus: 'charts',
+
+        filter: {
+          onSite: null,
+          securityDevice: null,
+          operatorType: null,
+          operator: null,
+          time: null,
+          statisticalStepSize: 'hour',
+
+        },
         onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
+        ],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
         ],
         // TODO: refactor temp table data to api mode
         tempData: {
-            data: [1, 2, 3, 4, 5].map((e) => {
+          data: [1, 2, 3, 4, 5].map((e) => {
 
-
-                let statusSet = [
-                    "pending_dispatch",
-                    "pending_review",
-                    "while_review",
-                    "pending_inspection",
-                    "while_inspection"
-                ];
-
-                return {
-                    id: e,
-                    taskNumber: 'HR201909210001',
-                    // operationMode: 'HR201909210001',
-                    status: _.sample(statusSet),
-                    onSite: '',
-                    securityInstrument: '',
-                    guide: '张怡宁',
-                    scanStartTime: '2019-10-23.10:30',
-                    scanEndTime: '2019-10-23.10:30',
-                    judgementStation: '丹东站',
-                    judge: '张怡宁',
-                    judgementStartTime: '2019-10-23.10:30',
-                    judgementEndTime: '2019-10-23.10:30',
-                    handCheckStation: '丹东站',
-                    handChecker: '张怡宁',
-                    handCheckStartTime: '2019-10-23.10:30'
-
-                }
-            }),
-            pagination: {
-                total: 5,
-                per_page: 5,
-                current_page: 1,
-                last_page: 1,
-                from: 1,
-                to: 5
+            return {
+              id: e,
+              period: '201-1104 00:00:00-20191104 00:59:59',
             }
+          }),
+          pagination: {
+            total: 5,
+            per_page: 5,
+            current_page: 1,
+            last_page: 1,
+            from: 1,
+            to: 5
+          }
         },
 
         taskVuetableItems: {
@@ -849,541 +884,88 @@
             },
             {
               name: 'id',
-              title: this.$t('personal-inspection.serial-number'),
+              title: '序号',
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:taskNumber',
-              title: this.$t('personal-inspection.task-number'),
+              name: '__slot:period',
+              title: '时间段',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:operationMode',
-              title: this.$t('personal-inspection.operation-mode'),
+              name: 'totalScanAmount',
+              title: '扫描总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
-              title: this.$t('personal-inspection.status'),
+              name: 'validScanAmount',
+              title: '有效扫描量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'onSite',
-              title: this.$t('personal-inspection.on-site'),
+              name: 'validityPercentage',
+              title: '有效率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'securityInstrument',
-              title: this.$t('personal-inspection.security-instrument'),
+              name: 'invalidScanAmount',
+              title: '无效扫描量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'guide',
-              title: this.$t('personal-inspection.guide'),
+              name: 'invalidityPercentage',
+              title: '无效率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'scanStartTime',
-              title: this.$t('personal-inspection.scan-start-time'),
+              name: 'passAmount',
+              title: '通过量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'scanEndTime',
-              title: this.$t('personal-inspection.scan-end-time'),
+              name: 'passPercentage',
+              title: '通过率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judgementStation',
-              title: this.$t('personal-inspection.judgement-station'),
+              name: 'reportAmount',
+              title: '报警量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judge',
-              title: this.$t('personal-inspection.judge'),
+              name: 'reportPercentage',
+              title: '报警率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
-            {
-              name: 'judgementStartTime',
-              title: this.$t('personal-inspection.judgement-start-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'judgementEndTime',
-              title: this.$t('personal-inspection.judgement-end-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handCheckStation',
-              title: this.$t('personal-inspection.hand-check-station'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handChecker',
-              title: this.$t('personal-inspection.hand-checker'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handCheckStartTime',
-              title: this.$t('personal-inspection.hand-check-start-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
+
           ],
           perPage: 5,
         },
-        power: true
 
       }
     },
-    watch: {
-      'vuetableItems.perPage': function (newVal) {
-        this.$refs.vuetable.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
-      },
-      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
-
-        let nest = (items, id = 0) =>
-          items
-            .filter(item => item.parentOrgId == id)
-            .map(item => ({
-              ...item,
-              children: nest(items, item.orgId),
-              id: id++,
-              label: `${item.orgNumber} ${item.orgName}`
-            }));
-
-        this.treeData = nest(newVal)[0];
-        let getLevel = (org) => {
-
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].orgId == org.parentOrgId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
-          }
-
-          return level;
-
-        };
-
-        let generateSpace = (count) => {
-          let string = '';
-          while (count--) {
-            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-          }
-          return string;
-        };
-
-        let selectOptions = [];
-
-        newVal.forEach((org) => {
-          selectOptions.push({
-            value: org.orgId,
-            html: `${generateSpace(getLevel(org))}${org.orgName}`
-          });
-        });
-
-        this.orgNameSelectData = selectOptions;
-
-        this.filter.orgId = this.treeData.orgId;
-        this.defaultOrgId = this.treeData.orgId;
-        this.fnRefreshOrgUserTreeData();
-      },
-      userData(newVal) {
-        this.fnRefreshOrgUserTreeData();
-      },
-      selectedUserGroupItem(newVal) {
-        if (newVal) {
-          let userGroupList = [];
-          newVal.users.forEach((user) => {
-            userGroupList.push(user.userId);
-          });
-          this.userData.forEach((user) => {
-            user.selected = userGroupList.includes(user.userId);
-          });
-          this.fnRefreshOrgUserTreeData();
-        }
-      },
-      isSelectedAllUsersForDataGroup(newVal) {
-
-        if (this.selectedUserGroupItem) {
-          let tempSelectedUserGroup = this.selectedUserGroupItem;
-          tempSelectedUserGroup.users = newVal ? this.userData : [];
-          this.selectedUserGroupItem = null;
-          this.selectedUserGroupItem = tempSelectedUserGroup;
-        }
-      }
-    },
+    watch: {},
     methods: {
-      onTableListPage() {
-        this.pageStatus = 'table';
-      },
-      onRowClicked() {
-        this.pageStatus = 'show';
-      },
-      onSaveUserPage() {
-        this.submitted = true;
-        this.$v.$touch();
-        if (this.$v.$invalid) {
-          return;
-        }
-
-        const formData = new FormData();
-        for (let key in this.profileForm) {
-          if (key !== 'portrait')
-            formData.append(key, this.profileForm[key]);
-          else if (this.profileForm['portrait'] !== null)
-            formData.append(key, this.profileForm[key], this.profileForm[key].name);
-        }
-        // call api
-        let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user/` + finalLink, formData)
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                this.onInitialUserData();
-                // back to table
-                this.pageStatus = 'table';
-                break;
-              case responseMessages['used-user-account']://duplicated user account
-                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-            }
-          })
-          .catch((error) => {
-          });
-      },
-      onAction(action, data, index) {
-        let userId = data.userId;
-        switch (action) {
-          case 'modify':
-            this.fnModifyItem(data);
-            break;
-          case 'show':
-            this.fnShowItem(data);
-            break;
-          case 'reset-password':
-          case 'active':
-          case 'unblock':
-            this.fnChangeItemStatus(userId, action);
-            break;
-          case 'inactive':
-          case 'blocked':
-            this.fnShowConfDiaglog(userId, action);
-            break;
-          case 'group-remove':
-            this.fnShowUserGroupConfDiaglog(data);
-            break;
-        }
-      },
-      fnHideModal(modal) {
-        // hide modal
-        this.$refs[modal].hide();
-        this.promptTemp = {
-          userId: 0,
-          action: ''
-        }
-      },
-      fnShowConfDiaglog(userId, action) {
-        this.promptTemp.userId = userId;
-        this.promptTemp.action = action;
-        this.$refs['modal-prompt'].show();
-      },
-      fnModifyItem(data) {
-        this.onInitialUserData();
-        for (let key in this.profileForm) {
-          if (Object.keys(data).includes(key)) {
-            if (key !== 'portrait' && key !== 'avatar')
-              this.profileForm[key] = data[key];
-            else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
-          }
-        }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
-        this.pageStatus = 'create';
-      },
-      fnShowItem(data) {
-        this.onInitialUserData();
-        for (let key in this.profileForm) {
-          if (Object.keys(data).includes(key))
-            if (key !== 'portrait' && key !== 'avatar')
-              this.profileForm[key] = data[key];
-            else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
-        }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
-        this.pageStatus = 'show';
-      },
-      fnChangeItemStatus(userId = 0, action = '') {
-        if (userId === 0)
-          userId = this.promptTemp.userId;
-        if (action === '')
-          action = this.promptTemp.action;
-        let status = action;
-        if (status === 'unblock' || status === 'reset-password')
-          status = 'inactive';
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
-            'userId': userId,
-            'status': status,
-          })
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-change-status-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-
-                this.$refs.vuetable.refresh();
-
-                break;
-            }
-          })
-          .catch((error) => {
-          })
-          .finally(() => {
-            this.$refs['modal-prompt'].hide();
-          });
-
-      },
-      onFileChange(e) {
-        let files = e.target.files || e.dataTransfer.files;
-        if (!files.length)
-          return;
-        this.onCreateImage(files[0]);
-      },
-      onCreateImage(file) {
-        this.profileForm.avatar = new Image();
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          this.profileForm.avatar = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        this.profileForm.portrait = file;
-      },
       onSearchButton() {
 
       },
       onResetButton() {
 
       },
-      onInitialUserData() {
-        this.profileForm = {
-          status: 'inactive',
-          userId: 0,
-          avatar: '',
-          userName: '',
-          userNumber: '',
-          gender: '',
-          identityCard: '',
-          orgId: '',
-          post: '',
-          education: '',
-          degree: '',
-          email: '',
-          mobile: '',
-          address: '',
-          category: '',
-          userAccount: '',
-          passwordType: 'default',
-          passwordValue: '',
-          note: '',
-          portrait: null
-        }
-      },
-      transform(response) {
+      onRowClicked() {
 
-        let transformed = {};
-
-        let data = response.data;
-
-        transformed.pagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-
-        transformed.data = [];
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          temp.orgName = fnGetOrgFullName(temp.org);
-          transformed.data.push(temp)
-        }
-
-        return transformed
-
-      },
-
-      //second tab content
-      fnShowUserGroupConfDiaglog(userGroupItem) {
-        this.selectedUserGroupItem = userGroupItem;
-        this.$refs['modal-prompt-group'].show();
-      },
-      fnDeleteUserGroupItem() {
-        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
-          this.$refs['modal-prompt-group'].hide();
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-              userGroupId: this.selectedUserGroupItem.userGroupId
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-
-                  this.$refs.userGroupTable.refresh();
-                  this.selectedUserGroupItem = null;
-                  break;
-                case responseMessages['has-children']: // okay
-                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-
-              }
-            })
-            .catch((error) => {
-            })
-            .finally(() => {
-
-            });
-        }
-      },
-      fnTransformUserGroupTable(response) {
-        this.selectedUserGroupItem = null;
-        let transformed = {};
-
-        let data = response.data;
-
-        transformed.operatingLogPagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-
-        transformed.data = [];
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          transformed.data.push(temp)
-        }
-
-        return transformed
-
-      },
-      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.vuetableItems.perPage,
-          filter: {
-            userName: this.filter.userName,
-            status: this.filter.status,
-            orgId: this.filter.orgId,
-            category: this.filter.category,
-          }
-        });
-      },
-      onUserTablePaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
-      },
-      onUserTableChangePage(page) {
-        this.$refs.vuetable.changePage(page)
-      },
-      onGroupFormSubmit() {
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-
-                this.$refs.userGroupTable.refresh();
-
-                break;
-
-            }
-          })
-          .catch((error) => {
-          })
-          .finally(() => {
-            //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
-          });
-      },
-      userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.operatingLogTableItems.perPage,
-          filter: {
-            groupName: this.groupFilter.name,
-          }
-        });
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData)
@@ -1391,134 +973,357 @@
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
       },
-      onUserGroupTableRowClick(dataItems) {
-        this.selectedUserGroupItem = dataItems;
-        this.groupForm.status = 'modify';
-        console.log(this.selectedUserGroupItem);
-      },
-      // user tree group
-      fnRefreshOrgUserTreeData() {
-        let pseudoRootId = 0;
-        let nest = (orgData, userData, rootId = pseudoRootId) => {
-          let childrenOrgList = orgData
-            .filter(org => org.parentOrgId === rootId)
-            .map(org => ({
-              ...org,
-              title: org.orgName,
-              expanded: true,
-              children: nest(orgData, userData, org.orgId)
-            }));
-          let childrenUserList = userData
-            .filter(user => user.orgId === rootId)
-            .map(user => ({
-              ...user,
-              isUser: true,
-              title: user.userName,
-              expanded: true,
-              checked: user.selected,
-              children: []
-            }));
-          return [...childrenOrgList, ...childrenUserList];
-        };
-        this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
-      },
-      onUserGroupSearchButton() {
-        this.$refs.userGroupTable.refresh();
-      },
-      onUserGroupResetButton() {
-        this.groupFilter = {
-          name: null
-        };
-        this.$refs.userGroupTable.refresh();
-      },
-      onUserGroupCreateButton() {
-        this.selectedUserGroupItem = {
-          users: []
-        };
-        this.groupForm = {
-          groupNumber: null,
-          groupName: null,
-          status: 'create'
+      onDisplaceButton() {
+        if (this.pageStatus === 'charts') {
+          this.pageStatus = 'table';
+        } else {
+          this.pageStatus = 'charts';
         }
       },
-      onClickDeleteUserGroup() {
-        this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
-      },
-      onClickCreateUserGroup() {
-        if (this.selectedUserGroupItem) {
-          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-          let userGroupUserIds = [];
-          checkedNodes.forEach((node) => {
-            if (node.isUser) userGroupUserIds.push(node.userId);
-          });
-          if (userGroupUserIds.length == 0) {
-            return;
-          }
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
-              'groupName': this.groupForm.groupName,
-              'groupNumber': this.groupForm.groupNumber,
-              'userIdList': userGroupUserIds
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.userGroupTable.refresh();
-                  break;
-                default:
 
-              }
-            })
-            .catch((error) => {
 
-            }).finally(() => {
-            //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
-          });
-        }
-      },
-      onClickModifyUserGroup() {
-        if (this.selectedUserGroupItem) {
-          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-          let userGroupUserIds = [];
-          checkedNodes.forEach((node) => {
-            if (node.isUser) userGroupUserIds.push(node.userId);
-          });
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
-              'userGroupId': this.selectedUserGroupItem.userGroupId,
-              'userIdList': userGroupUserIds
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.userGroupTable.refresh();
-                  break;
-                default:
-
-              }
-            })
-            .catch((error) => {
-
-            });
-        }
-      }
     }
   }
 </script>
+
+<style lang="scss">
+  .statistics-monitors {
+
+    display: flex;
+    flex-direction: column;
+
+    .no-padding {
+      .card-body {
+        padding: 0;
+      }
+    }
+
+    .parameter-items {
+
+      & > .col:nth-child(1) {
+        flex: 1 0 0;
+        display: flex;
+      }
+
+      & > .col:nth-child(2) {
+        flex: 4 0 0;
+      }
+
+      .statistics-item {
+        display: flex;
+        align-items: center;
+        $padding-x: 50px;
+        $padding-y: 20px;
+        padding: $padding-y $padding-x;
+        justify-content: stretch;
+
+        & > div:nth-child(1) {
+          $size: 40px;
+          width: $size;
+          height: $size;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 5px;
+
+          margin-right: 20px;
+
+        }
+
+        & > div:nth-child(2) {
+          display: flex;
+          flex-direction: column;
+
+          & > div:nth-child(1) {
+            display: flex;
+
+            span {
+              font-size: 2rem;
+              font-weight: bold;
+            }
+          }
+
+          & > div:nth-child(2) {
+            display: flex;
+
+            span {
+              font-size: 1rem;
+            }
+          }
+
+
+        }
+
+        &.type-1 {
+          & > div:nth-child(1) {
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          & > div:nth-child(2) {
+            & > div:nth-child(1) {
+              span {
+                color: white;
+              }
+            }
+
+            & > div:nth-child(2) {
+              span {
+                color: white;
+              }
+            }
+          }
+        }
+
+        &.type-2 {
+          & > div:nth-child(1) {
+
+            img {
+              $size: 50%;
+              width: $size;
+              height: $size;
+            }
+          }
+        }
+
+        &.type-3 {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          & > div:nth-child(1) {
+            margin: 0;
+
+            img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          & > div:nth-child(2) {
+            margin: 8px 0;
+
+            span {
+              font-size: 2.2rem;
+              color: #fff;
+              font-weight: bold;
+            }
+          }
+
+          & > div:nth-child(3) {
+            span {
+              font-size: 1rem;
+              color: #fff;
+            }
+          }
+        }
+
+        & > div:nth-child(2) {
+          & > div:nth-child(1) {
+            span {
+              color: black;
+            }
+          }
+
+          & > div:nth-child(2) {
+            span {
+              color: #999999;
+            }
+          }
+        }
+
+
+      }
+    }
+
+
+    .bottom-part {
+      display: flex;
+      flex-grow: 1;
+
+      .charts-part {
+
+        display: flex;
+
+        flex-direction: column;
+
+        & > .row {
+
+          flex-grow: 1;
+
+          & > *:nth-child(1) {
+
+            .card-body {
+              display: flex;
+              flex-direction: column;
+
+              .pie-chart {
+                width: 250px;
+                height: 250px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+
+                .echarts {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+
+              .legend-group {
+                width: 160px;
+                display: flex;
+                flex-direction: column;
+
+                .legend-item {
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: 16px;
+
+                  .legend-icon {
+                    $size: 12px;
+                    width: $size;
+                    height: $size;
+                    border-radius: 50%;
+                    position: relative;
+                    margin-right: $size;
+
+                    &:after {
+                      content: ' ';
+                      display: block;
+                      width: $size / 2;
+                      height: $size / 2;
+                      border-radius: 50%;
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      background: #fff;
+                    }
+                  }
+
+                  .legend-name {
+                    flex-grow: 1;
+                  }
+
+                  .value {
+
+                  }
+
+
+                }
+
+                &.part-1 {
+                  .legend-item {
+
+                    &:nth-child(1) .legend-icon {
+                      background-color: #ff6600;
+                    }
+
+                    &:nth-child(2) .legend-icon {
+                      background-color: #1989fa;
+                    }
+
+                    &:nth-child(3) .legend-icon {
+                      background-color: #9900ff;
+                    }
+
+                    &:nth-child(4) .legend-icon {
+                      background-color: #009900;
+                    }
+                  }
+                }
+
+
+                &.part-2 {
+                  .legend-item {
+
+                    &:nth-child(1) .legend-icon {
+                      background-color: #1989fa;
+                    }
+
+                    &:nth-child(2) .legend-icon {
+                      background-color: #ff6600;
+                    }
+
+                  }
+                }
+
+              }
+            }
+
+          }
+
+          & > *:nth-child(2) {
+
+
+            .card-body {
+              display: flex;
+              flex-direction: column;
+
+              .bar-chart-1-and-2 {
+
+                display: flex;
+
+                height: 100%;
+
+                .echarts {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+
+            }
+
+          }
+
+          .card {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        .bar-chart-3 {
+          height: 300px;
+
+          .echarts {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+
+      .table-part {
+
+        display: flex;
+
+        .card-body {
+          display: flex;
+          flex-direction: column;
+          padding: 20px;
+        }
+
+      }
+    }
+
+
+    span.cursor-p {
+      cursor: pointer !important;
+    }
+
+    .rounded-span {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+    }
+
+  }
+</style>
+

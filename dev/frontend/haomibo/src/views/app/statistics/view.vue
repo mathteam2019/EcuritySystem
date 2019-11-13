@@ -755,7 +755,6 @@
 
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 170px);
 
     .no-padding {
       .card-body {

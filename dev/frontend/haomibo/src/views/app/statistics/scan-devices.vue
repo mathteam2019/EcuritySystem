@@ -730,7 +730,6 @@
 
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 170px);
 
     .no-padding {
       .card-body {
@@ -851,6 +850,7 @@
             span {
               font-size: 2.2rem;
               color: #fff;
+              font-weight: bold;
             }
           }
 
