@@ -433,8 +433,8 @@
             }
           },
           color: [
-            '#1989fa',
-            '#ff6600'
+            '#ff6600',
+            '#ff0000'
           ],
           series: [
             {
@@ -506,7 +506,7 @@
               show: false
             }
           },
-          color: ['#1989fa', '#ff6600'],
+          color: ['#ff6600', '#ff0000'],
           series: [
             {
               name: '判图超时',
@@ -1035,33 +1035,11 @@
 
               }
 
-              &.part-1 {
-                .legend-item {
-
-                  &:nth-child(1) .legend-icon {
-                    background-color: #ff6600;
-                  }
-
-                  &:nth-child(2) .legend-icon {
-                    background-color: #1989fa;
-                  }
-
-                  &:nth-child(3) .legend-icon {
-                    background-color: #9900ff;
-                  }
-
-                  &:nth-child(4) .legend-icon {
-                    background-color: #009900;
-                  }
-                }
-              }
-
-
               &.part-2 {
                 .legend-item {
 
                   &:nth-child(1) .legend-icon {
-                    background-color: #1989fa;
+                    background-color: #ff0000;
                   }
 
                   &:nth-child(2) .legend-icon {
