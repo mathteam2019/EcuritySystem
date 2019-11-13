@@ -201,48 +201,23 @@
     </b-row>
 
     <b-row class="bottom-part mt-3 mb-3">
-      <b-col v-if="pageStatus==='charts'" class="charts-part">
+      <b-col v-if="pageStatus==='charts-1'" class="charts-part">
         <b-row>
-          <b-col>
+          <b-col cols="4">
             <b-card>
-
-              <b-card-header>
-                <h5>工时统计</h5>
-              </b-card-header>
-              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
-                <div class="d-flex align-items-center justify-content-around">
-                  <div class="double-pie-chart">
-                    <v-chart :options="doublePieChartOptions" :autoresize="true"/>
-                  </div>
-                </div>
-                <b-row>
-                  <b-col class="legend-item">
-                    <div class="value">60%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>安检仪累计运行时长</div>
-                  </b-col>
-                  <b-col class="legend-item">
-                    <div class="value">30%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>判图站累计运行时长</div>
-                  </b-col>
-                  <b-col class="legend-item">
-                    <div class="value">10%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>手检站累计运行时长</div>
-                  </b-col>
-                </b-row>
-              </div>
-
+              <b-img src="/assets/img/brand.png" class="w-100 h-100" style="object-fit: contain; object-position: center"/>
             </b-card>
           </b-col>
-          <b-col>
+          <b-col cols="8">
             <b-card>
 
               <b-card-header>
-                <h5>工时统计</h5>
+                <h5>查获</h5>
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
                 <div class="bar-3-chart">
-                  <v-chart :options="bar3ChartOptions" :autoresize="true"/>
+                  <v-chart :options="bar3ChartOptions" style="width: 100%" :autoresize="true"/>
                 </div>
               </div>
 
@@ -250,10 +225,10 @@
           </b-col>
         </b-row>
       </b-col>
-      <b-col v-if="pageStatus==='table'">
+      <b-col v-if="pageStatus==='table-1'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">人员工时统计</h5>
+            <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
           </b-card-header>
 
           <div class="table-wrapper table-responsive">
@@ -269,11 +244,6 @@
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
-              <template slot="period" slot-scope="props">
-                        <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                          {{props.rowData.period}}
-                        </span>
-              </template>
             </vuetable>
           </div>
           <div class="pagination-wrapper">
@@ -322,87 +292,14 @@
     },
     data() {
 
-
-      let doublePieChartData = {
-        '安检仪累计运行时长': {
-          value: 800,
-          color: '#1989fa'
-        },
-        '判图站累计运行时长': {
-          value: 300,
-          color: '#ffd835',
-        },
-        '手检站累计运行时长': {
-          value: 200,
-          color: '#ff0000',
-        }
-      };
-
       return {
         isExpanded: false,
-        doublePieChartOptions: {
-          tooltip: {
-            trigger: 'item',
-            formatter: `
-              <div style='position: relative'>
-              <div style='position: absolute;
-                  left: -8px;
-                  top: 50%;
-                  transform: translateY(-50%);
-                  border-top: 8px solid transparent;
-                  border-bottom: 8px solid transparent;
-                  border-right:8px solid #cccccc;'></div>
-              <div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
-              </div>
-            `,
-            backgroundColor: 'rgba(0,0,0,0)',
-            transitionDuration: 0,
-            position: function (point, params, dom, rect, size) {
-              // fixed at top
-              return [point[0] + 8, point[1] + 8];
-            }
-          },
-          color: [
-            doublePieChartData['安检仪累计运行时长'].color,
-            doublePieChartData['判图站累计运行时长'].color,
-            doublePieChartData['手检站累计运行时长'].color
-          ],
-          series: [
-            {
-              type: 'pie',
-              hoverAnimation: false,
-              radius: ['80%', '90%'],
-              avoidLabelOverlap: false,
-              label: {
-                normal: {
-                  show: false,
-                  position: 'outside',
-                },
-              },
-              labelLine: {
-                show: false,
-                length: -34,
-                length2: -30
-              },
-              data: [
-                {value: doublePieChartData['安检仪累计运行时长'].value, name: '安检仪累计运行时长'},
-                {value: doublePieChartData['判图站累计运行时长'].value, name: '判图站累计运行时长'},
-                {value: doublePieChartData['手检站累计运行时长'].value, name: '手检站累计运行时长'},
-              ]
-            }
-          ]
-        },
         bar3ChartOptions: {
           tooltip: {
             trigger: 'axis',
             axisPointer: {
               type: 'shadow'
             }
-          },
-          legend: {
-            data: ['安检仪', '判图', '手检'],
-            icon: 'rect',
-            right: 25,
           },
           grid: {
             left: '3%',
@@ -437,39 +334,48 @@
               show: false
             }
           },
-          color: ['#ff0000', '#ffd835', '#1989fa'],
+          color: ['#1989fa'],
           series: [
             {
               name: '安检仪',
               type: 'bar',
               stack: '总量',
               data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120]
-            },
-            {
-              name: '判图',
-              type: 'bar',
-              stack: '总量',
-
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30]
-            },
-            {
-              name: '手检',
-              type: 'bar',
-              stack: '总量',
-              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30]
             }
           ]
         },
 
-        pageStatus: 'charts',
+        pageStatus: 'charts-1',
 
         // TODO: refactor temp table data to api mode
         tempData: {
           data: [1, 2, 3, 4, 5].map((e) => {
+            let statusSet = [
+              "pending_dispatch",
+              "pending_review",
+              "while_review",
+              "pending_inspection",
+              "while_inspection"
+            ];
 
             return {
               id: e,
-              period: '201-1104 00:00:00-20191104 00:59:59',
+              taskNumber: 'HR201909210001',
+              // operationMode: 'HR201909210001',
+              status: _.sample(statusSet),
+              onSite: '',
+              securityInstrument: '',
+              guide: '张怡宁',
+              scanStartTime: '2019-10-23.10:30',
+              scanEndTime: '2019-10-23.10:30',
+              judgementStation: '丹东站',
+              judge: '张怡宁',
+              judgementStartTime: '2019-10-23.10:30',
+              judgementEndTime: '2019-10-23.10:30',
+              handCheckStation: '丹东站',
+              handChecker: '张怡宁',
+              handCheckStartTime: '2019-10-23.10:30'
+
             }
           }),
           pagination: {
@@ -481,98 +387,115 @@
             to: 5
           }
         },
-
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/...`,
           fields: [
             {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
               name: 'id',
-              title: '序号',
+              title: this.$t('personal-inspection.serial-number'),
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:period',
+              name: 'toto-field-1',
               title: '时间段',
               titleClass: 'text-center',
-              dataClass: 'text-center',
+              dataClass: 'text-center'
             },
             {
-              name: 'totalScanAmount',
-              title: '扫描总量',
+              name: 'toto-field-2',
+              title: '手检总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'invalidScanAmount',
-              title: '无效扫描量',
+              name: 'toto-field-3',
+              title: '误报总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'invalidityPercentage',
-              title: '无效率',
+              name: 'toto-field-4',
+              title: '误报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'monitorAmount',
-              title: '判图量',
+              name: 'toto-field-5',
+              title: '漏报总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'handCheckAmount',
-              title: '手检量',
+              name: 'toto-field-6',
+              title: '漏报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'noSuspectAmount',
-              title: '无嫌疑量',
+              name: 'toto-field-7',
+              title: '手检（人工判图）量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'noSuspectPercentage',
-              title: '无嫌疑率',
+              name: 'toto-field-8',
+              title: '人工判图误报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'noSeizedAmount',
-              title: '无查获量',
+              name: 'toto-field-9',
+              title: '人工判图误报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'noSeizedPercentage',
-              title: '无查获率',
+              name: 'toto-field-10',
+              title: '人工判图漏报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'seizedAmount',
-              title: '查获量',
+              name: 'toto-field-11',
+              title: '人工判图漏报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'seizedPercentage',
-              title: '查获率',
+              name: 'toto-field-12',
+              title: '手检（智能判图）量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
+            {
+              name: 'toto-field-13',
+              title: '智能判图误报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-14',
+              title: '智能判图误报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-15',
+              title: '智能判图漏报量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'toto-field-16',
+              title: '智能判图漏报率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            }
           ],
           perPage: 5,
-        },
-
+        }
       }
     },
     watch: {},
@@ -593,10 +516,10 @@
         this.$refs.taskVuetable.changePage(page)
       },
       onDisplaceButton() {
-        if (this.pageStatus === 'charts') {
-          this.pageStatus = 'table';
+        if (this.pageStatus === 'charts-1') {
+          this.pageStatus = 'table-1';
         } else {
-          this.pageStatus = 'charts';
+          this.pageStatus = 'charts-1';
         }
       },
     }
@@ -727,8 +650,6 @@
           flex-grow: 1;
 
           & > .col:nth-child(1) {
-            flex: 2 1 0;
-
             .card-body {
               display: flex;
               flex-direction: column;
@@ -786,8 +707,6 @@
           }
 
           & > .col:nth-child(2) {
-            flex: 3 1 0;
-
             .card-body {
               display: flex;
               flex-direction: column;
