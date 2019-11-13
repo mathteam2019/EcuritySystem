@@ -896,56 +896,104 @@
               dataClass: 'text-center',
             },
             {
-              name: 'totalScanAmount',
-              title: '扫描总量',
+              name: 'key1',
+              title: '判图总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'validScanAmount',
-              title: '有效扫描量',
+              name: 'key2',
+              title: '人工结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'validityPercentage',
-              title: '有效率',
+              name: 'key3',
+              title: '人工结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'invalidScanAmount',
-              title: '无效扫描量',
+              name: 'key4',
+              title: '分派超时结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'invalidityPercentage',
-              title: '无效率',
+              name: 'key5',
+              title: '分派超时结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'passAmount',
-              title: '通过量',
+              name: 'key6',
+              title: '判图超时结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'passPercentage',
-              title: '通过率',
+              name: 'key7',
+              title: '判图超时结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'reportAmount',
-              title: '报警量',
+              name: 'key8',
+              title: '扫描结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'reportPercentage',
-              title: '报警率',
+              name: 'key9',
+              title: '扫描结论率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key10',
+              title: '无嫌疑量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key11',
+              title: '无嫌疑率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key12',
+              title: '嫌疑量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key13',
+              title: '嫌疑率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key14',
+              title: '人工判图时长阈值',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key15',
+              title: '人工判图平均时长',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key16',
+              title: '人工判图最高时长',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'key17',
+              title: '人工判图最低时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
