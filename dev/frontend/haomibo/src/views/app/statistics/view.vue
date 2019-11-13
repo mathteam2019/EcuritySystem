@@ -1,5 +1,5 @@
 <template>
-  <div class="statistics-view-page">
+  <div class="statistics-view">
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
@@ -72,12 +72,6 @@
           </b-button>
           <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
             <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
-            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
-          </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
-            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
       </b-col>
@@ -219,24 +213,24 @@
       </b-col>
     </b-row>
 
-    <b-row class="mt-4 mb-2">
+    <b-row class="mt-4 mb-3">
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" >
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
       </b-col>
     </b-row>
 
-    <div class="row bottom-part">
-      <div v-if="pageStatus==='charts'" class="col charts-part">
+    <b-row class="bottom-part mb-3">
+      <b-col v-if="pageStatus==='charts'" class="charts-part">
         <b-row>
           <b-col>
             <b-card>
@@ -244,7 +238,7 @@
               <b-card-header>
                 <h5>扫描</h5>
               </b-card-header>
-              <div class="w-100 flex-grow-1 d-flex flex-column">
+              <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
                 <div class="d-flex align-items-center justify-content-around">
                   <div class="double-pie-chart">
@@ -298,8 +292,8 @@
             </b-card>
           </b-col>
         </b-row>
-      </div>
-      <div v-if="pageStatus==='table'" class="col table-part">
+      </b-col>
+      <b-col v-if="pageStatus==='table'" class="table-part">
         <b-card class="flex-grow-1 ">
           <b-card-header>
 
@@ -307,33 +301,33 @@
 
           </b-card-header>
 
-          <div class="flex-grow-1 overflow-auto">
-            <div class="container-fluid" style="height: 0">
-              <div class="row no-gutters mb-2">
+          <div class="flex-grow-1 ">
+            <div class="container-fluid">
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
-              </div>
-              <div class="row no-gutters mb-2">
+              </b-row>
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
                 <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
-              </div>
-              <div class="row no-gutters mb-2">
+              </b-row>
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员类型:</b></b-col>
                 <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
-              </div>
-              <div class="row no-gutters mb-2">
+              </b-row>
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
                 <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
-              </div>
-              <div class="row no-gutters mb-2">
+              </b-row>
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
                 <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
-              </div>
-              <div class="row no-gutters mb-2">
+              </b-row>
+              <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>少时</span></b-col>
-              </div>
-              <div class="row no-gutters">
+                <b-col cols="11"><span>小时</span></b-col>
+              </b-row>
+              <b-row class="no-gutters">
 
                 <b-col cols>
 
@@ -368,13 +362,13 @@
 
                 </b-col>
 
-              </div>
+              </b-row>
             </div>
           </div>
         </b-card>
 
-      </div>
-    </div>
+      </b-col>
+    </b-row>
 
 
   </div>
@@ -516,7 +510,7 @@
           legend: {
             data: ['通过', '报警', '无效扫描'],
             icon: 'rect',
-            right: 0
+            right: 25
           },
           grid: {
             left: '3%',
@@ -757,11 +751,11 @@
 </script>
 
 <style lang="scss">
-  .statistics-view-page {
+  .statistics-view {
 
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 170px);
 
     .no-padding {
       .card-body {
@@ -972,7 +966,7 @@
 
                 display: flex;
 
-                height: 250px;
+                height: 100%;
 
                 .echarts {
                   width: 100%;
