@@ -240,22 +240,20 @@
         <b-row>
           <b-col>
             <b-card>
+
               <div class="w-100 h-100 d-flex align-items-center">
-                <div class="chart-container">
-                  <doughnut-chart :data="doughnutChartData" :height="300"/>
-                </div>
+
+                  <v-chart :options="polar"/>
+
               </div>
+
+
             </b-card>
           </b-col>
           <b-col>
             <b-card>
 
-
-              <div class="w-100 h-100 d-flex align-items-center">
-                <div class="chart-container">
-                  <bar-chart :data="barChartData" :height="300"/>
-                </div>
-              </div>
+              <h1>hello world</h1>
 
             </b-card>
           </b-col>
@@ -278,6 +276,12 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
+
+
+  import ECharts from 'vue-echarts'
+  import 'echarts/lib/chart/line'
+  import 'echarts/lib/component/polar'
+
 
   import {
     areaChartData,
@@ -303,11 +307,21 @@
       'switches': Switches,
       'doughnut-chart': DoughnutChart,
       'bar-chart': BarChart,
+      'v-chart': ECharts
     },
     mounted() {
 
     },
     data() {
+
+      let data = []
+
+      for (let i = 0; i <= 360; i++) {
+        let t = i / 180 * Math.PI
+        let r = Math.sin(2 * t) * Math.cos(2 * t)
+        data.push([r, i])
+      }
+
       return {
         lineChartData,
         polarAreaChartData,
@@ -317,6 +331,44 @@
         radarChartData,
         pieChartData,
         doughnutChartData,
+
+
+        polar: {
+          title: {
+            text: '极坐标双数值轴'
+          },
+          legend: {
+            data: ['line']
+          },
+          polar: {
+            center: ['50%', '54%']
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross'
+            }
+          },
+          angleAxis: {
+            type: 'value',
+            startAngle: 0
+          },
+          radiusAxis: {
+            min: 0
+          },
+          series: [
+            {
+              coordinateSystem: 'polar',
+              name: 'line',
+              type: 'line',
+              showSymbol: false,
+              data: data
+            }
+          ],
+          animationDuration: 2000
+        },
+
+
         isExpanded: false,
         pageStatus: 'charts',
 
