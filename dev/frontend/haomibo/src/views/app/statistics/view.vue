@@ -13,26 +13,26 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="$t('personal-inspection.task-number')">
-              <b-form-input></b-form-input>
-            </b-form-group>
-          </b-col>
-
-          <b-col>
-            <b-form-group :label="$t('personal-inspection.operation-mode')">
-              <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
-            </b-form-group>
-          </b-col>
-
-          <b-col>
-            <b-form-group :label="$t('personal-inspection.status')">
-              <b-form-select v-model="filter.status" :options="statusOptions" plain/>
-            </b-form-group>
-          </b-col>
-
-          <b-col>
-            <b-form-group :label="$t('personal-inspection.on-site')">
+            <b-form-group :label="'现场'">
               <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
+            </b-form-group>
+          </b-col>
+
+          <b-col>
+            <b-form-group :label="'安检仪'">
+              <b-form-select v-model="filter.securityDevice" :options="securityDeviceOptions" plain/>
+            </b-form-group>
+          </b-col>
+
+          <b-col>
+            <b-form-group :label="'操作员类型'">
+              <b-form-select v-model="filter.operatorType" :options="operatorTypeOptions" plain/>
+            </b-form-group>
+          </b-col>
+
+          <b-col>
+            <b-form-group :label="'操作员'">
+              <b-form-input></b-form-input>
             </b-form-group>
           </b-col>
 
@@ -47,14 +47,14 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="$t('personal-inspection.user')">
+            <b-form-group :label="'时间'">
               <b-form-input></b-form-input>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="$t('personal-inspection.time')">
-              <b-form-input></b-form-input>
+            <b-form-group :label="'统计步长'">
+              <b-form-select v-model="filter.statisticalStepSize" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
 
@@ -244,34 +244,36 @@
               <b-card-header>
                 <h5>扫描</h5>
               </b-card-header>
-              <div class="w-100 h-100 d-flex align-items-center">
+              <div class="w-100 flex-grow-1 d-flex flex-column">
 
-                <div class="double-pie-chart">
+                <div class="d-flex align-items-center justify-content-around">
+                  <div class="double-pie-chart">
 
-                  <v-chart :options="doublePieChartOptions" :autoresize="true"/>
-
-                </div>
-                <div class="legend-group">
-                  <div class="legend-item">
-                    <div class="legend-icon"></div>
-                    <div class="legend-name">无效扫描</div>
-                    <div class="value">200</div>
-                  </div>
-                  <div class="legend-item">
-                    <div class="legend-icon"></div>
-                    <div class="legend-name">报警</div>
-                    <div class="value">200</div>
-                  </div>
-                  <div class="legend-item">
-                    <div class="legend-icon"></div>
-                    <div class="legend-name">通过</div>
-                    <div class="value">500</div>
+                    <v-chart :options="doublePieChartOptions" :autoresize="true"/>
 
                   </div>
-                  <div class="legend-item">
-                    <div class="legend-icon"></div>
-                    <div class="legend-name">有效扫描</div>
-                    <div class="value">1500</div>
+                  <div class="legend-group">
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">无效扫描</div>
+                      <div class="value">200</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">报警</div>
+                      <div class="value">200</div>
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">通过</div>
+                      <div class="value">500</div>
+
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-icon"></div>
+                      <div class="legend-name">有效扫描</div>
+                      <div class="value">1500</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -281,14 +283,96 @@
           <b-col>
             <b-card>
 
-              <h1>hello world</h1>
+              <b-card-header>
+                <h5>扫描历史</h5>
+              </b-card-header>
+
+              <div class="w-100 flex-grow-1 d-flex flex-column ">
+                <div class="bar-3-chart">
+
+                  <v-chart :options="bar3ChartOptions" :autoresize="true"/>
+
+                </div>
+              </div>
 
             </b-card>
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus==='table'">
-        <h1>world</h1>
+      <div v-if="pageStatus==='table'" class="col table-part">
+        <b-card class="flex-grow-1 ">
+          <b-card-header>
+
+            <h5 class="text-center my-4">人体查验综合统计</h5>
+
+          </b-card-header>
+
+          <div class="flex-grow-1 overflow-auto">
+            <div class="container-fluid" style="height: 0">
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>现场:</b></b-col>
+                <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+              </div>
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>安检仪:</b></b-col>
+                <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+              </div>
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>操作员类型:</b></b-col>
+                <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+              </div>
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>操作员:</b></b-col>
+                <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+              </div>
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>时间:</b></b-col>
+                <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+              </div>
+              <div class="row no-gutters mb-2">
+                <b-col cols="1"><b>统计步长:</b></b-col>
+                <b-col cols="11"><span>少时</span></b-col>
+              </div>
+              <div class="row no-gutters">
+
+                <b-col cols>
+
+                  <div class="table-wrapper table-responsive">
+                    <vuetable
+                      ref="taskVuetable"
+                      :api-mode="false"
+                      :data="tempData"
+                      data-path="data"
+                      pagination-path="pagination"
+                      :fields="taskVuetableItems.fields"
+                      :per-page="taskVuetableItems.perPage"
+                      :data-total="tempData.data.length"
+                      class="table-hover"
+                      @vuetable:pagination-data="onTaskVuetablePaginationData"
+                    >
+                      <template slot="period" slot-scope="props">
+                          <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
+                            {{props.rowData.period}}
+                          </span>
+                      </template>
+                    </vuetable>
+                  </div>
+                  <div class="pagination-wrapper">
+                    <vuetable-pagination-bootstrap
+                      ref="taskVuetablePagination"
+                      @vuetable-pagination:change-page="onTaskVuetableChangePage"
+                      :initial-per-page="taskVuetableItems.perPage"
+                      @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+                    ></vuetable-pagination-bootstrap>
+                  </div>
+
+                </b-col>
+
+              </div>
+            </div>
+          </div>
+        </b-card>
+
       </div>
     </div>
 
@@ -309,11 +393,9 @@
   import ECharts from 'vue-echarts'
 
   import 'echarts/lib/chart/pie';
+  import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
-
-  import DoughnutChart from '../../../components/Charts/Doughnut';
-  import BarChart from '../../../components/Charts/Bar';
-  import _ from 'lodash';
+  import 'echarts/lib/component/legend';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -322,8 +404,6 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'doughnut-chart': DoughnutChart,
-      'bar-chart': BarChart,
       'v-chart': ECharts
     },
     mounted() {
@@ -394,7 +474,7 @@
               },
               labelLine: {
                 show: false,
-                length: -50,
+                length: -34,
                 length2: -30
               },
               data: [
@@ -416,7 +496,7 @@
               },
               labelLine: {
                 show: false,
-                length: -60,
+                length: -40,
                 length2: -15
               },
               data: [
@@ -426,74 +506,121 @@
             }
           ]
         },
+        bar3ChartOptions: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['通过', '报警', '无效扫描'],
+            icon: 'rect',
+            right: 0
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#ff6600', '#009900', '#cccccc'],
+          series: [
+            {
+              name: '报警',
+              type: 'bar',
+              stack: '总量',
+              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+            },
+            {
+              name: '通过',
+              type: 'bar',
+              stack: '总量',
+
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+            },
+            {
+              name: '无效扫描',
+              type: 'bar',
+              stack: '总量',
+              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
+            }
+          ]
+        },
 
 
         isExpanded: false,
         pageStatus: 'charts',
 
         filter: {
-          operationMode: null,
-          status: null,
-          onSite: null
-          // TODO: search filter
+          onSite: null,
+          securityDevice: null,
+          operatorType: null,
+          operator: null,
+          time: null,
+          statisticalStepSize: 'hour',
+
         },
-        // TODO: select options
-        operationModeOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'security', text: this.$t('personal-inspection.security-instrument')},
-          {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
-          {
-            value: 'security+hand+device',
-            text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')
-          },
-        ],
-        statusOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
-        ],
         onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
+        ],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
         ],
         // TODO: refactor temp table data to api mode
         tempData: {
           data: [1, 2, 3, 4, 5].map((e) => {
 
-
-            let statusSet = [
-              "pending_dispatch",
-              "pending_review",
-              "while_review",
-              "pending_inspection",
-              "while_inspection"
-            ];
-
             return {
               id: e,
-              taskNumber: 'HR201909210001',
-              // operationMode: 'HR201909210001',
-              status: _.sample(statusSet),
-              onSite: '',
-              securityInstrument: '',
-              guide: '张怡宁',
-              scanStartTime: '2019-10-23.10:30',
-              scanEndTime: '2019-10-23.10:30',
-              judgementStation: '丹东站',
-              judge: '张怡宁',
-              judgementStartTime: '2019-10-23.10:30',
-              judgementEndTime: '2019-10-23.10:30',
-              handCheckStation: '丹东站',
-              handChecker: '张怡宁',
-              handCheckStartTime: '2019-10-23.10:30'
-
+              period: '201-1104 00:00:00-20191104 00:59:59',
             }
           }),
           pagination: {
@@ -516,98 +643,80 @@
             },
             {
               name: 'id',
-              title: this.$t('personal-inspection.serial-number'),
+              title: '序号',
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:taskNumber',
-              title: this.$t('personal-inspection.task-number'),
+              name: '__slot:period',
+              title: '时间段',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: '__slot:operationMode',
-              title: this.$t('personal-inspection.operation-mode'),
+              name: 'totalScanAmount',
+              title: '扫描总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
-              title: this.$t('personal-inspection.status'),
+              name: 'invalidScanAmount',
+              title: '无效扫描量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'onSite',
-              title: this.$t('personal-inspection.on-site'),
+              name: 'invalidityPercentage',
+              title: '无效率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'securityInstrument',
-              title: this.$t('personal-inspection.security-instrument'),
+              name: 'monitorAmount',
+              title: '判图量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'guide',
-              title: this.$t('personal-inspection.guide'),
+              name: 'handCheckAmount',
+              title: '手检量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'scanStartTime',
-              title: this.$t('personal-inspection.scan-start-time'),
+              name: 'noSuspectAmount',
+              title: '无嫌疑量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'scanEndTime',
-              title: this.$t('personal-inspection.scan-end-time'),
+              name: 'noSuspectPercentage',
+              title: '无嫌疑率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judgementStation',
-              title: this.$t('personal-inspection.judgement-station'),
+              name: 'noSeizedAmount',
+              title: '无查获量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judge',
-              title: this.$t('personal-inspection.judge'),
+              name: 'noSeizedPercentage',
+              title: '无查获率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judgementStartTime',
-              title: this.$t('personal-inspection.judgement-start-time'),
+              name: 'seizedAmount',
+              title: '查获量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'judgementEndTime',
-              title: this.$t('personal-inspection.judgement-end-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handCheckStation',
-              title: this.$t('personal-inspection.hand-check-station'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handChecker',
-              title: this.$t('personal-inspection.hand-checker'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handCheckStartTime',
-              title: this.$t('personal-inspection.hand-check-start-time'),
+              name: 'seizedPercentage',
+              title: '查获率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -624,6 +733,15 @@
       },
       onResetButton() {
 
+      },
+      onRowClicked() {
+
+      },
+      onTaskVuetablePaginationData(paginationData) {
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+      },
+      onTaskVuetableChangePage(page) {
+        this.$refs.taskVuetable.changePage(page)
       },
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
@@ -764,70 +882,101 @@
           & > .col:nth-child(1) {
             flex: 2 1 0;
 
-            display: flex;
-            align-items: center;
-
-            .double-pie-chart {
-              width: 70%;
-              height: 400px;
-              display: flex;
-              align-items: center;
-            }
-
-            .legend-group {
-              width: 30%;
+            .card-body {
               display: flex;
               flex-direction: column;
 
-              .legend-item {
+              .double-pie-chart {
+                width: 250px;
+                height: 250px;
                 display: flex;
                 align-items: center;
-                margin-bottom: 16px;
+                justify-content: flex-start;
 
-                .legend-icon {
-                  $size: 12px;
-                  width: $size;
-                  height: $size;
-                  border-radius: 50%;
-                  position: relative;
-                  margin-right: $size;
+                .echarts {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
 
-                  &:after {
-                    content: ' ';
-                    display: block;
-                    width: $size / 2;
-                    height: $size / 2;
+              .legend-group {
+                width: 160px;
+                display: flex;
+                flex-direction: column;
+
+                .legend-item {
+                  display: flex;
+                  align-items: center;
+                  margin-bottom: 16px;
+
+                  .legend-icon {
+                    $size: 12px;
+                    width: $size;
+                    height: $size;
                     border-radius: 50%;
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: #fff;
+                    position: relative;
+                    margin-right: $size;
+
+                    &:after {
+                      content: ' ';
+                      display: block;
+                      width: $size / 2;
+                      height: $size / 2;
+                      border-radius: 50%;
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      background: #fff;
+                    }
+                  }
+
+                  .legend-name {
+                    flex-grow: 1;
+                  }
+
+                  .value {
+
+                  }
+
+                  &:nth-child(1) .legend-icon {
+                    background-color: #cccccc;
+                  }
+
+                  &:nth-child(2) .legend-icon {
+                    background-color: #1989fa;
+                  }
+
+                  &:nth-child(3) .legend-icon {
+                    background-color: #ff6600;
+                  }
+
+                  &:nth-child(4) .legend-icon {
+                    background-color: #009900;
                   }
                 }
 
-                .legend-name {
-                  flex-grow: 1;
-                }
+              }
+            }
 
-                .value {
+          }
 
-                }
+          & > .col:nth-child(2) {
+            flex: 3 1 0;
 
-                &:nth-child(1) .legend-icon {
-                  background-color: #cccccc;
-                }
+            .card-body {
+              display: flex;
+              flex-direction: column;
 
-                &:nth-child(2) .legend-icon {
-                  background-color: #1989fa;
-                }
+              .bar-3-chart {
 
-                &:nth-child(3) .legend-icon {
-                  background-color: #ff6600;
-                }
+                display: flex;
 
-                &:nth-child(4) .legend-icon {
-                  background-color: #009900;
+                height: 250px;
+
+                .echarts {
+                  width: 100%;
+                  height: 100%;
                 }
               }
 
@@ -835,17 +984,22 @@
 
           }
 
-          & > .col:nth-child(2) {
-            flex: 3 1 0;
-          }
-
           .card {
+            width: 100%;
             height: 100%;
           }
         }
       }
 
       .table-part {
+
+        display: flex;
+
+        .card-body {
+          display: flex;
+          flex-direction: column;
+          padding: 20px;
+        }
 
       }
     }
