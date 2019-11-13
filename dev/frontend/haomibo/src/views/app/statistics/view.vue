@@ -241,9 +241,9 @@
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
                 <div class="d-flex align-items-center justify-content-around">
-                  <div class="double-pie-chart">
+                  <div>
 
-                    <v-chart :options="doublePieChartOptions" :autoresize="true"/>
+                    <v-chart :options="doublePieChartOptions" :autoresize="true" style="width:300px; height: 300px;"/>
 
                   </div>
                   <div class="legend-group">
@@ -282,9 +282,9 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div class="bar-3-chart">
+                <div>
 
-                  <v-chart :options="bar3ChartOptions" :autoresize="true"/>
+                  <v-chart :options="bar3ChartOptions" :autoresize="true" style="width: 100%; height: 300px;"/>
 
                 </div>
               </div>
@@ -405,26 +405,6 @@
     },
     data() {
 
-
-      let doublePieChartData = {
-        '无效扫描': {
-          value: 200,
-          color: '#cccccc'
-        },
-        '有效扫描': {
-          value: 1500,
-          color: '#1989fa',
-        },
-        '报警': {
-          value: 200,
-          color: '#ff6600',
-        },
-        '通过': {
-          value: 500,
-          color: '#009900'
-        },
-      };
-
       return {
         doublePieChartOptions: {
           tooltip: {
@@ -449,10 +429,10 @@
             }
           },
           color: [
-            doublePieChartData['无效扫描'].color,
-            doublePieChartData['有效扫描'].color,
-            doublePieChartData['报警'].color,
-            doublePieChartData['通过'].color,
+            '#cccccc',
+            '#1989fa',
+            '#ff6600',
+            '#009900',
           ],
           series: [
             {
@@ -472,8 +452,8 @@
                 length2: -30
               },
               data: [
-                {value: doublePieChartData['无效扫描'].value, name: '无效扫描'},
-                {value: doublePieChartData['有效扫描'].value, name: '有效扫描'},
+                {value: 200, name: '无效扫描'},
+                {value: 1500, name: '有效扫描'},
               ]
             },
             {
@@ -494,8 +474,8 @@
                 length2: -15
               },
               data: [
-                {value: doublePieChartData['报警'].value, name: '报警'},
-                {value: doublePieChartData['通过'].value, name: '通过'},
+                {value: 200, name: '报警'},
+                {value: 500, name: '通过'},
               ]
             }
           ]
@@ -879,18 +859,7 @@
               display: flex;
               flex-direction: column;
 
-              .double-pie-chart {
-                width: 250px;
-                height: 250px;
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
 
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
 
               .legend-group {
                 width: 160px;
@@ -961,17 +930,7 @@
               display: flex;
               flex-direction: column;
 
-              .bar-3-chart {
 
-                display: flex;
-
-                height: 100%;
-
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
 
             }
 

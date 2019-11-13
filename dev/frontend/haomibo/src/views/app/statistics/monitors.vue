@@ -322,9 +322,9 @@
                 <h5>判图</h5>
               </b-card-header>
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div class="bar-chart-1-and-2">
+                <div>
 
-                  <v-chart :options="barChart1Options" :autoresize="true"/>
+                  <v-chart :options="barChart1Options" :autoresize="true" style="width: 100%; height: 300px;"/>
 
                 </div>
               </div>
@@ -370,9 +370,9 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div class="bar-chart-1-and-2">
+                <div >
 
-                  <v-chart :options="barChart2Options" :autoresize="true"/>
+                  <v-chart :options="barChart2Options" :autoresize="true" style="width: 100%; height: 300px;"/>
 
                 </div>
               </div>
@@ -389,9 +389,8 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div class="bar-chart-3">
-
-                  <v-chart :options="barChart3Options" :autoresize="true"/>
+                <div >
+                  <v-chart :options="barChart3Options" :autoresize="true" style="width: 100%; height:300px;"/>
 
                 </div>
               </div>
@@ -1211,8 +1210,8 @@
               flex-direction: column;
 
               .pie-chart {
-                width: 250px;
-                height: 250px;
+                width: 300px;
+                height: 300px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
@@ -1314,17 +1313,7 @@
               display: flex;
               flex-direction: column;
 
-              .bar-chart-1-and-2 {
 
-                display: flex;
-
-                height: 100%;
-
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
 
             }
 
@@ -1336,14 +1325,7 @@
           }
         }
 
-        .bar-chart-3 {
-          height: 300px;
 
-          .echarts {
-            width: 100%;
-            height: 100%;
-          }
-        }
       }
 
       .table-part {

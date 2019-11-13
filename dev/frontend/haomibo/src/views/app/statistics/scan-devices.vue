@@ -133,7 +133,7 @@
                   <b-img src="/assets/img/forbidden.svg"/>
                 </div>
                 <div>
-                  <div><span>75</span></div>
+                  <div><span>25%</span></div>
                   <div><span>无效扫描率</span></div>
                 </div>
               </div>
@@ -161,7 +161,7 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>80</span></div>
+                  <div><span>80%</span></div>
                   <div><span>通过率</span></div>
                 </div>
               </div>
@@ -187,7 +187,7 @@
                   <b-img src="/assets/img/bell_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>20</span></div>
+                  <div><span>20%</span></div>
                   <div><span>报警率</span></div>
                 </div>
               </div>
@@ -226,9 +226,9 @@
               <div class="w-100 flex-grow-1 d-flex flex-column justify-content-around">
 
                 <div class="d-flex align-items-center justify-content-around">
-                  <div class="double-pie-chart">
+                  <div>
 
-                    <v-chart :options="doublePieChartOptions" :autoresize="true"/>
+                    <v-chart :options="doublePieChartOptions" :autoresize="true" style="width: 300px; height: 300px;"/>
 
                   </div>
                   <div class="legend-group">
@@ -267,9 +267,9 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div class="bar-3-chart">
+                <div >
 
-                  <v-chart :options="bar3ChartOptions" :autoresize="true"/>
+                  <v-chart :options="bar3ChartOptions" :autoresize="true" style="width: 100%; height: 300px;"/>
 
                 </div>
               </div>
@@ -899,18 +899,7 @@
               display: flex;
               flex-direction: column;
 
-              .double-pie-chart {
-                width: 250px;
-                height: 250px;
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
 
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
 
               .legend-group {
                 width: 160px;
@@ -980,18 +969,6 @@
             .card-body {
               display: flex;
               flex-direction: column;
-
-              .bar-3-chart {
-
-                display: flex;
-
-                height: 100%;
-
-                .echarts {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
 
             }
 
