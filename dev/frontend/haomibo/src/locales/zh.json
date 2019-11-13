@@ -261,6 +261,8 @@
     "organization-deactivated-successfully": "机构失效成功",
     "organization-deleted-successfully": "机构删除成功",
     "user-change-status-successfully": "User Status changed successfully.",
+    "user-modify-successfully": "人员修改成功",
+    "user-created-successfully": "人员创建成功",
     "assign-permission-management": {
       "assign-to-user": "人员授权",
       "assign-to-group": "人员组授权",
