@@ -98,7 +98,15 @@
     "time-task": "定时任务",
     "routine-plan": "例行计划",
     "maintenance-task": "维保任务",
-    "history-record": "历史记录"
+    "history-record": "历史记录",
+    "statistics": "综合统计",
+    "statistics-view": "统计预览",
+    "statistics-scan-devices": "扫描统计",
+    "statistics-monitors": "判图统计",
+    "statistics-hand-checks": "手检统计",
+    "statistics-evaluate-monitors": "评价判图",
+    "statistics-working-hours": "人员工时统计",
+    "statistics-operating-hours": "设备运行时长统计"
   },
   "pages": {
     "project-name": "欢迎访问统一管理系统",
