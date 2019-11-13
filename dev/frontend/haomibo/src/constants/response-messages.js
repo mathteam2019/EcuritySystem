@@ -1,6 +1,7 @@
 export const responseMessages = {
   'ok': 'ok',
   'invalid-parameter': 'invalid_parameter',
+  'forbidden': 'forbidden',
   'user-not-found': 'user_not_found',
   'invalid-password': 'invalid_password',
   'token-expired': 'token_expired',

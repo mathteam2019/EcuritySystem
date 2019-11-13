@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -15,9 +16,9 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Table(name = "sys_role_resource")
-public class SysRoleResource implements Serializable {
+public class SysRoleResource extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,22 +30,6 @@ public class SysRoleResource implements Serializable {
 
     @Column(name = "ROLE_ID", length = 20)
     Long roleId;
-
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
-
 
 
 }

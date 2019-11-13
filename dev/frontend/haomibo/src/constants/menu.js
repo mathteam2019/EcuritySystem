@@ -8,7 +8,7 @@ const data = [
   },
   {
     id: "permission-management",
-    icon: "simple-icon-shield",
+    icon: "icofont-shield",
     label: "menu.permission-management",
     to: "/app/permission-management",
     newWindow: false,
@@ -47,14 +47,21 @@ const data = [
   },
   {
     id: "site-management",
-    icon: "simple-icon-location-pin",
+    icon: "icofont-location-pin",
     label: "menu.site-management",
     to: "/app/site-management",
     newWindow: false,
   },
   {
+    id: "system-setting",
+    icon: "icofont-gears",
+    label: "menu.system-setting",
+    to: "/app/system-setting",
+    newWindow: false,
+  },
+  {
     id: "device-management",
-    icon: "simple-icon-puzzle",
+    icon: "icofont-site-map",
     label: "menu.device-management",
     to: "/app/device-management",
     newWindow: false,
@@ -104,15 +111,8 @@ const data = [
     ]
   },
   {
-    id: "system-setting",
-    icon: "simple-icon-settings",
-    label: "menu.system-setting",
-    to: "/app/system-setting",
-    newWindow: false,
-  },
-  {
     id: "log-management",
-    icon: "simple-icon-note",
+    icon: "icofont-list",
     label: "menu.log-management",
     to: "/app/log-management",
     newWindow: false,
@@ -135,7 +135,7 @@ const data = [
   },
   {
     id: "personal-inspection",
-    icon: "simple-icon-user-following",
+    icon: "icofont-users-alt-4",
     label: "menu.personal-inspection",
     to: "/app/personal-inspection",
     newWindow: false,
@@ -164,8 +164,66 @@ const data = [
     ]
   },
   {
+    id: "statistics",
+    icon: "icofont-chart-pie",
+    label: "menu.statistics",
+    to: "/app/statistics",
+    newWindow: false,
+    subs: [
+      {
+        id: 'statistics-*-view',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-view",
+        to: "/app/statistics/view",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-scan-devices',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-scan-devices",
+        to: "/app/statistics/scan-devices",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-monitors',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-monitors",
+        to: "/app/statistics/monitors",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-hand-checks',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-hand-checks",
+        to: "/app/statistics/hand-checks",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-evaluate-monitors',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-evaluate-monitors",
+        to: "/app/statistics/evaluate-monitors",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-working-hours',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-working-hours",
+        to: "/app/statistics/working-hours",
+        newWindow: false
+      },
+      {
+        id: 'statistics-*-operating-hours',
+        icon: "simple-icon-equalizer",
+        label: "menu.statistics-operating-hours",
+        to: "/app/statistics/operating-hours",
+        newWindow: false
+      },
+    ]
+  },
+  {
     id: "black-list",
-    icon: "simple-icon-user-unfollow",
+    icon: "icofont-thief",
     label: "menu.black-list",
     to: "/app/black-list",
     newWindow: false,
@@ -181,7 +239,7 @@ const data = [
   },
   {
     id: "knowledge-base",
-    icon: "simple-icon-layers",
+    icon: "icofont-notebook",
     label: "menu.knowledge-base",
     to: "/app/knowledge-base",
     newWindow: false,
@@ -204,7 +262,7 @@ const data = [
   },
   {
     id: "maintenance-management",
-    icon: "simple-icon-wrench",
+    icon: "icofont-tools",
     label: "menu.maintenance-management",
     to: "/app/maintenance-management",
     newWindow: false,

@@ -1,6 +1,7 @@
 package com.haomibo.haomibo.models.db;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,9 +14,9 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Table(name = "sys_data_group_user")
-public class SysDataGroupUser implements Serializable {
+public class SysDataGroupUser extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,22 +28,6 @@ public class SysDataGroupUser implements Serializable {
 
     @Column(name = "DATA_GROUP_ID", length = 20)
     Long dataGroupId;
-
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
-
 
 }
 

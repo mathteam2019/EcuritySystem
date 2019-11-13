@@ -98,7 +98,22 @@
     "time-task": "定时任务",
     "routine-plan": "例行计划",
     "maintenance-task": "维保任务",
-    "history-record": "历史记录"
+    "history-record": "历史记录",
+    "statistics": "综合统计",
+    "statistics-view": "统计预览",
+    "statistics-scan-devices": "扫描统计",
+    "statistics-monitors": "判图统计",
+    "statistics-hand-checks": "手检统计",
+    "statistics-evaluate-monitors": "评价判图",
+    "statistics-working-hours": "人员工时统计",
+    "statistics-operating-hours": "设备运行时长统计",
+    "view": "统计预览",
+    "scan-devices": "扫描统计",
+    "monitors": "判图统计",
+    "hand-checks": "手检统计",
+    "evaluate-monitors": "评价判图",
+    "working-hours": "人员工时统计",
+    "operating-hours": "设备运行时长统计"
   },
   "pages": {
     "project-name": "欢迎访问统一管理系统",
@@ -492,6 +507,17 @@
       "wave-security-device": "MW毫米波安检仪",
       "huawei-m6-tablet": "华为M6平板",
       "template": "模板"
+    },
+    "device-monitoring": {
+      "disk-space" :"磁盘空间",
+      "main-acquire-card":"主采集卡",
+      "from-acquire-card":"从采集卡",
+      "servo":"伺服",
+      "slider-position":"滑块位置",
+      "emergency-stop":"急停",
+      "footstep-alarm":"脚步报警",
+      "data-monitor":"流量监控",
+      "landing-time":"登陆时间"
     }
   },
   "system-setting": {
@@ -929,7 +955,9 @@
   },
   "api-call-error-messages": {
     "error-title": "错误",
-    "network-error": "网路错误"
+    "network-error": "网路错误",
+    "forbidden": "That action is forbidden",
+    "invalid-parameter": "Unknown error is occurred"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

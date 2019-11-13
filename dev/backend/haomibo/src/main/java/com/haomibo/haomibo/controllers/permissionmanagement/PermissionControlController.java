@@ -265,8 +265,12 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Create first.
-        SysRole sysRole = sysRoleRepository.save(requestBody.convert2SysRole());
+        // Create role with created info.
+        SysRole sysRole = sysRoleRepository.save(
+                (SysRole) requestBody
+                        .convert2SysRole()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+        );
 
         // Get resource Id list from request.
         List<Long> resourceIdList = requestBody.getResourceIdList();
@@ -311,11 +315,15 @@ public class PermissionControlController extends BaseController {
 
         // Save relation.
         List<SysRoleResource> relationList = sysResourceList.stream()
-                .map(sysResource -> SysRoleResource
-                        .builder()
-                        .roleId(sysRole.getRoleId())
-                        .resourceId(sysResource.getResourceId())
-                        .build()).collect(Collectors.toList());
+                .map(
+                        sysResource -> (SysRoleResource) SysRoleResource
+                                .builder()
+                                .roleId(sysRole.getRoleId())
+                                .resourceId(sysResource.getResourceId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         sysRoleResourceRepository.saveAll(relationList);
 
@@ -440,13 +448,21 @@ public class PermissionControlController extends BaseController {
 
         // Save relation.
         List<SysRoleResource> relationList = sysResourceList.stream()
-                .map(sysResource -> SysRoleResource
-                        .builder()
-                        .roleId(sysRole.getRoleId())
-                        .resourceId(sysResource.getResourceId())
-                        .build()).collect(Collectors.toList());
+                .map(
+                        sysResource -> (SysRoleResource) SysRoleResource
+                                .builder()
+                                .roleId(sysRole.getRoleId())
+                                .resourceId(sysResource.getResourceId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         sysRoleResourceRepository.saveAll(relationList);
+
+        // Add edited info.
+        sysRole.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysRoleRepository.save(sysRole);
 
         return new CommonResponseBody(ResponseMessage.OK);
 
@@ -479,6 +495,18 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+
+        if (sysRoleUserRepository.exists(QSysRoleUser.sysRoleUser.roleId.eq(sysRole.getRoleId()))) {
+            // If there are users assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (sysUserGroupRoleRepository.exists(QSysUserGroupRole.sysUserGroupRole.roleId.eq(sysRole.getRoleId()))) {
+            // If there are user groups assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+        }
+
+
         sysRoleRepository.delete(
                 SysRole
                         .builder()
@@ -504,8 +532,12 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Create data group first.
-        SysDataGroup sysDataGroup = sysDataGroupRepository.save(requestBody.convert2SysDataGroup());
+        // Create data group with created info.
+        SysDataGroup sysDataGroup = sysDataGroupRepository.save(
+                (SysDataGroup) requestBody
+                        .convert2SysDataGroup()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+        );
 
         // Get user Id list from the request.
         List<Long> userIdList = requestBody.getUserIdList();
@@ -514,12 +546,17 @@ public class PermissionControlController extends BaseController {
         // Generate relation list with valid UserIds which are filtered by comparing to database.
         List<SysDataGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> SysDataGroupUser
-                        .builder()
-                        .dataGroupId(sysDataGroup.getDataGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                false
+        )
+                .map(
+                        sysUser -> (SysDataGroupUser) SysDataGroupUser
+                                .builder()
+                                .dataGroupId(sysDataGroup.getDataGroupId())
+                                .userId(sysUser.getUserId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
@@ -615,15 +652,24 @@ public class PermissionControlController extends BaseController {
         // Generate relation list with valid UserIds which are filtered by comparing to database.
         List<SysDataGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> SysDataGroupUser
-                        .builder()
-                        .dataGroupId(sysDataGroup.getDataGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                false
+        )
+                .map(
+                        sysUser -> (SysDataGroupUser) SysDataGroupUser
+                                .builder()
+                                .dataGroupId(sysDataGroup.getDataGroupId())
+                                .userId(sysUser.getUserId())
+                                .build()
+                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
+
+        // Add edited info.
+        sysDataGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDataGroupRepository.save(sysDataGroup);
 
         return new CommonResponseBody(ResponseMessage.OK);
 
@@ -653,6 +699,16 @@ public class PermissionControlController extends BaseController {
         if (!sysDataGroup.getUsers().isEmpty()) {
             // If data group has users, it can't be deleted.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
+
+        if (sysUserLookupRepository.exists(QSysUserLookup.sysUserLookup.dataGroupId.eq(sysDataGroup.getDataGroupId()))) {
+            // If there are users assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (sysUserGroupLookupRepository.exists(QSysUserGroupLookup.sysUserGroupLookup.dataGroupId.eq(sysDataGroup.getDataGroupId()))) {
+            // If there are user groups assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
 
         sysDataGroupRepository.delete(

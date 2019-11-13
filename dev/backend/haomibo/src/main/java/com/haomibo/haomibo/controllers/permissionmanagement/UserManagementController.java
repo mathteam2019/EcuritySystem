@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -82,6 +83,7 @@ public class UserManagementController extends BaseController {
         String post;
         String education;
         String degree;
+        @Email
         String email;
         String mobile;
         String address;
@@ -148,6 +150,7 @@ public class UserManagementController extends BaseController {
         String post;
         String education;
         String degree;
+        @Email
         String email;
         String mobile;
         String address;
@@ -230,7 +233,6 @@ public class UserManagementController extends BaseController {
                     SysUser.Gender.FEMALE + "|" +
                     SysUser.Gender.OTHER)
             String gender;
-
 
 
         }
@@ -404,6 +406,9 @@ public class UserManagementController extends BaseController {
         }
 
 
+        // Add created info.
+        sysUser.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+
         sysUserRepository.save(sysUser);
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -471,6 +476,9 @@ public class UserManagementController extends BaseController {
             }
 
         }
+
+        // Add edited info.
+        sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
 
@@ -582,7 +590,11 @@ public class UserManagementController extends BaseController {
         }
 
         SysUser sysUser = optionalSysUser.get();
+
         sysUser.setStatus(requestBody.getStatus());
+
+        // Add created info.
+        sysUser.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
 
@@ -644,15 +656,19 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Create user group.
+        // Create user group with created info.
+
+
         SysUserGroup sysUserGroup = sysUserGroupRepository.save(
-                SysUserGroup
+                (SysUserGroup) SysUserGroup
                         .builder()
                         .groupName(requestBody.getGroupName())
                         .groupNumber(requestBody.getGroupNumber())
                         .note(requestBody.getNote())
                         .build()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
         );
+
 
         List<Long> userIdList = requestBody.getUserIdList();
 
@@ -660,11 +676,14 @@ public class UserManagementController extends BaseController {
         List<SysUserGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
                 false)
-                .map(sysUser -> SysUserGroupUser
+                .map(sysUser -> (SysUserGroupUser) SysUserGroupUser
                         .builder()
                         .userGroupId(sysUserGroup.getUserGroupId())
                         .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                        .build()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysUserGroupUserRepository.saveAll(relationList);
@@ -770,14 +789,21 @@ public class UserManagementController extends BaseController {
         List<SysUserGroupUser> relationList = StreamSupport.stream(
                 sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
                 false)
-                .map(sysUser -> SysUserGroupUser
+                .map(sysUser -> (SysUserGroupUser) SysUserGroupUser
                         .builder()
                         .userGroupId(sysUserGroup.getUserGroupId())
                         .userId(sysUser.getUserId())
-                        .build()).collect(Collectors.toList());
+                        .build()
+                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
+                )
+                .collect(Collectors.toList());
 
         // Save.
         sysUserGroupUserRepository.saveAll(relationList);
+
+        // Add edited info.
+        sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysUserGroupRepository.save(sysUserGroup);
 
         return new CommonResponseBody(ResponseMessage.OK);
 
