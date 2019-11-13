@@ -219,7 +219,7 @@
       </b-col>
     </b-row>
 
-    <b-row class="mt-4 mb-2">
+    <b-row class="mt-4 mb-3">
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
@@ -235,7 +235,7 @@
       </b-col>
     </b-row>
 
-    <div class="row bottom-part">
+    <div class="row bottom-part mb-3">
       <div v-if="pageStatus==='charts'" class="col charts-part">
         <b-row>
           <b-col>
@@ -307,8 +307,8 @@
 
           </b-card-header>
 
-          <div class="flex-grow-1 overflow-auto">
-            <div class="container-fluid" style="height: 0">
+          <div class="flex-grow-1 ">
+            <div class="container-fluid">
               <div class="row no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
