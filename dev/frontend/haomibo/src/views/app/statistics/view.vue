@@ -219,780 +219,79 @@
       </b-col>
     </b-row>
 
+    <b-row class="mt-4 mb-2">
+      <b-col class="d-flex justify-content-end align-items-center">
+        <div>
+          <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
+            <i class="icofont-exchange"></i>&nbsp;切换
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default">
+            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+          </b-button>
+          <b-button size="sm" class="ml-2" variant="outline-info default">
+            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
 
-    <b-card class="main-without-tab" v-if="pageStatus === 'table'" style="margin-top: 20px;">
-      <div class="h-100 d-flex flex-column">
+    <div class="row bottom-part">
+      <div v-if="pageStatus==='charts'" class="col charts-part">
+        <b-row>
+          <b-col>
+            <b-card>
+              <div class="w-100 h-100 d-flex align-items-center">
+                <div class="chart-container">
+                  <doughnut-chart :data="doughnutChartData" :height="300"/>
+                </div>
+              </div>
+            </b-card>
+          </b-col>
+          <b-col>
+            <b-card>
 
-        <b-row class="flex-grow-1">
-          <b-col cols="12">
-            <div class="table-wrapper table-responsive">
-              <vuetable
-                ref="taskVuetable"
-                :api-mode="false"
-                :data="tempData"
-                data-path="data"
-                pagination-path="pagination"
-                :fields="taskVuetableItems.fields"
-                :per-page="taskVuetableItems.perPage"
-                :data-total="tempData.data.length"
-                class="table-hover"
-                @vuetable:pagination-data="onTaskVuetablePaginationData"
-              >
-                <template slot="taskNumber" slot-scope="props">
-                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                      {{props.rowData.taskNumber}}
-                    </span>
-                </template>
-                <template slot="operationMode" slot-scope="props">
-                  <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                  <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                  <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                </template>
-                <template slot="status" slot-scope="props">
-                  <div v-if="props.rowData.status === 'pending_dispatch'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-dispatch')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'pending_review'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-review')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'while_review'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-review')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'pending_inspection'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-inspection')}}
-                  </div>
-                  <div v-if="props.rowData.status === 'while_inspection'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-inspection')}}
-                  </div>
 
-                </template>
-              </vuetable>
-            </div>
-            <div class="pagination-wrapper">
-              <vuetable-pagination-bootstrap
-                ref="taskVuetablePagination"
-                @vuetable-pagination:change-page="onTaskVuetableChangePage"
-                :initial-per-page="taskVuetableItems.perPage"
-                @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
-            </div>
+              <div class="w-100 h-100 d-flex align-items-center">
+                <div class="chart-container">
+                  <bar-chart :data="barChartData" :height="300"/>
+                </div>
+              </div>
+
+            </b-card>
           </b-col>
         </b-row>
       </div>
-    </b-card>
-    <div v-if="pageStatus === 'show'">
-      <b-row class="fill-main">
-        <b-col cols="3">
-          <b-card class="pt-4 h-100">
-            <b-row class="mb-1">
-              <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
-              </b-col>
-              <b-col class="text-right icon-container">
-                <span><i class="icofont-star"></i></span>
-                <span><i class="icofont-search-user"></i></span>
-                <span><i class="icofont-female"></i></span>
-              </b-col>
-            </b-row>
-
-            <b-row class="mb-4">
-              <b-col>
-                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
-              </b-col>
-              <b-col>
-                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
-              </b-col>
-            </b-row>
-
-            <b-row class="mb-2">
-              <b-col class="control-group">
-                <div class="control-btn-wrapper">
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
-                  </div>
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
-                  </div>
-
-
-                  <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
-                    <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
-                  </div>
-                </div>
-
-                <div class="switch-wrapper">
-                  <div class="separator"></div>
-                  <div class="switch">
-                    <switches v-model="power" theme="custom" color="info"></switches>
-                  </div>
-                </div>
-              </b-col>
-            </b-row>
-
-
-          </b-card>
-        </b-col>
-        <b-col cols="9">
-          <b-card class="h-100 d-flex flex-column right-card">
-
-            <div class="history-chart">
-              <div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>开始</div>
-                  </div>
-                  <div class="right">
-                    <div>Start</div>
-                  </div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>扫描</div>
-                    <div>张三</div>
-                  </div>
-                  <div class="right">
-                    <div>Scanning</div>
-                    <div>zhang san</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>判图</div>
-                    <div>李四</div>
-                  </div>
-                  <div class="right">
-                    <div>Decision diagram</div>
-                    <div>Li si</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>查验</div>
-                    <div>王五</div>
-                  </div>
-                  <div class="right">
-                    <div>Inspection</div>
-                    <div>Wang wu</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>结束</div>
-                  </div>
-                  <div class="right">
-                    <div>End</div>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.task-number')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>HR201909010001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.on-site')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>北京首都机场</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.security-instrument')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>安检仪001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.image-gender')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scanned-image')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.operation-mode')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <div>
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
-                  </div>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.status')}}
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.guide')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>张三</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.atr-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.foot-alarm')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:40:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.dispatch-timeout')}}
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>TC0001</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无嫌疑</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>无</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station-identification')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>全部</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:41:05</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judge')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>李四</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>张三</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>20190921 10:42:05</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-checker')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>男</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-              </b-col>
-            </b-row>
-
-            <b-row class="flex-grow-1 d-flex align-items-end">
-              <b-col class="text-right">
-                <b-button size="sm" variant="info default" @click="pageStatus='table'">
-                  <i class="icofont-long-arrow-left"></i>
-                  {{ $t('personal-inspection.return') }}
-                </b-button>
-
-              </b-col>
-            </b-row>
-
-          </b-card>
-        </b-col>
-      </b-row>
+      <div v-if="pageStatus==='table'">
+        <h1>world</h1>
+      </div>
     </div>
 
 
   </div>
 </template>
 
-<style lang="scss">
-  .statistics-view-page {
-    .no-padding {
-      .card-body {
-        padding: 0;
-      }
-    }
-
-    .statistics-item {
-      display: flex;
-      align-items: center;
-      $padding-x: 50px;
-      $padding-y: 20px;
-      padding: $padding-y $padding-x;
-      justify-content: stretch;
-
-      & > div:nth-child(1) {
-        $size: 40px;
-        width: $size;
-        height: $size;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 5px;
-
-        margin-right: 20px;
-
-      }
-
-      & > div:nth-child(2) {
-        display: flex;
-        flex-direction: column;
-
-        & > div:nth-child(1) {
-          display: flex;
-
-          span {
-            font-size: 2rem;
-            font-weight: bold;
-          }
-        }
-
-        & > div:nth-child(2) {
-          display: flex;
-
-          span {
-            font-size: 1.2rem;
-          }
-        }
-
-
-      }
-
-      &.type-1 {
-        & > div:nth-child(1) {
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        }
-
-        & > div:nth-child(2) {
-          & > div:nth-child(1) {
-            span {
-              color: white;
-            }
-          }
-
-          & > div:nth-child(2) {
-            span {
-              color: white;
-            }
-          }
-        }
-      }
-
-      &.type-2 {
-        & > div:nth-child(1) {
-
-          img {
-            $size: 40%;
-            width: $size;
-            height: $size;
-          }
-        }
-      }
-
-      & > div:nth-child(2) {
-        & > div:nth-child(1) {
-          span {
-            color: black;
-          }
-        }
-
-        & > div:nth-child(2) {
-          span {
-            color: #999999;
-          }
-        }
-      }
-
-
-    }
-
-
-    span.cursor-p {
-      cursor: pointer !important;
-    }
-
-    .rounded-span {
-      width: 20px;
-      height: 20px;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #007bff;
-    }
-
-    .operation-icon {
-      width: 24px;
-      height: 24px;
-    }
-
-    .icon-container {
-      font-size: 20px;
-
-      .icofont-star {
-        color: #ffe400;
-      }
-
-      .icofont-search-user {
-        color: #ff9c0e;
-      }
-
-      .icofont-female {
-        color: #fe687f;
-      }
-    }
-
-    .control-group {
-      display: flex;
-      align-items: flex-start;
-
-      .control-btn-wrapper {
-        display: flex;
-        flex-grow: 1;
-        flex-wrap: wrap;
-
-        .control-btn {
-          width: calc(100% / 6);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 24px;
-
-
-          img {
-
-            $size: 40px;
-            width: $size;
-            height: $size;
-
-            margin-bottom: 6px;
-          }
-
-
-          span {
-            display: block;
-          }
-        }
-      }
-
-      .switch-wrapper {
-        width: 60px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-
-        .separator {
-          border: 0;
-          width: 1px;
-          height: 30px;
-          background: #1e9dd2;
-          flex-shrink: 0;
-        }
-
-        .switch {
-          .vue-switcher {
-            display: flex;
-            height: 100%;
-            margin: 0;
-            transform: scale(0.8);
-          }
-        }
-      }
-
-      @media screen and (max-width: 1700px) {
-
-        .control-btn-wrapper {
-          .control-btn {
-            img {
-              $size: 28px;
-              width: $size !important;
-              height: $size !important;
-            }
-          }
-        }
-        .switch-wrapper {
-          height: 28px;
-
-          .separator {
-            height: 28px;
-          }
-        }
-
-      }
-    }
-
-
-    .history-chart {
-
-      $ratio: 12.8;
-
-      width: 100%;
-      padding-bottom: 100% / $ratio;
-      position: relative;
-
-      margin-bottom: 24px;
-
-      & > :first-child {
-        left: 0;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        width: 100%;
-
-        background: url("/assets/img/history_chart.png") no-repeat;
-        background-size: contain;
-
-
-        $elements: 5;
-        @for $i from 0 to $elements {
-          .part:nth-child(#{$i + 1}) {
-            position: absolute;
-            top: 25%;
-            bottom: 25%;
-            left: 2% + 20% * $i;
-            width: 20% - 4%;
-            display: flex;
-            color: white;
-            align-items: center;
-            justify-content: space-between;
-
-            $date-color: #0c70ab;
-
-            .top-date {
-              color: $date-color;
-              position: absolute;
-              top: 104%;
-              left: -6%;
-            }
-
-            .bottom-date {
-              color: $date-color;
-              position: absolute;
-              bottom: 104%;
-              right: 2%;
-            }
-          }
-        }
-
-      }
-
-
-    }
-
-  }
-</style>
 
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager} from '../../../api';
-  import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
 
+  import {
+    areaChartData,
+    barChartData,
+    doughnutChartData,
+    lineChartData,
+    pieChartData,
+    polarAreaChartData,
+    radarChartData,
+    scatterChartData
+  } from '../../../data/charts';
+
+  import DoughnutChart from '../../../components/Charts/Doughnut';
+  import BarChart from '../../../components/Charts/Bar';
   import _ from 'lodash';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
@@ -1001,15 +300,26 @@
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'switches': Switches
+      'switches': Switches,
+      'doughnut-chart': DoughnutChart,
+      'bar-chart': BarChart,
     },
     mounted() {
 
     },
     data() {
       return {
+        lineChartData,
+        polarAreaChartData,
+        areaChartData,
+        scatterChartData,
+        barChartData,
+        radarChartData,
+        pieChartData,
+        doughnutChartData,
         isExpanded: false,
-        pageStatus: 'table',
+        pageStatus: 'charts',
+
         filter: {
           operationMode: null,
           status: null,
@@ -1193,578 +503,185 @@
           ],
           perPage: 5,
         },
-        power: true
 
       }
     },
-    watch: {
-      'vuetableItems.perPage': function (newVal) {
-        this.$refs.vuetable.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
-      },
-      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
-
-        let nest = (items, id = 0) =>
-          items
-            .filter(item => item.parentOrgId == id)
-            .map(item => ({
-              ...item,
-              children: nest(items, item.orgId),
-              id: id++,
-              label: `${item.orgNumber} ${item.orgName}`
-            }));
-
-        this.treeData = nest(newVal)[0];
-        let getLevel = (org) => {
-
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].orgId == org.parentOrgId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
-          }
-
-          return level;
-
-        };
-
-        let generateSpace = (count) => {
-          let string = '';
-          while (count--) {
-            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-          }
-          return string;
-        };
-
-        let selectOptions = [];
-
-        newVal.forEach((org) => {
-          selectOptions.push({
-            value: org.orgId,
-            html: `${generateSpace(getLevel(org))}${org.orgName}`
-          });
-        });
-
-        this.orgNameSelectData = selectOptions;
-
-        this.filter.orgId = this.treeData.orgId;
-        this.defaultOrgId = this.treeData.orgId;
-        this.fnRefreshOrgUserTreeData();
-      },
-      userData(newVal) {
-        this.fnRefreshOrgUserTreeData();
-      },
-      selectedUserGroupItem(newVal) {
-        if (newVal) {
-          let userGroupList = [];
-          newVal.users.forEach((user) => {
-            userGroupList.push(user.userId);
-          });
-          this.userData.forEach((user) => {
-            user.selected = userGroupList.includes(user.userId);
-          });
-          this.fnRefreshOrgUserTreeData();
-        }
-      },
-      isSelectedAllUsersForDataGroup(newVal) {
-
-        if (this.selectedUserGroupItem) {
-          let tempSelectedUserGroup = this.selectedUserGroupItem;
-          tempSelectedUserGroup.users = newVal ? this.userData : [];
-          this.selectedUserGroupItem = null;
-          this.selectedUserGroupItem = tempSelectedUserGroup;
-        }
-      }
-    },
+    watch: {},
     methods: {
-      onTableListPage() {
-        this.pageStatus = 'table';
-      },
-      onRowClicked() {
-        this.pageStatus = 'show';
-      },
-      onSaveUserPage() {
-        this.submitted = true;
-        this.$v.$touch();
-        if (this.$v.$invalid) {
-          return;
-        }
-
-        const formData = new FormData();
-        for (let key in this.profileForm) {
-          if (key !== 'portrait')
-            formData.append(key, this.profileForm[key]);
-          else if (this.profileForm['portrait'] !== null)
-            formData.append(key, this.profileForm[key], this.profileForm[key].name);
-        }
-        // call api
-        let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user/` + finalLink, formData)
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                this.onInitialUserData();
-                // back to table
-                this.pageStatus = 'table';
-                break;
-              case responseMessages['used-user-account']://duplicated user account
-                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
-                  duration: 3000,
-                  permanent: false
-                });
-                break;
-            }
-          })
-          .catch((error) => {
-          });
-      },
-      onAction(action, data, index) {
-        let userId = data.userId;
-        switch (action) {
-          case 'modify':
-            this.fnModifyItem(data);
-            break;
-          case 'show':
-            this.fnShowItem(data);
-            break;
-          case 'reset-password':
-          case 'active':
-          case 'unblock':
-            this.fnChangeItemStatus(userId, action);
-            break;
-          case 'inactive':
-          case 'blocked':
-            this.fnShowConfDiaglog(userId, action);
-            break;
-          case 'group-remove':
-            this.fnShowUserGroupConfDiaglog(data);
-            break;
-        }
-      },
-      fnHideModal(modal) {
-        // hide modal
-        this.$refs[modal].hide();
-        this.promptTemp = {
-          userId: 0,
-          action: ''
-        }
-      },
-      fnShowConfDiaglog(userId, action) {
-        this.promptTemp.userId = userId;
-        this.promptTemp.action = action;
-        this.$refs['modal-prompt'].show();
-      },
-      fnModifyItem(data) {
-        this.onInitialUserData();
-        for (let key in this.profileForm) {
-          if (Object.keys(data).includes(key)) {
-            if (key !== 'portrait' && key !== 'avatar')
-              this.profileForm[key] = data[key];
-            else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
-          }
-        }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
-        this.pageStatus = 'create';
-      },
-      fnShowItem(data) {
-        this.onInitialUserData();
-        for (let key in this.profileForm) {
-          if (Object.keys(data).includes(key))
-            if (key !== 'portrait' && key !== 'avatar')
-              this.profileForm[key] = data[key];
-            else if (key === 'portrait')
-              this.profileForm.avatar = apiBaseUrl + data['portrait'];
-        }
-        this.profileForm.portrait = null;
-        this.profileForm.passwordType = 'default';
-        this.pageStatus = 'show';
-      },
-      fnChangeItemStatus(userId = 0, action = '') {
-        if (userId === 0)
-          userId = this.promptTemp.userId;
-        if (action === '')
-          action = this.promptTemp.action;
-        let status = action;
-        if (status === 'unblock' || status === 'reset-password')
-          status = 'inactive';
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
-            'userId': userId,
-            'status': status,
-          })
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-change-status-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-
-                this.$refs.vuetable.refresh();
-
-                break;
-            }
-          })
-          .catch((error) => {
-          })
-          .finally(() => {
-            this.$refs['modal-prompt'].hide();
-          });
-
-      },
-      onFileChange(e) {
-        let files = e.target.files || e.dataTransfer.files;
-        if (!files.length)
-          return;
-        this.onCreateImage(files[0]);
-      },
-      onCreateImage(file) {
-        this.profileForm.avatar = new Image();
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          this.profileForm.avatar = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        this.profileForm.portrait = file;
-      },
       onSearchButton() {
 
       },
       onResetButton() {
 
       },
-      onInitialUserData() {
-        this.profileForm = {
-          status: 'inactive',
-          userId: 0,
-          avatar: '',
-          userName: '',
-          userNumber: '',
-          gender: '',
-          identityCard: '',
-          orgId: '',
-          post: '',
-          education: '',
-          degree: '',
-          email: '',
-          mobile: '',
-          address: '',
-          category: '',
-          userAccount: '',
-          passwordType: 'default',
-          passwordValue: '',
-          note: '',
-          portrait: null
+      onDisplaceButton() {
+        if (this.pageStatus === 'charts') {
+          this.pageStatus = 'table';
+        } else {
+          this.pageStatus = 'charts';
         }
       },
-      transform(response) {
 
-        let transformed = {};
 
-        let data = response.data;
-
-        transformed.pagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-
-        transformed.data = [];
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          temp.orgName = fnGetOrgFullName(temp.org);
-          transformed.data.push(temp)
-        }
-
-        return transformed
-
-      },
-
-      //second tab content
-      fnShowUserGroupConfDiaglog(userGroupItem) {
-        this.selectedUserGroupItem = userGroupItem;
-        this.$refs['modal-prompt-group'].show();
-      },
-      fnDeleteUserGroupItem() {
-        if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
-          this.$refs['modal-prompt-group'].hide();
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-              userGroupId: this.selectedUserGroupItem.userGroupId
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']: // okay
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-
-                  this.$refs.userGroupTable.refresh();
-                  this.selectedUserGroupItem = null;
-                  break;
-                case responseMessages['has-children']: // okay
-                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  break;
-
-              }
-            })
-            .catch((error) => {
-            })
-            .finally(() => {
-
-            });
-        }
-      },
-      fnTransformUserGroupTable(response) {
-        this.selectedUserGroupItem = null;
-        let transformed = {};
-
-        let data = response.data;
-
-        transformed.operatingLogPagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-
-        transformed.data = [];
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          transformed.data.push(temp)
-        }
-
-        return transformed
-
-      },
-      userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.vuetableItems.perPage,
-          filter: {
-            userName: this.filter.userName,
-            status: this.filter.status,
-            orgId: this.filter.orgId,
-            category: this.filter.category,
-          }
-        });
-      },
-      onUserTablePaginationData(paginationData) {
-        this.$refs.pagination.setPaginationData(paginationData)
-      },
-      onUserTableChangePage(page) {
-        this.$refs.vuetable.changePage(page)
-      },
-      onGroupFormSubmit() {
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-
-                this.$refs.userGroupTable.refresh();
-
-                break;
-
-            }
-          })
-          .catch((error) => {
-          })
-          .finally(() => {
-            //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
-          });
-      },
-      userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.operatingLogTableItems.perPage,
-          filter: {
-            groupName: this.groupFilter.name,
-          }
-        });
-      },
-      onTaskVuetablePaginationData(paginationData) {
-        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
-      },
-      onTaskVuetableChangePage(page) {
-        this.$refs.taskVuetable.changePage(page)
-      },
-      onUserGroupTableRowClick(dataItems) {
-        this.selectedUserGroupItem = dataItems;
-        this.groupForm.status = 'modify';
-        console.log(this.selectedUserGroupItem);
-      },
-      // user tree group
-      fnRefreshOrgUserTreeData() {
-        let pseudoRootId = 0;
-        let nest = (orgData, userData, rootId = pseudoRootId) => {
-          let childrenOrgList = orgData
-            .filter(org => org.parentOrgId === rootId)
-            .map(org => ({
-              ...org,
-              title: org.orgName,
-              expanded: true,
-              children: nest(orgData, userData, org.orgId)
-            }));
-          let childrenUserList = userData
-            .filter(user => user.orgId === rootId)
-            .map(user => ({
-              ...user,
-              isUser: true,
-              title: user.userName,
-              expanded: true,
-              checked: user.selected,
-              children: []
-            }));
-          return [...childrenOrgList, ...childrenUserList];
-        };
-        this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
-      },
-      onUserGroupSearchButton() {
-        this.$refs.userGroupTable.refresh();
-      },
-      onUserGroupResetButton() {
-        this.groupFilter = {
-          name: null
-        };
-        this.$refs.userGroupTable.refresh();
-      },
-      onUserGroupCreateButton() {
-        this.selectedUserGroupItem = {
-          users: []
-        };
-        this.groupForm = {
-          groupNumber: null,
-          groupName: null,
-          status: 'create'
-        }
-      },
-      onClickDeleteUserGroup() {
-        this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
-      },
-      onClickCreateUserGroup() {
-        if (this.selectedUserGroupItem) {
-          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-          let userGroupUserIds = [];
-          checkedNodes.forEach((node) => {
-            if (node.isUser) userGroupUserIds.push(node.userId);
-          });
-          if (userGroupUserIds.length == 0) {
-            return;
-          }
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
-              'groupName': this.groupForm.groupName,
-              'groupNumber': this.groupForm.groupNumber,
-              'userIdList': userGroupUserIds
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.userGroupTable.refresh();
-                  break;
-                default:
-
-              }
-            })
-            .catch((error) => {
-
-            }).finally(() => {
-            //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
-          });
-        }
-      },
-      onClickModifyUserGroup() {
-        if (this.selectedUserGroupItem) {
-          let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-          let userGroupUserIds = [];
-          checkedNodes.forEach((node) => {
-            if (node.isUser) userGroupUserIds.push(node.userId);
-          });
-          getApiManager()
-            .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
-              'userGroupId': this.selectedUserGroupItem.userGroupId,
-              'userIdList': userGroupUserIds
-            })
-            .then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                    duration: 3000,
-                    permanent: false
-                  });
-                  this.$refs.userGroupTable.refresh();
-                  break;
-                default:
-
-              }
-            })
-            .catch((error) => {
-
-            });
-        }
-      }
     }
   }
 </script>
+
+<style lang="scss">
+  .statistics-view-page {
+
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 190px);
+
+    .no-padding {
+      .card-body {
+        padding: 0;
+      }
+    }
+
+    .statistics-item {
+      display: flex;
+      align-items: center;
+      $padding-x: 50px;
+      $padding-y: 20px;
+      padding: $padding-y $padding-x;
+      justify-content: stretch;
+
+      & > div:nth-child(1) {
+        $size: 40px;
+        width: $size;
+        height: $size;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+
+        margin-right: 20px;
+
+      }
+
+      & > div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+
+        & > div:nth-child(1) {
+          display: flex;
+
+          span {
+            font-size: 2rem;
+            font-weight: bold;
+          }
+        }
+
+        & > div:nth-child(2) {
+          display: flex;
+
+          span {
+            font-size: 1rem;
+          }
+        }
+
+
+      }
+
+      &.type-1 {
+        & > div:nth-child(1) {
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        & > div:nth-child(2) {
+          & > div:nth-child(1) {
+            span {
+              color: white;
+            }
+          }
+
+          & > div:nth-child(2) {
+            span {
+              color: white;
+            }
+          }
+        }
+      }
+
+      &.type-2 {
+        & > div:nth-child(1) {
+
+          img {
+            $size: 50%;
+            width: $size;
+            height: $size;
+          }
+        }
+      }
+
+      & > div:nth-child(2) {
+        & > div:nth-child(1) {
+          span {
+            color: black;
+          }
+        }
+
+        & > div:nth-child(2) {
+          span {
+            color: #999999;
+          }
+        }
+      }
+
+
+    }
+
+
+    .bottom-part {
+      display: flex;
+      flex-grow: 1;
+
+      .charts-part {
+
+        display: flex;
+
+        & > .row {
+
+          flex-grow: 1;
+
+          & > .col:nth-child(1) {
+            flex: 2 1 0;
+          }
+
+          & > .col:nth-child(2) {
+            flex: 3 1 0;
+          }
+
+          .card {
+            height: 100%;
+          }
+        }
+      }
+
+      .table-part {
+
+      }
+    }
+
+
+    span.cursor-p {
+      cursor: pointer !important;
+    }
+
+    .rounded-span {
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #007bff;
+    }
+
+  }
+</style>
+
