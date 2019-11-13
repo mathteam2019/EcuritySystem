@@ -104,8 +104,8 @@
               <b-img src="/assets/img/check.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>1500</span></div>
+              <div><span>有效扫描</span></div>
             </div>
           </div>
         </b-card>
@@ -117,8 +117,8 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>500</span></div>
+              <div><span>通过</span></div>
             </div>
           </div>
         </b-card>
@@ -130,8 +130,8 @@
               <b-img src="/assets/img/bell_icon.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>500</span></div>
+              <div><span>报警</span></div>
             </div>
           </div>
         </b-card>
@@ -143,8 +143,8 @@
               <b-img src="/assets/img/forbidden.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>500</span></div>
+              <div><span>无效扫描</span></div>
             </div>
           </div>
         </b-card>
@@ -159,8 +159,8 @@
               <b-img src="/assets/img/picture.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>1500</span></div>
+              <div><span>判图</span></div>
             </div>
           </div>
         </b-card>
@@ -172,8 +172,8 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>1200</span></div>
+              <div><span>无嫌疑</span></div>
             </div>
           </div>
         </b-card>
@@ -185,8 +185,8 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>300</span></div>
+              <div><span>手检</span></div>
             </div>
           </div>
         </b-card>
@@ -198,8 +198,8 @@
               <b-img src="/assets/img/glass_delete_icon.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>200</span></div>
+              <div><span>无查获</span></div>
             </div>
           </div>
         </b-card>
@@ -211,8 +211,8 @@
               <b-img src="/assets/img/glass_check_icon.svg"/>
             </div>
             <div>
-              <div><span>2000</span></div>
-              <div><span>扫描</span></div>
+              <div><span>100</span></div>
+              <div><span>查获</span></div>
             </div>
           </div>
         </b-card>
@@ -721,7 +721,7 @@
       justify-content: stretch;
 
       & > div:nth-child(1) {
-        $size: 50px;
+        $size: 40px;
         width: $size;
         height: $size;
 
@@ -785,8 +785,9 @@
         & > div:nth-child(1) {
 
           img {
-            width: 80%;
-            height: 80%;
+            $size: 40%;
+            width: $size;
+            height: $size;
           }
         }
       }
