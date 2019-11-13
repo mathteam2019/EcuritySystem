@@ -937,6 +937,16 @@
       "position": "场地"
     }
   },
+  "statistics": {
+    "evaluate-monitors": {
+      "on-site":"现场",
+      "security-device":"安检仪",
+      "hand-checker":"手检员",
+      "time":"时间",
+      "step-size":"统计步长",
+      "displacement":"切换"
+    }
+  },
   "error-404": {
     "it-is-indeed": "是的，的确如此！"
   },
@@ -964,6 +974,5 @@
     "items": "条记录",
     "total": "共",
     "record": "条"
-
   }
 }
