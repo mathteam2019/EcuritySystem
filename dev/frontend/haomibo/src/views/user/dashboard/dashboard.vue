@@ -2,7 +2,7 @@
   <div class="dashboard-container d-flex flex-column">
     <b-row>
       <b-col cols="12">
-        <b-img src="/assets/img/admin_home_main_banner.png" fluid-grow class="shadow-sm"/>
+        <b-img src="/assets/img/user_home_main_banner.png" fluid-grow class="shadow-sm"/>
       </b-col>
     </b-row>
     <b-row class="d-flex flex-grow-1 align-items-center kcb-mt-20">

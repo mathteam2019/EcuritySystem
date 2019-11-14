@@ -218,6 +218,40 @@ export const isLoggedIn = () => {
   return false;
 };
 
+
+export const isLoggedInAsAdmin = () => {
+  let loginInfo = getLoginInfo();
+
+  let now = Math.floor(Date.now() / 1000);
+
+  if (loginInfo.user
+    && loginInfo.user.category === 'admin'
+    && loginInfo.token
+    && loginInfo.token.expirationTimestamp
+    && loginInfo.token.expirationTimestamp > now) {
+    return true;
+  }
+
+  return false;
+};
+
+export const isLoggedInAsUser = () => {
+  let loginInfo = getLoginInfo();
+
+  let now = Math.floor(Date.now() / 1000);
+
+  if (loginInfo.user
+    && loginInfo.user.category === 'normal'
+    && loginInfo.token
+    && loginInfo.token.expirationTimestamp
+    && loginInfo.token.expirationTimestamp > now) {
+    return true;
+  }
+
+  return false;
+};
+
+
 export const doRefreshToken = () => {
 
   if (!isLoggedIn()) {

@@ -4,7 +4,7 @@ import App from './App'
 // BootstrapVue add
 import BootstrapVue from 'bootstrap-vue'
 // Router & Store add
-import router from './router'
+import router from './router/router'
 import { store } from './store'
 // Multi Language Add
 import en from './locales/en.json'
@@ -74,7 +74,7 @@ Vue.use(VueScrollTo)
 export default new Vue({
   el: '#app',
   i18n,
-  router,
+  router: router,
   store,
   render: h => h(App)
 })

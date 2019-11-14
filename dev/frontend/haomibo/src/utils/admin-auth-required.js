@@ -1,19 +1,15 @@
-import {isLoggedIn} from "./index";
+import {isLoggedInAsAdmin} from "./index";
 
 export default (to, from, next) => {
 
 
-  console.log(to, from, next);
-
-  if (isLoggedIn()) {
+  if (isLoggedInAsAdmin()) {
 
     next();
 
   } else {
 
     localStorage.removeItem('loginInfo');
-
-
 
     next('/admin/auth/login');
 

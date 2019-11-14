@@ -38,12 +38,16 @@
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
   "login":{
-    "title":"统一权限管理系统",
+    "admin-title":"统一权限管理系统",
+    "user-title":"综合业务平台",
     "enter-user-email": "输入用户账号",
-    "enter-user-password": "请输入人员密码"
+    "enter-user-password": "请输入人员密码",
+    "not-admin-role": "这用户不是系统管理员",
+    "not-normal-role": "这用户不是普通职员"
   },
   "menu": {
     "admin": "主场",
+    "user": "主场",
     "piaf": "Piaf",
     "second-menu": "Second Menu",
     "second": "Second",

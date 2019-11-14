@@ -10,8 +10,8 @@
   </div>
 </template>
 <script>
-import Sidebar from '@/containers/Sidebar'
-import TopNav from '@/containers/TopNav'
+import Sidebar from './containers/Sidebar';
+import TopNav from './containers/TopNav';
 import { mapGetters } from 'vuex'
 
 export default {

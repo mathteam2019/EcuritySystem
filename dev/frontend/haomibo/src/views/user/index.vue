@@ -1,20 +1,29 @@
 <template>
-    <div id="root">
-        <div class="fixed-background"></div>
-        <main>
-            <div class="container">
-                <router-view/>
-            </div>
-        </main>
-    </div>
+  <div id="app-container" :class="getMenuType">
+    <top-nav/>
+    <sidebar/>
+    <main>
+      <div class="container-fluid">
+        <router-view/>
+      </div>
+    </main>
+  </div>
 </template>
 <script>
+import Sidebar from './containers/Sidebar';
+import TopNav from './containers/TopNav';
+import { mapGetters } from 'vuex'
+
 export default {
-  mounted () {
-    document.body.classList.add('background')
+  data () {
+    return { show: false }
   },
-  beforeDestroy () {
-    document.body.classList.remove('background')
+  components: {
+    TopNav,
+    Sidebar
+  },
+  computed: {
+    ...mapGetters(['getMenuType'])
   }
 }
 </script>

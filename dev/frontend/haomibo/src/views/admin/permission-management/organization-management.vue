@@ -371,7 +371,7 @@
             <div class="table-responsive h-100">
               <div class="bg-organization-structure text-center">
                 <h3 style="font-size: 2rem;color: #1a3035" class="font-weight-bold my-4 mb-5 pb-4">
-                  <span>{{$t('login.title')}}</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
+                  <span>{{$t('login.admin-title')}}</span> <span style="color: #047a98">{{$t('permission-management.organization-structure')}}</span>
                 </h3>
                 <vue2-org-tree
                   :data="treeData"

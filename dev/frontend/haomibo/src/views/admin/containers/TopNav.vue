@@ -40,7 +40,7 @@
         <b-dropdown class="dropdown-menu-right" right variant="empty" toggle-class="p-0" menu-class="mt-3" no-caret>
           <template slot="button-content" v-if="currentUser">
             <span>
-                <img :alt="currentUser.title" :src="currentUser.img"/>
+                <img :alt="currentUser.title" :src="portrait" @error="portraitOnError"/>
             </span>
             <span class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
@@ -48,7 +48,7 @@
         </b-dropdown>
       </div>
       <div class="d-inline-block">
-        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="logout" />
+        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="logout"/>
       </div>
     </div>
   </nav>
@@ -56,27 +56,14 @@
 
 <script>
   import Switches from 'vue-switches'
-  import notifications from '../data/notifications'
+  import notifications from '../../../data/notifications'
 
-  import {
-    mapGetters,
-    mapMutations,
-    mapActions
-  } from 'vuex'
-  import {
-    MenuIcon,
-    MobileMenuIcon
-  } from '../components/Svg'
-  import {
-    searchPath,
-    menuHiddenBreakpoint,
-    localeOptions,
-    defaultColor
-  } from '../constants/config'
-  import {
-    getDirection,
-    setDirection
-  } from '../utils'
+  import {mapActions, mapGetters, mapMutations} from 'vuex'
+  import {MenuIcon, MobileMenuIcon} from '../../../components/Svg'
+  import {apiBaseUrl, defaultColor, localeOptions, menuHiddenBreakpoint} from '../../../constants/config'
+  import {getDirection, removeLoginInfo, setDirection} from '../../../utils'
+  import {getApiManager} from "../../../api";
+  import {responseMessages} from "../../../constants/response-messages";
 
   export default {
     components: {
@@ -90,16 +77,23 @@
         menuHiddenBreakpoint,
         localeOptions,
         notifications,
+        portrait: ''
       }
+    },
+    mounted () {
+      this.portrait = `${apiBaseUrl}${this.currentUser.portrait}`;
     },
     methods: {
       ...mapMutations(['changeSideMenuStatus', 'changeSideMenuForMobile']),
-      ...mapActions(['setLang', 'signOut']),
+      ...mapActions(['setLang']),
 
+      portraitOnError(e) {
+        this.portrait = '/assets/img/user_placeholder.png';
+      },
       changeLocale(l) {
         let locale = l.id;
         let direction = l.direction;
-        const currentDirection = getDirection().direction
+        const currentDirection = getDirection().direction;
         if (direction !== currentDirection) {
           setDirection(direction)
         }
@@ -109,16 +103,34 @@
 
       getLocaleIcon() {
         const locale = this.$i18n.locale;
-        for(let l of localeOptions) {
-            if(l.id === locale) return l.icon;
+        for (let l of localeOptions) {
+          if (l.id === locale) return l.icon;
         }
         return localeOptions[1].icon;
       },
 
       logout() {
-        this.signOut().then(() => {
-          this.$router.push('/admin/auth/login')
-        })
+
+        return getApiManager()
+          .post(`${apiBaseUrl}/auth/logout`, {})
+          .then(response => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+
+                removeLoginInfo();
+
+
+                this.$router.push('/admin/auth/login');
+
+                break;
+
+            }
+          })
+          .catch((error) => {
+
+          });
       },
 
       getThemeColor() {
@@ -149,3 +161,12 @@
     }
   }
 </script>
+<style lang="scss">
+  .navbar {
+    .navbar-title {
+      .logo {
+        background: url(/assets/img/top-title-admin.png) no-repeat;
+      }
+    }
+  }
+</style>

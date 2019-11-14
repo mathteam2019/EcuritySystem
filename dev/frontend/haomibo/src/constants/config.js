@@ -14,17 +14,13 @@ export const localeOptions = [
   {id: 'enrtl', name: 'English RTL', direction: 'rtl', icon: '/assets/img/flags/united-kingdom.svg'}
 ];
 
-// export const apiBaseUrl = 'http://192.168.5.7:8080/haomibo-0.0.1-SNAPSHOT';
+export const apiBaseUrl = 'http://192.168.5.7:8080/haomibo-0.0.1-SNAPSHOT';
 // export const apiBaseUrl = 'http://192.168.5.7:4546';
-export const apiBaseUrl = 'http://39.97.175.200:8080/haomibo-0.0.1-SNAPSHOT';
+// export const apiBaseUrl = 'http://39.97.175.200:8080/haomibo-0.0.1-SNAPSHOT';
 
 export const refreshTokenTimeDiff = 30;
 
-export const currentUser = {
-  id: 0,
-  name: '',
-  img: '/assets/img/user_placeholder.png',
-};
+export const currentUser = {};
 
 export const defaultColor = 'light.blue';
 export const colors = [
