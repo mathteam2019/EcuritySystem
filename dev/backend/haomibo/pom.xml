@@ -8,11 +8,11 @@
         <version>2.1.9.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.haomibo</groupId>
-    <artifactId>haomibo</artifactId>
+    <groupId>com.nuctech</groupId>
+    <artifactId>ecuritycheckitem</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>haomibo</name>
+    <name>ecuritycheckitem</name>
     <description>haomibo project</description>
 
     <properties>
