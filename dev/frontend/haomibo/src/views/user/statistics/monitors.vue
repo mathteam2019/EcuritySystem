@@ -370,7 +370,7 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div >
+                <div>
 
                   <v-chart :options="barChart2Options" :autoresize="true" style="width: 100%; height: 300px;"/>
 
@@ -389,7 +389,7 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div >
+                <div>
                   <v-chart :options="barChart3Options" :autoresize="true" style="width: 100%; height:300px;"/>
 
                 </div>
@@ -438,7 +438,7 @@
 
                 <b-col cols>
 
-                  <div class="table-wrapper table-responsive">
+                  <div class="table-wrapper overflow-auto">
                     <vuetable
                       ref="taskVuetable"
                       :api-mode="false"
@@ -448,7 +448,8 @@
                       :fields="taskVuetableItems.fields"
                       :per-page="taskVuetableItems.perPage"
                       :data-total="tempData.data.length"
-                      class="table-hover"
+                      class="table table-hover"
+                      style="min-width: 2000px;"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
                       <template slot="period" slot-scope="props">
@@ -1312,7 +1313,6 @@
             .card-body {
               display: flex;
               flex-direction: column;
-
 
 
             }

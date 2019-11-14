@@ -267,7 +267,7 @@
               </b-card-header>
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
-                <div >
+                <div>
 
                   <v-chart :options="bar3ChartOptions" :autoresize="true" style="width: 100%; height: 300px;"/>
 
@@ -898,7 +898,6 @@
             .card-body {
               display: flex;
               flex-direction: column;
-
 
 
               .legend-group {

@@ -250,7 +250,7 @@
             <h5 class="text-center my-4">毫米波人体查验手检统计</h5>
           </b-card-header>
 
-          <div class="table-wrapper table-responsive">
+          <div class="table-wrapper table-responsive overflow-auto">
             <vuetable
               ref="taskVuetable"
               :api-mode="false"
@@ -261,6 +261,7 @@
               :per-page="taskVuetableItems.perPage"
               :data-total="tempData.data.length"
               class="table-hover"
+              style="min-width: 1800px;"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
             </vuetable>

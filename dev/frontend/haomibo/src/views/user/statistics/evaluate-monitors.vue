@@ -568,7 +568,7 @@
                 <b-col cols="11"><span>小时</span></b-col>
               </b-row>
 
-              <div class="table-wrapper table-responsive">
+              <div class="table-wrapper table-responsive overflow-auto">
                 <vuetable
                   ref="taskVuetable"
                   :api-mode="false"
@@ -579,6 +579,7 @@
                   :per-page="taskVuetableItems.perPage"
                   :data-total="tempData.data.length"
                   class="table-hover"
+                  style="min-width: 1800px;"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
                 >
                 </vuetable>
