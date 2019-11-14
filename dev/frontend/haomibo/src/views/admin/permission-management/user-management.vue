@@ -206,7 +206,7 @@
                   <template slot="label">{{$t('permission-management.th-username')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text" v-model="profileForm.userName"
-                                :state="!$v.profileForm.userName.$invalid"
+                                :state="!$v.profileForm.userName.$dirty ? null : !$v.profileForm.userName.$invalid"
                                 :placeholder="$t('permission-management.please-enter-user-name')"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.userName.required) ?
@@ -221,7 +221,7 @@
                   <template slot="label">{{$t('permission-management.th-user-id')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text" v-model="profileForm.userNumber"
-                                :state="!$v.profileForm.userNumber.$invalid"
+                                :state="!$v.profileForm.userNumber.$dirty ? null : !$v.profileForm.userNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-user-id')"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.userNumber.required) ?
@@ -238,7 +238,7 @@
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
-                                 :state="!$v.profileForm.gender.$invalid"/>
+                                 :state="!$v.profileForm.gender.$dirty ? null : !$v.profileForm.gender.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.gender.required) ?
                     $t('permission-management.user.gender-field-is-mandatory') : "&nbsp;" }}
@@ -250,7 +250,7 @@
                   <template slot="label">{{$t('permission-management.license-number')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text" v-model="profileForm.identityCard"
-                                :state="!$v.profileForm.identityCard.$invalid"
+                                :state="!$v.profileForm.identityCard.$dirty ? null : !$v.profileForm.identityCard.$invalid"
                                 :placeholder="$t('permission-management.please-enter-license-number')"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.identityCard.required) ?
@@ -265,7 +265,7 @@
                   <template slot="label">{{$t('permission-management.affiliated-institution')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select v-model="profileForm.orgId" :options="orgNameSelectData" plain
-                                 :state="!$v.profileForm.orgId.$invalid"/>
+                                 :state="!$v.profileForm.orgId.$dirty ? null : !$v.profileForm.orgId.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.orgId.required) ?
                     $t('permission-management.user.orgId-field-is-mandatory') : "&nbsp;" }}
@@ -296,7 +296,9 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.email')}}</template>
-                  <b-form-input type="email" v-model="profileForm.email" :state="!$v.profileForm.email.$invalid"
+                  <b-form-input type="email"
+                                v-model="profileForm.email"
+                                :state="!$v.profileForm.email.$dirty ? null : !$v.profileForm.email.$invalid"
                                 :placeholder="$t('permission-management.please-enter-email')"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.email.email) ?
@@ -324,8 +326,9 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.user-account')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text" v-model="profileForm.userAccount"
-                                :state="!$v.profileForm.userAccount.$invalid"
+                  <b-form-input type="text"
+                                v-model="profileForm.userAccount"
+                                :state="!$v.profileForm.userAccount.$dirty ? null : !$v.profileForm.userAccount.$invalid"
                                 :placeholder="$t('permission-management.please-enter-user-account')"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.userAccount.required) ?
@@ -541,11 +544,11 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button v-if="profileForm.status==='active'" class="mb-1 mr-1" @click="onAction('inactive', profileForm)"
+            <b-button v-if="profileForm.status==='active'" class="mr-1" @click="onAction('inactive', profileForm)"
                       variant="warning default" size="sm"><i class="icofont-ban"></i> {{
               $t('permission-management.action-make-inactive') }}
             </b-button>
-            <b-button v-if="profileForm.status==='inactive'" class="mb-1 mr-1" @click="onAction('active', profileForm)"
+            <b-button v-if="profileForm.status==='inactive'" class="mr-1" @click="onAction('active', profileForm)"
                       variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
               $t('permission-management.action-unblock') }}
             </b-button>
@@ -619,7 +622,7 @@
                       :initial-per-page="userGroupTableItems.perPage"
                       @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                     ></vuetable-pagination-bootstrap>
-                    <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+                    <b-modal centered ref="modal-prompt-group" :title="$t('permission-management.prompt')">
                       {{$t('permission-management.user.user-group-delete-prompt')}}
                       <template slot="modal-footer">
                         <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
@@ -731,7 +734,7 @@
 
     </b-tabs>
 
-    <b-modal ref="modal-prompt" :title="$t('permission-management.prompt')">
+    <b-modal centered ref="modal-prompt" :title="$t('permission-management.prompt')">
       {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
       <template slot="modal-footer">
         <b-button variant="primary" @click="fnChangeItemStatus()" class="mr-1">
@@ -750,7 +753,6 @@
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getDirection} from "../../../utils";
-  import _ from "lodash";
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -1173,6 +1175,8 @@
         // reset models
         this.onInitialUserData();
         this.submitted = false;
+        // reset create form
+        this.$v.profileForm.$reset();
         // change page to create
         this.pageStatus = 'create';
       },
@@ -1183,7 +1187,6 @@
         this.submitted = true;
         this.$v.profileForm.$touch();
         if (this.$v.profileForm.$invalid) {
-          console.log(this.$v.profileForm);
           return;
         }
         console.log('submit');

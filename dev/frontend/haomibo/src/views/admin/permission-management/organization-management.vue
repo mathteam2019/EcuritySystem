@@ -391,7 +391,7 @@
 
     </b-tabs>
 
-    <b-modal ref="modal-delete" :title="$t('permission-management.prompt')">
+    <b-modal centered ref="modal-delete" :title="$t('permission-management.prompt')">
       {{$t('permission-management.organization-delete-prompt')}}
       <template slot="modal-footer">
         <b-button variant="primary" @click="deleteOrg()" class="mr-1">
@@ -403,7 +403,7 @@
       </template>
     </b-modal>
 
-    <b-modal ref="modal-deactivate" :title="$t('permission-management.prompt')">
+    <b-modal centered ref="modal-deactivate" :title="$t('permission-management.prompt')">
       {{$t('permission-management.organization-deactivate-prompt')}}
       <template slot="modal-footer">
         <b-button variant="primary" @click="deactivateOrg()" class="mr-1">

@@ -140,7 +140,7 @@
                     @vuetable-pagination:change-page="onChangePage"
                   ></vuetable-pagination-bootstrap>
 
-                  <b-modal id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
+                  <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
                     {{$t('system-setting.make-inactive-prompt')}}
                     <template slot="modal-footer">
                       <b-button variant="primary" @click="inactiveRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>
@@ -148,7 +148,7 @@
                     </template>
                   </b-modal>
 
-                  <b-modal id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
+                  <b-modal centered id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
                     {{$t('system-setting.delete-prompt')}}
                     <template slot="modal-footer">
                       <b-button variant="primary" @click="deleteRow('props.rowData')" class="mr-1">{{$t('system-setting.ok')}}</b-button>

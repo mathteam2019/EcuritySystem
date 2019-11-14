@@ -400,7 +400,7 @@
 
     <div v-show="isLoading" class="loading"></div>
 
-    <b-modal id="modal-delete-role" ref="modal-delete-role" :title="$t('permission-management.permission-control.prompt')">
+    <b-modal centered id="modal-delete-role" ref="modal-delete-role" :title="$t('permission-management.permission-control.prompt')">
       {{$t('permission-management.permission-control.delete-role-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" @click="deleteRole" class="mr-1">{{$t('system-setting.ok')}}</b-button>
@@ -408,7 +408,7 @@
       </template>
     </b-modal>
 
-    <b-modal id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
+    <b-modal centered id="modal-delete-data-group" ref="modal-delete-data-group" :title="$t('permission-management.permission-control.prompt')">
       {{$t('permission-management.permission-control.delete-data-group-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}</b-button>

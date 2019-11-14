@@ -470,7 +470,7 @@
       </b-tab>
     </b-tabs>
 
-    <b-modal ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
+    <b-modal centered ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
       {{$t('permission-management.organization-delete-prompt')}}
       <template slot="modal-footer">
         <b-button variant="primary" @click="deleteUserRole()" class="mr-1">
@@ -482,7 +482,7 @@
       </template>
     </b-modal>
 
-    <b-modal ref="modal-prompt-group" :title="$t('permission-management.prompt')">
+    <b-modal centered ref="modal-prompt-group" :title="$t('permission-management.prompt')">
       {{$t('permission-management.assign-permission-management.group.user-group-delete-prompt')}}
       <template slot="modal-footer">
         <b-button variant="primary" @click="fnDeleteUserGroupItem()" class="mr-1">
