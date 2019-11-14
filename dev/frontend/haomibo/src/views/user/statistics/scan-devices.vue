@@ -32,7 +32,14 @@
 
           <b-col>
             <b-form-group :label="'时间'">
-              <b-form-input></b-form-input>
+
+              <v-date-picker
+                mode="range"
+                v-model="selectedValueRange"
+                :input-props="{ class: 'form-control', placeholder: $t('form-components.date-range')}"
+                :formats="formats"
+                :is-inline="false"
+              ></v-date-picker>
             </b-form-group>
           </b-col>
 
@@ -411,6 +418,13 @@
       };
 
       return {
+        selectedValueRange: {
+          start: new Date(2018, 12, 9),
+          end: new Date(2018, 12, 18)
+        },
+        formats: {
+          input: ['YYYYMMDD']
+        },
         doublePieChartOptions: {
           tooltip: {
             trigger: 'item',
