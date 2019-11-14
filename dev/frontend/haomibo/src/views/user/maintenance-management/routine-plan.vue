@@ -3,24 +3,30 @@
     .inline-form-no-margin {
       .form-group {
         margin-bottom: 0;
+
         label.input-label {
           line-height: unset;
         }
       }
+
       .col-form-label {
         padding-top: 0;
       }
     }
+
     .inline-label-form-section {
       .w-130-px {
         width: 130px !important;
       }
+
       .w-200-px {
         width: 200px !important;
       }
+
       input[type=time] {
         padding-left: 30px;
         position: relative;
+
         &:after {
           font-family: 'IcoFont' !important;
           content: "\eedc";
@@ -30,6 +36,7 @@
           color: #9c9999;
         }
       }
+
       input[type=number]:not(.full-width) {
         width: 60px;
       }
@@ -37,9 +44,11 @@
       .front-icon {
         position: relative;
         display: flex;
+
         input {
           padding-left: 30px;
         }
+
         i {
           position: absolute;
           left: 5px;
@@ -57,6 +66,7 @@
       border: solid 1px #bdbaba;
       border-radius: 3px;
       position: relative;
+
       img {
         width: 100%;
         object-fit: scale-down;
@@ -95,7 +105,8 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('maintenance-management.routine-plan.device-classification')">
-                  <b-form-select v-model="filterForm.deviceClassification" :options="deviceClassificationOptions" plain/>
+                  <b-form-select v-model="filterForm.deviceClassification" :options="deviceClassificationOptions"
+                                 plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -182,8 +193,8 @@
 
       </div>
       <div v-if="pageStatus==='create'" class="h-100 d-flex flex-grow-1 flex-column">
-        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
-                 :no-fade="true">
+        <b-tabs class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                :no-fade="true">
           <b-tab :title="$t('maintenance-management.routine-plan.plan-info')">
             <b-row class="h-100 form-section">
               <b-col cols="8">
@@ -635,16 +646,22 @@
         </b-tabs>
         <div class="d-flex align-items-end justify-content-end flex-grow-1 mr-3 mb-3">
           <div>
-            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}
+            </b-button>
+            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i>
+              {{$t('device-management.active')}}
+            </b-button>
+            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
           </div>
         </div>
       </div>
       <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column">
-        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
-                 :no-fade="true">
+        <b-tabs class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                :no-fade="true">
           <b-tab :title="$t('maintenance-management.routine-plan.plan-info')">
             <b-row class="h-100 form-section">
               <b-col cols="8">
@@ -1110,227 +1127,228 @@
   </div>
 </template>
 <script>
-    import _ from 'lodash';
-    import Vuetable from 'vuetable-2/src/components/Vuetable'
-    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
-    import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+  import _ from 'lodash';
+  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
+  import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
 
-    export default {
-        components: {
-            'vuetable': Vuetable,
-            'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+  export default {
+    components: {
+      'vuetable': Vuetable,
+      'vuetable-pagination': VuetablePagination,
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+    },
+    data() {
+      return {
+        pageStatus: 'list',
+        filterForm: {
+          plan: null,
+          status: null,
+          position: null,
+          deviceClassification: null,
+          device: null
         },
-        data() {
-            return {
-                pageStatus: 'list',
-                filterForm: {
-                    plan: null,
-                    status: null,
-                    position: null,
-                    deviceClassification: null,
-                    device: null
-                },
-                statusOptions: [
-                    {value: null, text: this.$t('permission-management.all')},
-                    {value: 'active', text: this.$t('permission-management.active')},
-                    {value: 'inactive', text: this.$t('permission-management.inactive')},
-                ],
-                deviceClassificationOptions: [
-                    {value: null, text: this.$t('permission-management.all')},
-                    {value: 'classification-1', text: '分类1'},
-                    {value: 'classification-2', text: '分类2'},
-                    {value: 'classification-3', text: '分类3'},
-                ],
-                positionOptions: [
-                    {value: null, text: this.$t('permission-management.all')},
-                    {value: 'position-1', text: '清理'},
-                    {value: 'position-2', text: '维修'}
-                ],
-                weekDayOptions: [
-                    {value: null, text: this.$t('maintenance-management.all')},
-                    {value: 1, text: this.$t('maintenance-management.week-1')},
-                    {value: 2, text: this.$t('maintenance-management.week-2')},
-                    {value: 3, text: this.$t('maintenance-management.week-3')},
-                    {value: 4, text: this.$t('maintenance-management.week-4')},
-                    {value: 5, text: this.$t('maintenance-management.week-5')},
-                    {value: 6, text: this.$t('maintenance-management.week-6')},
-                    {value: 7, text: this.$t('maintenance-management.week-7')},
-                ],
-                pendingListTableItems: {
-                    perPage: 5,
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'no',
-                            sortField: 'no',
-                            title: this.$t('maintenance-management.routine-plan.no'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: '__slot:number',
-                            sortField: 'number',
-                            title: this.$t('maintenance-management.routine-plan.number'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'plan',
-                            sortField: 'plan',
-                            title: this.$t('maintenance-management.routine-plan.plan'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'status',
-                            sortField: 'status',
-                            title: this.$t('maintenance-management.routine-plan.status'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (value) => {
-                                const dictionary = {
-                                    "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
-                                    "inactive": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
-                                };
-                                if (!dictionary.hasOwnProperty(value)) return '';
-                                return dictionary[value];
-                            }
-                        },
-                        {
-                            name: 'position',
-                            sortField: 'position',
-                            title: this.$t('maintenance-management.history-record.position'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'deviceClassification',
-                            sortField: 'deviceClassification',
-                            title: this.$t('maintenance-management.history-record.device-classification'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'device',
-                            sortField: 'device',
-                            title: this.$t('maintenance-management.history-record.device'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'securityDepartment',
-                            sortField: 'security-department',
-                            title: this.$t('maintenance-management.history-record.security-department'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'securityGuard',
-                            sortField: 'securityGuard',
-                            title: this.$t('maintenance-management.history-record.security-user'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'realTimeTask',
-                            sortField: 'realTimeTask',
-                            title: this.$t('maintenance-management.routine-plan.real-time-task'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'createdUser',
-                            sortField: 'createdUser',
-                            title: this.$t('maintenance-management.routine-plan.created-user'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'createdTime',
-                            sortField: 'createdTime',
-                            title: this.$t('maintenance-management.routine-plan.created-time'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: '__slot:operating',
-                            title: this.$t('system-setting.operating'),
-                            titleClass: 'text-center',
-                            dataClass: 'text-center btn-actions'
-                        }
-                    ]
-                },
-                tempData: [
-                    {
-                        "no": 1,
-                        "number": "J201909200001",
-                        "status": "active",
-                    },
-                    {
-                        "no": 2,
-                        "number": "J201909200002",
-                       "status": "inactive",
-                    }
-                ],
-            }
-        },
-        methods: {
-            onSearchButton() {
-
+        statusOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'active', text: this.$t('permission-management.active')},
+          {value: 'inactive', text: this.$t('permission-management.inactive')},
+        ],
+        deviceClassificationOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'classification-1', text: '分类1'},
+          {value: 'classification-2', text: '分类2'},
+          {value: 'classification-3', text: '分类3'},
+        ],
+        positionOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'position-1', text: '清理'},
+          {value: 'position-2', text: '维修'}
+        ],
+        weekDayOptions: [
+          {value: null, text: this.$t('maintenance-management.all')},
+          {value: 1, text: this.$t('maintenance-management.week-1')},
+          {value: 2, text: this.$t('maintenance-management.week-2')},
+          {value: 3, text: this.$t('maintenance-management.week-3')},
+          {value: 4, text: this.$t('maintenance-management.week-4')},
+          {value: 5, text: this.$t('maintenance-management.week-5')},
+          {value: 6, text: this.$t('maintenance-management.week-6')},
+          {value: 7, text: this.$t('maintenance-management.week-7')},
+        ],
+        pendingListTableItems: {
+          perPage: 5,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
-            onResetButton() {
-
+            {
+              name: 'no',
+              sortField: 'no',
+              title: this.$t('maintenance-management.routine-plan.no'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
-            onAction(value) {
-                switch (value) {
-                    case 'show':
-                        this.pageStatus = 'show';
-                        break;
-                    case 'create':
-                        this.pageStatus = 'create';
-                        break;
-                    case 'show-list':
-                        this.pageStatus = 'list';
-                        break;
-                }
+            {
+              name: '__slot:number',
+              sortField: 'number',
+              title: this.$t('maintenance-management.routine-plan.number'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
-            pendingListTableDataManager(sortOrder, pagination) {
-                let local = this.tempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-
-                pagination = this.$refs.pendingListTable.makePagination(
-                    local.length,
-                    this.pendingListTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.pendingListTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
+            {
+              name: 'plan',
+              sortField: 'plan',
+              title: this.$t('maintenance-management.routine-plan.plan'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'status',
+              sortField: 'status',
+              title: this.$t('maintenance-management.routine-plan.status'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
+                  "inactive": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
                 };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
-            onBlackListTablePaginationData(paginationData) {
-                this.$refs.pendingListTablePagination.setPaginationData(paginationData);
+            {
+              name: 'position',
+              sortField: 'position',
+              title: this.$t('maintenance-management.history-record.position'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
-            onBlackListTableChangePage(page) {
-                this.$refs.pendingListTable.changePage(page);
+            {
+              name: 'deviceClassification',
+              sortField: 'deviceClassification',
+              title: this.$t('maintenance-management.history-record.device-classification'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
+            {
+              name: 'device',
+              sortField: 'device',
+              title: this.$t('maintenance-management.history-record.device'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'securityDepartment',
+              sortField: 'security-department',
+              title: this.$t('maintenance-management.history-record.security-department'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'securityGuard',
+              sortField: 'securityGuard',
+              title: this.$t('maintenance-management.history-record.security-user'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'realTimeTask',
+              sortField: 'realTimeTask',
+              title: this.$t('maintenance-management.routine-plan.real-time-task'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'createdUser',
+              sortField: 'createdUser',
+              title: this.$t('maintenance-management.routine-plan.created-user'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'createdTime',
+              sortField: 'createdTime',
+              title: this.$t('maintenance-management.routine-plan.created-time'),
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '__slot:operating',
+              title: this.$t('system-setting.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '210px'
+            }
+          ]
+        },
+        tempData: [
+          {
+            "no": 1,
+            "number": "J201909200001",
+            "status": "active",
+          },
+          {
+            "no": 2,
+            "number": "J201909200002",
+            "status": "inactive",
+          }
+        ],
+      }
+    },
+    methods: {
+      onSearchButton() {
+
+      },
+      onResetButton() {
+
+      },
+      onAction(value) {
+        switch (value) {
+          case 'show':
+            this.pageStatus = 'show';
+            break;
+          case 'create':
+            this.pageStatus = 'create';
+            break;
+          case 'show-list':
+            this.pageStatus = 'list';
+            break;
         }
+      },
+      pendingListTableDataManager(sortOrder, pagination) {
+        let local = this.tempData;
+
+        // sortOrder can be empty, so we have to check for that as well
+        if (sortOrder.length > 0) {
+          local = _.orderBy(
+            local,
+            sortOrder[0].sortField,
+            sortOrder[0].direction
+          );
+        }
+
+        pagination = this.$refs.pendingListTable.makePagination(
+          local.length,
+          this.pendingListTableItems.perPage
+        );
+
+        let from = pagination.from - 1;
+        let to = from + this.pendingListTableItems.perPage;
+        return {
+          pagination: pagination,
+          data: _.slice(local, from, to)
+        };
+      },
+      onBlackListTablePaginationData(paginationData) {
+        this.$refs.pendingListTablePagination.setPaginationData(paginationData);
+      },
+      onBlackListTableChangePage(page) {
+        this.$refs.pendingListTable.changePage(page);
+      },
     }
+  }
 </script>
 
 

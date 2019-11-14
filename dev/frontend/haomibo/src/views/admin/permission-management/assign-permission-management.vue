@@ -771,8 +771,9 @@
             {
               name: '__slot:actions',
               title: this.$t('permission-management.th-org-actions'),
-              titleClass: 'text-center btn-actions',
-              dataClass: 'text-center'
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '150px'
             },
           ],
           perPage: 5,
@@ -894,8 +895,9 @@
             {
               name: '__slot:operating',
               title: this.$t('permission-management.user.operating'),
-              titleClass: 'text-center btn-actions',
-              dataClass: 'text-center'
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '150px'
             }
           ],
         }

@@ -1026,8 +1026,9 @@
             {
               name: '__slot:actions',
               title: this.$t('permission-management.th-action'),
-              titleClass: 'text-center btn-actions',
-              dataClass: 'text-center btn-actions'
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '270px'
             },
 
           ],
@@ -1072,7 +1073,8 @@
               name: '__slot:operating',
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '60px'
             }
           ],
         },

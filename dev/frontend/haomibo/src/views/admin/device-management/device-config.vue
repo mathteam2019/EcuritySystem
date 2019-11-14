@@ -267,7 +267,7 @@
                     :per-page="pendingListTableItems.perPage"
                     pagination-path="pagination"
                     @vuetable:pagination-data="onBlackListTablePaginationData"
-                    class="table-striped"
+                    class="table table-striped"
                   >
                     <div slot="number" slot-scope="props">
                       <span class="cursor-p text-primary"
@@ -605,7 +605,8 @@
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
               titleClass: 'text-center',
-              dataClass: 'text-center btn-actions'
+              dataClass: 'text-center',
+              width: '150px'
             }
           ]
         },

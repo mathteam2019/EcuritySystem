@@ -13,6 +13,7 @@
       border: solid 1px #bdbaba;
       border-radius: 3px;
       position: relative;
+
       img {
         width: 100%;
         object-fit: scale-down;
@@ -180,17 +181,17 @@
             <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.original-number')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.production-date')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.purchase-date')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -200,74 +201,74 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.ip')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
             <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.battery-capacity')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.running-memory')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.screen-size')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.storage-capacity')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.front-camera')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.rear-camera')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.scalable-capacity')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.operating-system')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.cpu-model')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.dimension')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.body-weight')">
-                  <b-form-input ></b-form-input>
+                  <b-form-input></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -302,8 +303,8 @@
         </b-row>
       </div>
       <div v-if="pageStatus==='show'" class="h-100 d-flex flex-grow-1 flex-column pb-3">
-        <b-tabs  class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
-                 :no-fade="true">
+        <b-tabs class="sub-tabs" nav-class="separator-tabs ml-0" content-class="tab-content"
+                :no-fade="true">
           <b-tab :title="$t('device-management.device-table.device-info')">
             <b-row class="h-100 form-section">
               <b-col cols="8">
@@ -332,7 +333,8 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group>
-                      <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span
+                        class="text-danger">*</span>
                       </template>
                       <label class="input-label">监管查验设备 / 人体查验设备</label>
                     </b-form-group>
@@ -358,17 +360,17 @@
                 <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.original-number')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.production-date')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.purchase-date')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
@@ -378,74 +380,74 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.supplier-contact')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.ip')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
                 <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.battery-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.running-memory')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.screen-size')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.storage-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.front-camera')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.rear-camera')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.scalable-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.operating-system')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.cpu-model')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.dimension')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.body-weight')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -491,7 +493,8 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group>
-                      <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                      <template slot="label">{{$t('device-management.device-classify')}}<span
+                        class="text-danger">*</span>
                       </template>
                       <label class="input-label">监管查验设备 / 人体查验设备</label>
                     </b-form-group>
@@ -584,77 +587,78 @@
                 <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.battery-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.running-memory')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.screen-size')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.storage-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.front-camera')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.rear-camera')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.scalable-capacity')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.operating-system')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.cpu-model')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.dimension')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.body-weight')">
-                      <b-form-input ></b-form-input>
+                      <b-form-input></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex flex-column align-items-center">
                 <div class="img-wrapper">
-                  <img  src="../../../assets/img/device.png">
+                  <img src="../../../assets/img/device.png">
                   <div class="position-absolute" style="bottom: -18%;left: -41%">
                     <img src="../../../assets/img/active_stamp.png">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
-                <b-button  class="mt-3" variant="info skyblue default" size="sm">{{
+                <b-button class="mt-3" variant="info skyblue default" size="sm">{{
                   $t('permission-management.upload-image')}}
                 </b-button>
               </b-col>
             </b-row>
           </b-tab>
         </b-tabs>
-        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute" style="right: 30px;bottom: 30px;">
+        <div class="d-flex align-items-end justify-content-end flex-grow-1 position-absolute"
+             style="right: 30px;bottom: 30px;">
           <div>
 
             <b-button size="sm" variant="warning default"><i class="icofont-check-circled"></i>
@@ -767,7 +771,8 @@
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
               titleClass: 'text-center',
-              dataClass: 'text-center btn-actions'
+              dataClass: 'text-center',
+              width: '210px'
             }
           ]
         },

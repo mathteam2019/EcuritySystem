@@ -594,7 +594,8 @@
               name: '__slot:actions',
               title: this.$t('permission-management.th-org-actions'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '210px'
             },
 
           ],

@@ -396,7 +396,8 @@
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
               titleClass: 'text-center',
-              dataClass: 'text-center btn-actions'
+              dataClass: 'text-center',
+              width: '210px'
             }
           ]
         },

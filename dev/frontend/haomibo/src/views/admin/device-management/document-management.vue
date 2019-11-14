@@ -5,6 +5,7 @@
         line-height: 36px;
       }
     }
+
     div.img-wrapper {
       width: 270px;
       height: 420px;
@@ -12,6 +13,7 @@
       border: solid 1px #bdbaba;
       border-radius: 3px;
       position: relative;
+
       img {
         width: 100%;
         object-fit: scale-down;
@@ -301,13 +303,14 @@
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
-              <div class="img-wrapper">
-                <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
-                <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')" src="../../../assets/img/device.png">
-                <div class="position-absolute" style="bottom: -18%;left: -41%">
-                  <img src="../../../assets/img/active_stamp.png">
-                </div>
+            <div class="img-wrapper">
+              <img v-if="archivesForm.image!=null&&archivesForm.image!==''" :src="archivesForm.image"/>
+              <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
+                   src="../../../assets/img/device.png">
+              <div class="position-absolute" style="bottom: -18%;left: -41%">
+                <img src="../../../assets/img/active_stamp.png">
               </div>
+            </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
             <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
@@ -315,10 +318,17 @@
           </b-col>
           <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
             <div>
-              <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-              <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-              <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+              <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}
+              </b-button>
+              <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i>
+                {{$t('device-management.active')}}
+              </b-button>
+              <b-button size="sm" variant="danger default"><i class="icofont-bin"></i>
+                {{$t('device-management.delete')}}
+              </b-button>
+              <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+                class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -420,8 +430,9 @@
             {
               name: '__slot:operating',
               title: this.$t('system-setting.operating'),
-              titleClass: 'text-center btn-actions',
-              dataClass: 'text-center'
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '210px'
             }
           ]
         },
@@ -510,7 +521,7 @@
         archivesForm: {
           number: null,
           name: null,
-          image:null,
+          image: null,
           templateId: 'waveSecurityDevice',
 
         },
