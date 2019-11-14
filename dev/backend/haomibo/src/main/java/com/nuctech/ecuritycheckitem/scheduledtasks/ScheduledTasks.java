@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName ScheduledTasks.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.scheduledtasks;
 
 import com.nuctech.ecuritycheckitem.config.Constants;

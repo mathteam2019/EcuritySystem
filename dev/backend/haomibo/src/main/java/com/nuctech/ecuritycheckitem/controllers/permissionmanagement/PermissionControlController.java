@@ -1,5 +1,11 @@
-
-
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/24
+ * @CreatedBy Sandy.
+ * @FileName PermissionControlController.java
+ * @ModifyHistory
+ */
 package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;

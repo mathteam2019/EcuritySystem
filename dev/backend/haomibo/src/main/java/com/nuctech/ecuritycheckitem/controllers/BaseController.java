@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/14
+ * @CreatedBy Sandy.
+ * @FileName BaseController.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.controllers;
 
 import com.nuctech.ecuritycheckitem.repositories.*;

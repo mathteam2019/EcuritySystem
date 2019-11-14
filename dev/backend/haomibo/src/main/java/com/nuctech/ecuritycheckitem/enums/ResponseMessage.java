@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/30
+ * @CreatedBy Sandy.
+ * @FileName ResponseMessage.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.enums;
 
 import lombok.AllArgsConstructor;

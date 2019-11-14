@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/10
+ * @CreatedBy Sandy.
+ * @FileName ResourceId.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.validation.annotations;
 
 import com.nuctech.ecuritycheckitem.validation.validators.ResourceIdValidator;

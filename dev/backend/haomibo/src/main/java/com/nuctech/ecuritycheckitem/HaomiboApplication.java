@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/11
+ * @CreatedBy Sandy.
+ * @FileName HamobiApplication.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem;
 
 import org.springframework.boot.SpringApplication;

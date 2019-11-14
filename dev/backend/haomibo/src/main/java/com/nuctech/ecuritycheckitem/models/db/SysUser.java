@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/14
+ * @CreatedBy Sandy.
+ * @FileName SysUser.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;

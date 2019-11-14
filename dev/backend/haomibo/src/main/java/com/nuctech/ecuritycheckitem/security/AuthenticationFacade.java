@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName AuthenticationFacade.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.security;
 
 import org.springframework.security.core.Authentication;

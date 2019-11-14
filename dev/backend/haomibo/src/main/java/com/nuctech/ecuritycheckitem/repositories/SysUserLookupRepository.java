@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/01
+ * @CreatedBy Sandy.
+ * @FileName SysUserLookupRepository.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.repositories;
 
 import com.nuctech.ecuritycheckitem.models.db.SysUserLookup;

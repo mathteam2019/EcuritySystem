@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName Utils.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

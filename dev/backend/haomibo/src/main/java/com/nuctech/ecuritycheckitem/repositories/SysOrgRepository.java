@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/19
+ * @CreatedBy Sandy.
+ * @FileName SysOrgRepository.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.repositories;
 
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;

@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/25
+ * @CreatedBy Sandy.
+ * @FileName SysRoleResourceRepository.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.repositories;
 
 import com.nuctech.ecuritycheckitem.models.db.SysRoleResource;

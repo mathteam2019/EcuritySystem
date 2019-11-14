@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName JwtAuthenticationEntryPoint.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.jwt;
 
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -24,19 +33,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint, Se
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-
-
-        // TODO: This is still ambitious.... This is for handling authentication exceptions but what exception can be thrown ?
-
-        ;
-
-//        Optional<String> tokenStringOptional = utils.getTokenString(request.getHeader(Constants.REQUEST_HEADER_AUTH_TOKEN_KEY));
-//
-//        if (!tokenStringOptional.isPresent()) {
-//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ResponseMessage.INVALID_TOKEN);
-//        } else {
-//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, jwtUtil.getTokenStatus(tokenStringOptional.get()));
-//        }
 
 
     }

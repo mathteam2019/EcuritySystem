@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName JwtAuthenticationFilter.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.jwt;
 
 import com.nuctech.ecuritycheckitem.config.Constants;

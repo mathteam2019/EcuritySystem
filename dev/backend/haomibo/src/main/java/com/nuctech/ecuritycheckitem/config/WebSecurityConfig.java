@@ -1,3 +1,11 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/14
+ * @CreatedBy Sandy.
+ * @FileName WebSecurityConfig.java
+ * @ModifyHistory
+ */
 package com.nuctech.ecuritycheckitem.config;
 
 import com.nuctech.ecuritycheckitem.jwt.JwtAuthenticationEntryPoint;
@@ -29,6 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * Create a new JWT authentication filter as Bean.
+     *
      * @return JWT authentication filter.
      */
     @Bean

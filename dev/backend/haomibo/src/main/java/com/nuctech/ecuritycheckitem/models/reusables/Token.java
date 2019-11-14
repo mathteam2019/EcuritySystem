@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/15
+ * @CreatedBy Sandy.
+ * @FileName Token.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.models.reusables;
 
 import lombok.*;

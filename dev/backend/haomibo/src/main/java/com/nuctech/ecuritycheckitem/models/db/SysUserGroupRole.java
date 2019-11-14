@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/10
+ * @CreatedBy Sandy.
+ * @FileName SysUserGroupRole.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.models.db;
 
 import lombok.*;

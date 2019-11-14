@@ -1,3 +1,11 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/30
+ * @CreatedBy Sandy.
+ * @FileName ErrorHandlingController.java
+ * @ModifyHistory
+ */
 package com.nuctech.ecuritycheckitem.controllers.errorhandling;
 
 import com.nuctech.ecuritycheckitem.controllers.BaseController;

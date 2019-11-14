@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/25
+ * @CreatedBy Sandy.
+ * @FileName ModelJsonFilters.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.jsonfilter;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;

@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/13
+ * @CreatedBy Sandy.
+ * @FileName BaseEntity.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.models.db;
 
 import lombok.*;
@@ -14,6 +23,10 @@ import java.util.Date;
 @AllArgsConstructor
 @MappedSuperclass
 @SuperBuilder(toBuilder = true)
+/**
+ * All Entity includes createdBy, createdTime, editedBy, editedTime and note.
+ * This class is base class for other entities.
+ */
 public class BaseEntity {
     @Column(name = "CREATEDBY", length = 20)
     Long createdBy;

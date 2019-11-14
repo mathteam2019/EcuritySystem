@@ -1,3 +1,11 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/10/14
+ * @CreatedBy Sandy.
+ * @FileName WebConfig.java
+ * @ModifyHistory
+ */
 package com.nuctech.ecuritycheckitem.config;
 
 import com.fasterxml.jackson.databind.MapperFeature;
