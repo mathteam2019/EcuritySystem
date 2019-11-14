@@ -108,11 +108,11 @@
 
 <script>
   import Vue from 'vue'
-  import Buttons from "../../../../theme_4_reference/src/views/app/ui/components/Buttons";
+
 
   export default {
     name: 'vue-dual-list',
-    components: {Buttons},
+    components: {},
     props: {
       'options': {
         type: Object,

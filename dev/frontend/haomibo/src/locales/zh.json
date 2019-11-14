@@ -43,7 +43,7 @@
     "enter-user-password": "请输入人员密码"
   },
   "menu": {
-    "app": "主场",
+    "admin": "主场",
     "piaf": "Piaf",
     "second-menu": "Second Menu",
     "second": "Second",

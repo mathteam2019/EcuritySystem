@@ -7,244 +7,244 @@ Vue.use(Router);
 const routes = [
   {
     path: '/',
-    component: () => import('./views/app'),
-    redirect: '/app',
+    component: () => import('./views/admin'),
+    redirect: '/admin',
     beforeEnter: AuthRequired,
     children: [
       {
-        path: 'app',
-        component: () => import( './views/app/dashboard/index'),
-        redirect: '/app/dashboard',
+        path: 'admin',
+        component: () => import( './views/admin/dashboard/index'),
+        redirect: '/admin/dashboard',
         beforeEnter: AuthRequired,
         children: [
           {
             path: 'dashboard',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/dashboard/dashboard')
+            component: () => import('./views/admin/dashboard/dashboard')
           }
         ]
       },
       {
-        path: 'app/permission-management',
-        component: () => import('./views/app/permission-management'),
-        redirect: '/app/permission-management/organization-management',
+        path: 'admin/permission-management',
+        component: () => import('./views/admin/permission-management'),
+        redirect: '/admin/permission-management/organization-management',
         beforeEnter: AuthRequired,
         children: [
           {
             path: 'organization-management',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/permission-management/organization-management')
+            component: () => import('./views/admin/permission-management/organization-management')
           },
           {
             path: 'assign-permission-management',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/permission-management/assign-permission-management')
+            component: () => import('./views/admin/permission-management/assign-permission-management')
           },
           {
             path: 'permission-control',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/permission-management/permission-control')
+            component: () => import('./views/admin/permission-management/permission-control')
           },
           {
             path: 'user-management',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/permission-management/user-management')
+            component: () => import('./views/admin/permission-management/user-management')
           },
         ]
       },
       {
-        path: 'app/device-management',
-        component: () => import('./views/app/device-management'),
-        redirect: '/app/device-management/device-classify',
+        path: 'admin/device-management',
+        component: () => import('./views/admin/device-management'),
+        redirect: '/admin/device-management/device-classify',
         beforeEnter: AuthRequired,
         children: [
           {
             path: 'device-classify',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/device-classify')
+            component: () => import('./views/admin/device-management/device-classify')
           },
           {
             path: 'document-template',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/document-template')
+            component: () => import('./views/admin/device-management/document-template')
           },
           {
             path: 'document-management',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/document-management')
+            component: () => import('./views/admin/device-management/document-management')
           },
           {
             path: 'device-table',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/device-table')
+            component: () => import('./views/admin/device-management/device-table')
           },
           {
             path: 'device-config',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/device-config')
+            component: () => import('./views/admin/device-management/device-config')
           },
           {
             path: 'condition-monitoring',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/device-management/condition-monitoring')
+            component: () => import('./views/admin/device-management/condition-monitoring')
           },
         ]
       },
       {
-        path: 'app/site-management',
+        path: 'admin/site-management',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/site-management')
+        component: () => import('./views/admin/site-management')
       },
       {
-        path: 'app/system-setting',
+        path: 'admin/system-setting',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/system-setting')
+        component: () => import('./views/admin/system-setting')
       },
       {
-        path: 'app/log-management',
+        path: 'admin/log-management',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/log-management'),
-        redirect: '/app/log-management/operating-log',
+        component: () => import('./views/admin/log-management'),
+        redirect: '/admin/log-management/operating-log',
         children: [
           {
             path: 'operating-log',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/log-management/operating-log')
+            component: () => import('./views/admin/log-management/operating-log')
           },
           {
             path: 'device-log',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/log-management/device-log')
+            component: () => import('./views/admin/log-management/device-log')
           }
         ]
       },
       {
-        path: 'app/personal-inspection',
+        path: 'admin/personal-inspection',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/personal-inspection'),
-        redirect: '/app/personal-inspection/process-task',
+        component: () => import('./views/admin/personal-inspection'),
+        redirect: '/admin/personal-inspection/process-task',
         children: [
           {
             path: 'process-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/personal-inspection/process-task')
+            component: () => import('./views/admin/personal-inspection/process-task')
           },
           {
             path: 'history-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/personal-inspection/history-task')
+            component: () => import('./views/admin/personal-inspection/history-task')
           },
           {
             path: 'invalid-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/personal-inspection/invalid-task')
+            component: () => import('./views/admin/personal-inspection/invalid-task')
           },
         ]
       },
       {
-        path: 'app/statistics',
+        path: 'admin/statistics',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/statistics'),
-        redirect: 'app/statistics/view',
+        component: () => import('./views/admin/statistics'),
+        redirect: 'admin/statistics/view',
         children: [
           {
             path: 'view',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/view')
+            component: () => import('./views/admin/statistics/view')
           },
           {
             path: 'scan-devices',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/scan-devices')
+            component: () => import('./views/admin/statistics/scan-devices')
           },
           {
             path: 'monitors',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/monitors')
+            component: () => import('./views/admin/statistics/monitors')
           },
           {
             path: 'hand-checks',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/hand-checks')
+            component: () => import('./views/admin/statistics/hand-checks')
           },
           {
             path: 'evaluate-monitors',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/evaluate-monitors')
+            component: () => import('./views/admin/statistics/evaluate-monitors')
           },
           {
             path: 'working-hours',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/working-hours')
+            component: () => import('./views/admin/statistics/working-hours')
           },
           {
             path: 'operating-hours',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/statistics/operating-hours')
+            component: () => import('./views/admin/statistics/operating-hours')
           },
         ]
       },
       {
-        path: 'app/black-list',
+        path: 'admin/black-list',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/black-list'),
-        redirect: '/app/black-list/personal-black-list',
+        component: () => import('./views/admin/black-list'),
+        redirect: '/admin/black-list/personal-black-list',
         children: [
           {
             path: 'personal-black-list',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/black-list/personal-black-list')
+            component: () => import('./views/admin/black-list/personal-black-list')
           }
         ]
       },
       {
-        path: 'app/knowledge-base',
+        path: 'admin/knowledge-base',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/knowledge-base'),
-        redirect: '/app/knowledge-base/pending-case',
+        component: () => import('./views/admin/knowledge-base'),
+        redirect: '/admin/knowledge-base/pending-case',
         children: [
           {
             path: 'pending-case',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/knowledge-base/pending-case')
+            component: () => import('./views/admin/knowledge-base/pending-case')
           },
           {
             path: 'personal-case',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/knowledge-base/personal-case')
+            component: () => import('./views/admin/knowledge-base/personal-case')
           }
         ]
       },
       {
-        path: 'app/maintenance-management',
+        path: 'admin/maintenance-management',
         beforeEnter: AuthRequired,
-        component: () => import('./views/app/maintenance-management'),
-        redirect: '/app/maintenance-management/time-task',
+        component: () => import('./views/admin/maintenance-management'),
+        redirect: '/admin/maintenance-management/time-task',
         children: [
           {
             path: 'time-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/maintenance-management/time-task')
+            component: () => import('./views/admin/maintenance-management/time-task')
           },
           {
             path: 'routine-plan',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/maintenance-management/routine-plan')
+            component: () => import('./views/admin/maintenance-management/routine-plan')
           },
           {
             path: 'maintenance-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/maintenance-management/maintenance-task')
+            component: () => import('./views/admin/maintenance-management/maintenance-task')
           },
           {
             path: 'process-task',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/maintenance-management/process-task')
+            component: () => import('./views/admin/maintenance-management/process-task')
           },
           {
             path: 'history-record',
             beforeEnter: AuthRequired,
-            component: () => import('./views/app/maintenance-management/history-record')
+            component: () => import('./views/admin/maintenance-management/history-record')
           },
 
         ]
