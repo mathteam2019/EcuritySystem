@@ -3,6 +3,7 @@
     .v-select.v-select-custom-style {
       & > div {
         border-radius: 0.3rem !important;
+
         & > div {
           border-radius: 0.3rem !important;
         }
@@ -212,7 +213,8 @@
                         class="text-danger">*</span></template>
                       <div class="d-flex ">
                         <div>
-                          <b-form-radio-group :disabled="pageStatus === 'show'" v-model="userForm.dataRangeCategory" stacked>
+                          <b-form-radio-group :disabled="pageStatus === 'show'" v-model="userForm.dataRangeCategory"
+                                              stacked>
                             <b-form-radio class="pb-2" value="person">
                               {{$t('permission-management.assign-permission-management.user-form.one-user-data')}}
                             </b-form-radio>
@@ -238,7 +240,10 @@
                                            :state="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid"
                                            :disabled="userForm.dataRangeCategory !== 'specified'"
                             />
-                            <div v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">&nbsp;</div>
+                            <div
+                              v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">
+                              &nbsp;
+                            </div>
                             <b-form-invalid-feedback>
                               {{ $t('permission-management.user.orgId-field-is-mandatory') }}
                             </b-form-invalid-feedback>
@@ -497,7 +502,6 @@
 </template>
 <script>
 
-  import _ from 'lodash';
   import {apiBaseUrl} from '../../../constants/config';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
@@ -506,12 +510,11 @@
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
-
-  const {required} = require('vuelidate/lib/validators');
-
   import Vue2OrgTree from 'vue2-org-tree'
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+
+  const {required} = require('vuelidate/lib/validators');
 
   export default {
     components: {
@@ -799,21 +802,36 @@
         },
         selectedUser: {},
         selectedUserGender: '',
-        userDataRangeOptions:[
+        userDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'person', text: this.$t('permission-management.assign-permission-management.user-form.one-user-data')},
-          {value: 'org', text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')},
-          {value: 'org_desc', text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')},
+          {
+            value: 'person',
+            text: this.$t('permission-management.assign-permission-management.user-form.one-user-data')
+          },
+          {
+            value: 'org',
+            text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')
+          },
+          {
+            value: 'org_desc',
+            text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')
+          },
           {value: 'all', text: this.$t('permission-management.assign-permission-management.user-form.all-user-data')},
-          {value: 'specified', text: this.$t('permission-management.assign-permission-management.user-form.select-data-group')}
+          {
+            value: 'specified',
+            text: this.$t('permission-management.assign-permission-management.user-form.select-data-group')
+          }
         ],
         //TODO assign permission management for user group part
-        userGroupDataRangeOptions:[
+        userGroupDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
           {value: 'person', text: this.$t('permission-management.assign-permission-management.group.one-user-data')},
           {value: 'group', text: this.$t('permission-management.assign-permission-management.group.group-user-data')},
           {value: 'all', text: this.$t('permission-management.assign-permission-management.group.all-user-data')},
-          {value: 'specified', text: this.$t('permission-management.assign-permission-management.group.select-data-group')}
+          {
+            value: 'specified',
+            text: this.$t('permission-management.assign-permission-management.group.select-data-group')
+          }
         ],
         groupForm: {
           userGroup: null,
@@ -1008,6 +1026,7 @@
                         permanent: false
                       });
                       this.initializeUserForm();
+                      this.pageStatus = 'table';
                     } else {
                       this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
                         duration: 3000,
@@ -1219,8 +1238,7 @@
               this.groupPageStatus = 'table';
 
             });
-        }
-        else
+        } else
           console.log('this not selected');
         console.log(this.selectedUserGroupItem);
       },
@@ -1319,17 +1337,17 @@
         this.$refs.userVuetable.refresh();
       },
       initializeUserForm() {
-          this.userForm = {
-              orgId: null,
-              userId: null,
-              nextUserId: null, // when edit or show user's role, userId should be stored here.
-              roles: [],
-              dataRangeCategory: "person",
-              selectedDataGroupId: null,
-              nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
-          };
-          this.selectedUser = {};
-          this.selectedUserGender = '';
+        this.userForm = {
+          orgId: null,
+          userId: null,
+          nextUserId: null, // when edit or show user's role, userId should be stored here.
+          roles: [],
+          dataRangeCategory: "person",
+          selectedDataGroupId: null,
+          nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
+        };
+        this.selectedUser = {};
+        this.selectedUserGender = '';
       }
     }
   }
