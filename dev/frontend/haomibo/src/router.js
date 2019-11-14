@@ -264,13 +264,14 @@ const routes = [
     component: () => import( './views/error405')
   },
   {
-    path: '/user',
+    path: '/admin/auth',
     component: () => import('./views/user'),
-    redirect: '/user/login',
+    redirect: '/admin/auth/login',
     children: [
       {
         path: 'login',
-        component: () => import( './views/user/login')
+        component: () => import( './views/admin/auth/login')
+        // component: () => import( './views/user/login')
       },
     ]
   },

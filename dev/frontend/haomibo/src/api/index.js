@@ -25,7 +25,7 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/user/login').catch(error => {
+        app.$router.push('/admin/auth/login').catch(error => {
         });
         break;
       case responseMessages['token-expired']:
@@ -36,7 +36,7 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/user/login').catch(error => {
+        app.$router.push('/admin/auth/login').catch(error => {
         });
         break;
 

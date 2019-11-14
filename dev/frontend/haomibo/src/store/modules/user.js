@@ -114,7 +114,7 @@ export default {
               commit('setProcessing', false);
 
               setTimeout(() => {
-                app.$router.push('/user/login')
+                app.$router.push('/admin/auth/login')
               }, 100);
 
 

@@ -117,7 +117,7 @@
 
       logout() {
         this.signOut().then(() => {
-          this.$router.push('/user/login')
+          this.$router.push('/admin/auth/login')
         })
       },
 

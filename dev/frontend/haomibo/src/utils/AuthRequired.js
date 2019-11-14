@@ -3,6 +3,8 @@ import {isLoggedIn} from "./index";
 export default (to, from, next) => {
 
 
+  console.log(to, from, next);
+
   if (isLoggedIn()) {
 
     next();
@@ -11,7 +13,9 @@ export default (to, from, next) => {
 
     localStorage.removeItem('loginInfo');
 
-    next('/user/login');
+
+
+    next('/admin/auth/login');
 
   }
 };
