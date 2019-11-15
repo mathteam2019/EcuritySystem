@@ -143,7 +143,7 @@
                       <b-form-select
                         v-model="userForm.orgId"
                         :options="orgNameSelectData" plain
-                        :state="!$v.userForm.orgId.$invalid"
+                        :state="!$v.userForm.orgId.$dirty ? null : !$v.userForm.orgId.$invalid"
                         :disabled="pageStatus !== 'create'"
                       />
                       <div v-if="!$v.userForm.orgId.$invalid">&nbsp;</div>
@@ -161,7 +161,7 @@
                       <b-form-select
                         v-model="userForm.userId"
                         :options="userSelectData" plain
-                        :state="!$v.userForm.userId.$invalid"
+                        :state="!$v.userForm.userId.$dirty? null : !$v.userForm.userId.$invalid"
                         :disabled="pageStatus !== 'create'"
                       />
                       <div v-if="!$v.userForm.userId">&nbsp;</div>
@@ -237,7 +237,7 @@
                             <b-form-select class="mw-100"
                                            v-model="userForm.selectedDataGroupId"
                                            :options="dataGroupSelectData" plain
-                                           :state="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid"
+                                           :state="userForm.dataRangeCategory !== 'specified' ? null : (!$v.userForm.selectedDataGroupId.$dirty ? null : !$v.userForm.selectedDataGroupId.$invalid)"
                                            :disabled="userForm.dataRangeCategory !== 'specified'"
                             />
                             <div
@@ -1008,6 +1008,9 @@
       onUserActionGroup(value) {
         switch (value) {
           case 'save-item':
+
+            this.$v.userForm.$touch();
+
             if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== 'specified' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
@@ -1154,6 +1157,7 @@
       onAssignUserCreatePage() {
         this.initializeUserForm();
         this.pageStatus = 'create';
+        this.$v.userForm.$reset();
       },
 
       onAssignUserGroupCreatePage() {

@@ -267,6 +267,11 @@
     "user-change-status-successfully": "User Status changed successfully.",
     "user-modify-successfully": "人员修改成功",
     "user-created-successfully": "人员创建成功",
+    "organization-management": {
+      "please-enter-organization-name": "请输入机构名称",
+      "please-enter-organization-number": "请输入机构编号",
+      "please-select-parent-organization": "请选择上级机构"
+    },
     "assign-permission-management": {
       "assign-to-user": "人员授权",
       "assign-to-group": "人员组授权",

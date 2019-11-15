@@ -185,7 +185,11 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="createPage.orgNumber"
+                                :state="!$v.createPage.orgNumber.$dirty ? null : !$v.createPage.orgNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-number') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -194,7 +198,11 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="createPage.orgName"
+                                :state="!$v.createPage.orgName.$dirty ? null : !$v.createPage.orgName.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-name') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -212,7 +220,11 @@
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 :state="!$v.createPage.parentOrgId.$dirty ? null : !$v.createPage.parentOrgId.$invalid"
                                  v-model="createPage.parentOrgId" plain/>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-select-parent-organization') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -272,7 +284,11 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="modifyPage.orgNumber"
+                                :state="!$v.modifyPage.orgNumber.$dirty ? null : !$v.modifyPage.orgNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-number') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -281,7 +297,11 @@
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
                                 v-model="modifyPage.orgName"
+                                :state="!$v.modifyPage.orgName.$dirty ? null : !$v.modifyPage.orgName.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-name') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -299,7 +319,11 @@
                   <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 :state="!$v.modifyPage.parentOrgId.$dirty ? null : !$v.modifyPage.parentOrgId.$invalid"
                                  v-model="modifyPage.parentOrgId" plain/>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-select-parent-organization') }}
+                  </b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -421,11 +445,12 @@
   import {apiBaseUrl} from '../../../constants/config';
   import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
-
-
+  import {validationMixin} from 'vuelidate';
   import Vue2OrgTree from 'vue2-org-tree'
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+
+  const {required} = require('vuelidate/lib/validators');
 
   let getOrgById = (orgData, orgId) => {
     for (let i = 0; i < orgData.length; i++) {
@@ -452,6 +477,31 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       Vue2OrgTree
+    },
+    mixins: [validationMixin],
+    validations: {
+      createPage: { // create page
+        orgName: {
+          required
+        },
+        orgNumber: {
+          required
+        },
+        parentOrgId: {
+          required
+        }
+      },
+      modifyPage: { // modify page
+        orgName: {
+          required
+        },
+        orgNumber: {
+          required
+        },
+        parentOrgId: {
+          required
+        }
+      }
     },
     mounted() {
 
@@ -756,6 +806,8 @@
           // change page to modify
           this.pageStatus = 'modify';
 
+          this.$v.modifyPage.$reset();
+
         };
 
         let deleteItem = () => {
@@ -842,31 +894,12 @@
         };
         // change page to create
         this.pageStatus = 'create';
+        this.$v.createPage.$reset();
       },
       onCreatePageSaveButton() { // save button is clicked from create page
 
-        // validate inputs
-        if (this.createPage.orgName == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.createPage.orgNumber == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-number`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.createPage.parentOrgId == null) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-parent-organization`), {
-            duration: 3000,
-            permanent: false
-          });
+        this.$v.createPage.$touch();
+        if(this.$v.createPage.$invalid) {
           return;
         }
 
@@ -908,37 +941,8 @@
       },
       onModifyPageSaveButton() { // save button is clicked from modify page
 
-        // validate inputs
-
-        if (this.modifyPage.orgName == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-name`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.modifyPage.orgNumber == '') {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-enter-organization-number`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.modifyPage.parentOrgId == null) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-parent-organization`), {
-            duration: 3000,
-            permanent: false
-          });
-          return;
-        }
-
-        if (this.modifyPage.parentOrgId == this.modifyPage.selectedOrg.orgId) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.please-select-different-parent-organization`), {
-            duration: 3000,
-            permanent: false
-          });
+        this.$v.modifyPage.$touch();
+        if(this.$v.modifyPage.$invalid) {
           return;
         }
 
