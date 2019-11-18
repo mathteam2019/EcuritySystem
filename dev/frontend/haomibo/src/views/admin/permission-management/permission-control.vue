@@ -592,7 +592,8 @@
             {
               name: '__checkbox',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '60px'
             },
             {
               name: 'roleId',
@@ -600,6 +601,7 @@
               // sortField: 'roleId,
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '11%'
             },
             {
               name: '__slot:roleNumber',
@@ -607,6 +609,7 @@
               // sortField: 'roleId,
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '29%'
             },
             {
               name: 'roleName',
@@ -614,13 +617,13 @@
               // sortField: 'dataGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '29%'
             },
             {
               name: '__slot:operating',
               title: this.$t('permission-management.permission-control.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '90px'
             }
           ]
         },
@@ -649,11 +652,18 @@
           perPage: 5,
           fields: [
             {
+                name: '__checkbox',
+                titleClass: 'text-center',
+                dataClass: 'text-center',
+                width: '60px'
+            },
+            {
               name: 'dataGroupId',
               title: this.$t('permission-management.permission-control.serial-number'),
               // sortField: 'dataGroupId',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '11%'
             },
             {
               name: '__slot:dataGroupNumber',
@@ -661,6 +671,7 @@
               // sortField: 'dataGroupId',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '21%'
             },
             {
               name: 'dataGroupName',
@@ -668,6 +679,7 @@
               // sortField: 'dataGroupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '21%'
             },
             {
               name: '__slot:dataGroupRange',
@@ -675,13 +687,13 @@
               // sortField: 'note',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '18%'
             },
             {
               name: '__slot:operating',
               title: this.$t('permission-management.permission-control.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '90px'
             },
           ],
         },
