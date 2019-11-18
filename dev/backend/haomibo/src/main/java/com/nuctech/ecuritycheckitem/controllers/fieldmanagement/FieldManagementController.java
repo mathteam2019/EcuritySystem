@@ -72,6 +72,8 @@ public class FieldManagementController extends BaseController {
             return SysField
                     .builder()
                     //.orgId(this.getOrgId())
+                    .fieldSerial(this.getFieldSerial())
+                    .fieldDesignation(this.getFieldDesignation())
                     .parentFieldId(this.getParentFieldId())
                     .leader(Optional.of(this.getLeader()).orElse(""))
                     .mobile(Optional.of(this.getMobile()).orElse(""))
@@ -166,6 +168,8 @@ public class FieldManagementController extends BaseController {
             return SysField
                     .builder()
                     .fieldId(this.getFieldId())
+                    .fieldSerial(this.getFieldSerial())
+                    .fieldDesignation(this.getFieldDesignation())
                     //.orgId(this.getOrgId())
                     .parentFieldId(this.getParentFieldId())
                     .leader(Optional.of(this.getLeader()).orElse(""))
@@ -197,30 +201,6 @@ public class FieldManagementController extends BaseController {
 
     }
 
-
-    /**
-     * Field get all request body.
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class FieldGetAllRequestBody {
-
-        static class GetAllType {
-            static final String BARE = "bare";
-            static final String WITH_PARENT = "with_parent";
-            static final String WITH_CHILDREN = "with_children";
-        }
-
-        @Pattern(regexp = GetAllType.BARE + "|" +
-                GetAllType.WITH_PARENT + "|" +
-                GetAllType.WITH_CHILDREN + "|")
-        String type = GetAllType.BARE;
-
-
-    }
 
 
     /**
@@ -346,37 +326,16 @@ public class FieldManagementController extends BaseController {
      * BARE, WITH_PARENT, WITH_CHILDREN
      */
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
-    public Object organizationGetAll(@RequestBody @Valid FieldGetAllRequestBody requestBody,
-                                     BindingResult bindingResult) {
+    public Object fieldGetAll() {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
 
 
         List<SysField> sysFieldList = sysFieldRepository.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
-        String type = requestBody.getType();
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
-        // Set filters for different type.
-        switch (type) {
-
-            case FieldGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
-                break;
-            case FieldGetAllRequestBody.GetAllType.WITH_PARENT:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"));
-                break;
-            case FieldGetAllRequestBody.GetAllType.WITH_CHILDREN:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-                break;
-            default:
-                break;
-        }
 
         value.setFilters(filters);
 
@@ -388,7 +347,7 @@ public class FieldManagementController extends BaseController {
      * Field datatable data.
      */
     @RequestMapping(value = "/field/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object organizationGetByFilterAndPage(
+    public Object fieldGetByFilterAndPage(
             @RequestBody @Valid FieldGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -440,10 +399,7 @@ public class FieldManagementController extends BaseController {
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
+                .getDefaultFilters();
 
         value.setFilters(filters);
 

@@ -65,8 +65,4 @@ public class SysField extends BaseEntity implements Serializable {
     @MapsId("parent")
     SysField parent;
 
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "parent")
-    Set<SysField> children;
 }

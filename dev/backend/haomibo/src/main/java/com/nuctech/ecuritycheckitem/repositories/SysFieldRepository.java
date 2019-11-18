@@ -1,9 +1,9 @@
 /*
  * Copyright 2019 KR-STAR-DEV team.
  *
- * @CreatedDate 2019/10/19
- * @CreatedBy Sandy.
- * @FileName SysOrgRepository.java
+ * @CreatedDate 2019/11/18
+ * @CreatedBy Choe.
+ * @FileName SysFieldRepository.java
  * @ModifyHistory
  *
  */
