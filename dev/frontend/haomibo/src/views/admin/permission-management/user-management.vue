@@ -30,28 +30,24 @@
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-2">
-              <b-col cols="6">
+            <div class="filter-wrapper pt-2">
+              <div class="filter-option">
                 <b-row>
-
                   <b-col>
                     <b-form-group :label="$t('permission-management.username')">
                       <b-form-input v-model="filter.userName"></b-form-input>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('permission-management.status')">
                       <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('permission-management.gender')">
                       <b-form-select v-model="filter.gender" :options="genderFilterOptions" plain/>
                     </b-form-group>
                   </b-col>
-
                   <b-col>
                     <b-form-group :label="$t('permission-management.affiliated-institution')">
                       <b-form-select v-model="filter.orgId"
@@ -60,8 +56,8 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-              </b-col>
-              <b-col cols="6" class="d-flex justify-content-end align-items-center">
+              </div>
+              <div class="filter-action d-flex justify-content-end align-items-center">
                 <div>
                   <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
@@ -79,8 +75,8 @@
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
-              </b-col>
-            </b-row>
+              </div>
+            </div>
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
