@@ -560,27 +560,31 @@
             {
               name: '__checkbox',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width:'60px'
             },
             {
               name: 'orgId',
               title: this.$t('permission-management.th-no'),
               sortField: 'orgId',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '4%'
             },
             {
               name: 'orgNumber',
               title: this.$t('permission-management.th-org-number'),
               sortField: 'orgNumber',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '7%'
             },
             {
               name: 'orgName',
               title: this.$t('permission-management.th-org-name'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '8%'
             },
             {
               name: 'status',
@@ -588,6 +592,7 @@
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '7%',
               callback: (value) => {
 
                 const dictionary = {
@@ -604,6 +609,7 @@
               title: this.$t('permission-management.th-org-parent-org-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '9%',
               callback: (value) => {
 
                 return value ? value.orgNumber : this.$t('permission-management.org-none');
@@ -615,6 +621,7 @@
               title: this.$t('permission-management.th-org-parent-org-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '14%',
               callback: (value) => {
 
                 return value ? value.orgName : this.$t('permission-management.org-none');
@@ -626,13 +633,15 @@
               title: this.$t('permission-management.th-org-leader'),
               sortField: 'leader',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '8%'
             },
             {
               name: 'mobile',
               title: this.$t('permission-management.th-org-mobile'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '15%'
             },
             {
               name: 'note',
@@ -645,7 +654,7 @@
               title: this.$t('permission-management.th-org-actions'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '210px'
+              width: '16%'
             },
 
           ],
