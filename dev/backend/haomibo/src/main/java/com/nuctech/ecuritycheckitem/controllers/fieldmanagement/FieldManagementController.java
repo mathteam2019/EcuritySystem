@@ -1,25 +1,24 @@
 package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.OrganizationManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +71,8 @@ public class FieldManagementController extends BaseController {
             return SysField
                     .builder()
                     //.orgId(this.getOrgId())
+                    .fieldSerial(this.getFieldSerial())
+                    .fieldDesignation(this.getFieldDesignation())
                     .parentFieldId(this.getParentFieldId())
                     .leader(Optional.of(this.getLeader()).orElse(""))
                     .mobile(Optional.of(this.getMobile()).orElse(""))
@@ -166,6 +167,8 @@ public class FieldManagementController extends BaseController {
             return SysField
                     .builder()
                     .fieldId(this.getFieldId())
+                    .fieldSerial(this.getFieldSerial())
+                    .fieldDesignation(this.getFieldDesignation())
                     //.orgId(this.getOrgId())
                     .parentFieldId(this.getParentFieldId())
                     .leader(Optional.of(this.getLeader()).orElse(""))
@@ -198,30 +201,6 @@ public class FieldManagementController extends BaseController {
     }
 
 
-    /**
-     * Field get all request body.
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class FieldGetAllRequestBody {
-
-        static class GetAllType {
-            static final String BARE = "bare";
-            static final String WITH_PARENT = "with_parent";
-            static final String WITH_CHILDREN = "with_children";
-        }
-
-        @Pattern(regexp = GetAllType.BARE + "|" +
-                GetAllType.WITH_PARENT + "|" +
-                GetAllType.WITH_CHILDREN + "|")
-        String type = GetAllType.BARE;
-
-
-    }
-
 
     /**
      * Field create request.
@@ -236,11 +215,15 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if parent field is existing.
-        if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
+        if (requestBody.getParentFieldId() != 0 && !sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysField sysField = requestBody.convert2SysField();
+
+        if(requestBody.getParentFieldId() == 0) {
+            sysField.setStatus(SysField.Status.ACTIVE);
+        }
 
         // Add createdInfo.
         sysField.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -263,8 +246,10 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(requestBody.getFieldId())).orElse(null);
+
         // Check if field is existing.
-        if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getFieldId()))) {
+        if (oldSysField == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -274,6 +259,10 @@ public class FieldManagementController extends BaseController {
         }
 
         SysField sysField = requestBody.convert2SysField();
+
+        //Don't modify created by and created time
+        sysField.setCreatedBy(oldSysField.getCreatedBy());
+        sysField.setCreatedTime(oldSysField.getCreatedTime());
 
         // Add edited info.
         sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -343,40 +332,18 @@ public class FieldManagementController extends BaseController {
 
     /**
      * Field get all request.
-     * BARE, WITH_PARENT, WITH_CHILDREN
      */
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
-    public Object organizationGetAll(@RequestBody @Valid FieldGetAllRequestBody requestBody,
-                                     BindingResult bindingResult) {
+    public Object fieldGetAll() {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
 
 
         List<SysField> sysFieldList = sysFieldRepository.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
-        String type = requestBody.getType();
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
-        // Set filters for different type.
-        switch (type) {
-
-            case FieldGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"));
-                break;
-            case FieldGetAllRequestBody.GetAllType.WITH_PARENT:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"));
-                break;
-            case FieldGetAllRequestBody.GetAllType.WITH_CHILDREN:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-                break;
-            default:
-                break;
-        }
 
         value.setFilters(filters);
 
@@ -388,7 +355,7 @@ public class FieldManagementController extends BaseController {
      * Field datatable data.
      */
     @RequestMapping(value = "/field/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object organizationGetByFilterAndPage(
+    public Object fieldGetByFilterAndPage(
             @RequestBody @Valid FieldGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -440,10 +407,7 @@ public class FieldManagementController extends BaseController {
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
+                .getDefaultFilters();
 
         value.setFilters(filters);
 

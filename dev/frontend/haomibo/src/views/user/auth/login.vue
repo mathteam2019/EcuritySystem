@@ -1,22 +1,22 @@
 <style lang="scss">
   $text-color: #d4d5da;
-  .header-title {
-    font-size: 70px;
-    font-weight: bold;
-    text-shadow: 3px 4px 0px black;
-  }
+  .auth-login-page {
 
-  .form-control {
-    max-width: unset !important;
-  }
+    .header-title {
+      font-size: 70px;
+      font-weight: bold;
+      text-shadow: 3px 4px 0px black;
+    }
 
-  body {
+    .form-control {
+      max-width: unset !important;
+    }
     img.logo {
       top: 50px;
       left: 50px;
     }
 
-    footer {
+    footer.auth-login {
       position: absolute;
       bottom: 100px;
       left: 15%;
@@ -89,80 +89,80 @@
         }
       }
     }
-
   }
 
   body.rtl {
     .fixed-background {
       transform: rotateY(180deg);
     }
+    .auth-login-page {
+      img.logo {
+        top: 50px;
+        right: 50px;
+      }
 
-    img.logo {
-      top: 50px;
-      right: 50px;
-    }
+      footer.auth-login {
+        position: absolute;
+        bottom: 100px;
+        right: 15%;
+        color: #fffefe;
+      }
 
-    footer {
-      position: absolute;
-      bottom: 100px;
-      right: 15%;
-      color: #fffefe;
-    }
+      .line-form {
+        #langddm {
+          width: 100%;
+          border-bottom: solid 1px white;
+          border-right: transparent;
+          border-left: transparent;
+          border-top: transparent;
 
-    .line-form {
-      #langddm {
-        width: 100%;
-        border-bottom: solid 1px white;
-        border-right: transparent;
-        border-left: transparent;
-        border-top: transparent;
+          .dropdown-toggle::after {
+            background: none !important;
+          }
 
-        .dropdown-toggle::after {
-          background: none !important;
-        }
+          span.front-icon {
+            height: 36px;
+            line-height: 36px;
+            position: absolute;
+            right: 0;
+            top: 1px;
 
-        span.front-icon {
-          height: 36px;
-          line-height: 36px;
-          position: absolute;
-          right: 0;
-          top: 1px;
+            img {
+              width: 19px;
+            }
+          }
 
-          img {
-            width: 19px;
+          span.name {
+            padding-right: 18px;
+            color: $text-color;;
           }
         }
 
-        span.name {
-          padding-right: 18px;
-          color: $text-color;;
-        }
-      }
+        button.btn-primary {
+          background-color: #1782d4 !important;
 
-      button.btn-primary {
-        background-color: #1782d4 !important;
-
-        &:hover {
-          background-color: darken(#1782d4, 8%);
-        }
-      }
-
-      div.input-group {
-        span.front-input-icon {
-          height: 36px;
-          line-height: 36px;
+          &:hover {
+            background-color: darken(#1782d4, 8%);
+          }
         }
 
-        .form-control {
-          padding-right: 40px;
-          border-top: transparent;
-          border-left: transparent;
-          border-right: transparent;
-          border-bottom-right-radius: unset;
-          outline: none;
-          background: transparent !important;
-          color: $text-color;
-          font-size: 16px;
+        div.input-group {
+          span.front-input-icon {
+            height: 36px;
+            line-height: 36px;
+          }
+
+          .form-control {
+            padding-right: 40px;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+            border-bottom-right-radius: unset;
+            outline: none;
+            background: transparent !important;
+            color: $text-color;
+            font-size: 16px;
+          }
         }
       }
     }
@@ -174,11 +174,12 @@
       margin-top: 20% !important;
     }
   }
+
 </style>
 
 
 <template>
-  <b-row class="h-100">
+  <b-row class="h-100 auth-login-page">
     <img class="position-absolute logo" src="../../../assets/img/logo.png"/>
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.user-title')}}</h2>
@@ -224,7 +225,7 @@
         </b-col>
       </b-row>
     </b-col>
-    <footer>Copyright by JINUNG Company limited 2019.All right Reserved</footer>
+    <footer class="auth-login">Copyright by JINUNG Company limited 2019.All right Reserved</footer>
   </b-row>
 </template>
 <script>

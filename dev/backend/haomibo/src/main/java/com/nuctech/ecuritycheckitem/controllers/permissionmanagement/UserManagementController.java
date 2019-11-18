@@ -460,6 +460,10 @@ public class UserManagementController extends BaseController {
         // Don't modify portrait if uploaded file is not found.
         sysUser.setPortrait(oldSysUser.getPortrait());
 
+        //Don't modify created by and created time
+        sysUser.setCreatedBy(oldSysUser.getCreatedBy());
+        sysUser.setCreatedTime(oldSysUser.getCreatedTime());
+
         // Process user portrait file.
         MultipartFile portraitFile = requestBody.getPortrait();
 
