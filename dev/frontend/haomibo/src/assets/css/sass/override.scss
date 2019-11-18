@@ -388,6 +388,14 @@ filter option style modify
   .filter-action {
     &>div {
       margin-top: 6px;
+      button.btn-success {
+        background-color: #66cd00;
+        border-color: #66cd00;
+        &:hover,&:active {
+          background-color: darken(#66cd00,8%);
+          border-color: darken(#66cd00,8%);
+        }
+      }
     }
   }
 }
