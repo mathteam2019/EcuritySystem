@@ -221,6 +221,10 @@ public class FieldManagementController extends BaseController {
 
         SysField sysField = requestBody.convert2SysField();
 
+        if(requestBody.getParentFieldId() == 0) {
+            sysField.setStatus(SysField.Status.ACTIVE);
+        }
+
         // Add createdInfo.
         sysField.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
