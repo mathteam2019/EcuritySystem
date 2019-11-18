@@ -1,25 +1,24 @@
 package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.OrganizationManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -216,7 +215,7 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if parent field is existing.
-        if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
+        if (requestBody.getParentFieldId() != 0 && !sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -329,7 +328,6 @@ public class FieldManagementController extends BaseController {
 
     /**
      * Field get all request.
-     * BARE, WITH_PARENT, WITH_CHILDREN
      */
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
     public Object fieldGetAll() {

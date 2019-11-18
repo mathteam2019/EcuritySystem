@@ -1,5 +1,4 @@
 package com.nuctech.ecuritycheckitem.models.db;
-
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.Getter;
@@ -31,46 +30,29 @@ import java.io.Serializable;
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
-@Table(name = "sys_field")
-public class SysField extends BaseEntity implements Serializable {
-
-    public static class Status {
-        public static final String ACTIVE = "active";
-        public static final String INACTIVE = "inactive";
-    }
-
+@Table(name = "sys_device_category")
+public class SysDeviceCategory extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "FIELD_ID", length = 20, nullable = false)
-    Long fieldId;
+    @Column(name = "CATEGORY_ID", length = 20, nullable = false)
+    Long categoryId;
 
-    @Column(name = "ORG_ID", length = 20)
-    Long orgId;
 
-    @Column(name = "PARENT_FIELD_ID", length = 20)
-    Long parentFieldId;
+    @Column(name = "PARENT_CATEGORY_ID", length = 20)
+    Long parentCategoryId;
 
-    @Column(name = "FIELD_SERIAL", length = 50)
-    String fieldSerial;
+    @Column(name = "CATEGORY_NUMBER", length = 50)
+    String categoryNumber;
 
-    @Column(name = "FIELD_DESIGNATION", length = 50)
-    String fieldDesignation;
-
-    @Column(name = "LEADER", length = 50)
-    String leader;
-
-    @Column(name = "MOBILE", length = 50)
-    String mobile;
-
-    @Column(name = "FIELD_STATUS", length = 10)
-    String status;
+    @Column(name = "CATEGORY_NAME", length = 50)
+    String categoryName;
 
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PARENT_FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "PARENT_CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
-    SysField parent;
+    SysDeviceCategory parent;
 
 }
