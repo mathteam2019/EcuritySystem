@@ -67,5 +67,8 @@ public class BaseController {
     @Autowired
     public SysUserGroupLookupRepository sysUserGroupLookupRepository;
 
+    @Autowired
+    public SysFieldRepository sysFieldRepository;
+
 
 }
