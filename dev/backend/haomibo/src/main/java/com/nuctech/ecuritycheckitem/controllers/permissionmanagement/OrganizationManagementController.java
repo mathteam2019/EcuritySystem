@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
@@ -271,8 +272,10 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SysOrg oldSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId())).orElse(null);
+
         // Check if org is existing.
-        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
+        if (oldSysOrg == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -282,6 +285,10 @@ public class OrganizationManagementController extends BaseController {
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
+
+        //Don't modify created by and created time
+        sysOrg.setCreatedBy(oldSysOrg.getCreatedBy());
+        sysOrg.setCreatedTime(oldSysOrg.getCreatedTime());
 
         // Add edited info.
         sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

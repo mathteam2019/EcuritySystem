@@ -243,8 +243,10 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(requestBody.getFieldId())).orElse(null);
+
         // Check if field is existing.
-        if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getFieldId()))) {
+        if (oldSysField == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -254,6 +256,10 @@ public class FieldManagementController extends BaseController {
         }
 
         SysField sysField = requestBody.convert2SysField();
+
+        //Don't modify created by and created time
+        sysField.setCreatedBy(oldSysField.getCreatedBy());
+        sysField.setCreatedTime(oldSysField.getCreatedTime());
 
         // Add edited info.
         sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
