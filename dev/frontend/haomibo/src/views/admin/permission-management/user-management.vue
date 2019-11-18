@@ -1019,7 +1019,7 @@
             },
 
           ],
-          perPage: 5,
+          perPage: 10,
         },
         //second tab content
         selectedUserGroupItem: null,
@@ -1382,8 +1382,8 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.orgName = fnGetOrgFullName(temp.org);
-          transformed.data.push(temp)
+          temp.orgName = temp.org.orgName;
+          transformed.data.push(temp);
         }
 
         return transformed
