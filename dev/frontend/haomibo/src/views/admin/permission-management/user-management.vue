@@ -1191,7 +1191,6 @@
         if (this.$v.profileForm.$invalid) {
           return;
         }
-        console.log('submit');
         const formData = new FormData();
         for (let key in this.profileForm) {
           if (key !== 'portrait')
