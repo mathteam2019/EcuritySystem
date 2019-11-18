@@ -364,6 +364,34 @@ body.rtl {
   }
 }
 
+/**
+filter option style modify
+ */
+.filter-wrapper {
+  display: flex;
+  justify-content: space-between;
+  .filter-option {
+    display: flex;
+    flex-grow: 1;
+    margin-right: 140px;
+    max-width: 1100px;
+    div.row {
+      width: 100%;
+      div.col{
+        padding-right: 0;
+        .form-control {
+          max-width: unset;
+        }
+      }
+    }
+  }
+  .filter-action {
+    &>div {
+      margin-top: 6px;
+    }
+  }
+}
+
 //vue table btn square style variables
 $btn-square-length: 30px;
 $btn-square-padding: 0;

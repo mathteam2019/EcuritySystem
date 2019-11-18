@@ -209,9 +209,9 @@
                   <b-button @click="onAction('save')" size="sm" variant="success default" v-if="pageStatus !== 'show'">
                     <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="" size="sm" variant="warning default" v-if="pageStatus !== 'create'">
-                    <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
-                  </b-button>
+                  <!--<b-button v-if="siteForm.status === 'inactive' && pageStatus !== 'create'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                    <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
+                  </b-button>-->
                   <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
                             v-if="pageStatus !== 'create'">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
@@ -309,12 +309,12 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button v-if="siteForm.status === 'active' && siteForm.parentFieldId !=0" @click="" size="sm"
+                  <b-button v-if="siteForm.status === 'active' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
                             variant="warning default">
                     <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="" size="sm" variant="warning default">
-                    <i class="icofont-ban"></i> {{$t('system-setting.status-active')}}
+                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                    <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>
                   <b-button v-if="siteForm.status === 'inactive'" @click="onAction('delete',siteForm)" size="sm"
                             variant="danger default">
@@ -415,16 +415,7 @@
       ///////////////////////////////////////////////////////////
       ////////////// Load site list from server /////////////////
       ///////////////////////////////////////////////////////////
-      getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.siteData = data;
-
-            break;
-        }
-      });
+      this.getSiteData();
 
       this.$refs.vuetable.$parent.transform = this.transformSiteTable.bind(this);
     },
@@ -624,6 +615,17 @@
       }
     },
     methods: {
+      getSiteData(){
+        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        });
+      },
       onAction(value, data = null) {
         switch (value) {
           case 'create':
@@ -710,6 +712,7 @@
                   permanent: false
                 });
                 this.pageStatus = 'table';
+                this.getSiteData();
                 break;
             }
           })
@@ -758,14 +761,15 @@
         this.$refs.vuetable.changePage(page);
       },
 
-      updateItemStatus(data) {
+      updateItemStatus(statusValue) {
         let fieldId = this.siteForm.fieldId;
         if (fieldId === 0)
           return false;
+
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/update-status`, {
             fieldId: fieldId,
-            status: data
+            status: statusValue
           })
           .then((response) => {
             let message = response.data.message;
@@ -777,7 +781,7 @@
                   permanent: false
                 });
                 if (this.siteForm.fieldId > 0)
-                  this.siteForm.status = data;
+                  this.siteForm.status = statusValue;
                 if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
                 break;
@@ -808,6 +812,7 @@
                 if (this.siteForm.fieldId > 0)
                   this.siteForm = null;
                 this.$refs.vuetable.refresh();
+                this.getSiteData();
                 break;
             }
           })
