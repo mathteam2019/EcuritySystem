@@ -1,5 +1,7 @@
 <style lang="scss">
-    $text-color: #d4d5da;
+  $text-color: #d4d5da;
+  .auth-login-page {
+
     .header-title {
       font-size: 70px;
       font-weight: bold;
@@ -9,94 +11,91 @@
     .form-control {
       max-width: unset !important;
     }
-
-    body {
-      img.logo {
-        top: 50px;
-        left: 50px;
-      }
-
-      footer.auth-login {
-        position: absolute;
-        bottom: 100px;
-        left: 15%;
-        color: #fffefe;
-      }
-
-      .line-form {
-        #langddm {
-          width: 100%;
-          border-bottom: solid 1px white;
-          border-right: transparent;
-          border-left: transparent;
-          border-top: transparent;
-
-          .dropdown-toggle::after {
-            background: none !important;
-          }
-
-          span.front-icon {
-            height: 36px;
-            line-height: 36px;
-            position: absolute;
-            left: 0;
-            top: 1px;
-
-            img {
-              width: 19px;
-            }
-          }
-
-          span.name {
-            padding-left: 18px;
-            color: $text-color;
-          }
-        }
-
-        div.input-group {
-          span.front-input-icon {
-            height: 36px;
-            line-height: 36px;
-            color: $text-color;
-          }
-
-          .form-control {
-            padding-left: 40px;
-            border-top: transparent;
-            border-left: transparent;
-            border-right: transparent;
-            border-bottom-right-radius: unset;
-            outline: none;
-            background: transparent !important;
-            color: white !important;
-            font-size: 16px;
-
-            &::placeholder {
-              color: $text-color;
-            }
-
-            &:-webkit-autofill {
-              -webkit-text-fill-color: $text-color !important;
-            }
-          }
-        }
-
-        button.btn-primary {
-          background-color: #1782d4 !important;
-
-          &:hover {
-            background-color: darken(#1782d4, 8%);
-          }
-        }
-      }
-
+    img.logo {
+      top: 50px;
+      left: 50px;
     }
 
-    body.rtl {
-      .fixed-background {
-        transform: rotateY(180deg);
+    footer.auth-login {
+      position: absolute;
+      bottom: 100px;
+      left: 15%;
+      color: #fffefe;
+    }
+
+    .line-form {
+      #langddm {
+        width: 100%;
+        border-bottom: solid 1px white;
+        border-right: transparent;
+        border-left: transparent;
+        border-top: transparent;
+
+        .dropdown-toggle::after {
+          background: none !important;
+        }
+
+        span.front-icon {
+          height: 36px;
+          line-height: 36px;
+          position: absolute;
+          left: 0;
+          top: 1px;
+
+          img {
+            width: 19px;
+          }
+        }
+
+        span.name {
+          padding-left: 18px;
+          color: $text-color;
+        }
       }
 
+      div.input-group {
+        span.front-input-icon {
+          height: 36px;
+          line-height: 36px;
+          color: $text-color;
+        }
+
+        .form-control {
+          padding-left: 40px;
+          border-top: transparent;
+          border-left: transparent;
+          border-right: transparent;
+          border-bottom-right-radius: unset;
+          outline: none;
+          background: transparent !important;
+          color: white !important;
+          font-size: 16px;
+
+          &::placeholder {
+            color: $text-color;
+          }
+
+          &:-webkit-autofill {
+            -webkit-text-fill-color: $text-color !important;
+          }
+        }
+      }
+
+      button.btn-primary {
+        background-color: #1782d4 !important;
+
+        &:hover {
+          background-color: darken(#1782d4, 8%);
+        }
+      }
+    }
+  }
+
+  body.rtl {
+    .fixed-background {
+      transform: rotateY(180deg);
+    }
+    .auth-login-page {
       img.logo {
         top: 50px;
         right: 50px;
@@ -166,14 +165,15 @@
           }
         }
       }
-
     }
 
-    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-      .auth-content-only-ie {
-        margin-top: 20% !important;
-      }
+  }
+
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .auth-content-only-ie {
+      margin-top: 20% !important;
     }
+  }
 
 
 </style>
