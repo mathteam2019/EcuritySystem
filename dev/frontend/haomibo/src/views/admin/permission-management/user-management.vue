@@ -936,14 +936,16 @@
             {
               name: '__checkbox',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width:'60px'
             },
             {
               name: 'userId',
               title: this.$t('permission-management.th-no'),
               sortField: 'userId',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width:'6%'
             },
             {
               name: '__slot:userNumber',
@@ -951,13 +953,15 @@
               sortField: 'userNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width:'12%'
             },
             {
               name: 'userName',
               title: this.$t('permission-management.th-username'),
               sortField: 'userName',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width:'12%'
             },
             {
               name: 'gender',
@@ -973,7 +977,8 @@
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
-              }
+              },
+              width:'11%'
             },
             {
               name: 'status',
@@ -991,44 +996,30 @@
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
-              }
+              },
+              width:'11%',
             },
             {
               name: 'orgName',
               title: this.$t('permission-management.th-affiliated-institution'),
               sortField: 'orgName',
               titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'category',
-              title: this.$t('permission-management.th-user-category'),
-              sortField: 'category',
-              titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-
-                const dictionary = {
-                  "admin": `${this.$t('permission-management.admin')}`,
-                  "normal": `${this.$t('permission-management.normal-staff')}`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
             },
             {
               name: 'userAccount',
               title: this.$t('permission-management.th-account'),
               sortField: 'userAccount',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width:'13%'
             },
             {
               name: '__slot:actions',
               title: this.$t('permission-management.th-action'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              width: '270px'
+              dataClass: 'text-center btn-actions',
+              width:'250px'
             },
 
           ],

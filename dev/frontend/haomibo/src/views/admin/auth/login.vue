@@ -18,7 +18,7 @@
 
     footer.auth-login {
       position: absolute;
-      bottom: 100px;
+      bottom: 10%;
       left: 15%;
       color: #fffefe;
     }
@@ -103,7 +103,7 @@
 
       footer.auth-login {
         position: absolute;
-        bottom: 100px;
+        bottom: 10%;
         right: 15%;
         color: #fffefe;
       }
@@ -172,6 +172,12 @@
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .auth-content-only-ie {
       margin-top: 20% !important;
+    }
+    .auth-login-page {
+      .form-control {
+        max-width: 100%!important;
+        border-radius: 0px!important;
+      }
     }
   }
 
