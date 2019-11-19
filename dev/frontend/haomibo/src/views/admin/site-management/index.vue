@@ -838,14 +838,9 @@
           });
         this.$refs['modal-delete'].hide();
       },
+
       hideModal(modal) {
         this.$refs[modal].hide();
-      },
-      onReturnClicked() {
-        this.pageStatus = 'table';
-      },
-      onHorizontalSubmit() {
-        console.log('submit form');
       },
       renderTreeContent: function (h, data) {
         return data.label;

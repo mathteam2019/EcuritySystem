@@ -10,7 +10,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -21,19 +21,19 @@
             <b-row>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-classify-item.classify')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="filterOption.categoryName"></b-form-input>
                 </b-form-group>
               </b-col>
 
-              <b-col cols="4" >
+              <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select :options="stateOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
 
-              <b-col cols="4" >
+              <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-classify-item.super-classify')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="filterOption.parentCategoryName" ></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -62,42 +62,43 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="deviceClassifyTable"
-                :api-mode="false"
+                :api-url="deviceClassifyTableItems.apiUrl"
                 :fields="deviceClassifyTableItems.fields"
-                :data-manager="dataManager"
+                :http-fetch="deviceClassifyTableHttpFetch"
                 :per-page="deviceClassifyTableItems.perPage"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
                 <div slot="number" slot-scope="props">
-                  <span class="cursor-p text-primary" @click="onAction('edit')">{{ props.rowData.number }}</span>
+                  <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.categoryNumber }}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
-                  <b-button @click="onAction('edit')"
-                            size="sm"
-                            variant="primary default btn-square"
-                  >
+                  <b-button @click="onAction('edit',props.rowData)"
+                            size="sm" :disabled="props.rowData.status === 'active'"
+                            variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status=='inactive'"
-                    size="sm"
+                    size="sm" @click="onAction('activate',props.rowData)"
                     variant="success default btn-square"
                   >
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
+                    @click="onAction('inactivate',props.rowData)"
                     v-if="props.rowData.status=='active'"
                     size="sm"
-                    variant="warning default btn-square"
-                  >
+                    :disabled="props.rowData.parentCategoryId === 0"
+                    variant="warning default btn-square" >
                     <i class="icofont-ban"></i>
                   </b-button>
                   <b-button
                     size="sm"
+                    @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                  >
+                    :disabled="props.rowData.status === 'active'">
                     <i class="icofont-bin"></i>
                   </b-button>
                 </div>
@@ -107,44 +108,71 @@
               <vuetable-pagination-bootstrap
                 ref="pagination"
                 @vuetable-pagination:change-page="onChangePage"
+                :initial-per-page="deviceClassifyTableItems.perPage"
+                @onUpdatePerPage="deviceClassifyTableItems.perPage = Number($event)"
               ></vuetable-pagination-bootstrap>
             </div>
           </b-col>
         </b-row>
 
       </div>
-      <div v-if="pageStatus=='create'" class="h-100 d-flex flex-column">
+      <div v-if="pageStatus === 'create' || pageStatus === 'edit' " class="h-100 d-flex flex-column">
         <b-row class="form-section d-flex">
           <b-col cols="6">
             <b-row>
-              <b-col cols="6" >
+              <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span
+                    class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="classifyForm.number"></b-form-input>
+                  <b-form-input
+                    :state="!$v.classifyForm.categoryNumber.$invalid"
+                    v-model="classifyForm.categoryNumber"></b-form-input>
+                  <div class="invalid-feedback d-block">
+                    {{ (submitted && !$v.classifyForm.categoryNumber.required) ?
+                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                  </div>
                 </b-form-group>
               </b-col>
-              <b-col cols="6" >
+              <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify-item.device')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.device')}}<span
+                    class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="classifyForm.orgId" :options="orgSelectData" plain/>
+                  <b-form-input
+                    :state="!$v.classifyForm.categoryName.$invalid"
+                    v-model="classifyForm.categoryName"></b-form-input>
+                  <div class="invalid-feedback d-block">
+                    {{ (submitted && !$v.classifyForm.categoryName.required) ?
+                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                  </div>
                 </b-form-group>
               </b-col>
             </b-row>
             <b-row>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span
+                    class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="classifyForm.parentNumber"></b-form-input>
+                  <b-form-input v-model="classifyForm.parentCategoryNumber" disabled></b-form-input>
+                  <div class="invalid-feedback d-block">
+                    {{ "&nbsp;"}}
+                  </div>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
                 <b-form-group>
-                  <template slot="label">{{$t('device-management.device-classify-item.parent-device')}}<span class="text-danger">*</span>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device')}}<span
+                    class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="classifyForm.parentOrgId" :options="parentOrgSelectData" plain/>
+                  <b-form-select :disabled="pageStatus === 'edit'"
+                    :state="!$v.classifyForm.parentCategoryId.$invalid"
+                    v-model="classifyForm.parentCategoryId" :options="parentClassifyOptions" plain/>
+                  <div class="invalid-feedback d-block">
+                    {{ (submitted && !$v.classifyForm.parentCategoryId.required) ?
+                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                  </div>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -159,17 +187,118 @@
             </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3 " class="align-self-end">
-            <b-button size="sm" variant="info default"><i class="icofont-save"></i> {{$t('device-management.save')}}</b-button>
-            <b-button size="sm" variant="success default"><i class="icofont-check-circled"></i> {{$t('device-management.active')}}</b-button>
-            <b-button size="sm" variant="danger default"><i class="icofont-bin"></i> {{$t('device-management.delete')}}</b-button>
-            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}</b-button>
+            <b-button size="sm" @click="saveCategoryItem()" variant="info default"><i class="icofont-save"></i>
+              {{$t('device-management.save')}}
+            </b-button>
+            <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default"
+                      v-if="pageStatus !== 'create'">
+              <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
           </b-col>
           <div class="position-absolute" style="left: 3%;bottom: 17%">
-            <img src="../../../assets/img/no_active_stamp.png">
+            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+          </div>
+        </b-row>
+      </div>
+      <div v-if="pageStatus=='show'" class="h-100 d-flex flex-column">
+        <b-row class="form-section d-flex">
+          <b-col cols="6">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify-item.device-number')}}<span
+                    class="text-danger">*</span>
+                  </template>
+                  <b-form-input
+                    v-model="classifyForm.categoryNumber"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify-item.device')}}<span
+                    class="text-danger">*</span>
+                  </template>
+                  <b-form-input v-model="classifyForm.categoryName"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device-number')}}<span
+                    class="text-danger">*</span>
+                  </template>
+                  <b-form-input disabled v-model="classifyForm.parentCategoryNumber"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify-item.parent-device')}}<span
+                    class="text-danger">*</span>
+                  </template>
+                  <b-form-select v-if="classifyForm.parentCategoryId > 0" disabled v-model="classifyForm.parentCategoryId" :options="parentClassifyOptions" plain/>
+                  <b-form-input v-if="classifyForm.parentCategoryId === 0" disabled v-model="classifyForm.parentCategoryNumber"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('device-management.device-classify-item.remark')}}
+                  </template>
+                  <b-form-textarea :rows="3" v-model="classifyForm.note"></b-form-textarea>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12 text-right mt-3 " class="align-self-end">
+            <b-button v-if="classifyForm.status === 'active' && classifyForm.parentCategoryId !== 0" @click="onAction('inactivate',classifyForm)" size="sm"
+                      variant="warning default">
+              <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
+            </b-button>
+            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('activate',classifyForm)" size="sm" variant="success default">
+              <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
+            </b-button>
+            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('delete',classifyForm)" size="sm"
+                      variant="danger default">
+              <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+            </b-button>
+            <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
+              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+            </b-button>
+          </b-col>
+          <div class="position-absolute" style="left: 3%;bottom: 17%">
+            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
       </div>
     </b-card>
+    <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
+      {{$t('device-management.make-inactive-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+
+    <b-modal centered id="modal-delete" ref="modal-delete" :title="$t('system-setting.prompt')">
+      {{$t('device-management.delete-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="removeItem()" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-delete')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </div>
 </template>
 
@@ -181,6 +310,20 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
   import {getApiManager} from '../../../api';
+  import {validationMixin} from 'vuelidate';
+
+  const {required} = require('vuelidate/lib/validators');
+
+  let getParentSerialName = (categoryData, categoryId) => {
+    let parentSerialNumber = null;
+    if (categoryData == null || categoryData.length === 0)
+      return parentSerialNumber;
+    categoryData.forEach(siteItem => {
+      if (siteItem.categoryId === categoryId)
+        parentSerialNumber = siteItem.categoryNumber;
+    });
+    return parentSerialNumber;
+  };
 
   export default {
     components: {
@@ -188,35 +331,47 @@
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
-    mounted(){
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
-        type: 'with_parent'
-      }).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.orgData = data;
-            break;
+    mixins: [validationMixin],
+    validations: {
+      classifyForm: {
+        categoryNumber: {
+          required
+        },
+        categoryName: {
+          required
+        },
+        parentCategoryId: {
+          required
         }
-      });
+      }
     },
-    data () {
+    mounted() {
+      this.getCategoryData();
+      this.$refs.deviceClassifyTable.$parent.transform = this.transformCategoryTable.bind(this);
+    },
+    data() {
       return {
-        orgData:[],
-        orgSelectData:[],
-        parentOrgSelectData:[],
-        pageStatus:'list',
+        categoryData: [],
+        submitted: false,
+        parentClassifyOptions: [],
+        pageStatus: 'list',
         selectedStatus: 'all',
-        classifyForm:{
-         number:null,
-         orgId:null,
-         parentNumber:null,
-         parentOrgId:null,
-         note:null
+        filterOption: {
+          categoryName: '',
+          status: null,
+          parentCategoryName: ''
+        },
+        classifyForm: {
+          categoryNumber: null,
+          categoryName: null,
+          parentCategoryId: null,
+          parentCategoryNumber: "",
+          categoryId: 0,
+          note: null
         },
         deviceClassifyTableItems: {
-          perPage: 5,
+          apiUrl: `${apiBaseUrl}/device-management/device-classify/category/get-by-filter-and-page`,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -224,22 +379,22 @@
               dataClass: 'text-center'
             },
             {
-              name: 'no',
-              sortField: 'no',
+              name: 'categoryId',
+              sortField: 'categoryId',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: '__slot:number',
-              sortField: 'site-no',
+              sortField: 'categoryNumber',
               title: this.$t('device-management.device-classify-item.device-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'site-name',
-              sortField: 'site-name',
+              name: 'categoryName',
+              sortField: 'categoryName',
               title: this.$t('device-management.device-classify-item.classify'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -255,18 +410,18 @@
                   "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
                   "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
                 };
-                if(!dictionary.hasOwnProperty(value)) return '';
+                if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               }
             },
             {
-              name: 'super-site-no',
-              sortField: 'super-site-no',
+              name: 'parentCategoryNumber',
+              sortField: 'parentCategoryNumber',
               title: this.$t('device-management.device-classify-item.super-classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
-                if(value) {
+                if (value) {
                   return value;
                 } else {
                   return this.$t('system-setting.none');
@@ -274,13 +429,13 @@
               }
             },
             {
-              name: 'super-site-name',
-              sortField: 'super-site-name',
+              name: 'parentCategoryName',
+              sortField: 'parentCategoryName',
               title: this.$t('device-management.device-classify-item.super-classify'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
-                if(value) {
+                if (value) {
                   return value;
                 } else {
                   return this.$t('system-setting.none');
@@ -288,8 +443,8 @@
               }
             },
             {
-              name: 'remarks',
-              sortField: 'remarks',
+              name: 'note',
+              sortField: 'note',
               title: this.$t('system-setting.remarks'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -303,111 +458,104 @@
             }
           ]
         },
-        tempData: [
-          {
-            "no": 1,
-            "number": "0000",
-            "site-name": "首都机场",
-            "status": "active",
-            "super-site-no": null,
-            "super-site-name": null,
-            "manager": "张三",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 2,
-            "site-no": "0100",
-            "site-name": "1号航站楼",
-            "status": "active",
-            "super-site-no": "0000",
-            "super-site-name": "总部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 3,
-            "site-no": "0200",
-            "site-name": "2号航站楼",
-            "status": "active",
-            "super-site-no": "0000",
-            "super-site-name": "总部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 4,
-            "site-no": "0201",
-            "site-name": "通道1",
-            "status": "active",
-            "super-site-no": "0200",
-            "super-site-name": "生产部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 5,
-            "site-no": "0202",
-            "site-name": "通道2",
-            "status": "inactive",
-            "super-site-no": "0200",
-            "super-site-name": "生产部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 6,
-            "site-no": "0300",
-            "site-name": "3号航站楼",
-            "status": "active",
-            "super-site-no": "0000",
-            "super-site-name": "总部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 7,
-            "site-no": "0301",
-            "site-name": "通道001",
-            "status": "inactive",
-            "super-site-no": "0300",
-            "super-site-name": "销售部",
-            "manager": "",
-            "contact-info": "13800001234",
-            "remarks": "",
-          },
-        ],
         stateOptions: {
-          'all':this.$t('system-setting.status-all'),
-          'valid':this.$t('system-setting.status-active'),
-          'invalid':this.$t('system-setting.status-inactive')
+          null: this.$t('system-setting.status-all'),
+          'active': this.$t('system-setting.status-active'),
+          'inactive': this.$t('system-setting.status-inactive')
         },
       }
     },
     methods: {
-      onSearchButton(){
-
+      hideModal(modal) {
+        this.$refs[modal].hide();
       },
-      onResetButton(){
+      getCategoryData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.categoryData = data;
 
+              break;
+          }
+        });
       },
-      onAction(value) {
+      onSearchButton() {
+        this.$refs.deviceClassifyTable.refresh();
+      },
+      onResetButton() {
+        this.filterOption = {
+          categoryName: '',
+          status: null,
+          parentCategoryName: ''
+        };
+        this.$refs.deviceClassifyTable.refresh();
+      },
+      onAction(value,data = null) {
         switch (value) {
           case 'create':
-            this.pageStatus = 'create';
-            break;
-          case 'edit':
+            this.initialize();
             this.pageStatus = 'create';
             break;
           case 'show-list':
             this.pageStatus = 'list';
             break;
+          case 'edit':
+            this.initialize(data);
+            this.pageStatus = 'edit';
+            break;
+          case 'activate':
+            this.initialize(data);
+            this.updateItemStatus('active');
+            break;
+          case 'show':
+            this.initialize(data);
+            this.pageStatus = 'show';
+            break;
+          case 'inactivate':
+            this.initialize(data);
+            this.$refs['modal-inactive'].show();
+            break;
+          case 'delete':
+            this.initialize(data);
+            this.$refs['modal-delete'].show();
+            break;
         }
+      },
+      transformCategoryTable(response) {
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.parentCategoryName = temp.parent != null ? temp.parent.categoryName : null;
+          temp.parentCategoryNumber = temp.parent != null ? temp.parent.categoryNumber : null;
+          transformed.data.push(temp);
+        }
+
+        return transformed
+      },
+      deviceClassifyTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.deviceClassifyTableItems.perPage,
+          filter: this.filterOption
+        });
       },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
@@ -415,89 +563,143 @@
       onChangePage(page) {
         this.$refs.deviceClassifyTable.changePage(page);
       },
-      dataManager(sortOrder, pagination) {
-        let local = this.tempData;
 
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
+      initialize(data = null) {
+        if (data == null)
+          this.classifyForm = {
+            categoryNumber: null,
+            categoryName: null,
+            parentCategoryId: null,
+            parentCategoryNumber: "",
+            categoryId: 0,
+            note: ""
+          };
+        else
+          this.classifyForm = data;
+      },
+
+      saveCategoryItem() {
+        this.submitted = true;
+        this.$v.classifyForm.$touch();
+        if (this.$v.classifyForm.$invalid) {
+          return;
         }
-
-        pagination = this.$refs.deviceClassifyTable.makePagination(
-          local.length,
-          this.deviceClassifyTableItems.perPage
-        );
-
-        let from = pagination.from - 1;
-        let to = from + this.deviceClassifyTableItems.perPage;
-
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
-        };
+        let finalLink = this.classifyForm.categoryId > 0 ? 'modify' : 'create';
+        getApiManager()
+          .post(`${apiBaseUrl}/device-management/device-classify/category/` + finalLink, this.classifyForm)
+          .then((response) => {
+            let message = response.data.message;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.category-added-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.pageStatus = 'list';
+                this.getCategoryData();
+                break;
+            }
+          })
+          .catch((error) => {
+          });
       },
-      showCreatePage() { // move to create page
-        // reset models
-        this.classifyForm = {
-          orgName: '',
-          orgNumber: '',
-          parentOrgId: null,
-          leader: '',
-          mobile: '',
-          note: ''
-        };
-        // change page to create
-        this.pageStatus = 'create';
+      //update status
+      updateItemStatus(statusValue) {
+        let categoryId = this.classifyForm.categoryId;
+        if (categoryId === 0)
+          return false;
+
+        getApiManager()
+          .post(`${apiBaseUrl}/device-management/device-classify/category/update-status`, {
+            categoryId: categoryId,
+            status: statusValue
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.status-updated-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                if (this.classifyForm.categoryId > 0)
+                  this.classifyForm.status = statusValue;
+                if (this.pageStatus === 'list')
+                  this.$refs.deviceClassifyTable.refresh();
+                break;
+
+            }
+          })
+          .catch((error) => {
+          });
+        this.$refs['modal-inactive'].hide();
       },
+
+      //remove category
+      removeItem() {
+        let categoryId = this.classifyForm.categoryId;
+        if (categoryId === 0)
+          return false;
+        getApiManager()
+          .post(`${apiBaseUrl}/device-management/device-classify/category/delete`, {
+            categoryId: categoryId,
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`device-management.category-deleted-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.pageStatus = 'list';
+                if (this.classifyForm.categoryId > 0)
+                  initialize();
+                this.$refs.deviceClassifyTable.refresh();
+                this.getCategoryData();
+                break;
+              case responseMessages["has-children"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+            }
+          })
+          .catch((error) => {
+          });
+        this.$refs['modal-delete'].hide();
+      },
+
+
     },
     watch: {
       'deviceClassifyTableItems.perPage': function (newVal) {
         this.$refs.deviceClassifyTable.refresh();
       },
-      orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-        let getLevel = (org) => {
+      'classifyForm.parentCategoryId': function (newVal) {
+        this.classifyForm.parentCategoryNumber = getParentSerialName(this.categoryData, newVal);
+        if (this.classifyForm.parentCategoryNumber === null)
+          this.classifyForm.parentCategoryNumber = this.$t('system-setting.none');
+      },
+      categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
-          let getParent = (org) => {
-            for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].orgId == org.parentOrgId) {
-                return newVal[i];
-              }
-            }
-            return null;
-          };
-
-          let stepValue = org;
-          let level = 0;
-          while (getParent(stepValue) !== null) {
-            stepValue = getParent(stepValue);
-            level++;
-          }
-          return level;
-        };
-
-        let generateSpace = (count) => {
-          let string = '';
-          while (count--) {
-            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-          }
-          return string;
-        };
-
-        let selectOptions = [];
-
-        newVal.forEach((org) => {
-          selectOptions.push({
-            value: org.orgId,
-            html: `${generateSpace(getLevel(org))}${org.orgName}`
+        this.parentClassifyOptions = [];
+        if (newVal.length === 0) {
+          this.parentClassifyOptions.push({
+            value: 0,
+            html: `${this.$t('system-setting.none')}`
           });
-        });
-        this.orgSelectData = selectOptions;
-        this.parentOrgSelectData = JSON.parse(JSON.stringify(selectOptions));
-        this.parentOrgSelectData.push({value:null,html:`${this.$t('device-management.device-classify-item.no-classify')}`});
+        }
+        else {
+          this.parentClassifyOptions = newVal.map(site => ({
+            text: site.categoryName,
+            value: site.categoryId
+          }));
+        }
+
       },
     }
   }
