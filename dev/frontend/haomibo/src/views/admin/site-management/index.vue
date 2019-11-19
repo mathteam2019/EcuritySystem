@@ -112,8 +112,9 @@
                 <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
                     ref="pagination"
-                    :initial-per-page="vuetableItems.perPage"
                     @vuetable-pagination:change-page="onChangePage"
+                    :initial-per-page="vuetableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -170,7 +171,10 @@
                         <span class="text-danger">*</span>
                       </template>
                       <b-form-select :disabled="pageStatus==='edit'" :options="superSiteOptions"
+                                     :state="!$v.siteForm.parentFieldId.$invalid"
                                      v-model="siteForm.parentFieldId" plain/>
+                      <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
+                      </b-form-invalid-feedback>
                     </b-form-group>
                   </b-col>
 
@@ -420,6 +424,9 @@
       this.$refs.vuetable.$parent.transform = this.transformSiteTable.bind(this);
     },
     watch: {
+      'vuetableItems.perPage': function (newVal) {
+        this.$refs.vuetable.refresh();
+      },
       'siteForm.parentFieldId': function (newVal) {
         this.selectedParentSerial = getParentSerialName(this.siteData, newVal);
         if (this.selectedParentSerial === null)
@@ -611,6 +618,9 @@
         },
         fieldDesignation: {
           required
+        },
+        parentFieldId: {
+          required
         }
       }
     },
@@ -733,7 +743,7 @@
 
         let data = response.data;
 
-        transformed.userGroupTablePagination = {
+        transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
           current_page: data.current_page,
@@ -785,12 +795,14 @@
                 if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
                 break;
+
             }
           })
           .catch((error) => {
           });
         this.$refs['modal-inactive'].hide();
       },
+
       removeItem() {
         let fieldId = this.siteForm.fieldId;
         if (fieldId === 0)
@@ -813,6 +825,12 @@
                   this.siteForm = null;
                 this.$refs.vuetable.refresh();
                 this.getSiteData();
+                break;
+              case responseMessages["has-children"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })
