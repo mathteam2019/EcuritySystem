@@ -303,7 +303,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template create request.
      */
     @RequestMapping(value = "/archive-template/create", method = RequestMethod.POST)
-    public Object ArchiveTemplateCreate(
+    public Object archiveTemplateCreate(
             @RequestBody @Valid ArchiveTemplateCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -335,7 +335,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template modify request.
      */
     @RequestMapping(value = "/archive-template/modify", method = RequestMethod.POST)
-    public Object ArchiveTemplateCreate(
+    public Object archiveTemplateModify(
             @RequestBody @Valid ArchiveTemplateModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -351,16 +351,21 @@ public class ArchiveTemplateManagementController extends BaseController {
         SerArchiveTemplate oldSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archives_template_id.eq(requestBody.getArchives_template_id())).orElse(null);
 
+        //check if template exist
+        if(oldSerArchiveTemplate == null) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
         /*
         Todo
-            Check can modify or not(other archive contain this or not)
+            Check can modify or not(other archive contain this template or not)
          */
 
         //don't modify created by and create time.
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate(oldSerArchiveTemplate.getCreatedBy(),
                 oldSerArchiveTemplate.getCreatedTime());
 
-        // Add createdInfo.
+        // Add editInfo.
         serArchiveTemplate.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
@@ -377,7 +382,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template delete request.
      */
     @RequestMapping(value = "/archive-template/delete", method = RequestMethod.POST)
-    public Object fieldDelete(
+    public Object archiveTemplateDelete(
             @RequestBody @Valid ArchiveTemplateDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -387,6 +392,11 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         SerArchiveTemplate serArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archives_template_id.eq(requestBody.getArchives_template_id())).orElse(null);
+
+        //check template exist or not
+        if(serArchiveTemplate == null) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
 
 
         /*
