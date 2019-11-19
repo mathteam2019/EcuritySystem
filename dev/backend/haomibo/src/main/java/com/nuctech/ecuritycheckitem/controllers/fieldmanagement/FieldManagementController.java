@@ -1,3 +1,12 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/18
+ * @CreatedBy Choe.
+ * @FileName FieldManagementController.java
+ * @ModifyHistory
+ */
+
 package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -291,6 +300,11 @@ public class FieldManagementController extends BaseController {
             // Can't delete if org has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
+
+        /*
+        #TODO
+            Check device have this field or not
+        */
 
         sysFieldRepository.delete(SysField.builder().fieldId(requestBody.getFieldId()).build());
 

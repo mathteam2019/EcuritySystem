@@ -1,3 +1,13 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/18
+ * @CreatedBy Choe.
+ * @FileName DeviceCategoryManagementController.java
+ * @ModifyHistory
+ */
+
+
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
@@ -28,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +76,7 @@ public class DeviceCategoryManagementController extends BaseController {
                     .categoryName(this.getCategoryName())
                     .categoryNumber(this.getCategoryNumber())
                     .parentCategoryId(this.getParentCategoryId())
+                    .status(SysDeviceCategory.Status.INACTIVE)
                     .note(Optional.of(this.getNote()).orElse(""))
                     .build();
 
@@ -151,12 +163,32 @@ public class DeviceCategoryManagementController extends BaseController {
                     .categoryName(this.getCategoryName())
                     .categoryNumber(this.getCategoryNumber())
                     .parentCategoryId(this.getParentCategoryId())
+                    .status(SysDeviceCategory.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
                     .note(Optional.of(this.getNote()).orElse(""))
                     .build();
 
         }
+
+    }
+
+    /**
+     * Device Category update status request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceCategoryUpdateStatusRequestBody {
+
+        @NotNull
+        Long categoryId;
+
+        @NotNull
+        @Pattern(regexp = SysDeviceCategory.Status.ACTIVE + "|" + SysDeviceCategory.Status.INACTIVE)
+        String status;
 
     }
 
@@ -250,6 +282,12 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+        /*
+        TODO
+            Check if device contain this category
+        */
+
+
         sysDeviceCategoryRepository.delete(SysDeviceCategory.builder().categoryId(requestBody.getCategoryId()).build());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -337,6 +375,38 @@ public class DeviceCategoryManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Device Category update status request.
+     */
+    @RequestMapping(value = "/category/update-status", method = RequestMethod.POST)
+    public Object deviceCategoryUpdateStatus(
+            @RequestBody @Valid DeviceCategoryUpdateStatusRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Check if category is existing.
+        Optional<SysDeviceCategory> optionalSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.sysDeviceCategory
+                .categoryId.eq(requestBody.getCategoryId()));
+        if (!optionalSysDeviceCategory.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SysDeviceCategory sysDeviceCategory = optionalSysDeviceCategory.get();
+
+        // Update status.
+        sysDeviceCategory.setStatus(requestBody.getStatus());
+
+        // Add edited info.
+        sysDeviceCategory.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+
+        sysDeviceCategoryRepository.save(sysDeviceCategory);
+
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 

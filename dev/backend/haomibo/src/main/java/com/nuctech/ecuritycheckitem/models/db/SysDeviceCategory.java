@@ -1,3 +1,13 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/18
+ * @CreatedBy Choe.
+ * @FileName SysDeviceCategory.java
+ * @ModifyHistory
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.models.db;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -29,9 +39,15 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY)
 @Table(name = "sys_device_category")
 public class SysDeviceCategory extends BaseEntity implements Serializable {
+
+    public static class Status {
+        public static final String ACTIVE = "active";
+        public static final String INACTIVE = "inactive";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID", length = 20, nullable = false)
@@ -46,6 +62,9 @@ public class SysDeviceCategory extends BaseEntity implements Serializable {
 
     @Column(name = "CATEGORY_NAME", length = 50)
     String categoryName;
+
+    @Column(name = "STATUS", length = 10)
+    String status;
 
 
     @ToString.Exclude

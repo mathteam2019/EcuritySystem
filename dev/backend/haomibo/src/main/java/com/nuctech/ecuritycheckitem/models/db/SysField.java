@@ -1,3 +1,13 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/18
+ * @CreatedBy Choe.
+ * @FileName SysField.java
+ * @ModifyHistory
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -30,7 +40,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SYS_ORG)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_FIELD)
 @Table(name = "sys_field")
 public class SysField extends BaseEntity implements Serializable {
 

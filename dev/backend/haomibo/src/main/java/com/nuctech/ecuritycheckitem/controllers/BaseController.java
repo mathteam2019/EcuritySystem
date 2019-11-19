@@ -9,22 +9,7 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
-import com.nuctech.ecuritycheckitem.repositories.ForbiddenTokenRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceCategoryRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDataGroupUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysResourceRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysRoleResourceRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysRoleUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserLookupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupLookupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +72,12 @@ public class BaseController {
 
     @Autowired
     public SysDeviceCategoryRepository sysDeviceCategoryRepository;
+
+    @Autowired
+    public SerArchiveTemplateRepository serArchiveTemplateRepository;
+
+    @Autowired
+    public SerArchiveIndicatorsRepository serArchiveIndicatorsRepository;
 
 
 
