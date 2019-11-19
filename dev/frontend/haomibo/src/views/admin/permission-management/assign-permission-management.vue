@@ -695,26 +695,30 @@
             {
               name: '__checkbox',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '60px'
             },
             {
               name: 'userId',
               title: this.$t('permission-management.th-no'),
               sortField: 'userId',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '7%'
             },
             {
               name: '__slot:userName',
               title: this.$t('permission-management.assign-permission-management.user'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '9%'
             },
             {
               name: 'gender',
               title: this.$t('permission-management.gender'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '5%',
               callback: (value) => {
                 const dictionary = {
                   "male": `<span>${this.$t('permission-management.male')}</span>`,
@@ -730,12 +734,14 @@
               title: this.$t('permission-management.th-account'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '16%'
             },
             {
               name: 'org',
               title: this.$t('permission-management.assign-permission-management.affiliated-org'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '16%',
               callback: (org) => {
                 return org.orgName;
               }
@@ -745,6 +751,7 @@
               title: this.$t('permission-management.assign-permission-management.group.role'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '17%',
               callback: (roles) => {
                 return roles.map((role) => role.roleName).join(', ');
               }
@@ -755,6 +762,7 @@
               sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '13%',
               callback: (dataRangeCategory) => {
                 if (dataRangeCategory === 'person' || dataRangeCategory === null) {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
@@ -775,8 +783,7 @@
               name: '__slot:actions',
               title: this.$t('permission-management.th-org-actions'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              width: '150px'
+              dataClass: 'text-center'
             },
           ],
           perPage: 5,
@@ -860,7 +867,8 @@
             {
               name: '__checkbox',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '60px'
             },
             {
               name: 'userGroupId',
@@ -868,6 +876,7 @@
               sortField: 'number',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '8%'
             },
             {
               name: '__slot:groupName',
@@ -875,6 +884,7 @@
               sortField: 'groupName',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '20%'
             },
             {
               name: 'groupMember',
@@ -882,13 +892,15 @@
               sortField: 'groupMember',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '22%'
             },
             {
               name: 'groupRole',
               title: this.$t('permission-management.assign-permission-management.group.role'),
               sortField: 'groupRole',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              width: '18%'
             },
             {
               name: 'dataRangeCategory',
@@ -896,6 +908,7 @@
               sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              width: '15%',
               callback: (dataRangeCategory) => {
                 if (dataRangeCategory === 'person') {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
@@ -915,7 +928,6 @@
               title: this.$t('permission-management.user.operating'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '150px'
             }
           ],
         }
