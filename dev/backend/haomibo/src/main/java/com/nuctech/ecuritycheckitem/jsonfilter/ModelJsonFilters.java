@@ -25,8 +25,11 @@ public class ModelJsonFilters {
     public final static String FILTER_SYS_DATA_GROUP = "filter_sys_data_group";
     public final static String FILTER_SYS_FIELD = "filter_sys_field";
     public final static String FILTER_SYS_DEVICE_CATEGORY = "filter_sys_device_category";
+    public final static String FILTER_SER_ARCHIVES = "filter_ser_archives";
+    public final static String FILTER_SER_ARCHIVES_VALUE = "filter_ser_archives_value";
     public final static String FILTER_SER_ARCHIVE_TEMPLATE = "filter_ser_archive_template";
     public final static String FILTER_SER_ARCHIVE_INDICATORS = "filter_ser_archive_indicators";
+    public final static String FILTER_SYS_DEVICE = "filter_sys_device";
 
     /**
      * Used to get default filter
