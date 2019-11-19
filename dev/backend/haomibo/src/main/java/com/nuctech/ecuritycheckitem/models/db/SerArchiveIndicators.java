@@ -40,18 +40,18 @@ public class SerArchiveIndicators extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "INDICATORS_ID", length = 20, nullable = false)
-    Long indicators_id;
+    Long indicatorsId;
 
     @Column(name = "ARCHIVES_TEMPLATE_ID", length = 20)
-    Long archives_template_id;
+    Long archivesTemplateId;
 
     @Column(name = "INDICATORS_NAME", length = 20)
-    String indicators_name;
+    String indicatorsName;
 
     @Column(name = "INDICATORS_UNIT", length = 20)
-    String indicators_unit;
+    String indicatorsUnit;
 
     @Column(name = "IS_NULL", length = 20)
-    String is_null;
+    String isNull;
 
 }

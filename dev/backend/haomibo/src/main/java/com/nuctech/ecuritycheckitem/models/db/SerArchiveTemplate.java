@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
@@ -52,29 +52,29 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ARCHIVES_TEMPLATE_ID", length = 20, nullable = false)
-    Long archives_template_id;
+    Long archivesTemplateId;
 
 
     @Column(name = "S_TEMPLATE_NAME", length = 50)
-    String s_template_name;
+    String templateName;
 
     @Column(name = "ARCHIVES_TEMPLATE_NUMBER", length = 50)
-    String archives_template_number;
+    String archivesTemplateNumber;
 
     @Column(name = "CATEGORY_ID", length = 20)
-    Long category_id;
+    Long categoryId;
 
     @Column(name = "MANUFACTURER", length = 10)
     String manufacturer;
 
     @Column(name = "ORIGINAL_MODEL", length = 50)
-    String original_model;
+    String originalModel;
 
     @Column(name = "STATUS", length = 10)
     String status;
 
     @ToString.Exclude
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("category")

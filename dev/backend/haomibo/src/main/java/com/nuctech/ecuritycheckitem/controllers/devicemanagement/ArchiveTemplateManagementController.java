@@ -12,7 +12,12 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
+import com.nuctech.ecuritycheckitem.models.db.SerArchiveIndicators;
+import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
+import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
@@ -45,7 +50,7 @@ import java.util.Optional;
 public class ArchiveTemplateManagementController extends BaseController {
 
     /**
-     * Device Category datatable request body.
+     * Archive Template datatable request body.
      */
     @Getter
     @Setter
@@ -59,7 +64,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String s_template_name;
+            String templateName;
             String status;
             String categoryName;
         }
@@ -85,7 +90,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveTemplateUpdateStatusRequestBody {
 
         @NotNull
-        Long archives_template_id;
+        Long archivesTemplateId;
 
         @NotNull
         @Pattern(regexp = SerArchiveTemplate.Status.ACTIVE + "|" + SerArchiveTemplate.Status.INACTIVE)
@@ -104,34 +109,34 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveTemplateCreateRequestBody {
 
         @NotNull
-        String s_template_name;
+        String templateName;
 
         @NotNull
-        String archives_template_number;
+        String archivesTemplateNumber;
 
         @NotNull
-        Long category_id;
+        Long categoryId;
 
         String manufacturer;
 
-        String original_model;
+        String originalModel;
 
         String note;
 
-        List<SerArchiveIndicators> indicatorsList;
+        List<SerArchiveIndicators> archiveIndicatorsList;
 
         SerArchiveTemplate convert2SerArchiveTemplate() {
 
             return SerArchiveTemplate
                     .builder()
-                    .s_template_name(this.getS_template_name())
-                    .archives_template_number(this.getArchives_template_number())
-                    .category_id(this.getCategory_id())
-                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-                    .original_model(Optional.of(this.getOriginal_model()).orElse(""))
+                    .templateName(this.getTemplateName())
+                    .archivesTemplateNumber(this.getArchivesTemplateNumber())
+                    .categoryId(this.getCategoryId())
+                    .manufacturer(Optional.ofNullable(this.getManufacturer()).orElse(""))
+                    .originalModel(Optional.ofNullable(this.getOriginalModel()).orElse(""))
                     .status(SerArchiveTemplate.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
-                    .archiveIndicatorsList(this.getIndicatorsList())
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
+                    .archiveIndicatorsList(this.getArchiveIndicatorsList())
                     .build();
 
         }
@@ -149,40 +154,40 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveTemplateModifyRequestBody {
 
         @NotNull
-        Long archives_template_id;
+        Long archivesTemplateId;
 
         @NotNull
-        String s_template_name;
+        String templateName;
 
         @NotNull
-        String archives_template_number;
+        String archivesTemplateNumber;
 
         @NotNull
-        Long category_id;
+        Long categoryId;
 
         String manufacturer;
 
-        String original_model;
+        String originalModel;
 
         String note;
 
-        List<SerArchiveIndicators> indicatorsList;
+        List<SerArchiveIndicators> archiveIndicatorsList;
 
         SerArchiveTemplate convert2SerArchiveTemplate(Long createdBy, Date createdTime) {
 
             return SerArchiveTemplate
                     .builder()
-                    .archives_template_id(this.getArchives_template_id())
-                    .s_template_name(this.getS_template_name())
-                    .archives_template_number(this.getArchives_template_number())
-                    .category_id(this.getCategory_id())
-                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-                    .original_model(Optional.of(this.getOriginal_model()).orElse(""))
+                    .archivesTemplateId(this.getArchivesTemplateId())
+                    .templateName(this.getTemplateName())
+                    .archivesTemplateNumber(this.getArchivesTemplateNumber())
+                    .categoryId(this.getCategoryId())
+                    .manufacturer(Optional.ofNullable(this.getManufacturer()).orElse(""))
+                    .originalModel(Optional.ofNullable(this.getOriginalModel()).orElse(""))
                     .status(SerArchiveTemplate.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
-                    .archiveIndicatorsList(this.getIndicatorsList())
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
+                    .archiveIndicatorsList(this.getArchiveIndicatorsList())
                     .build();
 
         }
@@ -200,11 +205,11 @@ public class ArchiveTemplateManagementController extends BaseController {
     private static class ArchiveTemplateDeleteRequestBody {
 
         @NotNull
-        Long archives_template_id;
+        Long archivesTemplateId;
     }
 
 
-        /**
+    /**
      * Archive Template datatable data.
      */
     @RequestMapping(value = "/archive-template/get-by-filter-and-page", method = RequestMethod.POST)
@@ -224,8 +229,8 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getS_template_name())) {
-                predicate.and(builder.s_template_name.contains(filter.getS_template_name()));
+            if (!StringUtils.isEmpty(filter.getTemplateName())) {
+                predicate.and(builder.templateName.contains(filter.getTemplateName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.contains(filter.getStatus()));
@@ -281,7 +286,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         // Check if template is existing.
         Optional<SerArchiveTemplate> optionalSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
-                serArchiveTemplate.archives_template_id.eq(requestBody.getArchives_template_id()));
+                serArchiveTemplate.archivesTemplateId.eq(requestBody.getArchivesTemplateId()));
         if (!optionalSerArchiveTemplate.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -312,7 +317,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         // Check if category is existing.
-        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId.eq(requestBody.getCategory_id()))) {
+        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId.eq(requestBody.getCategoryId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -344,12 +349,12 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         // Check if category is existing.
-        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId.eq(requestBody.getCategory_id()))) {
+        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId.eq(requestBody.getCategoryId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SerArchiveTemplate oldSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
-                .archives_template_id.eq(requestBody.getArchives_template_id())).orElse(null);
+                .archivesTemplateId.eq(requestBody.getArchivesTemplateId())).orElse(null);
 
         //check if template exist
         if(oldSerArchiveTemplate == null) {
@@ -391,7 +396,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         SerArchiveTemplate serArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
-                .archives_template_id.eq(requestBody.getArchives_template_id())).orElse(null);
+                .archivesTemplateId.eq(requestBody.getArchivesTemplateId())).orElse(null);
 
         //check template exist or not
         if(serArchiveTemplate == null) {
