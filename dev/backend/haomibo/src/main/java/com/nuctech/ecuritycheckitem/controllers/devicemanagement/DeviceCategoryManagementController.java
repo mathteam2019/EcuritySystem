@@ -77,7 +77,7 @@ public class DeviceCategoryManagementController extends BaseController {
                     .categoryNumber(this.getCategoryNumber())
                     .parentCategoryId(this.getParentCategoryId())
                     .status(SysDeviceCategory.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -166,7 +166,7 @@ public class DeviceCategoryManagementController extends BaseController {
                     .status(SysDeviceCategory.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -206,12 +206,16 @@ public class DeviceCategoryManagementController extends BaseController {
         }
 
         // Check if parent category is existing.
-        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId
+        if (requestBody.getParentCategoryId() != 0 && !sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId
                 .eq(requestBody.getParentCategoryId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
+
+        if(requestBody.getParentCategoryId() == 0) {
+            sysDeviceCategory.setStatus(SysDeviceCategory.Status.ACTIVE);
+        }
 
         // Add createdInfo.
         sysDeviceCategory.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
