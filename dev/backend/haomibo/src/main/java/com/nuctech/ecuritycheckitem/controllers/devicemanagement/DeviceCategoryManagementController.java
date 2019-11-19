@@ -77,7 +77,7 @@ public class DeviceCategoryManagementController extends BaseController {
                     .categoryNumber(this.getCategoryNumber())
                     .parentCategoryId(this.getParentCategoryId())
                     .status(SysDeviceCategory.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -166,7 +166,7 @@ public class DeviceCategoryManagementController extends BaseController {
                     .status(SysDeviceCategory.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
