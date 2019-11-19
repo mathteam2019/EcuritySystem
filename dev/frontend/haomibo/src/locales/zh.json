@@ -452,6 +452,12 @@
     "action": "操作",
     "before-selected": "待选",
     "selected": "己选",
+    "status-updated-successfully":"设备分类修改成功",
+    "category-deleted-successfully" : "设备分类删除成功",
+    "category-has-children" : "该设备分类有孩子",
+    "category-added-successfully" : "设备分类创建成功",
+    "delete-prompt": "是否失效该设备分类",
+    "make-inactive-prompt" : "是否失效该设备分类",
     "device-classify-item":{
       "classify": "分类",
       "super-classify": "上级分类",
@@ -462,7 +468,8 @@
       "parent-device-number": "上级分类编号",
       "parent-device": "上级分类",
       "remark": "备注",
-      "no-classify": "没有上级分类"
+      "no-classify": "没有上级分类",
+      "field-is-mandatory" : "这输入是必需的"
     },
     "document-template": {
       "device-show-list": "设备指标项",
