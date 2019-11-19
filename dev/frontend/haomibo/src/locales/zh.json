@@ -389,6 +389,14 @@
       "prompt": "提示"
     }
   },
+  "site-management" : {
+    "status-updated-successfully":"场地修改成功",
+    "site-deleted-successfully" : "场地删除成功",
+    "site-has-children" : "该场地有孩子",
+    "site-added-successfully" : "场地创建成功",
+    "delete-prompt": "是否失效该场地",
+    "make-inactive-prompt" : "是否失效该场地"
+  },
   "device-management": {
     "file-template": "档案模板",
     "business-stat": "业务统计",
