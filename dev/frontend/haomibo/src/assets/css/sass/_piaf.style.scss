@@ -1930,8 +1930,8 @@ button {
     padding: 0.6rem 1rem;
 
     .locale {
-      width: 40px;
-      border-radius: 20px;
+      width: $navbar-locale-width;
+      border-radius: #{$navbar-locale-width/2};
     }
 
     @include respond-below(xs) {
@@ -2100,9 +2100,9 @@ button {
 
     img {
       margin-right: 0;
-      border-radius: 30px;
-      width: 40px;
-      height: 40px;
+      border-radius: #{$navbar-locale-width/2};
+      width: $navbar-locale-width;
+      height: $navbar-locale-width;
     }
 
     @include respond-below(md) {

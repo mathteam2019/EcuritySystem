@@ -48,26 +48,28 @@ $whiteLogoPath: "/assets/img/logo-white.png";
 $grayLogoPath: "/assets/img/logo-gray.png";
 $logoPathMobile: "/assets/img/logo-mobile.png";
 
-$nav-height: 80px;
+$nav-height: 5rem;
 $nav-background-color: #01172E;
 $nav-background: "/assets/img/nav-bg.png";
 $nav-background-mirror: "/assets/img/nav-bg-mirror.png";
 
-$nav-logo-width: 115px;
-$nav-logo-height: 50px;
-$nav-logo-start: 14px;
+$nav-logo-width: 7.1875rem;
+$nav-logo-height: 3.125rem;
+$nav-logo-start: 0.875rem;
 
-$nav-title-width: 225px;
-$nav-title-height: 30px;
-$nav-title-start: 150px;
+$nav-title-width: 14.0625rem;
+$nav-title-height: 1.875rem;
+$nav-title-start: 9.375rem;
 
 $nav-auth-avatar-margin-end: 0px;
 
-$nav-auth-margin-end: 240px;
-$nav-auth-top: 10px;
+$nav-auth-margin-end: 15rem;
+$nav-auth-top: 0.625;
 
 $nabvar-active-color: #1782d4;
 
+$navbar-locale-width: 2.5rem;
+$navbar-logout-width: 1.25rem;
 
 @import "../_mixins.scss";
 @import "../_piaf.style.scss";

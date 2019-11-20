@@ -15,13 +15,13 @@ $menu-color-7: #042340;
 $menu-main-color-1: #104975;
 $menu-main-color-2: #307fcf;
 
-$bread-height: 70px;
-$side-bar-width: 70px;
-$tab-padding-1: 15px;
-$tab-padding-2: 15px;
-$page-padding-horizontal: 20px;
-$page-padding-vertical: 20px;
-$tab-nav-item-height: 35px;
+$bread-height: 4.375rem;
+$side-bar-width: 4.375rem;
+$tab-padding-1: 0.9375rem;
+$tab-padding-2: 0.9375rem;
+$page-padding-horizontal: 1.25rem;
+$page-padding-vertical: 1.25rem;
+$tab-nav-item-height: 2.1875rem;
 //breadcrumb style point
 main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;
@@ -199,7 +199,7 @@ main {
           border-top-left-radius: 0px!important;
           border-top-right-radius: 0px!important;
           padding-top: 0px!important;
-          height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + 155px});
+          height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + 9.6875rem});
           overflow: auto;
 
           .font-weight-bold {
@@ -321,7 +321,7 @@ body.rtl {
     }
   }
   main {
-    margin: $nav-height + $bread-height +10px, $side-bar-width+20px 0 20px !important;
+    margin: $nav-height + $bread-height +0.625rem, $side-bar-width+1.25rem 0 1.25rem !important;
     div.container-fluid {
       .breadcrumb-container {
         position: fixed;
@@ -682,8 +682,8 @@ $check-checked-color:#67c23a;
 }
 
 .navbar .logout {
-  width: 20px;
-  height: 20px;
+  width: $navbar-logout-width;
+  height: $navbar-logout-width;
   cursor: pointer;
 }
 
