@@ -30,6 +30,22 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_ARCHIVE_TEMPLATE = "filter_ser_archive_template";
     public final static String FILTER_SER_ARCHIVE_INDICATORS = "filter_ser_archive_indicators";
     public final static String FILTER_SYS_DEVICE = "filter_sys_device";
+    public final static String FILTER_SYS_MANUAL_DEVICE = "filter_sys_manual_device";
+    public final static String FILTER_SYS_MANUAL_GROUP = "filter_sys_manual_group";
+    public final static String FILTER_SYS_JUDGE_DEVICE = "filter_sys_judge_device";
+    public final static String FILTER_SYS_JUDGE_GROUP = "filter_sys_judge_group";
+    public final static String FILTER_SYS_WORK_MODE = "filter_sys_work_mode";
+    public final static String FILTER_FROM_CONFIG_ID = "filter_from_config_id";
+    public final static String FILTER_SYS_DEVICE_CONFIG = "filter_sys_device_config";
+    public final static String FILTER_SYS_AUDIT_LOG = "filter_sys_audit_log";
+    public final static String FILTER_SYS_ACCESS_LOG = "filter_sys_access_log";
+    public final static String FILTER_SER_DEV_LOG = "filter_ser_dev_log";
+    public final static String FILTER_SER_LOGIN_INFO = "filter_ser_login_info";
+    public final static String FILTER_SER_DEVICE_STATUS = "filter_ser_device_status";
+    public final static String FILTER_SER_SCAN_PARAM = "filter_ser_scan_param";
+    public final static String FILTER_SER_SCAN_PARAMS_FROM = "filter_ser_scan_params_from";
+    public final static String FILTER_SER_PLATFORM_CHECK_PARAMS = "filter_ser_platform_check_params";
+    public final static String FILTER_SER_PLATFORM_OTHER_PARAMS = "filter_ser_platform_other_params";
 
     /**
      * Used to get default filter

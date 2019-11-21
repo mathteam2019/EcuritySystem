@@ -345,7 +345,7 @@ public class DeviceCategoryManagementController extends BaseController {
                 predicate.and(builder.categoryName.contains(filter.getCategoryName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.contains(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
                 predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));

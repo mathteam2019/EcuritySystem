@@ -9,6 +9,10 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
+import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
+import com.nuctech.ecuritycheckitem.models.db.SysManualDevice;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -78,6 +82,60 @@ public class BaseController {
 
     @Autowired
     public SerArchiveIndicatorsRepository serArchiveIndicatorsRepository;
+
+    @Autowired
+    public SerArchiveRepository serArchiveRepository;
+
+    @Autowired
+    public SerArchiveValueRepository serArchiveValueRepository;
+
+    @Autowired
+    public SysDeviceRepository sysDeviceRepository;
+
+    @Autowired
+    public SysDeviceConfigRepository sysDeviceConfigRepository;
+
+    @Autowired
+    public SysWorkModeRepository sysWorkModeRepository;
+
+    @Autowired
+    public SysManualDeviceRepository sysManualDeviceRepository;
+
+    @Autowired
+    public SysManualGroupRepository sysManualGroupRepository;
+
+    @Autowired
+    public SysJudgeDeviceRepository sysJudgeDeviceRepository;
+
+    @Autowired
+    public SysJudgeGroupRepository sysJudgeGroupRepository;
+
+    @Autowired
+    public FromConfigIdRepository fromConfigIdRepository;
+
+    @Autowired
+    public SerDevLogRepository serDevLogRepository;
+
+    @Autowired
+    public SysAccessLogRepository sysAccessLogRepository;
+
+    @Autowired
+    public SysAuditLogRepository sysAuditLogRepository;
+
+    @Autowired
+    public SerDeviceStatusRepository serDeviceStatusRepository;
+
+    @Autowired
+    public SerScanParamRepository serScanParamRepository;
+
+    @Autowired
+    public SerScanParamsFromRepository serScanParamsFromRepository;
+
+    @Autowired
+    public SerPlatformCheckParamRepository serPlatformCheckParamRepository;
+
+    @Autowired
+    public SerPlatformOtherParamRepository serPlatformOtherParamRepository;
 
 
 
