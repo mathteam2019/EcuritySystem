@@ -66,7 +66,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         static class Filter {
             String templateName;
             String status;
-            String categoryName;
+            Long categoryId;
         }
 
         @NotNull
@@ -235,8 +235,8 @@ public class ArchiveTemplateManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.contains(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 
@@ -410,11 +410,11 @@ public class ArchiveTemplateManagementController extends BaseController {
          */
 
         //remove it's indicators
-        if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
-            for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
-                serArchiveIndicatorsRepository.delete(serArchiveTemplate.getArchiveIndicatorsList().get(i));
-            }
-        }
+//        if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
+//            for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
+//                serArchiveIndicatorsRepository.delete(serArchiveTemplate.getArchiveIndicatorsList().get(i));
+//            }
+//        }
 
         serArchiveTemplateRepository.delete(serArchiveTemplate);
 
