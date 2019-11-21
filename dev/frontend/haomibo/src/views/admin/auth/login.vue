@@ -3,7 +3,7 @@
   .auth-login-page {
 
     .header-title {
-      font-size: 70px;
+      font-size: 4.375rem;
       font-weight: bold;
       text-shadow: 3px 4px 0px black;
     }
@@ -12,8 +12,8 @@
       max-width: unset !important;
     }
     img.logo {
-      top: 50px;
-      left: 50px;
+      top: 3.125rem;
+      left: 3.125rem;
     }
 
     footer.auth-login {
@@ -36,32 +36,32 @@
         }
 
         span.front-icon {
-          height: 36px;
-          line-height: 36px;
+          height: 2.25rem;
+          line-height: 2.25rem;
           position: absolute;
           left: 0;
           top: 1px;
 
           img {
-            width: 19px;
+            width: 1.1875rem;
           }
         }
 
         span.name {
-          padding-left: 18px;
+          padding-left: 1.125rem;
           color: $text-color;
         }
       }
 
       div.input-group {
         span.front-input-icon {
-          height: 36px;
-          line-height: 36px;
+          height: 2.25rem;
+          line-height: 2.25rem;
           color: $text-color;
         }
 
         .form-control {
-          padding-left: 40px;
+          padding-left: 2.5rem;
           border-top: transparent;
           border-left: transparent;
           border-right: transparent;
@@ -69,7 +69,7 @@
           outline: none;
           background: transparent !important;
           color: white !important;
-          font-size: 16px;
+          font-size: 1rem;
 
           &::placeholder {
             color: $text-color;
@@ -97,8 +97,8 @@
     }
     .auth-login-page {
       img.logo {
-        top: 50px;
-        right: 50px;
+        top: 3.125rem;
+        left: 3.125rem;
       }
 
       footer.auth-login {
@@ -121,19 +121,19 @@
           }
 
           span.front-icon {
-            height: 36px;
-            line-height: 36px;
+            height: 2.25rem;
+            line-height: 2.25rem;
             position: absolute;
             right: 0;
             top: 1px;
 
             img {
-              width: 19px;
+              width: 1.1875rem;
             }
           }
 
           span.name {
-            padding-right: 18px;
+            padding-right: 1.125rem;
             color: $text-color;;
           }
         }
@@ -148,12 +148,12 @@
 
         div.input-group {
           span.front-input-icon {
-            height: 36px;
-            line-height: 36px;
+            height: 2.25rem;
+            line-height: 2.25rem;
           }
 
           .form-control {
-            padding-right: 40px;
+            padding-right: 2.5rem;
             border-top: transparent;
             border-left: transparent;
             border-right: transparent;
@@ -161,7 +161,7 @@
             outline: none;
             background: transparent !important;
             color: $text-color;
-            font-size: 16px;
+            font-size: 1rem;
           }
         }
       }
@@ -171,7 +171,7 @@
 
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .auth-content-only-ie {
-      margin-top: 20% !important;
+      margin-top: 10% !important;
     }
     .auth-login-page {
       .form-control {

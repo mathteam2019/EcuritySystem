@@ -1,9 +1,33 @@
+@media screen and (max-width: 1366px){
+  html,html body {
+    font-size: 12px;
+  }
+}
+@media screen and (min-width: 1367px) and (max-width: 1440px){
+  html {
+    font-size: 13px;
+  }
+}
+@media screen and (min-width: 1441px) and (max-width: 1680px){
+  html {
+    font-size: 15px;
+  }
+}
+@media screen and(min-width: 1681px){
+  html {
+    font-size: 16px;
+  }
+}
+@function calculateRem($size) {
+  $remSize: $size / 16px;
+  @return #{$remSize}rem;
+}
 
 html, html body {
   font-family: "Microsoft YaHei" !important;
   background: #eaeaea;
 }
-
+$nav-height:5rem;
 //left side menu
 $menu-color-1: #042340;
 $menu-color-2: #136076;
@@ -25,6 +49,13 @@ $tab-nav-item-height: 2.1875rem;
 //breadcrumb style point
 main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;
+  .row {
+    margin: 0 -0.9375rem 0 -0.9375rem;
+    [class^='col-'],.col {
+      padding-right: 0.9375rem;
+      padding-left: 0.9375rem;
+    }
+  }
 
   div.container-fluid {
     .breadcrumb-container {
@@ -42,7 +73,7 @@ main {
           align-items: center;
           ol.breadcrumb {
             margin: 0;
-            font-size: 19px;
+            font-size: 1.17rem;
             li a, li span {
               color: $info-color !important;
             }
@@ -69,7 +100,7 @@ main {
           align-items: center;
           ol.breadcrumb {
             margin: 0;
-            font-size: 19px;
+            font-size: 1.1875rem;
             li a, li span {
               color: $info-color !important;
             }
@@ -94,16 +125,16 @@ main {
         padding: 0 !important;
         div.table-wrapper {
           position: absolute;
-          width: calc(100% - 30px);
-          height: calc(100% - 52px);
+          width: calc(100% - 1.875rem);
+          height: calc(100% - 3.25rem);
           overflow: auto;
 
         }
         div.pagination-wrapper {
           position: absolute;
           bottom: 0;
-          padding-top: 10px;
-          width: calc(100% - 30px);
+          padding-top: 0.625rem;
+          width: calc(100% - 1.875rem);
           & > nav {
             width: 100%;
           }
@@ -116,7 +147,7 @@ main {
     }
     div.tabs:not(.sub-tabs) {
       & > div.tab-content {
-        margin-bottom: 1rem !important;
+        //margin-bottom: 1rem !important;
         padding: $tab-padding-1 0 $tab-padding-2 0;
         min-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
         max-height: calc(100vh - #{$nav-height + $bread-height + 2*$page-padding-vertical + $tab-nav-item-height});
@@ -130,16 +161,16 @@ main {
           }
           div.table-wrapper {
             position: absolute;
-            width: calc(100% - 30px);
-            height: calc(100% - 52px);
+            width: calc(100% - 1.875rem);
+            height: calc(100% - 3.25rem);
             overflow: auto;
 
           }
           div.pagination-wrapper {
             position: absolute;
             bottom: 0;
-            padding-top: 10px;
-            width: calc(100% - 30px);
+            padding-top: 0.625rem;
+            width: calc(100% - 1.875rem);
             & > nav {
               width: 100%;
             }
@@ -166,7 +197,7 @@ main {
     ;
     }
     div.card {
-      border-radius: 4px;
+      border-radius: 0.25rem;
     }
     div.system-setting {
       .section.pt-0 {
@@ -247,10 +278,10 @@ main {
           a {
             color: inherit !important;
             border-bottom: unset !important;
-            height: 65px;
+            height: 4.0625rem;
             i {
-              font-size: 30px;
-              line-height: 38px;
+              font-size: 1.875rem;
+              line-height: 2.375rem;
             }
           }
           &.active, &:hover, &:focus {
@@ -277,14 +308,14 @@ main {
         height: 100%;
         li {
           margin-left: 0 !important;
-          padding: 0 5px !important;
+          padding: 0 0.3125rem !important;
           background-color: $menu-color-4;
           border: 1px solid $menu-color-5;
           border-bottom-color: $menu-color-3;
           border-left-color: $menu-color-2;
           a {
             margin-bottom: 0 !important;
-            line-height: 20px;
+            line-height: 1.25rem;
           }
           &.active, &:hover, &:active {
             background-color: $menu-color-7;
@@ -351,7 +382,7 @@ body.rtl {
         }
       }
       div.card {
-        border-radius: 4px;
+        border-radius: 0.25rem;
       }
       select {
         background-image: url("../../../img/bottom_arrow_black.svg") !important;
@@ -373,8 +404,8 @@ filter option style modify
   .filter-option {
     display: flex;
     flex-grow: 1;
-    margin-right: 140px;
-    max-width: 1100px;
+    margin-right: 8.75rem;
+    max-width: 68.75rem;
     div.row {
       width: 100%;
       div.col{
@@ -387,7 +418,7 @@ filter option style modify
   }
   .filter-action {
     &>div {
-      margin-top: 6px;
+      margin-top: 0.375rem;
       button.btn-success {
         background-color: #66cd00;
         border-color: #66cd00;
@@ -401,9 +432,9 @@ filter option style modify
 }
 
 //vue table btn square style variables
-$btn-square-length: 30px;
+$btn-square-length: 1.875rem;
 $btn-square-padding: 0;
-$btn-square-font-size: 17px;
+$btn-square-font-size: 1.0625rem;
 $theme-color-purple-2: #881aff;
 $btn-orange-color: #ff5e00;
 
@@ -424,10 +455,10 @@ $btn-orange-color: #ff5e00;
 }
 
 .form-section {
-  padding: 30px 20px 20px 90px;
+  padding: 1.875rem 1.25rem 1.25rem 5.625rem;
   height: 100%;
   .form-group {
-    max-width: 250px;
+    max-width: 15.625rem;
     margin-bottom: 1rem;
   }
 
@@ -550,7 +581,7 @@ $btn-orange-color: #ff5e00;
 
 .tab-content {
   div.section {
-    border-radius: 5px;
+    border-radius: 0.3125rem;
     padding: 1.5rem 0 1rem 0;
     border: solid 1px #cccccc;
   }
@@ -559,18 +590,18 @@ $check-checked-color:#67c23a;
 .vuetable {
   thead > tr > th[class*='vuetable-th-checkbox-'], tbody > tr > td.vuetable-checkboxes {
     position: relative;
-    width: 60px!important;
+    width: 3.75rem!important;
     input[type=checkbox] {
       width: 0;
       cursor: pointer;
       &::before {
         content: "";
         position: absolute;
-        left: 20px;
+        left: 1.25rem;
         /*top: .25rem;*/
-        min-width: 20px;
-        width: 20px;
-        height: 20px;
+        min-width: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
         border: 1px solid #909090;
         border-radius: .25rem;
       }
@@ -578,11 +609,11 @@ $check-checked-color:#67c23a;
         &::before {
           content: "";
           position: absolute;
-          left: 20px;
+          left: 1.25rem;
           /*top: .25rem;*/
           min-width: 1rem;
-          width: 20px;
-          height: 20px;
+          width: 1.25rem;
+          height: 1.25rem;
           border: 1px solid #909090;
           border-radius: .25rem;
           background-color: $check-checked-color;
@@ -590,11 +621,11 @@ $check-checked-color:#67c23a;
         &::after {
           content: "";
           position: absolute;
-          left: 20px;
+          left: 1.25rem;
           /*top: .25rem;*/
           min-width: 1rem;
-          width: 20px;
-          height: 20px;
+          width: 1.25rem;
+          height: 1.25rem;
           border: 1px solid $check-checked-color;
           border-radius: .25rem;
           background: no-repeat 50% / 50% 50%;
@@ -609,14 +640,14 @@ $check-checked-color:#67c23a;
     tr {
       background: #f1f1f1;
       th {
-        padding: 14px 0 !important;
+        padding: 0.875rem 0 !important;
         border: solid 1px #e7e7e7 !important;
         background-color: #f1f1f1 !important;
         /*position: sticky;
         top: -1px;*/
         /* z-index: 4;*/
         &.btn-actions {
-          width: 230px;
+          width: 14.375rem;
         }
       }
     }
@@ -624,18 +655,18 @@ $check-checked-color:#67c23a;
   tbody {
     tr {
       td {
-        padding: 10px 0 !important;
+        padding: 0.625rem 0 !important;
         border: solid 1px #e7e7e7 !important;
         vertical-align: middle !important;
         &.btn-actions {
-          padding: 0 20px 0 20px;
+          padding: 0 1.25rem 0 1.25rem;
         }
         button.btn-square {
           width: $btn-square-length;
           height: $btn-square-length;
           padding: $btn-square-padding;
           font-size: $btn-square-font-size;
-          line-height: $btn-square-length - 3px;
+          line-height: $btn-square-length - 0.1875rem;
           border-radius: 4px !important;
           text-align: center;
           &:disabled {
@@ -644,7 +675,7 @@ $check-checked-color:#67c23a;
           }
         }
         button.btn-square:not(:first-child) {
-          margin-left: 20px;
+          margin-left: 1.25rem;
         }
       }
     }
@@ -666,7 +697,7 @@ $check-checked-color:#67c23a;
       border: none;
       cursor: pointer;
       min-width: 5px;
-      font-size: 14px;
+      font-size: 0.875rem;
       &:hover {
         color: #1782d4;
       }
@@ -686,17 +717,24 @@ $check-checked-color:#67c23a;
   height: $navbar-logout-width;
   cursor: pointer;
 }
-
+.navbar {
+  .navbar-title {
+    .logo {
+      background-size: contain!important;
+      background: url(/assets/img/top-title-admin.png) no-repeat;
+    }
+  }
+}
 .dashboard-container {
   position: absolute;
   top: $nav-height;
   left: $side-bar-width;
   right: 0px;
   bottom: 0px;
-  padding: 20px;
+  padding: 1.25rem;
 
   .kcb-mt-20 {
-    margin-top: 20px;
+    margin-top: 1.25rem;
   }
 
   .article {
@@ -714,13 +752,13 @@ $check-checked-color:#67c23a;
   }
 
   .article-icon-container {
-    padding: 36px;
-    border-radius: 5px;
+    padding:2.25rem;
+    border-radius: 0.3125rem;
     background-color: #1782D4;
 
     img {
-      width: 38px;
-      height: 38px;
+      width: 2.375rem;
+      height: 2.375rem;
     }
   }
 }
