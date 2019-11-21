@@ -9,6 +9,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -233,7 +234,7 @@ public class ArchiveTemplateManagementController extends BaseController {
                 predicate.and(builder.templateName.contains(filter.getTemplateName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.contains(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (filter.getCategoryId() != null) {
                 predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
@@ -265,7 +266,8 @@ public class ArchiveTemplateManagementController extends BaseController {
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
+                .getDefaultFilters()
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 
@@ -435,6 +437,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 

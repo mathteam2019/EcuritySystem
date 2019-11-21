@@ -105,7 +105,7 @@ public class PlatformCheckManagementController extends BaseController {
      * Platform check modify request.
      */
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
-    public Object deviceModify(
+    public Object platformCheckModify(
             @ModelAttribute @Valid PlatformCheckrModifyRequestBody requestBody,
             BindingResult bindingResult) {
 

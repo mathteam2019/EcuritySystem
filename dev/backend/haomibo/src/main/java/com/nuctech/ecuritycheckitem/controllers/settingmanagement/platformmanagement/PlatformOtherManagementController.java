@@ -92,7 +92,7 @@ public class PlatformOtherManagementController extends BaseController {
      * Platform other modify request.
      */
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
-    public Object deviceModify(
+    public Object platformOtherModify(
             @ModelAttribute @Valid PlatformOtherModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
