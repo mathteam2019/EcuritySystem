@@ -35,7 +35,7 @@ public class SerArchiveValue extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", length = 20, nullable = false)
+    @Column(name = "VALUE_ID", length = 20, nullable = false)
     Long id;
 
     @Column(name = "INDICATORS_ID", length = 20)
@@ -44,8 +44,8 @@ public class SerArchiveValue extends BaseEntity implements Serializable {
     @Column(name = "ARCHIVE_ID", length = 20)
     Long archiveId;
 
-    @Column(name = "VALUE", length = 20)
-    Long value;
+    @Column(name = "VALUE", length = 255)
+    String value;
 
 
 }

@@ -139,7 +139,7 @@ public class ArchiveManagementController extends BaseController {
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SerArchive.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -194,7 +194,7 @@ public class ArchiveManagementController extends BaseController {
                     .status(SerArchive.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -325,7 +325,7 @@ public class ArchiveManagementController extends BaseController {
 
 
         // Check if template is valid
-        if (serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
+        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -391,7 +391,7 @@ public class ArchiveManagementController extends BaseController {
 
 
         // Check if template is valid
-        if (serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
+        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -434,7 +434,7 @@ public class ArchiveManagementController extends BaseController {
         // Add edit info.
         serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
-        serArchiveRepository.save(serArchive);
+
 
         //remove original indicators value
         if(oldSerArchive.getArchiveValueList() != null) {
@@ -453,6 +453,8 @@ public class ArchiveManagementController extends BaseController {
                 serArchiveValueRepository.save(archiveValue);
             }
         }
+
+        serArchiveRepository.save(serArchive);
 
 
         return new CommonResponseBody(ResponseMessage.OK);
