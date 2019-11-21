@@ -46,6 +46,7 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_SCAN_PARAMS_FROM = "filter_ser_scan_params_from";
     public final static String FILTER_SER_PLATFORM_CHECK_PARAMS = "filter_ser_platform_check_params";
     public final static String FILTER_SER_PLATFORM_OTHER_PARAMS = "filter_ser_platform_other_params";
+    public final static String FILTER_SER_TASK = "filter_ser_task";
 
     /**
      * Used to get default filter

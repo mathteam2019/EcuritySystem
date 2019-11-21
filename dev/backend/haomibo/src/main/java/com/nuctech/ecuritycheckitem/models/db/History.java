@@ -4,9 +4,7 @@ package com.nuctech.ecuritycheckitem.models.db;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.jdo.annotations.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,7 +15,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-//@JsonFilter(ModelJsonFilters.FILTER_SYS_ROLE)
 @Table(name = "history")
 public class History extends BaseEntity implements Serializable {
     @Column(name = "HISTORY_ID", length = 20)
@@ -175,5 +172,33 @@ public class History extends BaseEntity implements Serializable {
 
     @Column(name = "JUDGE_STATUS", length = 10)
     String judge_status;
+
+    @OneToOne()
+    @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    SysDevice device;
+
+    @OneToOne()
+    @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
+    SysUser scan_pointsman;
+
+    @OneToOne()
+    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "JUDGE_DEVICE_ID", insertable = false, updatable = false)
+    SysJudgeDevice judge_device;
+
+    @OneToOne()
+    @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
+    SysUser judge_user;
+
+    @OneToOne()
+    @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    SysDevice hand_device;
+
+    @OneToOne()
+    @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER__ID", insertable = false, updatable = false)
+    SysUser hand_user;
+
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
+//    SerImage;
 
 }
