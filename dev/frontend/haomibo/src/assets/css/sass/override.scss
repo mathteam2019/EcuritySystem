@@ -51,7 +51,7 @@ main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;
   .row {
     margin: 0 -0.9375rem 0 -0.9375rem;
-    [class^='col-'],.col {
+    &>[class^='col-'],&>.col {
       padding-right: 0.9375rem;
       padding-left: 0.9375rem;
     }
