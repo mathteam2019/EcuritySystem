@@ -76,9 +76,5 @@ public class BaseController {
     @Autowired
     public SerArchiveTemplateRepository serArchiveTemplateRepository;
 
-    @Autowired
-    public SerArchiveIndicatorsRepository serArchiveIndicatorsRepository;
-
-
 
 }
