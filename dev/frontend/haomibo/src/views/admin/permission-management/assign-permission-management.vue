@@ -503,7 +503,7 @@
 <script>
 
   import {apiBaseUrl} from '../../../constants/config';
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'

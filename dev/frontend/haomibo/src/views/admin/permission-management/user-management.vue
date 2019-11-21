@@ -746,7 +746,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getDirection} from "../../../utils";
   import {getApiManager} from '../../../api';
