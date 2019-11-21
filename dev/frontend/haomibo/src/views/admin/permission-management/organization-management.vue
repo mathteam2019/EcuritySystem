@@ -443,7 +443,7 @@
 <script>
 
   import {apiBaseUrl} from '../../../constants/config';
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import {validationMixin} from 'vuelidate';
   import Vue2OrgTree from 'vue2-org-tree'

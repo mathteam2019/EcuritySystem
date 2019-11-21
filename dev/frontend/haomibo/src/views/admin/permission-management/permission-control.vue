@@ -499,7 +499,7 @@
 
   import {apiBaseUrl} from "../../../constants/config";
   import axios from 'axios'
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'

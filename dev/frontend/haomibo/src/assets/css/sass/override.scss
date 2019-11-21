@@ -594,7 +594,10 @@ $check-checked-color:#67c23a;
     input[type=checkbox] {
       width: 0;
       cursor: pointer;
-      &::before {
+      & ~ label {
+        display: inline;
+      }
+      & ~ label::before {
         content: "";
         position: absolute;
         left: 1.25rem;
@@ -606,7 +609,7 @@ $check-checked-color:#67c23a;
         border-radius: .25rem;
       }
       &:checked, &:indeterminate {
-        &::before {
+        & ~ label::before {
           content: "";
           position: absolute;
           left: 1.25rem;
@@ -618,7 +621,7 @@ $check-checked-color:#67c23a;
           border-radius: .25rem;
           background-color: $check-checked-color;
         }
-        &::after {
+        & ~ label::after {
           content: "";
           position: absolute;
           left: 1.25rem;

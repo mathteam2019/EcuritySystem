@@ -383,7 +383,7 @@
 
 <script>
   import _ from 'lodash';
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import Vue2OrgTree from 'vue2-org-tree'
