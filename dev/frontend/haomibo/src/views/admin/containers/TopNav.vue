@@ -161,12 +161,3 @@
     }
   }
 </script>
-<style lang="scss">
-  .navbar {
-    .navbar-title {
-      .logo {
-        background: url(/assets/img/top-title-admin.png) no-repeat;
-      }
-    }
-  }
-</style>

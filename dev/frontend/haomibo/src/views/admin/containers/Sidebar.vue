@@ -16,7 +16,7 @@
         </vue-perfect-scrollbar>
     </div>
 
-    <div class="sub-menu" :style="{top:80+ subMenuIndex * 67 + 'px'}">
+    <div class="sub-menu" :style="{top:5+ subMenuIndex * 4.1874 + 'rem'}">
         <vue-perfect-scrollbar class="scroll" :settings="{ suppressScrollX: true, wheelPropagation: false }">
             <ul v-for="(item,itemIndex) in menuItems" :class="{'list-unstyled':true, 'd-block' : (selectedParentMenu === item.id && viewingParentMenu === '') || viewingParentMenu === item.id }" :data-parent="item.id" :key="`sub_${item.id}`">
                 <li v-for="(sub,subIndex) in item.subs" :class="{'has-sub-item' : sub.subs && sub.subs.length > 0 , 'active' : $route.path.indexOf(sub.to)>-1}">
