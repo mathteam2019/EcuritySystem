@@ -347,8 +347,6 @@
                 :collapsable="false"
                 :label-class-name="treeLabelClass"
                 :render-content="renderTreeContent"
-                @on-expand="() => {}"
-                @on-node-click="() => {}"
               />
             </div>
           </b-col>
