@@ -8,7 +8,10 @@
  */
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.mysql.cj.xdevapi.JsonArray;
+import com.mysql.cj.xdevapi.JsonParser;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -126,7 +129,9 @@ public class ArchiveManagementController extends BaseController {
 
         private MultipartFile imageUrl;
 
-        List<SerArchiveValue> archiveValueList;
+        String json;
+
+
 
         SerArchive convert2SerArchive() {
 
@@ -139,7 +144,7 @@ public class ArchiveManagementController extends BaseController {
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SerArchive.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -178,7 +183,7 @@ public class ArchiveManagementController extends BaseController {
 
         private MultipartFile imageUrl;
 
-        List<SerArchiveValue> archiveValueList;
+        String json;
 
         SerArchive convert2SerArchive(Long createdBy, Date createdTime) {
 
@@ -194,7 +199,7 @@ public class ArchiveManagementController extends BaseController {
                     .status(SerArchive.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -325,7 +330,7 @@ public class ArchiveManagementController extends BaseController {
 
 
         // Check if template is valid
-        if (serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
+        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -362,15 +367,26 @@ public class ArchiveManagementController extends BaseController {
 
         serArchiveRepository.save(serArchive);
 
-        //add indicators value
-        if(requestBody.getArchiveValueList() != null) {
-            for(int i = 0; i < requestBody.getArchiveValueList().size(); i ++) {
-                SerArchiveValue archiveValue = requestBody.getArchiveValueList().get(i);
-                archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                archiveValue.setArchiveId(serArchive.getArchiveId());
-                serArchiveValueRepository.save(archiveValue);
+        //Object[] arrayReceipients = JSONArray.toArray (JSONArray.fromObject(requestBody.getJsonArchiveValueList()));
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            SerArchive jsonArchive = mapper.readValue(requestBody.getJson(), SerArchive.class);
+            List<SerArchiveValue> archiveValueList = jsonArchive.getArchiveValueList();
+            if(archiveValueList != null) {
+                for(int i = 0; i < archiveValueList.size(); i ++) {
+                    SerArchiveValue archiveValue = archiveValueList.get(i);
+                    archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    archiveValue.setArchiveId(serArchive.getArchiveId());
+                    serArchiveValueRepository.save(archiveValue);
+                }
             }
+        }catch(Exception ex) {
+            ex.printStackTrace();
         }
+
+
+        //add indicators value
+
 
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -391,7 +407,7 @@ public class ArchiveManagementController extends BaseController {
 
 
         // Check if template is valid
-        if (serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
+        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -434,7 +450,7 @@ public class ArchiveManagementController extends BaseController {
         // Add edit info.
         serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
-        serArchiveRepository.save(serArchive);
+
 
         //remove original indicators value
         if(oldSerArchive.getArchiveValueList() != null) {
@@ -445,14 +461,22 @@ public class ArchiveManagementController extends BaseController {
         }
 
         //add new indicators value
-        if(requestBody.getArchiveValueList() != null) {
-            for(int i = 0; i < requestBody.getArchiveValueList().size(); i ++) {
-                SerArchiveValue archiveValue = requestBody.getArchiveValueList().get(i);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            SerArchive jsonArchive = mapper.readValue(requestBody.getJson(), SerArchive.class);
+            List<SerArchiveValue> archiveValueList = jsonArchive.getArchiveValueList();
+            for(int i = 0; i < archiveValueList.size(); i ++) {
+                SerArchiveValue archiveValue = archiveValueList.get(i);
                 archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                 archiveValue.setArchiveId(serArchive.getArchiveId());
                 serArchiveValueRepository.save(archiveValue);
             }
+        } catch(Exception ex) {
+
         }
+
+
+        serArchiveRepository.save(serArchive);
 
 
         return new CommonResponseBody(ResponseMessage.OK);

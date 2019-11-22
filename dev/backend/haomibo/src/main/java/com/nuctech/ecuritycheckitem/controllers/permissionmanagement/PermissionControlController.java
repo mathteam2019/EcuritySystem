@@ -762,12 +762,9 @@ public class PermissionControlController extends BaseController {
                 break;
         }
 
-
         value.setFilters(filters);
 
         return value;
-
-
     }
 
 
