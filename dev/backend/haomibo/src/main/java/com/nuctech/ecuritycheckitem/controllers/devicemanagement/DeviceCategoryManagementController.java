@@ -310,6 +310,14 @@ public class DeviceCategoryManagementController extends BaseController {
 
         List<SysDeviceCategory> sysDeviceCategoryList = sysDeviceCategoryRepository.findAll();
 
+        //set parent's  parent to null so prevent recursion
+        for(int i = 0; i < sysDeviceCategoryList.size(); i ++) {
+            SysDeviceCategory deviceCategory = sysDeviceCategoryList.get(i);
+            if(deviceCategory.getParent() != null) {
+                deviceCategory.getParent().setParent(null);
+            }
+        }
+
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceCategoryList));
 
 
@@ -360,6 +368,13 @@ public class DeviceCategoryManagementController extends BaseController {
         long total = sysDeviceCategoryRepository.count(predicate);
         List<SysDeviceCategory> data = sysDeviceCategoryRepository.findAll(predicate, pageRequest).getContent();
 
+        //set parent's  parent to null so prevent recursion
+        for(int i = 0; i < data.size(); i ++) {
+            SysDeviceCategory deviceCategory = data.get(i);
+            if(deviceCategory.getParent() != null) {
+                deviceCategory.getParent().setParent(null);
+            }
+        }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,

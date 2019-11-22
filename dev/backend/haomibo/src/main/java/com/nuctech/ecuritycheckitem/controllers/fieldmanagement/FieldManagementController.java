@@ -354,6 +354,15 @@ public class FieldManagementController extends BaseController {
 
         List<SysField> sysFieldList = sysFieldRepository.findAll();
 
+
+        //set parent's  parent to null so prevent recursion
+        for(int i = 0; i < sysFieldList.size(); i ++) {
+            SysField field = sysFieldList.get(i);
+            if(field.getParent() != null) {
+                field.getParent().setParent(null);
+            }
+        }
+
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
 
@@ -403,6 +412,14 @@ public class FieldManagementController extends BaseController {
 
         long total = sysFieldRepository.count(predicate);
         List<SysField> data = sysFieldRepository.findAll(predicate, pageRequest).getContent();
+
+        //set parent's  parent to null so prevent recursion
+        for(int i = 0; i < data.size(); i ++) {
+            SysField field = data.get(i);
+            if(field.getParent() != null) {
+                field.getParent().setParent(null);
+            }
+        }
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
