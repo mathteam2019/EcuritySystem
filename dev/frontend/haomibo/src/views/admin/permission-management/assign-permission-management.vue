@@ -510,7 +510,6 @@
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
-  import Vue2OrgTree from 'vue2-org-tree'
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 

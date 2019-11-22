@@ -386,7 +386,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import Vue2OrgTree from 'vue2-org-tree'
+  import Vue2OrgTree from '../../../components/vue2-org-tree'
   import 'vue-select/dist/vue-select.css'
   import {validationMixin} from 'vuelidate';
 

@@ -403,8 +403,6 @@
                   :collapsable="false"
                   :label-class-name="treeLabelClass"
                   :render-content="renderTreeContent"
-                  @on-expand="() => {}"
-                  @on-node-click="() => {}"
                 />
               </div>
             </div>
@@ -446,7 +444,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import {validationMixin} from 'vuelidate';
-  import Vue2OrgTree from 'vue2-org-tree'
+  import Vue2OrgTree from '../../../components/vue2-org-tree'
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
