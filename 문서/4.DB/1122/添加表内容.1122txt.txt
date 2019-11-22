@@ -1,0 +1,27 @@
+
+
+add  
+SER_TASK 任务表
+模式ID	        MODE_ID	
+模式名称	MODE_NAME	
+
+冗余数据方便判断任务模式。
+
+SER_SCAN  添加注释
+
+ATR结论	        SCAN_ATR_RESULT	ATR结论     TRUE报警、FALSE通过    sys_device_dictionary_data    dictionary_id=4	
+扫描状态	SCAN_INVALID	扫描状态    TRUE有效、FALSE无效   sys_device_dictionary_data   dictionary_id=8	
+脚步报警	SCAN_FOOT_ALARM	脚步报警    TRUE报警、FALSE不报警    sys_device_dictionary_data    dictionary_id=9
+
+新增表  SER_SEIZED_GOODS  查获物表	
+
+
+
+SER_ASSIGN  添加注释
+分派超时	ASSIGN_TIMEOUT	分派超时超时、不超时        sys_dictionary_data   dictionary_id=17	
+
+
+SER_JUDGE_GRAPH 添加JUDGE_SUBMITRECTS字段和注释
+判图结论	JUDGE_RESULT	        有嫌疑true、无嫌疑false     sys_device_dictionary_data     dictionary_id=5	类型	
+判图超时	JUDGE_TIMEOUT	        超时、不超时        sys_dictionary_data   dictionary_id=17	
+判图提交嫌疑框	JUDGE_SUBMITRECTS	判图提交嫌疑框 （json字符串，包括添加的嫌疑框和删除的嫌疑框） new	
