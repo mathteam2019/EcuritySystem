@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -126,8 +127,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;
@@ -153,18 +156,18 @@ public class DeviceControlController extends BaseController {
                     .deviceName(this.getDeviceName())
                     .deviceType(this.getDeviceType())
                     .deviceSerial(this.getDeviceSerial())
-                    .originalFactoryNumber(Optional.of(this.getOriginalFactoryNumber()).orElse(""))
+                    .originalFactoryNumber(Optional.ofNullable(this.getOriginalFactoryNumber()).orElse(""))
                     .manufacturerDate(this.getManufacturerDate())
                     .purchaseDate(this.getPurchaseDate())
-                    .supplier(Optional.of(this.getSupplier()).orElse(""))
-                    .contacts(Optional.of(this.getContacts()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.of(this.getRegistrationNumber()).orElse(""))
+                    .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
+                    .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
+                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
                     //.categoryId(this.getCategoryId())
                     //.manufacturer(Optional.of(this.getManufacturer()).orElse(""))
                     //.originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -203,8 +206,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;
@@ -231,20 +236,20 @@ public class DeviceControlController extends BaseController {
                     .deviceName(this.getDeviceName())
                     .deviceType(this.getDeviceType())
                     .deviceSerial(this.getDeviceSerial())
-                    .originalFactoryNumber(Optional.of(this.getOriginalFactoryNumber()).orElse(""))
+                    .originalFactoryNumber(Optional.ofNullable(this.getOriginalFactoryNumber()).orElse(""))
                     .manufacturerDate(this.getManufacturerDate())
                     .purchaseDate(this.getPurchaseDate())
-                    .supplier(Optional.of(this.getSupplier()).orElse(""))
-                    .contacts(Optional.of(this.getContacts()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.of(this.getRegistrationNumber()).orElse(""))
+                    .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
+                    .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
+                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
 //                    .categoryId(this.getCategoryId())
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
                     .createdBy(createdBy)
                     .createdTime(createdTime)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -357,7 +362,9 @@ public class DeviceControlController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
 
         value.setFilters(filters);
@@ -583,17 +590,20 @@ public class DeviceControlController extends BaseController {
         String type = requestBody.getType();
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
         switch (type) {
 
             case DeviceGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"));
                 break;
             case DeviceGetAllRequestBody.GetAllType.WITH_CONFIG:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scan"))
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CONFIG, SimpleBeanPropertyFilter.serializeAllExcept("device"));
                 break;
             case DeviceGetAllRequestBody.GetAllType.WITH_SCAN:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config"))
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig"))
                         .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device"));
                 break;
 

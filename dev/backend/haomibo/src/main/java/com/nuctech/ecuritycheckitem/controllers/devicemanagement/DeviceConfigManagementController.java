@@ -122,7 +122,7 @@ public class DeviceConfigManagementController extends BaseController {
     /**
      * Device config datatable data.
      */
-    @RequestMapping(value = "/device-config/get-by-filter-and-page", method = RequestMethod.POST)
+    @RequestMapping(value = "/config/get-by-filter-and-page", method = RequestMethod.POST)
     public Object deviceConfigGetByFilterAndPage(
             @RequestBody @Valid DeviceConfigGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
@@ -143,7 +143,7 @@ public class DeviceConfigManagementController extends BaseController {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
             }
             if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.field.fieldDesignation.contains(filter.getFieldDesignation()));
+                predicate.and(builder.device.field.fieldDesignation.contains(filter.getFieldDesignation()));
             }
             if (!StringUtils.isEmpty(filter.getCategoryName())) {
                 predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
@@ -176,7 +176,9 @@ public class DeviceConfigManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));;
 
         value.setFilters(filters);
 
@@ -189,7 +191,7 @@ public class DeviceConfigManagementController extends BaseController {
     /**
      * Device config modify request.
      */
-    @RequestMapping(value = "/device-config/modify", method = RequestMethod.POST)
+    @RequestMapping(value = "/config/modify", method = RequestMethod.POST)
     public Object deviceConfigModify(
             @ModelAttribute @Valid DeviceConfigModifyRequestBody requestBody,
             BindingResult bindingResult) {
@@ -212,7 +214,8 @@ public class DeviceConfigManagementController extends BaseController {
         Long configDeviceId = requestBody.getDeviceId();
 
 
-        SysManualGroup manualGroup = sysDeviceConfig.getManualGroup();
+        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
+                sysDeviceConfig.getManualGroupList().get(0): null;
         //check manual Group exist or not
         if(manualGroup != null) {
             if(manualDeviceId != null) {
@@ -233,7 +236,8 @@ public class DeviceConfigManagementController extends BaseController {
             sysManualGroupRepository.save(manualGroup);
         }
 
-        SysJudgeGroup judgeGroup = sysDeviceConfig.getJudgeGroup();
+        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
+                sysDeviceConfig.getJudgeGroupList().get(0): null;
         //check judge Group exist or not
         if(judgeGroup != null) {
             if(judgeDeviceId != null) {
@@ -247,14 +251,15 @@ public class DeviceConfigManagementController extends BaseController {
         } else if(judgeDeviceId != null) {//create judge group
             judgeGroup = SysJudgeGroup.
                     builder()
-                    .judgeGroupId(judgeDeviceId)
+                    .judgeDeviceId(judgeDeviceId)
                     .configId(requestBody.getConfigId())
                     .build();
             judgeGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysJudgeGroupRepository.save(judgeGroup);
         }
 
-        FromConfigId fromConfigId = sysDeviceConfig.getFromConfigId();
+        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
+                sysDeviceConfig.getFromConfigIdList().get(0): null;
         //check from config exist or not
         if(fromConfigId != null) {
             if(configDeviceId != null) {
@@ -301,7 +306,7 @@ public class DeviceConfigManagementController extends BaseController {
     /**
      * Device Config delete request.
      */
-    @RequestMapping(value = "/device-config/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
     public Object deviceConfigDelete(
             @RequestBody @Valid DeviceConfigDeleteRequestBody requestBody,
             BindingResult bindingResult) {
@@ -319,19 +324,22 @@ public class DeviceConfigManagementController extends BaseController {
         }
 
         //remove correspond manual group
-        SysManualGroup manualGroup = sysDeviceConfig.getManualGroup();
+        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
+                sysDeviceConfig.getManualGroupList().get(0): null;
         if(manualGroup != null) {
             sysManualGroupRepository.delete(manualGroup);
         }
 
         //remove correspond judge group
-        SysJudgeGroup judgeGroup = sysDeviceConfig.getJudgeGroup();
+        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
+                sysDeviceConfig.getJudgeGroupList().get(0): null;
         if(judgeGroup != null) {
             sysJudgeGroupRepository.delete(judgeGroup);
         }
 
         //remove correspond from config.
-        FromConfigId fromConfigId = sysDeviceConfig.getFromConfigId();
+        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
+                sysDeviceConfig.getFromConfigIdList().get(0): null;
         if(fromConfigId != null) {
             fromConfigIdRepository.delete(fromConfigId);
         }
@@ -347,7 +355,7 @@ public class DeviceConfigManagementController extends BaseController {
     /**
      * Device  config get all request.
      */
-    @RequestMapping(value = "/device-config/get-all", method = RequestMethod.POST)
+    @RequestMapping(value = "/config/get-all", method = RequestMethod.POST)
     public Object deviceConfigGetAll() {
 
 
@@ -358,7 +366,9 @@ public class DeviceConfigManagementController extends BaseController {
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));;
 
         value.setFilters(filters);
 

@@ -41,8 +41,8 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @Column(name = "MODE_ID", length = 20)
     Long modeId;
 
-    @Column(name = "FIELD_ID", length = 20)
-    Long fieldId;
+//    @Column(name = "FIELD_ID", length = 20)
+//    Long fieldId;
 
     @Column(name = "DEVICE_ID", length = 20)
     Long deviceId;
@@ -79,12 +79,6 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @MapsId("manual")
     private SysWorkMode workMode; // Relation to SysWorkMode table.
 
-    @ToString.Exclude
-    @ManyToOne()
-    @JoinColumn(name = "FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("field")
-    private SysField field; // Relation to SysField table.
 
     @ToString.Exclude
     @ManyToOne()
@@ -94,23 +88,23 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     private SysDevice device; // Relation to SysDevice table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToMany()
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("manual")
-    private SysManualGroup manualGroup; // Relation to SysManualGroup table.
+    private List<SysManualGroup> manualGroupList; // Relation to SysManualGroup table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToMany()
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("judge")
-    private SysJudgeGroup judgeGroup; // Relation to SysJudgeGroup table.
+    private List<SysJudgeGroup> judgeGroupList; // Relation to SysJudgeGroup table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToMany()
     @JoinColumn(name = "CONFIG_ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("from_config")
-    private FromConfigId fromConfigId; // Relation to FromConfigId table.
+    private List<FromConfigId> fromConfigIdList; // Relation to FromConfigId table.
 }

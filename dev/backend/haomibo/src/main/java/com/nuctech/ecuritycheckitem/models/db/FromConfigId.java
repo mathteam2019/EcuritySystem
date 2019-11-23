@@ -37,7 +37,6 @@ public class FromConfigId extends BaseEntity implements Serializable {
     @Column(name = "FROM_CONFIG_ID", length = 20, nullable = false)
     Long fromConfigId;
 
-
     @Column(name = "CONFIG_ID", length = 20)
     Long configId;
 
