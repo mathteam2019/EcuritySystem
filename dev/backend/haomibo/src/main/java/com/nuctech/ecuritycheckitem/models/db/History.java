@@ -180,7 +180,7 @@ public class History extends BaseEntity implements Serializable {
     @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
     SysWorkMode workMode;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice scanDevice;
 
@@ -188,7 +188,7 @@ public class History extends BaseEntity implements Serializable {
     @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser scanPointsman;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice judgeDevice;
 
@@ -196,7 +196,7 @@ public class History extends BaseEntity implements Serializable {
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser judgeUser;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice handDevice;
 
@@ -207,5 +207,9 @@ public class History extends BaseEntity implements Serializable {
     @OneToOne()
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     SerImage scanImage;
+
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    SerTask task;
 
 }
