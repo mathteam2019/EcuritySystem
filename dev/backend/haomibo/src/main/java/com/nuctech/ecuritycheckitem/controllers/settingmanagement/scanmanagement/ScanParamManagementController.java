@@ -170,7 +170,9 @@ public class ScanParamManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 
@@ -182,7 +184,7 @@ public class ScanParamManagementController extends BaseController {
      */
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object scanParamModify(
-            @ModelAttribute @Valid ScanParamModifyRequestBody requestBody,
+            @RequestBody @Valid ScanParamModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -193,14 +195,15 @@ public class ScanParamManagementController extends BaseController {
         SerScanParam serScanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
                 .scanParamsId.eq(requestBody.getScanParamsId())).orElse(null);
 
-        //check if device config is valid.
+        //check if ser scan param is valid.
         if(serScanParam == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         Long paramDeviceId = requestBody.getDeviceId();
 
-        SerScanParamsFrom fromParams = serScanParam.getFromParams();
+        SerScanParamsFrom fromParams = (serScanParam.getFromParamsList() != null && serScanParam.getFromParamsList().size() > 0)?
+                serScanParam.getFromParamsList().get(0): null;
         //check from params exist or not
         if(fromParams != null) {
             if(paramDeviceId != null) {

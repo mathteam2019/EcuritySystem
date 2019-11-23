@@ -193,7 +193,7 @@ public class DeviceConfigManagementController extends BaseController {
      */
     @RequestMapping(value = "/config/modify", method = RequestMethod.POST)
     public Object deviceConfigModify(
-            @ModelAttribute @Valid DeviceConfigModifyRequestBody requestBody,
+            @RequestBody @Valid DeviceConfigModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {

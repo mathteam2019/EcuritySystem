@@ -84,7 +84,10 @@ public class DeviceLogController extends BaseController {
 
         DeviceLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
-            predicate.and(builder.devType.eq(filter.getDeviceType()));
+            if (!StringUtils.isEmpty(filter.getDeviceType())) {
+                predicate.and(builder.device.deviceType.contains(filter.getDeviceType()));
+            }
+
             if (!StringUtils.isEmpty(filter.getDeviceName())) {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
             }

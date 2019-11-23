@@ -104,10 +104,10 @@ public class SerScanParam extends BaseEntity implements Serializable {
     private SysDevice device; // Relation to SysDevice table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToMany()
     @JoinColumn(name = "SCAN_PARAMS_ID", referencedColumnName = "SCAN_PARAMS_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("from_param")
-    private SerScanParamsFrom fromParams; // Relation to SerScanParamsFrom table.
+    private List<SerScanParamsFrom> fromParamsList; // Relation to SerScanParamsFrom table.
 
 }

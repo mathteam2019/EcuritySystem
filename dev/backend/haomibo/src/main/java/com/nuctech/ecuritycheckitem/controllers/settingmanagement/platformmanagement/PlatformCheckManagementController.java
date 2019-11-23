@@ -8,8 +8,10 @@
  */
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.platformmanagement;
 
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import org.springframework.web.bind.annotation.*;
@@ -85,19 +87,20 @@ public class PlatformCheckManagementController extends BaseController {
 
 
     /**
-     * Platform Chceck  get all request
+     * Platform Check  get request
      */
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public Object platformOtherGetAll() {
+    public Object platformCheckGet() {
 
 
         List<SerPlatformCheckParams> serPlatformCheckParamsList = serPlatformCheckParamRepository.findAll();
-        if(serPlatformCheckParamsList == null || serPlatformCheckParamsList.size() == 0) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformCheckParamsList));
 
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
         return value;
     }
 
@@ -106,7 +109,7 @@ public class PlatformCheckManagementController extends BaseController {
      */
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object platformCheckModify(
-            @ModelAttribute @Valid PlatformCheckrModifyRequestBody requestBody,
+            @RequestBody @Valid PlatformCheckrModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {

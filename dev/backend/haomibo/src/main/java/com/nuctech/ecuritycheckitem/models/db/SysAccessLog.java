@@ -42,8 +42,8 @@ public class SysAccessLog extends BaseEntity implements Serializable {
     @Column(name = "CLIENT_IP", length = 255)
     String clientIp;
 
-    @Column(name = "OPERATOR_ID", length = 20)
-    Long operatorId;
+    @Column(name = "OPERATE_ID", length = 20)
+    Long operateId;
 
     @Column(name = "OPERATE_ACCOUNT", length = 200)
     String operateAccount;

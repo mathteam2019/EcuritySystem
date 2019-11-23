@@ -9,8 +9,10 @@
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.platformmanagement;
 
 
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import org.springframework.web.bind.annotation.*;
@@ -72,19 +74,19 @@ public class PlatformOtherManagementController extends BaseController {
 
 
     /**
-     * PlatformOther  get all request
+     * PlatformOther  get request
      */
     @RequestMapping(value = "/get", method = RequestMethod.POST)
-    public Object platformOtherGetAll() {
+    public Object platformOtherGet() {
 
 
         List<SerPlatformOtherParams> serPlatformOtherParamsList = serPlatformOtherParamRepository.findAll();
-        if(serPlatformOtherParamsList == null || serPlatformOtherParamsList.size() == 0) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformOtherParamsList));
 
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
         return value;
     }
 
@@ -93,7 +95,7 @@ public class PlatformOtherManagementController extends BaseController {
      */
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object platformOtherModify(
-            @ModelAttribute @Valid PlatformOtherModifyRequestBody requestBody,
+            @RequestBody @Valid PlatformOtherModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -107,7 +109,7 @@ public class PlatformOtherManagementController extends BaseController {
         List<SerPlatformOtherParams> serPlatformOtherParamsList = serPlatformOtherParamRepository.findAll();
 
         if(serPlatformOtherParamsList != null && serPlatformOtherParamsList.size() > 0) {
-            serPlatformOtherParams.setScanId(serPlatformOtherParamsList.get(0).getScanId());
+            serPlatformOtherParams.setId(serPlatformOtherParamsList.get(0).getId());
         }
 
 
