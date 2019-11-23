@@ -136,4 +136,7 @@ public class BaseController {
     @Autowired
     public SerTaskRepository serTaskRespository;
 
+    @Autowired
+    public HistoryRepository historyRespository;
+
 }

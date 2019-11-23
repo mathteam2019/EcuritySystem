@@ -76,8 +76,8 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/get-all", method = RequestMethod.POST)
-    public Object fieldGetAll() {
+    @RequestMapping(value = "/process-task/get-all", method = RequestMethod.POST)
+    public Object taskGetAll() {
 
         List<SerTask> serTaskList = serTaskRespository.findAll();
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serTaskList));
@@ -96,7 +96,7 @@ public class TaskManagementController extends BaseController {
     /**
      * Field datatable data.
      */
-    @RequestMapping(value = "/get-one", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/get-one", method = RequestMethod.POST)
     public Object taskGetById(
             @RequestBody @Valid TaskManagementController.TaskGetByIdRequestBody requestBody,
             BindingResult bindingResult) {
@@ -108,10 +108,9 @@ public class TaskManagementController extends BaseController {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-
         Long id = requestBody.getTaskId();
 
-        Optional<SerTask> optionalSerTask = serTaskRespository.findOne(QSerTask.serTask.task_id.eq(id));
+        Optional<SerTask> optionalSerTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
 
         if(!optionalSerTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -131,12 +130,13 @@ public class TaskManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+
     }
 
     /**
      * Field datatable data.
      */
-    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/get-by-filter-and-page", method = RequestMethod.POST)
     public Object taskGetByFilterAndPage(
             @RequestBody @Valid TaskManagementController.TaskGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
@@ -151,26 +151,23 @@ public class TaskManagementController extends BaseController {
         TaskManagementController.TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.task_number.contains(filter.getTaskNumber()));
+                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
             }
             if (filter.getMode() != null) {
                 predicate.and(builder.history.mode.in(filter.getMode()));
             }
             if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.task_status.eq(filter.getStatus()));
+                predicate.and(builder.taskStatus.eq(filter.getStatus()));
             }
             if (filter.getFieldId() != null) {
-                predicate.and(builder.field_id.in(filter.getFieldId()));
+                predicate.and(builder.fieldId.in(filter.getFieldId()));
             }
             if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
 
-                Predicate scanUserName = builder.history.scan_pointsman.userName.contains(filter.getUserName());
-                builder.history.judge_user.userName.contains(filter.getUserName()).or(
-                        builder.history.judge_user.userName.contains(filter.getUserName())
-                ).or(builder.history.judge_user.userName.contains(filter.getUserName()));
-//                Predicate judgeUserName = builder.history.judge_user.userName.contains(filter.getUserName());
-//                Predicate handUserName = builder.history.hand_user.userName.contains(filter.getUserName());
-//                Predicate userName = predicate.or(scanUserName, judgeUserName, handUserName);
+                Predicate scanUserName = builder.history.scanPointsman.userName.contains(filter.getUserName());
+                builder.history.scanPointsman.userName.contains(filter.getUserName()).or(
+                        builder.history.judgeUser.userName.contains(filter.getUserName())
+                ).or(builder.history.handUser.userName.contains(filter.getUserName()));
                 predicate.and(scanUserName);
             }
             if (filter.getStartTime() != null) {
@@ -218,4 +215,25 @@ public class TaskManagementController extends BaseController {
 
         return value;
     }
+
+    @RequestMapping(value = "/history-task/get-all", method = RequestMethod.POST)
+    public Object historyGetAll() {
+
+        List<History> historyList = historyRespository.findAll();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, historyList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        value.setFilters(filters);
+
+        return value;
+
+    }
+
 }

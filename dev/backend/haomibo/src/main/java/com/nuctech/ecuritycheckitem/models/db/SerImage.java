@@ -1,5 +1,6 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
@@ -16,25 +17,35 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SER_TASK)
-@Table(name = "ser_task")
-public class SerTask extends BaseEntity implements Serializable {
+@JsonFilter(ModelJsonFilters.FILTER_SER_IMAGE)
+@Table(name = "ser_image")
+public class SerImage extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "TASK_ID", length = 20)
+    @Column(name = "IMAGE_ID", length = 20)
+    Long imageId ;
+
+    @Column(name = "SCAN_ID", length = 20)
+    Long scanId;
+
+    @Column(name = "TASK_ID", length = 20, nullable = false)
     Long taskId;
 
-    @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    @Column(name = "IMAGE_FORMAT", length = 10)
+    String imageFormat;
 
-    @Column(name = "TASK_NUMBER", length = 50)
-    String taskNumber;
+    @Column(name = "IMAGE_CATEGORY", length = 10)
+    String imageCategory;
 
-    @Column(name = "SCENE", length = 20)
-    Long fieldId;
+    @Column(name = "IMAGE_URL", length = 200)
+    String imageUrl;
 
-    @Column(name = "TASK_STATUS", length = 10)
-    String taskStatus;
+    @Column(name = "IMAGE_LABEL", length = 50)
+    String imageLabel;
+
+    @Column(name = "STATUS", length = 10)
+    String status ;
 
     @Column(name = "CREATEDBY", length = 20)
     private Long createdBy;
@@ -50,14 +61,6 @@ public class SerTask extends BaseEntity implements Serializable {
 
     @Column(name = "NOTE", length = 500, nullable = false)
     private String note;
-
-    @OneToOne()
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    History history;
-
-    @OneToOne()
-    @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
-    SysField field;
 
 
 }
