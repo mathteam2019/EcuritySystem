@@ -1,18 +1,16 @@
 package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.fieldmanagement.FieldManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
@@ -26,6 +24,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/task")
@@ -64,6 +63,19 @@ public class TaskManagementController extends BaseController {
         TaskManagementController.TaskGetByFilterAndPageRequestBody.Filter filter;
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class TaskGetByIdRequestBody {
+
+        @NotNull
+        @Min(1)
+        Long taskId;
+
+    }
+
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
     public Object fieldGetAll() {
 
@@ -78,6 +90,47 @@ public class TaskManagementController extends BaseController {
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
         value.setFilters(filters);
         return value;
+
+    }
+
+    /**
+     * Field datatable data.
+     */
+    @RequestMapping(value = "/get-one", method = RequestMethod.POST)
+    public Object taskGetById(
+            @RequestBody @Valid TaskManagementController.TaskGetByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        QSerTask builder = QSerTask.serTask;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        Long id = requestBody.getTaskId();
+
+        Optional<SerTask> optionalSerTask = serTaskRespository.findOne(QSerTask.serTask.task_id.eq(id));
+
+        if(!optionalSerTask.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalSerTask.get()));
+
+        // Set filters.
+        SimpleFilterProvider filters = ModelJsonFilters
+                .getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        value.setFilters(filters);
+
+        return value;
     }
 
     /**
@@ -87,6 +140,7 @@ public class TaskManagementController extends BaseController {
     public Object taskGetByFilterAndPage(
             @RequestBody @Valid TaskManagementController.TaskGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -103,15 +157,21 @@ public class TaskManagementController extends BaseController {
                 predicate.and(builder.history.mode.in(filter.getMode()));
             }
             if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.task_status.contains(filter.getStatus()));
+                predicate.and(builder.task_status.eq(filter.getStatus()));
             }
             if (filter.getFieldId() != null) {
                 predicate.and(builder.field_id.in(filter.getFieldId()));
             }
             if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
-                predicate.and(builder.history.scan_pointsman.userName.contains(filter.getUserName()));
-                predicate.or(builder.history.judge_user.userName.contains(filter.getUserName()));
-                predicate.or(builder.history.hand_user.userName.contains(filter.getUserName()));
+
+                Predicate scanUserName = builder.history.scan_pointsman.userName.contains(filter.getUserName());
+                builder.history.judge_user.userName.contains(filter.getUserName()).or(
+                        builder.history.judge_user.userName.contains(filter.getUserName())
+                ).or(builder.history.judge_user.userName.contains(filter.getUserName()));
+//                Predicate judgeUserName = builder.history.judge_user.userName.contains(filter.getUserName());
+//                Predicate handUserName = builder.history.hand_user.userName.contains(filter.getUserName());
+//                Predicate userName = predicate.or(scanUserName, judgeUserName, handUserName);
+                predicate.and(scanUserName);
             }
             if (filter.getStartTime() != null) {
                 predicate.and(builder.createdTime.after(filter.getStartTime()));
@@ -146,9 +206,14 @@ public class TaskManagementController extends BaseController {
 
         // Set filters.
 
-        FilterProvider filters = ModelJsonFilters
+        SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
         value.setFilters(filters);
 
         return value;
