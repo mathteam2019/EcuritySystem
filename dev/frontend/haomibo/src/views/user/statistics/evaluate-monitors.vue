@@ -178,9 +178,9 @@
                 <b-form-input plain/>
               </b-form-group>
             </b-col>
-            <b-col>
-              <b-form-group :label="$t('statistics.evaluate-monitors.time')">
-                <b-form-input plain/>
+            <b-col cols="3">
+              <b-form-group :label="$t('statistics.evaluate-monitors.step-size')">
+                <b-form-select :options="[]" plain/>
               </b-form-group>
             </b-col>
             <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -192,11 +192,21 @@
         </b-col>
         <b-col cols="8" v-if="isExpanded">
           <b-row>
-            <b-col cols="3">
-              <b-form-group :label="$t('statistics.evaluate-monitors.step-size')">
-                <b-form-select :options="[]" plain/>
-              </b-form-group>
-            </b-col>
+            <b-col>
+            <b-form-group :label="$t('statistics.view.start-time')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
+          <b-col>
+            <b-form-group :label="$t('statistics.view.end-time')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+	  
+	  
+          <b-col></b-col>
+          <b-col></b-col>
           </b-row>
         </b-col>
         <b-col cols="4" class="d-flex justify-content-end align-items-center">

@@ -31,7 +31,7 @@
           </b-col>
 
           <b-col>
-            <b-form-group :label="'时间'">
+            <b-form-group :label="'统计步长'">
               <b-form-input />
             </b-form-group>
           </b-col>
@@ -47,13 +47,18 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="'统计步长'">
-              <b-form-select plain/>
+            <b-form-group :label="$t('statistics.view.start-time')">
+              <b-form-input></b-form-input>
             </b-form-group>
           </b-col>
 
-          <b-col></b-col>
-          <b-col></b-col>
+          <b-col>
+            <b-form-group :label="$t('statistics.view.end-time')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
+          
           <b-col></b-col>
           <b-col></b-col>
 

@@ -24,9 +24,15 @@
             </b-form-group>
           </b-col>
 
+           <b-col>
+            <b-form-group :label="$t('statistics.view.start-time')">
+              <b-form-input></b-form-input>
+            </b-form-group>
+          </b-col>
+
           <b-col>
-            <b-form-group :label="'时间'">
-              <b-form-input  plain />
+            <b-form-group :label="$t('statistics.view.end-time')">
+              <b-form-input></b-form-input>
             </b-form-group>
           </b-col>
 
