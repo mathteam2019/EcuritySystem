@@ -144,7 +144,7 @@
                 </b-col>
               </b-row>
               <b-row class="mx-4">
-                <b-col cols="12" class="d-flex justify-content-end align-self-end">
+                <b-col cols="12" class="d-flex justify-content-end align-self-end" style="margin-left: 1.5rem; margin-right: 1.5rem;">
                   <b-button size="sm" variant="info default mr-1">
                     <i class="icofont-save"></i>
                     {{ $t('permission-management.save-button') }}

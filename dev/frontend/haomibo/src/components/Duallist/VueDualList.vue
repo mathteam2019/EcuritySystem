@@ -1,7 +1,7 @@
 <template>
   <div class="vue-dual-list">
-    <b-row class="h-100">
-      <b-col cols="5" class="d-flex flex-column">
+    <div class="h-100 flex-row d-flex">
+      <div class="d-flex flex-grow-1 flex-column dual-list-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
           <b-form-select :options="[]" plain></b-form-select>
         </b-form-group>
@@ -15,14 +15,14 @@
             </li>
           </ul>
         </div>
-      </b-col>
-      <b-col cols="2" class="d-flex justify-content-center align-items-center flex-column">
+      </div>
+      <div class="d-flex flex-grow-0 justify-content-center align-items-center flex-column">
         <div class="move-button-container">
           <span @click='transferToRight(options.items.indexOf(item))'><i class="icofont-long-arrow-right"></i></span>
           <span @click='transferToLeft(-1)'><i class="icofont-long-arrow-left"></i></span>
         </div>
-      </b-col>
-      <b-col cols="5" class="d-flex flex-column">
+      </div>
+      <div class="d-flex flex-grow-1 flex-column dual-list-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
           <b-form-select :options="[]" plain></b-form-select>
         </b-form-group>
@@ -36,8 +36,8 @@
             </li>
           </ul>
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,11 +72,19 @@
       }
     }
 
+    .dual-list-column {
+      $dual-list-column-margin: 1.5rem;
+      margin-left: $dual-list-column-margin;
+      margin-right: $dual-list-column-margin;
+      flex-basis: 0;
+    }
+
     .list {
       border: 1px solid #cccccc;
       border-radius: 4px;
       overflow-y: auto;
       height: 100%;
+      background-color: white;
 
       &>div {
         padding: $item-horizontal-margin/2 #{$item-horizontal-margin - .2rem};
@@ -90,6 +98,7 @@
         list-style-type: none!important;
         width: 100%;
         font-size: 1rem;
+        margin-top: 1rem;
 
         li {
           padding: $item-horizontal-margin/2 $item-horizontal-margin;
