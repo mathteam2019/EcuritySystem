@@ -21,16 +21,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -114,7 +105,7 @@ public class SysDevice extends BaseEntity implements Serializable {
     String status;
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("field")

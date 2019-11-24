@@ -31,7 +31,7 @@ import java.util.Optional;
 public class TaskManagementController extends BaseController {
 
     /**
-     * Field datatable request body.
+     * Process Task datatable request body.
      */
     @Getter
     @Setter
@@ -61,6 +61,7 @@ public class TaskManagementController extends BaseController {
         @NotNull
         int perPage;
         TaskManagementController.TaskGetByFilterAndPageRequestBody.Filter filter;
+
     }
 
     @Getter
@@ -76,57 +77,102 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class HistoryGetByIdRequestBody {
+
+        @NotNull
+        @Min(1)
+        Long historyId;
+
+    }
+
+    /**
+     * History Task datatable request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class HistoryGetByFilterAndPageRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+            String taskNumber;
+            Long mode;
+            String status;
+            Long fieldId;
+            String userName;
+            Date startTime;
+            Date endTime;
+        }
+
+        @NotNull
+        @Min(1)
+        int currentPage;
+
+        @NotNull
+        int perPage;
+        TaskManagementController.HistoryGetByFilterAndPageRequestBody.Filter filter;
+
+    }
+
     @RequestMapping(value = "/process-task/get-all", method = RequestMethod.POST)
     public Object taskGetAll() {
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, null));
 
-        List<SerTask> serTaskList = serTaskRespository.findAll();
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serTaskList));
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        value.setFilters(filters);
         return value;
 
     }
 
     /**
-     * Field datatable data.
+     * Task datatable data.
      */
     @RequestMapping(value = "/process-task/get-one", method = RequestMethod.POST)
     public Object taskGetById(
             @RequestBody @Valid TaskManagementController.TaskGetByIdRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-        QSerTask builder = QSerTask.serTask;
+        MappingJacksonValue value =  new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, null));
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        return value;
 
-        Long id = requestBody.getTaskId();
+    }
 
-        Optional<SerTask> optionalSerTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
+    /**
+     * Task datatable data.
+     */
+    @RequestMapping(value = "/process-task/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object taskGetByFilterAndPage(
+            @RequestBody @Valid TaskManagementController.TaskGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
 
-        if(!optionalSerTask.isPresent()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+        MappingJacksonValue value =  new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, null));
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalSerTask.get()));
+        return value;
+    }
 
-        // Set filters.
-        SimpleFilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+    @RequestMapping(value = "/history-task/get-all", method = RequestMethod.POST)
+    public Object historyGetAll() {
+
+        List<History> historyList = historyRespository.findAll();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, historyList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
+
         value.setFilters(filters);
 
         return value;
@@ -134,40 +180,80 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
-     * Field datatable data.
+     * History Task datatable data.
      */
-    @RequestMapping(value = "/process-task/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object taskGetByFilterAndPage(
-            @RequestBody @Valid TaskManagementController.TaskGetByFilterAndPageRequestBody requestBody,
+    @RequestMapping(value = "/history-task/get-one", method = RequestMethod.POST)
+    public Object historyGetById(
+            @RequestBody @Valid TaskManagementController.HistoryGetByIdRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        QSerTask builder = QSerTask.serTask;
+        QHistory builder = QHistory.history;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        TaskManagementController.TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        Long id = requestBody.getHistoryId();
+
+        Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
+
+        if(!optionalHistory.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory.get()));
+
+        // Set filters.
+        SimpleFilterProvider filters = ModelJsonFilters
+                .getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
+
+        value.setFilters(filters);
+
+        return value;
+
+    }
+
+    /**
+     * History datatable data.
+     */
+    @RequestMapping(value = "/history-task/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object historyGetByFilterAndPage(
+            @RequestBody @Valid TaskManagementController.HistoryGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        QHistory builder = QHistory.history;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        TaskManagementController.HistoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
+                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
             }
             if (filter.getMode() != null) {
-                predicate.and(builder.history.mode.in(filter.getMode()));
+                predicate.and(builder.mode.eq(filter.getMode()));
             }
             if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
+                predicate.and(builder.task.taskStatus.eq(filter.getStatus()));
             }
             if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.in(filter.getFieldId()));
+                predicate.and(builder.task.fieldId.eq(filter.getFieldId()));
             }
             if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
 
-                Predicate scanUserName = builder.history.scanPointsman.userName.contains(filter.getUserName());
-                builder.history.scanPointsman.userName.contains(filter.getUserName()).or(
-                        builder.history.judgeUser.userName.contains(filter.getUserName())
-                ).or(builder.history.handUser.userName.contains(filter.getUserName()));
+                Predicate scanUserName = builder.scanPointsman.userName.contains(filter.getUserName());
+                builder.scanPointsman.userName.contains(filter.getUserName()).or(
+                        builder.judgeUser.userName.contains(filter.getUserName())
+                ).or(builder.handUser.userName.contains(filter.getUserName()));
                 predicate.and(scanUserName);
             }
             if (filter.getStartTime() != null) {
@@ -184,8 +270,8 @@ public class TaskManagementController extends BaseController {
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
-        long total = serTaskRespository.count(predicate);
-        List<SerTask> data = serTaskRespository.findAll(predicate, pageRequest).getContent();
+        long total = historyRespository.count(predicate);
+        List<History> data = historyRespository.findAll(predicate, pageRequest).getContent();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -203,37 +289,14 @@ public class TaskManagementController extends BaseController {
 
         // Set filters.
 
-        SimpleFilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        value.setFilters(filters);
-
-        return value;
-    }
-
-    @RequestMapping(value = "/history-task/get-all", method = RequestMethod.POST)
-    public Object historyGetAll() {
-
-        List<History> historyList = historyRespository.findAll();
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, historyList));
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("field"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam", "deviceConfig"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
         value.setFilters(filters);
 
         return value;
-
     }
 
 }

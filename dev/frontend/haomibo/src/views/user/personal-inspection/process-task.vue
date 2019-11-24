@@ -54,12 +54,16 @@
               </b-col>
 
               <b-col>
-                <b-form-group :label="$t('personal-inspection.time')">
-                  <b-form-input></b-form-input>
+                <b-form-group :label="$t('log-management.operating-log.start-time')">
+                  <b-form-input v-model = "filter.startTime"></b-form-input>
                 </b-form-group>
               </b-col>
 
-              <b-col></b-col>
+              <b-col>
+                <b-form-group :label = "$t('log-management.operating-log.end-time')">
+                  <b-form-input v-model = "filter.endTime"></b-form-input>
+                </b-form-group>
+              </b-col>
               <b-col></b-col>
               <b-col></b-col>
 

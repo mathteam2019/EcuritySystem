@@ -51,9 +51,9 @@ public class SerTask extends BaseEntity implements Serializable {
     @Column(name = "NOTE", length = 500, nullable = false)
     private String note;
 
-    @OneToOne()
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    History history;
+//    @OneToOne()
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    History history;
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
