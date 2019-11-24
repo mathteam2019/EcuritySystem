@@ -14,8 +14,8 @@ export const localeOptions = [
   {id: 'enrtl', name: 'English RTL', direction: 'rtl', icon: '/assets/img/flags/united-kingdom.svg'}
 ];
 
-// export const apiBaseUrl = 'http://192.168.5.7:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
-export const apiBaseUrl = 'http://localhost:4546';
+export const apiBaseUrl = 'http://192.168.5.9:4546';
+// export const apiBaseUrl = 'http://localhost:4546';
 // export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
 
 export const refreshTokenTimeDiff = 30;
