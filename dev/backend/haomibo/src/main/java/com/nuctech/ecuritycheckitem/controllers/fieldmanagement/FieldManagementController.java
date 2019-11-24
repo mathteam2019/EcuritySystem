@@ -83,10 +83,10 @@ public class FieldManagementController extends BaseController {
                     .fieldSerial(this.getFieldSerial())
                     .fieldDesignation(this.getFieldDesignation())
                     .parentFieldId(this.getParentFieldId())
-                    .leader(Optional.of(this.getLeader()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .leader(Optional.ofNullable(this.getLeader()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .status(SysField.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -180,10 +180,10 @@ public class FieldManagementController extends BaseController {
                     .fieldDesignation(this.getFieldDesignation())
                     //.orgId(this.getOrgId())
                     .parentFieldId(this.getParentFieldId())
-                    .leader(Optional.of(this.getLeader()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .leader(Optional.ofNullable(this.getLeader()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .status(SysField.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }

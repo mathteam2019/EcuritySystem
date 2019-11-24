@@ -1,7 +1,7 @@
 /*
  * Copyright 2019 KR-STAR-DEV team.
  *
- * @CreatedDate 2019/11/21
+ * @CreatedDate 2019/11/20
  * @CreatedBy Choe.
  * @FileName DeviceStatusController.java
  * @ModifyHistory

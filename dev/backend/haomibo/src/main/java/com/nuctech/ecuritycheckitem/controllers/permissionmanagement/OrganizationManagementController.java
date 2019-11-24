@@ -79,10 +79,10 @@ public class OrganizationManagementController extends BaseController {
                     .orgName(this.getOrgName())
                     .orgNumber(this.getOrgNumber())
                     .parentOrgId(this.getParentOrgId())
-                    .leader(Optional.of(this.getLeader()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .leader(Optional.ofNullable(this.getLeader()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .status(SysOrg.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
         }
@@ -171,10 +171,10 @@ public class OrganizationManagementController extends BaseController {
                     .orgName(this.getOrgName())
                     .orgNumber(this.getOrgNumber())
                     .parentOrgId(this.getParentOrgId())
-                    .leader(Optional.of(this.getLeader()).orElse(""))
-                    .mobile(Optional.of(this.getMobile()).orElse(""))
+                    .leader(Optional.ofNullable(this.getLeader()).orElse(""))
+                    .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .status(SysOrg.Status.INACTIVE)
-                    .note(Optional.of(this.getNote()).orElse(""))
+                    .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
 
