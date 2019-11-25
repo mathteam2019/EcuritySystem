@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -38,18 +40,22 @@ public class SerTask extends BaseEntity implements Serializable {
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     SysField field;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     SerScan serScan;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     SerJudgeGraph serJudgeGraph;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
     SerHandExamination serHandExamination;
 
 }
