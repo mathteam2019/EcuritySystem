@@ -168,55 +168,46 @@ public class History extends BaseEntity implements Serializable {
     String judgeStatus;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysWorkMode workMode;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser scanPointsman;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice judgeDevice;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser judgeUser;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice handDevice;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerImage scanImage;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerTask task;
