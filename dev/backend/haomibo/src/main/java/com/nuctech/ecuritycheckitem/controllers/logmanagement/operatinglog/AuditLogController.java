@@ -89,7 +89,7 @@ public class AuditLogController extends BaseController {
             }
 
             if (!StringUtils.isEmpty(filter.getOperateResult())) {
-                predicate.and(builder.operateResult.contains(filter.getOperateResult()));
+                predicate.and(builder.operateResult.eq(filter.getOperateResult()));
             }
 
             if (!StringUtils.isEmpty(filter.getOperateObject())) {

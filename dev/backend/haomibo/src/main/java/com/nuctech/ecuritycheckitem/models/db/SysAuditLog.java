@@ -63,7 +63,7 @@ public class SysAuditLog extends BaseEntity implements Serializable {
     String operateContent;
 
     @Column(name = "REASON_CODE", length = 255)
-    String womanManualGender;
+    String reasonCode;
 
     @Column(name = "ONLINE_TIME", length = 11)
     Long onlineTime;
