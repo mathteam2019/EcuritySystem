@@ -42,25 +42,21 @@ public class SerTask extends BaseEntity implements Serializable {
     String taskStatus;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysField field;
 
     @ManyToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerScan serScan;
 
     @ManyToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerJudgeGraph serJudgeGraph;
 
     @ManyToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerHandExamination serHandExamination;
