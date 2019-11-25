@@ -748,7 +748,6 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
 
   import _ from 'lodash';
