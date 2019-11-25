@@ -49,6 +49,11 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_TASK = "filter_ser_task";
     public final static String FILTER_HISTORY = "filter_history";
     public final static String FILTER_SER_IMAGE = "filter_ser_image";
+    public final static String FILTER_SER_SCAN = "filter_ser_scan";
+    public final static String FILTER_SER_JUDGE_GRAPH = "filter_ser_judge_graph";
+    public final static String FILTER_SER_HAND_EXAMINATION = "filter_ser_hand_examination";
+    public final static String FILTER_SYS_WORKFLOW = "filter_sys_workflow";
+
 
     /**
      * Used to get default filter
