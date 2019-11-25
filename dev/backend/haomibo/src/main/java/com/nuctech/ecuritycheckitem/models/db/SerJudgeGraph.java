@@ -3,8 +3,14 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -51,14 +57,17 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     Long judgeUserId;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     SysWorkflow workFlow;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice judgeDevice;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser judgeUser;
 

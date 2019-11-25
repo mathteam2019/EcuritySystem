@@ -1,8 +1,14 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 
 import javax.persistence.*;
@@ -162,38 +168,47 @@ public class History extends BaseEntity implements Serializable {
     String judgeStatus;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
     SysWorkMode workMode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice scanDevice;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser scanPointsman;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice judgeDevice;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser judgeUser;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     SysDevice handDevice;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     SysUser handUser;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     SerImage scanImage;
 
     @OneToOne()
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     SerTask task;
 
