@@ -146,7 +146,7 @@
     </b-card>
     <div v-if="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="3">
+        <b-col cols="4">
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
@@ -248,7 +248,7 @@
 
           </b-card>
         </b-col>
-        <b-col cols="9">
+        <b-col cols="8">
           <b-card class="h-100 d-flex flex-column right-card">
 
             <div class="history-chart">
