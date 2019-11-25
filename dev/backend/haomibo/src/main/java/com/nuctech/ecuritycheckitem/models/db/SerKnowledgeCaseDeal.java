@@ -1,15 +1,10 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,15 +17,19 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@Table(name = "history")
-public class History extends BaseEntity implements Serializable {
+@Table(name = "ser_knowledge_case_deal")
+public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "HISTORY_ID", length = 20)
-    Long historyId;
+    @Column(name = "CASE_DETAL_ID", length = 20)
+    Long caseDealId;
+
+    @Column(name = "CASE_ID", length = 20)
+    Long caseId;
+
 
     @Column(name = "TASK_ID", length = 20)
-    Long task_id;
+    Long taskId;
 
     @Column(name = "MODE", length = 20)
     Long mode;
@@ -94,6 +93,7 @@ public class History extends BaseEntity implements Serializable {
 
     @Column(name = "ASSIGN_STATUS", length = 10)
     String assignStatus;
+
 
     @Column(name = "JUDGE_ID", length = 20)
     Long judgeId;
@@ -168,57 +168,37 @@ public class History extends BaseEntity implements Serializable {
     String judgeStatus;
 
     @OneToOne()
+    @JoinColumn(name = "CASE_ID", referencedColumnName = "CASE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
+    SerKnowledgeCase knowledgeCase;
+
+    @OneToOne()
     @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysWorkMode workMode;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
 
-    @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysUser scanPointsman;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice judgeDevice;
 
-    @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysUser judgeUser;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysDevice handDevice;
-
-    @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysUser handUser;
-
-    @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerImage scanImage;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerTask task;
+
+
 
 }

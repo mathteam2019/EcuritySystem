@@ -93,7 +93,7 @@ public class DeviceLogController extends BaseController {
             }
 
             if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.user.userName.contains(filter.getUserName()));
+                predicate.and(builder.user.userAccount.contains(filter.getUserName()));
             }
 
             if (filter.getCategory() != null) {
@@ -131,7 +131,9 @@ public class DeviceLogController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 

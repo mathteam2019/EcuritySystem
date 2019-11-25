@@ -20,6 +20,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,7 +45,7 @@ public class SerDevLog extends BaseEntity implements Serializable {
     @Column(name = "DEV_TYPE", length = 10)
     String devType;
 
-    @Column(name = "LOGIN_NAME", length = 200)
+    @Column(name = "LOGIN_NAME", length = 20)
     String loginName;
 
     @Column(name = "CATEGORY", length = 2)
@@ -60,14 +61,14 @@ public class SerDevLog extends BaseEntity implements Serializable {
     String time;
 
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "GUID", referencedColumnName = "GUID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
     SysDevice device;
 
     @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "LOGIN_NAME", referencedColumnName = "USER_ACCOUNT", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("user")
