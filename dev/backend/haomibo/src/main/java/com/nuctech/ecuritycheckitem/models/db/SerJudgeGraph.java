@@ -50,21 +50,6 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     @Column(name = "JUDGE_USER_ID", length = 20)
     Long judgeUserId;
 
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
-
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     SysWorkflow workFlow;

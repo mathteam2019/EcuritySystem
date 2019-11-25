@@ -89,21 +89,6 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "ASSIGN_STATUS", length = 10)
     String assignStatus;
 
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
-
     @Column(name = "JUDGE_ID", length = 20)
     Long judgeId;
 

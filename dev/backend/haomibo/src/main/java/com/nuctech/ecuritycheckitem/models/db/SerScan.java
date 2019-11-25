@@ -59,21 +59,6 @@ public class SerScan extends BaseEntity implements Serializable {
     @Column(name = "SCAN_ASSIGN_TIMEOUT", length = 10)
     String scanAssignTimeout;
 
-    @Column(name = "CREATEDBY", length = 20)
-    private Long createdBy;
-
-    @Column(name = "CREATEDTIME", nullable = false)
-    private Date createdTime;
-
-    @Column(name = "EDITEDBY", length = 20)
-    private Long editedBy;
-
-    @Column(name = "EDITEDTIME", nullable = false)
-    private Date editedTime;
-
-    @Column(name = "NOTE", length = 500, nullable = false)
-    private String note;
-
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     SysWorkflow workFlow;
