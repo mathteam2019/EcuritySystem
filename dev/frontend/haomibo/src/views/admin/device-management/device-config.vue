@@ -37,7 +37,7 @@
       }
     }
     .second-row {
-      height: calc(100% - 54px);
+      height: calc(100% - 4rem);
       &.list {
         margin-top: -23px!important;
         height: calc(100% - 29px);
@@ -77,6 +77,7 @@
 
     .section {
       background-color: #f4f4f4;
+      padding: 1rem 0 0.5rem 0!important;
     }
 
     div.label-center label {
@@ -559,7 +560,7 @@
         treeData: this.getData(),
         treeOptions: {direction: getDirection().direction},
         pendingListTableItems: {
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -630,7 +631,7 @@
         ],
 
         configListTableItems: {
-            perPage: 5,
+            perPage: 10,
             fields: [
                 {
                     name: '__checkbox',

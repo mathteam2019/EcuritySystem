@@ -166,7 +166,7 @@
           {value: 'unknown', text: this.$t('knowledge-base.no-seized')},
         ],
         pendingListTableItems: {
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',

@@ -128,7 +128,7 @@
           '三等级'
         ],
         blackListTableItems: {
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',

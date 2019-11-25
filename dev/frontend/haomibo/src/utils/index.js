@@ -43,6 +43,11 @@ export const getDateWithFormat = () => {
   return dd + '.' + mm + '.' + yyyy
 };
 
+let getDateTimeWithFormat = (datetime, lang = 'cn') => {
+  //todo need to format datetime with its language value
+  return moment(String(datetime)).format('MM/DD/YYYY HH:mm')
+};
+
 export const getCurrentTime = () => {
   const now = new Date();
   return now.getHours() + ':' + now.getMinutes()

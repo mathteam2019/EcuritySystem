@@ -380,7 +380,7 @@
               $t('permission-management.back-button') }}
             </b-button>
           </b-col>
-          <div class="position-absolute" style="left: 8%;bottom: 17%">
+          <div class="position-absolute" style="left: 8%;bottom: 12%">
             <img v-if="modifyPage.selectedOrg.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
             <img v-else-if="modifyPage.selectedOrg.status==='active'" src="../../../assets/img/active_stamp.png">
           </div>
@@ -656,7 +656,7 @@
             },
 
           ],
-          perPage: 5,
+          perPage: 10,
         },
         treeData: { // holds tree data for org diagram
         }

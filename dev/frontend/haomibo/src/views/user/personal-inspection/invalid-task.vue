@@ -126,7 +126,7 @@
 
     <div v-if="pageStatus === 'show'" >
       <b-row class="fill-main">
-        <b-col cols="3">
+        <b-col cols="4">
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
@@ -228,72 +228,8 @@
 
           </b-card>
         </b-col>
-        <b-col cols="9">
+        <b-col cols="8">
           <b-card class="h-100 d-flex flex-column right-card">
-            <div class="history-chart">
-              <div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>开始</div>
-                  </div>
-                  <div class="right">
-                    <div>Start</div>
-                  </div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>扫描</div>
-                    <div>张三</div>
-                  </div>
-                  <div class="right">
-                    <div>Scanning</div>
-                    <div>zhang san</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>判图</div>
-                    <div>李四</div>
-                  </div>
-                  <div class="right">
-                    <div>Decision diagram</div>
-                    <div>Li si</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>查验</div>
-                    <div>王五</div>
-                  </div>
-                  <div class="right">
-                    <div>Inspection</div>
-                    <div>Wang wu</div>
-                  </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
-                </div>
-
-                <div class="part">
-                  <div class="left">
-                    <div>结束</div>
-                  </div>
-                  <div class="right">
-                    <div>End</div>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
             <b-row>
               <b-col>
                 <b-form-group>
@@ -331,6 +267,9 @@
                   <label>男</label>
                 </b-form-group>
               </b-col>
+            </b-row>
+
+            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -340,9 +279,7 @@
                   <label>ATR</label>
                 </b-form-group>
               </b-col>
-            </b-row>
 
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -374,6 +311,8 @@
                   <label>20190921 10:40:05</label>
                 </b-form-group>
               </b-col>
+            </b-row>
+            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -391,9 +330,6 @@
                   <label>无</label>
                 </b-form-group>
               </b-col>
-            </b-row>
-
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -403,6 +339,7 @@
                   <label>张三</label>
                 </b-form-group>
               </b-col>
+              <b-col></b-col>
             </b-row>
 
             <b-row class="flex-grow-1 d-flex align-items-end">
@@ -763,7 +700,7 @@
                             dataClass: 'text-center'
                         },
                     ],
-                    perPage: 5,
+                    perPage: 10,
                 },
                 power: true
 

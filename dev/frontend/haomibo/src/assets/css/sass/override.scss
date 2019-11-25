@@ -1,11 +1,29 @@
 @media screen and (max-width: 1366px){
   html,html body {
-    font-size: 12px;
+    font-size: 11px;
+    .vuetable  {
+      thead tr td {
+        padding: 0.5rem 0!important;
+      }
+      tbody tr td {
+        padding: 0.4rem 0!important;
+      }
+    }
   }
+
+
 }
 @media screen and (min-width: 1367px) and (max-width: 1440px){
   html {
-    font-size: 13px;
+    font-size: 14px;
+    .vuetable  {
+      thead tr td {
+        padding: 0.6rem 0!important;
+      }
+      tbody tr td {
+        padding: 0.5rem 0!important;
+      }
+    }
   }
 }
 @media screen and (min-width: 1441px) and (max-width: 1680px){
@@ -46,6 +64,17 @@ $tab-padding-2: 0.9375rem;
 $page-padding-horizontal: 1.25rem;
 $page-padding-vertical: 1.25rem;
 $tab-nav-item-height: 2.1875rem;
+.notification-container {
+  width: 100%;
+  &>.notification-wrapper {
+    display: flex;
+    justify-content: center;
+    &>div {
+      transition: opacity 500ms ease-in-out;
+      min-width: 320px;
+    }
+  }
+}
 //breadcrumb style point
 main {
   margin: $nav-height + $bread-height + $page-padding-vertical $page-padding-horizontal 0 $side-bar-width+$page-padding-horizontal !important;
@@ -407,7 +436,7 @@ filter option style modify
     margin-right: 8.75rem;
     max-width: 68.75rem;
     div.row {
-      width: 100%;
+      flex-grow: 1;
       div.col{
         padding-right: 0;
         .form-control {
@@ -417,6 +446,7 @@ filter option style modify
     }
   }
   .filter-action {
+    flex-grow: 0;
     &>div {
       margin-top: 0.375rem;
       button.btn-success {
@@ -593,6 +623,7 @@ $check-checked-color:#67c23a;
     width: 3.75rem!important;
     input[type=checkbox] {
       width: 0;
+      opacity: 0;
       cursor: pointer;
       & ~ label {
         display: inline;
@@ -643,7 +674,7 @@ $check-checked-color:#67c23a;
     tr {
       background: #f1f1f1;
       th {
-        padding: 0.875rem 0 !important;
+        padding: 0.7rem 0 !important;
         border: solid 1px #e7e7e7 !important;
         background-color: #f1f1f1 !important;
         /*position: sticky;
@@ -658,7 +689,7 @@ $check-checked-color:#67c23a;
   tbody {
     tr {
       td {
-        padding: 0.625rem 0 !important;
+        padding: 0.56rem 0 !important;
         border: solid 1px #e7e7e7 !important;
         vertical-align: middle !important;
         &.btn-actions {

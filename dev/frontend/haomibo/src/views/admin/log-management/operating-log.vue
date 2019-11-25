@@ -7,6 +7,9 @@
       border-radius: 10px;
       cursor: pointer;
       background-color: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -16,7 +19,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -30,32 +33,32 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-ip')">
-                      <b-form-input v-model="filter.accessIp"></b-form-input>
+                      <b-form-input v-model="accessFilter.clientIp"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="filter.startingTime"></b-form-input>
+                      <b-form-input type="date" v-model="accessFilter.operateStartTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="filter.endingTime"></b-form-input>
+                      <b-form-input type="date" v-model="accessFilter.operateEndTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.access-user')">
-                      <b-form-input v-model="filter.accessUser"></b-form-input>
+                      <b-form-input v-model="accessFilter.operateAccount"></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
               </b-col>
               <b-col cols="6" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAccessSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onAccessResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -71,11 +74,11 @@
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
                   <vuetable
-                    ref="vueTable"
-                    :api-mode="false"
-                    :fields="vueTableItems.fields"
-                    :data-manager="vueTableDataManager"
-                    :per-page="vueTableItems.perPage"
+                    ref="vuetable"
+                    :fields="vuetableItems.fields"
+                    :api-url="vuetableItems.apiUrl"
+                    :http-fetch="vuetableHttpFetch"
+                    :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
                     @vuetable:pagination-data="onvueTablePaginationData"
@@ -84,9 +87,10 @@
                 </div>
                 <div class="pagination-wrapper">
                   <vuetable-pagination-bootstrap
-                    ref="vueTablePagination"
+                    ref="vuetablePagination"
                     @vuetable-pagination:change-page="onvueTableChangePage"
-                    :initial-per-page="vueTableItems.perPage"
+                    :initial-per-page="vuetableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -102,26 +106,26 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="filter.startTime"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateStartTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="filter.endTime"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateEndTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.client-ip')">
-                      <b-form-input v-model="filter.clientIp"></b-form-input>
+                      <b-form-input v-model="operatingFilter.clientIp"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating-result')">
-                      <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
+                      <b-form-select v-model="operatingFilter.operateResult" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
@@ -131,14 +135,10 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.object')">
-                      <b-form-input v-model="filter.object"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateObject"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.account-number')">
-                      <b-form-input v-model="filter.accountNumber"></b-form-input>
-                    </b-form-group>
-                  </b-col>
+                  <b-col></b-col>
                   <b-col></b-col>
                   <b-col></b-col>
                   <b-col></b-col>
@@ -146,10 +146,10 @@
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onOperatingSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onOperatingResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -166,11 +166,11 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="operatingLogTable"
-                    :api-mode="false"
                     :fields="operatingLogTableItems.fields"
-                    :data-manager="operatingLogDataManager"
+                    :api-url="operatingLogTableItems.apiUrl"
+                    :http-fetch="operatingTableHttpFetch"
                     pagination-path="pagination"
-                    class="table-hover"
+                    class="table-striped"
                     @vuetable:pagination-data="onOperatingLogTablePaginationData"
                   >
                   </vuetable>
@@ -180,6 +180,7 @@
                     ref="operatingLogPagination"
                     @vuetable-pagination:change-page="onOperatingLogTableChangePage"
                     :initial-per-page="operatingLogTableItems.perPage"
+                    @onUpdatePerPage="operatingLogTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
@@ -192,382 +193,272 @@
   </div>
 </template>
 <script>
-    import _ from 'lodash';
-    import {apiBaseUrl} from "../../../constants/config";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getApiManager} from '../../../api';
-    import {responseMessages} from '../../../constants/response-messages';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import {getApiManager,getDateTimeWithFormat} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
 
-    export default {
-        components: {
-            'vuetable': Vuetable,
-            'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+  export default {
+    components: {
+      'vuetable': Vuetable,
+      'vuetable-pagination': VuetablePagination,
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+    },
+    mounted() {
+      this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
+      this.$refs.operatingLogTable.$parent.transform = this.transformOperatingTable.bind(this);
+    },
+    data() {
+      return {
+        isExpanded: false,
+        pageStatus: 'table',
+        accessFilter: {
+          clientIp: null,
+          operateAccount: null,
+          operateStartTime: null,
+          operateEndTime: null
         },
-        data() {
-            return {
-                isExpanded:false,
-                pageStatus: 'table',
-                filter: {
-                    startingTime: '',
-                    endingTime:'',
-                    accessIp: '',
-                    accessUser:'',
-                    accountNumber:'',
-                    clientIp:'',
-                    object:'',
-                    startTime:'',
-                    endTime: '',
+        operatingFilter: {
+          clientIp: "",
+          operateResult: "",
+          operateObject: "",
+          operateStartTime: null,
+          operateEndTime: null
 
-                },
-                statusSelectData: [
-                    {value: null, text: this.$t('log-management.operating-log.status-all')},
-                    {value: 'active', text: this.$t('log-management.operating-log.status-success')},
-                    {value: 'inactive', text: this.$t('log-management.operating-log.status-failure')},
-                ],
-                vueTableItems: {
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'number',
-                            title: this.$t('log-management.operating-log.number'),
-                            sortField: 'number',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'access-time',
-                            title: this.$t('log-management.operating-log.access-time'),
-                            sortField: 'access-time',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'action',
-                            title: this.$t('log-management.operating-log.action'),
-                            sortField: 'action',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'accessIp',
-                            title: this.$t('log-management.operating-log.access-ip'),
-                            sortField: 'accessIp',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'accessUser',
-                            title: this.$t('log-management.operating-log.access-user'),
-                            sortField: 'accessUser',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                    ],
-                    perPage: 5,
-
-                },
-                tempData: [
-                    {
-                        "number": 1,
-                        "access-time": "00:00",
-                        "action": "success",
-                        "accessIp": "170.108.49.5",
-                        "accessUser": "2139910831",
-                    },
-                    {
-                        "number": 2,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                    {
-                        "number": 3,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                    {
-                        "number": 4,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                    {
-                        "number": 5,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                    {
-                        "number": 6,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                    {
-                        "number": 7,
-                        "access-time": "07:00",
-                        "action": "failure",
-                        "accessIp": "106.134.49.5",
-                        "accessUser": "5436576754",
-                    },
-                ],
-
-                //second tab content
-                operatingLogTableItems: {
-                    perPage: 5,
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'number',
-                            title: this.$t('log-management.operating-log.number'),
-                            sortField: 'number',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'userId',
-                            title: this.$t('log-management.operating-log.user-id'),
-                            sortField: 'userId',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'userNumber',
-                            title: this.$t('log-management.operating-log.user-number'),
-                            sortField: 'userNumber',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'clientIp',
-                            title: this.$t('log-management.operating-log.client-ip'),
-                            sortField: 'clientIp',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingObject',
-                            title: this.$t('log-management.operating-log.object'),
-                            sortField: 'operatingObject',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingNumber',
-                            title: this.$t('log-management.operating-log.operating-number'),
-                            sortField: 'operatingNumber',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operating',
-                            title: this.$t('log-management.operating-log.operating'),
-                            sortField: 'operating',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingContent',
-                            title: this.$t('log-management.operating-log.operating-content'),
-                            sortField: 'operatingContent',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingResult',
-                            title: this.$t('log-management.operating-log.operating-result'),
-                            sortField: 'operatingResult',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'failureCode',
-                            title: this.$t('log-management.operating-log.operating-failure-code'),
-                            sortField: 'failureCode',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingTime',
-                            title: this.$t('log-management.operating-log.operating-time'),
-                            sortField: 'operatingTime',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        }
-                    ],
-                },
-                operatingLogtempData: [
-                    {
-                        "number": 1,
-                        "userId": "100",
-                        "userNumber": "246",
-                        "clientIp": "170.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 2,
-                        "userId": "731",
-                        "userNumber": "45",
-                        "clientIp": "102.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 3,
-                        "userId": "100",
-                        "userNumber": "246",
-                        "clientIp": "170.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 4,
-                        "userId": "132",
-                        "userNumber": "246",
-                        "clientIp": "170.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 5,
-                        "userId": "12",
-                        "userNumber": "246",
-                        "clientIp": "102.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 6,
-                        "userId": "498",
-                        "userNumber": "341",
-                        "clientIp": "170.135.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                    {
-                        "number": 7,
-                        "userId": "369",
-                        "userNumber": "100",
-                        "clientIp": "151.108.49.5",
-                        "operatingObject": "2139910831",
-                        "operatingNumber": "2139910831",
-                        "operating": "test",
-                        "operatingContent": null,
-                        "operatingResult": null,
-                        "failureCode": null,
-                        "operatingTime": null,
-                    },
-                ],
+        },
+        statusSelectData: [
+          {value: null, text: this.$t('log-management.operating-log.status-all')},
+          {value: 'active', text: this.$t('log-management.operating-log.status-success')},
+          {value: 'inactive', text: this.$t('log-management.operating-log.status-failure')},
+        ],
+        vuetableItems: {
+          apiUrl: `${apiBaseUrl}/log-management/operating-log/access/get-by-filter-and-page`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'operateId',
+              title: this.$t('log-management.operating-log.number'),
+              sortField: 'operateId',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'operateTimeFormat',
+              title: this.$t('log-management.operating-log.access-time'),
+              sortField: 'operateTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'action',
+              title: this.$t('log-management.operating-log.action'),
+              sortField: 'action',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'clientIp',
+              title: this.$t('log-management.operating-log.access-ip'),
+              sortField: 'clientIp',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'operateAccount',
+              title: this.$t('log-management.operating-log.access-user'),
+              sortField: 'operateAccount',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+          ],
+          perPage: 10,
+        },
+        //second tab content
+        operatingLogTableItems: {
+          apiUrl: `${apiBaseUrl}/log-management/operating-log/audit/get-by-filter-and-page`,
+          perPage: 10,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'id',
+              title: this.$t('log-management.operating-log.number'),
+              sortField: 'id',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operatorId',
+              title: this.$t('log-management.operating-log.user-id'),
+              sortField: 'operatorId',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'clientIp',
+              title: this.$t('log-management.operating-log.client-ip'),
+              sortField: 'clientIp',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operateObject',
+              title: this.$t('log-management.operating-log.object'),
+              sortField: 'operateObject',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'action',
+              title: this.$t('log-management.operating-log.operating'),
+              sortField: 'action',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operateContent',
+              title: this.$t('log-management.operating-log.operating-content'),
+              sortField: 'operateContent',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operateResult',
+              title: this.$t('log-management.operating-log.operating-result'),
+              sortField: 'operateResult',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'reasonCode',
+              title: this.$t('log-management.operating-log.operating-failure-code'),
+              sortField: 'reasonCode',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operateTimeFormat',
+              title: this.$t('log-management.operating-log.operating-time'),
+              sortField: 'operateTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             }
+          ],
         },
-        methods: {
-            vueTableDataManager(sortOrder, pagination) {
-                let local = this.tempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-                pagination = this.$refs.vueTable.makePagination(
-                    local.length,
-                    this.vueTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.vueTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
-                };
-            },
-            onvueTablePaginationData(paginationData) {
-                this.$refs.vueTablePagination.setPaginationData(paginationData);
-            },
-            onvueTableChangePage(page) {
-                this.$refs.vueTable.changePage(page);
-            },
-
-            operatingLogDataManager(sortOrder, pagination) {
-                let local = this.operatingLogtempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-                pagination = this.$refs.operatingLogTable.makePagination(
-                    local.length,
-                    this.operatingLogTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.operatingLogTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
-                };
-            },
-            onOperatingLogTablePaginationData(paginationData) {
-                this.$refs.operatingLogPagination.setPaginationData(paginationData);
-            },
-            onOperatingLogTableChangePage(page) {
-                this.$refs.operatingLogTable.changePage(page);
-            },
+      }
+    },
+    methods: {
+      onAccessSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onAccessResetButton() {
+        this.accessFilter = {
+          clientIp: null,
+          operateAccount: null,
+          operateStartTime: null,
+          operateEndTime: null
+        };
+        this.$refs.vuetable.refresh();
+      },
+      transformTable(response) {
+        let transformed = {};
+        let data = response.data;
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
+          transformed.data.push(temp);
         }
+        return transformed
+      },
+      vuetableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.vuetableItems.perPage,
+          filter: this.accessFilter
+        });
+      },
+      onvueTablePaginationData(paginationData) {
+        this.$refs.vuetablePagination.setPaginationData(paginationData);
+      },
+      onvueTableChangePage(page) {
+        this.$refs.vuetable.changePage(page);
+      },
+
+      transformOperatingTable(response) {
+        let transformed = {};
+        let data = response.data;
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
+          transformed.data.push(temp);
+        }
+        return transformed
+      },
+      operatingTableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.operatingLogTableItems.perPage,
+          filter: this.operatingFilter
+        });
+      },
+      onOperatingSearchButton() {
+        this.$refs.operatingLogTable.refresh();
+      },
+      onOperatingResetButton() {
+        this.operatingFilter = {
+          clientIp: "",
+          operateResult: "",
+          operateObject: "",
+          operateStartTime: null,
+          operateEndTime: null
+        };
+        this.$refs.operatingLogTable.refresh();
+      },
+      onOperatingLogTablePaginationData(paginationData) {
+        this.$refs.operatingLogPagination.setPaginationData(paginationData);
+      },
+      onOperatingLogTableChangePage(page) {
+        this.$refs.operatingLogTable.changePage(page);
+      },
+    },
+    watch: {
+      'vuetableItems.perPage': function (newVal) {
+        this.$refs.vuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+
     }
+
+  }
 </script>

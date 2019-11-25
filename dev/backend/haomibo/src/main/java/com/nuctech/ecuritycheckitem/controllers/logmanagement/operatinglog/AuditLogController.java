@@ -49,6 +49,7 @@ public class AuditLogController extends BaseController {
         static class Filter {
             String clientIp;
             String operateResult;
+            String operateObject;
             Date operateStartTime;
             Date operateEndTime;
         }
@@ -88,8 +89,13 @@ public class AuditLogController extends BaseController {
             }
 
             if (!StringUtils.isEmpty(filter.getOperateResult())) {
-                predicate.and(builder.operateResult.contains(filter.getOperateResult()));
+                predicate.and(builder.operateResult.eq(filter.getOperateResult()));
             }
+
+            if (!StringUtils.isEmpty(filter.getOperateObject())) {
+                predicate.and(builder.operateObject.contains(filter.getOperateObject()));
+            }
+
 
             if(filter.getOperateStartTime() != null) {
                 predicate.and(builder.operateTime.after(filter.getOperateStartTime()));

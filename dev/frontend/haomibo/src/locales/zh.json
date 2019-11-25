@@ -479,7 +479,13 @@
       "unit": "单位",
       "required": "必填",
       "yes": "YES",
-      "no": "NO"
+      "no": "NO",
+      "status-updated-successfully":"模板修改成功",
+      "deleted-successfully" : "模板删除成功",
+      "has-children" : "该模板有孩子",
+      "added-successfully" : "模板创建成功",
+      "delete-prompt": "是否失效该模板",
+      "make-inactive-prompt" : "是否失效该模板"
     },
     "device-table": {
       "device-info": "设备信息",
@@ -487,7 +493,13 @@
     },
     "document-management": {
       "document-table": "档案列表",
-      "document-stat": "业务统计"
+      "document-stat": "业务统计",
+      "status-updated-successfully":"档案修改成功",
+      "deleted-successfully" : "档案删除成功",
+      "has-children" : "该档案有孩子",
+      "added-successfully" : "档案创建成功",
+      "delete-prompt": "是否失效该档案",
+      "make-inactive-prompt" : "是否失效该档案"
     },
     "archive":{
       "technical-indicator":"技术指标",
@@ -529,7 +541,7 @@
       "supplier": "供应商",
       "supplier-contact": "联系人",
       "supplier-contact-information": "联系方式",
-      "ip": "设备注册号",
+      "ip": "IP",
       "wave-security-device": "MW毫米波安检仪",
       "huawei-m6-tablet": "华为M6平板",
       "template": "模板"

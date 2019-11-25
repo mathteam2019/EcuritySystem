@@ -643,7 +643,7 @@
                     {value: 7, text: this.$t('maintenance-management.week-7')},
                 ],
                 pendingListTableItems: {
-                    perPage: 5,
+                    perPage: 10,
                     fields: [
                         {
                             name: '__checkbox',

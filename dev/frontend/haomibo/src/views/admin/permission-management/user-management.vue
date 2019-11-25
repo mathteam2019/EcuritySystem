@@ -30,8 +30,8 @@
       <b-tab :title="$t('permission-management.member-table')">
         <b-row v-if="pageStatus=='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
-            <div class="filter-wrapper pt-2">
-              <div class="filter-option">
+            <b-row class="pt-2">
+              <b-col cols="7">
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('permission-management.username')">
@@ -56,27 +56,25 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-              </div>
-              <div class="filter-action d-flex justify-content-end align-items-center">
-                <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                    <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                    <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
-                    <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
-                  </b-button>
-                  <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
-                    <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
-                  </b-button>
-                </div>
-              </div>
-            </div>
+              </b-col>
+              <b-col cols="5" class="d-flex justify-content-end align-items-center">
+                <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                  <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
+                </b-button>
+              </b-col>
+            </b-row>
             <b-row class="flex-grow-1">
               <b-col cols="12">
                 <div class="table-wrapper table-responsive">
@@ -332,8 +330,8 @@
                   </div>
                 </b-form-group>
               </b-col>
-              <b-col cols="3">
-                <b-form-group>
+              <b-col cols="4">
+                <b-form-group style="max-width: unset">
                   <template slot="label">{{$t('permission-management.password')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <div class="d-flex ">

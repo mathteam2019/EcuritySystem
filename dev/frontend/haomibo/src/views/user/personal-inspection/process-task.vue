@@ -146,7 +146,7 @@
     </b-card>
     <div v-if="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="3">
+        <b-col cols="4">
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
@@ -248,7 +248,7 @@
 
           </b-card>
         </b-col>
-        <b-col cols="9">
+        <b-col cols="8">
           <b-card class="h-100 d-flex flex-column right-card">
 
             <div class="history-chart">
@@ -748,7 +748,6 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
 
   import _ from 'lodash';
@@ -949,7 +948,7 @@
               dataClass: 'text-center'
             },
           ],
-          perPage: 5,
+          perPage: 10,
         },
         power: true
 

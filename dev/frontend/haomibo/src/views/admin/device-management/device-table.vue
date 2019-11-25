@@ -34,26 +34,31 @@
     <b-card class="main-without-tab">
       <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
         <b-row class="pt-2">
-          <b-col cols="6">
+          <b-col cols="7">
             <b-row>
               <b-col>
-                <b-form-group :label="$t('device-management.filename')">
-                  <b-form-input></b-form-input>
+                <b-form-group :label="$t('device-management.device')">
+                  <b-form-input v-model="filterOption.deviceName"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select :options="stateOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group :label="$t('device-management.filename')">
+                  <b-form-input v-model="filterOption.archivesName"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.device-classify')">
-                  <b-form-select :options="deviceClassifyData" plain/>
+                  <b-form-select v-model="filterOption.deviceCategoryId" :options="categoryFilterData" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
-          <b-col cols="6" class="d-flex justify-content-end align-items-center">
+          <b-col cols="5" class="d-flex justify-content-end align-items-center">
             <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
               <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
             </b-button>
@@ -77,9 +82,9 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="vuetable"
-                :api-mode="false"
                 :fields="vuetableItems.fields"
-                :data-manager="dataManager"
+                :api-url="vuetableItems.apiUrl"
+                :http-fetch="vuetableHttpFetch"
                 :per-page="vuetableItems.perPage"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onPaginationData"
@@ -135,14 +140,14 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.number"></b-form-input>
+                  <b-form-input v-model="mainForm.deviceSerial"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.name"></b-form-input>
+                  <b-form-input v-model="mainForm.deviceName"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -150,14 +155,14 @@
                   <template slot="label">{{$t('device-management.device-list.archive')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="mainForm.templateId" :options="templateOptions" plain/>
+                  <b-form-select v-model="mainForm.archiveId" :options="archivesSelectOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.deviceClassify"></b-form-input>
+                  <label class="input-label">同方威视</label>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -171,27 +176,34 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mb-5">
+            <b-row class="mb-5" v-if="mainForm.archiveId>0">
               <b-col cols="12" class="d-flex align-items-center">
                 <label class="pr-2 m-0 "
                        style="color: #bdbaba">{{$t('device-management.device-list.device-information')}}</label>
                 <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
               </b-col>
             </b-row>
-            <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
+            <b-row class="mb-5" v-if="false">
+              <b-col cols="12" class="d-flex align-items-center">
+                <label class="pr-2 m-0 "
+                       style="color: #bdbaba">{{$t('device-management.archive.technical-indicator')}}</label>
+                <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
+              </b-col>
+            </b-row>
+            <b-row v-if="mainForm.archiveId>0">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.original-number')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="deviceForm.originalFactoryNumber"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.production-date')">
-                  <b-form-input></b-form-input>
+                  <b-form-input type="date" v-model="deviceForm.manufacturerDate"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.purchase-date')">
-                  <b-form-input></b-form-input>
+                  <b-form-input type="date" v-model="deviceForm.purchaseDate"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -201,21 +213,21 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="deviceForm.contacts"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="deviceForm.mobile"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.ip')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="deviceForm.registrationNumber"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
+            <b-row v-if="false">
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.archive.battery-capacity')">
                   <b-form-input></b-form-input>
@@ -357,7 +369,7 @@
                     <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
                   </b-col>
                 </b-row>
-                <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
+                <b-row v-if="mainForm.archiveId==='waveSecurityDevice'">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.original-number')">
                       <b-form-input></b-form-input>
@@ -394,7 +406,7 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
+                <b-row v-if="mainForm.archiveId!=='waveSecurityDevice'">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.battery-capacity')">
                       <b-form-input></b-form-input>
@@ -517,7 +529,7 @@
                     <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
                   </b-col>
                 </b-row>
-                <b-row v-if="mainForm.templateId==='waveSecurityDevice'">
+                <b-row v-if="mainForm.archiveId>0">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.inspection-method')">
                       <label class="input-label">非接触式</label>
@@ -584,7 +596,7 @@
                     </b-form-group>
                   </b-col>
                 </b-row>
-                <b-row v-if="mainForm.templateId!=='waveSecurityDevice'">
+                <b-row v-if="false">
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.archive.battery-capacity')">
                       <b-form-input></b-form-input>
@@ -677,20 +689,50 @@
 </template>
 
 <script>
-  import _ from 'lodash';
+  import {apiBaseUrl} from '../../../constants/config'
   import Vuetable from '../../../components/Vuetable2/Vuetable'
-  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+  import {responseMessages} from '../../../constants/response-messages';
+  import {getApiManager} from '../../../api';
+  import {validationMixin} from 'vuelidate';
+
+  const {required} = require('vuelidate/lib/validators');
 
   export default {
     components: {
       'vuetable': Vuetable,
-      'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
+    },
+    mounted() {
+      this.getArchivesData();
+      this.getCategoryData();
+      this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
+    },
+    mixins: [validationMixin],
+    validations: {
+      mainForm: {
+        deviceName: {
+          required
+        },
+        archiveId: {
+          required
+        },
+        deviceSerial: {
+          required
+        }
+      }
     },
     data() {
       return {
         pageStatus: 'list',
+        categoryData: [],
+        categoryFilterData: [],
+        categorySelectOptions: [],
+        stateOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'active', text: this.$t('permission-management.active')},
+          {value: 'inactive', text: this.$t('permission-management.inactive')}
+        ],
         fileData: [
           '档案-1',
           '档案-2',
@@ -702,8 +744,11 @@
           '单兵设备',
         ],
         selectedStatus: 'all',
+        archivesSelectOptions: [],
+        archivesData: [],
         vuetableItems: {
-          perPage: 5,
+          apiUrl: `${apiBaseUrl}/device-management/device-table/device/get-by-filter-and-page`,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -862,12 +907,12 @@
             "remarks": "",
           },
         ],
-        stateOptions: [
-          {value: null, text: this.$t('system-setting.status-all')},
-          {value: "active", text: this.$t('system-setting.status-active')},
-          {value: "inactive", text: this.$t('system-setting.status-inactive')},
-        ],
-
+        filterOption: {
+          deviceName:null,
+          status:null,
+          archiveName:null,
+          deviceCategoryId:null
+        },
         mainForm: {
           number: null,
           name: null,
@@ -897,12 +942,73 @@
       }
     },
     methods: {
+      getArchivesData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/document-management/archive/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.archivesData = data;
+              break;
+          }
+        });
+      },
+      //get device category data
+      getCategoryData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.categoryData = data;
 
+              break;
+          }
+        });
+      },
+      getTemplateData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/document-template/archive-template/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.templateData = data;
+              break;
+          }
+        });
+      },
+      getArchiveDetailData(templateId) {
+        this.archiveForm = {
+          category: '',
+          manufacturer: '',
+          originalModel: ''
+        };
+        for (let item of this.templateData) {
+          if (item.archivesTemplateId === templateId) {
+            this.archiveForm.category = item.deviceCategory.categoryName;
+            this.archiveForm.manufacturer = item.manufacturer;
+            this.archiveForm.originalModel = item.originalModel;
+            break;
+          }
+        }
+      },
       onSearchButton() {
-
+        this.$refs.vuetable.refresh();
       },
       onResetButton() {
-
+        this.filterOption = {
+          deviceName: '',
+          status: null,
+          archiveName:null,
+          deviceCategoryId: null
+        };
+        this.$refs.vuetable.refresh();
       },
       onAction(value) {
         switch (value) {
@@ -932,6 +1038,36 @@
         reader.readAsDataURL(file);
         this.mainForm.portrait = file;
       },
+
+      transformTable(response) {
+        let transformed = {};
+        let data = response.data;
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.categoryName = temp.archiveTemplate ? temp.archiveTemplate.deviceCategory.categoryName : '';
+          temp.manufacturerName = temp.archiveTemplate ? temp.archiveTemplate.manufacturer : '';
+          temp.originalModelName = temp.archiveTemplate ? temp.archiveTemplate.originalModel : '';
+          transformed.data.push(temp);
+        }
+        return transformed
+      },
+      vuetableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.vuetableItems.perPage,
+          filter: this.filterOption
+        });
+      },
       onPaginationData(paginationData) {
         this.$refs.pagination.setPaginationData(paginationData);
       },
@@ -939,35 +1075,47 @@
         this.$refs.vuetable.changePage(page);
       },
       //todo need to remove with temp data
-      dataManager(sortOrder, pagination) {
-        let local = this.tempData;
 
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
-        }
-
-        pagination = this.$refs.vuetable.makePagination(
-          local.length,
-          this.vuetableItems.perPage
-        );
-
-        let from = pagination.from - 1;
-        let to = from + this.vuetableItems.perPage;
-
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
-        };
-      }
     },
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+      },
+      categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
+
+        this.categorySelectOptions = [];
+        if (newVal.length === 0) {
+          this.categorySelectOptions.push({
+            value: 0,
+            html: `${this.$t('system-setting.none')}`
+          });
+        }
+        else {
+          this.categorySelectOptions = newVal.map(site => ({
+            text: site.categoryName,
+            value: site.categoryId
+          }));
+        }
+        this.categoryFilterData = JSON.parse(JSON.stringify(this.categorySelectOptions));
+        this.categoryFilterData.push({value: null, text: `${this.$t('permission-management.all')}`})
+      },
+      archivesData: function (newVal) {
+        this.archivesSelectOptions = [];
+        if (newVal.length === 0) {
+          this.archivesSelectOptions.push({
+            value: null,
+            html: `${this.$t('system-setting.none')}`
+          });
+        }
+        else {
+          this.archivesSelectOptions = newVal.map(item => ({
+            text: item.archivesName,
+            value: item.archiveId
+          }));
+        }
+      },
+      'archivesForm.archiveId': function (newVal) {
+        this.getArchiveDetailData(newVal);
       }
     }
   }
