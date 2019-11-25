@@ -7,6 +7,9 @@
       border-radius: 10px;
       cursor: pointer;
       background-color: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -16,7 +19,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -33,49 +36,58 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="filter.device"></b-form-input>
+                      <b-form-input v-model="deviceFilter.device"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="filter.user"></b-form-input>
+                      <b-form-input v-model="deviceFilter.user"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.category')">
-                      <b-form-input v-model="filter.category"></b-form-input>
+                      <b-form-input v-model="deviceFilter.category"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.level')">
-                      <b-form-input v-model="filter.level"></b-form-input>
+                      <b-form-input v-model="deviceFilter.level"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
+                      <span class="rounded-span flex-grow-0 text-center text-light"
+                            @click="isExpanded.device = !isExpanded.device">
+                        <i :class="!isExpanded.device?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="8" v-if="isExpanded">
+              <b-col cols="8" v-if="isExpanded.device">
                 <b-row>
-                  <b-col cols="3">
-                    <b-form-group :label="$t('log-management.device-log.operating-time')">
-                      <b-form-input v-model="filter.operatingTime"></b-form-input>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="deviceFilter.startTime"></b-form-input>
                     </b-form-group>
                   </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="deviceFilter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onDeviceSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onDeviceResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -93,9 +105,9 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="securityLogTable"
-                    :api-mode="false"
+                    :api-url="securityLogTableItems.apiUrl"
+                    :http-fetch="securityLogTableHttpFetch"
                     :fields="securityLogTableItems.fields"
-                    :data-manager="securityLogTableDataManager"
                     :per-page="securityLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
@@ -108,11 +120,11 @@
                     ref="securityLogPagination"
                     @vuetable-pagination:change-page="onsecurityLogTableChangePage"
                     :initial-per-page="securityLogTableItems.perPage"
+                    @onUpdatePerPage="vuetableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
             </b-row>
-
 
 
           </b-col>
@@ -128,49 +140,57 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="filter.device"></b-form-input>
+                      <b-form-input v-model="judgeFilter.device"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="filter.user"></b-form-input>
+                      <b-form-input v-model="judgeFilter.user"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.category')">
-                      <b-form-input v-model="filter.category"></b-form-input>
+                      <b-form-input v-model="judgeFilter.category"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.level')">
-                      <b-form-input v-model="filter.level"></b-form-input>
+                      <b-form-input v-model="judgeFilter.level"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded.judge = !isExpanded.judge">
+                        <i :class="!isExpanded.judge?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="8" v-if="isExpanded">
+              <b-col cols="8" v-if="isExpanded.judge">
                 <b-row>
-                  <b-col cols="3">
-                    <b-form-group :label="$t('log-management.device-log.operating-time')">
-                      <b-form-input v-model="filter.operatingTime"></b-form-input>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="judgeFilter.startTime"></b-form-input>
                     </b-form-group>
                   </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="judgeFilter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onJudgeSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onJudgeResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -188,9 +208,9 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="decisionLogTable"
-                    :api-mode="false"
+                    :api-url="decisionLogTableItems.apiUrl"
+                    :http-fetch="decisionLogTableHttpFetch"
                     :fields="decisionLogTableItems.fields"
-                    :data-manager="decisionLogTableDataManager"
                     :per-page="decisionLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
@@ -203,11 +223,11 @@
                     ref="decisionLogPagination"
                     @vuetable-pagination:change-page="ondecisionLogTableChangePage"
                     :initial-per-page="decisionLogTableItems.perPage"
+                    @onUpdatePerPage="decisionLogTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
                 </div>
               </b-col>
             </b-row>
-
 
 
           </b-col>
@@ -223,49 +243,57 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="filter.device"></b-form-input>
+                      <b-form-input v-model="manualFilter.device"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="filter.user"></b-form-input>
+                      <b-form-input v-model="manualFilter.user"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.category')">
-                      <b-form-input v-model="filter.category"></b-form-input>
+                      <b-form-input v-model="manualFilter.category"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.level')">
-                      <b-form-input v-model="filter.level"></b-form-input>
+                      <b-form-input v-model="manualFilter.level"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded.manual = !isExpanded.manual">
+                        <i :class="!isExpanded.manual?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="8" v-if="isExpanded">
+              <b-col cols="8" v-if="isExpanded.manual">
                 <b-row>
-                  <b-col cols="3">
-                    <b-form-group :label="$t('log-management.device-log.operating-time')">
-                      <b-form-input v-model="filter.operatingTime"></b-form-input>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.start-time')">
+                      <b-form-input v-model="manualFilter.startTime"></b-form-input>
                     </b-form-group>
                   </b-col>
+                  <b-col>
+                    <b-form-group :label="$t('log-management.operating-log.end-time')">
+                      <b-form-input v-model="manualFilter.endTime"></b-form-input>
+                    </b-form-group>
+                  </b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
+                  <b-col></b-col>
                 </b-row>
               </b-col>
               <b-col cols="4" class="d-flex justify-content-end align-items-center">
                 <div>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onManualSearchButton()">
                     <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
+                  <b-button size="sm" class="ml-2" variant="info default" @click="onManualResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="outline-info default">
@@ -283,12 +311,13 @@
                 <div class="table-wrapper table-responsive">
                   <vuetable
                     ref="handCheckLogTable"
-                    :api-mode="false"
+                    :api-url="handCheckLogTableItems.apiUrl"
+                    :http-fetch="handCheckLogTableHttpFetch"
                     :fields="handCheckLogTableItems.fields"
-                    :data-manager="handCheckLogTableDataManager"
                     :per-page="handCheckLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
+                    @onUpdatePerPage="handCheckLogTableItems.perPage = Number($event)"
                     @vuetable:pagination-data="onhandCheckLogTablePaginationData"
                   >
                   </vuetable>
@@ -304,7 +333,6 @@
             </b-row>
 
 
-
           </b-col>
         </b-row>
       </b-tab>
@@ -316,403 +344,374 @@
 </template>
 <script>
 
-    import {apiBaseUrl} from "../../../constants/config";
-    import _ from "lodash";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getApiManager} from '../../../api';
-    import {responseMessages} from '../../../constants/response-messages';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import {getApiManager} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
 
 
-
-    export default {
-        components: {
-            'vuetable': Vuetable,
-            'vuetable-pagination': VuetablePagination,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+  export default {
+    components: {
+      'vuetable': Vuetable,
+      'vuetable-pagination': VuetablePagination,
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+    },
+    mounted() {
+      this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
+      this.$refs.decisionLogTable.$parent.transform = this.transformTable.bind(this);
+      this.$refs.handCheckLogTable.$parent.transform = this.transformTable.bind(this);
+    },
+    data() {
+      return {
+        isExpanded: {
+          'device': false,
+          'judge': false,
+          'manual': false
         },
-
-        data() {
-            return {
-                isExpanded:false,
-                pageStatus: 'table',
-                filter: {
-                    operatingTime: '',
-                    device:'',
-                    user:'',
-                    category:'',
-                    level:'',
-
-                },
-
-                securityLogTableItems: {
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'number',
-                            title: this.$t('log-management.device-log.number'),
-                            sortField: 'number',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'device',
-                            title: this.$t('log-management.device-log.device'),
-                            sortField: 'device',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'deviceNumber',
-                            title: this.$t('log-management.device-log.device-number'),
-                            sortField: 'deviceNumber',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'user',
-                            title: this.$t('log-management.device-log.user'),
-                            sortField: 'user',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'category',
-                            title: this.$t('log-management.device-log.category'),
-                            sortField: 'category',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'level',
-                            title: this.$t('log-management.device-log.level'),
-                            sortField: 'level',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'content',
-                            title: this.$t('log-management.device-log.content'),
-                            sortField: 'content',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingTime',
-                            title: this.$t('log-management.device-log.operating-time'),
-                            sortField: 'operatingTime',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        }
-                    ],
-                    perPage: 5,
-                },
-                tempData: [
-                    {
-                        "number": 1,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 2,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 3,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 4,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 5,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 6,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                    {
-                        "number": 7,
-                        "device": "00:00",
-                        "deviceNumber": "009",
-                        "user": "test",
-                        "category": "2139910831",
-                        "level": null,
-                        "content": null,
-                        "operatingTime": "00:00:00",
-                    },
-                ],
-
-                //second tab
-                decisionLogTableItems: {
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'number',
-                            title: this.$t('log-management.device-log.number'),
-                            sortField: 'number',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'device',
-                            title: this.$t('log-management.device-log.device'),
-                            sortField: 'device',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'deviceNumber',
-                            title: this.$t('log-management.device-log.device-number'),
-                            sortField: 'deviceNumber',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'user',
-                            title: this.$t('log-management.device-log.user'),
-                            sortField: 'user',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'category',
-                            title: this.$t('log-management.device-log.category'),
-                            sortField: 'category',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'level',
-                            title: this.$t('log-management.device-log.level'),
-                            sortField: 'level',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'content',
-                            title: this.$t('log-management.device-log.content'),
-                            sortField: 'content',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingTime',
-                            title: this.$t('log-management.device-log.operating-time'),
-                            sortField: 'operatingTime',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        }
-                    ],
-                    perPage: 5,
-                },
-                //third tab
-                handCheckLogTableItems: {
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'number',
-                            title: this.$t('log-management.device-log.number'),
-                            sortField: 'number',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'device',
-                            title: this.$t('log-management.device-log.device'),
-                            sortField: 'device',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'deviceNumber',
-                            title: this.$t('log-management.device-log.device-number'),
-                            sortField: 'deviceNumber',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'user',
-                            title: this.$t('log-management.device-log.user'),
-                            sortField: 'user',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'category',
-                            title: this.$t('log-management.device-log.category'),
-                            sortField: 'category',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'level',
-                            title: this.$t('log-management.device-log.level'),
-                            sortField: 'level',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'content',
-                            title: this.$t('log-management.device-log.content'),
-                            sortField: 'content',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'operatingTime',
-                            title: this.$t('log-management.device-log.operating-time'),
-                            sortField: 'operatingTime',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        }
-                    ],
-                    perPage: 5,
-                },
+        pageStatus: 'table',
+        deviceFilter: {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'device'
+        },
+        judgeFilter: {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'judge'
+        },
+        manualFilter: {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'manual'
+        },
+        //first tab
+        securityLogTableItems: {
+          apiUrl: `${apiBaseUrl}/log-management/device-log/get-by-filter-and-page`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'number',
+              title: this.$t('log-management.device-log.number'),
+              sortField: 'number',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'device',
+              title: this.$t('log-management.device-log.device'),
+              sortField: 'device',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'deviceNumber',
+              title: this.$t('log-management.device-log.device-number'),
+              sortField: 'deviceNumber',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'user',
+              title: this.$t('log-management.device-log.user'),
+              sortField: 'user',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'category',
+              title: this.$t('log-management.device-log.category'),
+              sortField: 'category',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'level',
+              title: this.$t('log-management.device-log.level'),
+              sortField: 'level',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'content',
+              title: this.$t('log-management.device-log.content'),
+              sortField: 'content',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operatingTime',
+              title: this.$t('log-management.device-log.operating-time'),
+              sortField: 'operatingTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             }
+          ],
+          perPage: 10,
         },
-        methods: {
-            securityLogTableDataManager(sortOrder, pagination) {
-                let local = this.tempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-                pagination = this.$refs.securityLogTable.makePagination(
-                    local.length,
-                    this.securityLogTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.securityLogTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
-                };
+        //second tab
+        decisionLogTableItems: {
+          apiUrl: `${apiBaseUrl}/log-management/device-log/get-by-filter-and-page`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
-            onSecurityLogTablePaginationData(paginationData) {
-                this.$refs.securityLogPagination.setPaginationData(paginationData);
+            {
+              name: 'number',
+              title: this.$t('log-management.device-log.number'),
+              sortField: 'number',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            onsecurityLogTableChangePage(page) {
-                this.$refs.securityLogTable.changePage(page);
+            {
+              name: 'device',
+              title: this.$t('log-management.device-log.device'),
+              sortField: 'device',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-
-            //second tab
-            decisionLogTableDataManager(sortOrder, pagination) {
-                let local = this.tempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-                pagination = this.$refs.decisionLogTable.makePagination(
-                    local.length,
-                    this.decisionLogTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.decisionLogTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
-                };
+            {
+              name: 'deviceNumber',
+              title: this.$t('log-management.device-log.device-number'),
+              sortField: 'deviceNumber',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            ondecisionLogTablePaginationData(paginationData) {
-                this.$refs.decisionLogPagination.setPaginationData(paginationData);
+            {
+              name: 'user',
+              title: this.$t('log-management.device-log.user'),
+              sortField: 'user',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            ondecisionLogTableChangePage(page) {
-                this.$refs.decisionLogTable.changePage(page);
+            {
+              name: 'category',
+              title: this.$t('log-management.device-log.category'),
+              sortField: 'category',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-
-            //third tab
-            handCheckLogTableDataManager(sortOrder, pagination) {
-                let local = this.tempData;
-
-                // sortOrder can be empty, so we have to check for that as well
-                if (sortOrder.length > 0) {
-                    local = _.orderBy(
-                        local,
-                        sortOrder[0].sortField,
-                        sortOrder[0].direction
-                    );
-                }
-                pagination = this.$refs.handCheckLogTable.makePagination(
-                    local.length,
-                    this.handCheckLogTableItems.perPage
-                );
-
-                let from = pagination.from - 1;
-                let to = from + this.handCheckLogTableItems.perPage;
-                return {
-                    pagination: pagination,
-                    data: _.slice(local, from, to)
-                };
+            {
+              name: 'level',
+              title: this.$t('log-management.device-log.level'),
+              sortField: 'level',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            onhandCheckLogTablePaginationData(paginationData) {
-                this.$refs.handCheckLogPagination.setPaginationData(paginationData);
+            {
+              name: 'content',
+              title: this.$t('log-management.device-log.content'),
+              sortField: 'content',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            onhandCheckLogTableChangePage(page) {
-                this.$refs.handCheckLogTable.changePage(page);
+            {
+              name: 'operatingTime',
+              title: this.$t('log-management.device-log.operating-time'),
+              sortField: 'operatingTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
+          perPage: 10,
+        },
+        //third tab
+        handCheckLogTableItems: {
+          apiUrl: `${apiBaseUrl}/log-management/device-log/get-by-filter-and-page`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
+            {
+              name: 'number',
+              title: this.$t('log-management.device-log.number'),
+              sortField: 'number',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'device',
+              title: this.$t('log-management.device-log.device'),
+              sortField: 'device',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'deviceNumber',
+              title: this.$t('log-management.device-log.device-number'),
+              sortField: 'deviceNumber',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'user',
+              title: this.$t('log-management.device-log.user'),
+              sortField: 'user',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'category',
+              title: this.$t('log-management.device-log.category'),
+              sortField: 'category',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'level',
+              title: this.$t('log-management.device-log.level'),
+              sortField: 'level',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'content',
+              title: this.$t('log-management.device-log.content'),
+              sortField: 'content',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'operatingTime',
+              title: this.$t('log-management.device-log.operating-time'),
+              sortField: 'operatingTime',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
+          ],
+          perPage: 10,
+        },
+      }
+    },
+    methods: {
+      transformTable(response) {
+        let transformed = {};
+        let data = response.data;
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          transformed.data.push(temp);
         }
+        return transformed
+      },
+      onDeviceSearchButton() {
+        this.$refs.securityLogTable.refresh();
+      },
+      onDeviceResetButton() {
+        this.deviceFilter = {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'device'
+        };
+        this.$refs.securityLogTable.refresh();
+      },
+      securityLogTableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.securityLogTableItems.perPage,
+          filter: this.deviceFilter
+        });
+      },
+      onSecurityLogTablePaginationData(paginationData) {
+        this.$refs.securityLogPagination.setPaginationData(paginationData);
+      },
+      onsecurityLogTableChangePage(page) {
+        this.$refs.securityLogTable.changePage(page);
+      },
+
+      //second tab
+      onJudgeSearchButton() {
+        this.$refs.decisionLogTable.refresh();
+      },
+      onJudgeResetButton() {
+        this.judgeFilter = {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'device'
+        };
+        this.$refs.decisionLogTable.refresh();
+      },
+      decisionLogTableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.decisionLogTableItems.perPage,
+          filter: this.judgeFilter
+        });
+      },
+      ondecisionLogTablePaginationData(paginationData) {
+        this.$refs.decisionLogPagination.setPaginationData(paginationData);
+      },
+      ondecisionLogTableChangePage(page) {
+        this.$refs.decisionLogTable.changePage(page);
+      },
+
+      //third tab
+      onManualSearchButton() {
+        this.$refs.handCheckLogTable.refresh();
+      },
+      onManualResetButton() {
+        this.manualFilter = {
+          startTime: null,
+          endTime: null,
+          device: '',
+          user: '',
+          category: '',
+          level: '',
+          deviceType: 'device'
+        };
+        this.$refs.handCheckLogTable.refresh();
+      },
+      handCheckLogTableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.handCheckLogTableItems.perPage,
+          filter: this.manualFilter
+        });
+      },
+      onhandCheckLogTablePaginationData(paginationData) {
+        this.$refs.handCheckLogPagination.setPaginationData(paginationData);
+      },
+      onhandCheckLogTableChangePage(page) {
+        this.$refs.handCheckLogTable.changePage(page);
+      },
     }
+  }
 </script>

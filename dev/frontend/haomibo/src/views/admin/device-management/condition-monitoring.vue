@@ -1,9 +1,13 @@
 <style lang="scss">
+  @function calculateRem($size) {
+    $remSize: $size / 16px;
+    @return #{$remSize}rem;
+  }
   .device-monitoring {
-    $item-height: calc((100vh - 350px) / 2);
+    $item-height: calc(50% - 0.3rem);
     $item-width: 25% ;
-    $item-padding: 20px;
-    $item-extra-add-height: 50px;
+    $item-padding: calculateRem(20px);
+    $item-extra-add-height: calculateRem(50px);
     .main-without-tab {
       overflow-x: hidden!important;
     }
@@ -36,14 +40,14 @@
         .item-header {
           background: #f3f3f3;
           border-bottom: solid 2px #c6c6c6;
-          height: 50px;
+          height: calculateRem(50px);
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 0 20px 0 20px;
+          padding: 0 calculateRem(20px) 0 calculateRem(20px);
           .label {
             white-space: pre;
-            font-size: 15px;
+            font-size: calculateRem(15px);
             color: #666666;
             max-width: 100%;
             flex-grow: 1;
@@ -53,8 +57,8 @@
           .action-list {
             white-space: pre;
             img {
-              width: 20px;
-              margin-left: 0.5vw;
+              width: calculateRem(20px);
+              margin-left: 0.5rem;
               img:first-child {
                 margin-left: 0;
               }
@@ -63,13 +67,13 @@
           }
         }
         .item-body {
-          padding: 10px;
+          padding: calculateRem(10px);
           .left-side {
             .action {
               button.btn {
-                margin-bottom: 10px;
+                margin-bottom: calculateRem(10px);
                 white-space: pre;
-                font-size: 11px;
+                font-size: calculateRem(11px);
                 &.btn-success {
                   background-color: #49cf6f;
                   border-color: #49cf6f;
@@ -89,7 +93,7 @@
             }
             .img {
               img {
-                width: 5vw;
+                width: 90%;
                 object-fit: contain;
               }
             }
@@ -98,7 +102,7 @@
             .text-top {
               color: #1782d4;
               font-weight: bold;
-              margin-bottom: 15px;
+              margin-bottom: calculateRem(15px);
             }
             .content {
               & > div {
@@ -109,8 +113,8 @@
                   text-overflow: ellipsis;
                   max-width: 100%;
                   color: #606266;
-                  font-size: 12px;
-                  line-height: 12px;
+                  font-size: calculateRem(12px);
+                  line-height: calculateRem(12px);
                   &:first-child {
                     width: 37%;
                     min-width: 37%;
@@ -133,7 +137,7 @@
         }
       }
       & > .item-extra-info {
-        padding: 20px;
+        padding: calculateRem(18px);
         opacity: 0;
         transition: 300ms;
         border-radius: 0.3rem;
@@ -141,15 +145,17 @@
         top: 0;
         width: 100%;
         height: 100%;
-        left: 30px;
+        left: calculateRem(30px);
         background: black;
         z-index: 0;
         &>div {
           &>div {
-            margin-bottom: 5px;
+            margin-bottom: calculateRem(4px);
             align-items: center;
             &:first-child {
-              width: 70px;
+              width: calculateRem(75px);
+              margin-bottom: 0;
+              font-size: 0.7rem;
               color: white;
               white-space: pre;
               overflow: hidden;
@@ -164,9 +170,10 @@
               overflow: hidden;
               text-overflow: ellipsis;
               img {
-                width: 12px;
+                width: calculateRem(12px);
               }
               span {
+                font-size: 0.7rem;
                 &.success {
                   color: #42b662;
                 }
@@ -176,15 +183,15 @@
                 &.danger {
                   color: #e12c48;
                 }
-                margin-left: 5px;
+                margin-left: calculateRem(5px);
                 &.without {
-                  margin-left: 18px;
+                  margin-left: calculateRem(18px);
                 }
               }
               .chart-container {
-                 width: 100%;
-                 height: 100%;
-               }
+                width: 100%;
+                height: 100%;
+              }
             }
           }
         }
@@ -195,7 +202,7 @@
         }
         &:hover {
           & > .item-extra-info {
-            left: calc(20px - 100%);
+            left: calc(1.25rem - 100%);
           }
 
         }
@@ -220,11 +227,11 @@
       .pagination {
         span {
           border: solid 1px #eeeeee;
-          width: 25px;
-          height: 25px;
-          line-height: 23px;
+          width: calculateRem(25px);
+          height: calculateRem(25px);
+          line-height: calculateRem(23px);
           text-align: center;
-          font-size: 12px;
+          font-size: calculateRem(12px);
           cursor: pointer;
           &.active{
             border: solid 1px #1782d4;
@@ -287,7 +294,7 @@
 
         <div class="flex-grow-1 m-0">
           <div class="item-wrapper" v-for="(item, index) in items"
-               :class="index%4===0?(index===0?'pl-0':'p-0'):index%4===3?(index>4?'slide-left pb-0':'slide-left'):(index>4?'pb-0':'')">
+               :class="index%4===0?(index===0?'pl-0':'pl-0'):index%4===3?(index>4?'slide-left':'slide-left'):(index>4?'':'')">
             <div class="item d-flex flex-column">
               <div class="item-header">
                 <div class="label">MW1000AA-001 00000dd</div>

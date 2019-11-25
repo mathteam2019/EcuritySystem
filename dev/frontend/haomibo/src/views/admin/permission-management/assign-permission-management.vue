@@ -785,7 +785,7 @@
               dataClass: 'text-center'
             },
           ],
-          perPage: 5,
+          perPage: 10,
         },
         orgData: [], // loaded from server when the page is mounted
         orgTreeData: [],
@@ -861,7 +861,7 @@
         },
         userGroupTableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/assign-permission-management/user-group/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',

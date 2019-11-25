@@ -1138,7 +1138,7 @@
                             dataClass: 'text-center'
                         },
                     ],
-                    perPage: 5,
+                    perPage: 10,
                 },
                 power: true,
 

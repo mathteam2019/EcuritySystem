@@ -606,7 +606,7 @@
           ]
         },
         vuetableItems: {
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',

@@ -303,7 +303,7 @@
 </template>
 
 <script>
-  import _ from 'lodash';
+
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
@@ -458,11 +458,11 @@
             }
           ]
         },
-        stateOptions: {
-          null: this.$t('system-setting.status-all'),
-          'active': this.$t('system-setting.status-active'),
-          'inactive': this.$t('system-setting.status-inactive')
-        },
+        stateOptions: [
+          {value: null, text: this.$t('permission-management.all')},
+          {value: 'active', text: this.$t('permission-management.active')},
+          {value: 'inactive', text: this.$t('permission-management.inactive')}
+        ],
       }
     },
     methods: {
@@ -576,6 +576,7 @@
           };
         else
           this.classifyForm = data;
+        this.submitted = false;
       },
 
       saveCategoryItem() {
