@@ -2,6 +2,7 @@ import axios from 'axios';
 import {getAuthTokenInfo, removeLoginInfo} from "../utils";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
+import moment from '../../node_modules/moment';
 
 const getApiManager = function () {
 
@@ -75,4 +76,16 @@ const getApiManager = function () {
   return apiManager;
 };
 
-export {getApiManager};
+const getDateTimeWithFormat = (datetime, lang = 'cn') => {
+  //todo need to format datetime with its language value
+  let format = 'MM/DD/YYYY HH:mm';
+  switch (lang) {
+    case 'cn':
+    case 'en':
+      format = 'MM/DD/YYYY HH:mm';
+      break;
+  }
+  return moment(String(datetime)).format(format)
+};
+
+export {getApiManager, getDateTimeWithFormat};

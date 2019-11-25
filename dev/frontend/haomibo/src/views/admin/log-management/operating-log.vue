@@ -106,12 +106,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="operatingFilter.startTime"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateStartTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="operatingFilter.endTime"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateEndTime"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -121,7 +121,7 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.operating-result')">
-                      <b-form-select v-model="operatingFilter.status" :options="statusSelectData" plain/>
+                      <b-form-select v-model="operatingFilter.operateResult" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -135,14 +135,10 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.object')">
-                      <b-form-input v-model="operatingFilter.object"></b-form-input>
+                      <b-form-input v-model="operatingFilter.operateObject"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('log-management.operating-log.account-number')">
-                      <b-form-input v-model="operatingFilter.accountNumber"></b-form-input>
-                    </b-form-group>
-                  </b-col>
+                  <b-col></b-col>
                   <b-col></b-col>
                   <b-col></b-col>
                   <b-col></b-col>
@@ -197,12 +193,11 @@
   </div>
 </template>
 <script>
-  import _ from 'lodash';
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager} from '../../../api';
+  import {getApiManager,getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
   export default {
@@ -226,15 +221,11 @@
           operateEndTime: null
         },
         operatingFilter: {
-          startingTime: '',
-          endingTime: '',
-          accessIp: '',
-          accessUser: '',
-          accountNumber: '',
-          clientIp: '',
-          object: '',
-          startTime: '',
-          endTime: '',
+          clientIp: "",
+          operateResult: "",
+          operateObject: "",
+          operateStartTime: null,
+          operateEndTime: null
 
         },
         statusSelectData: [
@@ -258,7 +249,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'operateTime',
+              name: 'operateTimeFormat',
               title: this.$t('log-management.operating-log.access-time'),
               sortField: 'operateTime',
               titleClass: 'text-center',
@@ -313,13 +304,6 @@
               dataClass: 'text-center',
             },
             {
-              name: 'userNumber',
-              title: this.$t('log-management.operating-log.user-number'),
-              sortField: 'userNumber',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
               name: 'clientIp',
               title: this.$t('log-management.operating-log.client-ip'),
               sortField: 'clientIp',
@@ -330,13 +314,6 @@
               name: 'operateObject',
               title: this.$t('log-management.operating-log.object'),
               sortField: 'operateObject',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: 'operatingNumber',
-              title: this.$t('log-management.operating-log.operating-number'),
-              sortField: 'operatingNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -362,14 +339,14 @@
               dataClass: 'text-center',
             },
             {
-              name: 'failureCode',
+              name: 'reasonCode',
               title: this.$t('log-management.operating-log.operating-failure-code'),
-              sortField: 'failureCode',
+              sortField: 'reasonCode',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'operateTime',
+              name: 'operateTimeFormat',
               title: this.$t('log-management.operating-log.operating-time'),
               sortField: 'operateTime',
               titleClass: 'text-center',
@@ -407,6 +384,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
           transformed.data.push(temp);
         }
         return transformed
@@ -440,6 +418,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
           transformed.data.push(temp);
         }
         return transformed
@@ -456,8 +435,9 @@
       },
       onOperatingResetButton() {
         this.operatingFilter = {
-          clientIp: null,
-          operateAccount: null,
+          clientIp: "",
+          operateResult: "",
+          operateObject: "",
           operateStartTime: null,
           operateEndTime: null
         };
