@@ -139,4 +139,13 @@ public class BaseController {
     @Autowired
     public HistoryRepository historyRespository;
 
+    @Autowired
+    public SerScanRepository serScanRepository;
+
+    @Autowired
+    public SerJudgeGraphRepository serJudgeGraphRepository;
+
+    @Autowired
+    public SerHandExaminationRepository serHandExaminationRepository;
+
 }

@@ -27,6 +27,21 @@ import java.util.Date;
 @Table(name = "ser_scan")
 public class SerScan extends BaseEntity implements Serializable {
 
+    public static class Invalid {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class ATRResult {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class FootAlarm {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_ID", length = 20)
@@ -66,25 +81,21 @@ public class SerScan extends BaseEntity implements Serializable {
     String scanAssignTimeout;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysWorkflow workFlow;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser scanPointsman;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerImage scanImage;

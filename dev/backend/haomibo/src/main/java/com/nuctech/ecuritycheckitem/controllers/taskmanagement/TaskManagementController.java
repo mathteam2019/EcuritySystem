@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.StatisticWidth;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -31,11 +32,88 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
+
+
+    /**
+     * Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class TotalStatistics {
+
+        String axisLabel;
+        long invalidScan;
+        long validScan;
+        long passedScan;
+        long alarmScan;
+        long totalScan;
+        double invalidScanRate;
+        long totalJudge;
+        long totalHandExamination;
+        long noSuspictionJudge;
+        double noSuspictionJudgeRate;
+        long seizureHandExamination;
+        double seizureHandExaminationRate;
+        long noSeizureHandExamination;
+        double noSeizureHandExaminationRate;
+
+    }
+
+    /**
+     * Statistics Response Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class ScanStatistics {
+
+        String axisLabel;
+        long totalScan;
+        long invalidScan;
+        long validScan;
+        long passedScan;
+        long alarmScan;
+        double invalidScanRate;
+
+    }
+
+    /**
+     * Judge Statistics Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class JudgeStatistics {
+
+        String axisLabel;
+        long totalJudge;
+        long noSuspictionJudge;
+        double noSuspictionJudgeRate;
+        long suspictionJudge;
+        double suspictionJudgeRate;
+
+    }
+
+    /**
+     * Hand Examination Response Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class HandExaminationStatistics {
+
+        String axisLabel;
+        long totalHandExamination;
+        long seizureHandExamination;
+        double seizureHandExaminationRate;
+        long noSeizureHandExamination;
+        double noSeizureHandExaminationRate;
+
+    }
 
     /**
      * Process Task datatable request body.
@@ -132,6 +210,36 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
+     * Preview Statistics RequestBody
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class PreviewStatisticsRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            Long fieldId;
+            Long scanDeviceId;
+            String userType;
+            String userName;
+            Date startTime;
+            Date endTime;
+            String statWidth;
+
+        }
+
+        PreviewStatisticsRequestBody.Filter filter;
+
+    }
+
+    /**
      * Task datatable data.
      */
     @RequestMapping(value = "/process-task/get-one", method = RequestMethod.POST)
@@ -151,6 +259,10 @@ public class TaskManagementController extends BaseController {
 
         if(!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.TRUE)) {
+            return new CommonResponseBody(ResponseMessage.INVALID_SCANID);
         }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask.get()));
@@ -193,7 +305,7 @@ public class TaskManagementController extends BaseController {
 
         if (filter != null) {
 
-            predicate.and(builder.serScan.scanInvalid.eq("true"));
+            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
                 predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
@@ -404,7 +516,7 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (!optionalTask.get().getSerScan().getScanInvalid().equals("false")) {
+        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.FALSE)) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -443,7 +555,7 @@ public class TaskManagementController extends BaseController {
 
         TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-        predicate.and(builder.serScan.scanInvalid.eq("false"));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
         if (filter != null) {
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
@@ -513,4 +625,240 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
+    private ScanStatistics getScanStatistics(Date dateFrom, Date dateTo) {
+
+        ScanStatistics scanStatistics =  new ScanStatistics();
+
+        QSerScan builder = QSerScan.serScan;
+
+        Predicate predicateDate;
+
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        }
+        else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.scanStartTime.after(dateFrom);
+        }
+        else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.scanEndTime.before(dateTo);
+        }
+        else {
+            predicateDate = builder.scanStartTime.between(dateTo, dateFrom).and(builder.scanEndTime.between(dateTo, dateFrom));
+        }
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+
+        BooleanBuilder predicateValid = new BooleanBuilder(builder.isNotNull());
+        predicateValid.and(predicateDate);
+        predicateValid.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
+
+        BooleanBuilder predicateInvalid = new BooleanBuilder(builder.isNotNull());
+        predicateInvalid.and(predicateDate);
+        predicateInvalid.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
+
+        BooleanBuilder predicatePassed = new BooleanBuilder(builder.isNotNull());
+        predicatePassed.and(predicateDate);
+        predicatePassed.and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
+
+        BooleanBuilder predicateAlarm = new BooleanBuilder(builder.isNotNull());
+        predicateAlarm.and(predicateDate);
+        predicateAlarm.and(builder.scanAtrResult.eq(SerScan.FootAlarm.TRUE));
+
+        scanStatistics.setTotalScan(serScanRepository.count(predicateTotal));
+        scanStatistics.setValidScan(serScanRepository.count(predicateValid));
+        scanStatistics.setInvalidScan(serScanRepository.count(predicateInvalid));
+        scanStatistics.setPassedScan(serScanRepository.count(predicatePassed));
+        scanStatistics.setAlarmScan(serScanRepository.count(predicateAlarm));
+
+        return scanStatistics;
+
+    }
+
+    private JudgeStatistics getJudgeStatistics(Date dateFrom, Date dateTo) {
+
+        JudgeStatistics judgeStatistics =  new JudgeStatistics();
+
+        QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
+
+        Predicate predicateDate;
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        }
+        else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.judgeStartTime.after(dateFrom);
+        }
+        else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.judgeEndTime.before(dateTo);
+        }
+        else {
+            predicateDate = builder.judgeStartTime.between(dateTo, dateFrom).and(builder.judgeEndTime.between(dateTo, dateFrom));
+        }
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+
+        BooleanBuilder predicateNoSuspiction = new BooleanBuilder(builder.isNotNull());
+        predicateNoSuspiction.and(predicateDate);
+        predicateNoSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
+
+        BooleanBuilder predicateSuspiction = new BooleanBuilder(builder.isNotNull());
+        predicateSuspiction.and(predicateDate);
+        predicateSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
+
+        judgeStatistics.setTotalJudge(serJudgeGraphRepository.count(predicateTotal));
+        judgeStatistics.setNoSuspictionJudge(serJudgeGraphRepository.count(predicateNoSuspiction));
+        judgeStatistics.setSuspictionJudge(serJudgeGraphRepository.count(predicateSuspiction));
+
+        return judgeStatistics;
+
+    }
+
+    private HandExaminationStatistics getHandExaminationStatistics(Date dateFrom, Date dateTo) {
+
+        HandExaminationStatistics handExaminationStatistics = new HandExaminationStatistics();
+
+        QSerHandExamination builder = QSerHandExamination.serHandExamination;
+
+        Predicate predicateDate;
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        }
+        else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.handStartTime.after(dateFrom);
+        }
+        else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.handEndTime.before(dateTo);
+        }
+        else {
+            predicateDate = builder.handStartTime.between(dateTo, dateFrom).and(builder.handEndTime.between(dateTo, dateFrom));
+        }
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+
+        BooleanBuilder predictionSeizure = new BooleanBuilder(builder.isNotNull());
+        predictionSeizure.and(predicateDate);
+        predictionSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
+
+        BooleanBuilder predictionNoSeizure = new BooleanBuilder(builder.isNotNull());
+        predictionNoSeizure.and(predicateDate);
+        predictionNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
+
+        handExaminationStatistics.setTotalHandExamination(serHandExaminationRepository.count(predicateTotal));
+        handExaminationStatistics.setSeizureHandExamination(serHandExaminationRepository.count(predictionSeizure));
+
+        return handExaminationStatistics;
+
+    }
+
+    @RequestMapping(value = "/statistics/preview", method = RequestMethod.POST)
+    public Object previewStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+        TotalStatistics totalStatistics = new TotalStatistics();
+
+        //get Scan statistics
+        ScanStatistics scanStatiscs = getScanStatistics(dateFrom, dateTo);
+
+        totalStatistics.setTotalScan(scanStatiscs.getTotalScan());
+        totalStatistics.setValidScan(scanStatiscs.getValidScan());
+        totalStatistics.setPassedScan(scanStatiscs.getPassedScan());
+        totalStatistics.setInvalidScan(scanStatiscs.getInvalidScan());
+        totalStatistics.setAlarmScan(scanStatiscs.getAlarmScan());
+
+        //get Judge statistics
+        JudgeStatistics judgeStatistics = getJudgeStatistics(dateFrom, dateTo);
+        totalStatistics.setTotalJudge(judgeStatistics.getTotalJudge());
+        totalStatistics.setNoSuspictionJudge(judgeStatistics.getNoSuspictionJudge());
+
+        //get Hand Examination Statistics
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(dateFrom, dateTo);
+        totalStatistics.setTotalHandExamination(handExaminationStatistics.getTotalHandExamination());
+        totalStatistics.setSeizureHandExamination(handExaminationStatistics.getSeizureHandExamination());
+        totalStatistics.setNoSeizureHandExamination(handExaminationStatistics.getNoSeizureHandExamination());
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, totalStatistics));
+
+        return value;
+
+    }
+
+    @RequestMapping(value = "/statistics/scan", method = RequestMethod.POST)
+    public Object scanStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+
+        //get Scan statistics
+        ScanStatistics scanStatiscs = getScanStatistics(dateFrom, dateTo);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatiscs));
+
+        return value;
+
+    }
+
+    @RequestMapping(value = "/statistics/judgegraph", method = RequestMethod.POST)
+    public Object judgegraphStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+
+        //get Scan statistics
+        JudgeStatistics judgeStatistics = getJudgeStatistics(dateFrom, dateTo);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
+
+        return value;
+
+    }
+
+    @RequestMapping(value = "/statistics/handexamination", method = RequestMethod.POST)
+    public Object handexaminationStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+
+        //get Scan statistics
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(dateFrom, dateTo);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handExaminationStatistics));
+
+        return value;
+
+    }
 }

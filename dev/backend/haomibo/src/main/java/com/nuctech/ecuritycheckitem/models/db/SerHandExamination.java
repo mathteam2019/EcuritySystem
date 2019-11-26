@@ -26,6 +26,11 @@ import java.util.Date;
 @Table(name = "ser_hand_examination")
 public class SerHandExamination extends BaseEntity implements Serializable {
 
+    public static class Result {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HAND_EXAMINATION_ID", length = 20)
@@ -68,19 +73,16 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     private String note;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysWorkflow workFlow;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice handDevice;
 
     @OneToOne()
-    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
