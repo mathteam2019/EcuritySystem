@@ -14,10 +14,15 @@ import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
+
 /**
  * The base controller for all controllers. This class defines common fields and methods.
  */
 public class BaseController {
+
+    @Autowired
+    public EntityManager entityManager;
 
     @Autowired
     public SysOrgRepository sysOrgRepository;

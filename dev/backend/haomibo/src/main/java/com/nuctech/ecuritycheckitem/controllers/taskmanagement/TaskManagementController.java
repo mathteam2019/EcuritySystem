@@ -4,20 +4,16 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.enums.StatisticWidth;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.jpa.impl.JPAQuery;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.AllArgsConstructor;
-
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
@@ -31,6 +27,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -81,6 +78,8 @@ public class TaskManagementController extends BaseController {
         double passedScanRate;
         long alarmScan;
         double alarmScanRate;
+
+        Map<Integer, List<SerScan>> detailedScan;
 
     }
 
@@ -260,11 +259,11 @@ public class TaskManagementController extends BaseController {
 
         Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
 
-        if(!optionalTask.isPresent()) {
+        if (!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.TRUE)) {
+        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.TRUE)) {
             return new CommonResponseBody(ResponseMessage.INVALID_SCANID);
         }
 
@@ -274,7 +273,7 @@ public class TaskManagementController extends BaseController {
         filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanAtrResult", "scanFootAlarm", "scanAssignTimeout", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
@@ -365,7 +364,7 @@ public class TaskManagementController extends BaseController {
         filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
@@ -396,7 +395,7 @@ public class TaskManagementController extends BaseController {
 
         Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
 
-        if(!optionalHistory.isPresent()) {
+        if (!optionalHistory.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -515,7 +514,7 @@ public class TaskManagementController extends BaseController {
 
         Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
 
-        if(!optionalTask.isPresent()) {
+        if (!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -616,7 +615,7 @@ public class TaskManagementController extends BaseController {
         filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
@@ -630,7 +629,7 @@ public class TaskManagementController extends BaseController {
 
     private ScanStatistics getScanStatistics(PreviewStatisticsRequestBody requestBody) {
 
-        ScanStatistics scanStatistics =  new ScanStatistics();
+        ScanStatistics scanStatistics = new ScanStatistics();
 
         QSerScan builder = QSerScan.serScan;
 
@@ -647,14 +646,11 @@ public class TaskManagementController extends BaseController {
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
-        }
-        else if (dateFrom != null && dateTo == null) {
+        } else if (dateFrom != null && dateTo == null) {
             predicateDate = builder.scanStartTime.after(dateFrom);
-        }
-        else if (dateFrom == null && dateTo != null) {
+        } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.scanEndTime.before(dateTo);
-        }
-        else {
+        } else {
             predicateDate = builder.scanStartTime.between(dateTo, dateFrom).and(builder.scanEndTime.between(dateTo, dateFrom));
         }
 
@@ -719,29 +715,43 @@ public class TaskManagementController extends BaseController {
         predicateAlarm.and(predicateUsername);
         predicateAlarm.and(predicateUserCategory);
 
-        long totalScan = serScanRepository.count(predicateTotal);
-        long validScan = serScanRepository.count(predicateValid);
-        long invalidScan = serScanRepository.count(predicateInvalid);
-        long passedScan = serScanRepository.count(predicatePassed);
-        long alarmScan = serScanRepository.count(predicateAlarm);
+//        JPAQuery query = new JPAQuery(entityManager);
+//
+//        List<Integer, List<SerScan>> transform = List<Integer, List<SerScan>>) query
+//                .from(builder)
+//                .transform(
+//                        GroupBy.groupBy(builder.scanStartTime.month()).as(GroupBy.list(builder))
+//                );
 
-        scanStatistics.setTotalScan(totalScan);
-        scanStatistics.setValidScan(validScan);
-        scanStatistics.setValidScanRate(validScan / (double)totalScan);
-        scanStatistics.setInvalidScan(invalidScan);
-        scanStatistics.setInvalidScanRate(invalidScan / (double)totalScan);
-        scanStatistics.setPassedScan(passedScan);
-        scanStatistics.setPassedScanRate(passedScan / (double)totalScan);
-        scanStatistics.setAlarmScan(alarmScan);
-        scanStatistics.setAlarmScanRate(alarmScan/ (double)totalScan);
+        //scanStatistics.setDetailedScan(transform);
+        try {
 
+            long totalScan = serScanRepository.count(predicateTotal);
+            long validScan = serScanRepository.count(predicateValid);
+            long invalidScan = serScanRepository.count(predicateInvalid);
+            long passedScan = serScanRepository.count(predicatePassed);
+            long alarmScan = serScanRepository.count(predicateAlarm);
+
+            scanStatistics.setTotalScan(totalScan);
+            scanStatistics.setValidScan(validScan);
+            scanStatistics.setValidScanRate(validScan / (double) totalScan);
+            scanStatistics.setInvalidScan(invalidScan);
+            scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
+            scanStatistics.setPassedScan(passedScan);
+            scanStatistics.setPassedScanRate(passedScan / (double) totalScan);
+            scanStatistics.setAlarmScan(alarmScan);
+            scanStatistics.setAlarmScanRate(alarmScan / (double) totalScan);
+        }
+        catch (Exception e) {
+
+        }
         return scanStatistics;
 
     }
 
     private JudgeStatistics getJudgeStatistics(PreviewStatisticsRequestBody requestBody) {
 
-        JudgeStatistics judgeStatistics =  new JudgeStatistics();
+        JudgeStatistics judgeStatistics = new JudgeStatistics();
 
         QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
 
@@ -757,14 +767,11 @@ public class TaskManagementController extends BaseController {
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
-        }
-        else if (dateFrom != null && dateTo == null) {
+        } else if (dateFrom != null && dateTo == null) {
             predicateDate = builder.judgeStartTime.after(dateFrom);
-        }
-        else if (dateFrom == null && dateTo != null) {
+        } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.judgeEndTime.before(dateTo);
-        }
-        else {
+        } else {
             predicateDate = builder.judgeStartTime.between(dateTo, dateFrom).and(builder.judgeEndTime.between(dateTo, dateFrom));
         }
 
@@ -787,7 +794,6 @@ public class TaskManagementController extends BaseController {
         if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
             predicateUsername = builder.judgeUser.userName.contains(requestBody.getFilter().getUserName());
         }
-
 
 
         BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
@@ -820,9 +826,9 @@ public class TaskManagementController extends BaseController {
 
         judgeStatistics.setTotalJudge(totalJudge);
         judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
-        judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double)totalJudge);
+        judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double) totalJudge);
         judgeStatistics.setSuspictionJudge(suspictionJudge);
-        judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge/ (double)totalJudge);
+        judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge / (double) totalJudge);
 
         return judgeStatistics;
 
@@ -846,14 +852,11 @@ public class TaskManagementController extends BaseController {
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
-        }
-        else if (dateFrom != null && dateTo == null) {
+        } else if (dateFrom != null && dateTo == null) {
             predicateDate = builder.handStartTime.after(dateFrom);
-        }
-        else if (dateFrom == null && dateTo != null) {
+        } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.handEndTime.before(dateTo);
-        }
-        else {
+        } else {
             predicateDate = builder.handStartTime.between(dateTo, dateFrom).and(builder.handEndTime.between(dateTo, dateFrom));
         }
 
@@ -906,9 +909,9 @@ public class TaskManagementController extends BaseController {
 
         handExaminationStatistics.setTotalHandExamination(totalHandExam);
         handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
-        handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double)totalHandExam);
+        handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double) totalHandExam);
         handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
-        handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double)totalHandExam);
+        handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double) totalHandExam);
 
         return handExaminationStatistics;
 
@@ -967,7 +970,6 @@ public class TaskManagementController extends BaseController {
         Date dateFrom, dateTo;
         dateFrom = requestBody.getFilter().getStartTime();
         dateTo = requestBody.getFilter().getEndTime();
-
 
         //get Scan statistics
         ScanStatistics scanStatiscs = getScanStatistics(requestBody);

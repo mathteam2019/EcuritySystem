@@ -12,4 +12,5 @@ public interface SerScanRepository extends
         PagingAndSortingRepository<SerScan, Integer>,
         QuerydslPredicateExecutor<SerScan> {
 
+
 }
