@@ -74,10 +74,13 @@ public class TaskManagementController extends BaseController {
         String axisLabel;
         long totalScan;
         long invalidScan;
-        long validScan;
-        long passedScan;
-        long alarmScan;
         double invalidScanRate;
+        long validScan;
+        double validScanRate;
+        long passedScan;
+        double passedScanRate;
+        long alarmScan;
+        double alarmScanRate;
 
     }
 
@@ -226,8 +229,8 @@ public class TaskManagementController extends BaseController {
         static class Filter {
 
             Long fieldId;
-            Long scanDeviceId;
-            String userType;
+            Long deviceId;
+            String userCategory;
             String userName;
             Date startTime;
             Date endTime;
@@ -625,13 +628,22 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
-    private ScanStatistics getScanStatistics(Date dateFrom, Date dateTo) {
+    private ScanStatistics getScanStatistics(PreviewStatisticsRequestBody requestBody) {
 
         ScanStatistics scanStatistics =  new ScanStatistics();
 
         QSerScan builder = QSerScan.serScan;
 
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
         Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateStatisticWidth = null;
+
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
@@ -646,42 +658,103 @@ public class TaskManagementController extends BaseController {
             predicateDate = builder.scanStartTime.between(dateTo, dateFrom).and(builder.scanEndTime.between(dateTo, dateFrom));
         }
 
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.scanDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.scanPointsman.userName.contains(requestBody.getFilter().getUserName());
+        }
+
         BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
         predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
 
         BooleanBuilder predicateValid = new BooleanBuilder(builder.isNotNull());
-        predicateValid.and(predicateDate);
         predicateValid.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicateValid.and(predicateDate);
+        predicateValid.and(predicateField);
+        predicateValid.and(predicateDevice);
+        predicateValid.and(predicateUsername);
+        predicateValid.and(predicateUserCategory);
+
 
         BooleanBuilder predicateInvalid = new BooleanBuilder(builder.isNotNull());
-        predicateInvalid.and(predicateDate);
         predicateInvalid.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicateInvalid.and(predicateDate);
+        predicateInvalid.and(predicateField);
+        predicateInvalid.and(predicateDevice);
+        predicateInvalid.and(predicateUsername);
+        predicateInvalid.and(predicateUserCategory);
+
 
         BooleanBuilder predicatePassed = new BooleanBuilder(builder.isNotNull());
-        predicatePassed.and(predicateDate);
         predicatePassed.and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
+        predicatePassed.and(predicateDate);
+        predicatePassed.and(predicateField);
+        predicatePassed.and(predicateDevice);
+        predicatePassed.and(predicateUsername);
+        predicatePassed.and(predicateUserCategory);
 
         BooleanBuilder predicateAlarm = new BooleanBuilder(builder.isNotNull());
-        predicateAlarm.and(predicateDate);
         predicateAlarm.and(builder.scanAtrResult.eq(SerScan.FootAlarm.TRUE));
+        predicateAlarm.and(predicateDate);
+        predicateAlarm.and(predicateField);
+        predicateAlarm.and(predicateDevice);
+        predicateAlarm.and(predicateUsername);
+        predicateAlarm.and(predicateUserCategory);
 
-        scanStatistics.setTotalScan(serScanRepository.count(predicateTotal));
-        scanStatistics.setValidScan(serScanRepository.count(predicateValid));
-        scanStatistics.setInvalidScan(serScanRepository.count(predicateInvalid));
-        scanStatistics.setPassedScan(serScanRepository.count(predicatePassed));
-        scanStatistics.setAlarmScan(serScanRepository.count(predicateAlarm));
+        long totalScan = serScanRepository.count(predicateTotal);
+        long validScan = serScanRepository.count(predicateValid);
+        long invalidScan = serScanRepository.count(predicateInvalid);
+        long passedScan = serScanRepository.count(predicatePassed);
+        long alarmScan = serScanRepository.count(predicateAlarm);
+
+        scanStatistics.setTotalScan(totalScan);
+        scanStatistics.setValidScan(validScan);
+        scanStatistics.setValidScanRate(validScan / (double)totalScan);
+        scanStatistics.setInvalidScan(invalidScan);
+        scanStatistics.setInvalidScanRate(invalidScan / (double)totalScan);
+        scanStatistics.setPassedScan(passedScan);
+        scanStatistics.setPassedScanRate(passedScan / (double)totalScan);
+        scanStatistics.setAlarmScan(alarmScan);
+        scanStatistics.setAlarmScanRate(alarmScan/ (double)totalScan);
 
         return scanStatistics;
 
     }
 
-    private JudgeStatistics getJudgeStatistics(Date dateFrom, Date dateTo) {
+    private JudgeStatistics getJudgeStatistics(PreviewStatisticsRequestBody requestBody) {
 
         JudgeStatistics judgeStatistics =  new JudgeStatistics();
 
         QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
 
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
         Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateStatisticWidth = null;
+
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
         }
@@ -695,32 +768,82 @@ public class TaskManagementController extends BaseController {
             predicateDate = builder.judgeStartTime.between(dateTo, dateFrom).and(builder.judgeEndTime.between(dateTo, dateFrom));
         }
 
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.judgeDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.judgeUser.userName.contains(requestBody.getFilter().getUserName());
+        }
+
+
+
         BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
         predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
+
 
         BooleanBuilder predicateNoSuspiction = new BooleanBuilder(builder.isNotNull());
-        predicateNoSuspiction.and(predicateDate);
         predicateNoSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
+        predicateNoSuspiction.and(predicateDate);
+        predicateNoSuspiction.and(predicateField);
+        predicateNoSuspiction.and(predicateDevice);
+        predicateNoSuspiction.and(predicateUsername);
+        predicateNoSuspiction.and(predicateUserCategory);
 
         BooleanBuilder predicateSuspiction = new BooleanBuilder(builder.isNotNull());
-        predicateSuspiction.and(predicateDate);
         predicateSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
+        predicateSuspiction.and(predicateDate);
+        predicateSuspiction.and(predicateField);
+        predicateSuspiction.and(predicateDevice);
+        predicateSuspiction.and(predicateUsername);
+        predicateSuspiction.and(predicateUserCategory);
 
-        judgeStatistics.setTotalJudge(serJudgeGraphRepository.count(predicateTotal));
-        judgeStatistics.setNoSuspictionJudge(serJudgeGraphRepository.count(predicateNoSuspiction));
-        judgeStatistics.setSuspictionJudge(serJudgeGraphRepository.count(predicateSuspiction));
+        long totalJudge = serJudgeGraphRepository.count(predicateTotal);
+        long noSuspictionJudge = serJudgeGraphRepository.count(predicateNoSuspiction);
+        long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
+
+        judgeStatistics.setTotalJudge(totalJudge);
+        judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
+        judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double)totalJudge);
+        judgeStatistics.setSuspictionJudge(suspictionJudge);
+        judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge/ (double)totalJudge);
 
         return judgeStatistics;
 
     }
 
-    private HandExaminationStatistics getHandExaminationStatistics(Date dateFrom, Date dateTo) {
+    private HandExaminationStatistics getHandExaminationStatistics(PreviewStatisticsRequestBody requestBody) {
 
         HandExaminationStatistics handExaminationStatistics = new HandExaminationStatistics();
 
         QSerHandExamination builder = QSerHandExamination.serHandExamination;
 
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
         Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateStatisticWidth = null;
+
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
         }
@@ -734,19 +857,58 @@ public class TaskManagementController extends BaseController {
             predicateDate = builder.handStartTime.between(dateTo, dateFrom).and(builder.handEndTime.between(dateTo, dateFrom));
         }
 
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.handDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.handUser.userName.contains(requestBody.getFilter().getUserName());
+        }
+
         BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
         predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
 
-        BooleanBuilder predictionSeizure = new BooleanBuilder(builder.isNotNull());
-        predictionSeizure.and(predicateDate);
-        predictionSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
+        BooleanBuilder predicteSeizure = new BooleanBuilder(builder.isNotNull());
+        predicteSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
+        predicteSeizure.and(predicateDate);
+        predicteSeizure.and(predicateField);
+        predicteSeizure.and(predicateDevice);
+        predicteSeizure.and(predicateUsername);
+        predicteSeizure.and(predicateUserCategory);
 
-        BooleanBuilder predictionNoSeizure = new BooleanBuilder(builder.isNotNull());
-        predictionNoSeizure.and(predicateDate);
-        predictionNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
+        BooleanBuilder predicteNoSeizure = new BooleanBuilder(builder.isNotNull());
+        predicteNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
+        predicteNoSeizure.and(predicateDate);
+        predicteNoSeizure.and(predicateField);
+        predicteNoSeizure.and(predicateDevice);
+        predicteNoSeizure.and(predicateUsername);
+        predicteNoSeizure.and(predicateUserCategory);
 
-        handExaminationStatistics.setTotalHandExamination(serHandExaminationRepository.count(predicateTotal));
-        handExaminationStatistics.setSeizureHandExamination(serHandExaminationRepository.count(predictionSeizure));
+        long totalHandExam = serHandExaminationRepository.count(predicateTotal);
+        long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
+        long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
+
+        handExaminationStatistics.setTotalHandExamination(totalHandExam);
+        handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
+        handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double)totalHandExam);
+        handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
+        handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double)totalHandExam);
 
         return handExaminationStatistics;
 
@@ -768,7 +930,7 @@ public class TaskManagementController extends BaseController {
         TotalStatistics totalStatistics = new TotalStatistics();
 
         //get Scan statistics
-        ScanStatistics scanStatiscs = getScanStatistics(dateFrom, dateTo);
+        ScanStatistics scanStatiscs = getScanStatistics(requestBody);
 
         totalStatistics.setTotalScan(scanStatiscs.getTotalScan());
         totalStatistics.setValidScan(scanStatiscs.getValidScan());
@@ -777,12 +939,12 @@ public class TaskManagementController extends BaseController {
         totalStatistics.setAlarmScan(scanStatiscs.getAlarmScan());
 
         //get Judge statistics
-        JudgeStatistics judgeStatistics = getJudgeStatistics(dateFrom, dateTo);
+        JudgeStatistics judgeStatistics = getJudgeStatistics(requestBody);
         totalStatistics.setTotalJudge(judgeStatistics.getTotalJudge());
         totalStatistics.setNoSuspictionJudge(judgeStatistics.getNoSuspictionJudge());
 
         //get Hand Examination Statistics
-        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(dateFrom, dateTo);
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(requestBody);
         totalStatistics.setTotalHandExamination(handExaminationStatistics.getTotalHandExamination());
         totalStatistics.setSeizureHandExamination(handExaminationStatistics.getSeizureHandExamination());
         totalStatistics.setNoSeizureHandExamination(handExaminationStatistics.getNoSeizureHandExamination());
@@ -808,7 +970,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        ScanStatistics scanStatiscs = getScanStatistics(dateFrom, dateTo);
+        ScanStatistics scanStatiscs = getScanStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatiscs));
 
@@ -831,7 +993,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        JudgeStatistics judgeStatistics = getJudgeStatistics(dateFrom, dateTo);
+        JudgeStatistics judgeStatistics = getJudgeStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
 
@@ -854,7 +1016,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(dateFrom, dateTo);
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handExaminationStatistics));
 
