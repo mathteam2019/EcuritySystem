@@ -194,6 +194,16 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
 
+    @OneToOne()
+    @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SysDevice handDevice;
+
+    @OneToOne()
+    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SysDevice judgeDevice;
+
 
 
     @OneToOne()

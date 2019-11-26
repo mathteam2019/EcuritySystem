@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.fieldmanagement.FieldManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealExcelView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -32,11 +33,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +66,7 @@ public class KnowledgeDealManagementController extends BaseController {
             String modeName;
             String taskResult;
             String fieldDesignation;
+            String handGoods;
             String caseStatus;
         }
 
@@ -97,6 +101,25 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
+     * Knowledge Case Deal update status request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class KnowledgeCaseGenerateRequestBody {
+
+        @NotNull
+        String idList;
+
+        @NotNull
+        Boolean isAll;
+
+
+    }
+
+    /**
      * Knowledge Case Deal datatable data.
      */
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
@@ -116,7 +139,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
-            predicate.and(builder.knowledgeCase.caseStatus.eq(filter.getCaseStatus()));
+            //predicate.and(builder.knowledgeCase.caseStatus.eq(filter.getCaseStatus()));
             if (!StringUtils.isEmpty(filter.getTaskNumber())) {
                 predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
             }
@@ -129,6 +152,10 @@ public class KnowledgeDealManagementController extends BaseController {
             }
             if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
                 predicate.and(builder.scanDevice.field.fieldDesignation.contains(filter.getFieldDesignation()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getHandGoods())) {
+                predicate.and(builder.handGoods.contains(filter.getHandGoods()));
             }
         }
 
@@ -159,11 +186,11 @@ public class KnowledgeDealManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE_DEAL, SimpleBeanPropertyFilter.serializeAllExcept("workMode"))
                 .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseStatus"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl"))
                 .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay", "deviceName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
 
         value.setFilters(filters);
@@ -201,6 +228,44 @@ public class KnowledgeDealManagementController extends BaseController {
         serKnowledgeCaseRepository.save(serKnowledgeCase);
 
         return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
+     * Knowledge Case generate excel request.
+     */
+    @RequestMapping(value = "/generate/excel", method = RequestMethod.POST)
+    public Object knowledgeCaseGenerateExcel(
+            @RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // get case deal id list
+
+        List<SerKnowledgeCaseDeal> knowledgeCaseDealList = serKnowledgeCaseDealRepository.findAll();
+        List<SerKnowledgeCaseDeal> exportDealList = new ArrayList<>();
+        if(requestBody.isAll == false) {
+            String[] idListStr = requestBody.getIdList().split(",");
+            for(int i = 0; i < knowledgeCaseDealList.size(); i ++) {
+                boolean isExist = false;
+                String caseDealIdStr = knowledgeCaseDealList.get(i).getCaseDealId().toString();
+                for(int j = 0; j < idListStr.length; j ++) {
+                    if(caseDealIdStr.equals(idListStr[j])) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportDealList.add(knowledgeCaseDealList.get(i));
+                }
+            }
+        } else {
+            exportDealList = knowledgeCaseDealList;
+        }
+
+        return new ModelAndView(new KnowledgeDealExcelView(), "dealList", exportDealList);
     }
 
 }
