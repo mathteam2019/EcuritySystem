@@ -152,5 +152,12 @@ public class BaseController {
 
     @Autowired
     public SerHandExaminationRepository serHandExaminationRepository;
+    
+    @Autowired
+    public SerKnowledgeCaseDealRepository serKnowledgeCaseDealRepository;
+
+    @Autowired
+    public SerKnowledgeCaseRepository serKnowledgeCaseRepository;
+
 
 }

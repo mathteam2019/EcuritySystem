@@ -1,6 +1,17 @@
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/26
+ * @CreatedBy Choe.
+ * @FileName SerKnowledgeCaseDeal.java
+ * @ModifyHistory
+ *
+ */
 package com.nuctech.ecuritycheckitem.models.db;
 
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
@@ -17,6 +28,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE_DEAL)
 @Table(name = "ser_knowledge_case_deal")
 public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @Id
@@ -182,11 +194,6 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
 
-
-    @OneToOne()
-    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysDevice judgeDevice;
 
 
     @OneToOne()

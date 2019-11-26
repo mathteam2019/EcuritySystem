@@ -53,6 +53,8 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_JUDGE_GRAPH = "filter_ser_judge_graph";
     public final static String FILTER_SER_HAND_EXAMINATION = "filter_ser_hand_examination";
     public final static String FILTER_SYS_WORKFLOW = "filter_sys_workflow";
+    public final static String FILTER_SER_KNOWLEDGE_CASE_DEAL = "filter_ser_knowledge_case_deal";
+    public final static String FILTER_SER_KNOWLEDGE_CASE = "filter_ser_knowledge_case";
 
 
     /**
