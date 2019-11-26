@@ -10,11 +10,9 @@ package com.nuctech.ecuritycheckitem.controllers.knowledgemanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.fieldmanagement.FieldManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealExcelView;
+import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealPendingExcelView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -26,7 +24,12 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.*;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,10 +38,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -139,7 +147,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
-            //predicate.and(builder.knowledgeCase.caseStatus.eq(filter.getCaseStatus()));
+            predicate.and(builder.knowledgeCase.caseStatus.eq(filter.getCaseStatus()));
             if (!StringUtils.isEmpty(filter.getTaskNumber())) {
                 predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
             }
@@ -233,39 +241,45 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case generate excel request.
      */
-    @RequestMapping(value = "/generate/excel", method = RequestMethod.POST)
-    public Object knowledgeCaseGenerateExcel(
-            @RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-            BindingResult bindingResult) {
+    @RequestMapping(value = "/generate/pending/excel", method = RequestMethod.GET)
+    public Object knowledgeCasePendingGenerateExcel(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        Workbook workbook = null;
+        byte[] contentReturn=null;
+        /* Here I got the object structure (pulling it from DAO layer) that I want to be export as part of Excel. */
+        List<SerKnowledgeCaseDeal> dealList = serKnowledgeCaseDealRepository.findAll();
+        try{
+            /* Logic to Export Excel */
+            String fileName = "knowledge-pending.xlsx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            OutputStream out;
+            workbook = new KnowledgeDealPendingExcelView().buildExcelDocument(dealList);
+            out = response.getOutputStream();
+            workbook.write(out);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            workbook.write(baos);
+            contentReturn = baos.toByteArray();
+            workbook.close();
+            /* Export Excel logic end */
+
+        } catch (Exception ecx) {
+
         }
 
-        // get case deal id list
+        ByteArrayResource resource = new ByteArrayResource(contentReturn);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.ms-excel"));
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(contentReturn.length)
+                //.contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
 
-        List<SerKnowledgeCaseDeal> knowledgeCaseDealList = serKnowledgeCaseDealRepository.findAll();
-        List<SerKnowledgeCaseDeal> exportDealList = new ArrayList<>();
-        if(requestBody.isAll == false) {
-            String[] idListStr = requestBody.getIdList().split(",");
-            for(int i = 0; i < knowledgeCaseDealList.size(); i ++) {
-                boolean isExist = false;
-                String caseDealIdStr = knowledgeCaseDealList.get(i).getCaseDealId().toString();
-                for(int j = 0; j < idListStr.length; j ++) {
-                    if(caseDealIdStr.equals(idListStr[j])) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportDealList.add(knowledgeCaseDealList.get(i));
-                }
-            }
-        } else {
-            exportDealList = knowledgeCaseDealList;
-        }
 
-        return new ModelAndView(new KnowledgeDealExcelView(), "dealList", exportDealList);
+
+
+        //return new ResponseEntity<byte[]>(contentReturn, headers, HttpStatus.OK);
     }
 
 }
