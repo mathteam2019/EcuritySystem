@@ -24,6 +24,7 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @Table(name = "history")
 public class History extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)

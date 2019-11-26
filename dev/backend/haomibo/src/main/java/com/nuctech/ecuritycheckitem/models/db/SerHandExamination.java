@@ -26,6 +26,11 @@ import java.util.Date;
 @Table(name = "ser_hand_examination")
 public class SerHandExamination extends BaseEntity implements Serializable {
 
+    public static class Result {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HAND_EXAMINATION_ID", length = 20)

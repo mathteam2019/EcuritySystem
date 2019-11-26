@@ -27,6 +27,21 @@ import java.util.Date;
 @Table(name = "ser_scan")
 public class SerScan extends BaseEntity implements Serializable {
 
+    public static class Invalid {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class ATRResult {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class FootAlarm {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_ID", length = 20)

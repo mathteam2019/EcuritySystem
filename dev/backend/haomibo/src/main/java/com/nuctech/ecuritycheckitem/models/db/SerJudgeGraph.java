@@ -27,6 +27,11 @@ import java.util.Date;
 @Table(name = "ser_judge_graph")
 public class SerJudgeGraph extends BaseEntity implements Serializable {
 
+    public static class Result {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "JUDGE_ID", length = 20)

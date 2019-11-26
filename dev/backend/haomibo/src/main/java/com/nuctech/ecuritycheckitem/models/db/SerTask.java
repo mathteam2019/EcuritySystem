@@ -24,6 +24,7 @@ import java.io.Serializable;
 @JsonFilter(ModelJsonFilters.FILTER_SER_TASK)
 @Table(name = "ser_task")
 public class SerTask extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TASK_ID", length = 20)
