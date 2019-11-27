@@ -25,15 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
 
+    public static class StatisticWidth {
+        public static final String HOUR = "hour";
+        public static final String DAY = "day";
+        public static final String WEEK = "week";
+        public static final String MONTH = "month";
+        public static final String QUARTER = "quarter";
+        public static final String YEAR = "year";
+    }
 
     /**
      * Statistics Response Body
@@ -627,7 +632,58 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
-    private ScanStatistics getScanStatistics(PreviewStatisticsRequestBody requestBody) {
+    private List<ScanStatistics> getScanStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        ScanStatistics totalStatistics = new ScanStatistics();
+
+        List<ScanStatistics> detailedStatistics = new ArrayList<>();
+
+        totalStatistics = getScanStatisticsByDate(requestBody, null);
+        detailedStatistics.add(totalStatistics);
+
+        int keyValueMin = 0, keyValueMax = 0;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
+            detailedStatistics.add(scanStat);
+        }
+
+        return detailedStatistics;
+
+    }
+
+    private ScanStatistics getScanStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
 
         ScanStatistics scanStatistics = new ScanStatistics();
 
@@ -642,7 +698,33 @@ public class TaskManagementController extends BaseController {
         Predicate predicateUsername = null;
         Predicate predicateUserCategory = null;
         Predicate predicateStatisticWidth = null;
+        Predicate predicateKeyDate = null;
 
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.scanStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.scanStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.scanStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.scanStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
@@ -680,6 +762,7 @@ public class TaskManagementController extends BaseController {
         predicateTotal.and(predicateDevice);
         predicateTotal.and(predicateUsername);
         predicateTotal.and(predicateUserCategory);
+        predicateTotal.and(predicateKeyDate);
 
         BooleanBuilder predicateValid = new BooleanBuilder(builder.isNotNull());
         predicateValid.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
@@ -688,6 +771,7 @@ public class TaskManagementController extends BaseController {
         predicateValid.and(predicateDevice);
         predicateValid.and(predicateUsername);
         predicateValid.and(predicateUserCategory);
+        predicateValid.and(predicateKeyDate);
 
 
         BooleanBuilder predicateInvalid = new BooleanBuilder(builder.isNotNull());
@@ -697,6 +781,7 @@ public class TaskManagementController extends BaseController {
         predicateInvalid.and(predicateDevice);
         predicateInvalid.and(predicateUsername);
         predicateInvalid.and(predicateUserCategory);
+        predicateInvalid.and(predicateKeyDate);
 
 
         BooleanBuilder predicatePassed = new BooleanBuilder(builder.isNotNull());
@@ -706,6 +791,7 @@ public class TaskManagementController extends BaseController {
         predicatePassed.and(predicateDevice);
         predicatePassed.and(predicateUsername);
         predicatePassed.and(predicateUserCategory);
+        predicatePassed.and(predicateKeyDate);
 
         BooleanBuilder predicateAlarm = new BooleanBuilder(builder.isNotNull());
         predicateAlarm.and(builder.scanAtrResult.eq(SerScan.FootAlarm.TRUE));
@@ -714,6 +800,7 @@ public class TaskManagementController extends BaseController {
         predicateAlarm.and(predicateDevice);
         predicateAlarm.and(predicateUsername);
         predicateAlarm.and(predicateUserCategory);
+        predicateAlarm.and(predicateKeyDate);
 
 //        JPAQuery query = new JPAQuery(entityManager);
 //
@@ -734,17 +821,25 @@ public class TaskManagementController extends BaseController {
 
             scanStatistics.setTotalScan(totalScan);
             scanStatistics.setValidScan(validScan);
-            scanStatistics.setValidScanRate(validScan / (double) totalScan);
             scanStatistics.setInvalidScan(invalidScan);
-            scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
             scanStatistics.setPassedScan(passedScan);
+            scanStatistics.setPassedScan(alarmScan);
+
+            scanStatistics.setValidScanRate(validScan / (double) totalScan);
+            scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
             scanStatistics.setPassedScanRate(passedScan / (double) totalScan);
-            scanStatistics.setAlarmScan(alarmScan);
             scanStatistics.setAlarmScanRate(alarmScan / (double) totalScan);
+
         }
         catch (Exception e) {
 
+            scanStatistics.setValidScanRate(0);
+            scanStatistics.setInvalidScanRate(0);
+            scanStatistics.setPassedScanRate(0);
+            scanStatistics.setAlarmScanRate(0);
+
         }
+
         return scanStatistics;
 
     }
@@ -933,7 +1028,7 @@ public class TaskManagementController extends BaseController {
         TotalStatistics totalStatistics = new TotalStatistics();
 
         //get Scan statistics
-        ScanStatistics scanStatiscs = getScanStatistics(requestBody);
+        ScanStatistics scanStatiscs = getScanStatisticsByDate(requestBody, null);
 
         totalStatistics.setTotalScan(scanStatiscs.getTotalScan());
         totalStatistics.setValidScan(scanStatiscs.getValidScan());
@@ -972,7 +1067,7 @@ public class TaskManagementController extends BaseController {
         dateTo = requestBody.getFilter().getEndTime();
 
         //get Scan statistics
-        ScanStatistics scanStatiscs = getScanStatistics(requestBody);
+        List<ScanStatistics> scanStatiscs = getScanStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatiscs));
 
