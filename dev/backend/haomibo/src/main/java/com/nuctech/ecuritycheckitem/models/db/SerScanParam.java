@@ -32,6 +32,13 @@ import java.util.List;
 @Table(name = "ser_scan_params")
 public class SerScanParam extends BaseEntity implements Serializable {
 
+    public static class Status {
+        public static final String YES = "yes";
+        public static final String NO = "no";
+        public static final String ACTIVE = "active";
+        public static final String INACTIVE = "inactive";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_PARAMS_ID", length = 20, nullable = false)

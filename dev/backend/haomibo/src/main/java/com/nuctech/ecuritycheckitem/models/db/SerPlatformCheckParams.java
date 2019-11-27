@@ -29,6 +29,13 @@ import java.io.Serializable;
 @Table(name = "ser_platform_check_params")
 public class SerPlatformCheckParams extends BaseEntity implements Serializable {
 
+    public static class HistoryData {
+        public static final String BUSINESS = "business";
+        public static final String CARTOON = "cartoon";
+        public static final String CONVERSION = "conversion";
+        public static final String ORIGINAL = "original";
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,7 +71,7 @@ public class SerPlatformCheckParams extends BaseEntity implements Serializable {
     String historyDataStorage;
 
     @Column(name = "HISTORY_DATA_EXPORT", length = 255)
-    String displayDataExport;
+    String historyDataExport;
 
     @Column(name = "DISPLAY_DELETE_SUSPICION", length = 10)
     Long displayDeleteSuspicion;
