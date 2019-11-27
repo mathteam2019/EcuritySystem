@@ -108,6 +108,21 @@ public class SysDevice extends BaseEntity implements Serializable {
     @Column(name = "ARCHIVE_ID", length = 20)
     Long archiveId;
 
+    @Column(name = "CATEGORY_ID", length = 20)
+    Long categoryId;
+
+    @Column(name = "REGISTER_ID", length = 20)
+    Long registerId;
+
+    @Column(name = "DEVICE_DESC", length = 500)
+    String deviceDesc;
+
+    @Column(name = "DEVICE_IP", length = 20)
+    String deviceIp;
+
+    @Column(name = "DEVICE_PASSAGEWAY", length = 50)
+    String devicePassageWay;
+
 
 
     @Column(name = "STATUS", length = 10)

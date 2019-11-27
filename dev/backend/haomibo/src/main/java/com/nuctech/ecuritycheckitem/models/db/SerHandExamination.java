@@ -2,7 +2,11 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -21,6 +25,11 @@ import java.util.Date;
 @JsonFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION)
 @Table(name = "ser_hand_examination")
 public class SerHandExamination extends BaseEntity implements Serializable {
+
+    public static class Result {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,4 +86,8 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
+
+    public long getCheckDuration() {
+        return handEndTime.getTime() - handStartTime.getTime();
+    }
 }

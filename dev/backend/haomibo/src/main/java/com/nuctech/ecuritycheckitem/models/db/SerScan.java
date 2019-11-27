@@ -3,7 +3,11 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -22,6 +26,21 @@ import java.util.Date;
 @JsonFilter(ModelJsonFilters.FILTER_SER_SCAN)
 @Table(name = "ser_scan")
 public class SerScan extends BaseEntity implements Serializable {
+
+    public static class Invalid {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class ATRResult {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class FootAlarm {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,4 +99,5 @@ public class SerScan extends BaseEntity implements Serializable {
     @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SerImage scanImage;
+
 }

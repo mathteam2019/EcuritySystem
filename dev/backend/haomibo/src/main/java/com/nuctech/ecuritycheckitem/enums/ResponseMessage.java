@@ -20,6 +20,7 @@ import lombok.Getter;
 public enum ResponseMessage {
     OK("ok"),
     INVALID_PARAMETER("invalid_parameter"),
+    INVALID_SCANID("invalid_serscan_id"),
     USER_NOT_FOUND("user_not_found"),
     INVALID_PASSWORD("invalid_password"),
     TOKEN_EXPIRED("token_expired"),

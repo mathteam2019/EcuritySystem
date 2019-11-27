@@ -1,7 +1,11 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -20,6 +24,7 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @Table(name = "history")
 public class History extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HISTORY_ID", length = 20)
@@ -168,7 +173,7 @@ public class History extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysWorkMode workMode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice scanDevice;
@@ -178,7 +183,7 @@ public class History extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser scanPointsman;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice judgeDevice;
@@ -188,7 +193,7 @@ public class History extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser judgeUser;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice handDevice;

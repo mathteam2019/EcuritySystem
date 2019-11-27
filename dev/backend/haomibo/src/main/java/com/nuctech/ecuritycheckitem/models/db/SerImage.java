@@ -3,12 +3,14 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Getter
 @Setter

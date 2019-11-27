@@ -2,6 +2,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -10,8 +11,10 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+
 import lombok.*;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,13 +25,133 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
+
+    /**
+     *  Statistics Response Type
+     */
+    public static class StatisticWidth {
+        public static final String HOUR = "hour";
+        public static final String DAY = "day";
+        public static final String WEEK = "week";
+        public static final String MONTH = "month";
+        public static final String QUARTER = "quarter";
+        public static final String YEAR = "year";
+    }
+
+    /**
+     * Scan Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class ScanStatisticsResponse {
+        ScanStatistics totalStatistics;
+        Map<Integer, ScanStatistics> detailedStatistics;
+    }
+
+    /**
+     * Judge Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class JudgeStatisticsResponse {
+        JudgeStatistics totalStatistics;
+        Map<Integer, JudgeStatistics> detailedStatistics;
+    }
+
+    /**
+     * HandExamination Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class HandExaminationStatisticsResponse {
+        HandExaminationStatistics totalStatistics;
+        Map<Integer, HandExaminationStatistics> detailedStatistics;
+    }
+
+    /**
+     * Total Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class TotalStatistics {
+
+        ScanStatistics scanStatistics;
+        JudgeStatistics judgeStatistics;
+        HandExaminationStatistics handExaminationStatistics;
+
+    }
+
+    /**
+     * Total Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class TotalStatisticsResponse {
+        TotalStatistics totalStatistics;
+        Map<Integer, TotalStatistics> detailedStatistics;
+    }
+
+    /**
+     * Statistics Response Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class ScanStatistics {
+
+        String axisLabel;
+        long totalScan;
+        long invalidScan;
+        double invalidScanRate;
+        long validScan;
+        double validScanRate;
+        long passedScan;
+        double passedScanRate;
+        long alarmScan;
+        double alarmScanRate;
+
+    }
+
+    /**
+     * Judge Statistics Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class JudgeStatistics {
+
+        String axisLabel;
+        long totalJudge;
+        long noSuspictionJudge;
+        double noSuspictionJudgeRate;
+        long suspictionJudge;
+        double suspictionJudgeRate;
+
+    }
+
+    /**
+     * Hand Examination Response Body
+     */
+    @Getter
+    @Setter
+    @ToString
+    class HandExaminationStatistics {
+
+        String axisLabel;
+        long totalHandExamination;
+        long seizureHandExamination;
+        double seizureHandExaminationRate;
+        long noSeizureHandExamination;
+        double noSeizureHandExaminationRate;
+
+        long checkDuration;
+
+    }
 
     /**
      * Process Task datatable request body.
@@ -50,7 +173,9 @@ public class TaskManagementController extends BaseController {
             String status;
             Long fieldId;
             String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
         }
 
@@ -110,7 +235,9 @@ public class TaskManagementController extends BaseController {
             String status;
             Long fieldId;
             String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
         }
 
@@ -121,6 +248,38 @@ public class TaskManagementController extends BaseController {
         @NotNull
         int perPage;
         TaskManagementController.HistoryGetByFilterAndPageRequestBody.Filter filter;
+
+    }
+
+    /**
+     * Preview Statistics RequestBody
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class PreviewStatisticsRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            Long fieldId;
+            Long deviceId;
+            String userCategory;
+            String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date endTime;
+            String statWidth;
+
+        }
+
+        PreviewStatisticsRequestBody.Filter filter;
 
     }
 
@@ -142,21 +301,21 @@ public class TaskManagementController extends BaseController {
 
         Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
 
-        if(!optionalTask.isPresent()) {
+        if (!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (!optionalTask.get().getSerScan().getScanInvalid().equals("true")) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.TRUE)) {
+            return new CommonResponseBody(ResponseMessage.INVALID_SCANID);
         }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask.get()));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanAtrResult", "scanFootAlarm", "scanAssignTimeout", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
@@ -190,7 +349,7 @@ public class TaskManagementController extends BaseController {
 
         if (filter != null) {
 
-            predicate.and(builder.serScan.scanInvalid.eq("true"));
+            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
                 predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
@@ -244,10 +403,10 @@ public class TaskManagementController extends BaseController {
         // Set filters.
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
@@ -278,7 +437,7 @@ public class TaskManagementController extends BaseController {
 
         Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
 
-        if(!optionalHistory.isPresent()) {
+        if (!optionalHistory.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -397,18 +556,18 @@ public class TaskManagementController extends BaseController {
 
         Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
 
-        if(!optionalTask.isPresent()) {
+        if (!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (!optionalTask.get().getSerScan().getScanInvalid().equals("false")) {
+        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.FALSE)) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask.get()));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "taskStatus", "field", "serScan"))
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "workflow", "scanPointsman", "scanStartTime", "scanEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
@@ -440,7 +599,7 @@ public class TaskManagementController extends BaseController {
 
         TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-        predicate.and(builder.serScan.scanInvalid.eq("false"));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
         if (filter != null) {
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
@@ -495,10 +654,10 @@ public class TaskManagementController extends BaseController {
         // Set filters.
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"))
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanImage", "scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice","judgeUser", "judgeStartTime", "judgeEndTime"))
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handDevice", "handUser", "handStartTime", "handEndTime"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))
                 .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))
@@ -510,4 +669,732 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
+    private ScanStatisticsResponse getScanStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        ScanStatistics totalStatistics = new ScanStatistics();
+
+        HashMap<Integer, ScanStatistics> detailedStatistics = new HashMap<Integer, ScanStatistics>();
+
+        totalStatistics = getScanStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = -1;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+
+        ScanStatisticsResponse response = new ScanStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
+    private ScanStatistics getScanStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
+
+        ScanStatistics scanStatistics = new ScanStatistics();
+
+        QSerScan builder = QSerScan.serScan;
+
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
+        Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateStatisticWidth = null;
+        Predicate predicateKeyDate = null;
+
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.scanStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.scanStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.scanStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.scanStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        } else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.scanStartTime.after(dateFrom);
+        } else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.scanEndTime.before(dateTo);
+        } else {
+            predicateDate = builder.scanStartTime.between(dateTo, dateFrom).and(builder.scanEndTime.between(dateTo, dateFrom));
+        }
+
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.scanDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.scanPointsman.userName.contains(requestBody.getFilter().getUserName());
+        }
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
+        predicateTotal.and(predicateKeyDate);
+
+        BooleanBuilder predicateValid = new BooleanBuilder(builder.isNotNull());
+        predicateValid.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicateValid.and(predicateDate);
+        predicateValid.and(predicateField);
+        predicateValid.and(predicateDevice);
+        predicateValid.and(predicateUsername);
+        predicateValid.and(predicateUserCategory);
+        predicateValid.and(predicateKeyDate);
+
+
+        BooleanBuilder predicateInvalid = new BooleanBuilder(builder.isNotNull());
+        predicateInvalid.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicateInvalid.and(predicateDate);
+        predicateInvalid.and(predicateField);
+        predicateInvalid.and(predicateDevice);
+        predicateInvalid.and(predicateUsername);
+        predicateInvalid.and(predicateUserCategory);
+        predicateInvalid.and(predicateKeyDate);
+
+
+        BooleanBuilder predicatePassed = new BooleanBuilder(builder.isNotNull());
+        predicatePassed.and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
+        predicatePassed.and(predicateDate);
+        predicatePassed.and(predicateField);
+        predicatePassed.and(predicateDevice);
+        predicatePassed.and(predicateUsername);
+        predicatePassed.and(predicateUserCategory);
+        predicatePassed.and(predicateKeyDate);
+
+        BooleanBuilder predicateAlarm = new BooleanBuilder(builder.isNotNull());
+        predicateAlarm.and(builder.scanAtrResult.eq(SerScan.FootAlarm.TRUE));
+        predicateAlarm.and(predicateDate);
+        predicateAlarm.and(predicateField);
+        predicateAlarm.and(predicateDevice);
+        predicateAlarm.and(predicateUsername);
+        predicateAlarm.and(predicateUserCategory);
+        predicateAlarm.and(predicateKeyDate);
+
+//        JPAQuery query = new JPAQuery(entityManager);
+//
+//        List<Integer, List<SerScan>> transform = List<Integer, List<SerScan>>) query
+//                .from(builder)
+//                .transform(
+//                        GroupBy.groupBy(builder.scanStartTime.month()).as(GroupBy.list(builder))
+//                );
+
+        //scanStatistics.setDetailedScan(transform);
+        try {
+
+            long totalScan = serScanRepository.count(predicateTotal);
+            long validScan = serScanRepository.count(predicateValid);
+            long invalidScan = serScanRepository.count(predicateInvalid);
+            long passedScan = serScanRepository.count(predicatePassed);
+            long alarmScan = serScanRepository.count(predicateAlarm);
+
+            scanStatistics.setTotalScan(totalScan);
+            scanStatistics.setValidScan(validScan);
+            scanStatistics.setInvalidScan(invalidScan);
+            scanStatistics.setPassedScan(passedScan);
+            scanStatistics.setPassedScan(alarmScan);
+
+            scanStatistics.setValidScanRate(validScan / (double) totalScan);
+            scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
+            scanStatistics.setPassedScanRate(passedScan / (double) totalScan);
+            scanStatistics.setAlarmScanRate(alarmScan / (double) totalScan);
+
+        }
+        catch (Exception e) {
+
+            scanStatistics.setValidScanRate(0);
+            scanStatistics.setInvalidScanRate(0);
+            scanStatistics.setPassedScanRate(0);
+            scanStatistics.setAlarmScanRate(0);
+
+        }
+
+        return scanStatistics;
+
+    }
+
+    private JudgeStatisticsResponse getJudgeStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        JudgeStatistics totalStatistics = new JudgeStatistics();
+
+        HashMap<Integer, JudgeStatistics> detailedStatistics = new HashMap<Integer, JudgeStatistics>();
+
+        totalStatistics = getJudgeStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = -1;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            JudgeStatistics scanStat = getJudgeStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+
+        JudgeStatisticsResponse response = new JudgeStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
+    private JudgeStatistics getJudgeStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
+
+        JudgeStatistics judgeStatistics = new JudgeStatistics();
+
+        QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
+
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
+        Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateStatisticWidth = null;
+        Predicate predicateKeyDate = null;
+
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.judgeStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.judgeStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.judgeStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.judgeStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        } else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.judgeStartTime.after(dateFrom);
+        } else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.judgeEndTime.before(dateTo);
+        } else {
+            predicateDate = builder.judgeStartTime.between(dateTo, dateFrom).and(builder.judgeEndTime.between(dateTo, dateFrom));
+        }
+
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.judgeDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.judgeUser.userName.contains(requestBody.getFilter().getUserName());
+        }
+
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
+        predicateTotal.and(predicateKeyDate);
+
+        BooleanBuilder predicateNoSuspiction = new BooleanBuilder(builder.isNotNull());
+        predicateNoSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
+        predicateNoSuspiction.and(predicateDate);
+        predicateNoSuspiction.and(predicateField);
+        predicateNoSuspiction.and(predicateDevice);
+        predicateNoSuspiction.and(predicateUsername);
+        predicateNoSuspiction.and(predicateUserCategory);
+        predicateNoSuspiction.and(predicateKeyDate);
+
+        BooleanBuilder predicateSuspiction = new BooleanBuilder(builder.isNotNull());
+        predicateSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
+        predicateSuspiction.and(predicateDate);
+        predicateSuspiction.and(predicateField);
+        predicateSuspiction.and(predicateDevice);
+        predicateSuspiction.and(predicateUsername);
+        predicateSuspiction.and(predicateUserCategory);
+        predicateSuspiction.and(predicateKeyDate);
+
+        long totalJudge = serJudgeGraphRepository.count(predicateTotal);
+        long noSuspictionJudge = serJudgeGraphRepository.count(predicateNoSuspiction);
+        long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
+
+        try {
+            judgeStatistics.setTotalJudge(totalJudge);
+            judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
+            judgeStatistics.setSuspictionJudge(suspictionJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double) totalJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge / (double) totalJudge);
+
+        }
+        catch (Exception e) {
+            judgeStatistics.setNoSuspictionJudgeRate(0);
+            judgeStatistics.setNoSuspictionJudgeRate(0);
+        }
+
+        return judgeStatistics;
+
+    }
+
+    private HandExaminationStatistics getHandExaminationStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
+
+        HandExaminationStatistics handExaminationStatistics = new HandExaminationStatistics();
+
+        QSerHandExamination builder = QSerHandExamination.serHandExamination;
+
+        Date dateFrom = requestBody.getFilter().getStartTime();
+        Date dateTo = requestBody.getFilter().getEndTime();
+
+        Predicate predicateDate;
+        Predicate predicateField = null;
+        Predicate predicateDevice = null;
+        Predicate predicateUsername = null;
+        Predicate predicateUserCategory = null;
+        Predicate predicateKeyDate = null;
+
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.handStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.handStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.handStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.handStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.handStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.handStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (dateFrom == null && dateTo == null) {
+            predicateDate = null;
+        } else if (dateFrom != null && dateTo == null) {
+            predicateDate = builder.handStartTime.after(dateFrom);
+        } else if (dateFrom == null && dateTo != null) {
+            predicateDate = builder.handEndTime.before(dateTo);
+        } else {
+            predicateDate = builder.handStartTime.between(dateTo, dateFrom).and(builder.handEndTime.between(dateTo, dateFrom));
+        }
+
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+        }
+
+
+        if (requestBody.getFilter().getDeviceId() != null) {
+            predicateDevice = builder.handDeviceId.eq(requestBody.getFilter().getDeviceId());
+        }
+
+
+        if (requestBody.getFilter().getUserCategory() != null && !requestBody.getFilter().getUserCategory().isEmpty()) {
+
+        }
+
+
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            predicateUsername = builder.handUser.userName.contains(requestBody.getFilter().getUserName());
+        }
+
+        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
+        predicateTotal.and(predicateDate);
+        predicateTotal.and(predicateField);
+        predicateTotal.and(predicateDevice);
+        predicateTotal.and(predicateUsername);
+        predicateTotal.and(predicateUserCategory);
+        predicateTotal.and(predicateKeyDate);
+
+        BooleanBuilder predicteSeizure = new BooleanBuilder(builder.isNotNull());
+        predicteSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
+        predicteSeizure.and(predicateDate);
+        predicteSeizure.and(predicateField);
+        predicteSeizure.and(predicateDevice);
+        predicteSeizure.and(predicateUsername);
+        predicteSeizure.and(predicateUserCategory);
+        predicteSeizure.and(predicateKeyDate);
+
+        BooleanBuilder predicteNoSeizure = new BooleanBuilder(builder.isNotNull());
+        predicteNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
+        predicteNoSeizure.and(predicateDate);
+        predicteNoSeizure.and(predicateField);
+        predicteNoSeizure.and(predicateDevice);
+        predicteNoSeizure.and(predicateUsername);
+        predicteNoSeizure.and(predicateUserCategory);
+        predicteNoSeizure.and(predicateKeyDate);
+
+        long totalHandExam = serHandExaminationRepository.count(predicateTotal);
+        long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
+        long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
+
+        List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
+
+
+        try {
+
+            handExaminationStatistics.setTotalHandExamination(totalHandExam);
+            handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
+            handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
+            handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double) totalHandExam);
+            handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double) totalHandExam);
+
+        }
+        catch (Exception e) {
+
+            handExaminationStatistics.setSeizureHandExaminationRate(0.0);
+            handExaminationStatistics.setNoSeizureHandExaminationRate(0.0);
+
+        }
+
+        return handExaminationStatistics;
+
+    }
+
+    private TotalStatistics getPreviewStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
+
+        ScanStatistics scanStatistics = getScanStatisticsByDate(requestBody, keyDate);
+        JudgeStatistics judgeStatistics = getJudgeStatisticsByDate(requestBody, keyDate);
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatisticsByDate(requestBody, keyDate);
+
+        TotalStatistics totalStatistics = new TotalStatistics();
+        totalStatistics.setScanStatistics(scanStatistics);
+        totalStatistics.setJudgeStatistics(judgeStatistics);
+        totalStatistics.setHandExaminationStatistics(handExaminationStatistics);
+
+        return totalStatistics;
+    }
+
+    private TotalStatisticsResponse getPreviewStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        TotalStatistics totalStatistics = new TotalStatistics();
+
+        HashMap<Integer, TotalStatistics> detailedStatistics = new HashMap<Integer, TotalStatistics>();
+
+        totalStatistics = getPreviewStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = 0;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            TotalStatistics scanStat = getPreviewStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+
+        TotalStatisticsResponse response = new TotalStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/statistics/preview", method = RequestMethod.POST)
+    public Object previewStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+        TotalStatisticsResponse response = getPreviewStatistics(requestBody);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
+
+        return value;
+
+    }
+
+    @RequestMapping(value = "/statistics/scan", method = RequestMethod.POST)
+    public Object scanStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //get Scan statistics
+        ScanStatisticsResponse scanStatistics = getScanStatistics(requestBody);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
+
+        return value;
+
+    }
+
+    @RequestMapping(value = "/statistics/judgegraph", method = RequestMethod.POST)
+    public Object judgegraphStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+
+        //get Scan statistics
+        JudgeStatisticsResponse judgeStatistics = getJudgeStatistics(requestBody);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
+
+        return value;
+
+    }
+
+    private HandExaminationStatisticsResponse getHandExaminationStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        HandExaminationStatistics totalStatistics = new HandExaminationStatistics();
+
+        HashMap<Integer, HandExaminationStatistics> detailedStatistics = new HashMap<Integer, HandExaminationStatistics>();
+
+        totalStatistics = getHandExaminationStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = -1;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            HandExaminationStatistics scanStat = getHandExaminationStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+        HandExaminationStatisticsResponse response = new HandExaminationStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/statistics/handexamination", method = RequestMethod.POST)
+    public Object handExaminationStatisticsGet(
+            @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Date dateFrom, dateTo;
+        dateFrom = requestBody.getFilter().getStartTime();
+        dateTo = requestBody.getFilter().getEndTime();
+
+
+        //get Scan statistics
+        HandExaminationStatisticsResponse handStatistics = getHandExaminationStatistics(requestBody);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handStatistics));
+
+        return value;
+
+    }
 }

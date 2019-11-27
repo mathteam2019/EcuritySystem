@@ -316,7 +316,8 @@
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.task.taskNumber}}</label>
+                  <label v-if="showPage.task == null">None</label>
+                  <label v-else>{{showPage.task.taskNumber}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -325,7 +326,8 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.task.field.fieldDesignation}}</label>
+                  <label v-if="showPage.task == null">None</label>
+                  <label v-else>{{showPage.task.field.fieldDesignation}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -334,7 +336,8 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanDevice.deviceName}}</label>
+                  <label v-if="showPage.scanDevice == null">None</label>
+                  <label v-else>{{showPage.scanDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -343,7 +346,8 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanImage.imageCategory}}</label>
+                  <label v-if="showPage.scanImage == null">None</label>
+                  <label v-else>{{showPage.scanImage.imageCategory}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -352,7 +356,8 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanImage.imageId}}</label>
+                  <label v-if="showPage.scanImage == null">None</label>
+                  <label v-else>{{showPage.scanImage.imageId}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -432,7 +437,8 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeDevice.deviceName}}</label>
+                  <label v-if="showPage.judgeDevice == null">None</label>
+                  <label v-else>{{showPage.judgeDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -492,7 +498,8 @@
                     {{$t('personal-inspection.judge')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeUser.userName}}</label>
+                  <label v-if="showPage.judgeUser == null">None</label>
+                  <label v-else>{{showPage.judgeUser.userName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -501,7 +508,8 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.handDevice.deviceName}}</label>
+                  <label v-if="showPage.handDevice == null">None</label>
+                  <label v-else>{{showPage.handDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -519,7 +527,8 @@
                     {{$t('personal-inspection.hand-checker')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.handUser.userName}}</label>
+                  <label v-if="showPage.handUser == null">None</label>
+                  <label v-else>{{showPage.handUser.userName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -923,7 +932,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'task_id',
+              name: 'historyId',
               title: this.$t('personal-inspection.serial-number'),
               sortField: 'task_id',
               titleClass: 'text-center',
@@ -974,6 +983,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (task) => {
+                  if(task==null)  return '';
                 return task.field.fieldDesignation;
               }
             },
@@ -983,7 +993,8 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanDevice) => {
-                return scanDevice.scanPointsmanName;
+                  if(scanDevice==null)  return '';
+                return scanDevice.deviceName;
               }
             },
             {
@@ -992,6 +1003,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanPointsman) => {
+                  if(scanPointsman==null)  return '';
                 return scanPointsman.userName;
               }
             },
@@ -1008,10 +1020,14 @@
               dataClass: 'text-center'
             },
             {
-              name: 'judgeStatus',
+              name: 'judgeDevice',
               title: this.$t('personal-inspection.judgement-station'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+                callback: (judgeDevice) => {
+                    if(judgeDevice==null)  return '';
+                    return judgeDevice.deviceName;
+                }
             },
             {
               name: 'judgeUser',
@@ -1019,6 +1035,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeUser) => {
+                  if(judgeUser==null)  return '';
                 return judgeUser.userName;
               }
             },
@@ -1035,10 +1052,14 @@
               dataClass: 'text-center'
             },
             {
-              name: 'handResult',
+              name: 'handDevice',
               title: this.$t('personal-inspection.hand-check-station'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+                callback: (handDevice) => {
+                    if(handDevice==null)  return '';
+                    return handDevice.deviceName;
+                }
             },
             {
               name: 'handUser',
@@ -1046,6 +1067,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handUser) => {
+                  if(handUser==null)  return '';
                 return handUser.userName;
               }
             },
@@ -1056,7 +1078,7 @@
               dataClass: 'text-center'
             },
           ],
-          perPage: 5,
+          perPage: 10,
         },
         power: true,
 

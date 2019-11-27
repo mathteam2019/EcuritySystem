@@ -3,7 +3,11 @@ package com.nuctech.ecuritycheckitem.models.db;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -22,6 +26,11 @@ import java.util.Date;
 @JsonFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH)
 @Table(name = "ser_judge_graph")
 public class SerJudgeGraph extends BaseEntity implements Serializable {
+
+    public static class Result {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
