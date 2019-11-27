@@ -22,15 +22,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.net.ssl.HandshakeCompletedEvent;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
 
+    /**
+     *  Statistics Response Type
+     */
     public static class StatisticWidth {
         public static final String HOUR = "hour";
         public static final String DAY = "day";
@@ -41,7 +46,37 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
-     * Statistics Response Body
+     * Scan Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class ScanStatisticsResponse {
+        ScanStatistics totalStatistics;
+        Map<Integer, ScanStatistics> detailedStatistics;
+    }
+
+    /**
+     * Judge Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class JudgeStatisticsResponse {
+        JudgeStatistics totalStatistics;
+        Map<Integer, JudgeStatistics> detailedStatistics;
+    }
+
+    /**
+     * Judge Statistics Response Body
+     */
+    @Getter
+    @Setter
+    class HandExaminationStatisticsResponse {
+        HandExaminationStatistics totalStatistics;
+        Map<Integer, HandExaminationStatistics> detailedStatistics;
+    }
+
+    /**
+     * Total Statistics Response Body
      */
     @Getter
     @Setter
@@ -632,16 +667,15 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
-    private List<ScanStatistics> getScanStatistics(PreviewStatisticsRequestBody requestBody) {
+    private ScanStatisticsResponse getScanStatistics(PreviewStatisticsRequestBody requestBody) {
 
         ScanStatistics totalStatistics = new ScanStatistics();
 
-        List<ScanStatistics> detailedStatistics = new ArrayList<>();
+        HashMap<Integer, ScanStatistics> detailedStatistics = new HashMap<Integer, ScanStatistics>();
 
         totalStatistics = getScanStatisticsByDate(requestBody, null);
-        detailedStatistics.add(totalStatistics);
 
-        int keyValueMin = 0, keyValueMax = 0;
+        int keyValueMin = 0, keyValueMax = -1;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case StatisticWidth.HOUR:
@@ -669,6 +703,7 @@ public class TaskManagementController extends BaseController {
                     keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
                     break;
                 default:
+                    keyValueMax = -1;
                     break;
             }
         }
@@ -676,10 +711,15 @@ public class TaskManagementController extends BaseController {
         int i = 0;
         for (i = keyValueMin; i <= keyValueMax; i ++) {
             ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
-            detailedStatistics.add(scanStat);
+            detailedStatistics.put (i, scanStat);
         }
 
-        return detailedStatistics;
+
+        ScanStatisticsResponse response = new ScanStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
 
     }
 
@@ -844,7 +884,63 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    private JudgeStatistics getJudgeStatistics(PreviewStatisticsRequestBody requestBody) {
+    private JudgeStatisticsResponse getJudgeStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        JudgeStatistics totalStatistics = new JudgeStatistics();
+
+        HashMap<Integer, JudgeStatistics> detailedStatistics = new HashMap<Integer, JudgeStatistics>();
+
+        totalStatistics = getJudgeStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = -1;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            JudgeStatistics scanStat = getJudgeStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+
+        JudgeStatisticsResponse response = new JudgeStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
+    private JudgeStatistics getJudgeStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
 
         JudgeStatistics judgeStatistics = new JudgeStatistics();
 
@@ -859,6 +955,33 @@ public class TaskManagementController extends BaseController {
         Predicate predicateUsername = null;
         Predicate predicateUserCategory = null;
         Predicate predicateStatisticWidth = null;
+        Predicate predicateKeyDate = null;
+
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.judgeStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.judgeStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.judgeStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.judgeStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
@@ -897,7 +1020,7 @@ public class TaskManagementController extends BaseController {
         predicateTotal.and(predicateDevice);
         predicateTotal.and(predicateUsername);
         predicateTotal.and(predicateUserCategory);
-
+        predicateTotal.and(predicateKeyDate);
 
         BooleanBuilder predicateNoSuspiction = new BooleanBuilder(builder.isNotNull());
         predicateNoSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
@@ -906,6 +1029,7 @@ public class TaskManagementController extends BaseController {
         predicateNoSuspiction.and(predicateDevice);
         predicateNoSuspiction.and(predicateUsername);
         predicateNoSuspiction.and(predicateUserCategory);
+        predicateNoSuspiction.and(predicateKeyDate);
 
         BooleanBuilder predicateSuspiction = new BooleanBuilder(builder.isNotNull());
         predicateSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
@@ -914,22 +1038,30 @@ public class TaskManagementController extends BaseController {
         predicateSuspiction.and(predicateDevice);
         predicateSuspiction.and(predicateUsername);
         predicateSuspiction.and(predicateUserCategory);
+        predicateSuspiction.and(predicateKeyDate);
 
         long totalJudge = serJudgeGraphRepository.count(predicateTotal);
         long noSuspictionJudge = serJudgeGraphRepository.count(predicateNoSuspiction);
         long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
 
-        judgeStatistics.setTotalJudge(totalJudge);
-        judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
-        judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double) totalJudge);
-        judgeStatistics.setSuspictionJudge(suspictionJudge);
-        judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge / (double) totalJudge);
+        try {
+            judgeStatistics.setTotalJudge(totalJudge);
+            judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
+            judgeStatistics.setSuspictionJudge(suspictionJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double) totalJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge / (double) totalJudge);
+
+        }
+        catch (Exception e) {
+            judgeStatistics.setNoSuspictionJudgeRate(0);
+            judgeStatistics.setNoSuspictionJudgeRate(0);
+        }
 
         return judgeStatistics;
 
     }
 
-    private HandExaminationStatistics getHandExaminationStatistics(PreviewStatisticsRequestBody requestBody) {
+    private HandExaminationStatistics getHandExaminationStatisticsByDate(PreviewStatisticsRequestBody requestBody, Integer keyDate) {
 
         HandExaminationStatistics handExaminationStatistics = new HandExaminationStatistics();
 
@@ -944,6 +1076,33 @@ public class TaskManagementController extends BaseController {
         Predicate predicateUsername = null;
         Predicate predicateUserCategory = null;
         Predicate predicateStatisticWidth = null;
+        Predicate predicateKeyDate = null;
+
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    predicateKeyDate = builder.handStartTime.hour().eq(keyDate);
+                    break;
+                case StatisticWidth.DAY:
+                    predicateKeyDate = builder.handStartTime.dayOfMonth().eq(keyDate);
+                    break;
+                case StatisticWidth.WEEK:
+                    predicateKeyDate = builder.handStartTime.week().eq(keyDate);
+                    break;
+                case StatisticWidth.MONTH:
+                    predicateKeyDate = builder.handStartTime.month().eq(keyDate);
+                    break;
+                case StatisticWidth.QUARTER:
+                    predicateKeyDate = builder.handStartTime.month().eq(keyDate * 3);
+                    break;
+                case StatisticWidth.YEAR:
+                    predicateKeyDate = builder.handStartTime.year().eq(keyDate);
+                    break;
+                default:
+                    break;
+            }
+        }
 
         if (dateFrom == null && dateTo == null) {
             predicateDate = null;
@@ -981,6 +1140,7 @@ public class TaskManagementController extends BaseController {
         predicateTotal.and(predicateDevice);
         predicateTotal.and(predicateUsername);
         predicateTotal.and(predicateUserCategory);
+        predicateTotal.and(predicateKeyDate);
 
         BooleanBuilder predicteSeizure = new BooleanBuilder(builder.isNotNull());
         predicteSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
@@ -989,6 +1149,7 @@ public class TaskManagementController extends BaseController {
         predicteSeizure.and(predicateDevice);
         predicteSeizure.and(predicateUsername);
         predicteSeizure.and(predicateUserCategory);
+        predicteSeizure.and(predicateKeyDate);
 
         BooleanBuilder predicteNoSeizure = new BooleanBuilder(builder.isNotNull());
         predicteNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
@@ -997,16 +1158,27 @@ public class TaskManagementController extends BaseController {
         predicteNoSeizure.and(predicateDevice);
         predicteNoSeizure.and(predicateUsername);
         predicteNoSeizure.and(predicateUserCategory);
+        predicteNoSeizure.and(predicateKeyDate);
 
         long totalHandExam = serHandExaminationRepository.count(predicateTotal);
         long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
         long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
 
-        handExaminationStatistics.setTotalHandExamination(totalHandExam);
-        handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
-        handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double) totalHandExam);
-        handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
-        handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double) totalHandExam);
+        try {
+
+            handExaminationStatistics.setTotalHandExamination(totalHandExam);
+            handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
+            handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
+            handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double) totalHandExam);
+            handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double) totalHandExam);
+
+        }
+        catch (Exception e) {
+
+            handExaminationStatistics.setSeizureHandExaminationRate(0.0);
+            handExaminationStatistics.setNoSeizureHandExaminationRate(0.0);
+
+        }
 
         return handExaminationStatistics;
 
@@ -1037,12 +1209,12 @@ public class TaskManagementController extends BaseController {
         totalStatistics.setAlarmScan(scanStatiscs.getAlarmScan());
 
         //get Judge statistics
-        JudgeStatistics judgeStatistics = getJudgeStatistics(requestBody);
+        JudgeStatistics judgeStatistics = getJudgeStatisticsByDate(requestBody, null);
         totalStatistics.setTotalJudge(judgeStatistics.getTotalJudge());
         totalStatistics.setNoSuspictionJudge(judgeStatistics.getNoSuspictionJudge());
 
         //get Hand Examination Statistics
-        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(requestBody);
+        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatisticsByDate(requestBody, null);
         totalStatistics.setTotalHandExamination(handExaminationStatistics.getTotalHandExamination());
         totalStatistics.setSeizureHandExamination(handExaminationStatistics.getSeizureHandExamination());
         totalStatistics.setNoSeizureHandExamination(handExaminationStatistics.getNoSeizureHandExamination());
@@ -1067,9 +1239,9 @@ public class TaskManagementController extends BaseController {
         dateTo = requestBody.getFilter().getEndTime();
 
         //get Scan statistics
-        List<ScanStatistics> scanStatiscs = getScanStatistics(requestBody);
+        ScanStatisticsResponse scanStatistics = getScanStatistics(requestBody);
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatiscs));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
 
         return value;
 
@@ -1090,7 +1262,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        JudgeStatistics judgeStatistics = getJudgeStatistics(requestBody);
+        JudgeStatisticsResponse judgeStatistics = getJudgeStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
 
@@ -1098,8 +1270,63 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    private HandExaminationStatisticsResponse getHandExaminationStatistics(PreviewStatisticsRequestBody requestBody) {
+
+        HandExaminationStatistics totalStatistics = new HandExaminationStatistics();
+
+        HashMap<Integer, HandExaminationStatistics> detailedStatistics = new HashMap<Integer, HandExaminationStatistics>();
+
+        totalStatistics = getHandExaminationStatisticsByDate(requestBody, null);
+
+        int keyValueMin = 0, keyValueMax = -1;
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+                    keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10;
+                    keyValueMax = Calendar.getInstance().get(Calendar.YEAR); // should be changed
+                    break;
+                default:
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        int i = 0;
+        for (i = keyValueMin; i <= keyValueMax; i ++) {
+            HandExaminationStatistics scanStat = getHandExaminationStatisticsByDate(requestBody, i);
+            detailedStatistics.put (i, scanStat);
+        }
+
+        HandExaminationStatisticsResponse response = new HandExaminationStatisticsResponse();
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
+
+        return response;
+
+    }
+
     @RequestMapping(value = "/statistics/handexamination", method = RequestMethod.POST)
-    public Object handexaminationStatisticsGet(
+    public Object handExaminationStatisticsGet(
             @RequestBody @Valid TaskManagementController.PreviewStatisticsRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -1113,9 +1340,9 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatistics(requestBody);
+        HandExaminationStatisticsResponse handStatistics = getHandExaminationStatistics(requestBody);
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handExaminationStatistics));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handStatistics));
 
         return value;
 
