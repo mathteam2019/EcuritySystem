@@ -10,6 +10,7 @@
 package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -358,15 +359,17 @@ public class FieldManagementController extends BaseController {
         //set parent's  parent to null so prevent recursion
         for(int i = 0; i < sysFieldList.size(); i ++) {
             SysField field = sysFieldList.get(i);
+            field.setParentDesignation("");
             if(field.getParent() != null) {
-                field.getParent().setParent(null);
+                field.setParentDesignation(field.getParent().getFieldDesignation());
             }
         }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
 
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 
@@ -416,10 +419,13 @@ public class FieldManagementController extends BaseController {
         //set parent's  parent to null so prevent recursion
         for(int i = 0; i < data.size(); i ++) {
             SysField field = data.get(i);
+            field.setParentDesignation("");
             if(field.getParent() != null) {
-                field.getParent().setParent(null);
+                field.setParentDesignation(field.getParent().getFieldDesignation());
             }
         }
+
+
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -438,7 +444,8 @@ public class FieldManagementController extends BaseController {
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
+                .getDefaultFilters()
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 

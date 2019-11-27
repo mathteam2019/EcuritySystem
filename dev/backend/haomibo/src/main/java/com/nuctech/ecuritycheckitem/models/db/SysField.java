@@ -83,4 +83,7 @@ public class SysField extends BaseEntity implements Serializable {
     @MapsId("parent")
     SysField parent;
 
+    @javax.persistence.Transient
+    String parentDesignation;
+
 }

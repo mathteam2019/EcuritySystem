@@ -3,66 +3,40 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
 
-    <b-card class="main-without-tab" v-if="pageStatus==='table'">
-      <div  class="h-100 d-flex flex-column">
+    <b-card class="main-without-tab" v-if="pageStatus === 'table'">
+      <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
           <b-col cols="8">
             <b-row>
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.task-number')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="filter.taskNumber"></b-form-input>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.operationMode" :options="operationModeOptions" plain/>
+                  <b-form-select v-model="filter.mode" :options="operationModeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
-                <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
-                </b-form-group>
-              </b-col>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input></b-form-input>
-                </b-form-group>
-              </b-col>
-
-            </b-row>
-          </b-col>
-          <b-col cols="8" v-if="isExpanded">
-            <b-row>
-
-              <b-col>
-                <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input></b-form-input>
+                <b-form-group :label="$t('personal-inspection.status')">
+                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
-                <b-form-group :label="$t('log-management.operating-log.start-time')">
-                  <b-form-input v-model = "filter.startTime"></b-form-input>
+                <b-form-group :label="$t('personal-inspection.user')">
+                  <b-form-input v-model="filter.userName"></b-form-input>
                 </b-form-group>
               </b-col>
-
-              <b-col>
-                <b-form-group :label = "$t('log-management.operating-log.end-time')">
-                  <b-form-input v-model = "filter.endTime"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-
 
             </b-row>
           </b-col>
@@ -89,25 +63,35 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="taskVuetable"
-                :api-mode="false"
-                :data="tempData"
-                data-path="data"
-                pagination-path="pagination"
-                :data-total="tempData.data.length"
-                :per-page="taskVuetableItems.perPage"
+                :api-url="taskVuetableItems.apiUrl"
                 :fields="taskVuetableItems.fields"
+                :http-fetch="taskVuetableHttpFetch"
+                :per-page="taskVuetableItems.perPage"
+                pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="taskNumber" slot-scope="props">
-                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
+                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.taskId)">
                       {{props.rowData.taskNumber}}
                     </span>
                 </template>
-                <template slot="operationMode" slot-scope="props">
-                  <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                  <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
-                  <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                <template slot="scanImage" slot-scope="props">
+                  <b-img :src="props.rowData.serScan.scanImage.imageUrl" class="operation-icon"/>
+                </template>
+                <template slot="mode" slot-scope="props">
+                  <div v-if="filter.mode==null">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="filter.mode==='security'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="filter.mode==='security+hand'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                  </div>
                 </template>
               </vuetable>
             </div>
@@ -124,9 +108,9 @@
       </div>
     </b-card>
 
-    <div v-if="pageStatus === 'show'" >
+    <div v-if="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="4">
+        <b-col cols="3">
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
@@ -228,8 +212,72 @@
 
           </b-card>
         </b-col>
-        <b-col cols="8">
+        <b-col cols="9">
           <b-card class="h-100 d-flex flex-column right-card">
+            <div class="history-chart">
+              <div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>开始</div>
+                  </div>
+                  <div class="right">
+                    <div>Start</div>
+                  </div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>扫描</div>
+                    <div>张三</div>
+                  </div>
+                  <div class="right">
+                    <div>Scanning</div>
+                    <div>zhang san</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>判图</div>
+                    <div>李四</div>
+                  </div>
+                  <div class="right">
+                    <div>Decision diagram</div>
+                    <div>Li si</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>查验</div>
+                    <div>王五</div>
+                  </div>
+                  <div class="right">
+                    <div>Inspection</div>
+                    <div>Wang wu</div>
+                  </div>
+                  <div class="top-date">2019-09-21 11:43:55</div>
+                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                </div>
+
+                <div class="part">
+                  <div class="left">
+                    <div>结束</div>
+                  </div>
+                  <div class="right">
+                    <div>End</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
             <b-row>
               <b-col>
                 <b-form-group>
@@ -237,7 +285,7 @@
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>HR201909010001</label>
+                  <label>{{showPage.taskNumber}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -246,7 +294,7 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>北京首都机场</label>
+                  <label>{{showPage.field.fieldDesignation}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -255,7 +303,7 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>安检仪001</label>
+                  <label>{{showPage.serScan.scanDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -264,7 +312,16 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>男</label>
+                  <label>{{showPage.serScan.scanImage.imageLabel}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.scanned-image')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label>{{showPage.serScan.scanImage.imageUrl}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -273,23 +330,13 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.scanned-image')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>ATR</label>
-                </b-form-group>
-              </b-col>
-
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <div>
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2" />
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2" />
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
                   </div>
                 </b-form-group>
               </b-col>
@@ -299,7 +346,7 @@
                     {{$t('personal-inspection.scan-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>20190921 10:40:05</label>
+                  <label>{{showPage.serScan.scanStartTime}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -308,18 +355,16 @@
                     {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>20190921 10:40:05</label>
+                  <label>{{showPage.serScan.scanEndTime}}</label>
                 </b-form-group>
               </b-col>
-            </b-row>
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.atr-conclusion')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>无嫌疑</label>
+                  <label>{{showPage.taskNumber}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -327,19 +372,21 @@
                   <template slot="label">
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
-                  <label>无</label>
+                  <label>{{showPage.taskNumber}}</label>
                 </b-form-group>
               </b-col>
+            </b-row>
+
+            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.guide')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>张三</label>
+                  <label>{{showPage.taskNumber}}</label>
                 </b-form-group>
               </b-col>
-              <b-col></b-col>
             </b-row>
 
             <b-row class="flex-grow-1 d-flex align-items-end">
@@ -348,7 +395,6 @@
                   <i class="icofont-long-arrow-left"></i>
                   {{ $t('personal-inspection.return') }}
                 </b-button>
-
               </b-col>
             </b-row>
 
@@ -356,9 +402,6 @@
         </b-col>
       </b-row>
     </div>
-
-
-
   </div>
 </template>
 
@@ -460,8 +503,9 @@
           }
         }
       }
-      .switch-wrapper{
+      .switch-wrapper {
         height: 28px;
+
         .separator {
           height: 28px;
         }
@@ -535,12 +579,8 @@
     import {apiBaseUrl} from "../../../constants/config";
     import Vuetable from '../../../components/Vuetable2/Vuetable'
     import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getDirection} from "../../../utils";
-    import _ from "lodash";
     import {getApiManager} from '../../../api';
     import {responseMessages} from '../../../constants/response-messages';
-    import {validationMixin} from 'vuelidate';
-    import VTree from 'vue-tree-halower';
     import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
     import Switches from 'vue-switches';
 
@@ -557,24 +597,57 @@
         },
         data() {
             return {
-                isExpanded:false,
+                isExpanded: false,
                 pageStatus: 'table',
                 filter: {
-                    operationMode: null,
-                    status: null,
-                    onSite: null
+                    taskNumber: null,
+                    mode: null,
+                    fieldId: null,
+                    userName: null,
+                    startTime: null,
+                    endTime: null
                     // TODO: search filter
+                },
+
+                showPage: [],
+
+                showPage1: { // modify page
+                    selectedOrg: {},
+                    taskNumber: '',
+                    onSite: '',
+                    machine: '',
+                    sex: '',
+                    scanImage: '',
+                    operationMode: '',
+                    status: '',
+                    guide: '',
+                    atrCon: '',
+                    footAlarm: '',
+                    scanStartTime: '',
+                    scanEndTime: '',
+                    dispatchTimeout: '',
+                    judgementStation: '',
+                    judgementType: '',
+                    judgement: '',
+                    judgementTimeout: '',
+                    judgementStartTime: '',
+                    judgementStationIde: '',
+                    judgementEndTime: '',
+                    judge: '',
+                    handCheckStation: '',
+                    handCheckStartTime: '',
+                    handChecker: '',
+
                 },
                 // TODO: select options
                 operationModeOptions: [
                     {value: null, text: this.$t('personal-inspection.all')},
                     {value: 'security', text: this.$t('personal-inspection.security-instrument')},
                     {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
-                    {value: 'security+hand+device', text: this.$t('personal-inspection.security-instrument-and-hand-test-and-device')},
                 ],
                 statusOptions: [
                     {value: null, text: this.$t('personal-inspection.all')},
-                    {value: 'pending-dispatch', text: this.$t('personal-inspection.pending-dispatch')},
+                    {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
                     {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
                     {value: 'while-review', text: this.$t('personal-inspection.while-review')},
                     {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
@@ -588,64 +661,17 @@
                     {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
                     {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
                 ],
-                // TODO: refactor temp table data to api mode
-                tempData: {
-                    pagination: {
-                        "total": 5,
-                        "per_page": 5,
-                        "current_page": 1,
-                        "last_page": 1,
-                        "from": 1,
-                        "to": 5,
-                    },
-                    data: [
-                        {
-                            id: 1,
-                            taskNumber: 'HR201909210001',
-                            securityInstrument: "张三",
-                            scanStartTime: '2019-10-23. 10:30',
-                            scanEndTime: '2019-10-23. 10:30'
-                        },
-                        {
-                            id: 2,
-                            taskNumber: 'HR201909210001',
-                            securityInstrument: "张三",
-                            scanStartTime: '2019-10-23. 10:30',
-                            scanEndTime: '2019-10-23. 10:30'
-                        },
-                        {
-                            id: 3,
-                            taskNumber: 'HR201909210001',
-                            securityInstrument: "张三",
-                            scanStartTime: '2019-10-23. 10:30',
-                            scanEndTime: '2019-10-23. 10:30'
-                        },
-                        {
-                            id: 4,
-                            taskNumber: 'HR201909210001',
-                            securityInstrument: "张三",
-                            scanStartTime: '2019-10-23. 10:30',
-                            scanEndTime: '2019-10-23. 10:30'
-                        },
-                        {
-                            id: 5,
-                            taskNumber: 'HR201909210001',
-                            securityInstrument: "张三",
-                            scanStartTime: '2019-10-23. 10:30',
-                            scanEndTime: '2019-10-23. 10:30'
-                        },
-                    ]
-                },
+
                 taskVuetableItems: {
-                    apiUrl: `${apiBaseUrl}/...`,
+                    apiUrl: `${apiBaseUrl}/task/invalid-task/get-by-filter-and-page`,
                     fields: [
-                      {
-                        name: '__checkbox',
-                        titleClass: 'text-center',
-                        dataClass: 'text-center'
-                      },
                         {
-                            name: 'id',
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: 'taskId',
                             title: this.$t('personal-inspection.serial-number'),
                             sortField: 'id',
                             titleClass: 'text-center',
@@ -655,340 +681,128 @@
                             name: '__slot:taskNumber',
                             title: this.$t('personal-inspection.task-number'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center',
+                            dataClass: 'text-center'
                         },
                         {
-                            name: 'image',
+                            name: '__slot:scanImage',
                             title: this.$t('personal-inspection.image'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
-                            name: '__slot:operationMode',
+                            name: '__slot:mode',
                             title: this.$t('personal-inspection.operation-mode'),
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
                         {
-                            name: 'onSite',
+                            name: 'field',
                             title: this.$t('personal-inspection.on-site'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center'
+                            dataClass: 'text-center',
+                            callback: (field) => {
+                                if (field == null) return '';
+                                return field.fieldDesignation;
+                            }
                         },
                         {
-                            name: 'securityInstrument',
+                            name: 'serScan',
                             title: this.$t('personal-inspection.security-instrument'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center'
+                            dataClass: 'text-center',
+                            callback: (serScan) => {
+                                if (serScan == null) return '';
+                                return serScan.scanDevice.deviceName;
+                            }
                         },
                         {
-                            name: 'guide',
+                            name: 'serScan',
                             title: this.$t('personal-inspection.guide'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center'
+                            dataClass: 'text-center',
+                            callback: (serScan) => {
+                                if (serScan == null) return '';
+                                return serScan.scanPointsman.userName;
+                            }
                         },
                         {
-                            name: 'scanStartTime',
+                            name: 'serScan',
                             title: this.$t('personal-inspection.scan-start-time'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center'
+                            dataClass: 'text-center',
+                            callback: (serScan) => {
+                                if (serScan == null) return '';
+                                return serScan.scanStartTime;
+                            }
                         },
                         {
-                            name: 'scanEndTime',
+                            name: 'serScan',
                             title: this.$t('personal-inspection.scan-end-time'),
                             titleClass: 'text-center',
-                            dataClass: 'text-center'
+                            dataClass: 'text-center',
+                            callback: (serScan) => {
+                                if (serScan == null) return '';
+                                return serScan.scanEndTime;
+                            }
                         },
                     ],
-                    perPage: 10,
+                    perPage: 5,
                 },
                 power: true
 
             }
         },
         watch: {
-            'vuetableItems.perPage': function (newVal) {
-                this.$refs.vuetable.refresh();
+            'taskVuetableItems.perPage': function (newVal) {
+                this.$refs.taskVuetable.refresh();
             },
             'operatingLogTableItems.perPage': function (newVal) {
                 this.$refs.operatingLogTable.refresh();
-            },
-            orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
-
-
-                let nest = (items, id = 0) =>
-                    items
-                        .filter(item => item.parentOrgId == id)
-                        .map(item => ({
-                            ...item,
-                            children: nest(items, item.orgId),
-                            id: id++,
-                            label: `${item.orgNumber} ${item.orgName}`
-                        }));
-
-                this.treeData = nest(newVal)[0];
-                let getLevel = (org) => {
-
-                    let getParent = (org) => {
-                        for (let i = 0; i < newVal.length; i++) {
-                            if (newVal[i].orgId == org.parentOrgId) {
-                                return newVal[i];
-                            }
-                        }
-                        return null;
-                    };
-
-                    let stepValue = org;
-                    let level = 0;
-                    while (getParent(stepValue) !== null) {
-                        stepValue = getParent(stepValue);
-                        level++;
-                    }
-
-                    return level;
-
-                };
-
-                let generateSpace = (count) => {
-                    let string = '';
-                    while (count--) {
-                        string += '&nbsp;&nbsp;&nbsp;&nbsp;';
-                    }
-                    return string;
-                };
-
-                let selectOptions = [];
-
-                newVal.forEach((org) => {
-                    selectOptions.push({
-                        value: org.orgId,
-                        html: `${generateSpace(getLevel(org))}${org.orgName}`
-                    });
-                });
-
-                this.orgNameSelectData = selectOptions;
-
-                this.filter.orgId = this.treeData.orgId;
-                this.defaultOrgId = this.treeData.orgId;
-                this.fnRefreshOrgUserTreeData();
-            },
-            userData(newVal) {
-                this.fnRefreshOrgUserTreeData();
-            },
-            selectedUserGroupItem(newVal) {
-                if (newVal) {
-                    let userGroupList = [];
-                    newVal.users.forEach((user) => {
-                        userGroupList.push(user.userId);
-                    });
-                    this.userData.forEach((user) => {
-                        user.selected = userGroupList.includes(user.userId);
-                    });
-                    this.fnRefreshOrgUserTreeData();
-                }
-            },
-            isSelectedAllUsersForDataGroup(newVal) {
-
-                if (this.selectedUserGroupItem) {
-                    let tempSelectedUserGroup = this.selectedUserGroupItem;
-                    tempSelectedUserGroup.users = newVal ? this.userData : [];
-                    this.selectedUserGroupItem = null;
-                    this.selectedUserGroupItem = tempSelectedUserGroup;
-                }
             }
         },
         methods: {
-            onTableListPage() {
-                this.pageStatus = 'table';
-            },
-            onRowClicked() {
-                this.pageStatus = 'show';
-            },
-            onSaveUserPage() {
-                this.submitted = true;
-                this.$v.$touch();
-                if (this.$v.$invalid) {
-                    return;
-                }
+            onRowClicked(taskNumber) {
 
-                const formData = new FormData();
-                for (let key in this.profileForm) {
-                    if (key !== 'portrait')
-                        formData.append(key, this.profileForm[key]);
-                    else if (this.profileForm['portrait'] !== null)
-                        formData.append(key, this.profileForm[key], this.profileForm[key].name);
-                }
                 // call api
-                let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
                 getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user/` + finalLink, formData)
+                    .post(`${apiBaseUrl}/task/invalid-task/get-one`, {
+                        'taskId': taskNumber,
+                    })
                     .then((response) => {
                         let message = response.data.message;
-                        let data = response.data.data;
+                        this.showPage = response.data.data;
+
                         switch (message) {
                             case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.profileForm.userId > 0 ? this.$t(`permission-management.user-created-successfully`) : this.$t(`permission-management.user-modify-successfully`), {
+                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
                                     duration: 3000,
                                     permanent: false
                                 });
-                                this.onInitialUserData();
-                                // back to table
-                                this.pageStatus = 'table';
-                                break;
-                            case responseMessages['used-user-account']://duplicated user account
-                                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                break;
                         }
                     })
                     .catch((error) => {
                     });
-            },
-            onAction(action, data, index) {
-                let userId = data.userId;
-                switch (action) {
-                    case 'modify':
-                        this.fnModifyItem(data);
-                        break;
-                    case 'show':
-                        this.fnShowItem(data);
-                        break;
-                    case 'reset-password':
-                    case 'active':
-                    case 'unblock':
-                        this.fnChangeItemStatus(userId, action);
-                        break;
-                    case 'inactive':
-                    case 'blocked':
-                        this.fnShowConfDiaglog(userId, action);
-                        break;
-                    case 'group-remove':
-                        this.fnShowUserGroupConfDiaglog(data);
-                        break;
-                }
-            },
-            fnHideModal(modal) {
-                // hide modal
-                this.$refs[modal].hide();
-                this.promptTemp = {
-                    userId: 0,
-                    action: ''
-                }
-            },
-            fnShowConfDiaglog(userId, action) {
-                this.promptTemp.userId = userId;
-                this.promptTemp.action = action;
-                this.$refs['modal-prompt'].show();
-            },
-            fnModifyItem(data) {
-                this.onInitialUserData();
-                for (let key in this.profileForm) {
-                    if (Object.keys(data).includes(key)) {
-                        if (key !== 'portrait' && key !== 'avatar')
-                            this.profileForm[key] = data[key];
-                        else if (key === 'portrait')
-                            this.profileForm.avatar = apiBaseUrl + data['portrait'];
-                    }
-                }
-                this.profileForm.portrait = null;
-                this.profileForm.passwordType = 'default';
-                this.pageStatus = 'create';
-            },
-            fnShowItem(data) {
-                this.onInitialUserData();
-                for (let key in this.profileForm) {
-                    if (Object.keys(data).includes(key))
-                        if (key !== 'portrait' && key !== 'avatar')
-                            this.profileForm[key] = data[key];
-                        else if (key === 'portrait')
-                            this.profileForm.avatar = apiBaseUrl + data['portrait'];
-                }
-                this.profileForm.portrait = null;
-                this.profileForm.passwordType = 'default';
+
+
                 this.pageStatus = 'show';
             },
-            fnChangeItemStatus(userId = 0, action = '') {
-                if (userId === 0)
-                    userId = this.promptTemp.userId;
-                if (action === '')
-                    action = this.promptTemp.action;
-                let status = action;
-                if (status === 'unblock' || status === 'reset-password')
-                    status = 'inactive';
-                getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
-                        'userId': userId,
-                        'status': status,
-                    })
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user-change-status-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
 
-                                this.$refs.vuetable.refresh();
-
-                                break;
-                        }
-                    })
-                    .catch((error) => {
-                    })
-                    .finally(() => {
-                        this.$refs['modal-prompt'].hide();
-                    });
-
-            },
-            onFileChange(e) {
-                let files = e.target.files || e.dataTransfer.files;
-                if (!files.length)
-                    return;
-                this.onCreateImage(files[0]);
-            },
-            onCreateImage(file) {
-                this.profileForm.avatar = new Image();
-                let reader = new FileReader();
-                reader.onload = (e) => {
-                    this.profileForm.avatar = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                this.profileForm.portrait = file;
-            },
             onSearchButton() {
-
+                this.$refs.taskVuetable.refresh();
             },
             onResetButton() {
 
+                this.filter = {
+                    taskNumber: null,
+                    mode: null,
+                    fieldId: null,
+                    userName: null,
+                    startTime: null,
+                    endTime: null
+                };
+                this.$refs.taskVuetable.refresh();
             },
-            onInitialUserData() {
-                this.profileForm = {
-                    status: 'inactive',
-                    userId: 0,
-                    avatar: '',
-                    userName: '',
-                    userNumber: '',
-                    gender: '',
-                    identityCard: '',
-                    orgId: '',
-                    post: '',
-                    education: '',
-                    degree: '',
-                    email: '',
-                    mobile: '',
-                    address: '',
-                    category: '',
-                    userAccount: '',
-                    passwordType: 'default',
-                    passwordValue: '',
-                    note: '',
-                    portrait: null
-                }
-            },
+
             transform(response) {
 
                 let transformed = {};
@@ -1008,7 +822,6 @@
                 let temp;
                 for (let i = 0; i < data.data.length; i++) {
                     temp = data.data[i];
-                    temp.orgName = fnGetOrgFullName(temp.org);
                     transformed.data.push(temp)
                 }
 
@@ -1016,128 +829,22 @@
 
             },
 
-            //second tab content
-            fnShowUserGroupConfDiaglog(userGroupItem) {
-                this.selectedUserGroupItem = userGroupItem;
-                this.$refs['modal-prompt-group'].show();
-            },
-            fnDeleteUserGroupItem() {
-                if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
-                    this.$refs['modal-prompt-group'].hide();
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/delete`, {
-                            userGroupId: this.selectedUserGroupItem.userGroupId
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']: // okay
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-removed-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
+            taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-                                    this.$refs.userGroupTable.refresh();
-                                    this.selectedUserGroupItem = null;
-                                    break;
-                                case responseMessages['has-children']: // okay
-                                    this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    break;
-
-                            }
-                        })
-                        .catch((error) => {
-                        })
-                        .finally(() => {
-
-                        });
-                }
-            },
-            fnTransformUserGroupTable(response) {
-                this.selectedUserGroupItem = null;
-                let transformed = {};
-
-                let data = response.data;
-
-                transformed.operatingLogPagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
-
-                transformed.data = [];
-                let temp;
-                for (let i = 0; i < data.data.length; i++) {
-                    temp = data.data[i];
-                    transformed.data.push(temp)
-                }
-
-                return transformed
-
-            },
-            userTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
                 return getApiManager().post(apiUrl, {
                     currentPage: httpOptions.params.page,
-                    perPage: this.vuetableItems.perPage,
+
                     filter: {
+                        taskNumber: this.filter.taskNumber,
+                        mode: this.filter.mode,
+                        fieldId: this.filter.fieldId,
                         userName: this.filter.userName,
-                        status: this.filter.status,
-                        orgId: this.filter.orgId,
-                        category: this.filter.category,
-                    }
-                });
-            },
-            onUserTablePaginationData(paginationData) {
-                this.$refs.pagination.setPaginationData(paginationData)
-            },
-            onUserTableChangePage(page) {
-                this.$refs.vuetable.changePage(page)
-            },
-            onGroupFormSubmit() {
-                getApiManager()
-                    .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
+                        startTime: null,
+                        endTime: null
 
-                                this.$refs.userGroupTable.refresh();
+                    },
 
-                                break;
-
-                        }
-                    })
-                    .catch((error) => {
-                    })
-                    .finally(() => {
-                        //
-                        this.groupForm = {
-                            groupName: null,
-                            groupNumber: null,
-                            status:'create'
-                        };
-                    });
-            },
-            userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-                return getApiManager().post(apiUrl, {
-                    currentPage: httpOptions.params.page,
-                    perPage: this.operatingLogTableItems.perPage,
-                    filter: {
-                        groupName: this.groupFilter.name,
-                    }
+                    perPage: this.taskVuetableItems.perPage,
                 });
             },
             onTaskVuetablePaginationData(paginationData) {
@@ -1145,134 +852,6 @@
             },
             onTaskVuetableChangePage(page) {
                 this.$refs.taskVuetable.changePage(page)
-            },
-            onUserGroupTableRowClick(dataItems) {
-                this.selectedUserGroupItem = dataItems;
-                this.groupForm.status = 'modify';
-                console.log(this.selectedUserGroupItem);
-            },
-            // user tree group
-            fnRefreshOrgUserTreeData() {
-                let pseudoRootId = 0;
-                let nest = (orgData, userData, rootId = pseudoRootId) => {
-                    let childrenOrgList = orgData
-                        .filter(org => org.parentOrgId === rootId)
-                        .map(org => ({
-                            ...org,
-                            title: org.orgName,
-                            expanded: true,
-                            children: nest(orgData, userData, org.orgId)
-                        }));
-                    let childrenUserList = userData
-                        .filter(user => user.orgId === rootId)
-                        .map(user => ({
-                            ...user,
-                            isUser: true,
-                            title: user.userName,
-                            expanded: true,
-                            checked: user.selected,
-                            children: []
-                        }));
-                    return [...childrenOrgList, ...childrenUserList];
-                };
-                this.orgUserTreeData = nest(this.orgData, this.userData, pseudoRootId);
-            },
-            onUserGroupSearchButton() {
-                this.$refs.userGroupTable.refresh();
-            },
-            onUserGroupResetButton() {
-                this.groupFilter = {
-                    name:null
-                };
-                this.$refs.userGroupTable.refresh();
-            },
-            onUserGroupCreateButton(){
-                this.selectedUserGroupItem = {
-                    users:[]
-                };
-                this.groupForm = {
-                    groupNumber:null,
-                    groupName:null,
-                    status:'create'
-                }
-            },
-            onClickDeleteUserGroup(){
-                this.fnShowUserGroupConfDiaglog(this.selectedUserGroupItem);
-            },
-            onClickCreateUserGroup() {
-                if(this.selectedUserGroupItem) {
-                    let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-                    let userGroupUserIds = [];
-                    checkedNodes.forEach((node) => {
-                        if(node.isUser)userGroupUserIds.push(node.userId);
-                    });
-                    if(userGroupUserIds.length==0){
-                        return ;
-                    }
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, {
-                            'groupName':this.groupForm.groupName,
-                            'groupNumber':this.groupForm.groupNumber,
-                            'userIdList': userGroupUserIds
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    this.$refs.userGroupTable.refresh();
-                                    break;
-                                default:
-
-                            }
-                        })
-                        .catch((error) => {
-
-                        }).finally(() => {
-                        //
-                        this.groupForm = {
-                            groupName: null,
-                            groupNumber: null,
-                            status:'create'
-                        };
-                    });
-                }
-            },
-            onClickModifyUserGroup() {
-                if(this.selectedUserGroupItem) {
-                    let checkedNodes = this.$refs.orgUserTree.getCheckedNodes();
-                    let userGroupUserIds = [];
-                    checkedNodes.forEach((node) => {
-                        if(node.isUser)userGroupUserIds.push(node.userId);
-                    });
-                    getApiManager()
-                        .post(`${apiBaseUrl}/permission-management/user-management/user-group/modify`, {
-                            'userGroupId': this.selectedUserGroupItem.userGroupId,
-                            'userIdList': userGroupUserIds
-                        })
-                        .then((response) => {
-                            let message = response.data.message;
-                            let data = response.data.data;
-                            switch (message) {
-                                case responseMessages['ok']:
-                                    this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.user-group-modified-successfully`), {
-                                        duration: 3000,
-                                        permanent: false
-                                    });
-                                    this.$refs.userGroupTable.refresh();
-                                    break;
-                                default:
-
-                            }
-                        })
-                        .catch((error) => {
-
-                        });
-                }
             }
         }
     }

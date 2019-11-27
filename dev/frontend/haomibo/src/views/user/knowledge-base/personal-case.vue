@@ -23,24 +23,24 @@
             <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-number')">
-                  <b-form-input v-model="filterForm.number"></b-form-input>
+                  <b-form-input v-model="filter.taskNumber"></b-form-input>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.operating-mode')">
-                  <b-form-select v-model="filterForm.mode" :options="modeOptions" plain/>
+                  <b-form-select v-model="filter.modeName"  :options="modeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-result')">
-                  <b-form-select v-model="filterForm.result" :options="resultTypeOptions" plain/>
+                  <b-form-select v-model="filter.taskResult"  :options="resultTypeOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.site')">
-                  <b-form-select v-model="filterForm.site" :options="siteOptions" plain/>
+                  <b-form-select v-model="filter.fieldDesignation"  :options="siteOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -54,11 +54,9 @@
             <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.seized-item')">
-                  <b-form-input v-model="filterForm.seizedItem"></b-form-input>
+                  <b-form-input v-model="filter.handGoods"></b-form-input>
                 </b-form-group>
               </b-col>
-              <b-col></b-col>
-              <b-col></b-col>
               <b-col></b-col>
               <b-col></b-col>
             </b-row>
@@ -86,27 +84,25 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="pendingListTable"
-                :api-mode="false"
+                :api-url="pendingListTableItems.apiUrl"
                 :fields="pendingListTableItems.fields"
-                :data-manager="pendingListTableDataManager"
+                :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
               >
-                <div slot="number" slot-scope="props">
-                <span class="cursor-p text-primary"
-                      @click="onAction('show',props.rowData)">{{ props.rowData.number}}</span>
+                <div slot="task" slot-scope="props">
+                  <span class="cursor-p text-primary">{{ props.rowData.task.taskNumber}}</span>
                 </div>
+                <template slot="scanImage" slot-scope="props">
+                  <b-img :src="props.rowData.scanImage.imageUrl" class="operation-icon" />
+                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button
                     size="sm"
-                    variant="success default btn-square">
-                    <i class="icofont-check-alt"></i>
-                  </b-button>
-                  <b-button
-                    size="sm"
-                    variant="danger default btn-square">
+                    variant="danger default btn-square"
+                    @click="onAction(props.rowData.caseId)">
                     <i class="icofont-ban"></i>
                   </b-button>
                 </div>
@@ -117,6 +113,7 @@
                 ref="pendingListTablePagination"
                 :initial-per-page="pendingListTableItems.perPage"
                 @vuetable-pagination:change-page="onBlackListTableChangePage"
+                @onUpdatePerPage="pendingListTableItems.perPage = Number($event)"
               ></vuetable-pagination-bootstrap>
             </div>
           </b-col>
@@ -127,29 +124,39 @@
   </div>
 </template>
 <script>
-  import _ from 'lodash';
-  import Vuetable from '../../../components/Vuetable2/Vuetable'
-  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
-  import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
+    import {apiBaseUrl} from "../../../constants/config";
+    import Vuetable from '../../../components/Vuetable2/Vuetable'
+    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+    import {getApiManager} from '../../../api';
+    import {responseMessages} from '../../../constants/response-messages';
+    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+    import Switches from 'vue-switches';
 
-  export default {
+
+    export default {
     components: {
       'vuetable': Vuetable,
-      'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
+
+    mounted() {
+
+    },
+
     data() {
       return {
         pageStatus: 'list',
-        isExpanded: false,
-        filterForm: {
-          number: null,
-          mode: null,
-          result: null,
-          seizedItem: null,
-          site: null,
-        },
-        modeOptions: [
+        isExpanded:false,
+        filter: {
+              caseStatus:"success_approval",
+              taskNumber: null,
+              modeName: null,
+              taskResult: null,
+              fieldDesignation:null,
+              handGoods:null,
+          },
+
+        modeOptions:[
           {value: '1', text: this.$t('knowledge-base.security-instrument')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test-and-device')},
@@ -166,7 +173,8 @@
           {value: 'unknown', text: this.$t('knowledge-base.no-seized')},
         ],
         pendingListTableItems: {
-          perPage: 10,
+          apiUrl: `${apiBaseUrl}/knowledge-base/get-by-filter-and-page`,
+          perPage: 5,
           fields: [
             {
               name: '__checkbox',
@@ -174,60 +182,54 @@
               dataClass: 'text-center'
             },
             {
-              name: 'no',
-              sortField: 'no',
+              name: 'taskId',
+              sortField: 'taskId',
               title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: '__slot:number',
-              sortField: 'number',
+              name: '__slot:task',
               title: this.$t('knowledge-base.task-number'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'archive',
-              sortField: 'archive',
+              name: '__slot:scanImage',
               title: this.$t('knowledge-base.image'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
+
             {
-              name: 'status',
-              sortField: 'status',
+              name: 'handResult',
               title: this.$t('knowledge-base.task-result'),
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (value) => {
-                const dictionary = {
-                  "1": `<span class="text-success ">${this.$t('knowledge-base.no-suspect')}</span>`,
-                  "2": `<span class="text-danger">${this.$t('knowledge-base.seized')}</span>`,
-                  "3": `<span class="text-warning">${this.$t('knowledge-base.no-seized')}</span>`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
-
+              dataClass: 'text-center'
             },
             {
-              name: 'manufacturer',
-              sortField: 'manufacturer',
+              name: 'scanDevice',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+                callback: (scanDevice) => {
+                    if(scanDevice==null)  return '';
+                    return scanDevice.field.fieldDesignation;
+                }
             },
             {
-              name: 'channel',
-              sortField: 'channel',
+              name: 'scanDevice',
               title: this.$t('knowledge-base.channel'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+                callback: (scanDevice) => {
+                    if(scanDevice==null)  return '';
+                    return scanDevice.devicePassageWay;
+                }
             },
+
             {
-              name: 'origin-no',
-              sortField: 'origin-no',
+              name: 'handGoods',
               title: this.$t('knowledge-base.seized-item'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -241,124 +243,64 @@
             }
           ]
         },
-        tempData: [
-          {
-            "no": 1,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "1",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 2,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "2",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 3,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": "MW毫米波安检仪",
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 4,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": "华为M6平板",
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 5,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 6,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-          {
-            "no": 7,
-            "number": "0000",
-            "device-name": "首都机场",
-            "setting": null,
-            "status": "active",
-            "archive": null,
-            "classify": null,
-            "manufacturer": "张三",
-            "origin-no": "13800001234",
-            "remarks": "",
-          },
-        ],
       }
     },
     methods: {
-      onSearchButton() {
-
+      onSearchButton(){
+        this.$refs.pendingListTable.refresh();
       },
-      onResetButton() {
-
-      },
-      pendingListTableDataManager(sortOrder, pagination) {
-        let local = this.tempData;
-
-        // sortOrder can be empty, so we have to check for that as well
-        if (sortOrder.length > 0) {
-          local = _.orderBy(
-            local,
-            sortOrder[0].sortField,
-            sortOrder[0].direction
-          );
-        }
-
-        pagination = this.$refs.pendingListTable.makePagination(
-          local.length,
-          this.pendingListTableItems.perPage
-        );
-
-        let from = pagination.from - 1;
-        let to = from + this.pendingListTableItems.perPage;
-        return {
-          pagination: pagination,
-          data: _.slice(local, from, to)
+      onResetButton(){
+        this.filter = {
+            taskNumber: null,
+            modeName: null,
+            taskResult: null,
+            fieldDesignation:null,
+            handGoods:null,
         };
+        this.$refs.pendingListTable.refresh();
+      },
+
+        transform(response) {
+
+            let transformed = {};
+
+            let data = response.data;
+
+            transformed.pagination = {
+                total: data.total,
+                per_page: data.per_page,
+                current_page: data.current_page,
+                last_page: data.last_page,
+                from: data.from,
+                to: data.to
+            };
+
+            transformed.data = [];
+            let temp;
+            for (let i = 0; i < data.data.length; i++) {
+                temp = data.data[i];
+                transformed.data.push(temp)
+            }
+
+            return transformed
+
+        },
+
+      pendingListTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.pendingListTableItems.perPage,
+
+          filter: {
+              caseStatus:this.filter.caseStatus,
+              taskNumber:this.filter.taskNumber,
+              modeName: this.filter.modeName,
+              taskResult: this.filter.taskResult,
+              fieldDesignation: this.filter.fieldDesignation,
+              handGoods: this.filter.handGoods,
+          },
+        });
       },
       onBlackListTablePaginationData(paginationData) {
         this.$refs.pendingListTablePagination.setPaginationData(paginationData);
@@ -366,6 +308,37 @@
       onBlackListTableChangePage(page) {
         this.$refs.pendingListTable.changePage(page);
       },
+
+      onAction(data) { // called when any action button is called from table
+                // call api
+                getApiManager()
+                    .post(`${apiBaseUrl}/knowledge-base/update-status`, {
+                        'caseId': data,
+                        'status': "submit_approval",
+                    })
+                    .then((response) => {
+                        let message = response.data.message;
+                        switch (message) {
+                            case responseMessages['ok']: // okay
+                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
+                                    duration: 3000,
+                                    permanent: false
+                                });
+                                this.$refs.pendingListTable.refresh();
+                                break;
+
+                        }
+                    })
+                    .catch((error) => {
+                    });
+
+
+
+
+
+
+
+        },
     }
   }
 </script>
