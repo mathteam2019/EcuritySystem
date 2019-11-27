@@ -544,7 +544,9 @@
       "ip": "IP",
       "wave-security-device": "MW毫米波安检仪",
       "huawei-m6-tablet": "华为M6平板",
-      "template": "模板"
+      "template": "模板",
+      "make-inactive-prompt" : "是否失效该设备",
+      "status-updated-successfully":"设备修改成功"
     },
     "device-monitoring": {
       "disk-space" :"磁盘空间",
@@ -619,6 +621,14 @@
     "groin-blurring": "腹股沟模糊处理",
     "minutes": "分钟",
     "hours": "小时",
+    "storage-business": "业务数据（默认必选）",
+    "storage-cartoon": "卡通图",
+    "storage-conversion": "转换图",
+    "storage-original": "原始图",
+    "setting-updated-successful": "系统设置改变成功",
+    "level-low":"低",
+    "level-middle":"中",
+    "level-high":"高",
 
     "parameter-setting": {
       "platform-parameter": "平台参数",
@@ -664,7 +674,8 @@
       "save-only-suspected-image": "仅保存嫌疑图像",
       "suitable-for": "适用于",
       "yes": "是",
-      "no": "不"
+      "no": "不",
+      "saved-successful":"安检仪设置改变成功"
     }
   },
   "log-management": {
