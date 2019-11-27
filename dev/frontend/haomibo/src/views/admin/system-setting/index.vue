@@ -641,8 +641,15 @@
           }
       },
       watch: {
+          color(val) {
+              this.colorValue = val;
+          },
+          'colors.hex': function(val) {
+              this.colorValue = val;
+          },
           colorValue(val) {
               if(val) {
+                  this.$emit("input", val) ;
                   this.updateColors(val);
                   this.$emit('input', val);
                   //document.body.style.background = val;
