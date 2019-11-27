@@ -1192,7 +1192,13 @@
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
-      }
+      },
+      onThumbClick(index) {
+          this.photoIndex = index;
+      },
+      handleHide() {
+          this.photoIndex = null;
+      },
     }
   }
 </script>
