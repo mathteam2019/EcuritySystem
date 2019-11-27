@@ -15,6 +15,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.sun.istack.NotNull;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +25,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 
@@ -46,7 +48,10 @@ public class PlatformOtherManagementController extends BaseController {
 
         Long logMaxNumber;
 
-        Long deviceTrafficSettings;
+        @NotNull
+        @Pattern(regexp = SerPlatformOtherParams.Setting.HIGH + "|" + SerPlatformOtherParams.Setting.MIDDLE
+                + "|" + SerPlatformOtherParams.Setting.LOW)
+        String deviceTrafficSettings;
 
         Long storageDetectionCycle;
 

@@ -29,6 +29,12 @@ import java.io.Serializable;
 @Table(name = "ser_platform_other_params")
 public class SerPlatformOtherParams implements Serializable {
 
+    public static class Setting {
+        public static final String HIGH = "high";
+        public static final String MIDDLE = "middle";
+        public static final String LOW = "low";
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,8 +51,8 @@ public class SerPlatformOtherParams implements Serializable {
     @Column(name = "LOG_MAX_NUMBER", length = 11)
     Long logMaxNumber;
 
-    @Column(name = "DEVICE_TRAFFIC_SETTINGS", length = 11)
-    Long deviceTrafficSettings;
+    @Column(name = "DEVICE_TRAFFIC_SETTINGS", length = 10)
+    String deviceTrafficSettings;
 
     @Column(name = "STORAGE_DETECTION_CYCLE", length = 11)
     Long storageDetectionCycle;
