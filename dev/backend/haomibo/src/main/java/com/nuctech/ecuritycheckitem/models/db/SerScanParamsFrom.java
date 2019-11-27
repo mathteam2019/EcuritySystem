@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -44,6 +46,13 @@ public class SerScanParamsFrom extends BaseEntity implements Serializable {
 
     @Column(name = "DEVICE_ID", length = 20)
     Long deviceId;
+
+    @ToString.Exclude
+    @ManyToOne()
+    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("device")
+    private SysDevice device; // Relation to SysDevice table.
 
 
 }
