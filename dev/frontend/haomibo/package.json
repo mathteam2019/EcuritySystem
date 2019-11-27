@@ -45,6 +45,7 @@
     "vue-switches": "^2.0.1",
     "vue-tree-halower": "^1.8.3",
     "vue-yandex-maps": "^0.8.3",
+    "vue2-datepicker": "^3.1.1",
     "vue2-dropzone": "^3.5.7",
     "vue2-google-maps": "^0.10.6",
     "vue2-org-tree": "^1.2.1",

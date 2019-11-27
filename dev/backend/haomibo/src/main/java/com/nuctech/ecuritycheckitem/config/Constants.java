@@ -33,4 +33,6 @@ public class Constants {
             Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
     };
 
+    public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 }
