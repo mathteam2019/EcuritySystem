@@ -38,12 +38,12 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="accessFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -106,12 +106,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>

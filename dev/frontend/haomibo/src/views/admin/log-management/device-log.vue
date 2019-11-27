@@ -69,12 +69,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="deviceFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" data-format="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="deviceFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" data-format="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -172,12 +172,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="judgeFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="judgeFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="judgeFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="judgeFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss"></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -275,12 +275,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="manualFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="manualFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
