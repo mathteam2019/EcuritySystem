@@ -607,7 +607,7 @@
               title: this.$t('permission-management.th-org-parent-org-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '9%',
+              width: '8%',
               callback: (value) => {
 
                 return value ? value.orgNumber : this.$t('permission-management.org-none');
@@ -619,7 +619,7 @@
               title: this.$t('permission-management.th-org-parent-org-name'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '14%',
+              width: '8%',
               callback: (value) => {
 
                 return value ? value.orgName : this.$t('permission-management.org-none');
@@ -736,6 +736,11 @@
         });
 
         this.parentOrganizationNameSelectOptions = selectOptions;
+        if(selectOptions.length==0)
+          this.parentOrganizationNameSelectOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          })
 
       }
     },
