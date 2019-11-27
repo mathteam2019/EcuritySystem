@@ -2,6 +2,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -13,6 +14,7 @@ import com.querydsl.core.types.Predicate;
 
 import lombok.*;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -113,8 +115,6 @@ public class TaskManagementController extends BaseController {
         long alarmScan;
         double alarmScanRate;
 
-        Map<Integer, List<SerScan>> detailedScan;
-
     }
 
     /**
@@ -131,7 +131,7 @@ public class TaskManagementController extends BaseController {
         double noSuspictionJudgeRate;
         long suspictionJudge;
         double suspictionJudgeRate;
-        
+
     }
 
     /**
@@ -148,6 +148,8 @@ public class TaskManagementController extends BaseController {
         double seizureHandExaminationRate;
         long noSeizureHandExamination;
         double noSeizureHandExaminationRate;
+
+        long checkDuration;
 
     }
 
@@ -171,7 +173,9 @@ public class TaskManagementController extends BaseController {
             String status;
             Long fieldId;
             String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
         }
 
@@ -231,7 +235,9 @@ public class TaskManagementController extends BaseController {
             String status;
             Long fieldId;
             String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
         }
 
@@ -265,7 +271,9 @@ public class TaskManagementController extends BaseController {
             Long deviceId;
             String userCategory;
             String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
             String statWidth;
 
@@ -1069,7 +1077,6 @@ public class TaskManagementController extends BaseController {
         Predicate predicateDevice = null;
         Predicate predicateUsername = null;
         Predicate predicateUserCategory = null;
-        Predicate predicateStatisticWidth = null;
         Predicate predicateKeyDate = null;
 
 
@@ -1157,6 +1164,9 @@ public class TaskManagementController extends BaseController {
         long totalHandExam = serHandExaminationRepository.count(predicateTotal);
         long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
         long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
+
+        List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
+
 
         try {
 
