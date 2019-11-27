@@ -69,12 +69,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="deviceFilter.startTime"></b-form-input>
+                      <date-picker v-model="deviceFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="deviceFilter.endTime"></b-form-input>
+                      <date-picker v-model="deviceFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -172,12 +172,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="judgeFilter.startTime"></b-form-input>
+                      <date-picker v-model="judgeFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="judgeFilter.endTime"></b-form-input>
+                      <date-picker v-model="judgeFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -275,12 +275,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="manualFilter.startTime"></b-form-input>
+                      <date-picker v-model="manualFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="manualFilter.endTime"></b-form-input>
+                      <date-picker v-model="manualFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -350,13 +350,16 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'date-picker': DatePicker,
     },
     mounted() {
       this.$refs.securityLogTable.$parent.transform = this.transformTable.bind(this);
@@ -408,30 +411,29 @@
               dataClass: 'text-center'
             },
             {
-              name: 'number',
+              name: 'id',
               title: this.$t('log-management.device-log.number'),
-              sortField: 'number',
+              sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'device',
+              name: 'deviceName',
               title: this.$t('log-management.device-log.device'),
-              sortField: 'device',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'deviceNumber',
+              name: 'guid',
               title: this.$t('log-management.device-log.device-number'),
-              sortField: 'deviceNumber',
+              sortField: 'guid',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'user',
+              name: 'loginName',
               title: this.$t('log-management.device-log.user'),
-              sortField: 'user',
+              sortField: 'loginName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -457,9 +459,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'operatingTime',
+              name: 'time',
               title: this.$t('log-management.device-log.operating-time'),
-              sortField: 'operatingTime',
+              sortField: 'time',
               titleClass: 'text-center',
               dataClass: 'text-center',
             }
@@ -483,9 +485,8 @@
               dataClass: 'text-center',
             },
             {
-              name: 'device',
+              name: 'deviceName',
               title: this.$t('log-management.device-log.device'),
-              sortField: 'device',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -497,9 +498,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'user',
+              name: 'loginName',
               title: this.$t('log-management.device-log.user'),
-              sortField: 'user',
+              sortField: 'loginName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -551,9 +552,8 @@
               dataClass: 'text-center',
             },
             {
-              name: 'device',
+              name: 'deviceName',
               title: this.$t('log-management.device-log.device'),
-              sortField: 'device',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -565,9 +565,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'user',
+              name: 'loginName',
               title: this.$t('log-management.device-log.user'),
-              sortField: 'user',
+              sortField: 'loginName',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -620,6 +620,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          temp.deviceName = temp.device.deviceName;
           transformed.data.push(temp);
         }
         return transformed

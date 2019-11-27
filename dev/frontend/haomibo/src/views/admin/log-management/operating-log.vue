@@ -38,12 +38,12 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input type="date" v-model="accessFilter.operateStartTime"></b-form-input>
+                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input type="date" v-model="accessFilter.operateEndTime"></b-form-input>
+                      <date-picker v-model="accessFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -106,12 +106,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <b-form-input v-model="operatingFilter.operateStartTime"></b-form-input>
+                      <date-picker v-model="operatingFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <b-form-input v-model="operatingFilter.operateEndTime"></b-form-input>
+                      <date-picker v-model="operatingFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -199,12 +199,17 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getApiManager,getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
+
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'date-picker': DatePicker,
     },
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
