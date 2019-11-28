@@ -358,6 +358,10 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         SerArchiveTemplate serArchiveTemplate = optionalSerArchiveTemplate.get();
 
+        if(isUsedTemplate(serArchiveTemplate.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
+
         // Update status.
         serArchiveTemplate.setStatus(requestBody.getStatus());
 
@@ -367,6 +371,15 @@ public class ArchiveTemplateManagementController extends BaseController {
         serArchiveTemplateRepository.save(serArchiveTemplate);
 
         return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    private boolean isUsedTemplate(long archiveTemplateId) {
+        Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
+                serArchive.archivesTemplateId.eq(archiveTemplateId));
+        if (!optionalSerArchive.isPresent()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -381,7 +394,7 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if template is existing.
+        // Check if indicator is existing.
         Optional<SerArchiveIndicators> optionalSerArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.
                 serArchiveIndicators.indicatorsId.eq(requestBody.getIndicatorsId()));
         if (!optionalSerArchiveIndicators.isPresent()) {
@@ -389,6 +402,11 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         SerArchiveIndicators serArchiveIndicators = optionalSerArchiveIndicators.get();
+
+        Long archiveTemplateId = serArchiveIndicators.getArchivesTemplateId();
+        if(archiveTemplateId != null && isUsedTemplate(archiveTemplateId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
 
         // Update status.
         serArchiveIndicators.setIsNull(requestBody.getIsNull());
@@ -484,10 +502,9 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        /*
-        Todo
-            Check can modify or not(other archive contain this template or not)
-         */
+        if(isUsedTemplate(oldSerArchiveTemplate.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
 
         //don't modify created by and create time.
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate(oldSerArchiveTemplate.getCreatedBy(),
@@ -531,17 +548,16 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
 
-        /*
-        Todo
-            Check if archive contain this template or not
-         */
+        if(isUsedTemplate(serArchiveTemplate.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
 
         //remove it's indicators
-//        if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
-//            for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
-//                serArchiveIndicatorsRepository.delete(serArchiveTemplate.getArchiveIndicatorsList().get(i));
-//            }
-//        }
+        if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
+            for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
+                serArchiveIndicatorsRepository.delete(serArchiveTemplate.getArchiveIndicatorsList().get(i));
+            }
+        }
 
         serArchiveTemplateRepository.delete(serArchiveTemplate);
 
@@ -569,7 +585,10 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
+        Long archiveTemplateId = serArchiveIndicators.getArchivesTemplateId();
+        if(archiveTemplateId != null && isUsedTemplate(archiveTemplateId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
 
         serArchiveIndicatorsRepository.delete(serArchiveIndicators);
 

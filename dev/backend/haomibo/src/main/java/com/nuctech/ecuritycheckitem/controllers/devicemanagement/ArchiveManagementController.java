@@ -416,6 +416,11 @@ public class ArchiveManagementController extends BaseController {
         SerArchive oldSerArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(requestBody.getArchiveId())).orElse(null);
 
+        if(sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.archiveId.eq(oldSerArchive.getArchiveId())).isPresent()) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
+
         //check if archive exist
         if(oldSerArchive == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -500,6 +505,11 @@ public class ArchiveManagementController extends BaseController {
         //check archive exist or not
         if(serArchive == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.archiveId.eq(serArchive.getArchiveId())).isPresent()) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
 

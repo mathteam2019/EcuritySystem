@@ -13,6 +13,7 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -252,6 +253,14 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        //Check if archive template contain this category
+
+
+        if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
+                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
+
         //Don't modify created by and created time
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory(oldSysDeviceCategory.getCreatedBy(),
                 oldSysDeviceCategory.getCreatedTime());
@@ -286,10 +295,14 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
-        /*
-        TODO
-            Check if device contain this category
-        */
+
+        //Check if archive template contain this category
+
+
+        if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
+                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
 
 
         sysDeviceCategoryRepository.delete(SysDeviceCategory.builder().categoryId(requestBody.getCategoryId()).build());

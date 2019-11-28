@@ -33,7 +33,9 @@ public enum ResponseMessage {
     BAD_REQUEST("bad_request"),
     HAS_USERS("has_users"),
     HAS_USER_GROUPS("has_user_groups"),
-    HAS_RESOURCES("has_resources");
+    HAS_RESOURCES("has_resources"),
+    HAS_ARCHIVES("has_archives"),
+    HAS_DEVICES("has_devices");
 
     private final String value;
 

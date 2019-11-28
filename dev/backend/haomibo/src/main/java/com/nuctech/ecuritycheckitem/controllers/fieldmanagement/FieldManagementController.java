@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -266,6 +267,16 @@ public class FieldManagementController extends BaseController {
         // Check if parent field is existing.
         if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //check if device contain this field
+
+        //Check if archive template contain this category
+
+
+        if(sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.fieldId.eq(requestBody.getFieldId())).isPresent()) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
         SysField sysField = requestBody.convert2SysField();
