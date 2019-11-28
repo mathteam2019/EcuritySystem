@@ -842,3 +842,65 @@ $check-checked-color:#67c23a;
   }
 
 }
+
+.org-tree {
+  .org-tree-node:not(:first-child):before, .org-tree-node:not(:last-child):after {
+    border-top-color: #7d7d7d;
+  }
+  .org-tree-node :after {
+    border-color: #7d7d7d;
+  }
+  .org-tree-node-children:before {
+    border-left-color: #7d7d7d;
+  }
+  .org-tree-node-label {
+    .bg-level-1 {
+      background-color: #2b3f70;
+    }
+
+    .bg-level-2 {
+      background-color: #576872;
+    }
+
+    .bg-level-3 {
+      background-color: #546094;
+    }
+    .bg-level-4 {
+      background-color: #3d84a8;
+    }
+    .bg-level-5 {
+      background-color: #2c9279;
+    }
+
+    .org-tree-node-label-inner {
+      padding: 0!important;
+      min-width: 120px;
+      &>div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        &>.org-content-top {
+          padding: 5px;
+          background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,0.3) 100%);
+          &>span {
+            position: absolute;
+            left: 10px;
+            background: #f4ad3c;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            padding: 0;
+            text-align: center;
+            line-height: 16px;
+          }
+        }
+        &>.org-content-bottom {
+          background: white;
+          padding: 5px;
+          color: #676e6f;
+        }
+      }
+    }
+  }
+}
