@@ -358,9 +358,6 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         SerArchiveTemplate serArchiveTemplate = optionalSerArchiveTemplate.get();
 
-        if(isUsedTemplate(serArchiveTemplate.getArchivesTemplateId())) {
-            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
-        }
 
         // Update status.
         serArchiveTemplate.setStatus(requestBody.getStatus());
@@ -455,7 +452,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     /**
-     * Archive Template create request.
+     * Archive Indicator create request.
      */
     @RequestMapping(value = "/archive-indicator/create", method = RequestMethod.POST)
     public Object archiveIndicatorCreate(
@@ -474,7 +471,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         serArchiveIndicatorsRepository.save(serArchiveIndicators);
 
-        return new CommonResponseBody(ResponseMessage.OK);
+        return new CommonResponseBody(ResponseMessage.OK, serArchiveIndicators.getIndicatorsId());
     }
 
     /**
