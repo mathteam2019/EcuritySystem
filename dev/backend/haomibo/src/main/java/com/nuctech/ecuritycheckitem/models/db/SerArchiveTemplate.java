@@ -47,6 +47,8 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     public static class Status {
         public static final String ACTIVE = "active";
         public static final String INACTIVE = "inactive";
+        public static final String YES = "yes";
+        public static final String NO = "no";
     }
 
     @Id

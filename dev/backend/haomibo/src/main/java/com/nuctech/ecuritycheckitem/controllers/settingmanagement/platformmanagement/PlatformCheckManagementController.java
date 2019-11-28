@@ -14,6 +14,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.sun.istack.NotNull;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 
@@ -54,9 +56,15 @@ public class PlatformCheckManagementController extends BaseController {
 
         String handRecogniseColour;
 
+        @NotNull
+        @Pattern(regexp = SerPlatformCheckParams.HistoryData.BUSINESS + "|" + SerPlatformCheckParams.HistoryData.CARTOON
+                + "|" + SerPlatformCheckParams.HistoryData.CONVERSION+ "|" + SerPlatformCheckParams.HistoryData.ORIGINAL)
         String historyDataStorage;
 
-        String displayDataExport;
+        @NotNull
+        @Pattern(regexp = SerPlatformCheckParams.HistoryData.BUSINESS + "|" + SerPlatformCheckParams.HistoryData.CARTOON
+                + "|" + SerPlatformCheckParams.HistoryData.CONVERSION+ "|" + SerPlatformCheckParams.HistoryData.ORIGINAL)
+        String historyDataExport;
 
         Long displayDeleteSuspicion;
 
@@ -76,7 +84,7 @@ public class PlatformCheckManagementController extends BaseController {
                     .handOverTime(this.getHandOverTime())
                     .handRecogniseColour(this.getHandRecogniseColour())
                     .historyDataStorage(this.getHistoryDataStorage())
-                    .displayDataExport(this.getDisplayDataExport())
+                    .historyDataExport(this.getHistoryDataExport())
                     .displayDeleteSuspicion(this.getDisplayDeleteSuspicion())
                     .displayDeleteSuspicionColour(this.getDisplayDeleteSuspicionColour())
                     .build();

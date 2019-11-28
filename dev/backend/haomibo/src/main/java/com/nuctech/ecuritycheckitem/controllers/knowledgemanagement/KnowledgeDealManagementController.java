@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealPendingExcelView;
+import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealPendingPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -44,9 +45,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -117,14 +116,12 @@ public class KnowledgeDealManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class KnowledgeCaseGenerateRequestBody {
-
         @NotNull
-        String idList;
+        String exportType;
 
+        String idList;
         @NotNull
         Boolean isAll;
-
-
     }
 
     /**
@@ -241,45 +238,66 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case generate excel request.
      */
-    @RequestMapping(value = "/generate/pending/excel", method = RequestMethod.GET)
-    public Object knowledgeCasePendingGenerateExcel(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping(value = "/generate/pending/export", method = RequestMethod.POST)
+    public Object knowledgeCasePendingGenerateExcel(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
 
-        Workbook workbook = null;
-        byte[] contentReturn=null;
-        /* Here I got the object structure (pulling it from DAO layer) that I want to be export as part of Excel. */
-        List<SerKnowledgeCaseDeal> dealList = serKnowledgeCaseDealRepository.findAll();
-        try{
-            /* Logic to Export Excel */
-            String fileName = "knowledge-pending.xlsx";
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-            OutputStream out;
-            workbook = new KnowledgeDealPendingExcelView().buildExcelDocument(dealList);
-            out = response.getOutputStream();
-            workbook.write(out);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            workbook.write(baos);
-            contentReturn = baos.toByteArray();
-            workbook.close();
-            /* Export Excel logic end */
-
-        } catch (Exception ecx) {
-
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        ByteArrayResource resource = new ByteArrayResource(contentReturn);
+        List<SerKnowledgeCaseDeal> dealList = serKnowledgeCaseDealRepository.findAll();
+        List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < dealList.size(); i ++) {
+                SerKnowledgeCaseDeal deal = dealList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(deal.getCaseDealId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(deal);
+                }
+            }
+        } else {
+            exportList = dealList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = KnowledgeDealPendingPdfView.buildExcelDocument(exportList);
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/vnd.ms-excel"));
-        return ResponseEntity.ok()
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+
+        return ResponseEntity
+                .ok()
                 .headers(headers)
-                .contentLength(contentReturn.length)
-                //.contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(resource);
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
 
 
 
 
         //return new ResponseEntity<byte[]>(contentReturn, headers, HttpStatus.OK);
-    }
+
 
 }

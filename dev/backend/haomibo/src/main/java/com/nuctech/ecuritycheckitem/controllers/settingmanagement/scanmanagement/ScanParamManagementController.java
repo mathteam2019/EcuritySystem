@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.scanmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -52,7 +53,7 @@ public class ScanParamManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String deviceName;
-            String fieldDesignation;
+            String status;
         }
 
         @NotNull
@@ -139,8 +140,8 @@ public class ScanParamManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getDeviceName())) {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
             }
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.device.field.fieldDesignation.contains(filter.getFieldDesignation()));
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.device.status.eq(filter.getStatus()));
             }
         }
 
@@ -170,11 +171,34 @@ public class ScanParamManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName", "field", "deviceSerial", "guid"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
 
         value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Scan Param datatable data.
+     */
+    @RequestMapping(value = "/get-all", method = RequestMethod.POST)
+    public Object scanParamGetAll() {
+
+        QSerScanParam builder = QSerScanParam.serScanParam;
+
+
+        List<SerScanParam> data = serScanParamRepository.findAll();
+
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, data));
+
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName"));
+
+        value.setFilters(filters);
+
 
         return value;
     }

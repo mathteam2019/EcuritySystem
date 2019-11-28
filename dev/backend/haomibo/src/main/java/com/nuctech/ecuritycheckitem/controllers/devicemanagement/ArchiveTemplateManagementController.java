@@ -13,11 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
-import com.nuctech.ecuritycheckitem.models.db.SerArchiveIndicators;
-import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
-import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
@@ -100,6 +96,25 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     /**
+     * Archive Template update status request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ArchiveIndicatorUpdateIsNullRequestBody {
+
+        @NotNull
+        Long indicatorsId;
+
+        @NotNull
+        @Pattern(regexp = SerArchiveTemplate.Status.YES + "|" + SerArchiveTemplate.Status.NO)
+        String isNull;
+
+    }
+
+    /**
      * Archive Template create request body.
      */
     @Getter
@@ -138,6 +153,40 @@ public class ArchiveTemplateManagementController extends BaseController {
                     .status(SerArchiveTemplate.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .archiveIndicatorsList(this.getArchiveIndicatorsList())
+                    .build();
+
+        }
+
+    }
+
+
+    /**
+     * Archive Indicator create request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ArchiveIndicatorCreateRequestBody {
+
+        @NotNull
+        String indicatorsName;
+
+        @NotNull
+        String indicatorsUnit;
+
+        @NotNull
+        @Pattern(regexp = SerArchiveTemplate.Status.YES + "|" + SerArchiveTemplate.Status.NO)
+        String isNull;
+
+        SerArchiveIndicators convert2SerArchiveIndicator() {
+
+            return SerArchiveIndicators
+                    .builder()
+                    .indicatorsName(this.getIndicatorsName())
+                    .indicatorsUnit(this.getIndicatorsUnit())
+                    .isNull(this.getIsNull())
                     .build();
 
         }
@@ -207,6 +256,20 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         @NotNull
         Long archivesTemplateId;
+    }
+
+    /**
+     * Archive Indicator delete request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ArchiveIndicatorDeleteRequestBody {
+
+        @NotNull
+        Long indicatorsId;
     }
 
 
@@ -307,6 +370,38 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     /**
+     * Archive Indicator update status request.
+     */
+    @RequestMapping(value = "/archive-indicator/update-isnull", method = RequestMethod.POST)
+    public Object archiveIndicatorUpdateIsNull(
+            @RequestBody @Valid ArchiveIndicatorUpdateIsNullRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        // Check if template is existing.
+        Optional<SerArchiveIndicators> optionalSerArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.
+                serArchiveIndicators.indicatorsId.eq(requestBody.getIndicatorsId()));
+        if (!optionalSerArchiveIndicators.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SerArchiveIndicators serArchiveIndicators = optionalSerArchiveIndicators.get();
+
+        // Update status.
+        serArchiveIndicators.setIsNull(requestBody.getIsNull());
+
+        // Add edited info.
+        serArchiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+
+        serArchiveIndicatorsRepository.save(serArchiveIndicators);
+
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
      * Archive Template create request.
      */
     @RequestMapping(value = "/archive-template/create", method = RequestMethod.POST)
@@ -332,9 +427,35 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
             for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
+                SerArchiveIndicators archiveIndicators = serArchiveTemplate.getArchiveIndicatorsList().get(i);
+                archiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
+                archiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                 serArchiveIndicatorsRepository.save(serArchiveTemplate.getArchiveIndicatorsList().get(i));
             }
         }
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
+     * Archive Template create request.
+     */
+    @RequestMapping(value = "/archive-indicator/create", method = RequestMethod.POST)
+    public Object archiveIndicatorCreate(
+            @RequestBody @Valid ArchiveIndicatorCreateRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        SerArchiveIndicators serArchiveIndicators = requestBody.convert2SerArchiveIndicator();
+
+        // Add createdInfo.
+        serArchiveIndicators.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+
+        serArchiveIndicatorsRepository.save(serArchiveIndicators);
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -377,10 +498,14 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
 
-        /*
-            Todo
-               Modify correspond indicators.
-         */
+        if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
+            for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
+                SerArchiveIndicators archiveIndicators = serArchiveTemplate.getArchiveIndicatorsList().get(i);
+                archiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
+                archiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                serArchiveIndicatorsRepository.save(serArchiveTemplate.getArchiveIndicatorsList().get(i));
+            }
+        }
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -419,6 +544,34 @@ public class ArchiveTemplateManagementController extends BaseController {
 //        }
 
         serArchiveTemplateRepository.delete(serArchiveTemplate);
+
+
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
+     * Archive Indicators delete request.
+     */
+    @RequestMapping(value = "/archive-indicator/delete", method = RequestMethod.POST)
+    public Object archiveIndicatorDelete(
+            @RequestBody @Valid ArchiveIndicatorDeleteRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SerArchiveIndicators serArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.serArchiveIndicators
+                .indicatorsId.eq(requestBody.getIndicatorsId())).orElse(null);
+
+        //check indicators exist or not
+        if(serArchiveIndicators == null) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+
+        serArchiveIndicatorsRepository.delete(serArchiveIndicators);
 
 
         return new CommonResponseBody(ResponseMessage.OK);

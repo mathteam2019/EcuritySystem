@@ -521,7 +521,6 @@
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      Vue2OrgTree
     },
     mixins: [validationMixin],
     validations: {
