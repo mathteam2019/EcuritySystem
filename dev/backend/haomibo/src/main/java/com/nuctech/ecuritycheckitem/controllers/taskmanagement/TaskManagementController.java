@@ -106,6 +106,9 @@ public class TaskManagementController extends BaseController {
     @Setter
     class TotalStatistics {
 
+        long id;
+        long time;
+
         ScanStatistics scanStatistics;
         JudgeStatistics judgeStatistics;
         HandExaminationStatistics handExaminationStatistics;
@@ -138,6 +141,8 @@ public class TaskManagementController extends BaseController {
     class ScanStatistics {
 
         String axisLabel;
+        long id;
+        long time;
         long totalScan;
         long invalidScan;
         double invalidScanRate;
@@ -159,6 +164,8 @@ public class TaskManagementController extends BaseController {
     class JudgeStatistics {
 
         String axisLabel;
+        long id;
+        long time;
         long totalJudge;
         long noSuspictionJudge;
         double noSuspictionJudgeRate;
@@ -176,6 +183,8 @@ public class TaskManagementController extends BaseController {
     class HandExaminationStatistics {
 
         String axisLabel;
+        long id;
+        long time;
         long totalHandExamination;
         long seizureHandExamination;
         double seizureHandExaminationRate;
@@ -803,7 +812,11 @@ public class TaskManagementController extends BaseController {
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
             ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
+
+            scanStat.setId(i - startIndex + 1);
+            
             detailedStatistics.put(i, scanStat);
+
         }
 
 
@@ -956,11 +969,13 @@ public class TaskManagementController extends BaseController {
             long passedScan = serScanRepository.count(predicatePassed);
             long alarmScan = serScanRepository.count(predicateAlarm);
 
+            scanStatistics.setId(keyDate);
+            scanStatistics.setTime(keyDate);
             scanStatistics.setTotalScan(totalScan);
             scanStatistics.setValidScan(validScan);
             scanStatistics.setInvalidScan(invalidScan);
             scanStatistics.setPassedScan(passedScan);
-            scanStatistics.setPassedScan(alarmScan);
+            scanStatistics.setAlarmScan(alarmScan);
 
             scanStatistics.setValidScanRate(validScan / (double) totalScan);
             scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
@@ -1077,8 +1092,11 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            JudgeStatistics scanStat = getJudgeStatisticsByDate(requestBody, i);
-            detailedStatistics.put(i, scanStat);
+            JudgeStatistics judgeStat = getJudgeStatisticsByDate(requestBody, i);
+
+            judgeStat.setId(i - startIndex + 1);
+
+            detailedStatistics.put(i, judgeStat);
         }
 
         response.setTotalStatistics(totalStatistics);
@@ -1201,6 +1219,8 @@ public class TaskManagementController extends BaseController {
         long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
 
         try {
+            judgeStatistics.setId(keyDate);
+            judgeStatistics.setTime(keyDate);
             judgeStatistics.setTotalJudge(totalJudge);
             judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
             judgeStatistics.setSuspictionJudge(suspictionJudge);
@@ -1329,8 +1349,11 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            HandExaminationStatistics scanStat = getHandExaminationStatisticsByDate(requestBody, i);
-            detailedStatistics.put(i, scanStat);
+            HandExaminationStatistics handExaminationStat = getHandExaminationStatisticsByDate(requestBody, i);
+
+            handExaminationStat.setId(i - startIndex + 1);
+
+            detailedStatistics.put(i, handExaminationStat);
         }
 
         response.setTotalStatistics(totalStatistics);
@@ -1456,6 +1479,8 @@ public class TaskManagementController extends BaseController {
 
         try {
 
+            handExaminationStatistics.setId(keyDate);
+            handExaminationStatistics.setTime(keyDate);
             handExaminationStatistics.setTotalHandExamination(totalHandExam);
             handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
             handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
@@ -1570,8 +1595,9 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            TotalStatistics scanStat = getPreviewStatisticsByDate(requestBody, i);
-            detailedStatistics.put(i, scanStat);
+            TotalStatistics totalStat = getPreviewStatisticsByDate(requestBody, i);
+            totalStat.setId(i - startIndex + 1);
+            detailedStatistics.put(i, totalStat);
         }
 
         response.setTotalStatistics(totalStatistics);
@@ -1582,7 +1608,7 @@ public class TaskManagementController extends BaseController {
             response.setCurrent_page(requestBody.getCurrentPage());
             response.setPer_page(requestBody.getPerPage());
             response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-            
+
         }
 
         return response;
@@ -1597,9 +1623,13 @@ public class TaskManagementController extends BaseController {
         HandExaminationStatistics handExaminationStatistics = getHandExaminationStatisticsByDate(requestBody, keyDate);
 
         TotalStatistics totalStatistics = new TotalStatistics();
+
+        totalStatistics.setId(keyDate);
+        totalStatistics.setTime(keyDate);
         totalStatistics.setScanStatistics(scanStatistics);
         totalStatistics.setJudgeStatistics(judgeStatistics);
         totalStatistics.setHandExaminationStatistics(handExaminationStatistics);
+
 
         return totalStatistics;
     }
