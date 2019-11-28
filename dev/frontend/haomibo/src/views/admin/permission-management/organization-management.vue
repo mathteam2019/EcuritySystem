@@ -8,17 +8,7 @@
       background: transparent !important;
     }
 
-    .bg-level-1 {
-      background-color: #056aa5;
-    }
 
-    .bg-level-2 {
-      background-color: #047a98;
-    }
-
-    .bg-level-3 {
-      background-color: #576872;
-    }
   }
 </style>
 
@@ -691,7 +681,7 @@
               ...item,
               children: nest(items, item.orgId),
               id: id++,
-              label: `${item.orgNumber} ${item.orgName}`
+              label: `<div class="org-content-top"><span>${id}</span>${item.orgNumber}</div><div class="org-content-bottom">${item.orgName}</div>`
             }));
 
         this.treeData = nest(newVal)[0];
@@ -886,12 +876,20 @@
         }
       },
       renderTreeContent: function (h, data) { // diagram page settings
-        return data.label;
+
+        return h('div', {
+            domProps: {
+              innerHTML: data.label
+            }
+          }
+        );
+
+        // return data.label;
       },
       treeLabelClass: function (data) {
         let level = fnGetOrgLevel(data);
-        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3'];
-        return `${labelClasses[level % 3]} text-white`;
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3','bg-level-4','bg-level-5'];
+        return `${labelClasses[level % 5]} text-white`;
       },
 
       showCreatePage() { // move to create page
