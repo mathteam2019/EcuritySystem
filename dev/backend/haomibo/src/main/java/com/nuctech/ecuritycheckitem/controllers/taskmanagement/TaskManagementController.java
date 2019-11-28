@@ -771,27 +771,33 @@ public class TaskManagementController extends BaseController {
         int curPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
 
-        int startIndex = (curPage - 1) * perPage + 1;
-        int endIndex = (curPage) * perPage;
+        int startIndex = keyValueMin;
+        int endIndex = keyValueMax;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            startIndex = keyValueMin + startIndex - 1;
-            endIndex = startIndex + perPage - 1;
-        }
+        if (curPage != 0 && perPage != 0) {
+            startIndex = (curPage - 1) * perPage + 1;
+            endIndex = (curPage) * perPage;
 
-        if (startIndex < keyValueMin) {
-            startIndex = keyValueMin;
-        }
-        if (endIndex > keyValueMax) {
-            endIndex = keyValueMax;
-        }
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                startIndex = keyValueMin + startIndex - 1;
+                endIndex = startIndex + perPage - 1;
+            }
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            response.setFrom(startIndex - keyValueMin + 1);
-            response.setTo(endIndex - keyValueMin + 1);
-        } else {
-            response.setFrom(startIndex);
-            response.setTo(endIndex);
+            if (startIndex < keyValueMin) {
+                startIndex = keyValueMin;
+            }
+            if (endIndex > keyValueMax) {
+                endIndex = keyValueMax;
+            }
+
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                response.setFrom(startIndex - keyValueMin + 1);
+                response.setTo(endIndex - keyValueMin + 1);
+            } else {
+                response.setFrom(startIndex);
+                response.setTo(endIndex);
+            }
         }
 
         int i = 0;
@@ -803,10 +809,13 @@ public class TaskManagementController extends BaseController {
 
         response.setTotalStatistics(totalStatistics);
         response.setDetailedStatistics(detailedStatistics);
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setPer_page(requestBody.getPerPage());
-        response.setLast_page(response.getTotal() / response.getPer_page() + 1);
 
+        if (curPage != 0 && perPage != 0) {
+
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+        }
         return response;
 
     }
@@ -1037,27 +1046,33 @@ public class TaskManagementController extends BaseController {
         int curPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
 
-        int startIndex = (curPage - 1) * perPage + 1;
-        int endIndex = (curPage) * perPage;
+        int startIndex = keyValueMin;
+        int endIndex = keyValueMax;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            startIndex = keyValueMin + startIndex - 1;
-            endIndex = startIndex + perPage - 1;
-        }
+        if (curPage != 0 && perPage != 0) {
 
-        if (startIndex < keyValueMin) {
-            startIndex = keyValueMin;
-        }
-        if (endIndex > keyValueMax) {
-            endIndex = keyValueMax;
-        }
+            startIndex = (curPage - 1) * perPage + 1;
+            endIndex = (curPage) * perPage;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            response.setFrom(startIndex - keyValueMin + 1);
-            response.setTo(endIndex - keyValueMin + 1);
-        } else {
-            response.setFrom(startIndex);
-            response.setTo(endIndex);
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                startIndex = keyValueMin + startIndex - 1;
+                endIndex = startIndex + perPage - 1;
+            }
+
+            if (startIndex < keyValueMin) {
+                startIndex = keyValueMin;
+            }
+            if (endIndex > keyValueMax) {
+                endIndex = keyValueMax;
+            }
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                response.setFrom(startIndex - keyValueMin + 1);
+                response.setTo(endIndex - keyValueMin + 1);
+            } else {
+                response.setFrom(startIndex);
+                response.setTo(endIndex);
+            }
         }
 
         int i = 0;
@@ -1068,9 +1083,14 @@ public class TaskManagementController extends BaseController {
 
         response.setTotalStatistics(totalStatistics);
         response.setDetailedStatistics(detailedStatistics);
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setPer_page(requestBody.getPerPage());
-        response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+        if (curPage != 0 && perPage != 0) {
+
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+        }
 
         return response;
 
@@ -1197,7 +1217,6 @@ public class TaskManagementController extends BaseController {
     }
 
 
-
     private HandExaminationStatisticsResponse getHandExaminationStatistics(StatisticsRequestBody requestBody) {
 
         HandExaminationStatistics totalStatistics = new HandExaminationStatistics();
@@ -1279,27 +1298,33 @@ public class TaskManagementController extends BaseController {
         int curPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
 
-        int startIndex = (curPage - 1) * perPage + 1;
-        int endIndex = (curPage) * perPage;
+        int startIndex = keyValueMin;
+        int endIndex = keyValueMax;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            startIndex = keyValueMin + startIndex - 1;
-            endIndex = startIndex + perPage - 1;
-        }
+        if (curPage != 0 && perPage != 0) {
 
-        if (startIndex < keyValueMin) {
-            startIndex = keyValueMin;
-        }
-        if (endIndex > keyValueMax) {
-            endIndex = keyValueMax;
-        }
+            startIndex = (curPage - 1) * perPage + 1;
+            endIndex = (curPage) * perPage;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            response.setFrom(startIndex - keyValueMin + 1);
-            response.setTo(endIndex - keyValueMin + 1);
-        } else {
-            response.setFrom(startIndex);
-            response.setTo(endIndex);
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                startIndex = keyValueMin + startIndex - 1;
+                endIndex = startIndex + perPage - 1;
+            }
+
+            if (startIndex < keyValueMin) {
+                startIndex = keyValueMin;
+            }
+            if (endIndex > keyValueMax) {
+                endIndex = keyValueMax;
+            }
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                response.setFrom(startIndex - keyValueMin + 1);
+                response.setTo(endIndex - keyValueMin + 1);
+            } else {
+                response.setFrom(startIndex);
+                response.setTo(endIndex);
+            }
         }
 
         int i = 0;
@@ -1310,9 +1335,14 @@ public class TaskManagementController extends BaseController {
 
         response.setTotalStatistics(totalStatistics);
         response.setDetailedStatistics(detailedStatistics);
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setPer_page(requestBody.getPerPage());
-        response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+        if (curPage != 0 && perPage != 0) {
+
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+        }
 
 
         return response;
@@ -1509,27 +1539,33 @@ public class TaskManagementController extends BaseController {
         int curPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
 
-        int startIndex = (curPage - 1) * perPage + 1;
-        int endIndex = (curPage) * perPage;
+        int startIndex = keyValueMin;
+        int endIndex = keyValueMax;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            startIndex = keyValueMin + startIndex - 1;
-            endIndex = startIndex + perPage - 1;
-        }
+        if (curPage != 0 && perPage != 0) {
 
-        if (startIndex < keyValueMin) {
-            startIndex = keyValueMin;
-        }
-        if (endIndex > keyValueMax) {
-            endIndex = keyValueMax;
-        }
+            startIndex = (curPage - 1) * perPage + 1;
+            endIndex = (curPage) * perPage;
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
-            response.setFrom(startIndex - keyValueMin + 1);
-            response.setTo(endIndex - keyValueMin + 1);
-        } else {
-            response.setFrom(startIndex);
-            response.setTo(endIndex);
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                startIndex = keyValueMin + startIndex - 1;
+                endIndex = startIndex + perPage - 1;
+            }
+
+            if (startIndex < keyValueMin) {
+                startIndex = keyValueMin;
+            }
+            if (endIndex > keyValueMax) {
+                endIndex = keyValueMax;
+            }
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                response.setFrom(startIndex - keyValueMin + 1);
+                response.setTo(endIndex - keyValueMin + 1);
+            } else {
+                response.setFrom(startIndex);
+                response.setTo(endIndex);
+            }
         }
 
         int i = 0;
@@ -1540,9 +1576,14 @@ public class TaskManagementController extends BaseController {
 
         response.setTotalStatistics(totalStatistics);
         response.setDetailedStatistics(detailedStatistics);
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setPer_page(requestBody.getPerPage());
-        response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+        if (curPage != 0 && perPage != 0) {
+
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+            
+        }
 
         return response;
 
