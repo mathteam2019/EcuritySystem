@@ -171,7 +171,7 @@ public class ScanParamManagementController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName", "field"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName", "field", "deviceSerial", "guid"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
 
         value.setFilters(filters);
