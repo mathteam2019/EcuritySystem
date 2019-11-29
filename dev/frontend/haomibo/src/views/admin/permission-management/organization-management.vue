@@ -674,14 +674,14 @@
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let id = 0;
-        let nest = (items, id = 0) =>
+        let nest = (items, id = 0, depth = 1) =>
           items
             .filter(item => item.parentOrgId == id)
             .map(item => ({
               ...item,
-              children: nest(items, item.orgId),
+              children: nest(items, item.orgId, depth + 1),
               id: id++,
-              label: `<div class="org-content-top"><span>${id}</span>${item.orgNumber}</div><div class="org-content-bottom">${item.orgName}</div>`
+              label: `<div class="org-content-top"><span>${depth}</span>${item.orgNumber}</div><div class="org-content-bottom">${item.orgName}</div>`
             }));
 
         this.treeData = nest(newVal)[0];
