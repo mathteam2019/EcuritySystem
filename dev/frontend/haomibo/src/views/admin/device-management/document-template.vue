@@ -103,154 +103,157 @@
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus !== 'list'" class="form-section d-flex flex-column">
-        <b-row>
-          <b-col xxs="12" md="4" lg="3">
-            <b-form-group>
-              <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
-              </template>
-              <b-form-input type="text" v-model="basicForm.archivesTemplateNumber"
-                            :placeholder="$t('device-management.template-number-placeholder')"/>
-              <div class="invalid-feedback d-block">
-                {{ (submitted && !$v.basicForm.archivesTemplateNumber.required) ?
-                $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-              </div>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
-              </template>
-              <b-form-input type="text" v-model="basicForm.templateName"
-                            :placeholder="$t('device-management.template-name-placeholder')"/>
-              <div class="invalid-feedback d-block">
-                {{ (submitted && !$v.basicForm.templateName.required) ?
-                $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-              </div>
-            </b-form-group>
-            <b-form-group>
-              <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
-              </template>
-              <b-form-select v-model="basicForm.categoryId" :options="categorySelectOptions"
-                             :disabled="pageStatus === 'show'"
-                             :placeholder="$t('device-management.device-classify-placeholder')" plain/>
-              <div class="invalid-feedback d-block">
-                {{ (submitted && !$v.basicForm.categoryId.required) ?
-                $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-              </div>
-            </b-form-group>
-            <b-form-group :label="$t('device-management.manufacture')">
-              <b-form-select v-model="basicForm.manufacturer" :options="manufacturerOptions"
-                             :disabled="pageStatus === 'show'" plain/>
-            </b-form-group>
-            <b-form-group :label="$t('device-management.device-model')">
-              <b-form-input type="text" v-model="basicForm.originalModel"
-                            :placeholder="$t('device-management.origin-model-placeholder')"/>
-            </b-form-group>
-          </b-col>
-          <b-col xxs="12" md="8" lg="9">
-            <b-row>
-              <b-col v-if="pageStatus!=='show'" cols="12" class="d-flex justify-content-between mb-2">
-                <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
-                <b-button size="sm" variant="success default">
-                  <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
-                </b-button>
-              </b-col>
-              <b-col v-if="pageStatus!=='show'" cols="12">
-                <b-row>
-                  <b-col>
-                    <b-form-group :label="$t('device-management.indicator.name')">
-                      <b-form-input type="text" v-model="indicatorForm.indicatorsName"/>
-                    </b-form-group>
-                  </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('device-management.indicator.unit')">
-                      <b-form-input type="text" v-model="indicatorForm.indicatorsUnit"/>
-                    </b-form-group>
-                  </b-col>
-                  <b-col>
-                    <b-form-group :label="$t('device-management.indicator.isNull')">
-                      <b-form-select v-model="indicatorForm.isNull" :options="yesNoOptions" plain/>
-                    </b-form-group>
-                  </b-col>
-                  <b-col class="d-flex">
-                    <b-button size="sm" variant="success default" class="align-self-center" @click="onSaveIndicator()">
-                      <i class="icofont-save"></i> {{$t('permission-management.save')}}
-                    </b-button>
-                  </b-col>
-                </b-row>
-              </b-col>
-              <b-col cols="12" class="table-responsive text-center">
+      <div v-show="pageStatus !== 'list'">
+        <div  class="form-section d-flex flex-column">
+          <b-row>
+            <b-col xxs="12" md="4" lg="3">
+              <b-form-group>
+                <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-input type="text" v-model="basicForm.archivesTemplateNumber"
+                              :placeholder="$t('device-management.template-number-placeholder')"/>
+                <div class="invalid-feedback d-block">
+                  {{ (submitted && !$v.basicForm.archivesTemplateNumber.required) ?
+                  $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                </div>
+              </b-form-group>
+              <b-form-group>
+                <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-input type="text" v-model="basicForm.templateName"
+                              :placeholder="$t('device-management.template-name-placeholder')"/>
+                <div class="invalid-feedback d-block">
+                  {{ (submitted && !$v.basicForm.templateName.required) ?
+                  $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                </div>
+              </b-form-group>
+              <b-form-group>
+                <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
+                </template>
+                <b-form-select v-model="basicForm.categoryId" :options="categorySelectOptions"
+                               :disabled="pageStatus === 'show'"
+                               :placeholder="$t('device-management.device-classify-placeholder')" plain/>
+                <div class="invalid-feedback d-block">
+                  {{ (submitted && !$v.basicForm.categoryId.required) ?
+                  $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                </div>
+              </b-form-group>
+              <b-form-group :label="$t('device-management.manufacture')">
+                <b-form-select v-model="basicForm.manufacturer" :options="manufacturerOptions"
+                               :disabled="pageStatus === 'show'" plain/>
+              </b-form-group>
+              <b-form-group :label="$t('device-management.device-model')">
+                <b-form-input type="text" v-model="basicForm.originalModel"
+                              :placeholder="$t('device-management.origin-model-placeholder')"/>
+              </b-form-group>
+            </b-col>
+            <b-col xxs="12" md="8" lg="9">
+              <b-row>
+                <b-col v-if="pageStatus!=='show'" cols="12" class="d-flex justify-content-between mb-2">
+                  <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
+                  <b-button size="sm" variant="success default">
+                    <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
+                  </b-button>
+                </b-col>
+                <b-col v-if="pageStatus!=='show'" cols="12">
+                  <b-row>
+                    <b-col>
+                      <b-form-group :label="$t('device-management.indicator.name')">
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsName"/>
+                      </b-form-group>
+                    </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('device-management.indicator.unit')">
+                        <b-form-input type="text" v-model="indicatorForm.indicatorsUnit"/>
+                      </b-form-group>
+                    </b-col>
+                    <b-col>
+                      <b-form-group :label="$t('device-management.indicator.isNull')">
+                        <b-form-select v-model="indicatorForm.isNull" :options="yesNoOptions" plain/>
+                      </b-form-group>
+                    </b-col>
+                    <b-col class="d-flex">
+                      <b-button size="sm" variant="success default" class="align-self-center" @click="onSaveIndicator()">
+                        <i class="icofont-save"></i> {{$t('permission-management.save')}}
+                      </b-button>
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col cols="12" class="table-responsive text-center">
 
-                <vuetable
-                  ref="indicatorTable"
-                  :api-mode="false"
-                  :fields="indicatorTableItems.fields"
-                  :data-manager="indicatorTableDataManager"
-                  :per-page="indicatorTableItems.perPage"
-                  pagination-path="pagination"
-                  @vuetable:pagination-data="onIndicatorTablePaginationData"
-                  class="table-striped text-center"
-                >
-                  <div slot="number" slot-scope="props">
-                    <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
-                  </div>
-                  <div slot="required" slot-scope="props">
-                    <b-button v-if="props.rowData.isNull === 'yes'"
-                              size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
-                              variant="success default">
-                      <i class="icofont-check-alt"></i>&nbsp;{{$t('device-management.document-template.yes')}}
-                    </b-button>
-                    <b-button v-if="props.rowData.isNull === 'no'"
-                              size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
-                              variant="light default">
-                      <i class="icofont-close-line"></i>&nbsp;{{$t('device-management.document-template.no')}}
-                    </b-button>
-                  </div>
-                  <div slot="action" slot-scope="props">
-                    <b-button
-                      size="sm" @click="onRemoveIndicator(props.rowData,props.rowIndex)"
-                      variant="danger default btn-square">
-                      <i class="icofont-bin"></i>
-                    </b-button>
-                  </div>
-                </vuetable>
-                <vuetable-pagination-bootstrap
-                  ref="indicatorTablePagination"
-                  @vuetable-pagination:change-page="onIndicatorTableChangePage"
-                ></vuetable-pagination-bootstrap>
-              </b-col>
-            </b-row>
-          </b-col>
-        </b-row>
-        <b-row class="flex-grow-1 align-items-end">
-          <b-col cols="12 text-right mt-3">
-            <b-button size="sm" v-if="pageStatus !== 'show'" @click="onSaveTemplate()" variant="info default"><i
-              class="icofont-save"></i>
-              {{$t('device-management.save')}}
-            </b-button>
-            <b-button v-if="basicForm.status === 'active'" @click="onAction('inactivate',basicForm)" size="sm"
-                      variant="warning default">
-              <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
-            </b-button>
-            <b-button v-if="basicForm.status === 'inactive' && pageStatus !=='create'"
-                      @click="onAction('activate',basicForm)" size="sm"
-                      variant="success default">
-              <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
-            </b-button>
-            <b-button v-if="basicForm.status === 'inactive'&& pageStatus !=='create'"
-                      @click="onAction('delete',basicForm)" size="sm"
-                      variant="danger default">
-              <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
-            </b-button>
-            <b-button size="sm" @click="onAction('show-list')" variant="info default"><i
-              class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
-            </b-button>
-          </b-col>
-        </b-row>
-        <div class="position-absolute" style="left: 3%;bottom: 10%">
-          <img v-if="basicForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-          <img v-else-if="basicForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+                  <vuetable
+                    ref="indicatorTable"
+                    :api-mode="false"
+                    :fields="indicatorTableItems.fields"
+                    :data-manager="indicatorTableDataManager"
+                    :per-page="indicatorTableItems.perPage"
+                    pagination-path="pagination"
+                    @vuetable:pagination-data="onIndicatorTablePaginationData"
+                    class="table-striped text-center"
+                  >
+                    <div slot="number" slot-scope="props">
+                      <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
+                    </div>
+                    <div slot="required" slot-scope="props">
+                      <b-button v-if="props.rowData.isNull === 'yes'"
+                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                variant="success default">
+                        <i class="icofont-check-alt"></i>&nbsp;{{$t('device-management.document-template.yes')}}
+                      </b-button>
+                      <b-button v-if="props.rowData.isNull === 'no'"
+                                size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
+                                variant="light default">
+                        <i class="icofont-close-line"></i>&nbsp;{{$t('device-management.document-template.no')}}
+                      </b-button>
+                    </div>
+                    <div slot="action" slot-scope="props">
+                      <b-button
+                        size="sm" @click="onRemoveIndicator(props.rowData,props.rowIndex)"
+                        variant="danger default btn-square">
+                        <i class="icofont-bin"></i>
+                      </b-button>
+                    </div>
+                  </vuetable>
+                  <vuetable-pagination-bootstrap
+                    ref="indicatorTablePagination"
+                    @vuetable-pagination:change-page="onIndicatorTableChangePage"
+                  ></vuetable-pagination-bootstrap>
+                </b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+          <b-row class="flex-grow-1 align-items-end">
+            <b-col cols="12 text-right mt-3">
+              <b-button size="sm" v-if="pageStatus !== 'show'" @click="onSaveTemplate()" variant="info default"><i
+                class="icofont-save"></i>
+                {{$t('device-management.save')}}
+              </b-button>
+              <b-button v-if="basicForm.status === 'active'" @click="onAction('inactivate',basicForm)" size="sm"
+                        variant="warning default">
+                <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
+              </b-button>
+              <b-button v-if="basicForm.status === 'inactive' && pageStatus !=='create'"
+                        @click="onAction('activate',basicForm)" size="sm"
+                        variant="success default">
+                <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
+              </b-button>
+              <b-button v-if="basicForm.status === 'inactive'&& pageStatus !=='create'"
+                        @click="onAction('delete',basicForm)" size="sm"
+                        variant="danger default">
+                <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
+              </b-button>
+              <b-button size="sm" @click="onAction('show-list')" variant="info default"><i
+                class="icofont-long-arrow-left"></i> {{$t('device-management.return')}}
+              </b-button>
+            </b-col>
+          </b-row>
+          <div class="position-absolute" style="left: 3%;bottom: 10%">
+            <img v-if="basicForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="basicForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+          </div>
         </div>
       </div>
+
     </b-card>
 
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
@@ -517,16 +520,16 @@
 
         switch (value) {
           case 'create':
-            this.initialize(data);
             this.pageStatus = 'create';
+            this.initialize(data);
             break;
           case 'edit':
-            this.initialize(data);
             this.pageStatus = 'edit';
+            this.initialize(data);
             break;
           case 'show':
-            this.initialize(data);
             this.pageStatus = 'show';
+            this.initialize(data);
             break;
           case 'show-list':
             this.pageStatus = 'list';
@@ -584,7 +587,7 @@
           indicatorsId: 0,
           indicatorsName: null,
           indicatorsUnit: null,
-          isNull: "yes"
+          isNull: "no"
         };
         if (data == null) {
           this.basicForm = {
@@ -601,7 +604,7 @@
         }
         else {
           this.basicForm = data;
-          if (this.basicForm.archiveIndicatorsList.length > 0 && isUpdated) {
+          if (isUpdated) {
             let items = [];
             this.basicForm.archiveIndicatorsList.forEach((item) => {
               items.push({
@@ -712,8 +715,8 @@
                 if (this.basicForm.archivesTemplateId > 0)
                   initialize();
                 break;
-              case responseMessages["has-children"]: // has children
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
+              case responseMessages['has-archives']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-archives`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -821,7 +824,7 @@
                 this.indicatorData.splice(index,1);
                 break;
               case responseMessages['has-archives']: // okay
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.indicator-has-archives`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-archives`), {
                   duration: 3000,
                   permanent: false
                 });

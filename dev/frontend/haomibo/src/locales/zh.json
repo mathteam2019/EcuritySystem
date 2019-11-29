@@ -486,7 +486,7 @@
       "added-successfully" : "模板创建成功",
       "delete-prompt": "是否失效该模板",
       "make-inactive-prompt" : "是否失效该模板",
-      "indicator-has-archives":"模板已经有设备"
+      "has-archives":"已经有档案"
     },
     "device-table": {
       "device-info": "设备信息",
@@ -500,7 +500,8 @@
       "has-children" : "该档案有孩子",
       "added-successfully" : "档案创建成功",
       "delete-prompt": "是否失效该档案",
-      "make-inactive-prompt" : "是否失效该档案"
+      "make-inactive-prompt" : "是否失效该档案",
+      "has-devices":"已经有设备"
     },
     "archive":{
       "technical-indicator":"技术指标",
