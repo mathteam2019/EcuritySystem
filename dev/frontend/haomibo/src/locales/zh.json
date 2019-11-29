@@ -485,7 +485,8 @@
       "has-children" : "该模板有孩子",
       "added-successfully" : "模板创建成功",
       "delete-prompt": "是否失效该模板",
-      "make-inactive-prompt" : "是否失效该模板"
+      "make-inactive-prompt" : "是否失效该模板",
+      "indicator-has-archives":"模板已经有设备"
     },
     "device-table": {
       "device-info": "设备信息",

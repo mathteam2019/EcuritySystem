@@ -12,4 +12,5 @@ export const responseMessages = {
   'has-resources': 'has_resources',
   'used-user-account':'used_user_account',
   'has-users': 'has_users',
+  'has-archives': 'has_archives',
 };
