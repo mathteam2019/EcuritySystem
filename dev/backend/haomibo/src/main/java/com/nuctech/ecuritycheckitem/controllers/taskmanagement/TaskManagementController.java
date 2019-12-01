@@ -814,7 +814,7 @@ public class TaskManagementController extends BaseController {
             ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
 
             scanStat.setId(i - startIndex + 1);
-            
+
             detailedStatistics.put(i, scanStat);
 
         }
@@ -1474,8 +1474,7 @@ public class TaskManagementController extends BaseController {
         long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
         long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
 
-        List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
-
+        //List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
 
         try {
 
@@ -1624,8 +1623,13 @@ public class TaskManagementController extends BaseController {
 
         TotalStatistics totalStatistics = new TotalStatistics();
 
-        totalStatistics.setId(keyDate);
-        totalStatistics.setTime(keyDate);
+        try {
+            totalStatistics.setId(keyDate);
+            totalStatistics.setTime(keyDate);
+        }
+        catch (Exception e) {
+
+        }
         totalStatistics.setScanStatistics(scanStatistics);
         totalStatistics.setJudgeStatistics(judgeStatistics);
         totalStatistics.setHandExaminationStatistics(handExaminationStatistics);

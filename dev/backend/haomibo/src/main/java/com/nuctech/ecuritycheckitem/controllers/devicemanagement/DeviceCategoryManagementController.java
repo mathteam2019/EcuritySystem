@@ -12,6 +12,8 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
@@ -20,6 +22,10 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -40,9 +46,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/device-classify")
@@ -130,6 +140,25 @@ public class DeviceCategoryManagementController extends BaseController {
         Filter filter;
 
 
+    }
+
+    /**
+     * Device Category  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceCategoryGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        DeviceCategoryGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -258,7 +287,7 @@ public class DeviceCategoryManagementController extends BaseController {
 
         if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
                 serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
-            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
         //Don't modify created by and created time
@@ -410,6 +439,85 @@ public class DeviceCategoryManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Device Category generate file request.
+     */
+    @RequestMapping(value = "/category/export", method = RequestMethod.POST)
+    public Object deviceCategoryGenerateFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
+                                              BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        DeviceCategoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getCategoryName())) {
+                predicate.and(builder.categoryName.contains(filter.getCategoryName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
+                predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));
+            }
+        }
+
+        //get all device category list
+        List<SysDeviceCategory> categoryList = StreamSupport
+                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysDeviceCategory> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < categoryList.size(); i ++) {
+                SysDeviceCategory category = categoryList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(category.getCategoryId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(category);
+                }
+            }
+        } else {
+            exportList = categoryList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=device-category.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-category.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 
     /**

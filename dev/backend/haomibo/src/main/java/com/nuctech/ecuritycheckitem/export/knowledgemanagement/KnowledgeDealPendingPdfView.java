@@ -1,4 +1,12 @@
-package com.nuctech.ecuritycheckitem.excel.knowledgemanagement;
+/*
+ * Copyright 2019 KR-STAR-DEV team.
+ *
+ * @CreatedDate 2019/11/28
+ * @CreatedBy Choe.
+ * @FileName KnowledgeDealPendingPdfView.java
+ * @ModifyHistory
+ */
+package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;

@@ -33,6 +33,9 @@ public class Constants {
             Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
     };
 
+    public static final short EXCEL_HEAD_FONT_SIZE = 11;
+    public static final String EXCEL_HEAD_FONT_NAME = "Arial";
+
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 }
