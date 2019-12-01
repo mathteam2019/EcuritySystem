@@ -255,6 +255,7 @@
       </div>
 
     </b-card>
+
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-management.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -536,7 +537,7 @@
             this.archivesForm = data;
         }
         this.submitted = false;
-        this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
+       // this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
       },
       onFileChange(e) {
         let files = e.target.files || e.dataTransfer.files;
@@ -554,6 +555,7 @@
         this.archivesForm.imageUrl = file;
       },
       getTemplateDetailData(templateId) {
+        this.indicatorsData = [];
         this.templateForm = {
           category: '',
           manufacturer: '',
@@ -615,8 +617,8 @@
         for (let key in this.archivesForm) {
           if (key !== 'imageUrl' && key !== 'image' && key !=='archiveValueList')
             formData.append(key, this.archivesForm[key]);
-          else if (key === 'imageUrl' && this.archivesForm['image'] !== null)
-            formData.append(key, this.archivesForm[key], this.archivesForm[key].name);
+          else if (key === 'imageUrl' && this.archivesForm['image'] !== null && this.archivesForm['imageUrl'] !== null)
+            formData.append('imageUrl', this.archivesForm['imageUrl'], this.archivesForm['imageUrl'].name);
         }
         formData.append('json', JSON.stringify({"archiveValueList": indicateFormData}));
         let finalLink = this.archivesForm.archiveId > 0 ? 'modify' : 'create';
@@ -781,7 +783,6 @@
 
       },
       'archivesForm.archivesTemplateId': function (newVal,oldVal) {
-        if(oldVal!=null)
           this.getTemplateDetailData(newVal);
       }
     }
