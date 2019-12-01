@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogExcelView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -19,7 +21,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +33,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/log-management/device-log")
@@ -62,6 +72,25 @@ public class DeviceLogController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    /**
+     * Device log  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceLogGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        DeviceLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -138,5 +167,94 @@ public class DeviceLogController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Device Log generate file request.
+     */
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public Object deviceLogGenerateFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
+                                    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSerDevLog builder = QSerDevLog.serDevLog;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        DeviceLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getDeviceType())) {
+                predicate.and(builder.device.deviceType.eq(filter.getDeviceType()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getDeviceName())) {
+                predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getUserName())) {
+                predicate.and(builder.user.userAccount.contains(filter.getUserName()));
+            }
+
+            if (filter.getCategory() != null) {
+                predicate.and(builder.category.eq(filter.getCategory()));
+            }
+
+            if (filter.getLevel() != null) {
+                predicate.and(builder.level.eq(filter.getLevel()));
+            }
+        }
+
+        //get all device log list
+        List<SerDevLog> logList = StreamSupport
+                .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SerDevLog> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < logList.size(); i ++) {
+                SerDevLog log = logList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(log.getId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(log);
+                }
+            }
+        } else {
+            exportList = logList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=device-log.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-log.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 }

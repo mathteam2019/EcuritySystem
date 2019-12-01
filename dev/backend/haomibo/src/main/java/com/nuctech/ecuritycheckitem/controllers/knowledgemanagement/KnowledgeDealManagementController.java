@@ -12,8 +12,10 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealPendingExcelView;
-import com.nuctech.ecuritycheckitem.excel.knowledgemanagement.KnowledgeDealPendingPdfView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingExcelView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingPdfView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -25,9 +27,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
@@ -37,10 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -49,13 +45,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 
 @RestController
 @RequestMapping("/knowledge-base")
 public class KnowledgeDealManagementController extends BaseController {
     /**
-     * Field datatable request body.
+     * Knowledge datatable request body.
      */
     @Getter
     @Setter
@@ -74,6 +72,8 @@ public class KnowledgeDealManagementController extends BaseController {
             String taskResult;
             String fieldDesignation;
             String handGoods;
+            @Pattern(regexp = SerKnowledgeCase.Status.SUBMIT_APPROVAL + "|" + SerKnowledgeCase.Status.DISMISS
+                    + "|" + SerKnowledgeCase.Status.SUCCESS_APPROVAL)
             String caseStatus;
         }
 
@@ -108,7 +108,7 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
-     * Knowledge Case Deal update status request body.
+     * Knowledge Case Deal generate request body.
      */
     @Getter
     @Setter
@@ -122,6 +122,8 @@ public class KnowledgeDealManagementController extends BaseController {
         String idList;
         @NotNull
         Boolean isAll;
+
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -236,17 +238,48 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
-     * Knowledge Case generate excel request.
+     * Knowledge Case pending generate file request.
      */
     @RequestMapping(value = "/generate/pending/export", method = RequestMethod.POST)
-    public Object knowledgeCasePendingGenerateExcel(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+    public Object knowledgeCasePendingGenerateFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SerKnowledgeCaseDeal> dealList = serKnowledgeCaseDealRepository.findAll();
+        QSerKnowledgeCaseDeal builder = QSerKnowledgeCaseDeal.serKnowledgeCaseDeal;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+
+        predicate.and(builder.knowledgeCase.caseStatus.eq(SerKnowledgeCase.Status.SUBMIT_APPROVAL));
+
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getTaskNumber())) {
+                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
+            }
+            if (!StringUtils.isEmpty(filter.getModeName())) {
+                predicate.and(builder.workMode.modeName.eq(filter.getModeName()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getTaskResult())) {
+                predicate.and(builder.handTaskResult.eq(filter.getTaskResult()));
+            }
+            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
+                predicate.and(builder.scanDevice.field.fieldDesignation.contains(filter.getFieldDesignation()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getHandGoods())) {
+                predicate.and(builder.handGoods.contains(filter.getHandGoods()));
+            }
+        }
+
+        //get all pending case deal list
+        List<SerKnowledgeCaseDeal> dealList = StreamSupport
+                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
         List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
         if(requestBody.getIsAll() == false) {
             String[] splits = requestBody.getIdList().split(",");
@@ -293,6 +326,96 @@ public class KnowledgeDealManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
 
     }
+
+    /**
+     * Knowledge Case pending generate file request.
+     */
+    @RequestMapping(value = "/generate/personal/export", method = RequestMethod.POST)
+    public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSerKnowledgeCaseDeal builder = QSerKnowledgeCaseDeal.serKnowledgeCaseDeal;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.knowledgeCase.caseStatus.eq(SerKnowledgeCase.Status.SUCCESS_APPROVAL));
+
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getTaskNumber())) {
+                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
+            }
+            if (!StringUtils.isEmpty(filter.getModeName())) {
+                predicate.and(builder.workMode.modeName.eq(filter.getModeName()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getTaskResult())) {
+                predicate.and(builder.handTaskResult.eq(filter.getTaskResult()));
+            }
+            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
+                predicate.and(builder.scanDevice.field.fieldDesignation.contains(filter.getFieldDesignation()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getHandGoods())) {
+                predicate.and(builder.handGoods.contains(filter.getHandGoods()));
+            }
+        }
+
+        //get all perosonal case deal list
+        List<SerKnowledgeCaseDeal> dealList = StreamSupport
+                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < dealList.size(); i ++) {
+                SerKnowledgeCaseDeal deal = dealList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(deal.getCaseDealId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(deal);
+                }
+            }
+        } else {
+            exportList = dealList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=knowledge-personal.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = KnowledgeDealPersonalPdfView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=knowledge-personal.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+
 
 
 

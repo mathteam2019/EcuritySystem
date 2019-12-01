@@ -3,22 +3,24 @@
  *
  * @CreatedDate 2019/11/26
  * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
+ * @FileName KnowledgeDealPersonalExcelView.java
  * @ModifyHistory
  */
-package com.nuctech.ecuritycheckitem.excel.knowledgemanagement;
+package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
+
+import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-public class KnowledgeDealPendingExcelView  {
+public class KnowledgeDealPersonalExcelView {
 
     public static InputStream buildExcelDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -26,17 +28,15 @@ public class KnowledgeDealPendingExcelView  {
 
             Workbook workbook = new XSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet("Knowledge-Pending");
-            sheet.setColumnWidth(0, 6000);
-            sheet.setColumnWidth(1, 4000);
+            Sheet sheet = workbook.createSheet("Knowledge-Personal");
 
             Row header = sheet.createRow(0);
 
             CellStyle headerStyle = workbook.createCellStyle();
 
             XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName("Arial");
-            font.setFontHeightInPoints((short) 13);
+            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
+            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
             font.setBold(true);
             headerStyle.setFont(font);
 
@@ -52,31 +52,19 @@ public class KnowledgeDealPendingExcelView  {
             headerCellImage.setCellValue("图像");
             headerCellImage.setCellStyle(headerStyle);
 
-            Cell headerCellMode = header.createCell(3);
-            headerCellMode.setCellValue("工作模式");
-            headerCellMode.setCellStyle(headerStyle);
-
-            Cell headerCellResult = header.createCell(4);
+            Cell headerCellResult = header.createCell(3);
             headerCellResult.setCellValue("任务结论");
             headerCellResult.setCellStyle(headerStyle);
 
-            Cell headerCellField = header.createCell(5);
+            Cell headerCellField = header.createCell(4);
             headerCellField.setCellValue("现场");
             headerCellField.setCellStyle(headerStyle);
 
-            Cell headerCellScanDevice = header.createCell(6);
-            headerCellScanDevice.setCellValue("安检仪");
-            headerCellScanDevice.setCellStyle(headerStyle);
+            Cell headerCellDevicePassageWay = header.createCell(5);
+            headerCellDevicePassageWay.setCellValue("通道");
+            headerCellDevicePassageWay.setCellStyle(headerStyle);
 
-            Cell headerCellJudgeDevice = header.createCell(7);
-            headerCellJudgeDevice.setCellValue("判图站");
-            headerCellJudgeDevice.setCellStyle(headerStyle);
-
-            Cell headerCellHandDevice = header.createCell(8);
-            headerCellHandDevice.setCellValue("手检站");
-            headerCellHandDevice.setCellStyle(headerStyle);
-
-            Cell headerCellGoods = header.createCell(9);
+            Cell headerCellGoods = header.createCell(6);
             headerCellGoods.setCellValue("查获物品");
             headerCellGoods.setCellStyle(headerStyle);
 
@@ -101,37 +89,22 @@ public class KnowledgeDealPendingExcelView  {
                     row.createCell(2).setCellValue("");
                 }
 
-                if(deal.getWorkMode() != null) {
-                    row.createCell(3).setCellValue(deal.getWorkMode().getModeName());
+
+
+                row.createCell(3).setCellValue(deal.getHandResult());
+                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
+                    row.createCell(4).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    row.createCell(3).setCellValue("");
+                    row.createCell(4).setCellValue("");
                 }
 
-                row.createCell(4).setCellValue(deal.getHandResult());
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    row.createCell(5).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getScanDevice() != null) {
+                    row.createCell(5).setCellValue(deal.getScanDevice().getDevicePassageWay());
                 } else {
                     row.createCell(5).setCellValue("");
                 }
 
-                if(deal.getScanDevice() != null) {
-                    row.createCell(6).setCellValue(deal.getScanDevice().getDeviceName());
-                } else {
-                    row.createCell(6).setCellValue("");
-                }
-
-                if(deal.getJudgeDevice() != null) {
-                    row.createCell(7).setCellValue(deal.getJudgeDevice().getDeviceName());
-                } else {
-                    row.createCell(7).setCellValue("");
-                }
-
-                if(deal.getHandDevice() != null) {
-                    row.createCell(8).setCellValue(deal.getHandDevice().getDeviceName());
-                } else {
-                    row.createCell(8).setCellValue("");
-                }
-                row.createCell(9).setCellValue(deal.getHandResult());
+                row.createCell(6).setCellValue(deal.getHandResult());
             }
 
             workbook.write(out);

@@ -11,6 +11,8 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogExcelView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -18,7 +20,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +32,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/log-management/operating-log/audit")
@@ -62,6 +72,25 @@ public class AuditLogController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    /**
+     * Audit log  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class AuditLogGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        AuditLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -136,5 +165,96 @@ public class AuditLogController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Audit Log generate file request.
+     */
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public Object auditLogGenerateFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysAuditLog builder = QSysAuditLog.sysAuditLog;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        AuditLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getClientIp())) {
+                predicate.and(builder.clientIp.contains(filter.getClientIp()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getOperateResult())) {
+                predicate.and(builder.operateResult.eq(filter.getOperateResult()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getOperateObject())) {
+                predicate.and(builder.operateObject.contains(filter.getOperateObject()));
+            }
+
+
+            if(filter.getOperateStartTime() != null) {
+                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
+
+            }
+            if(filter.getOperateEndTime() != null){
+                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
+            }
+        }
+
+
+        //get all audit log list
+        List<SysAuditLog> logList = StreamSupport
+                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysAuditLog> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < logList.size(); i ++) {
+                SysAuditLog log = logList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(log.getId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(log);
+                }
+            }
+        } else {
+            exportList = logList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=audit-log.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 }

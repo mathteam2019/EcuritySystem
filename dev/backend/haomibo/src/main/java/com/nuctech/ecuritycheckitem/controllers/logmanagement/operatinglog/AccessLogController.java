@@ -11,6 +11,8 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogExcelView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -18,7 +20,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +32,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/log-management/operating-log/access")
@@ -61,6 +71,25 @@ public class AccessLogController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    /**
+     * Access log  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class AccessLogGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        AccessLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -131,6 +160,92 @@ public class AccessLogController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Access Log generate file request.
+     */
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public Object accessLogGenerateFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysAccessLog builder = QSysAccessLog.sysAccessLog;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        AccessLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getClientIp())) {
+                predicate.and(builder.clientIp.contains(filter.getClientIp()));
+            }
+
+            if (!StringUtils.isEmpty(filter.getOperateAccount())) {
+                predicate.and(builder.operateAccount.contains(filter.getOperateAccount()));
+            }
+
+            if(filter.getOperateStartTime() != null) {
+                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
+
+            }
+            if(filter.getOperateEndTime() != null){
+                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
+            }
+
+        }
+
+        //get all access log list
+        List<SysAccessLog> logList = StreamSupport
+                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysAccessLog> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < logList.size(); i ++) {
+                SysAccessLog log = logList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(log.getId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(log);
+                }
+            }
+        } else {
+            exportList = logList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=access-log.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=access-log.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 }
 

@@ -31,6 +31,7 @@ import java.util.Date;
 @JsonFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE_DEAL)
 @Table(name = "ser_knowledge_case_deal")
 public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CASE_DETAL_ID", length = 20)
