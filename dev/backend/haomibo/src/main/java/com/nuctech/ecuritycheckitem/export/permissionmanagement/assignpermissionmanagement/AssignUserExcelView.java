@@ -82,13 +82,17 @@ public class AssignUserExcelView {
                 row.createCell(1).setCellValue(user.getUserName());
                 row.createCell(2).setCellValue(user.getGender());
                 row.createCell(3).setCellValue(user.getUserAccount());
-                row.createCell(4).setCellValue("");
+                row.createCell(4).setCellValue(user.getOrg().getOrgName());
                 List<SysRole> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });
                 if(sysRoleList.size() > 0) {
-                    row.createCell(5).setCellValue(sysRoleList.get(0).getRoleName());
+                    String str = sysRoleList.get(0).getRoleName();
+                    for(int i = 1; i < sysRoleList.size(); i ++) {
+                        str = str + ", " + sysRoleList.get(i).getRoleName();
+                    }
+                    row.createCell(5).setCellValue(str);
                 } else {
                     row.createCell(5).setCellValue("");
                 }

@@ -51,23 +51,19 @@ public class AssignUserPdfView {
                 table.addCell(user.getGender());
                 table.addCell(user.getUserAccount());
 
-                List<SysDataGroup> sysGroupeList = new ArrayList<>();
-                user.getDataGroups().forEach(sysDataGroup -> {
-                    sysGroupeList.add(sysDataGroup);
-                });
 
-                table.addCell("");
-                /*
-                Todo
-                Add group info
-                 */
+                table.addCell(user.getOrg().getOrgName());
 
                 List<SysRole> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
                     sysRoleList.add(sysRole);
                 });
                 if(sysRoleList.size() > 0) {
-                    table.addCell(sysRoleList.get(0).getRoleName());
+                    String str = sysRoleList.get(0).getRoleName();
+                    for(int i = 1; i < sysRoleList.size(); i ++) {
+                        str = str + ", " + sysRoleList.get(i).getRoleName();
+                    }
+                    table.addCell(str);
                 } else {
                     table.addCell("");
                 }

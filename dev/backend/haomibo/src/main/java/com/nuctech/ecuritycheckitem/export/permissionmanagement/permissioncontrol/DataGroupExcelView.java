@@ -68,6 +68,11 @@ public class DataGroupExcelView {
                 row.createCell(0).setCellValue(dataGroup.getDataGroupId().toString());
                 row.createCell(1).setCellValue(dataGroup.getDataGroupNumber());
                 row.createCell(2).setCellValue(dataGroup.getDataGroupName());
+                /**
+                 * Todo
+                 * data group range value
+                 *
+                */
                 row.createCell(3).setCellValue("");
             }
 

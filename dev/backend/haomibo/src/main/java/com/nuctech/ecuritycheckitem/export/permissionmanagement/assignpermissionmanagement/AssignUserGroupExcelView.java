@@ -9,6 +9,8 @@
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -18,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AssignUserGroupExcelView {
@@ -72,8 +75,30 @@ public class AssignUserGroupExcelView {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(userGroup.getUserGroupId().toString());
                 row.createCell(1).setCellValue(userGroup.getGroupName());
-                row.createCell(2).setCellValue("");
-                row.createCell(3).setCellValue("");
+                String strMember = "";
+                List<SysUser> sysUserList = new ArrayList<>();
+                userGroup.getUsers().forEach(sysUser -> {
+                    sysUserList.add(sysUser);
+                });
+                if(sysUserList.size() > 0) {
+                    strMember = sysUserList.get(0).getUserName();
+                    for(int i = 1; i < sysUserList.size(); i ++) {
+                        strMember = strMember + "," + sysUserList.get(i).getUserName();
+                    }
+                }
+                row.createCell(2).setCellValue(strMember);
+                String strRole = "";
+                List<SysRole> sysRoleList = new ArrayList<>();
+                userGroup.getRoles().forEach(sysRole -> {
+                    sysRoleList.add(sysRole);
+                });
+                if(sysRoleList.size() > 0) {
+                    strRole = sysRoleList.get(0).getRoleName();
+                    for(int i = 1; i < sysUserList.size(); i ++) {
+                        strRole = strRole + "," + sysRoleList.get(i).getRoleName();
+                    }
+                }
+                row.createCell(3).setCellValue(strRole);
                 row.createCell(4).setCellValue(userGroup.getDataRangeCategory());
             }
 

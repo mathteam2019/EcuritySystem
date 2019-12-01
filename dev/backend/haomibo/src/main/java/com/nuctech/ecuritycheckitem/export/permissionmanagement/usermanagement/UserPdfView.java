@@ -48,11 +48,7 @@ public class UserPdfView {
                 table.addCell(user.getUserName());
                 table.addCell(user.getGender());
                 table.addCell(user.getStatus());
-                /*
-                Todo
-                set group info
-                * */
-                table.addCell(user.getDataRangeCategory());
+                table.addCell(user.getOrg().getOrgName());
                 table.addCell(user.getUserAccount());
             }
 

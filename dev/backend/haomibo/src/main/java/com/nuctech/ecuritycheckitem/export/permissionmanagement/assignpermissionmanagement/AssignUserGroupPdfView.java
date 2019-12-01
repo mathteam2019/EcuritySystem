@@ -15,11 +15,14 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -45,12 +48,30 @@ public class AssignUserGroupPdfView {
             for (SysUserGroup userGroup : exportUserGroupList) {
                 table.addCell(userGroup.getUserGroupId().toString());
                 table.addCell(userGroup.getGroupName());
-                /*
-                * Todo
-                *  name and role
-                * */
-                table.addCell("");
-                table.addCell("");
+                String strMember = "";
+                List<SysUser> sysUserList = new ArrayList<>();
+                userGroup.getUsers().forEach(sysUser -> {
+                    sysUserList.add(sysUser);
+                });
+                if(sysUserList.size() > 0) {
+                    strMember = sysUserList.get(0).getUserName();
+                    for(int i = 1; i < sysUserList.size(); i ++) {
+                        strMember = strMember + "," + sysUserList.get(i).getUserName();
+                    }
+                }
+                table.addCell(strMember);
+                String strRole = "";
+                List<SysRole> sysRoleList = new ArrayList<>();
+                userGroup.getRoles().forEach(sysRole -> {
+                    sysRoleList.add(sysRole);
+                });
+                if(sysRoleList.size() > 0) {
+                    strRole = sysRoleList.get(0).getRoleName();
+                    for(int i = 1; i < sysUserList.size(); i ++) {
+                        strRole = strRole + "," + sysRoleList.get(i).getRoleName();
+                    }
+                }
+                table.addCell(strRole);
                 table.addCell(userGroup.getDataRangeCategory());
             }
 

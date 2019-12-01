@@ -81,7 +81,7 @@ public class UserExcelView {
                 row.createCell(2).setCellValue(user.getUserName());
                 row.createCell(3).setCellValue(user.getGender());
                 row.createCell(4).setCellValue(user.getStatus());
-                row.createCell(5).setCellValue(user.getDataRangeCategory());
+                row.createCell(5).setCellValue(user.getOrg().getOrgName());
                 row.createCell(6).setCellValue(user.getUserAccount());
 
             }
