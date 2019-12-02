@@ -28,7 +28,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/device-config")
@@ -145,18 +148,68 @@ public class DeviceConfigManagementController extends BaseController {
             if (filter.getFieldId() != null) {
                 predicate.and(builder.device.field.fieldId.eq(filter.getFieldId()));
             }
-            if (filter.getCategoryId() != null) {
+
+            /*
+            * Todo
+            *  strange category
+            *
+            * if (filter.getCategoryId() != null) {
                 predicate.and(builder.device.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
             }
+            * */
+
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        int startIndex = perPage * currentPage;
+        int endIndex = perPage * (currentPage + 1);
 
-        long total = sysDeviceConfigRepository.count(predicate);
-        List<SysDeviceConfig> data = sysDeviceConfigRepository.findAll(predicate, pageRequest).getContent();
+        long total = 0;
+        List<SysDeviceConfig> allData = StreamSupport
+                .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysDeviceConfig> data = new ArrayList<>();
+
+
+        for(int i = 0; i < allData.size(); i ++) {
+            SysDeviceConfig config = allData.get(i);
+            if(config.getFromConfigIdList() != null && config.getFromConfigIdList().size() > 0) {
+                Long fromDeviceId = config.getFromConfigIdList().get(0).getFromDeviceId();
+                SysDevice device = sysDeviceRepository.findOne(QSysDevice.sysDevice
+                        .deviceId.eq(fromDeviceId)).orElse(null);
+                if(device != null) {
+                    config.setFromConfigDeviceName(device.getDeviceName());
+                }
+            }
+        }
+
+        if(filter != null && filter.getCategoryId() != null) {
+
+            for(int i = 0; i < allData.size(); i ++) {
+                SysDeviceConfig deviceConfigData = allData.get(i);
+                try {
+                    if(deviceConfigData.getDevice().getArchive().getArchiveTemplate().getCategory().getCategoryId() == filter.getCategoryId()) {
+                        if(total >= startIndex && total < endIndex) {
+                            data.add(deviceConfigData);
+                        }
+                        total ++;
+
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            for(int i = 0; i < allData.size(); i ++) {
+                SysDeviceConfig deviceConfigData = allData.get(i);
+                if(i >= startIndex && i < endIndex) {
+                    data.add(deviceConfigData);
+                }
+            }
+            total = allData.size();
+        }
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -368,7 +421,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));;
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 

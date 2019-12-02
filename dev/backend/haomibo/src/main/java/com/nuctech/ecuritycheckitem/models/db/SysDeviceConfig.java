@@ -107,4 +107,8 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("from_config")
     private List<FromConfigId> fromConfigIdList; // Relation to FromConfigId table.
+
+    @javax.persistence.Transient
+    String fromConfigDeviceName;
+
 }
