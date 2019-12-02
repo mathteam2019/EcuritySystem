@@ -64,9 +64,9 @@ public class DeviceLogController extends BaseController {
             String userName;
             Long category;
             Long level;
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             Date operateStartTime;
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
             Date operateEndTime;
         }
 
@@ -218,6 +218,14 @@ public class DeviceLogController extends BaseController {
 
             if (filter.getLevel() != null) {
                 predicate.and(builder.level.eq(filter.getLevel()));
+            }
+
+            if(filter.getOperateStartTime() != null) {
+                predicate.and(builder.time.after(filter.getOperateStartTime()));
+
+            }
+            if(filter.getOperateEndTime() != null){
+                predicate.and(builder.time.before(filter.getOperateEndTime()));
             }
         }
 

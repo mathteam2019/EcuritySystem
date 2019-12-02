@@ -409,8 +409,7 @@ public class FieldManagementController extends BaseController {
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
 
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         value.setFilters(filters);
 
