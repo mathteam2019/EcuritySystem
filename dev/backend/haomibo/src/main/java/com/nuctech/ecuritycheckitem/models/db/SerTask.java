@@ -62,4 +62,11 @@ public class SerTask extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SerHandExamination serHandExamination;
 
+
+    @OneToOne()
+    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SysWorkflow workFlow;
+
+
 }

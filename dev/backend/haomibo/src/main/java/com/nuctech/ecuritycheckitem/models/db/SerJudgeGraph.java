@@ -62,11 +62,6 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     Long judgeUserId;
 
     @OneToOne()
-    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SysWorkflow workFlow;
-
-    @OneToOne()
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDevice judgeDevice;

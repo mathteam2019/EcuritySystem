@@ -10,10 +10,13 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
 
+import com.querydsl.jpa.impl.JPAQuery;
 import lombok.*;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
+import org.apache.poi.ss.formula.functions.Sumif;
+import org.hibernate.query.criteria.internal.expression.ConcatExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -31,6 +34,32 @@ import java.util.*;
 @RestController
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
+
+
+    /**
+     * Table type
+     */
+    @AllArgsConstructor
+    @Getter
+    public enum TableType {
+
+        SER_SCAN(1),
+        SER_JUDGE_GRAPH(2),
+        SER_HAND_EXAMINATION(3);
+
+        private final Integer value;
+    }
+
+    @Getter
+    @Setter
+    public class StatisticsByUserResponse {
+
+        long totalSeconds;
+        long scanSeconds;
+        long judgeSeconds;
+        long handSeconds;
+
+    }
 
     /**
      * Statistics Response Type
@@ -121,6 +150,7 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     class TotalStatisticsResponse {
+
         TotalStatistics totalStatistics;
         Map<Integer, TotalStatistics> detailedStatistics;
 
@@ -143,6 +173,7 @@ public class TaskManagementController extends BaseController {
         String axisLabel;
         long id;
         long time;
+        long workingSeconds;
         long totalScan;
         long invalidScan;
         double invalidScanRate;
@@ -161,11 +192,12 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     @ToString
-    class JudgeStatistics {
+    public class JudgeStatistics {
 
         String axisLabel;
         long id;
         long time;
+        long workingSeconds;
         long totalJudge;
         long noSuspictionJudge;
         double noSuspictionJudgeRate;
@@ -173,6 +205,7 @@ public class TaskManagementController extends BaseController {
         double suspictionJudgeRate;
 
     }
+
 
     /**
      * Hand Examination Response Body
@@ -185,6 +218,7 @@ public class TaskManagementController extends BaseController {
         String axisLabel;
         long id;
         long time;
+        long workingSeconds;
         long totalHandExamination;
         long seizureHandExamination;
         double seizureHandExaminationRate;
@@ -330,6 +364,67 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
+     * Statistics By Device RequestBody
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsByDeviceRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            Long deviceCategoryId;
+            Long deviceId;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date endTime;
+            String statWidth;
+
+        }
+
+        StatisticsByDeviceRequestBody.Filter filter;
+
+    }
+
+
+    /**
+     * Statistics By User RequestBody
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsByUserRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            Long modeId;
+            String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date endTime;
+            String statWidth;
+
+        }
+
+        StatisticsByUserRequestBody.Filter filter;
+
+    }
+
+    /**
      * Task datatable data.
      */
     @RequestMapping(value = "/process-task/get-one", method = RequestMethod.POST)
@@ -409,7 +504,7 @@ public class TaskManagementController extends BaseController {
             if (filter.getFieldId() != null) {
                 predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
-            if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
 
                 Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
@@ -432,6 +527,7 @@ public class TaskManagementController extends BaseController {
 
         long total = serTaskRespository.count(predicate);
         List<SerTask> data = serTaskRespository.findAll(predicate, pageRequest).getContent();
+
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -533,7 +629,7 @@ public class TaskManagementController extends BaseController {
             if (filter.getFieldId() != null) {
                 predicate.and(builder.task.fieldId.eq(filter.getFieldId()));
             }
-            if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
 
                 Predicate scanUserName = builder.scanPointsman.userName.contains(filter.getUserName());
                 builder.scanPointsman.userName.contains(filter.getUserName()).or(
@@ -660,7 +756,7 @@ public class TaskManagementController extends BaseController {
             if (filter.getFieldId() != null) {
                 predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
-            if (filter.getUserName() != null && filter.getUserName().isEmpty()) {
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
 
                 Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
@@ -814,7 +910,7 @@ public class TaskManagementController extends BaseController {
             ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
 
             scanStat.setId(i - startIndex + 1);
-            
+
             detailedStatistics.put(i, scanStat);
 
         }
@@ -883,7 +979,7 @@ public class TaskManagementController extends BaseController {
         } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.scanEndTime.before(dateTo);
         } else {
-            predicateDate = builder.scanStartTime.between(dateTo, dateFrom).and(builder.scanEndTime.between(dateTo, dateFrom));
+            predicateDate = builder.scanStartTime.between(dateFrom, dateTo).and(builder.scanEndTime.between(dateFrom, dateTo));
         }
 
 
@@ -952,15 +1048,6 @@ public class TaskManagementController extends BaseController {
         predicateAlarm.and(predicateUserCategory);
         predicateAlarm.and(predicateKeyDate);
 
-//        JPAQuery query = new JPAQuery(entityManager);
-//
-//        List<Integer, List<SerScan>> transform = List<Integer, List<SerScan>>) query
-//                .from(builder)
-//                .transform(
-//                        GroupBy.groupBy(builder.scanStartTime.month()).as(GroupBy.list(builder))
-//                );
-
-        //scanStatistics.setDetailedScan(transform);
         try {
 
             long totalScan = serScanRepository.count(predicateTotal);
@@ -969,6 +1056,17 @@ public class TaskManagementController extends BaseController {
             long passedScan = serScanRepository.count(predicatePassed);
             long alarmScan = serScanRepository.count(predicateAlarm);
 
+            Iterable<SerScan> listScans = serScanRepository.findAll(predicateTotal);
+
+            long workingSecs = 0;
+
+            for(SerScan item: listScans) {
+
+                workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime())/ 1000;
+
+            }
+
+            scanStatistics.setWorkingSeconds(workingSecs);
             scanStatistics.setId(keyDate);
             scanStatistics.setTime(keyDate);
             scanStatistics.setTotalScan(totalScan);
@@ -1132,6 +1230,7 @@ public class TaskManagementController extends BaseController {
         Predicate predicateKeyDate = null;
 
 
+
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case StatisticWidth.HOUR:
@@ -1164,7 +1263,7 @@ public class TaskManagementController extends BaseController {
         } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.judgeEndTime.before(dateTo);
         } else {
-            predicateDate = builder.judgeStartTime.between(dateTo, dateFrom).and(builder.judgeEndTime.between(dateTo, dateFrom));
+            predicateDate = builder.judgeStartTime.between(dateFrom, dateTo).and(builder.judgeEndTime.between(dateFrom, dateTo));
         }
 
 
@@ -1219,6 +1318,19 @@ public class TaskManagementController extends BaseController {
         long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
 
         try {
+
+            Iterable<SerJudgeGraph> listScans = serJudgeGraphRepository.findAll(predicateTotal);
+
+            long workingSecs = 0;
+
+            for(SerJudgeGraph item: listScans) {
+
+                workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime())/ 1000;
+
+            }
+
+            judgeStatistics.setWorkingSeconds(workingSecs);
+
             judgeStatistics.setId(keyDate);
             judgeStatistics.setTime(keyDate);
             judgeStatistics.setTotalJudge(totalJudge);
@@ -1421,7 +1533,7 @@ public class TaskManagementController extends BaseController {
         } else if (dateFrom == null && dateTo != null) {
             predicateDate = builder.handEndTime.before(dateTo);
         } else {
-            predicateDate = builder.handStartTime.between(dateTo, dateFrom).and(builder.handEndTime.between(dateTo, dateFrom));
+            predicateDate = builder.handStartTime.between(dateFrom, dateTo).and(builder.handEndTime.between(dateFrom, dateTo));
         }
 
 
@@ -1474,10 +1586,21 @@ public class TaskManagementController extends BaseController {
         long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
         long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
 
-        List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
-
+        //List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
 
         try {
+
+            Iterable<SerHandExamination> listScans = serHandExaminationRepository.findAll(predicateTotal);
+
+            long workingSecs = 0;
+
+            for(SerHandExamination item: listScans) {
+
+                workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime())/ 1000;
+
+            }
+
+            handExaminationStatistics.setWorkingSeconds(workingSecs);
 
             handExaminationStatistics.setId(keyDate);
             handExaminationStatistics.setTime(keyDate);
@@ -1624,8 +1747,12 @@ public class TaskManagementController extends BaseController {
 
         TotalStatistics totalStatistics = new TotalStatistics();
 
-        totalStatistics.setId(keyDate);
-        totalStatistics.setTime(keyDate);
+        try {
+            totalStatistics.setId(keyDate);
+            totalStatistics.setTime(keyDate);
+        } catch (Exception e) {
+
+        }
         totalStatistics.setScanStatistics(scanStatistics);
         totalStatistics.setJudgeStatistics(judgeStatistics);
         totalStatistics.setHandExaminationStatistics(handExaminationStatistics);
@@ -1719,5 +1846,333 @@ public class TaskManagementController extends BaseController {
         return value;
 
     }
+
+
+    public long getWorkingSecondsByUser(TaskManagementController.StatisticsByUserRequestBody requestBody, TableType tbType ) {
+
+        QSerTask serTask = QSerTask.serTask;
+
+        BooleanBuilder predicate = new BooleanBuilder(serTask.isNotNull());
+
+        StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+
+            if (filter.getModeId() != null) {
+                predicate.and(serTask.workFlow.workMode.modeId.eq(filter.getModeId()));
+            }
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    Predicate scanUserName = serTask.serScan.scanPointsman.userName.contains(filter.getUserName());
+                    predicate.and(scanUserName);
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    Predicate judgeUserName = serTask.serJudgeGraph.judgeUser.userName.contains(filter.getUserName());
+                    predicate.and(judgeUserName);
+
+                }
+                else if (tbType == TableType.SER_HAND_EXAMINATION) {
+
+                    Predicate handUserName = serTask.serHandExamination.handUser.userName.contains(filter.getUserName());
+                    predicate.and(handUserName);
+
+                }
+
+            }
+            if (filter.getStartTime() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    predicate.and(serTask.serScan.scanStartTime.after(filter.getStartTime()));
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    predicate.and(serTask.serJudgeGraph.judgeStartTime.after(filter.getStartTime()));
+
+                }
+                else {
+
+                    predicate.and(serTask.serHandExamination.handStartTime.after(filter.getStartTime()));
+
+                }
+
+
+
+            }
+            if (filter.getEndTime() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    predicate.and(serTask.serScan.scanEndTime.before(filter.getEndTime()));
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    predicate.and(serTask.serJudgeGraph.judgeEndTime.before(filter.getEndTime()));
+
+                }
+                else {
+
+                    predicate.and(serTask.serHandExamination.handEndTime.before(filter.getEndTime()));
+
+                }
+
+            }
+        }
+
+        Iterable<SerTask> listTasks = serTaskRespository.findAll(predicate);
+
+        long workingSeconds = 0;
+
+        for(SerTask item: listTasks){
+
+            if (tbType == TableType.SER_SCAN) {
+
+                workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
+
+            }
+            else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime())/ 1000;
+
+            }
+            else {
+
+                workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime())/ 1000;
+
+            }
+
+
+        }
+
+        return workingSeconds;
+
+    }
+
+    public long getWorkingSecondsByDevice(TaskManagementController.StatisticsByDeviceRequestBody requestBody, TableType tbType ) {
+
+        QSerTask serTask = QSerTask.serTask;
+
+        BooleanBuilder predicate = new BooleanBuilder(serTask.isNotNull());
+
+        StatisticsByDeviceRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+
+            if (filter.getDeviceCategoryId() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    Predicate scanDeviceCategory = serTask.serScan.scanDevice.categoryId.eq(filter.getDeviceCategoryId());
+                    predicate.and(scanDeviceCategory);
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    Predicate judgeDeviceCategory = serTask.serJudgeGraph.judgeDevice.categoryId.eq(filter.getDeviceCategoryId());
+                    predicate.and(judgeDeviceCategory);
+
+                }
+                else if (tbType == TableType.SER_HAND_EXAMINATION) {
+
+                    Predicate handDeviceCategory = serTask.serHandExamination.handDevice.categoryId.eq(filter.getDeviceCategoryId());
+                    predicate.and(handDeviceCategory);
+
+                }
+            }
+            if (filter.getDeviceId() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    Predicate scanDeviceId = serTask.serScan.scanDevice.deviceId.eq(filter.getDeviceId());
+                    predicate.and(scanDeviceId);
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    Predicate judgeDeviceId = serTask.serJudgeGraph.judgeDevice.deviceId.eq(filter.getDeviceId());
+                    predicate.and(judgeDeviceId);
+
+                }
+                else if (tbType == TableType.SER_HAND_EXAMINATION) {
+
+                    Predicate handDeviceId = serTask.serHandExamination.handDevice.deviceId.eq(filter.getDeviceId());
+                    predicate.and(handDeviceId);
+
+                }
+
+            }
+
+            if (filter.getStartTime() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    predicate.and(serTask.serScan.scanStartTime.after(filter.getStartTime()));
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    predicate.and(serTask.serJudgeGraph.judgeStartTime.after(filter.getStartTime()));
+
+                }
+                else {
+
+                    predicate.and(serTask.serHandExamination.handStartTime.after(filter.getStartTime()));
+
+                }
+
+            }
+
+            if (filter.getEndTime() != null) {
+
+                if (tbType == TableType.SER_SCAN) {
+
+                    predicate.and(serTask.serScan.scanEndTime.before(filter.getEndTime()));
+
+                }
+                else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                    predicate.and(serTask.serJudgeGraph.judgeEndTime.before(filter.getEndTime()));
+
+                }
+                else {
+
+                    predicate.and(serTask.serHandExamination.handEndTime.before(filter.getEndTime()));
+
+                }
+
+            }
+        }
+
+        Iterable<SerTask> listTasks = serTaskRespository.findAll(predicate);
+
+        long workingSeconds = 0;
+
+        for(SerTask item: listTasks){
+
+            if (tbType == TableType.SER_SCAN) {
+
+                workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime())/ 1000;
+
+            }
+            else if (tbType == TableType.SER_JUDGE_GRAPH) {
+
+                workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime())/ 1000;
+
+            }
+            else {
+
+                workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime())/ 1000;
+
+            }
+
+        }
+
+        return workingSeconds;
+
+    }
+
+    @RequestMapping(value = "/statistics/get-by-user-sum", method = RequestMethod.POST)
+    public Object statisticsByUserGet(
+            @RequestBody @Valid TaskManagementController.StatisticsByUserRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        long totalSecs = 0;
+        long scanSecs = 0;
+        long judgeSecs = 0;
+        long handSecs = 0;
+
+        scanSecs = getWorkingSecondsByUser(requestBody, TableType.SER_SCAN);
+        judgeSecs = getWorkingSecondsByUser(requestBody, TableType.SER_JUDGE_GRAPH);
+        handSecs = getWorkingSecondsByUser(requestBody, TableType.SER_HAND_EXAMINATION);
+
+        totalSecs = scanSecs + judgeSecs + handSecs;
+
+        StatisticsByUserResponse response = new StatisticsByUserResponse();
+        response.setTotalSeconds(totalSecs);
+        response.setScanSeconds(scanSecs);
+        response.setJudgeSeconds(judgeSecs);
+        response.setHandSeconds(handSecs);
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/statistics/get-by-device-sum", method = RequestMethod.POST)
+    public Object statisticsByDeviceGet(
+            @RequestBody @Valid TaskManagementController.StatisticsByDeviceRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        long totalSecs = 0;
+        long scanSecs = 0;
+        long judgeSecs = 0;
+        long handSecs = 0;
+
+        scanSecs = getWorkingSecondsByDevice(requestBody, TableType.SER_SCAN);
+        judgeSecs = getWorkingSecondsByDevice(requestBody, TableType.SER_JUDGE_GRAPH);
+        handSecs = getWorkingSecondsByDevice(requestBody, TableType.SER_HAND_EXAMINATION);
+
+        totalSecs = scanSecs + judgeSecs + handSecs;
+
+        StatisticsByUserResponse response = new StatisticsByUserResponse();
+        response.setTotalSeconds(totalSecs);
+        response.setScanSeconds(scanSecs);
+        response.setJudgeSeconds(judgeSecs);
+        response.setHandSeconds(handSecs);
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/statistics/get-judge-statistics", method = RequestMethod.POST)
+    public Object getJudgeStatistics(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+//        JPAQuery query = new JPAQuery(entityManager);
+//
+//        List<Integer, List<SerScan>> transform = List<Integer, List<SerScan>>) query
+//                .from(builder)
+//                .transform(
+//                        GroupBy.groupBy(builder.scanStartTime.month()).as(GroupBy.list(builder))
+//                );
+
+        //scanStatistics.setDetailedScan(transform);
+
+        QSerJudgeGraph serJudgeGraph = QSerJudgeGraph.serJudgeGraph;
+
+        JPAQuery<SerJudgeGraph> query = new JPAQuery(entityManager);
+
+
+        Map<Integer, Integer> list = query.from(builder)
+                .where(predicateField)
+                .transform(GroupBy
+                        .groupBy(builder.judgeStartTime.month())
+                        .as(builder.count()));
+        .transform(GroupBy.groupBy(builder.judgeStartTime.month()).as(GroupBy.list(builder)));
+
+
+        JudgeStatisticsResponse response = new JudgeStatisticsResponse();
+        return response;
+
+    }
+
 
 }
