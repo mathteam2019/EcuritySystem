@@ -190,7 +190,7 @@ public class DeviceConfigManagementController extends BaseController {
             for(int i = 0; i < allData.size(); i ++) {
                 SysDeviceConfig deviceConfigData = allData.get(i);
                 try {
-                    if(deviceConfigData.getDevice().getArchive().getArchiveTemplate().getCategory().getCategoryId() == filter.getCategoryId()) {
+                    if(deviceConfigData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
                         if(total >= startIndex && total < endIndex) {
                             data.add(deviceConfigData);
                         }

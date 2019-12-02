@@ -97,7 +97,7 @@ public class DeviceStatusController extends BaseController {
                 predicate.and(builder.device.field.fieldDesignation.contains(filter.getFieldDesignation()));
             }
             if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.device.archive.archiveTemplate.category.categoryName.contains(filter.getCategoryName()));
+                predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
             }
             if (!StringUtils.isEmpty(filter.getDeviceName())) {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));

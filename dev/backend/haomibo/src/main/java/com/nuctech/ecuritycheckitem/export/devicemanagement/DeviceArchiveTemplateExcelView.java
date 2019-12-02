@@ -79,8 +79,8 @@ public class DeviceArchiveTemplateExcelView {
                 row.createCell(1).setCellValue(template.getArchivesTemplateNumber());
                 row.createCell(2).setCellValue(template.getTemplateName());
                 row.createCell(3).setCellValue(template.getStatus());
-                if(template.getCategory() != null) {
-                    row.createCell(4).setCellValue(template.getCategory().getCategoryName());
+                if(template.getDeviceCategory() != null) {
+                    row.createCell(4).setCellValue(template.getDeviceCategory().getCategoryName());
                 } else {
                     row.createCell(4).setCellValue("无");
 

@@ -73,7 +73,7 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("category")
-    SysDeviceCategory category; // Relation to SysDeviceCategory table.
+    SysDeviceCategory deviceCategory; // Relation to SysDeviceCategory table.
 
 
     @ToString.Exclude

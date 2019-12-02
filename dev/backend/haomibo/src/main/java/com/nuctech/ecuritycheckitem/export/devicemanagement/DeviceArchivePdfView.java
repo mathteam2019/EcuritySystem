@@ -53,8 +53,8 @@ public class DeviceArchivePdfView {
                     table.addCell("无");
                 }
                 table.addCell(archive.getStatus());
-                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getCategory() != null) {
-                    table.addCell(archive.getArchiveTemplate().getCategory().getCategoryName());
+                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
+                    table.addCell(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {
                     table.addCell("无");
                 }

@@ -83,8 +83,8 @@ public class DeviceArchiveExcelView {
                     row.createCell(2).setCellValue("无");
                 }
                 row.createCell(3).setCellValue(archive.getStatus());
-                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getCategory() != null) {
-                    row.createCell(4).setCellValue(archive.getArchiveTemplate().getCategory().getCategoryName());
+                if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
+                    row.createCell(4).setCellValue(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {
                     row.createCell(4).setCellValue("无");
                 }

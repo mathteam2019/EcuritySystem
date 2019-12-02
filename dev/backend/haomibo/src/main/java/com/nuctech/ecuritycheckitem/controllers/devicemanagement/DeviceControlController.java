@@ -401,7 +401,7 @@ public class DeviceControlController extends BaseController {
             for(int i = 0; i < allData.size(); i ++) {
                 SysDevice deviceData = allData.get(i);
                 try {
-                    if(deviceData.getArchive().getArchiveTemplate().getCategory().getCategoryId() == filter.getCategoryId()) {
+                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
                         if(total >= startIndex && total < endIndex) {
                             data.add(deviceData);
                         }
@@ -494,7 +494,7 @@ public class DeviceControlController extends BaseController {
             for(int i = 0; i < preDeviceList.size(); i ++) {
                 SysDevice deviceData = preDeviceList.get(i);
                 try {
-                    if(deviceData.getArchive().getArchiveTemplate().getCategory().getCategoryId() == filter.getCategoryId()) {
+                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
                         deviceList.add(deviceData);
                     }
                 } catch(Exception ex) {
