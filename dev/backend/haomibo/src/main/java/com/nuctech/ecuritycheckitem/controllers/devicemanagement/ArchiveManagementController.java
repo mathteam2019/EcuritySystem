@@ -77,7 +77,7 @@ public class ArchiveManagementController extends BaseController {
         static class Filter {
             String archivesName;
             String status;
-            String categoryName;
+            Long categoryId;
         }
 
         @NotNull
@@ -276,8 +276,8 @@ public class ArchiveManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.eq(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 
@@ -601,8 +601,8 @@ public class ArchiveManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.eq(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 

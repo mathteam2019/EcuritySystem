@@ -74,7 +74,7 @@ public class DeviceControlController extends BaseController {
         static class Filter {
             String archivesName;
             String status;
-            String categoryName;
+            Long categoryId;
         }
 
         @NotNull
@@ -168,7 +168,9 @@ public class DeviceControlController extends BaseController {
 
         String mobile;
 
-        String registrationNumber;
+        String deviceIp;
+
+        String guid;
 
 
 
@@ -191,8 +193,8 @@ public class DeviceControlController extends BaseController {
                     .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
                     .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
-                    //.categoryId(this.getCategoryId())
+                    .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
+                    .guid(this.getGuid())
                     //.manufacturer(Optional.of(this.getManufacturer()).orElse(""))
                     //.originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
@@ -247,7 +249,9 @@ public class DeviceControlController extends BaseController {
 
         String mobile;
 
-        String registrationNumber;
+        String deviceIp;
+
+        String guid;
 
 
 
@@ -271,8 +275,8 @@ public class DeviceControlController extends BaseController {
                     .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
                     .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
-//                    .categoryId(this.getCategoryId())
+                    .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
+                    .guid(this.getGuid())
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
@@ -360,8 +364,8 @@ public class DeviceControlController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.contains(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 
@@ -424,8 +428,8 @@ public class DeviceControlController extends BaseController {
             if (!StringUtils.isEmpty(filter.getStatus())) {
                 predicate.and(builder.status.contains(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 
@@ -596,6 +600,7 @@ public class DeviceControlController extends BaseController {
 
 
         SysDevice sysDevice = requestBody.convert2SysDevice(oldSysDevice.getCreatedBy(), oldSysDevice.getCreatedTime());
+        sysDevice.setFieldId(oldSysDevice.getFieldId());
 
         // Process portrait file.
         MultipartFile portraitFile = requestBody.getImageUrl();

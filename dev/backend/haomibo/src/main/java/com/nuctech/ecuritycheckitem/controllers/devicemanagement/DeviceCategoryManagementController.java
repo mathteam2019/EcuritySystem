@@ -330,7 +330,7 @@ public class DeviceCategoryManagementController extends BaseController {
 
         if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
                 serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
-            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
 

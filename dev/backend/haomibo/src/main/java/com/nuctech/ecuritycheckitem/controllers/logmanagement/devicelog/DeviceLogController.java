@@ -23,6 +23,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -62,6 +64,10 @@ public class DeviceLogController extends BaseController {
             String userName;
             Long category;
             Long level;
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            Date operateStartTime;
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            Date operateEndTime;
         }
 
         @NotNull
@@ -131,6 +137,14 @@ public class DeviceLogController extends BaseController {
 
             if (filter.getLevel() != null) {
                 predicate.and(builder.level.eq(filter.getLevel()));
+            }
+
+            if(filter.getOperateStartTime() != null) {
+                predicate.and(builder.time.after(filter.getOperateStartTime()));
+
+            }
+            if(filter.getOperateEndTime() != null){
+                predicate.and(builder.time.before(filter.getOperateEndTime()));
             }
         }
 

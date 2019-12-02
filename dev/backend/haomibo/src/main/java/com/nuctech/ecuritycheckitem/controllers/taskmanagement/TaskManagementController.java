@@ -2164,12 +2164,12 @@ public class TaskManagementController extends BaseController {
         JPAQuery<SerJudgeGraph> query = new JPAQuery(entityManager);
 
 
-        Map<Integer, Integer> list = query.from(builder)
-                .where(predicateField)
-                .transform(GroupBy
-                        .groupBy(builder.judgeStartTime.month())
-                        .as(builder.count()));
-        .transform(GroupBy.groupBy(builder.judgeStartTime.month()).as(GroupBy.list(builder)));
+//        Map<Integer, Integer> list = query.from(builder)
+//                .where(predicateField)
+//                .transform(GroupBy
+//                        .groupBy(builder.judgeStartTime.month())
+//                        .as(builder.count()));
+//        .transform(GroupBy.groupBy(builder.judgeStartTime.month()).as(GroupBy.list(builder)));
 
 
         JudgeStatisticsResponse response = new JudgeStatisticsResponse();

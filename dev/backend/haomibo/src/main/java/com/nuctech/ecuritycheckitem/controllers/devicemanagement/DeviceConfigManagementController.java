@@ -50,8 +50,8 @@ public class DeviceConfigManagementController extends BaseController {
         @AllArgsConstructor
         static class Filter {
             String deviceName;
-            String categoryName;
-            String fieldDesignation;
+            Long categoryId;
+            Long fieldId;
         }
 
         @NotNull
@@ -142,11 +142,11 @@ public class DeviceConfigManagementController extends BaseController {
             if (!StringUtils.isEmpty(filter.getDeviceName())) {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
             }
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.device.field.fieldDesignation.contains(filter.getFieldDesignation()));
+            if (filter.getFieldId() != null) {
+                predicate.and(builder.device.field.fieldId.eq(filter.getFieldId()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
             }
         }
 

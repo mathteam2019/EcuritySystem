@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,9 @@ public class AuditLogController extends BaseController {
             String clientIp;
             String operateResult;
             String operateObject;
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
             Date operateStartTime;
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
             Date operateEndTime;
         }
 
