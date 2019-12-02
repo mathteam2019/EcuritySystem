@@ -733,6 +733,12 @@
                 this.pageStatus = 'table';
                 this.getSiteData();
                 break;
+              case responseMessages["has-devices"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -837,6 +843,12 @@
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages["has-devices"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
                   duration: 3000,
                   permanent: false
                 });

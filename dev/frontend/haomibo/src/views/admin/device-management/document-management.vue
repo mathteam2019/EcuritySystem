@@ -287,13 +287,20 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {getApiManager} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import Vue from 'vue';
+
   const {required} = require('vuelidate/lib/validators');
-  Vue.directive('init', {
-    bind: function(el, binding, vnode) {
-      vnode.context[binding.arg] = binding.value;
-    }
-  });
+
+  let getManufacturerName = (options, value) => {
+    let name = null;
+    if (options == null || options.length === 0)
+      return name;
+    options.forEach(option => {
+      if (option.value === value)
+        name = option.text;
+    });
+    return name;
+  };
+
   export default {
     components: {
       'vuetable': Vuetable,
@@ -332,6 +339,12 @@
           {value: 'active', text: this.$t('permission-management.active')},
           {value: 'inactive', text: this.$t('permission-management.inactive')}
         ],
+        manufacturerOptions: [
+          {text: "同方威视", value: "0"},
+          {text: "海康威视", value: '1'},
+          {text: "大华股份", value: '2'},
+          {text: "华为", value: '3'}
+        ],
         indicatorsData: [],
         filterOption: {
           archivesName: '',
@@ -355,7 +368,6 @@
           note: '',
           status: 'inactive',
           archiveValueList:[]
-
         },
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-management/archive/get-by-filter-and-page`,
@@ -565,7 +577,7 @@
         for (let item of this.templateData) {
           if (item.archivesTemplateId === templateId) {
             this.templateForm.category = item.deviceCategory.categoryName;
-            this.templateForm.manufacturer = item.manufacturer;
+            this.templateForm.manufacturer = getManufacturerName(this.manufacturerOptions,item.manufacturer);
             this.templateForm.originalModel = item.originalModel;
             this.indicatorsData = item.archiveIndicatorsList;
             break;
@@ -633,6 +645,12 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
+                break;
+              case responseMessages['has-devices']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })
@@ -722,7 +740,7 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           temp.categoryName = temp.archiveTemplate ? temp.archiveTemplate.deviceCategory.categoryName : '';
-          temp.manufacturerName = temp.archiveTemplate ? temp.archiveTemplate.manufacturer : '';
+          temp.manufacturerName = temp.archiveTemplate ? getManufacturerName(this.manufacturerOptions,temp.archiveTemplate.manufacturer) : '';
           temp.originalModelName = temp.archiveTemplate ? temp.archiveTemplate.originalModel : '';
           transformed.data.push(temp);
         }

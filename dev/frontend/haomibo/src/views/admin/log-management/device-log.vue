@@ -69,12 +69,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="deviceFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" data-format="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueTypet="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="deviceFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" data-format="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -172,12 +172,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="judgeFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="judgeFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="judgeFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss"></date-picker>
+                      <date-picker v-model="judgeFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss"></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -275,12 +275,12 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="manualFilter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="manualFilter.endTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -375,8 +375,8 @@
         },
         pageStatus: 'table',
         deviceFilter: {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',
@@ -384,8 +384,8 @@
           deviceType: 'device'
         },
         judgeFilter: {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',
@@ -393,8 +393,8 @@
           deviceType: 'judge'
         },
         manualFilter: {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',
@@ -630,8 +630,8 @@
       },
       onDeviceResetButton() {
         this.deviceFilter = {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',
@@ -660,8 +660,8 @@
       },
       onJudgeResetButton() {
         this.judgeFilter = {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',
@@ -690,8 +690,8 @@
       },
       onManualResetButton() {
         this.manualFilter = {
-          startTime: null,
-          endTime: null,
+          operateStartTime: null,
+          operateEndTime: null,
           device: '',
           user: '',
           category: '',

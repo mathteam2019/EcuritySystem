@@ -77,6 +77,8 @@ const getApiManager = function () {
 };
 
 const getDateTimeWithFormat = (datetime,lang = 'cn') => {
+  if(datetime === "" || datetime == null)
+    return "";
   //todo need to format datetime with its language value
   let format = 'MM/DD/YYYY HH:mm';
   switch (lang) {

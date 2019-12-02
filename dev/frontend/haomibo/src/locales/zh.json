@@ -395,7 +395,8 @@
     "site-has-children" : "该场地有孩子",
     "site-added-successfully" : "场地创建成功",
     "delete-prompt": "是否失效该场地",
-    "make-inactive-prompt" : "是否失效该场地"
+    "make-inactive-prompt" : "是否失效该场地",
+    "site-has-devices" : "这场地已经有设备"
   },
   "device-management": {
     "file-template": "档案模板",
