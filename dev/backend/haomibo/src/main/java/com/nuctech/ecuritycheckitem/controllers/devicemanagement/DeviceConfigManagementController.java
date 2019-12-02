@@ -120,6 +120,19 @@ public class DeviceConfigManagementController extends BaseController {
         Long configId;
     }
 
+    /**
+     * Device get all request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceConfigGetAllRequestBody {
+
+        Long deviceId;
+    }
+
 
 
     /**
@@ -408,10 +421,21 @@ public class DeviceConfigManagementController extends BaseController {
      * Device  config get all request.
      */
     @RequestMapping(value = "/config/get-all", method = RequestMethod.POST)
-    public Object deviceConfigGetAll() {
+    public Object deviceConfigGetAll(@RequestBody @Valid DeviceConfigGetAllRequestBody requestBody,
+                                     BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
 
-        List<SysDeviceConfig> sysDeviceConfigList = sysDeviceConfigRepository.findAll();
+        List<SysDeviceConfig> preSysDeviceConfigList = sysDeviceConfigRepository.findAll();
+        List<SysDeviceConfig> sysDeviceConfigList = new ArrayList<>();
+
+        for(int i = 0; i < preSysDeviceConfigList.size(); i ++) {
+            if(preSysDeviceConfigList.get(i).getDeviceId() != requestBody.getDeviceId()) {
+                sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
+            }
+        }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfigList));
 

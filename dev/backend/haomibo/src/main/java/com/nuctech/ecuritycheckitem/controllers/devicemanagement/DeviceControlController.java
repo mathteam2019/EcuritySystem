@@ -787,7 +787,6 @@ public class DeviceControlController extends BaseController {
         String type = requestBody.getType();
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         switch (type) {
 
@@ -803,6 +802,7 @@ public class DeviceControlController extends BaseController {
             case DeviceGetAllRequestBody.GetAllType.WITH_SCAN:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig"))
                         .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
+                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAMS_FROM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
                         .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
                 break;
 
