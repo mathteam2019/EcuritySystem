@@ -343,10 +343,10 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
-        /*
-        #TODO
-            Check device have this field or not
-        */
+        if(sysDeviceRepository.exists(QSysDevice.
+                sysDevice.fieldId.eq(requestBody.getFieldId()))) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
 
         sysFieldRepository.delete(SysField.builder().fieldId(requestBody.getFieldId()).build());
 
@@ -409,8 +409,7 @@ public class FieldManagementController extends BaseController {
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
 
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         value.setFilters(filters);
 

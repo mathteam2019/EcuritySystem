@@ -103,7 +103,7 @@
           </b-col>
         </b-row>
       </div>
-      <div v-show="pageStatus !== 'list'">
+      <div v-show="pageStatus !== 'list'" class="h-100">
         <div  class="form-section d-flex flex-column">
           <b-row>
             <b-col xxs="12" md="4" lg="3">
@@ -654,6 +654,12 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
+                break;
+              case responseMessages['has-archives']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-archives`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })

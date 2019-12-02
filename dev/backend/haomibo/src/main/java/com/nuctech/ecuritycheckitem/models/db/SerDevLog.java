@@ -57,8 +57,8 @@ public class SerDevLog extends BaseEntity implements Serializable {
     @Column(name = "CONTENT", length = 2000)
     String content;
 
-    @Column(name = "TIME", length = 255)
-    String time;
+    @Column(name = "TIME", nullable = false)
+    Date time;
 
     @ToString.Exclude
     @ManyToOne()

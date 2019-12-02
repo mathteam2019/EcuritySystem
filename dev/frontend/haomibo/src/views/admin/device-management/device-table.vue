@@ -127,6 +127,7 @@
               <vuetable-pagination-bootstrap
                 ref="pagination"
                 @vuetable-pagination:change-page="onChangePage"
+                @onUpdatePerPage="vuetableItems.perPage = Number($event)"
               ></vuetable-pagination-bootstrap>
             </div>
           </b-col>
@@ -252,7 +253,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.ip')">
-                  <b-form-input v-model="mainForm.registrationNumber"></b-form-input>
+                  <b-form-input v-model="mainForm.deviceIp"></b-form-input>
                 </b-form-group>
               </b-col>
 
@@ -260,7 +261,9 @@
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
-              <img src="../../../assets/img/device.png">
+              <img v-if="mainForm.image!=null&&mainForm.image!==''" :src="mainForm.image"/>
+              <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
+                   src="../../../assets/img/device.png">
               <div class="position-absolute" style="bottom: -18%;left: -41%">
                 <img v-if="mainForm.status === 'active'" src="../../../assets/img/active_stamp.png">
                 <img v-else-if="mainForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
@@ -397,7 +400,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.ip')">
-                      <b-form-input v-model="mainForm.ip"></b-form-input>
+                      <b-form-input v-model="mainForm.deviceIp"></b-form-input>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -728,10 +731,10 @@
           supplier: '',
           contacts: '',
           mobile: '',
-          registrationNumber: '',
+          deviceIp: '',
           guid: '',
-          image: '',
-          imageUrl: '',
+          image: null,
+          imageUrl: null,
           status: 'inactive'
         },
         archiveForm: {
@@ -826,10 +829,10 @@
             supplier: '',
             contacts: '',
             mobile: '',
-            registrationNumber: '',
+            deviceIp: '',
             guid: '',
-            image: '',
-            imageUrl: '',
+            image: null,
+            imageUrl: null,
             status: 'inactive'
           };
         else {

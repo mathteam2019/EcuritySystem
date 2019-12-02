@@ -74,7 +74,9 @@ public class DeviceControlController extends BaseController {
         static class Filter {
             String archivesName;
             String status;
-            String categoryName;
+            Long categoryId;
+            String deviceName;
+            Long fieldId;
         }
 
         @NotNull
@@ -168,7 +170,9 @@ public class DeviceControlController extends BaseController {
 
         String mobile;
 
-        String registrationNumber;
+        String deviceIp;
+
+        String guid;
 
 
 
@@ -191,8 +195,8 @@ public class DeviceControlController extends BaseController {
                     .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
                     .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
-                    //.categoryId(this.getCategoryId())
+                    .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
+                    .guid(this.getGuid())
                     //.manufacturer(Optional.of(this.getManufacturer()).orElse(""))
                     //.originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
@@ -247,7 +251,9 @@ public class DeviceControlController extends BaseController {
 
         String mobile;
 
-        String registrationNumber;
+        String deviceIp;
+
+        String guid;
 
 
 
@@ -271,8 +277,8 @@ public class DeviceControlController extends BaseController {
                     .supplier(Optional.ofNullable(this.getSupplier()).orElse(""))
                     .contacts(Optional.ofNullable(this.getContacts()).orElse(""))
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
-                    .registrationNumber(Optional.ofNullable(this.getRegistrationNumber()).orElse(""))
-//                    .categoryId(this.getCategoryId())
+                    .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
+                    .guid(this.getGuid())
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
@@ -330,8 +336,20 @@ public class DeviceControlController extends BaseController {
 
         @Pattern(regexp = GetAllType.BARE + "|" +
                 GetAllType.WITH_CONFIG + "|" +
-                GetAllType.WITH_SCAN + "|")
+                GetAllType.WITH_SCAN)
         String type = GetAllType.BARE;
+    }
+
+    /**
+     * Device delete request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceGetEmptyFieldRequestBody {
+        Long categoryId;
     }
 
     /**
@@ -357,21 +375,64 @@ public class DeviceControlController extends BaseController {
             if (!StringUtils.isEmpty(filter.getArchivesName())) {
                 predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));
             }
+            if (!StringUtils.isEmpty(filter.getDeviceName())) {
+                predicate.and(builder.deviceName.contains(filter.getDeviceName()));
+            }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.contains(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if(filter.getFieldId() != null) {
+                predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
+
+
+
+            /*
+            * Todo
+            *  Strange Category is null
+            *if (filter.getCategoryId() != null) {
+                predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
+            }
+            * */
+
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        int startIndex = perPage * currentPage;
+        int endIndex = perPage * (currentPage + 1);
 
-        long total = sysDeviceRepository.count(predicate);
-        List<SysDevice> data = sysDeviceRepository.findAll(predicate, pageRequest).getContent();
+        long total = 0;
+        List<SysDevice> allData = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysDevice> data = new ArrayList<>();
+        if(filter != null && filter.getCategoryId() != null) {
+
+            for(int i = 0; i < allData.size(); i ++) {
+                SysDevice deviceData = allData.get(i);
+                try {
+                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
+                        if(total >= startIndex && total < endIndex) {
+                            data.add(deviceData);
+                        }
+                        total ++;
+
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            for(int i = 0; i < allData.size(); i ++) {
+                SysDevice deviceData = allData.get(i);
+                if(i >= startIndex && i < endIndex) {
+                    data.add(deviceData);
+                }
+            }
+            total = allData.size();
+        }
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -392,7 +453,6 @@ public class DeviceControlController extends BaseController {
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
 
@@ -422,17 +482,40 @@ public class DeviceControlController extends BaseController {
                 predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));
             }
             if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.contains(filter.getStatus()));
+                predicate.and(builder.status.eq(filter.getStatus()));
             }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+
+            if (!StringUtils.isEmpty(filter.getDeviceName())) {
+                predicate.and(builder.deviceName.contains(filter.getDeviceName()));
             }
+
+            if(filter.getFieldId() != null) {
+                predicate.and(builder.fieldId.eq(filter.getFieldId()));
+            }
+//            if (filter.getCategoryId() != null) {
+//                predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
+//            }
         }
 
         //get all device list
-        List<SysDevice> deviceList = StreamSupport
+        List<SysDevice> preDeviceList = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
+        List<SysDevice> deviceList = new ArrayList<>();
+        if(filter != null && filter.getCategoryId() != null) {
+            for(int i = 0; i < preDeviceList.size(); i ++) {
+                SysDevice deviceData = preDeviceList.get(i);
+                try {
+                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
+                        deviceList.add(deviceData);
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            deviceList = preDeviceList;
+        }
         List<SysDevice> exportList = new ArrayList<>();
         if(requestBody.getIsAll() == false) {
             String[] splits = requestBody.getIdList().split(",");
@@ -596,6 +679,7 @@ public class DeviceControlController extends BaseController {
 
 
         SysDevice sysDevice = requestBody.convert2SysDevice(oldSysDevice.getCreatedBy(), oldSysDevice.getCreatedTime());
+        sysDevice.setFieldId(oldSysDevice.getFieldId());
 
         // Process portrait file.
         MultipartFile portraitFile = requestBody.getImageUrl();
@@ -703,27 +787,84 @@ public class DeviceControlController extends BaseController {
         String type = requestBody.getType();
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         switch (type) {
 
             case DeviceGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
                 break;
             case DeviceGetAllRequestBody.GetAllType.WITH_CONFIG:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CONFIG, SimpleBeanPropertyFilter.serializeAllExcept("device"));
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CONFIG, SimpleBeanPropertyFilter.serializeAllExcept("device"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
                 break;
             case DeviceGetAllRequestBody.GetAllType.WITH_SCAN:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig"))
-                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device"));
+                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
+                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAMS_FROM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
                 break;
+
 
             default:
 
                 break;
         }
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Device  get empty field request.
+     */
+    @RequestMapping(value = "/device/get-empty-field", method = RequestMethod.POST)
+    public Object deviceGetEmptyField(@RequestBody @Valid DeviceGetEmptyFieldRequestBody requestBody,
+                                      BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+
+        List<SysDevice> preSysDeviceList = sysDeviceRepository.findAll();
+        List<SysDevice> sysDeviceList = new ArrayList<>();
+        if(requestBody.getCategoryId() != null) {
+            for(int i = 0; i < preSysDeviceList.size(); i ++) {
+                SysDevice device = preSysDeviceList.get(i);
+                if(device.getFieldId() != null) {
+                    continue;
+                }
+                try {
+                    if(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == requestBody.getCategoryId()) {
+                        sysDeviceList.add(device);
+                    }
+                } catch(Exception ex) {
+
+                }
+            }
+        } else {
+            for(int i = 0; i < preSysDeviceList.size(); i ++) {
+                SysDevice device = preSysDeviceList.get(i);
+                if (device.getFieldId() != null) {
+                    continue;
+                }
+                sysDeviceList.add(device);
+            }
+        }
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
+
 
         value.setFilters(filters);
 
