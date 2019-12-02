@@ -12,12 +12,18 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplatePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -38,9 +44,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/document-template")
@@ -74,6 +84,25 @@ public class ArchiveTemplateManagementController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    /**
+     * Archive Template generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ArchiveTemplateGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -173,7 +202,6 @@ public class ArchiveTemplateManagementController extends BaseController {
         @NotNull
         String indicatorsName;
 
-        @NotNull
         String indicatorsUnit;
 
         @NotNull
@@ -338,6 +366,85 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     /**
+     * Archive Template generate file request.
+     */
+    @RequestMapping(value = "/archive-template/export", method = RequestMethod.POST)
+    public Object archiveTemplateGenerateFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
+                                      BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSerArchiveTemplate builder = QSerArchiveTemplate.serArchiveTemplate;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getTemplateName())) {
+                predicate.and(builder.templateName.contains(filter.getTemplateName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
+            }
+        }
+
+        //get all archive template list
+        List<SerArchiveTemplate> archiveTemplateList = StreamSupport
+                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SerArchiveTemplate> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < archiveTemplateList.size(); i ++) {
+                SerArchiveTemplate archiveTemplate = archiveTemplateList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(archiveTemplate.getArchivesTemplateId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(archiveTemplate);
+                }
+            }
+        } else {
+            exportList = archiveTemplateList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=archive-template.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive-template.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
      * Archive Template update status request.
      */
     @RequestMapping(value = "/archive-template/update-status", method = RequestMethod.POST)
@@ -358,9 +465,6 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         SerArchiveTemplate serArchiveTemplate = optionalSerArchiveTemplate.get();
 
-        if(isUsedTemplate(serArchiveTemplate.getArchivesTemplateId())) {
-            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
-        }
 
         // Update status.
         serArchiveTemplate.setStatus(requestBody.getStatus());
@@ -455,7 +559,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     /**
-     * Archive Template create request.
+     * Archive Indicator create request.
      */
     @RequestMapping(value = "/archive-indicator/create", method = RequestMethod.POST)
     public Object archiveIndicatorCreate(
@@ -474,7 +578,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         serArchiveIndicatorsRepository.save(serArchiveIndicators);
 
-        return new CommonResponseBody(ResponseMessage.OK);
+        return new CommonResponseBody(ResponseMessage.OK, serArchiveIndicators.getIndicatorsId());
     }
 
     /**
@@ -518,9 +622,15 @@ public class ArchiveTemplateManagementController extends BaseController {
         if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
             for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
                 SerArchiveIndicators archiveIndicators = serArchiveTemplate.getArchiveIndicatorsList().get(i);
-                archiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
-                archiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                serArchiveIndicatorsRepository.save(serArchiveTemplate.getArchiveIndicatorsList().get(i));
+                //get indicator from it's indicator id
+                SerArchiveIndicators oldArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.serArchiveIndicators
+                        .indicatorsId.eq(archiveIndicators.getIndicatorsId())).orElse(null);
+                if(oldArchiveIndicators != null) {
+                    oldArchiveIndicators.setArchivesTemplateId(serArchiveTemplate.getArchivesTemplateId());
+                    oldArchiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    serArchiveIndicatorsRepository.save(oldArchiveIndicators);
+                }
+
             }
         }
 
@@ -555,7 +665,11 @@ public class ArchiveTemplateManagementController extends BaseController {
         //remove it's indicators
         if(serArchiveTemplate.getArchiveIndicatorsList() != null) {
             for(int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i ++) {
-                serArchiveIndicatorsRepository.delete(serArchiveTemplate.getArchiveIndicatorsList().get(i));
+                SerArchiveIndicators archiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.serArchiveIndicators
+                        .indicatorsId.eq(serArchiveTemplate.getArchiveIndicatorsList().get(i).getIndicatorsId())).orElse(null);
+                if(archiveIndicators != null) {
+                    serArchiveIndicatorsRepository.delete(archiveIndicators);
+                }
             }
         }
 

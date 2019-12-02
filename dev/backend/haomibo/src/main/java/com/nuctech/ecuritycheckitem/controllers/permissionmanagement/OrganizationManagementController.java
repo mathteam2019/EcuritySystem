@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationExcelView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
@@ -24,7 +26,11 @@ import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -37,8 +43,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Organization management controller.
@@ -134,6 +144,25 @@ public class OrganizationManagementController extends BaseController {
         Filter filter;
 
 
+    }
+
+    /**
+     * Organization  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class OrganizationGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        OrganizationGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -477,6 +506,86 @@ public class OrganizationManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Organization generate excel request.
+     */
+    @RequestMapping(value = "/organization/export", method = RequestMethod.POST)
+    public Object organizationGenerateFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
+                                       BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysOrg builder = QSysOrg.sysOrg;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        OrganizationGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getOrgName())) {
+                predicate.and(builder.orgName.contains(filter.getOrgName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentOrgName())) {
+                predicate.and(builder.parent.orgName.contains(filter.getParentOrgName()));
+            }
+        }
+
+
+        //get all org list
+        List<SysOrg> orgList = StreamSupport
+                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysOrg> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < orgList.size(); i ++) {
+                SysOrg org = orgList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(org.getOrgId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(org);
+                }
+            }
+        } else {
+            exportList = orgList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=organization.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=organization.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 
 }

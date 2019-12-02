@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
+import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementExcelView;
+import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
@@ -28,7 +31,11 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,8 +47,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Field management controller.
@@ -140,6 +151,25 @@ public class FieldManagementController extends BaseController {
         Filter filter;
 
 
+    }
+
+    /**
+     * Field  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class FieldGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        FieldGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -274,8 +304,8 @@ public class FieldManagementController extends BaseController {
         //Check if archive template contain this category
 
 
-        if(sysDeviceRepository.findOne(QSysDevice.
-                sysDevice.fieldId.eq(requestBody.getFieldId())).isPresent()) {
+        if(sysDeviceRepository.exists(QSysDevice.
+                sysDevice.fieldId.eq(requestBody.getFieldId()))) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
@@ -461,5 +491,84 @@ public class FieldManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Field generate file request.
+     */
+    @RequestMapping(value = "/field/export", method = RequestMethod.POST)
+    public Object fieldGenerateFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
+                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysField builder = QSysField.sysField;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        FieldGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
+                predicate.and(builder.fieldDesignation.contains(filter.getFieldDesignation()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentFieldDesignation())) {
+                predicate.and(builder.parent.fieldDesignation.contains(filter.getParentFieldDesignation()));
+            }
+        }
+
+        //get all field list
+        List<SysField> fieldList = StreamSupport
+                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysField> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < fieldList.size(); i ++) {
+                SysField field = fieldList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(field.getFieldId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(field);
+                }
+            }
+        } else {
+            exportList = fieldList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=field.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=field.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 }

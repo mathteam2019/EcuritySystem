@@ -485,11 +485,23 @@
       "has-children" : "该模板有孩子",
       "added-successfully" : "模板创建成功",
       "delete-prompt": "是否失效该模板",
-      "make-inactive-prompt" : "是否失效该模板"
+      "make-inactive-prompt" : "是否失效该模板",
+      "has-archives":"已经有档案"
     },
     "device-table": {
       "device-info": "设备信息",
-      "archive-info": "档案信息"
+      "archive-info": "档案信息",
+      "guid": "GUID",
+      "device-type" : "设备类型",
+      "device" : "安检仪",
+      "judge" : "判图站",
+      "manual" : "手检端",
+      "status-updated-successfully":"设备修改成功",
+      "deleted-successfully" : "设备删除成功",
+      "has-children" : "该设备有孩子",
+      "added-successfully" : "设备创建成功",
+      "delete-prompt": "是否失效该设备",
+      "make-inactive-prompt" : "是否失效该设备"
     },
     "document-management": {
       "document-table": "档案列表",
@@ -499,7 +511,8 @@
       "has-children" : "该档案有孩子",
       "added-successfully" : "档案创建成功",
       "delete-prompt": "是否失效该档案",
-      "make-inactive-prompt" : "是否失效该档案"
+      "make-inactive-prompt" : "是否失效该档案",
+      "has-devices":"已经有设备"
     },
     "archive":{
       "technical-indicator":"技术指标",

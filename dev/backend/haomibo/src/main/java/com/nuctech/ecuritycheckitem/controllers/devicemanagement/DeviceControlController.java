@@ -15,12 +15,18 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DevicePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -39,9 +45,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/device-table")
@@ -75,6 +85,25 @@ public class DeviceControlController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    /**
+     * Device  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        DeviceGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -373,6 +402,85 @@ public class DeviceControlController extends BaseController {
     }
 
     /**
+     * Device generate file request.
+     */
+    @RequestMapping(value = "/device/export", method = RequestMethod.POST)
+    public Object deviceGenerateFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysDevice builder = QSysDevice.sysDevice;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getArchivesName())) {
+                predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.contains(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getCategoryName())) {
+                predicate.and(builder.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            }
+        }
+
+        //get all device list
+        List<SysDevice> deviceList = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysDevice> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < deviceList.size(); i ++) {
+                SysDevice device = deviceList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(device.getDeviceId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(device);
+                }
+            }
+        } else {
+            exportList = deviceList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=device.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
      * Device update status request.
      */
     @RequestMapping(value = "/device/update-status", method = RequestMethod.POST)
@@ -563,8 +671,13 @@ public class DeviceControlController extends BaseController {
         for(int i = 0; i < deviceList.size(); i ++) {
             SysDevice device = deviceList.get(i);
             // Add edited info.
-            device.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysDeviceRepository.save(device);
+            SysDevice realDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
+                    .deviceId.eq(device.getDeviceId())).orElse(null);
+            if(realDevice != null) {
+                realDevice.setField(device.getField());
+            }
+            realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysDeviceRepository.save(realDevice);
         }
 
 

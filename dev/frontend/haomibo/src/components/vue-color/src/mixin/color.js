@@ -53,36 +53,36 @@ function _colorChange (data, oldHue) {
 
 export default {
   props: ['value'],
-  data () {
+  data() {
     return {
       val: _colorChange(this.value)
     }
   },
   computed: {
     colors: {
-      get () {
+      get() {
         return this.val;
       },
-      set (newVal) {
+      set(newVal) {
         this.val = newVal;
         this.$emit('input', newVal);
       }
     }
   },
   watch: {
-    value (newVal) {
+    value(newVal) {
       this.val = _colorChange(newVal);
     }
   },
   methods: {
-    colorChange (data, oldHue) {
+    colorChange(data, oldHue) {
       this.oldHue = this.colors.hsl.h;
       this.colors = _colorChange(data, oldHue || this.oldHue)
     },
-    isValidHex (hex) {
+    isValidHex(hex) {
       return tinycolor(hex).isValid();
     },
-    simpleCheckForValidColor (data) {
+    simpleCheckForValidColor(data) {
       var keysToCheck = ['r', 'g', 'b', 'a', 'h', 's', 'l', 'v'];
       var checked = 0;
       var passed = 0;
@@ -101,10 +101,10 @@ export default {
         return data
       }
     },
-    paletteUpperCase (palette) {
+    paletteUpperCase(palette) {
       return palette.map(c => c.toUpperCase())
     },
-    isTransparent (color) {
+    isTransparent(color) {
       return tinycolor(color).getAlpha() === 0
     }
   }

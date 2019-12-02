@@ -1750,7 +1750,10 @@ public class TaskManagementController extends BaseController {
         try {
             totalStatistics.setId(keyDate);
             totalStatistics.setTime(keyDate);
-        } catch (Exception e) {
+
+        }
+        catch (Exception e) {
+
 
         }
         totalStatistics.setScanStatistics(scanStatistics);

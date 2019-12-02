@@ -14,6 +14,11 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserExcelView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupExcelView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupPdfView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -21,7 +26,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +42,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -254,6 +265,25 @@ public class UserManagementController extends BaseController {
 
     }
 
+    /**
+     * User  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        UserGetByFilterAndPageRequestBody.Filter filter;
+    }
+
 
     /**
      * User update status request body.
@@ -342,6 +372,25 @@ public class UserManagementController extends BaseController {
 
         Filter filter;
 
+    }
+
+    /**
+     * User Group generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class UserGroupGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        UserGroupGetByFilterAndPageRequestBody.Filter filter;
     }
 
 
@@ -579,6 +628,99 @@ public class UserManagementController extends BaseController {
         return value;
     }
 
+    /**
+     * User generate excel request.
+     */
+    @RequestMapping(value = "/user/export", method = RequestMethod.POST)
+    public Object userGenerateFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
+                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysUser builder = QSysUser.sysUser;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        UserGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getUserName())) {
+                predicate.and(builder.userName.contains(filter.getUserName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getGender())) {
+                predicate.and(builder.gender.eq(filter.getGender()));
+            }
+            if (filter.getOrgId() != null) {
+
+                // Build query if the user's org is under the org.
+                sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
+
+                    List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
+                    List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
+
+                    predicate.and(builder.orgId.in(parentOrgIdList));
+
+                });
+            }
+        }
+
+
+        //get all user list
+        List<SysUser> userList = StreamSupport
+                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysUser> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < userList.size(); i ++) {
+                SysUser user = userList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(user.getUserId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(user);
+                }
+            }
+        } else {
+            exportList = userList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = UserExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=user.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=user.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
+
 
     /**
      * User update status request.
@@ -766,6 +908,81 @@ public class UserManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * User Group generate excel request.
+     */
+    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    public Object userGroupGenerateFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        UserGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getGroupName())) {
+                predicate.and(builder.groupName.contains(filter.getGroupName()));
+            }
+        }
+
+
+        //get all user group list
+        List<SysUserGroup> userGroupList = StreamSupport
+                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysUserGroup> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < userGroupList.size(); i ++) {
+                SysUserGroup userGroup = userGroupList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(userGroup.getUserGroupId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(userGroup);
+                }
+            }
+        } else {
+            exportList = userGroupList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=user-group.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=user-group.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 
 

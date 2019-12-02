@@ -130,7 +130,7 @@
           </b-col>
         </b-row>
       </div>
-      <div v-if="pageStatus !== 'list'" class="form-section">
+      <div v-show="pageStatus !== 'list'" class="form-section">
         <b-row class="h-100">
           <b-col cols="8">
             <b-row>
@@ -160,7 +160,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions" plain/>
+                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions"
+                                 :disabled="pageStatus === 'show'" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesTemplateId.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -192,130 +193,25 @@
                 <div class="flex-grow-1" style="height: 1px;background-color: #bdbaba"></div>
               </b-col>
             </b-row>
-            <b-row v-if="archivesForm.templateId==='waveSecurityDevice'">
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.inspection-method')">
-                  <b-form-input v-model="deviceForm.inspectionMethod"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.single-scan-time')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.number-of-operator')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.detectable-item-type')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.automatic-identification')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.privacy-protection')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.equipment-size')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.channel-size')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.equipment-weight')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.power-by')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.rated-power')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.operating-temperature-humidity')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.storage-temperature-humidity')">
-                  <b-form-input v-model="deviceForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row v-if="archivesForm.templateId!=='waveSecurityDevice'">
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.battery-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.running-memory')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.screen-size')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.storage-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.front-camera')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.rear-camera')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.scalable-capacity')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.operating-system')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.cpu-model')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.dimension')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-              <b-col cols="4">
-                <b-form-group :label="$t('device-management.archive.body-weight')">
-                  <b-form-input v-model="extraForm.method"></b-form-input>
-                </b-form-group>
-              </b-col>
-            </b-row>
+            <b-form>
+              <b-row>
+
+                <b-col cols="4" v-for="(item,index) in indicatorsData">
+                  <b-form-group>
+                    <template slot="label">{{item.indicatorsName}}
+                      <span v-if="item.isNull ==='yes'" class="text-danger">*</span>
+                      <span class="font-weight-normal text-dark" v-if="item.indicatorsUnit!==null">( {{item.indicatorsUnit}} )</span>
+                    </template>
+                    <b-form-input v-model="indicatorsForm[index]" ></b-form-input>
+                    <div class="invalid-feedback d-block">
+                      {{ (submitted &&invalidIndicators.includes(index))?
+                      $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
+                    </div>
+                  </b-form-group>
+                </b-col>
+
+              </b-row>
+            </b-form>
           </b-col>
           <b-col cols="4" class="d-flex flex-column align-items-center">
             <div class="img-wrapper">
@@ -359,6 +255,7 @@
       </div>
 
     </b-card>
+
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-management.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -390,9 +287,13 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {getApiManager} from '../../../api';
   import {validationMixin} from 'vuelidate';
-
+  import Vue from 'vue';
   const {required} = require('vuelidate/lib/validators');
-
+  Vue.directive('init', {
+    bind: function(el, binding, vnode) {
+      vnode.context[binding.arg] = binding.value;
+    }
+  });
   export default {
     components: {
       'vuetable': Vuetable,
@@ -431,6 +332,7 @@
           {value: 'active', text: this.$t('permission-management.active')},
           {value: 'inactive', text: this.$t('permission-management.inactive')}
         ],
+        indicatorsData: [],
         filterOption: {
           archivesName: '',
           status: null,
@@ -441,6 +343,8 @@
           manufacturer: '',
           originalModel: ''
         },
+        indicatorsForm: {},
+        invalidIndicators: [],
         archivesForm: {
           archiveId: 0,
           archivesTemplateId: null,
@@ -449,7 +353,8 @@
           imageUrl: null,
           image: null,
           note: '',
-          status: 'inactive'
+          status: 'inactive',
+          archiveValueList:[]
 
         },
         vuetableItems: {
@@ -614,7 +519,8 @@
             image: null,
             imageUrl: null,
             note: '',
-            status: 'inactive'
+            status: 'inactive',
+            archiveValueList:[]
           };
         else {
           if (Object.keys(data).includes('createdBy')) { //if getting data from table , needful to processing
@@ -631,7 +537,7 @@
             this.archivesForm = data;
         }
         this.submitted = false;
-        this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
+       // this.getTemplateDetailData(this.archivesForm.archivesTemplateId);
       },
       onFileChange(e) {
         let files = e.target.files || e.dataTransfer.files;
@@ -649,34 +555,72 @@
         this.archivesForm.imageUrl = file;
       },
       getTemplateDetailData(templateId) {
+        this.indicatorsData = [];
         this.templateForm = {
           category: '',
           manufacturer: '',
           originalModel: ''
         };
+
         for (let item of this.templateData) {
           if (item.archivesTemplateId === templateId) {
             this.templateForm.category = item.deviceCategory.categoryName;
             this.templateForm.manufacturer = item.manufacturer;
             this.templateForm.originalModel = item.originalModel;
+            this.indicatorsData = item.archiveIndicatorsList;
             break;
           }
         }
+        let indicatorValues = [];
+        if (this.archivesForm != null && Object.keys(this.archivesForm).includes('archiveValueList'))
+          indicatorValues = this.archivesForm.archiveValueList;
+        this.indicatorsForm = {};
+        if (indicatorValues.length >0)
+        {
+          this.indicatorsData.forEach((item,index) => {
+            this.indicatorsForm[index] = null;
+            for (let v of indicatorValues){
+              if(v.indicatorsId === item.indicatorsId){
+                this.indicatorsForm[index] = v.value;
+                break
+              }
+            }
+          });
+        }
+        //todo indicator part...
       },
       //save archives Item
       saveArchivesItem() {
+
         this.submitted = true;
         this.$v.archivesForm.$touch();
         if (this.$v.archivesForm.$invalid) {
           return;
         }
+        this.invalidIndicators = [];
+        let isRequired = false;
+        let indicateFormData = [];
+        this.indicatorsData.forEach((item, index) => {
+          if (Object.keys(this.indicatorsForm).includes(index + "")) {
+            indicateFormData.push({
+              "indicatorsId": item.indicatorsId,
+              "value": this.indicatorsForm[index]
+            })
+          } else if (item.isNull === 'yes') {
+            this.invalidIndicators.push(index);
+            isRequired = true;
+          }
+        });
+        if (isRequired)
+          return;
         const formData = new FormData();
         for (let key in this.archivesForm) {
-          if (key !== 'imageUrl' && key !== 'image')
+          if (key !== 'imageUrl' && key !== 'image' && key !=='archiveValueList')
             formData.append(key, this.archivesForm[key]);
-          else if (key === 'imageUrl' && this.archivesForm['image'] !== null)
-            formData.append(key, this.archivesForm[key], this.archivesForm[key].name);
+          else if (key === 'imageUrl' && this.archivesForm['image'] !== null && this.archivesForm['imageUrl'] !== null)
+            formData.append('imageUrl', this.archivesForm['imageUrl'], this.archivesForm['imageUrl'].name);
         }
+        formData.append('json', JSON.stringify({"archiveValueList": indicateFormData}));
         let finalLink = this.archivesForm.archiveId > 0 ? 'modify' : 'create';
         getApiManager()
           .post(`${apiBaseUrl}/device-management/document-management/archive/` + finalLink, formData)
@@ -749,8 +693,8 @@
                 if (this.archivesForm.archiveId > 0)
                   initialize();
                 break;
-              case responseMessages["has-children"]: // has children
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-children`), {
+              case responseMessages['has-devices']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -838,8 +782,8 @@
         }
 
       },
-      'archivesForm.archivesTemplateId': function (newVal) {
-        this.getTemplateDetailData(newVal);
+      'archivesForm.archivesTemplateId': function (newVal,oldVal) {
+          this.getTemplateDetailData(newVal);
       }
     }
   }

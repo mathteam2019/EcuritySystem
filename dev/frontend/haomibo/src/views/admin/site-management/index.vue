@@ -405,6 +405,17 @@
     return parentSerialNumber;
   };
 
+  let fnGetOrgLevel = orgData => {
+      let level = 0;
+      if (orgData == null)
+          return level;
+      while (orgData.parent != null) {
+          level++;
+          orgData = orgData.parent;
+      }
+      return level;
+  };
+
   export default {
     components: {
       'vuetable': Vuetable,
@@ -565,33 +576,33 @@
         superSiteOptions: [],
         treeData: {
           id: 0,
-          label: '0000 首都机场',
+          label: `<div class="org-content-top"><span>1</span>0000</div><div class="org-content-bottom">首都机场</div>`,
           children: [
             {
               id: 1,
-              label: '0100 1号航站楼'
+              label: '<div class="org-content-top"><span>2</span>0100</div><div class="org-content-bottom">1号航站楼</div>'
             },
             {
               id: 2,
-              label: '0200 2号航站楼',
+              label: '<div class="org-content-top"><span>2</span>0200</div><div class="org-content-bottom">2号航站楼</div>',
               children: [
                 {
                   id: 3,
-                  label: '0201 通道1'
+                  label: '<div class="org-content-top"><span>3</span>0201</div><div class="org-content-bottom">通道1</div>'
                 },
                 {
                   id: 4,
-                  label: '0202 通道2'
+                  label: '<div class="org-content-top"><span>3</span>0202</div><div class="org-content-bottom">通道2</div>'
                 }
               ]
             },
             {
               id: 5,
-              label: '0300 3号航站楼',
+              label: '<div class="org-content-top"><span>2</span>0300</div><div class="org-content-bottom">3号航站楼</div>',
               children: [
                 {
                   id: 6,
-                  label: '0301 通道001'
+                  label: '<div class="org-content-top"><span>3</span>0301</div><div class="org-content-bottom">通道001</div>'
                 }
               ]
             }
@@ -841,11 +852,19 @@
         this.$refs[modal].hide();
       },
       renderTreeContent: function (h, data) {
-        return data.label;
+          return h('div', {
+                  domProps: {
+                      innerHTML: data.label
+                  }
+              }
+          );
       },
       treeLabelClass: function (data) {
-        const labelClasses = ['bg-primary', 'bg-secondary', 'bg-success', 'bg-info', 'bg-warning', 'bg-danger'];
-        return `${labelClasses[data.id % 6]} text-white`;
+          let level = fnGetOrgLevel(data);
+          console.log(data);
+          console.log(level);
+          const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3','bg-level-4','bg-level-5'];
+          return `${labelClasses[level % 5]} text-white`;
       }
     }
   }

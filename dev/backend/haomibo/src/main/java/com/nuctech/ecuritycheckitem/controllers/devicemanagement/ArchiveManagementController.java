@@ -15,11 +15,17 @@ import com.mysql.cj.xdevapi.JsonParser;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchivePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,9 +49,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/document-management")
@@ -218,6 +228,26 @@ public class ArchiveManagementController extends BaseController {
 
         @NotNull
         Long archiveId;
+    }
+
+
+    /**
+     * Archive  generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ArchiveGenerateRequestBody {
+        @NotNull
+        String exportType;
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        ArchiveGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -546,5 +576,84 @@ public class ArchiveManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    /**
+     * Archive generate file request.
+     */
+    @RequestMapping(value = "/archive/export", method = RequestMethod.POST)
+    public Object archiveGenerateFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSerArchive builder = QSerArchive.serArchive;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        ArchiveGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getArchivesName())) {
+                predicate.and(builder.archivesName.contains(filter.getArchivesName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getCategoryName())) {
+                predicate.and(builder.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            }
+        }
+
+        //get all archive list
+        List<SerArchive> archiveList = StreamSupport
+                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SerArchive> exportList = new ArrayList<>();
+        if(requestBody.getIsAll() == false) {
+            String[] splits = requestBody.getIdList().split(",");
+            for(int i = 0; i < archiveList.size(); i ++) {
+                SerArchive archive = archiveList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(archive.getArchiveId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(archive);
+                }
+            }
+        } else {
+            exportList = archiveList;
+        }
+
+        if(requestBody.exportType.equals("excel")) {
+            InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
+
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=archive.xlsx");
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.valueOf("application/x-msexcel"))
+                    .body(new InputStreamResource(inputStream));
+        }
+        InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
     }
 }
