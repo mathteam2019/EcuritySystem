@@ -54,8 +54,8 @@ public class DevicePdfView {
                 }
                 table.addCell(device.getStatus());
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null &&
-                        device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    table.addCell(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                        device.getArchive().getArchiveTemplate().getCategory() != null) {
+                    table.addCell(device.getArchive().getArchiveTemplate().getCategory().getCategoryName());
                 } else {
                     table.addCell("无");
                 }

@@ -277,7 +277,7 @@ public class ArchiveManagementController extends BaseController {
                 predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (filter.getCategoryId() != null) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
+                predicate.and(builder.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
             }
         }
 
@@ -602,7 +602,7 @@ public class ArchiveManagementController extends BaseController {
                 predicate.and(builder.status.eq(filter.getStatus()));
             }
             if (filter.getCategoryId() != null) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
+                predicate.and(builder.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
             }
         }
 

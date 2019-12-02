@@ -146,7 +146,7 @@ public class DeviceConfigManagementController extends BaseController {
                 predicate.and(builder.device.field.fieldId.eq(filter.getFieldId()));
             }
             if (filter.getCategoryId() != null) {
-                predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
+                predicate.and(builder.device.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
             }
         }
 

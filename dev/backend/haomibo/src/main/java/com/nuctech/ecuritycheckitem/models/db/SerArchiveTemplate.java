@@ -20,16 +20,8 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -63,6 +55,7 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     @Column(name = "ARCHIVES_TEMPLATE_NUMBER", length = 50)
     String archivesTemplateNumber;
 
+
     @Column(name = "CATEGORY_ID", length = 20)
     Long categoryId;
 
@@ -76,11 +69,12 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     String status;
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("category")
-    private SysDeviceCategory deviceCategory; // Relation to SysDeviceCategory table.
+    SysDeviceCategory category; // Relation to SysDeviceCategory table.
+
 
     @ToString.Exclude
     @OneToMany()
