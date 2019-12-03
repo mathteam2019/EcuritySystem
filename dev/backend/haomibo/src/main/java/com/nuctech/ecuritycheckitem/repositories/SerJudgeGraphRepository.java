@@ -20,6 +20,11 @@ public interface SerJudgeGraphRepository extends
         PagingAndSortingRepository<SerJudgeGraph, Integer>,
         QuerydslPredicateExecutor<SerJudgeGraph> {
 
+    @Query("SELECT YEAR(MAX(JUDGE_START_TIME)) FROM SerJudgeGraph ")
+    Integer findMaxYear();
+
+    @Query("SELECT YEAR(MIN(JUDGE_START_TIME)) FROM SerJudgeGraph ")
+    Integer findMinYear();
 
 
 }
