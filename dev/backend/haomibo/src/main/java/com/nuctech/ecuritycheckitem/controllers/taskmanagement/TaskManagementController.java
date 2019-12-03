@@ -17,6 +17,8 @@ import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
 
 import lombok.*;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -139,6 +141,7 @@ public class TaskManagementController extends BaseController {
 
         long id;
         long time;
+        String name; //user or device name
 
         ScanStatistics scanStatistics;
         JudgeStatistics judgeStatistics;
@@ -228,6 +231,33 @@ public class TaskManagementController extends BaseController {
         double noSeizureHandExaminationRate;
 
         long checkDuration;
+
+    }
+
+    /**
+     * Get Statistics by user request body
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsbyUserOrDeviceRequestBody {
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        static class Filter {
+
+            String userName;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date startTime;
+            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
+            Date endTime;
+        }
+
+        StatisticsbyUserOrDeviceRequestBody.Filter filter;
 
     }
 
@@ -387,7 +417,6 @@ public class TaskManagementController extends BaseController {
             Date startTime;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
-            String statWidth;
 
         }
 
@@ -418,7 +447,6 @@ public class TaskManagementController extends BaseController {
             Date startTime;
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
-            String statWidth;
 
         }
 
@@ -2139,6 +2167,8 @@ public class TaskManagementController extends BaseController {
 
         }
 
+        //result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
+
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
@@ -2264,19 +2294,56 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/statistics/get-statistics-by-user-all-pagination", method = RequestMethod.POST)
+    @RequestMapping(value = "/statistics/get-statistics-filter-by-user", method = RequestMethod.POST)
     public Object getStatisticsByUser(
-            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            @RequestBody @Valid TaskManagementController.StatisticsByUserRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Map<Long, List<SerScan>> scans =  serScanRepository.findAll().stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList() ));
-        Map<Long, List<SerJudgeGraph>> judges = serJudgeGraphRepository.findAll().stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList() ));
-        Map<Long, List<SerHandExamination>> handExaminations = serHandExaminationRepository.findAll().stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList() ));
+        QSerScan scanbuilder = QSerScan.serScan;
+        QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
+        QSerHandExamination handBuilder = QSerHandExamination.serHandExamination;
 
+        BooleanBuilder predicateScan = new BooleanBuilder(scanbuilder.isNotNull());
+        BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
+        BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
+
+        StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
+
+                predicateScan.and(scanbuilder.scanPointsman.userName.contains(filter.getUserName()));
+                predicateJudge.and(judgeBuilder.judgeUser.userName.contains(filter.getUserName()));
+                predicateHand.and(handBuilder.handUser.userName.contains(filter.getUserName()));
+
+
+            }
+            if (filter.getStartTime() != null) {
+
+                predicateScan.and(scanbuilder.scanStartTime.after(filter.getStartTime()));
+                predicateJudge.and(judgeBuilder.judgeStartTime.after(filter.getStartTime()));
+                predicateHand.and(handBuilder.handEndTime.after(filter.getStartTime()));
+
+            }
+
+            if (filter.getEndTime() != null) {
+
+                predicateScan.and(scanbuilder.scanEndTime.before(filter.getEndTime()));
+                predicateJudge.and(judgeBuilder.judgeEndTime.before(filter.getEndTime()));
+                predicateHand.and(handBuilder.handEndTime.before(filter.getEndTime()));
+
+            }
+
+        }
+
+        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList() ));
+        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList() ));
+        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList() ));
 
         HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
 
@@ -2291,7 +2358,18 @@ public class TaskManagementController extends BaseController {
             long validScan = 0;
             long invalidScan = 0;
 
+            String strName = "";
+
             for (int i = 0; i < listScans.size(); i ++) {
+
+                try {
+
+                    strName = listScans.get(i).getScanPointsman().getUserName();
+
+                }
+                catch(Exception e ) {
+
+                }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
 
@@ -2310,6 +2388,7 @@ public class TaskManagementController extends BaseController {
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
 
+            totalStat.setName(strName);
             totalStat.setScanStatistics(scanStat);
             listTotalStatistics.put(userId, totalStat);
 
@@ -2325,8 +2404,16 @@ public class TaskManagementController extends BaseController {
 
             long suspiction = 0;
             long noSuspiction = 0;
+            String strName = "";
 
             for (int i = 0; i < listJudge.size(); i ++) {
+
+                try {
+                    strName = listJudge.get(i).getJudgeUser().getUserName();
+                }
+                catch(Exception e) {
+
+                }
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
@@ -2353,6 +2440,7 @@ public class TaskManagementController extends BaseController {
             else {
 
                 totalStat.setJudgeStatistics(judgeStat);
+                totalStat.setName(strName);
                 listTotalStatistics.put(userId, totalStat);
 
             }
@@ -2369,8 +2457,16 @@ public class TaskManagementController extends BaseController {
 
             long seizure = 0;
             long noSeizure = 0;
+            String strName = "";
 
             for (int i = 0; i < listHand.size(); i ++) {
+
+                try {
+                    strName = listHand.get(i).getHandUser().getUserName();
+                }
+                catch(Exception e) {
+
+                }
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
@@ -2393,10 +2489,12 @@ public class TaskManagementController extends BaseController {
 
                 listTotalStatistics.get(userId).setHandExaminationStatistics(handStat);
 
+
             }
             else {
 
                 totalStat.setHandExaminationStatistics(handStat);
+                totalStat.setName(strName);
                 listTotalStatistics.put(userId, totalStat);
 
             }
@@ -2406,11 +2504,11 @@ public class TaskManagementController extends BaseController {
         TotalStatisticsResponse response = new TotalStatisticsResponse();
         response.setDetailedStatistics(listTotalStatistics);
         response.setTotal(listTotalStatistics.keySet().size());
-        response.setPer_page(requestBody.getPerPage());
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
-        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
-        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
+//        response.setPer_page(requestBody.getPerPage());
+//        response.setCurrent_page(requestBody.getCurrentPage());
+//        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
+//        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
+//        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
 
 
 
@@ -2418,19 +2516,55 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/statistics/get-statistics-by-device-all-pagination", method = RequestMethod.POST)
+    @RequestMapping(value = "/statistics/get-statistics-filter-by-device", method = RequestMethod.POST)
     public Object getStatisticsByDevice(
-            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            @RequestBody @Valid TaskManagementController.StatisticsByDeviceRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Map<Long, List<SerScan>> scans =  serScanRepository.findAll().stream().collect(Collectors.groupingBy(SerScan::getScanDeviceId, Collectors.toList() ));
-        Map<Long, List<SerJudgeGraph>> judges = serJudgeGraphRepository.findAll().stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList() ));
-        Map<Long, List<SerHandExamination>> handExaminations = serHandExaminationRepository.findAll().stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList() ));
+        QSerScan scanbuilder = QSerScan.serScan;
+        QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
+        QSerHandExamination handBuilder = QSerHandExamination.serHandExamination;
 
+        BooleanBuilder predicateScan = new BooleanBuilder(scanbuilder.isNotNull());
+        BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
+        BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
+
+        StatisticsByDeviceRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+
+            if (filter.getDeviceId() != null) {
+
+                predicateScan.and(scanbuilder.scanDeviceId.eq(filter.getDeviceId()));
+                predicateJudge.and(judgeBuilder.judgeDeviceId.eq(filter.getDeviceId()));
+                predicateHand.and(handBuilder.handDeviceId.eq(filter.getDeviceId()));
+
+            }
+            if (filter.getStartTime() != null) {
+
+                predicateScan.and(scanbuilder.scanStartTime.after(filter.getStartTime()));
+                predicateJudge.and(judgeBuilder.judgeStartTime.after(filter.getStartTime()));
+                predicateHand.and(handBuilder.handStartTime.after(filter.getStartTime()));
+
+            }
+
+            if (filter.getEndTime() != null) {
+
+                predicateScan.and(scanbuilder.scanEndTime.before(filter.getEndTime()));
+                predicateJudge.and(judgeBuilder.judgeEndTime.before(filter.getEndTime()));
+                predicateHand.and(handBuilder.handEndTime.before(filter.getEndTime()));
+
+            }
+
+        }
+
+        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanDeviceId, Collectors.toList() ));
+        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList() ));
+        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList() ));
 
         HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
 
@@ -2444,8 +2578,16 @@ public class TaskManagementController extends BaseController {
             long totalScan = 0;
             long validScan = 0;
             long invalidScan = 0;
+            String strName = "";
 
             for (int i = 0; i < listScans.size(); i ++) {
+
+                try {
+                    strName = listScans.get(i).getScanDevice().getDeviceName();
+                }
+                catch (Exception e) {
+
+                }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
 
@@ -2464,6 +2606,7 @@ public class TaskManagementController extends BaseController {
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
 
+            totalStat.setName(strName);
             totalStat.setScanStatistics(scanStat);
             listTotalStatistics.put(deviceId, totalStat);
 
@@ -2479,8 +2622,17 @@ public class TaskManagementController extends BaseController {
 
             long suspiction = 0;
             long noSuspiction = 0;
+            String strName = "";
 
             for (int i = 0; i < listJudge.size(); i ++) {
+
+                try {
+                    strName = listJudge.get(i).getJudgeDevice().getDeviceName();
+                }
+                catch (Exception e) {
+
+                }
+
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
@@ -2507,7 +2659,9 @@ public class TaskManagementController extends BaseController {
             else {
 
                 totalStat.setJudgeStatistics(judgeStat);
+                totalStat.setName(strName);
                 listTotalStatistics.put(deviceId, totalStat);
+
 
             }
 
@@ -2523,8 +2677,17 @@ public class TaskManagementController extends BaseController {
 
             long seizure = 0;
             long noSeizure = 0;
+            String strName = "";
 
             for (int i = 0; i < listHand.size(); i ++) {
+
+                try {
+                    strName = listHand.get(i).getHandDevice().getDeviceName();
+                }
+                catch (Exception e) {
+
+                }
+
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
@@ -2551,6 +2714,7 @@ public class TaskManagementController extends BaseController {
             else {
 
                 totalStat.setHandExaminationStatistics(handStat);
+                totalStat.setName(strName);
                 listTotalStatistics.put(deviceId, totalStat);
 
             }
@@ -2560,11 +2724,11 @@ public class TaskManagementController extends BaseController {
         TotalStatisticsResponse response = new TotalStatisticsResponse();
         response.setDetailedStatistics(listTotalStatistics);
         response.setTotal(listTotalStatistics.keySet().size());
-        response.setPer_page(requestBody.getPerPage());
-        response.setCurrent_page(requestBody.getCurrentPage());
-        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
-        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
-        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
+//        response.setPer_page(requestBody.getPerPage());
+//        response.setCurrent_page(requestBody.getCurrentPage());
+//        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
+//        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
+//        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
 
 
 
