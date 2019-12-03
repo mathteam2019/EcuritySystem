@@ -510,6 +510,11 @@ $btn-orange-color: #ff5e00;
 .btn-info {
   background-color: $info-color;
   border-color: $info-color;
+  &.disabled,&:disabled {
+    background-color: lighten($info-color, 10%);
+    border-color: lighten($info-color, 10%);
+    cursor: not-allowed;
+  }
   &.skyblue {
     background-color: #3182eb;
     border-color: #3182eb;

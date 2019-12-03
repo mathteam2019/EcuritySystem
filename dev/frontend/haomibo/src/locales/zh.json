@@ -997,8 +997,16 @@
       "operate-mode": "运行模式",
       "device": "设备",
       "device-classification": "设备分类 ",
-      "position": "场地"
+      "position": "场地",
+      "release" : "放行",
+      "inspection" : "查验",
+      "updated-successful" : "远行配置改变成功",
+      "deleted-successful" : "原型配置删除成功"
+    },
+    "field-config": {
+      "updated-successful" : "场地配置改变成功"
     }
+
   },
   "statistics": {
     "evaluate-monitors": {
