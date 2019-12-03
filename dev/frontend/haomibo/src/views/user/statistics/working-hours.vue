@@ -14,31 +14,34 @@
 
           <b-col>
             <b-form-group :label="'业务类型'">
-              <b-form-select plain/>
+              <b-form-select v-model="filter.modeId" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="'操作员'">
-              <b-form-input plain/>
+              <b-form-input v-model="filter.userName"></b-form-input>
             </b-form-group>
           </b-col>
 
-           <b-col>
+          <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
+
           <b-col>
-            <b-form-group :label="'统计步长'">
-              <b-form-select  plain />
+            <b-form-group :label="$t('statistics.view.step-size')">
+              <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -63,7 +66,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D38 15 : 34 : 45</span></div>
+              <div><span>D{{this.total.day}} {{this.total.hour}} : {{this.total.minute}} : {{this.total.second}}</span></div>
               <div><span>累计工时</span></div>
             </div>
           </div>
@@ -76,7 +79,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D38 15 : 34 : 45</span></div>
+              <div><span>D{{this.scan.day}} {{this.scan.hour}} : {{this.scan.minute}} : {{this.scan.second}}</span></div>
               <div><span>扫描累计工时</span></div>
             </div>
           </div>
@@ -89,7 +92,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D38 15 : 34 : 45</span></div>
+              <div><span>D{{this.judge.day}} {{this.judge.hour}} : {{this.judge.minute}} : {{this.judge.second}}</span></div>
               <div><span>判图累计工时</span></div>
             </div>
           </div>
@@ -102,7 +105,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>D38 15 : 34 : 45</span></div>
+              <div><span>D{{this.total.day}} {{this.total.hour}} : {{this.total.minute}} : {{this.total.second}}</span></div>
               <div><span>手检累计工时</span></div>
             </div>
           </div>
@@ -113,7 +116,7 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"></i>&nbsp;切换
+            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
@@ -142,16 +145,25 @@
                 </div>
                 <b-row>
                   <b-col class="legend-item">
-                    <div class="value">60%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>扫描</div>
+                    <div class="value">{{this.scan.rate}}%</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      扫描
+                    </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">30%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>判图</div>
+                    <div class="value">{{this.judge.rate}}%</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      判图
+                    </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">10%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>手检</div>
+                    <div class="value">{{this.hand.rate}}%</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      手检
+                    </div>
                   </b-col>
                 </b-row>
               </div>
@@ -195,31 +207,33 @@
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员:</b></b-col>
-            <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.userName===null">张三, 李四, 王五</span>
+              <span v-else>{{filter.userName}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>时间:</b></b-col>
-            <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+            <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>统计步长:</b></b-col>
-            <b-col cols="11"><span>小时</span></b-col>
+            <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
           </b-row>
 
 
-          <div class="table-wrapper table-responsive">
-            <vuetable
-              ref="taskVuetable"
-              :api-mode="false"
-              :data="tempData"
-              data-path="data"
-              pagination-path="pagination"
-              :fields="taskVuetableItems.fields"
-              :per-page="taskVuetableItems.perPage"
-              :data-total="tempData.data.length"
-              class="table-hover"
-              @vuetable:pagination-data="onTaskVuetablePaginationData"
-            >
+                  <div class="table-wrapper table-responsive">
+                    <vuetable
+                      ref="taskVuetable"
+                      :api-url="taskVuetableItems.apiUrl"
+                      :fields="taskVuetableItems.fields"
+                      :http-fetch="taskVuetableHttpFetch"
+                      :per-page="taskVuetableItems.perPage"
+                      track-by="time"
+                      pagination-path="pagination"
+                      class="table-hover"
+                      @vuetable:pagination-data="onTaskVuetablePaginationData"
+                    >
               <template slot="period" slot-scope="props">
                         <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
                           {{props.rowData.period}}
@@ -258,6 +272,11 @@
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
+  import {getApiManager} from "../../../api";
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -266,10 +285,12 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'v-chart': ECharts
+      'v-chart': ECharts,
+      'date-picker': DatePicker
     },
     mounted() {
 
+      this.getPreviewData();
     },
     data() {
 
@@ -413,6 +434,21 @@
 
         pageStatus: 'charts',
 
+        filter: {
+          modeId: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        },
+        preViewData: [],
+        total: [],
+        scan: [],
+        judge:[],
+        hand:[],
+
+        graphData :[],
+
         // TODO: refactor temp table data to api mode
         tempData: {
           data: [1, 2, 3, 4, 5].map((e) => {
@@ -433,107 +469,216 @@
         },
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/...`,
-          fields: [
-            {
-              name: '__checkbox',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'id',
-              title: '序号',
-              sortField: 'id',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__slot:period',
-              title: '时间段',
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            },
-            {
-              name: 'totalScanAmount',
-              title: '扫描总量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'invalidScanAmount',
-              title: '无效扫描量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'invalidityPercentage',
-              title: '无效率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'monitorAmount',
-              title: '判图量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'handCheckAmount',
-              title: '手检量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'noSuspectAmount',
-              title: '无嫌疑量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'noSuspectPercentage',
-              title: '无嫌疑率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'noSeizedAmount',
-              title: '无查获量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'noSeizedPercentage',
-              title: '无查获率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'seizedAmount',
-              title: '查获量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'seizedPercentage',
-              title: '查获率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-          ],
-          perPage: 10,
-        },
+                    apiUrl: `${apiBaseUrl}/task/statistics/preview`,
+                    fields: [
+                        {
+                            name: '__checkbox',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center'
+                        },
+                        {
+                            name: '__sequence',
+                            title: '序号',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'time',
+                            title: '时间段',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'scanStatistics',
+                            title: '扫描总量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (scanStatistics) => {
+                                if(scanStatistics==null)  return '';
+                                return scanStatistics.totalScan;
+                            }
+                        },
+                        {
+                            name: 'scanStatistics',
+                            title: '无效扫描量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (scanStatistics) => {
+                                if(scanStatistics==null)  return '';
+                                return scanStatistics.invalidScan;
+                            }
+                        },
+                        {
+                            name: 'scanStatistics',
+                            title: '无效率',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (scanStatistics) => {
+                                if(scanStatistics==null)  return '';
+                                return scanStatistics.invalidScanRate;
+                            }
+                        },
+                        {
+                            name: 'judgeStatistics',
+                            title: '判图量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (judgeStatistics) => {
+                                if(judgeStatistics==null)  return '';
+                                return judgeStatistics.totalJudge;
+                            }
+                        },
+                        {
+                            name: 'handExaminationStatistics',
+                            title: '手检量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (handExaminationStatistics) => {
+                                if(handExaminationStatistics==null)  return '';
+                                return handExaminationStatistics.totalHandExamination;
+                            }
+                        },
+                        {
+                            name: 'judgeStatistics',
+                            title: '无嫌疑量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (judgeStatistics) => {
+                                if(judgeStatistics==null)  return '';
+                                return judgeStatistics.noSuspictionJudge;
+                            }
+                        },
+                        {
+                            name: 'judgeStatistics',
+                            title: '无嫌疑率',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (judgeStatistics) => {
+                                if(judgeStatistics==null)  return '';
+                                return judgeStatistics.noSuspictionJudgeRate;
+                            }
+                        },
+                        {
+                            name: 'handExaminationStatistics',
+                            title: '无查获量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (handExaminationStatistics) => {
+                                if(handExaminationStatistics==null)  return '';
+                                return handExaminationStatistics.noSeizureHandExamination;
+                            }
+                        },
+                        {
+                            name: 'handExaminationStatistics',
+                            title: '无查获率',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (handExaminationStatistics) => {
+                                if(handExaminationStatistics==null)  return '';
+                                return handExaminationStatistics.noSeizureHandExaminationRate;
+                            }
+                        },
+                        {
+                            name: 'handExaminationStatistics',
+                            title: '查获量',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (handExaminationStatistics) => {
+                                if(handExaminationStatistics==null)  return '';
+                                return handExaminationStatistics.seizureHandExamination;
+                            }
+                        },
+                        {
+                            name: 'handExaminationStatistics',
+                            title: '查获率',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                            callback: (handExaminationStatistics) => {
+                                if(handExaminationStatistics==null)  return '';
+                                return handExaminationStatistics.seizureHandExaminationRate;
+                            }
+                        },
+                    ],
+                    perPage: 5,
+                },
 
       }
     },
-    watch: {},
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      }
+    },
     methods: {
-      onSearchButton() {
 
+      getGraphData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/`, {
+          filter : this.filter
+        }).then((response) => {
+          this.graphData = response.data.data;
+
+        })
+      },
+
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-by-user-sum`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.preViewData = response.data.data;
+          this.total.second = this.preViewData.totalSeconds%60;
+          this.total.minute = ((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60;
+          this.total.hour = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24;
+          this.total.day = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60-(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24)/24;
+          this.scan.rate = Math.floor(this.preViewData.scanSeconds/this.preViewData.totalSeconds*100);
+          this.judge.rate = Math.floor(this.preViewData.judgeSeconds/this.preViewData.totalSeconds*100);
+          this.hand.rate = Math.floor(this.preViewData.handSeconds/this.preViewData.totalSeconds*100);
+
+          this.doublePieChartOptions.series.data[0].value = this.scan.rate;
+          this.doublePieChartOptions.series.data[1].value = this.judge.rate;
+          this.doublePieChartOptions.series.data[2].value = this.hand.rate;
+          // this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+          //
+          // if (this.filter.statWidth === 'year') {
+          //   this.bar3ChartOptions.xAxis.data = this.xHour;
+          // } else {
+          //   this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          //   console.log(this.xDay);
+          //   this.bar3ChartOptions.xAxis.data = this.xDay;
+          //   for (let i = 0; i < this.xDay.length; i++) {
+          //
+          //     if (this.preViewData.detailedStatistics[i] != null) {
+          //       this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
+          //       this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
+          //       this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
+          //     }
+          //   }
+          // }
+
+        });
+      },
+
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
-
-      },
-      onRowClicked() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          statWidth: 'hour',
+          startTime: null,
+          endTime: null
+        };
+        this.getPreviewData();
+        this.$refs.taskVuetable.refresh();
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -549,7 +694,51 @@
           this.pageStatus = 'charts';
         }
       },
-    }
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        console.log(data.per_page);
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        //console.log(Object.keys(data.data.detailedStatistics).length);
+        console.log(Object.keys(data.detailedStatistics).length);
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i - 1];
+          console.log(j);
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+
+
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter
+        });
+      },
+
+    },
+
   }
 </script>
 

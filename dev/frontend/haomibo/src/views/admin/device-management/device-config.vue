@@ -306,7 +306,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.position')}}
                   </template>
-                  <label>首都机场/1号航站楼</label>
+                  <label>{{selectedDeviceData.fieldName}}</label>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -314,7 +314,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.device-classification')}}
                   </template>
-                  <label>监管查验设备 / 人体查验设备</label>
+                  <label>{{selectedDeviceData.category}}</label>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -322,7 +322,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.device')}}
                   </template>
-                  <label>安检仪001</label>
+                  <label>{{selectedDeviceData.deviceName}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -332,7 +332,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.operate-mode')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.modeId" :options="modeSelectData" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -340,7 +340,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.atr-insuspicion-process')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.atrSwitch" :options="[]" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -350,7 +350,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.safety-hand-check')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.manualSwitch" :options="[]" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -358,7 +358,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-guide-object')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.manDeviceGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -366,7 +366,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.womanDeviceGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -376,7 +376,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.monitor-group')}}
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.judgeDeviceId" :options="[]" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -384,7 +384,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
-                  <b-form-select :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.manRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -392,7 +392,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
-                  <b-form-select :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.womanRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -402,7 +402,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.hand-check-position')}}
                   </template>
-                  <b-form-input/>
+                  <b-form-select v-model="configForm.manualDeviceId" :options="[]" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -410,7 +410,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
-                  <b-form-select :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.manManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -418,7 +418,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.female-scan-object')}}&nbsp;
                   </template>
-                  <b-form-select :options="genderFilterOptions" plain/>
+                  <b-form-select v-model="configForm.womanManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -428,7 +428,7 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
                   </template>
-                  <b-form-select :options="[]" plain/>
+                  <b-form-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -497,6 +497,7 @@
     mounted() {
       this.getCategoryData();
       this.getSiteData();
+      this.getModeData();
       this.$refs.configListTable.$parent.transform = this.transformConfigTable.bind(this);
       this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
     },
@@ -508,6 +509,10 @@
         switchStatus: 'config', // config / list
         deviceCategoryOptions: [],
         siteSelectOptions: [],
+        modeData: [],
+        modeSelectData: [],
+        fromConfigDeviceData: [],
+        fromConfigDeviceSelectOptions:[],
         pendingFilter: {
           deviceName: null,
           categoryId: null,
@@ -530,44 +535,16 @@
           {value: 'female', text: this.$t('permission-management.female')},
           {value: 'other', text: this.$t('permission-management.unknown')},
         ],
-        maintenanceContactInfo: '',
-        maintenanceDepart: '',
-        maintenanceStaff: '',
-        maintenanceDepartData: [
-          '通道001',
-          '通道002',
-          '通道12',
-        ],
-        maintenanceStaffData: [
-          '职员1',
-          '职员2',
-          '职员3',
-        ],
-        package: '',
-        deviceClassify: '',
+        selectedConfigData: null,
+        selectedDeviceData: {
+          fieldName: '',
+          category: '',
+          deviceName: ''
+        },
+
+        configForm: {},
         direction: getDirection().direction,
-        packageData: [
-          '全部',
-          '通道001',
-          '通道002',
-          '通道12',
-        ],
-        deviceClassifyData: [
-          '全部',
-          '监管查验设备 / 人体查验设备',
-          '监管查验设备 / 物品查验设备',
-          '监管查验设备 / 车辆查验设备',
-          '单兵设备',
-          '音视频监控设备 / 视频监控设备',
-          '音视频监控设备 / 音频监控设备',
-        ],
-        connectedDevice: '',
-        connectedDeviceData: [
-          '全部',
-          '通道001',
-          '通道002',
-          '通道12',
-        ],
+
         isRequired: false,
         options: {
           label: this.$t('device-management.filter'),
@@ -696,11 +673,12 @@
             },
           ]
         },
-
-
       }
     },
     methods: {
+      ///////////////////////////////////////////
+      ////////   loading      Options ///////////
+      ///////////////////////////////////////////
       //getting all device category options
       getCategoryData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
@@ -729,6 +707,39 @@
           }
         });
       },
+      getModeData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-config/work-mode/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.modeData = data;
+              break;
+          }
+        });
+      },
+      getConfigDeviceData(deviceId = 0) {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-config/config/get-all`, {
+          deviceId: deviceId
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.fromConfigDeviceData = data;
+              break;
+          }
+        });
+      },
+
+      ///////////////////////////////////////////
+      /////   setting device with field /////////
+      ///////////////////////////////////////////
+      changeSwitchStatus(status) {
+        this.switchStatus = status;
+      },
       onConfigSearchButton() {
         this.$refs.configListTable.refresh();
       },
@@ -739,27 +750,6 @@
           fieldId: null
         };
         this.$refs.configListTable.refresh();
-      },
-      onPendingSearchButton() {
-        this.$refs.pendingListTable.refresh();
-      },
-      onPendingResetButton() {
-        this.pendingFilter = {
-          deviceName: '',
-          categoryId: null,
-          fieldId: null
-        };
-        this.$refs.pendingListTable.refresh();
-      },
-      onAction(value) {
-        switch (value) {
-          case 'list':
-            this.pageStatus = 'list';
-            break;
-          case 'show':
-            this.pageStatus = 'show';
-            break;
-        }
       },
       getData() {
         return Promise.resolve([
@@ -782,46 +772,6 @@
       },
       onNodeSelected(node) {
         // console.log(node.text)
-      },
-      transformPendingTable(response) {
-        let transformed = {};
-        let data = response.data;
-        transformed.pagination = {
-          total: data.total,
-          per_page: data.per_page,
-          current_page: data.current_page,
-          last_page: data.last_page,
-          from: data.from,
-          to: data.to
-        };
-        transformed.data = [];
-        let temp;
-        for (let i = 0; i < data.data.length; i++) {
-          temp = data.data[i];
-          temp.deviceSerialNumber = temp.device ? temp.device.deviceSerial : '';
-          temp.deviceName = temp.device ? temp.device.deviceName : '';
-          temp.siteNameWithParent = getSiteFullName(temp.device ? temp.device.field : null);
-          temp.fromConfig = temp.fromConfigIdList.length > 0 ? temp.fromConfigDeviceName: '';
-          transformed.data.push(temp);
-        }
-        return transformed
-      },
-      pendingListTableHttpFetch(apiUrl, httpOptions) {
-        return getApiManager().post(apiUrl, {
-          currentPage: httpOptions.params.page,
-          perPage: this.pendingListTableItems.perPage,
-          filter: this.pendingFilter
-        });
-      },
-      onPendingListTablePaginationData(paginationData) {
-        this.$refs.pendingListTablePagination.setPaginationData(paginationData);
-      },
-      onPendingListTableChangePage(page) {
-        this.$refs.pendingListTable.changePage(page);
-      },
-
-      changeSwitchStatus(status) {
-        this.switchStatus = status;
       },
       transformConfigTable(response) {
         let transformed = {};
@@ -857,13 +807,100 @@
       onConfigTableChangePage(page) {
         this.$refs.configListTable.changePage(page);
       },
+
+      ///////////////////////////////////////////
+      /////   setting device with config ////////
+      ///////////////////////////////////////////
+      onPendingSearchButton() {
+        this.$refs.pendingListTable.refresh();
+      },
+      onPendingResetButton() {
+        this.pendingFilter = {
+          deviceName: '',
+          categoryId: null,
+          fieldId: null
+        };
+        this.$refs.pendingListTable.refresh();
+      },
+      onAction(value, data = null) {
+        this.selectedConfigData = data;
+        switch (value) {
+          case 'list':
+            this.pageStatus = 'list';
+            break;
+          case 'show':
+            this.initializeConfigData(data);
+            this.pageStatus = 'show';
+            break;
+        }
+      },
+      initializeConfigData(data) {
+        this.selectedDeviceData = {
+          fieldName: data.device.field.fieldDesignation,
+          deviceName: data.device.deviceName,
+          category: data.device.archive.archiveTemplate.deviceCategory.categoryName
+        };
+        this.getConfigDeviceData();
+        this.configForm = {
+          configId : 0,
+          modeId : 0,
+          atrSwitch : null,
+          manualSwitch :null,
+          manRemoteGender :null,
+          womanRemoteGender :null,
+          manualDeviceId :null,
+          manManualGender :null,
+          womanManualGender :null,
+          judgeDeviceId :null,
+          manDeviceGender :null,
+          womanDeviceGender :null,
+          deviceId : 0,
+          fromDeviceId: null,
+        }
+      },
+      //table showing options
+      transformPendingTable(response) {
+        let transformed = {};
+        let data = response.data;
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.deviceSerialNumber = temp.device ? temp.device.deviceSerial : '';
+          temp.deviceName = temp.device ? temp.device.deviceName : '';
+          temp.siteNameWithParent = getSiteFullName(temp.device ? temp.device.field : null);
+          temp.fromConfig = temp.fromConfigIdList.length > 0 ? temp.fromConfigDeviceName : '';
+          transformed.data.push(temp);
+        }
+        return transformed
+      },
+      pendingListTableHttpFetch(apiUrl, httpOptions) {
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.pendingListTableItems.perPage,
+          filter: this.pendingFilter
+        });
+      },
+      onPendingListTablePaginationData(paginationData) {
+        this.$refs.pendingListTablePagination.setPaginationData(paginationData);
+      },
+      onPendingListTableChangePage(page) {
+        this.$refs.pendingListTable.changePage(page);
+      },
     },
     watch: {
       'configListTableItems.perPage': function (newVal) {
         this.$refs.configListTable.refresh();
       },
       'pendingListTableItems.perPage': function (newVal) {
-        console.log(newVal);
         this.$refs.pendingListTable.refresh();
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
@@ -916,7 +953,7 @@
         };
         this.siteSelectOptions = [];
         this.siteSelectOptions = newVal.map(org => ({
-          text: org.fieldDesignation,
+          value: org.fieldId,
           html: `${generateSpace(getLevel(org))}${org.fieldDesignation}`
         }));
         this.siteSelectOptions.push({
@@ -924,7 +961,23 @@
           html: `${this.$t('permission-management.all')}`
         });
 
-      }
+      },
+      modeData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.modeName,
+          value: site.modeId
+        }));
+        this.modeSelectData = options;
+      },
+      fromConfigDeviceData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.device.deviceName,
+          value: site.device.deviceId
+        }));
+        this.fromConfigDeviceSelectOptions = options;
+      },
     }
   }
 </script>

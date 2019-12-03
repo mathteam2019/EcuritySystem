@@ -53,7 +53,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.device-classify')">
-                  <b-form-select v-model="filterOption.deviceCategoryId" :options="categoryFilterData" plain/>
+                  <b-form-select v-model="filterOption.categoryId" :options="categoryFilterData" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -717,7 +717,7 @@
           deviceName: null,
           status: null,
           archiveName: null,
-          deviceCategoryId: null
+          categoryId: null
         },
         mainForm: {
           deviceId: 0,
@@ -863,7 +863,7 @@
           deviceName: '',
           status: null,
           archiveName: null,
-          deviceCategoryId: null
+          categoryId: null
         };
         this.$refs.vuetable.refresh();
       },

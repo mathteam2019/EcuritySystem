@@ -33,7 +33,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-select v-model="filter.fieldId" :options="onSiteOptions" plain/>
+                  <b-form-input v-model="filter.fieldId"/>
                 </b-form-group>
               </b-col>
 
@@ -55,13 +55,13 @@
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.start-time')">
-                  <b-form-input v-model = "filter.startTime"></b-form-input>
+                  <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label = "$t('log-management.operating-log.end-time')">
-                  <b-form-input v-model = "filter.endTime"></b-form-input>
+                  <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
               <b-col></b-col>
@@ -352,14 +352,14 @@
                   <label v-else>None</label>
                 </b-form-group>
               </b-col>
-              <b-col>history
+              <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan != null">{{showPage.serScan.scanImage.imageCategory}}</label>
-                  <label v-else></label>
+                  <label v-if="showPage.serScan != null">{{showPage.serScan.scanImage.imageLabel}}</label>
+                  <label v-else>None</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -368,8 +368,9 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan != null">{{showPage.serScan.scanImage.imageUrl}}</label>
-                  <label v-else></label>
+                  <b-img :src="showPage.serScan.scanImage.imageUrl" class="operation-icon" />
+<!--                  <label v-if="showPage.serScan != null">{{showPage.serScan.scanImage.imageUrl}}</label>-->
+<!--                  <label v-else>None</label>-->
                 </b-form-group>
               </b-col>
             </b-row>
@@ -382,9 +383,18 @@
                     <span class="text-danger">*</span>
                   </template>
                   <div>
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                    <div v-if="filter.mode==null">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                    </div>
+                    <div v-if="filter.mode==='security'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                    </div>
+                    <div v-if="filter.mode==='security+hand'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                    </div>
                   </div>
                 </b-form-group>
               </b-col>
@@ -393,7 +403,21 @@
                   <template slot="label">
                     {{$t('personal-inspection.status')}}
                   </template>
-                  <label>{{showPage.taskStatus}}</label>
+                  <div v-if="showPage.taskStatus === 'pending_dispatch'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-dispatch')}}
+                  </div>
+                  <div v-if="showPage.taskStatus === 'pending_review'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-review')}}
+                  </div>
+                  <div v-if="showPage.taskStatus === 'while_review'" style="color:#ef6e69;">
+                    {{$t('personal-inspection.while-review')}}
+                  </div>
+                  <div v-if="showPage.taskStatus === 'pending_inspection'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-inspection')}}
+                  </div>
+                  <div v-if="showPage.taskStatus === 'while_inspection'" style="color:#ef6e69;">
+                    {{$t('personal-inspection.while-inspection')}}
+                  </div>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -773,12 +797,16 @@
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'switches': Switches
+      'switches': Switches,
+      'date-picker': DatePicker
     },
     mounted() {
 
@@ -838,10 +866,10 @@
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
+          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
+          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
+          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
+          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
         ],
         onSiteOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -902,6 +930,7 @@
               dataClass: 'text-center',
               callback: (serScan) => {
                   if(serScan==null)  return '';
+                  if(serScan.scanDevice==null) return '';
                 return serScan.scanDevice.deviceName;
               }
             },
@@ -912,6 +941,7 @@
               dataClass: 'text-center',
               callback: (serScan) => {
                   if(serScan==null)  return '';
+                if(serScan.scanPointsman==null)  return '';
                 return serScan.scanPointsman.userName;
               }
             },
@@ -942,6 +972,7 @@
               dataClass: 'text-center',
               callback: (serJudgeGraph) => {
                   if(serJudgeGraph==null)  return '';
+                if(serJudgeGraph.judgeDevice==null)  return '';
                 return serJudgeGraph.judgeDevice.deviceName;
               }
             },
@@ -952,6 +983,7 @@
               dataClass: 'text-center',
               callback: (serJudgeGraph) => {
                   if(serJudgeGraph==null)  return '';
+                if(serJudgeGraph.judgeUser==null)  return '';
                 return serJudgeGraph.judgeUser.userName;
               }
             },
@@ -982,6 +1014,7 @@
               dataClass: 'text-center',
               callback: (serHandExamination) => {
                   if(serHandExamination==null)  return '';
+                if(serHandExamination.handDevice==null)  return '';
                 return serHandExamination.handDevice.deviceName;
               }
             },
@@ -992,6 +1025,7 @@
               dataClass: 'text-center',
               callback: (serHandExamination) => {
                   if(serHandExamination==null)  return '';
+                if(serHandExamination.handUser==null)  return '';
                 return serHandExamination.handUser.userName;
               }
             },
@@ -1006,7 +1040,7 @@
               }
             },
           ],
-          perPage: 5,
+          perPage: 10,
         },
         power: true
 
@@ -1062,7 +1096,7 @@
           startTime: null,
           endTime: null
         };
-        this.$refs.vuetable.refresh();
+        this.$refs.taskVuetable.refresh();
       },
 
       transform(response) {
@@ -1092,16 +1126,6 @@
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-        console.log(this.filter.taskNumber);
-        console.log(this.filter.mode);
-        console.log(this.filter.status);
-        console.log(this.filter.fieldId);
-        console.log(this.filter.userName);
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
-        console.log(httpOptions.params.page);
-        console.log(this.taskVuetableItems.perPage);
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
