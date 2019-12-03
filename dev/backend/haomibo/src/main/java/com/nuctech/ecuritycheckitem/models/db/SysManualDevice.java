@@ -49,4 +49,11 @@ public class SysManualDevice extends BaseEntity implements Serializable {
     @Column(name = "DEVICE_CHECKER_GENDER", length = 10)
     String deviceCheckGender;
 
+    @ToString.Exclude
+    @OneToOne()
+    @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("device")
+    SysDevice device;
+
 }
