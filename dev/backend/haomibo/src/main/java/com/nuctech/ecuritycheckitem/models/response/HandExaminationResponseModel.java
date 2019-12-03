@@ -15,13 +15,21 @@ public class HandExaminationResponseModel {
     long noSeizure;
     long totalJudge;
     long missingReport;
-    long falseReport;
+    long mistakeReport;
     long artificialJudge;
     long artificialJudgeMissing;
     long artificialJudgeMistake;
     long intelligenceJudge;
     long intelligenceJudgeMissing;
     long intelligenceJudgeMistake;
+
+    double missingReportRate;
+    double mistakeReportRate;
+    double artificialJudgeMissingRate;
+    double artificialJudgeMistakeRate;
+    double intelligenceJudgeMissingRate;
+    double intelligenceJudgeMistakeRate;
+
     double maxDuration;
     double minDuration;
     double avgDuration;

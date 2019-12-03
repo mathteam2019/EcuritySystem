@@ -13,7 +13,7 @@ public class EvaluateJudgeResponseModel {
     long noSeizure;
     long totalJudge;
     long missingReport;
-    long falseReport;
+    long mistakeReport;
     long artificialJudge;
     long artificialJudgeMissing;
     long artificialJudgeMistake;
@@ -23,5 +23,13 @@ public class EvaluateJudgeResponseModel {
     double maxDuration;
     double minDuration;
     double avgDuration;
+
+    double missingReportRate;
+    double mistakeReportRate;
+    double artificialJudgeMissingRate;
+    double artificialJudgeMistakeRate;
+    double intelligenceJudgeMissingRate;
+    double intelligenceJudgeMistakeRate;
+
 
 }

@@ -10,7 +10,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.HandExaminationResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsModel;
+import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -53,6 +53,21 @@ public class TaskManagementController extends BaseController {
         SER_HAND_EXAMINATION(3);
 
         private final Integer value;
+    }
+
+    @Getter
+    @Setter
+    public class JudgeStatisticsPaginationResponse {
+
+        long total;
+        long per_page;
+        long current_page;
+        long last_page;
+        long from;
+        long to;
+
+        List<JudgeStatisticsResponseModel> data;
+
     }
 
     @Getter
@@ -1781,7 +1796,7 @@ public class TaskManagementController extends BaseController {
         for (i = startIndex; i <= endIndex; i++) {
             TotalStatistics totalStat = getPreviewStatisticsByDate(requestBody, i);
             totalStat.setId(i - startIndex + 1);
-            detailedStatistics.put((long)i, totalStat);
+            detailedStatistics.put((long) i, totalStat);
         }
 
         response.setTotalStatistics(totalStatistics);
@@ -1991,8 +2006,7 @@ public class TaskManagementController extends BaseController {
 
                 try {
                     workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -2000,16 +2014,14 @@ public class TaskManagementController extends BaseController {
 
                 try {
                     workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
-                }
-                catch  (Exception e) {
+                } catch (Exception e) {
 
                 }
 
             } else {
                 try {
                     workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -2119,8 +2131,7 @@ public class TaskManagementController extends BaseController {
 
                 try {
                     workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -2128,8 +2139,7 @@ public class TaskManagementController extends BaseController {
 
                 try {
                     workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -2137,8 +2147,7 @@ public class TaskManagementController extends BaseController {
 
                 try {
                     workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -2176,7 +2185,7 @@ public class TaskManagementController extends BaseController {
         response.setJudgeSeconds(judgeSecs);
         response.setHandSeconds(handSecs);
 
-        return  new CommonResponseBody(ResponseMessage.OK, response);
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2206,11 +2215,11 @@ public class TaskManagementController extends BaseController {
         response.setJudgeSeconds(judgeSecs);
         response.setHandSeconds(handSecs);
 
-        return  new CommonResponseBody(ResponseMessage.OK, response);
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
-    public List<JudgeStatisticsModel> getJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
+    public JudgeStatisticsPaginationResponse getJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
         Map<String, Object> paramaterMap = new HashMap<String, Object>();
         List<String> whereCause = new ArrayList<String>();
@@ -2219,40 +2228,158 @@ public class TaskManagementController extends BaseController {
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-        if (filter != null) {
+        String groupBy = requestBody.getFilter().getStatWidth();
 
+        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
 
+        queryBuilder.append("SELECT\n" +
+                "\n" +
+                groupBy +
+                "\t( judge_start_time ) AS time,\n" +
+                "\tsum( IF ( g.judge_user_id != l.USER_ID, 1, 0 ) ) AS artificialJudge,\n" +
+                "\tsum( IF ( s.SCAN_INVALID LIKE 'true' AND a.ASSIGN_TIMEOUT LIKE 'true', 1, 0 ) ) AS assignResult,\n" +
+                "\tsum( IF ( g.judge_user_id = l.USER_ID, 1, 0 ) ) AS judgeTimeout,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'true', 1, 0 ) ) AS atrResult,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'true' AND g.JUDGE_RESULT LIKE 'true', 1, 0 ) ) AS suspiction,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'false' AND g.JUDGE_RESULT LIKE 'false', 1, 0 ) ) AS noSuspiction,\n" +
+                "\tcount( JUDGE_ID ) AS total ,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS minDuration,\n" +
+                "\t\n" +
+                "\tAVG( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
+                "\t AS artificialAvgDuration,\n" +
+                "\tMAX( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
+                "\tMIN( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n" +
+                "FROM\n" +
+                "\tser_judge_graph g\n" +
+                "\tLEFT JOIN ser_login_info l ON g.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
+                "\tLEFT JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
+                "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
+                "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
+                "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n");
+
+        whereCause.add("s.SCAN_INVALID like 'true'");
+
+        if (requestBody.getFilter().getFieldId() != null) {
+
+            whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
+
+        }
+        if (requestBody.getFilter().getDeviceId() != null) {
+
+            whereCause.add("g.JUDGE_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+
+        }
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
+
+        }
+        if (requestBody.getFilter().getStartTime() != null) {
+
+            Date date = requestBody.getFilter().getStartTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("g.JUDGE_START_TIME >= '" + strDate + "'");
+
+        }
+        if (requestBody.getFilter().getEndTime() != null) {
+
+            Date date = requestBody.getFilter().getEndTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("g.JUDGE_END_TIME <= '" + strDate + "'");
 
         }
 
-        queryBuilder.append("select p from Prod p ");
-
-//        if (!category.isEmpty()){
-//            whereCause.add(" p.cat.name =:category ");
-//            paramaterMap.put("category", category);
-//        }
-//        if (!name.isEmpty()){
-//            whereCause.add(" p.name =:name ");
-//            paramaterMap.put("name", name);
-//        }
-//        if (priceMin!=null){
-//            whereCause.add(" p.price>=:priceMin ");
-//            paramaterMap.put("priceMin", priceMin);
-//        }
-//        if (priceMax!=null){
-//            whereCause.add("p.price<=:priceMax  ");
-//            paramaterMap.put("priceMax", priceMax);
-//        }
 
         //.................
         queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        Query jpaQuery = entityManager.createQuery(queryBuilder.toString());
+        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
 
-        for(String key :paramaterMap.keySet()) {
-            jpaQuery.setParameter(key, paramaterMap.get(key));
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+
+            Integer from, to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1;
+
+            response.setFrom(from);
+            response.setTo(to);
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+
+            queryBuilder.append(" LIMIT " + from + ", " + requestBody.getPerPage());
+
         }
 
-        return  jpaQuery.getResultList();
+        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+
+
+        List<Object> result = jpaQuery.getResultList();
+
+        List<JudgeStatisticsResponseModel> data = new ArrayList<JudgeStatisticsResponseModel>();
+
+
+        SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
+        try {
+            systemConstants = serPlatformCheckParamRepository.getOne(0);
+        } catch (Exception e) {
+
+        }
+
+        for (int i = 0; i < result.size(); i++) {
+
+            Object[] item = (Object[]) result.get(i);
+
+            JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
+            try {
+
+                record.setTime(item[0].toString());
+                record.setArtificialJudge(Long.parseLong(item[1].toString()));
+                record.setAssignTimeout(Long.parseLong(item[2].toString()));
+                record.setJudgeTimeout(Long.parseLong(item[3].toString()));
+                record.setAtrResult(Long.parseLong(item[4].toString()));
+                record.setSuspiction(Long.parseLong(item[5].toString()));
+                record.setNoSuspiction(Long.parseLong(item[6].toString()));
+                record.setTotal(Long.parseLong(item[7].toString()));
+                record.setAvgDuration(Double.parseDouble(item[8].toString()));
+                record.setMaxDuration(Double.parseDouble(item[9].toString()));
+                record.setMinDuration(Double.parseDouble(item[1].toString()));
+                record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+                record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+                record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+
+
+                record.setArtificialResultRate(record.getArtificialResult() / (double) record.getTotal());
+                record.setAssignTimeoutResultRate(record.getAssignTimeout() / (double) record.getTotal());
+                record.setJudgeTimeoutResultRate(record.getJudgeTimeout() / (double) record.getTotal());
+                record.setSuspictionRate(record.getSuspiction() / (double) record.getTotal());
+                record.setNoSuspictionRate(record.getNoSuspiction() / (double) record.getTotal());
+                record.setScanResultRate(record.getAtrResult() / (double) record.getTotal());
+                record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
+
+            } catch (Exception e) {
+
+            }
+
+            data.add(record);
+
+        }
+
+
+        try {
+            response.setTotal(result.size());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+        } catch (Exception e) {
+
+        }
+
+        response.setData(data);
+
+        return response;
 
     }
 
@@ -2303,22 +2430,22 @@ public class TaskManagementController extends BaseController {
                 "\tleft join ser_assign a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n");
 
-        if (requestBody.getFilter().getFieldId() != null){
+        if (requestBody.getFilter().getFieldId() != null) {
 
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
 
         }
-        if (requestBody.getFilter().getDeviceId() != null){
+        if (requestBody.getFilter().getDeviceId() != null) {
 
             whereCause.add("h.HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
 
         }
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()){
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
 
             whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
 
         }
-        if (requestBody.getFilter().getStartTime() != null){
+        if (requestBody.getFilter().getStartTime() != null) {
 
             Date date = requestBody.getFilter().getStartTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -2327,7 +2454,7 @@ public class TaskManagementController extends BaseController {
             whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
 
         }
-        if (requestBody.getFilter().getEndTime() != null){
+        if (requestBody.getFilter().getEndTime() != null) {
 
             Date date = requestBody.getFilter().getEndTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -2344,9 +2471,9 @@ public class TaskManagementController extends BaseController {
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
-            Integer from,to;
+            Integer from, to;
             from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
-            to =  requestBody.getCurrentPage() * requestBody.getPerPage();
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1;
 
             response.setFrom(from);
             response.setTo(to);
@@ -2358,7 +2485,6 @@ public class TaskManagementController extends BaseController {
         }
 
 
-
         Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
 
 
@@ -2366,7 +2492,7 @@ public class TaskManagementController extends BaseController {
 
         List<HandExaminationResponseModel> data = new ArrayList<HandExaminationResponseModel>();
 
-        for (int i = 0; i < result.size(); i ++ ) {
+        for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
 
@@ -2378,7 +2504,7 @@ public class TaskManagementController extends BaseController {
             record.setNoSeizure(Long.parseLong(item[3].toString()));
             record.setTotalJudge(Long.parseLong(item[4].toString()));
             record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setFalseReport(Long.parseLong(item[6].toString()));
+            record.setMistakeReport(Long.parseLong(item[6].toString()));
             record.setArtificialJudge(Long.parseLong(item[7].toString()));
             record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
             record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
@@ -2390,6 +2516,19 @@ public class TaskManagementController extends BaseController {
             record.setMinDuration(Double.parseDouble(item[14].toString()));
             record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
+            try {
+
+                record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
+                record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
+                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
+                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
+                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
+                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+
+            } catch (Exception e) {
+
+            }
+
             data.add(record);
 
         }
@@ -2398,8 +2537,7 @@ public class TaskManagementController extends BaseController {
         try {
             response.setTotal(result.size());
             response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -2456,22 +2594,22 @@ public class TaskManagementController extends BaseController {
                 "\tleft join ser_assign a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n");
 
-        if (requestBody.getFilter().getFieldId() != null){
+        if (requestBody.getFilter().getFieldId() != null) {
 
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
 
         }
-        if (requestBody.getFilter().getDeviceId() != null){
+        if (requestBody.getFilter().getDeviceId() != null) {
 
             whereCause.add("h.HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
 
         }
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()){
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
 
             whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
 
         }
-        if (requestBody.getFilter().getStartTime() != null){
+        if (requestBody.getFilter().getStartTime() != null) {
 
             Date date = requestBody.getFilter().getStartTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -2480,7 +2618,7 @@ public class TaskManagementController extends BaseController {
             whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
 
         }
-        if (requestBody.getFilter().getEndTime() != null){
+        if (requestBody.getFilter().getEndTime() != null) {
 
             Date date = requestBody.getFilter().getEndTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -2497,9 +2635,9 @@ public class TaskManagementController extends BaseController {
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
-            Integer from,to;
+            Integer from, to;
             from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
-            to =  requestBody.getCurrentPage() * requestBody.getPerPage();
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1;
 
             response.setFrom(from);
             response.setTo(to);
@@ -2511,7 +2649,6 @@ public class TaskManagementController extends BaseController {
         }
 
 
-
         Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
 
 
@@ -2520,7 +2657,7 @@ public class TaskManagementController extends BaseController {
         List<EvaluateJudgeResponseModel> data = new ArrayList<EvaluateJudgeResponseModel>();
 
 
-        for (int i = 0; i < result.size(); i ++ ) {
+        for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
 
@@ -2532,7 +2669,7 @@ public class TaskManagementController extends BaseController {
             record.setNoSeizure(Long.parseLong(item[3].toString()));
             record.setTotalJudge(Long.parseLong(item[4].toString()));
             record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setFalseReport(Long.parseLong(item[6].toString()));
+            record.setMistakeReport(Long.parseLong(item[6].toString()));
             record.setArtificialJudge(Long.parseLong(item[7].toString()));
             record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
             record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
@@ -2544,6 +2681,17 @@ public class TaskManagementController extends BaseController {
             record.setMinDuration(Double.parseDouble(item[14].toString()));
             record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
+            try {
+
+                record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
+                record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
+                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
+                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
+                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
+                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+            } catch (Exception e) {
+
+            }
             data.add(record);
 
         }
@@ -2552,8 +2700,7 @@ public class TaskManagementController extends BaseController {
         try {
             response.setTotal(result.size());
             response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -2573,8 +2720,10 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
+        response = getJudgeStatistics(requestBody);
 
-        return  new CommonResponseBody(ResponseMessage.OK, getJudgeStatistics(requestBody));
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2590,7 +2739,7 @@ public class TaskManagementController extends BaseController {
 
         HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
         response = getHandStatistics(requestBody);
-        return  new CommonResponseBody(ResponseMessage.OK, response);
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2605,7 +2754,7 @@ public class TaskManagementController extends BaseController {
 
         EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
         response = getEvaluateJudgeStatistics(requestBody);
-        return  new CommonResponseBody(ResponseMessage.OK, response);
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2657,9 +2806,9 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList() ));
-        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList() ));
-        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList() ));
+        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList()));
+        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList()));
+        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList()));
 
         HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
 
@@ -2676,26 +2825,25 @@ public class TaskManagementController extends BaseController {
 
             String strName = "";
 
-            for (int i = 0; i < listScans.size(); i ++) {
+            for (int i = 0; i < listScans.size(); i++) {
 
                 try {
 
                     strName = listScans.get(i).getScanPointsman().getUserName();
 
-                }
-                catch(Exception e ) {
+                } catch (Exception e) {
 
                 }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
 
-                    validScan ++;
+                    validScan++;
 
                 }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.FALSE)) {
 
-                    invalidScan ++;
+                    invalidScan++;
 
                 }
             }
@@ -2722,24 +2870,23 @@ public class TaskManagementController extends BaseController {
             long noSuspiction = 0;
             String strName = "";
 
-            for (int i = 0; i < listJudge.size(); i ++) {
+            for (int i = 0; i < listJudge.size(); i++) {
 
                 try {
                     strName = listJudge.get(i).getJudgeUser().getUserName();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
 
                 }
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
-                    suspiction ++;
+                    suspiction++;
 
                 }
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
-                    noSuspiction ++;
+                    noSuspiction++;
 
                 }
             }
@@ -2752,8 +2899,7 @@ public class TaskManagementController extends BaseController {
 
                 listTotalStatistics.get(userId).setJudgeStatistics(judgeStat);
 
-            }
-            else {
+            } else {
 
                 totalStat.setJudgeStatistics(judgeStat);
                 totalStat.setName(strName);
@@ -2775,24 +2921,23 @@ public class TaskManagementController extends BaseController {
             long noSeizure = 0;
             String strName = "";
 
-            for (int i = 0; i < listHand.size(); i ++) {
+            for (int i = 0; i < listHand.size(); i++) {
 
                 try {
                     strName = listHand.get(i).getHandUser().getUserName();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
 
                 }
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
-                    seizure ++;
+                    seizure++;
 
                 }
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
-                    noSeizure ++;
+                    noSeizure++;
 
                 }
             }
@@ -2806,8 +2951,7 @@ public class TaskManagementController extends BaseController {
                 listTotalStatistics.get(userId).setHandExaminationStatistics(handStat);
 
 
-            }
-            else {
+            } else {
 
                 totalStat.setHandExaminationStatistics(handStat);
                 totalStat.setName(strName);
@@ -2825,7 +2969,6 @@ public class TaskManagementController extends BaseController {
 //        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
 //        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
 //        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
-
 
 
         return new CommonResponseBody(ResponseMessage.OK, response);
@@ -2878,9 +3021,9 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanDeviceId, Collectors.toList() ));
-        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList() ));
-        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList() ));
+        Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanDeviceId, Collectors.toList()));
+        Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList()));
+        Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList()));
 
         HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
 
@@ -2896,24 +3039,23 @@ public class TaskManagementController extends BaseController {
             long invalidScan = 0;
             String strName = "";
 
-            for (int i = 0; i < listScans.size(); i ++) {
+            for (int i = 0; i < listScans.size(); i++) {
 
                 try {
                     strName = listScans.get(i).getScanDevice().getDeviceName();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
 
-                    validScan ++;
+                    validScan++;
 
                 }
 
                 if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.FALSE)) {
 
-                    invalidScan ++;
+                    invalidScan++;
 
                 }
             }
@@ -2940,25 +3082,24 @@ public class TaskManagementController extends BaseController {
             long noSuspiction = 0;
             String strName = "";
 
-            for (int i = 0; i < listJudge.size(); i ++) {
+            for (int i = 0; i < listJudge.size(); i++) {
 
                 try {
                     strName = listJudge.get(i).getJudgeDevice().getDeviceName();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
-                    suspiction ++;
+                    suspiction++;
 
                 }
 
                 if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
 
-                    noSuspiction ++;
+                    noSuspiction++;
 
                 }
             }
@@ -2971,8 +3112,7 @@ public class TaskManagementController extends BaseController {
 
                 listTotalStatistics.get(deviceId).setJudgeStatistics(judgeStat);
 
-            }
-            else {
+            } else {
 
                 totalStat.setJudgeStatistics(judgeStat);
                 totalStat.setName(strName);
@@ -2994,25 +3134,24 @@ public class TaskManagementController extends BaseController {
             long noSeizure = 0;
             String strName = "";
 
-            for (int i = 0; i < listHand.size(); i ++) {
+            for (int i = 0; i < listHand.size(); i++) {
 
                 try {
                     strName = listHand.get(i).getHandDevice().getDeviceName();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
-                    seizure ++;
+                    seizure++;
 
                 }
 
                 if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
 
-                    noSeizure ++;
+                    noSeizure++;
 
                 }
             }
@@ -3025,8 +3164,7 @@ public class TaskManagementController extends BaseController {
 
                 listTotalStatistics.get(deviceId).setHandExaminationStatistics(handStat);
 
-            }
-            else {
+            } else {
 
                 totalStat.setHandExaminationStatistics(handStat);
                 totalStat.setName(strName);
@@ -3044,7 +3182,6 @@ public class TaskManagementController extends BaseController {
 //        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
 //        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
 //        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
-
 
 
         return new CommonResponseBody(ResponseMessage.OK, response);

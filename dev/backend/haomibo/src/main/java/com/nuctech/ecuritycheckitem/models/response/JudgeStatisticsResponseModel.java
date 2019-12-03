@@ -10,9 +10,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class JudgeStatisticsModel {
+public class JudgeStatisticsResponseModel {
 
-    int time; //时间段
+    String time; //时间段
     long artificialJudge; //人工判图
     long assignTimeout; //分派超时
     long judgeTimeout; //判图超时
@@ -21,16 +21,14 @@ public class JudgeStatisticsModel {
     long noSuspiction; //无嫌疑
     double avgDuration; //平均时长
     double maxDuration; //最高时长
-    double minDuratin; //最低时长
+    double minDuration; //最低时长
     long total; //判图总量
     long artificialResult; //"人工结论量	"
     double artificialResultRate; //人工结论率
-    long assignTimeoutResult; //"分派超时结论量	"
-    long assignTimeoutResultRate; //分派超时结论率
-    long judgeTimeoutResult; //判图超时结论量
-    long judgeTimeoutResultRate; //"判图超时结论率	"
+    double assignTimeoutResultRate; //分派超时结论率
+    double judgeTimeoutResultRate; //"判图超时结论率	"
     long scanResult; //扫描结论量
-    long scanResultRate; //扫描结论量
+    double scanResultRate; //扫描结论量
     double noSuspictionRate; //无嫌疑率
     double suspictionRate; //嫌疑率
     double limitedArtificialDuration;  //人工判图时长阈值
