@@ -40,7 +40,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.site')">
-                  <b-form-select v-model="filter.fieldDesignation"  :options="siteOptions" plain/>
+                  <b-form-input v-model="filter.fieldDesignation"/>
                 </b-form-group>
               </b-col>
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -74,7 +74,7 @@
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -86,10 +86,12 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="pendingListTable"
+                track-by = "caseDealId"
                 :api-url="pendingListTableItems.apiUrl"
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
+                @vuetable:checkbox-toggled="toggledChbox(payload, dataItem)"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
@@ -203,8 +205,8 @@
               dataClass: 'text-center'
             },
             {
-              name: 'taskId',
-              sortField: 'taskId',
+              name: 'caseDealId',
+              sortField: 'caseDealId',
               title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -296,15 +298,58 @@
           },
       },
     methods: {
-      onSearchButton(){
+        onSearchButton(){
         this.$refs.pendingListTable.refresh();
       },
       onGenerateExcelButton(){
           getApiManager()
-              .get(`${apiBaseUrl}/knowledge-base/generate/pending/excel?isAll=true`)
+              .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
+                  'isAll' : true,
+                  'idList' : '',
+                  'exportType' : 'excel',
+              }, {
+                  responseType: 'blob'
+              })
+              .then((response) => {
+                  let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                  let fileLink = document.createElement('a');
 
+                  fileLink.href = fileURL;
+                  fileLink.setAttribute('download', 'knowledge-pending.xlsx');
+                  document.body.appendChild(fileLink);
 
+                  fileLink.click();
+              })
+              .catch(error => {
+                  throw new Error(error);
+              });
       },
+
+        onGeneratePdfButton(){
+            getApiManager()
+                .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
+                    'isAll' : true,
+                    'idList' : '',
+                    'exportType' : 'pdf',
+                }, {
+                    responseType: 'blob'
+                })
+                .then((response) => {
+                    let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                    let fileLink = document.createElement('a');
+
+                    fileLink.href = fileURL;
+                    fileLink.setAttribute('download', 'knowledge-pending.pdf');
+                    document.body.appendChild(fileLink);
+
+                    fileLink.click();
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
+
+
+        },
       onResetButton(){
         this.filter = {
             taskNumber: null,

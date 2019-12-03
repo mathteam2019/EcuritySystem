@@ -3,7 +3,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -34,12 +34,12 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-select v-model="filter.fieldId" :options="onSiteOptions" plain/>
+                  <b-form-input v-model="filter.fieldId"/>
                 </b-form-group>
               </b-col>
 
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
               </b-col>
@@ -56,13 +56,13 @@
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.start-time')">
-                  <b-form-input v-model = "filter.startTime"></b-form-input>
+                  <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label = "$t('log-management.operating-log.end-time')">
-                  <b-form-input v-model = "filter.endTime"></b-form-input>
+                  <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
               <b-col></b-col>
@@ -347,7 +347,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.scanImage == null">None</label>
-                  <label v-else>{{showPage.scanImage.imageCategory}}</label>
+                  <label v-else>{{showPage.scanImage.imageLabel}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -356,8 +356,9 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.scanImage == null">None</label>
-                  <label v-else>{{showPage.scanImage.imageId}}</label>
+                  <b-img :src="showPage.scanImage.imageUrl" class="operation-icon" />
+<!--                  <label v-if="showPage.serScan != null">{{showPage.scanImage.imageUrl}}</label>-->
+<!--                  <label v-else>None</label>-->
                 </b-form-group>
               </b-col>
             </b-row>
@@ -370,9 +371,18 @@
                     <span class="text-danger">*</span>
                   </template>
                   <div>
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2" />
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2" />
+                    <div v-if="filter.mode==null">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                    </div>
+                    <div v-if="filter.mode==='security'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                    </div>
+                    <div v-if="filter.mode==='security+hand'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                    </div>
                   </div>
                 </b-form-group>
               </b-col>
@@ -870,6 +880,9 @@
     import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
     import Switches from 'vue-switches';
     import {LightGallery} from 'vue-light-gallery';
+    import DatePicker from 'vue2-datepicker';
+    import 'vue2-datepicker/index.css';
+    import 'vue2-datepicker/locale/zh-cn';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -878,7 +891,8 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'light-gallery': LightGallery
+      'light-gallery': LightGallery,
+      'date-picker': DatePicker
     },
     mounted() {
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
@@ -909,10 +923,10 @@
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
+          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
+          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
+          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
+          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
         ],
         onSiteOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1111,8 +1125,6 @@
     },
     methods: {
       onRowClicked(taskNumber) {
-
-
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/history-task/get-one`, {
@@ -1214,13 +1226,7 @@
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
-      },
-      onThumbClick(index) {
-          this.photoIndex = index;
-      },
-      handleHide() {
-          this.photoIndex = null;
-      },
+      }
     }
   }
 </script>

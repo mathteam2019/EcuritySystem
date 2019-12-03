@@ -69,10 +69,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
+              <b-button size="sm" class="ml-2" variant="outline-info default"  @click="onGeneratePdfButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -84,10 +84,13 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="pendingListTable"
+                track-by="caseDealId"
                 :api-url="pendingListTableItems.apiUrl"
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
+                @vuetable:checkbox-toggled-all = "onCheckEvent"
+                @vuetable:checkbox-toggled = "onCheckOneEvent"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
@@ -147,6 +150,8 @@
       return {
         pageStatus: 'list',
         isExpanded:false,
+        isCheckAll:false,
+        idList:[],
         filter: {
               caseStatus:"success_approval",
               taskNumber: null,
@@ -182,8 +187,8 @@
               dataClass: 'text-center'
             },
             {
-              name: 'taskId',
-              sortField: 'taskId',
+              name: 'caseDealId',
+              sortField: 'caseDealId',
               title: this.$t('knowledge-base.th-no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -214,6 +219,7 @@
               dataClass: 'text-center',
                 callback: (scanDevice) => {
                     if(scanDevice==null)  return '';
+                    if(scanDevice.field==null)  return '';
                     return scanDevice.field.fieldDesignation;
                 }
             },
@@ -246,8 +252,52 @@
       }
     },
     methods: {
+
+      onCheckOneEvent(){
+        let isCheck = this.isCheckAll;
+        //console.log(isCheck);
+        //let cnt = this.$refs.pendingListTable.selectedTo.length;
+        //console.log(cnt);
+        // if(isCheck === false && cnt === 0) {
+        //   this.isCheckAll = true;
+        // }
+        // else {
+        //   this.isCheckAll = false;
+        // }
+
+      },
+      onCheckEvent(){
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.pendingListTable.selectedTo.length;
+        console.log(cnt);
+        if(cnt === 0){
+          this.isCheckAll = false;
+        }
+        else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+        // console.log(isCheck);
+        // if (isCheck === false) {
+        //   console.log(this.idList.length);
+        //   // for (let i =0; i<this.idList.length; i++){
+        //   //   this.$refs.pendingListTable.selectedTo.push(this.idList[i]);
+        //   // }
+        //   this.$refs.pendingListTable.selectedTo.push(12);
+        //   console.log(this.$refs.pendingListTable.selectedTo);
+        //   this.isCheckAll = true;
+        // }
+        // else {
+        //   this.$refs.pendingListTable.selectedTo = [];
+        //   this.isCheckAll = false;
+        // }
+      },
       onSearchButton(){
         this.$refs.pendingListTable.refresh();
+
+        this.$refs.pendingListTable.selectedTo.push(12);
       },
       onResetButton(){
         this.filter = {
@@ -258,6 +308,55 @@
             handGoods:null,
         };
         this.$refs.pendingListTable.refresh();
+      },
+
+      onGenerateExcelButton(){
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
+            'isAll' : true,
+            'idList' : this.$refs.pendingListTable.selectedTo,
+            'exportType' : 'excel',
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'knowledge-pending.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton(){
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
+            'isAll' : true,
+            'idList' : '',
+            'exportType' : 'pdf',
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
       },
 
         transform(response) {
@@ -276,10 +375,17 @@
             };
 
             transformed.data = [];
+            //transformed.idList = [];
             let temp;
+            let idTemp;
             for (let i = 0; i < data.data.length; i++) {
                 temp = data.data[i];
-                transformed.data.push(temp)
+                idTemp = data.data[i].caseDealId;
+                transformed.data.push(temp);
+                this.idList.push(idTemp);
+                if(this.isCheckAll === true){
+                  this.$refs.pendingListTable.selectedTo.push(idTemp);
+                }
             }
 
             return transformed
