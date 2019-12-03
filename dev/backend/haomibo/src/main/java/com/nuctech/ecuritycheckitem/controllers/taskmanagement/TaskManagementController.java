@@ -1957,15 +1957,29 @@ public class TaskManagementController extends BaseController {
 
             if (tbType == TableType.SER_SCAN) {
 
-                workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
+                try {
+                    workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
+                }
+                catch (Exception e) {
+
+                }
 
             } else if (tbType == TableType.SER_JUDGE_GRAPH) {
 
-                workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
+                try {
+                    workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
+                }
+                catch  (Exception e) {
+
+                }
 
             } else {
+                try {
+                    workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
+                }
+                catch (Exception e) {
 
-                workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
+                }
 
             }
 
@@ -2071,15 +2085,30 @@ public class TaskManagementController extends BaseController {
 
             if (tbType == TableType.SER_SCAN) {
 
-                workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
+                try {
+                    workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
+                }
+                catch (Exception e) {
+
+                }
 
             } else if (tbType == TableType.SER_JUDGE_GRAPH) {
 
-                workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
+                try {
+                    workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
+                }
+                catch (Exception e) {
+
+                }
 
             } else {
 
-                workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
+                try {
+                    workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
+                }
+                catch (Exception e) {
+
+                }
 
             }
 
@@ -2166,6 +2195,7 @@ public class TaskManagementController extends BaseController {
             result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
 
         }
+
 
         //result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
 
@@ -2661,7 +2691,6 @@ public class TaskManagementController extends BaseController {
                 totalStat.setJudgeStatistics(judgeStat);
                 totalStat.setName(strName);
                 listTotalStatistics.put(deviceId, totalStat);
-
 
             }
 
