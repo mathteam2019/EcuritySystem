@@ -2418,5 +2418,159 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    @RequestMapping(value = "/statistics/get-statistics-by-device-all-pagination", method = RequestMethod.POST)
+    public Object getStatisticsByDevice(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Map<Long, List<SerScan>> scans =  serScanRepository.findAll().stream().collect(Collectors.groupingBy(SerScan::getScanDeviceId, Collectors.toList() ));
+        Map<Long, List<SerJudgeGraph>> judges = serJudgeGraphRepository.findAll().stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList() ));
+        Map<Long, List<SerHandExamination>> handExaminations = serHandExaminationRepository.findAll().stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList() ));
+
+
+        HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
+
+        for (Map.Entry<Long, List<SerScan>> entry : scans.entrySet()) {
+            Long deviceId = entry.getKey();
+            List<SerScan> listScans = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            ScanStatistics scanStat = new ScanStatistics();
+
+            long totalScan = 0;
+            long validScan = 0;
+            long invalidScan = 0;
+
+            for (int i = 0; i < listScans.size(); i ++) {
+
+                if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
+
+                    validScan ++;
+
+                }
+
+                if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.FALSE)) {
+
+                    invalidScan ++;
+
+                }
+            }
+
+            scanStat.setValidScan(validScan);
+            scanStat.setInvalidScan(invalidScan);
+            scanStat.setTotalScan(listScans.size());
+
+            totalStat.setScanStatistics(scanStat);
+            listTotalStatistics.put(deviceId, totalStat);
+
+        }
+
+        for (Map.Entry<Long, List<SerJudgeGraph>> entry : judges.entrySet()) {
+
+            Long deviceId = entry.getKey();
+            List<SerJudgeGraph> listJudge = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            JudgeStatistics judgeStat = new JudgeStatistics();
+
+            long suspiction = 0;
+            long noSuspiction = 0;
+
+            for (int i = 0; i < listJudge.size(); i ++) {
+
+                if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
+
+                    suspiction ++;
+
+                }
+
+                if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
+
+                    noSuspiction ++;
+
+                }
+            }
+
+            judgeStat.setSuspictionJudge(suspiction);
+            judgeStat.setNoSuspictionJudge(noSuspiction);
+            judgeStat.setTotalJudge(listJudge.size());
+
+            if (listTotalStatistics.containsKey(deviceId)) {
+
+                listTotalStatistics.get(deviceId).setJudgeStatistics(judgeStat);
+
+            }
+            else {
+
+                totalStat.setJudgeStatistics(judgeStat);
+                listTotalStatistics.put(deviceId, totalStat);
+
+            }
+
+        }
+
+        for (Map.Entry<Long, List<SerHandExamination>> entry : handExaminations.entrySet()) {
+
+            Long deviceId = entry.getKey();
+            List<SerHandExamination> listHand = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            HandExaminationStatistics handStat = new HandExaminationStatistics();
+
+            long seizure = 0;
+            long noSeizure = 0;
+
+            for (int i = 0; i < listHand.size(); i ++) {
+
+                if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
+
+                    seizure ++;
+
+                }
+
+                if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
+
+                    noSeizure ++;
+
+                }
+            }
+
+            handStat.setSeizureHandExamination(seizure);
+            handStat.setNoSeizureHandExamination(noSeizure);
+            handStat.setTotalHandExamination(listHand.size());
+
+            if (listTotalStatistics.containsKey(deviceId)) {
+
+                listTotalStatistics.get(deviceId).setHandExaminationStatistics(handStat);
+
+            }
+            else {
+
+                totalStat.setHandExaminationStatistics(handStat);
+                listTotalStatistics.put(deviceId, totalStat);
+
+            }
+
+        }
+
+        TotalStatisticsResponse response = new TotalStatisticsResponse();
+        response.setDetailedStatistics(listTotalStatistics);
+        response.setTotal(listTotalStatistics.keySet().size());
+        response.setPer_page(requestBody.getPerPage());
+        response.setCurrent_page(requestBody.getCurrentPage());
+        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
+        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
+        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
+
+
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
 }
 
