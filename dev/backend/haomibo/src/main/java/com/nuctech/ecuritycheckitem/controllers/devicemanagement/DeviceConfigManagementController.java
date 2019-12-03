@@ -129,7 +129,6 @@ public class DeviceConfigManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceConfigGetAllRequestBody {
-
         Long deviceId;
     }
 
