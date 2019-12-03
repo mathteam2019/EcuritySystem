@@ -113,7 +113,7 @@ public class ScanParamManagementController extends BaseController {
 
         String groinBlurring;
 
-        Long deviceId;
+        Long fromDeviceId;
 
     }
 
@@ -224,7 +224,7 @@ public class ScanParamManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Long paramDeviceId = requestBody.getDeviceId();
+        Long paramDeviceId = requestBody.getFromDeviceId();
 
         SerScanParamsFrom fromParams = (serScanParam.getFromParamsList() != null && serScanParam.getFromParamsList().size() > 0)?
                 serScanParam.getFromParamsList().get(0): null;
