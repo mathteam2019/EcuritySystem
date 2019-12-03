@@ -8,6 +8,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.response.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsModel;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
@@ -54,8 +55,6 @@ public class TaskManagementController extends BaseController {
         private final Integer value;
     }
 
-
-
     @Getter
     @Setter
     public class HandExaminationStatisticsPaginationResponse {
@@ -68,6 +67,22 @@ public class TaskManagementController extends BaseController {
         long to;
 
         List<HandExaminationResponseModel> data;
+
+    }
+
+
+    @Getter
+    @Setter
+    public class EvaluateJudgeStatisticsPaginationResponse {
+
+        long total;
+        long per_page;
+        long current_page;
+        long last_page;
+        long from;
+        long to;
+
+        List<EvaluateJudgeResponseModel> data;
 
     }
 
@@ -2394,6 +2409,161 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    public EvaluateJudgeStatisticsPaginationResponse getEvaluateJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
+
+        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        List<String> whereCause = new ArrayList<String>();
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+        StatisticsRequestBody.Filter filter = requestBody.getFilter();
+
+        String groupBy = requestBody.getFilter().getStatWidth();
+
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
+        queryBuilder.append("SELECT\n" +
+                "\n" +
+                groupBy +
+                "\t (h.HAND_START_TIME) as time,\n" +
+                "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE 'true', 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE 'false', 1, 0 ) ) AS noSeizure,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true', 1, 0)) as totalJudge,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE 'missing', 1, 0 ) ) AS missingReport,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE 'mistake', 1, 0 ) ) AS falseReport,\n" +
+                "\t\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong', 1, 0)) as artificialJudge,\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'missing', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'mistake', 1, 0)) as artificialJudgeMistake,\n" +
+                "\t\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true', 1, 0)) as intelligenceJudge,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'missing', 1, 0)) as intelligenceJudgeMissing,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'mistake', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\t\n" +
+                "\t\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
+                "\t\n" +
+                "FROM\n" +
+                "\tser_hand_examination h\n" +
+                "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
+                "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
+                "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
+                "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
+                "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
+                "\tleft join ser_assign a on t.task_id = a.task_id\n" +
+                "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n");
+
+        if (requestBody.getFilter().getFieldId() != null){
+
+            whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
+
+        }
+        if (requestBody.getFilter().getDeviceId() != null){
+
+            whereCause.add("h.HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+
+        }
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()){
+
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
+
+        }
+        if (requestBody.getFilter().getStartTime() != null){
+
+            Date date = requestBody.getFilter().getStartTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
+
+        }
+        if (requestBody.getFilter().getEndTime() != null){
+
+            Date date = requestBody.getFilter().getEndTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
+
+        }
+
+
+        //.................
+        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
+
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+
+            Integer from,to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
+            to =  requestBody.getCurrentPage() * requestBody.getPerPage();
+
+            response.setFrom(from);
+            response.setTo(to);
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+
+            queryBuilder.append(" LIMIT " + from + ", " + requestBody.getPerPage());
+
+        }
+
+
+
+        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+
+
+        List<Object> result = jpaQuery.getResultList();
+
+        List<EvaluateJudgeResponseModel> data = new ArrayList<EvaluateJudgeResponseModel>();
+
+
+        for (int i = 0; i < result.size(); i ++ ) {
+
+            Object[] item = (Object[]) result.get(i);
+
+            EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
+
+            record.setTime(item[0].toString());
+            record.setTotal(Long.parseLong(item[1].toString()));
+            record.setSeizure(Long.parseLong(item[2].toString()));
+            record.setNoSeizure(Long.parseLong(item[3].toString()));
+            record.setTotalJudge(Long.parseLong(item[4].toString()));
+            record.setMissingReport(Long.parseLong(item[5].toString()));
+            record.setFalseReport(Long.parseLong(item[6].toString()));
+            record.setArtificialJudge(Long.parseLong(item[7].toString()));
+            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+
+            record.setMaxDuration(Double.parseDouble(item[13].toString()));
+            record.setMinDuration(Double.parseDouble(item[14].toString()));
+            record.setAvgDuration(Double.parseDouble(item[15].toString()));
+
+            data.add(record);
+
+        }
+
+
+        try {
+            response.setTotal(result.size());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+        }
+        catch (Exception e) {
+
+        }
+
+        response.setData(data);
+
+        return response;
+
+    }
+
+
     @RequestMapping(value = "/statistics/get-judge-statistics", method = RequestMethod.POST)
     public Object getJudgeSummary(
             @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
@@ -2425,7 +2595,7 @@ public class TaskManagementController extends BaseController {
     }
 
     @RequestMapping(value = "/statistics/get-evaluatejudge-statistics", method = RequestMethod.POST)
-    public Object geEvaluateJudgeSummary(
+    public Object getEvaluateJudgeSummary(
             @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
 
@@ -2433,45 +2603,12 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<HandExaminationResponseModel> response = new ArrayList<>();
-
-        List<Object> result = serHandExaminationRepository.getEvaluateStatistics(
-
-        );
-
-
-        for (int i = 0; i < result.size(); i++) {
-
-            Object[] item = (Object[]) result.get(i);
-
-            HandExaminationResponseModel record = new HandExaminationResponseModel();
-
-            int t = Integer.parseInt(item[0].toString());
-            record.setTime(item[0].toString());
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSeizure(Long.parseLong(item[2].toString()));
-            record.setNoSeizure(Long.parseLong(item[3].toString()));
-            record.setTotalJudge(Long.parseLong(item[4].toString()));
-            record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setFalseReport(Long.parseLong(item[6].toString()));
-            record.setArtificialJudge(Long.parseLong(item[7].toString()));
-            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
-
-            record.setMaxDuration(Double.parseDouble(item[13].toString()));
-            record.setMinDuration(Double.parseDouble(item[14].toString()));
-            record.setAvgDuration(Double.parseDouble(item[15].toString()));
-
-            response.add(record);
-
-        }
-
-        return new CommonResponseBody(ResponseMessage.OK, response);
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+        response = getEvaluateJudgeStatistics(requestBody);
+        return  new CommonResponseBody(ResponseMessage.OK, response);
 
     }
+
 
     @RequestMapping(value = "/statistics/get-statistics-filter-by-user", method = RequestMethod.POST)
     public Object getStatisticsByUser(
