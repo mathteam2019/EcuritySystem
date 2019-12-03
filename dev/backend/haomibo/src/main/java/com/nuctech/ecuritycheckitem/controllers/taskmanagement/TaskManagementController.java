@@ -11,19 +11,12 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.repositories.SerScanRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
 
-import com.querydsl.jpa.hibernate.HibernateUtil;
-import com.querydsl.jpa.impl.JPAQuery;
 import lombok.*;
-import org.apache.poi.ss.formula.functions.Sumif;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-import org.hibernate.query.criteria.internal.expression.ConcatExpression;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -33,11 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.net.ssl.SSLEngineResult;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/task")
@@ -160,7 +154,7 @@ public class TaskManagementController extends BaseController {
     class TotalStatisticsResponse {
 
         TotalStatistics totalStatistics;
-        Map<Integer, TotalStatistics> detailedStatistics;
+        Map<Long, TotalStatistics> detailedStatistics;
 
         long total;
         long per_page;
@@ -1632,7 +1626,7 @@ public class TaskManagementController extends BaseController {
 
         TotalStatistics totalStatistics = new TotalStatistics();
 
-        HashMap<Integer, TotalStatistics> detailedStatistics = new HashMap<Integer, TotalStatistics>();
+        HashMap<Long, TotalStatistics> detailedStatistics = new HashMap<Long, TotalStatistics>();
 
         totalStatistics = getPreviewStatisticsByDate(requestBody, null);
 
@@ -1727,7 +1721,7 @@ public class TaskManagementController extends BaseController {
         for (i = startIndex; i <= endIndex; i++) {
             TotalStatistics totalStat = getPreviewStatisticsByDate(requestBody, i);
             totalStat.setId(i - startIndex + 1);
-            detailedStatistics.put(i, totalStat);
+            detailedStatistics.put((long)i, totalStat);
         }
 
         response.setTotalStatistics(totalStatistics);
@@ -2093,7 +2087,7 @@ public class TaskManagementController extends BaseController {
         response.setJudgeSeconds(judgeSecs);
         response.setHandSeconds(handSecs);
 
-        return response;
+        return  new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2123,7 +2117,7 @@ public class TaskManagementController extends BaseController {
         response.setJudgeSeconds(judgeSecs);
         response.setHandSeconds(handSecs);
 
-        return response;
+        return  new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2137,21 +2131,13 @@ public class TaskManagementController extends BaseController {
         }
 
         List<JudgeStatisticsResponseModel> response = new ArrayList<>();
+        List<Object> result = new ArrayList<>();
 
-//        List<Object> result =  serJudgeGraphRepository.getStatistics(requestBody.getFilter().getFieldId(),
-//                requestBody.getFilter().getDeviceId(),
-//                requestBody.getFilter().getUserCategory(),
-//                requestBody.getFilter().getUserName(),
-//                requestBody.getFilter().getStatWidth(),
-//                requestBody.getFilter().getStartTime().toString(),
-//                requestBody.getFilter().getEndTime().toString()
-//        );
+        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.MONTH)) {
 
+            result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
 
-        List<Object> result = serJudgeGraphRepository.getStatistics(
-
-        );
-
+        }
 
         for (int i = 0; i < result.size(); i++) {
 
@@ -2175,7 +2161,7 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        return response;
+        return  new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
@@ -2225,8 +2211,212 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        return response;
+        return  new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    @RequestMapping(value = "/statistics/get-evaluatejudge-statistics", method = RequestMethod.POST)
+    public Object geEvaluateJudgeSummary(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<HandExaminationResponseModel> response = new ArrayList<>();
+
+        List<Object> result = serHandExaminationRepository.getEvaluateStatistics(
+
+        );
+
+
+        for (int i = 0; i < result.size(); i++) {
+
+            Object[] item = (Object[]) result.get(i);
+
+            HandExaminationResponseModel record = new HandExaminationResponseModel();
+
+            int t = Integer.parseInt(item[0].toString());
+            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setTotal(Long.parseLong(item[1].toString()));
+            record.setSeizure(Long.parseLong(item[2].toString()));
+            record.setNoSeizure(Long.parseLong(item[3].toString()));
+            record.setTotalJudge(Long.parseLong(item[4].toString()));
+            record.setMissingReport(Long.parseLong(item[5].toString()));
+            record.setFalseReport(Long.parseLong(item[6].toString()));
+            record.setArtificialJudge(Long.parseLong(item[7].toString()));
+            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+
+            record.setMaxDuration(Double.parseDouble(item[13].toString()));
+            record.setMinDuration(Double.parseDouble(item[14].toString()));
+            record.setAvgDuration(Double.parseDouble(item[15].toString()));
+
+            response.add(record);
+
+        }
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    @RequestMapping(value = "/statistics/get-statistics-by-user-all-pagination", method = RequestMethod.POST)
+    public Object getStatisticsByUser(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Map<Long, List<SerScan>> scans =  serScanRepository.findAll().stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList() ));
+        Map<Long, List<SerJudgeGraph>> judges = serJudgeGraphRepository.findAll().stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList() ));
+        Map<Long, List<SerHandExamination>> handExaminations = serHandExaminationRepository.findAll().stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList() ));
+
+
+        HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
+
+        for (Map.Entry<Long, List<SerScan>> entry : scans.entrySet()) {
+            Long userId = entry.getKey();
+            List<SerScan> listScans = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            ScanStatistics scanStat = new ScanStatistics();
+
+            long totalScan = 0;
+            long validScan = 0;
+            long invalidScan = 0;
+
+            for (int i = 0; i < listScans.size(); i ++) {
+
+                if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.TRUE)) {
+
+                    validScan ++;
+
+                }
+
+                if (listScans.get(i).getScanInvalid().equals(SerScan.Invalid.FALSE)) {
+
+                    invalidScan ++;
+
+                }
+            }
+
+            scanStat.setValidScan(validScan);
+            scanStat.setInvalidScan(invalidScan);
+            scanStat.setTotalScan(listScans.size());
+
+            totalStat.setScanStatistics(scanStat);
+            listTotalStatistics.put(userId, totalStat);
+
+        }
+
+        for (Map.Entry<Long, List<SerJudgeGraph>> entry : judges.entrySet()) {
+
+            Long userId = entry.getKey();
+            List<SerJudgeGraph> listJudge = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            JudgeStatistics judgeStat = new JudgeStatistics();
+
+            long suspiction = 0;
+            long noSuspiction = 0;
+
+            for (int i = 0; i < listJudge.size(); i ++) {
+
+                if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
+
+                    suspiction ++;
+
+                }
+
+                if (listJudge.get(i).getJudgeResult().equals(SerJudgeGraph.Result.TRUE)) {
+
+                    noSuspiction ++;
+
+                }
+            }
+
+            judgeStat.setSuspictionJudge(suspiction);
+            judgeStat.setNoSuspictionJudge(noSuspiction);
+            judgeStat.setTotalJudge(listJudge.size());
+
+            if (listTotalStatistics.containsKey(userId)) {
+
+                listTotalStatistics.get(userId).setJudgeStatistics(judgeStat);
+
+            }
+            else {
+
+                totalStat.setJudgeStatistics(judgeStat);
+                listTotalStatistics.put(userId, totalStat);
+
+            }
+
+        }
+
+        for (Map.Entry<Long, List<SerHandExamination>> entry : handExaminations.entrySet()) {
+
+            Long userId = entry.getKey();
+            List<SerHandExamination> listHand = entry.getValue();
+
+            TotalStatistics totalStat = new TotalStatistics();
+            HandExaminationStatistics handStat = new HandExaminationStatistics();
+
+            long seizure = 0;
+            long noSeizure = 0;
+
+            for (int i = 0; i < listHand.size(); i ++) {
+
+                if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
+
+                    seizure ++;
+
+                }
+
+                if (listHand.get(i).getHandResult().equals(SerHandExamination.Result.TRUE)) {
+
+                    noSeizure ++;
+
+                }
+            }
+
+            handStat.setSeizureHandExamination(seizure);
+            handStat.setNoSeizureHandExamination(noSeizure);
+            handStat.setTotalHandExamination(listHand.size());
+
+            if (listTotalStatistics.containsKey(userId)) {
+
+                listTotalStatistics.get(userId).setHandExaminationStatistics(handStat);
+
+            }
+            else {
+
+                totalStat.setHandExaminationStatistics(handStat);
+                listTotalStatistics.put(userId, totalStat);
+
+            }
+
+        }
+
+        TotalStatisticsResponse response = new TotalStatisticsResponse();
+        response.setDetailedStatistics(listTotalStatistics);
+        response.setTotal(listTotalStatistics.keySet().size());
+        response.setPer_page(requestBody.getPerPage());
+        response.setCurrent_page(requestBody.getCurrentPage());
+        response.setLast_page(listTotalStatistics.keySet().size() / requestBody.getPerPage() + 1);
+        response.setFrom((requestBody.getCurrentPage() - 1 )* requestBody.getPerPage() + 1);
+        response.setTo((requestBody.getCurrentPage())* requestBody.getPerPage());
+
+
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
 
 }
+
