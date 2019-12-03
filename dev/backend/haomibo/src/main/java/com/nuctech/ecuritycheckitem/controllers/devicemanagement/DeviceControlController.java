@@ -21,6 +21,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.DeviceService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,6 +59,9 @@ import java.util.stream.StreamSupport;
 @RequestMapping("/device-management/device-table")
 public class DeviceControlController extends BaseController {
 
+    @Autowired
+    DeviceService deviceService;
+
     /**
      * Device datatable request body.
      */
@@ -65,13 +70,13 @@ public class DeviceControlController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class DeviceGetByFilterAndPageRequestBody {
+    public static class DeviceGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
         @NoArgsConstructor
         @AllArgsConstructor
-        static class Filter {
+        public static class Filter {
             String archivesName;
             String status;
             Long categoryId;
@@ -341,7 +346,7 @@ public class DeviceControlController extends BaseController {
     }
 
     /**
-     * Device delete request body.
+     * Empty field device list request body.
      */
     @Getter
     @Setter
@@ -350,6 +355,19 @@ public class DeviceControlController extends BaseController {
     @ToString
     private static class DeviceGetEmptyFieldRequestBody {
         Long categoryId;
+    }
+
+    /**
+     * Empty field device list request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceFilterByFieldRequestBody {
+        Long categoryId;
+        Long fieldId;
     }
 
     /**
@@ -366,37 +384,8 @@ public class DeviceControlController extends BaseController {
         }
 
 
-        QSysDevice builder = QSysDevice.sysDevice;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getArchivesName())) {
-                predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));
-            }
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.deviceName.contains(filter.getDeviceName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if(filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-
-
-
-            /*
-            * Todo
-            *  Strange Category is null
-            *if (filter.getCategoryId() != null) {
-                predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
-            }
-            * */
-
-        }
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
@@ -404,9 +393,7 @@ public class DeviceControlController extends BaseController {
         int endIndex = perPage * (currentPage + 1);
 
         long total = 0;
-        List<SysDevice> allData = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody);
         List<SysDevice> data = new ArrayList<>();
         if(filter != null && filter.getCategoryId() != null) {
 
@@ -645,6 +632,11 @@ public class DeviceControlController extends BaseController {
         sysDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
+        deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDeviceConfigRepository.save(deviceConfig);
+
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -736,6 +728,38 @@ public class DeviceControlController extends BaseController {
         sysDeviceRepository.delete(sysDevice);
 
 
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check device config exist or not
+        if(sysDeviceConfig != null) {
+            //remove correspond manual group
+            SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
+                    sysDeviceConfig.getManualGroupList().get(0): null;
+            if(manualGroup != null) {
+                sysManualGroupRepository.delete(manualGroup);
+            }
+
+            //remove correspond judge group
+            SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
+                    sysDeviceConfig.getJudgeGroupList().get(0): null;
+            if(judgeGroup != null) {
+                sysJudgeGroupRepository.delete(judgeGroup);
+            }
+
+            //remove correspond from config.
+            FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
+                    sysDeviceConfig.getFromConfigIdList().get(0): null;
+            if(fromConfigId != null) {
+                fromConfigIdRepository.delete(fromConfigId);
+            }
+
+            sysDeviceConfigRepository.delete(sysDeviceConfig);
+        }
+
+
+
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -759,9 +783,9 @@ public class DeviceControlController extends BaseController {
                     .deviceId.eq(device.getDeviceId())).orElse(null);
             if(realDevice != null) {
                 realDevice.setField(device.getField());
+                realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                sysDeviceRepository.save(realDevice);
             }
-            realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysDeviceRepository.save(realDevice);
         }
 
 
@@ -818,7 +842,7 @@ public class DeviceControlController extends BaseController {
     }
 
     /**
-     * Device  get empty field request.
+     * Get empty field device request.
      */
     @RequestMapping(value = "/device/get-empty-field", method = RequestMethod.POST)
     public Object deviceGetEmptyField(@RequestBody @Valid DeviceGetEmptyFieldRequestBody requestBody,
@@ -854,6 +878,63 @@ public class DeviceControlController extends BaseController {
                 }
                 sysDeviceList.add(device);
             }
+        }
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+
+
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Get device list with field request.
+     */
+    @RequestMapping(value = "/device/get-by-field", method = RequestMethod.POST)
+    public Object deviceGetByField(@RequestBody @Valid DeviceFilterByFieldRequestBody requestBody,
+                                      BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        QSysDevice builder = QSysDevice.sysDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+
+        if(requestBody.getFieldId() != null) {
+            predicate.and(builder.fieldId.eq(requestBody.getFieldId()));
+        }
+
+
+        List<SysDevice> preSysDeviceList = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDevice> sysDeviceList = new ArrayList<>();
+        if(requestBody.getCategoryId() != null) {
+            for(int i = 0; i < preSysDeviceList.size(); i ++) {
+                SysDevice device = preSysDeviceList.get(i);
+                try {
+                    if(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == requestBody.getCategoryId()) {
+                        sysDeviceList.add(device);
+                    }
+                } catch(Exception ex) {
+
+                }
+            }
+        } else {
+            sysDeviceList = preSysDeviceList;
         }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));

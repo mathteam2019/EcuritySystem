@@ -102,7 +102,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         String womanDeviceGender;
 
-        Long deviceId;
+        Long fromDeviceId;
 
     }
 
@@ -129,7 +129,6 @@ public class DeviceConfigManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceConfigGetAllRequestBody {
-
         Long deviceId;
     }
 
@@ -276,7 +275,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         Long manualDeviceId = requestBody.getManualDeviceId();
         Long judgeDeviceId = requestBody.getJudgeDeviceId();
-        Long configDeviceId = requestBody.getDeviceId();
+        Long configDeviceId = requestBody.getFromDeviceId();
 
 
         SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
@@ -463,6 +462,7 @@ public class DeviceConfigManagementController extends BaseController {
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"));
 
         value.setFilters(filters);
 
@@ -482,6 +482,7 @@ public class DeviceConfigManagementController extends BaseController {
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"));
 
         value.setFilters(filters);
 
@@ -501,7 +502,7 @@ public class DeviceConfigManagementController extends BaseController {
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"));
         value.setFilters(filters);
 
         return value;

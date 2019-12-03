@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,5 +47,12 @@ public class SysJudgeDevice extends BaseEntity implements Serializable {
 
     @Column(name = "DEVICE_CHECKER_GENDER", length = 10)
     String deviceCheckGender;
+
+    @ToString.Exclude
+    @OneToOne()
+    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("device")
+    SysDevice device;
 
 }
