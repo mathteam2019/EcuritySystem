@@ -102,7 +102,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         String womanDeviceGender;
 
-        Long deviceId;
+        Long fromDeviceId;
 
     }
 
@@ -275,7 +275,7 @@ public class DeviceConfigManagementController extends BaseController {
 
         Long manualDeviceId = requestBody.getManualDeviceId();
         Long judgeDeviceId = requestBody.getJudgeDeviceId();
-        Long configDeviceId = requestBody.getDeviceId();
+        Long configDeviceId = requestBody.getFromDeviceId();
 
 
         SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?

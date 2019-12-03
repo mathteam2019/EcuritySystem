@@ -632,6 +632,11 @@ public class DeviceControlController extends BaseController {
         sysDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
+        deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysDeviceConfigRepository.save(deviceConfig);
+
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -721,6 +726,38 @@ public class DeviceControlController extends BaseController {
         }
 
         sysDeviceRepository.delete(sysDevice);
+
+
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check device config exist or not
+        if(sysDeviceConfig != null) {
+            //remove correspond manual group
+            SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
+                    sysDeviceConfig.getManualGroupList().get(0): null;
+            if(manualGroup != null) {
+                sysManualGroupRepository.delete(manualGroup);
+            }
+
+            //remove correspond judge group
+            SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
+                    sysDeviceConfig.getJudgeGroupList().get(0): null;
+            if(judgeGroup != null) {
+                sysJudgeGroupRepository.delete(judgeGroup);
+            }
+
+            //remove correspond from config.
+            FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
+                    sysDeviceConfig.getFromConfigIdList().get(0): null;
+            if(fromConfigId != null) {
+                fromConfigIdRepository.delete(fromConfigId);
+            }
+
+            sysDeviceConfigRepository.delete(sysDeviceConfig);
+        }
+
+
 
 
         return new CommonResponseBody(ResponseMessage.OK);

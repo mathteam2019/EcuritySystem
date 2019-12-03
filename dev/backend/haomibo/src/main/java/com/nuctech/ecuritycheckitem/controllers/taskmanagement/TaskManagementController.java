@@ -66,7 +66,7 @@ public class TaskManagementController extends BaseController {
         long from;
         long to;
 
-        List<JudgeStatisticsResponseModel> data;
+        Map<String, JudgeStatisticsResponseModel> data;
 
     }
 
@@ -81,7 +81,7 @@ public class TaskManagementController extends BaseController {
         long from;
         long to;
 
-        List<HandExaminationResponseModel> data;
+        Map<String, HandExaminationResponseModel> data;
 
     }
 
@@ -97,7 +97,7 @@ public class TaskManagementController extends BaseController {
         long from;
         long to;
 
-        List<EvaluateJudgeResponseModel> data;
+        Map<String, EvaluateJudgeResponseModel> data;
 
     }
 
@@ -2219,6 +2219,96 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    /**
+     *
+     * Private purpose Only
+     * Get Start KeyDate and End Key Date for statistics
+     *
+     * Ex: In case of Hour - it returns [1, 24], In case of Month it returns [1, 12]
+     * @param requestBody
+     * @return [startKeyDate, endKeyDate]
+     */
+    public List<Integer> getKeyValuesforStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            switch (requestBody.getFilter().getStatWidth()) {
+                case StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case StatisticWidth.DAY:
+                    keyValueMin = 1;
+                    keyValueMax = 31;
+                    break;
+                case StatisticWidth.WEEK:
+                    keyValueMin = 1;
+                    keyValueMax = 5;
+                    break;
+                case StatisticWidth.MONTH:
+                    keyValueMin = 1;
+                    keyValueMax = 12;
+                    break;
+                case StatisticWidth.QUARTER:
+                    keyValueMin = 1;
+                    keyValueMax = 4;
+                    break;
+                case StatisticWidth.YEAR:
+
+                    Integer yearMax = serJudgeGraphRepository.findMaxYear();
+                    Integer yearMin = serJudgeGraphRepository.findMinYear();
+
+//                    if (yearMax > Calendar.getInstance().get(Calendar.YEAR)) {
+//                        yearMax = Calendar.getInstance().get(Calendar.YEAR);
+//                    }
+
+                    //if (yearMin < 1970) {
+                     yearMin = 1970;
+                    //}
+
+                    Calendar calendar = Calendar.getInstance();
+                    if (requestBody.getFilter().getStartTime() != null) {
+                        calendar.setTime(requestBody.getFilter().getStartTime());
+                        keyValueMin = calendar.get(Calendar.YEAR);
+
+                    } else {
+                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
+                    }
+                    if (requestBody.getFilter().getEndTime() != null) {
+                        calendar.setTime(requestBody.getFilter().getEndTime());
+                        keyValueMax = calendar.get(Calendar.YEAR);
+
+                    } else {
+
+                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+
+                    }
+
+                    if (keyValueMin < yearMin) {
+                        keyValueMin = yearMin;
+                    }
+
+                    if (keyValueMax > yearMax) {
+                        keyValueMax = yearMax;
+                    }
+
+                    break;
+                default:
+                    keyValueMin = 0;
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        List<Integer> result = new ArrayList<>();
+        result.add(keyValueMin);
+        result.add(keyValueMax);
+
+        return result;
+
+    }
+
     public JudgeStatisticsPaginationResponse getJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
         Map<String, Object> paramaterMap = new HashMap<String, Object>();
@@ -2320,8 +2410,22 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        List<JudgeStatisticsResponseModel> data = new ArrayList<JudgeStatisticsResponseModel>();
+        HashMap<String, JudgeStatisticsResponseModel> data = new HashMap<>();
 
+        //init hash map
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        }
+        catch (Exception e) {
+
+        }
+
+        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
+            data.put(i.toString(), new JudgeStatisticsResponseModel());
+        }
 
         SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
         try {
@@ -2365,7 +2469,7 @@ public class TaskManagementController extends BaseController {
 
             }
 
-            data.add(record);
+            data.put(record.getTime(), record);
 
         }
 
@@ -2490,13 +2594,31 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        List<HandExaminationResponseModel> data = new ArrayList<HandExaminationResponseModel>();
+        HashMap<String, HandExaminationResponseModel> data = new HashMap<>();
+
+        //init hash map
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        }
+        catch (Exception e) {
+
+        }
+
+        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
+            data.put(i.toString(), new HandExaminationResponseModel());
+        }
+
 
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
 
             HandExaminationResponseModel record = new HandExaminationResponseModel();
+
+            try {
 
             record.setTime(item[0].toString());
             record.setTotal(Long.parseLong(item[1].toString()));
@@ -2516,7 +2638,7 @@ public class TaskManagementController extends BaseController {
             record.setMinDuration(Double.parseDouble(item[14].toString()));
             record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
-            try {
+
 
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
                 record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
@@ -2529,7 +2651,7 @@ public class TaskManagementController extends BaseController {
 
             }
 
-            data.add(record);
+            data.put(record.getTime(), record);
 
         }
 
@@ -2654,7 +2776,23 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        List<EvaluateJudgeResponseModel> data = new ArrayList<EvaluateJudgeResponseModel>();
+        HashMap<String, EvaluateJudgeResponseModel> data = new HashMap<>();
+
+
+        //init hash map
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        }
+        catch (Exception e) {
+
+        }
+
+        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
+            data.put(i.toString(), new EvaluateJudgeResponseModel());
+        }
 
 
         for (int i = 0; i < result.size(); i++) {
@@ -2663,6 +2801,7 @@ public class TaskManagementController extends BaseController {
 
             EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
 
+            try {
             record.setTime(item[0].toString());
             record.setTotal(Long.parseLong(item[1].toString()));
             record.setSeizure(Long.parseLong(item[2].toString()));
@@ -2681,7 +2820,7 @@ public class TaskManagementController extends BaseController {
             record.setMinDuration(Double.parseDouble(item[14].toString()));
             record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
-            try {
+
 
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
                 record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
@@ -2692,7 +2831,7 @@ public class TaskManagementController extends BaseController {
             } catch (Exception e) {
 
             }
-            data.add(record);
+            data.put(record.getTime(), record);
 
         }
 
@@ -2719,6 +2858,11 @@ public class TaskManagementController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        HashMap<Integer, String> temp = new HashMap<Integer, String>();
+
+        temp.put(1, "Apple");
+        temp.put(1, "Bear");
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
         response = getJudgeStatistics(requestBody);
