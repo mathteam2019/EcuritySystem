@@ -3,11 +3,13 @@ package com.nuctech.ecuritycheckitem.models.response;
 import lombok.Getter;
 import lombok.Setter;
 
+
+
 @Getter
 @Setter
 public class HandExaminationResponseModel {
 
-    int time;
+    String time;
     long total;
     long seizure;
     long noSeizure;
@@ -23,6 +25,5 @@ public class HandExaminationResponseModel {
     double maxDuration;
     double minDuration;
     double avgDuration;
-
 
 }

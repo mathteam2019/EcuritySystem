@@ -9,16 +9,14 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.HandExaminationResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsResponseModel;
+import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsModel;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.repositories.SerScanRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
 
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -28,11 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -52,6 +52,23 @@ public class TaskManagementController extends BaseController {
         SER_HAND_EXAMINATION(3);
 
         private final Integer value;
+    }
+
+
+
+    @Getter
+    @Setter
+    public class HandExaminationStatisticsPaginationResponse {
+
+        long total;
+        long per_page;
+        long current_page;
+        long last_page;
+        long from;
+        long to;
+
+        List<HandExaminationResponseModel> data;
+
     }
 
     @Getter
@@ -102,8 +119,8 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     class JudgeStatisticsResponse {
-        JudgeStatistics totalStatistics;
-        Map<Integer, JudgeStatistics> detailedStatistics;
+        JudgeStatisticsModelForPreview totalStatistics;
+        Map<Integer, JudgeStatisticsModelForPreview> detailedStatistics;
 
         long total;
         long per_page;
@@ -120,8 +137,8 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     class HandExaminationStatisticsResponse {
-        HandExaminationStatistics totalStatistics;
-        Map<Integer, HandExaminationStatistics> detailedStatistics;
+        HandExaminationStatisticsForPreview totalStatistics;
+        Map<Integer, HandExaminationStatisticsForPreview> detailedStatistics;
 
         long total;
         long per_page;
@@ -144,8 +161,8 @@ public class TaskManagementController extends BaseController {
         String name; //user or device name
 
         ScanStatistics scanStatistics;
-        JudgeStatistics judgeStatistics;
-        HandExaminationStatistics handExaminationStatistics;
+        JudgeStatisticsModelForPreview judgeStatistics;
+        HandExaminationStatisticsForPreview handExaminationStatistics;
 
     }
 
@@ -197,7 +214,7 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     @ToString
-    public class JudgeStatistics {
+    public class JudgeStatisticsModelForPreview {
 
         String axisLabel;
         long id;
@@ -218,7 +235,7 @@ public class TaskManagementController extends BaseController {
     @Getter
     @Setter
     @ToString
-    class HandExaminationStatistics {
+    class HandExaminationStatisticsForPreview {
 
         String axisLabel;
         long id;
@@ -387,9 +404,9 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        int currentPage;
+        Integer currentPage;
 
-        int perPage;
+        Integer perPage;
 
         StatisticsRequestBody.Filter filter;
 
@@ -841,13 +858,13 @@ public class TaskManagementController extends BaseController {
         return value;
     }
 
-    private ScanStatisticsResponse getScanStatistics(StatisticsRequestBody requestBody) {
+    private ScanStatisticsResponse getScanStatisticsForPreview(StatisticsRequestBody requestBody) {
 
         ScanStatistics totalStatistics = new ScanStatistics();
 
         HashMap<Integer, ScanStatistics> detailedStatistics = new HashMap<Integer, ScanStatistics>();
 
-        totalStatistics = getScanStatisticsByDate(requestBody, null);
+        totalStatistics = getScanStatisticsByDateForPreview(requestBody, null);
 
         ScanStatisticsResponse response = new ScanStatisticsResponse();
 
@@ -937,7 +954,7 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            ScanStatistics scanStat = getScanStatisticsByDate(requestBody, i);
+            ScanStatistics scanStat = getScanStatisticsByDateForPreview(requestBody, i);
 
             scanStat.setId(i - startIndex + 1);
 
@@ -959,7 +976,7 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    private ScanStatistics getScanStatisticsByDate(StatisticsRequestBody requestBody, Integer keyDate) {
+    private ScanStatistics getScanStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
 
         ScanStatistics scanStatistics = new ScanStatistics();
 
@@ -1123,13 +1140,13 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    private JudgeStatisticsResponse getJudgeStatistics(StatisticsRequestBody requestBody) {
+    private JudgeStatisticsResponse getJudgeStatisticsForPreview(StatisticsRequestBody requestBody) {
 
-        JudgeStatistics totalStatistics = new JudgeStatistics();
+        JudgeStatisticsModelForPreview totalStatistics = new JudgeStatisticsModelForPreview();
 
-        HashMap<Integer, JudgeStatistics> detailedStatistics = new HashMap<Integer, JudgeStatistics>();
+        HashMap<Integer, JudgeStatisticsModelForPreview> detailedStatistics = new HashMap<Integer, JudgeStatisticsModelForPreview>();
 
-        totalStatistics = getJudgeStatisticsByDate(requestBody, null);
+        totalStatistics = getJudgeStatisticsByDateForPreview(requestBody, null);
 
         JudgeStatisticsResponse response = new JudgeStatisticsResponse();
 
@@ -1220,7 +1237,7 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            JudgeStatistics judgeStat = getJudgeStatisticsByDate(requestBody, i);
+            JudgeStatisticsModelForPreview judgeStat = getJudgeStatisticsByDateForPreview(requestBody, i);
 
             judgeStat.setId(i - startIndex + 1);
 
@@ -1242,9 +1259,9 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    private JudgeStatistics getJudgeStatisticsByDate(StatisticsRequestBody requestBody, Integer keyDate) {
+    private JudgeStatisticsModelForPreview getJudgeStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
 
-        JudgeStatistics judgeStatistics = new JudgeStatistics();
+        JudgeStatisticsModelForPreview judgeStatistics = new JudgeStatisticsModelForPreview();
 
         QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
 
@@ -1378,13 +1395,13 @@ public class TaskManagementController extends BaseController {
     }
 
 
-    private HandExaminationStatisticsResponse getHandExaminationStatistics(StatisticsRequestBody requestBody) {
+    private HandExaminationStatisticsResponse getHandExaminationStatisticsForPreview(StatisticsRequestBody requestBody) {
 
-        HandExaminationStatistics totalStatistics = new HandExaminationStatistics();
+        HandExaminationStatisticsForPreview totalStatistics = new HandExaminationStatisticsForPreview();
 
-        HashMap<Integer, HandExaminationStatistics> detailedStatistics = new HashMap<Integer, HandExaminationStatistics>();
+        HashMap<Integer, HandExaminationStatisticsForPreview> detailedStatistics = new HashMap<Integer, HandExaminationStatisticsForPreview>();
 
-        totalStatistics = getHandExaminationStatisticsByDate(requestBody, null);
+        totalStatistics = getHandExaminationStatisticsByDateForPreview(requestBody, null);
 
         HandExaminationStatisticsResponse response = new HandExaminationStatisticsResponse();
 
@@ -1490,7 +1507,7 @@ public class TaskManagementController extends BaseController {
 
         int i = 0;
         for (i = startIndex; i <= endIndex; i++) {
-            HandExaminationStatistics handExaminationStat = getHandExaminationStatisticsByDate(requestBody, i);
+            HandExaminationStatisticsForPreview handExaminationStat = getHandExaminationStatisticsByDateForPreview(requestBody, i);
 
             handExaminationStat.setId(i - startIndex + 1);
 
@@ -1513,9 +1530,9 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    private HandExaminationStatistics getHandExaminationStatisticsByDate(StatisticsRequestBody requestBody, Integer keyDate) {
+    private HandExaminationStatisticsForPreview getHandExaminationStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
 
-        HandExaminationStatistics handExaminationStatistics = new HandExaminationStatistics();
+        HandExaminationStatisticsForPreview handExaminationStatistics = new HandExaminationStatisticsForPreview();
 
         QSerHandExamination builder = QSerHandExamination.serHandExamination;
 
@@ -1770,9 +1787,9 @@ public class TaskManagementController extends BaseController {
 
     private TotalStatistics getPreviewStatisticsByDate(StatisticsRequestBody requestBody, Integer keyDate) {
 
-        ScanStatistics scanStatistics = getScanStatisticsByDate(requestBody, keyDate);
-        JudgeStatistics judgeStatistics = getJudgeStatisticsByDate(requestBody, keyDate);
-        HandExaminationStatistics handExaminationStatistics = getHandExaminationStatisticsByDate(requestBody, keyDate);
+        ScanStatistics scanStatistics = getScanStatisticsByDateForPreview(requestBody, keyDate);
+        JudgeStatisticsModelForPreview judgeStatistics = getJudgeStatisticsByDateForPreview(requestBody, keyDate);
+        HandExaminationStatisticsForPreview handExaminationStatistics = getHandExaminationStatisticsByDateForPreview(requestBody, keyDate);
 
         TotalStatistics totalStatistics = new TotalStatistics();
 
@@ -1808,7 +1825,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        HandExaminationStatisticsResponse handStatistics = getHandExaminationStatistics(requestBody);
+        HandExaminationStatisticsResponse handStatistics = getHandExaminationStatisticsForPreview(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handStatistics));
 
@@ -1847,7 +1864,7 @@ public class TaskManagementController extends BaseController {
         }
 
         //get Scan statistics
-        ScanStatisticsResponse scanStatistics = getScanStatistics(requestBody);
+        ScanStatisticsResponse scanStatistics = getScanStatisticsForPreview(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
 
@@ -1870,7 +1887,7 @@ public class TaskManagementController extends BaseController {
 
 
         //get Scan statistics
-        JudgeStatisticsResponse judgeStatistics = getJudgeStatistics(requestBody);
+        JudgeStatisticsResponse judgeStatistics = getJudgeStatisticsForPreview(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
 
@@ -2178,78 +2195,169 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/statistics/get-judge-statistics", method = RequestMethod.POST)
-    public Object getJudgeSummary(
-            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
+    public List<JudgeStatisticsModel> getJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        List<String> whereCause = new ArrayList<String>();
 
-        List<JudgeStatisticsResponseModel> response = new ArrayList<>();
-        List<Object> result = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
 
-        if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.MONTH)) {
+        StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-            result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
+        if (filter != null) {
+
+
 
         }
 
+        queryBuilder.append("select p from Prod p ");
 
-        //result = serJudgeGraphRepository.getStatisticsAllByMonth(requestBody.getFilter().getFieldId(), requestBody.getFilter().getDeviceId());
+//        if (!category.isEmpty()){
+//            whereCause.add(" p.cat.name =:category ");
+//            paramaterMap.put("category", category);
+//        }
+//        if (!name.isEmpty()){
+//            whereCause.add(" p.name =:name ");
+//            paramaterMap.put("name", name);
+//        }
+//        if (priceMin!=null){
+//            whereCause.add(" p.price>=:priceMin ");
+//            paramaterMap.put("priceMin", priceMin);
+//        }
+//        if (priceMax!=null){
+//            whereCause.add("p.price<=:priceMax  ");
+//            paramaterMap.put("priceMax", priceMax);
+//        }
 
-        for (int i = 0; i < result.size(); i++) {
+        //.................
+        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        Query jpaQuery = entityManager.createQuery(queryBuilder.toString());
 
-            Object[] item = (Object[]) result.get(i);
-
-            JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
-
-            int t = Integer.parseInt(item[0].toString());
-            record.setTime(Integer.parseInt(item[0].toString()));
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSuspiction(Long.parseLong(item[2].toString()));
-            record.setNoSuspiction(Long.parseLong(item[3].toString()));
-            record.setAtrResult(Long.parseLong(item[4].toString()));
-            record.setAssignResult(Long.parseLong(item[5].toString()));
-            record.setArtificialResult(Long.parseLong(item[6].toString()));
-            record.setMaxDuration(Double.parseDouble(item[7].toString()));
-            record.setMinDuration(Double.parseDouble(item[8].toString()));
-            record.setAvgDuration(Double.parseDouble(item[9].toString()));
-
-            response.add(record);
-
+        for(String key :paramaterMap.keySet()) {
+            jpaQuery.setParameter(key, paramaterMap.get(key));
         }
 
-        return  new CommonResponseBody(ResponseMessage.OK, response);
+        return  jpaQuery.getResultList();
 
     }
 
+    public HandExaminationStatisticsPaginationResponse getHandStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
-    @RequestMapping(value = "/statistics/get-handexamination-statistics", method = RequestMethod.POST)
-    public Object getHandExaminationSummary(
-            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
+        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        List<String> whereCause = new ArrayList<String>();
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        StringBuilder queryBuilder = new StringBuilder();
+
+        StatisticsRequestBody.Filter filter = requestBody.getFilter();
+
+        String groupBy = requestBody.getFilter().getStatWidth();
+
+        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
+
+        queryBuilder.append("SELECT\n" +
+                "\n" +
+                groupBy +
+                "\t (h.HAND_START_TIME) as time,\n" +
+                "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE 'true', 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE 'false', 1, 0 ) ) AS noSeizure,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true', 1, 0)) as totalJudge,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE 'missing', 1, 0 ) ) AS missingReport,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE 'mistake', 1, 0 ) ) AS falseReport,\n" +
+                "\t\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong', 1, 0)) as artificialJudge,\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'missing', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'mistake', 1, 0)) as artificialJudgeMistake,\n" +
+                "\t\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true', 1, 0)) as intelligenceJudge,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'missing', 1, 0)) as intelligenceJudgeMissing,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like 'true' and wf.MODE_ID = 11 and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'mistake', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\t\n" +
+                "\t\n" +
+                "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
+                "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
+                "\t\n" +
+                "FROM\n" +
+                "\tser_hand_examination h\n" +
+                "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
+                "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
+                "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
+                "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
+                "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
+                "\tleft join ser_assign a on t.task_id = a.task_id\n" +
+                "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n");
+
+        if (requestBody.getFilter().getFieldId() != null){
+
+            whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
+
+        }
+        if (requestBody.getFilter().getDeviceId() != null){
+
+            whereCause.add("h.HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+
+        }
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()){
+
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
+
+        }
+        if (requestBody.getFilter().getStartTime() != null){
+
+            Date date = requestBody.getFilter().getStartTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
+
+        }
+        if (requestBody.getFilter().getEndTime() != null){
+
+            Date date = requestBody.getFilter().getEndTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+
+            whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
+
         }
 
-        List<HandExaminationResponseModel> response = new ArrayList<>();
 
-        List<Object> result = serHandExaminationRepository.getStatistics(
+        //.................
+        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
 
-        );
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+
+            Integer from,to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
+            to =  requestBody.getCurrentPage() * requestBody.getPerPage();
+
+            response.setFrom(from);
+            response.setTo(to);
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+
+            queryBuilder.append(" LIMIT " + from + ", " + requestBody.getPerPage());
+
+        }
 
 
-        for (int i = 0; i < result.size(); i++) {
+
+        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+
+
+        List<Object> result = jpaQuery.getResultList();
+
+        List<HandExaminationResponseModel> data = new ArrayList<HandExaminationResponseModel>();
+
+        for (int i = 0; i < result.size(); i ++ ) {
 
             Object[] item = (Object[]) result.get(i);
 
             HandExaminationResponseModel record = new HandExaminationResponseModel();
 
-            int t = Integer.parseInt(item[0].toString());
-            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setTime(item[0].toString());
             record.setTotal(Long.parseLong(item[1].toString()));
             record.setSeizure(Long.parseLong(item[2].toString()));
             record.setNoSeizure(Long.parseLong(item[3].toString()));
@@ -2267,10 +2375,51 @@ public class TaskManagementController extends BaseController {
             record.setMinDuration(Double.parseDouble(item[14].toString()));
             record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
-            response.add(record);
+            data.add(record);
 
         }
 
+
+        try {
+            response.setTotal(result.size());
+            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+        }
+        catch (Exception e) {
+
+        }
+
+        response.setData(data);
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/statistics/get-judge-statistics", method = RequestMethod.POST)
+    public Object getJudgeSummary(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        return  new CommonResponseBody(ResponseMessage.OK, getJudgeStatistics(requestBody));
+
+    }
+
+
+    @RequestMapping(value = "/statistics/get-handexamination-statistics", method = RequestMethod.POST)
+    public Object getHandExaminationSummary(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
+        response = getHandStatistics(requestBody);
         return  new CommonResponseBody(ResponseMessage.OK, response);
 
     }
@@ -2298,7 +2447,7 @@ public class TaskManagementController extends BaseController {
             HandExaminationResponseModel record = new HandExaminationResponseModel();
 
             int t = Integer.parseInt(item[0].toString());
-            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setTime(item[0].toString());
             record.setTotal(Long.parseLong(item[1].toString()));
             record.setSeizure(Long.parseLong(item[2].toString()));
             record.setNoSeizure(Long.parseLong(item[3].toString()));
@@ -2430,7 +2579,7 @@ public class TaskManagementController extends BaseController {
             List<SerJudgeGraph> listJudge = entry.getValue();
 
             TotalStatistics totalStat = new TotalStatistics();
-            JudgeStatistics judgeStat = new JudgeStatistics();
+            JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
 
             long suspiction = 0;
             long noSuspiction = 0;
@@ -2483,7 +2632,7 @@ public class TaskManagementController extends BaseController {
             List<SerHandExamination> listHand = entry.getValue();
 
             TotalStatistics totalStat = new TotalStatistics();
-            HandExaminationStatistics handStat = new HandExaminationStatistics();
+            HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
 
             long seizure = 0;
             long noSeizure = 0;
@@ -2648,7 +2797,7 @@ public class TaskManagementController extends BaseController {
             List<SerJudgeGraph> listJudge = entry.getValue();
 
             TotalStatistics totalStat = new TotalStatistics();
-            JudgeStatistics judgeStat = new JudgeStatistics();
+            JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
 
             long suspiction = 0;
             long noSuspiction = 0;
@@ -2702,7 +2851,7 @@ public class TaskManagementController extends BaseController {
             List<SerHandExamination> listHand = entry.getValue();
 
             TotalStatistics totalStat = new TotalStatistics();
-            HandExaminationStatistics handStat = new HandExaminationStatistics();
+            HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
 
             long seizure = 0;
             long noSeizure = 0;
