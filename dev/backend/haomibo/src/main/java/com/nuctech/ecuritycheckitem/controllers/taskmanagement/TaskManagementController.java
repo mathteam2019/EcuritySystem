@@ -896,7 +896,7 @@ public class TaskManagementController extends BaseController {
 
         ScanStatistics totalStatistics = new ScanStatistics();
 
-        HashMap<Integer, ScanStatistics> detailedStatistics = new HashMap<Integer, ScanStatistics>();
+        TreeMap<Integer, ScanStatistics> detailedStatistics = new TreeMap<Integer, ScanStatistics>();
 
         totalStatistics = getScanStatisticsByDateForPreview(requestBody, null);
 
@@ -1178,7 +1178,7 @@ public class TaskManagementController extends BaseController {
 
         JudgeStatisticsModelForPreview totalStatistics = new JudgeStatisticsModelForPreview();
 
-        HashMap<Integer, JudgeStatisticsModelForPreview> detailedStatistics = new HashMap<Integer, JudgeStatisticsModelForPreview>();
+        TreeMap<Integer, JudgeStatisticsModelForPreview> detailedStatistics = new TreeMap<Integer, JudgeStatisticsModelForPreview>();
 
         totalStatistics = getJudgeStatisticsByDateForPreview(requestBody, null);
 
@@ -1433,7 +1433,7 @@ public class TaskManagementController extends BaseController {
 
         HandExaminationStatisticsForPreview totalStatistics = new HandExaminationStatisticsForPreview();
 
-        HashMap<Integer, HandExaminationStatisticsForPreview> detailedStatistics = new HashMap<Integer, HandExaminationStatisticsForPreview>();
+        TreeMap<Integer, HandExaminationStatisticsForPreview> detailedStatistics = new TreeMap<Integer, HandExaminationStatisticsForPreview>();
 
         totalStatistics = getHandExaminationStatisticsByDateForPreview(requestBody, null);
 
@@ -1705,7 +1705,7 @@ public class TaskManagementController extends BaseController {
 
         TotalStatistics totalStatistics = new TotalStatistics();
 
-        HashMap<Long, TotalStatistics> detailedStatistics = new HashMap<Long, TotalStatistics>();
+        TreeMap<Long, TotalStatistics> detailedStatistics = new TreeMap<Long, TotalStatistics>();
 
         totalStatistics = getPreviewStatisticsByDate(requestBody, null);
 
@@ -2315,7 +2315,7 @@ public class TaskManagementController extends BaseController {
 
     public JudgeStatisticsPaginationResponse getJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
-        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
         List<String> whereCause = new ArrayList<String>();
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -2460,7 +2460,7 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        HashMap<Integer, JudgeStatisticsResponseModel> data = new HashMap<>();
+        TreeMap<Integer, JudgeStatisticsResponseModel> data = new TreeMap<>();
 
         //init hash map
         Integer keyValueMin = 0, keyValueMax = -1;
@@ -2520,7 +2520,7 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        HashMap<Integer, JudgeStatisticsResponseModel> sorted = new HashMap<>();
+        TreeMap<Integer, JudgeStatisticsResponseModel> sorted = new TreeMap<>();
 
         for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
 
@@ -2529,7 +2529,7 @@ public class TaskManagementController extends BaseController {
         }
 
 
-        HashMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new HashMap<>();
+        TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new TreeMap<>();
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
@@ -2574,7 +2574,7 @@ public class TaskManagementController extends BaseController {
             else {
                 response.setLast_page(response.getTotal() / response.getPer_page() + 1);
             }
-            
+
         } catch (Exception e) {
 
         }
@@ -2585,7 +2585,7 @@ public class TaskManagementController extends BaseController {
 
     public HandExaminationStatisticsPaginationResponse getHandStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
-        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
         List<String> whereCause = new ArrayList<String>();
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -2729,7 +2729,7 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        HashMap<Integer, HandExaminationResponseModel> data = new HashMap<>();
+        TreeMap<Integer, HandExaminationResponseModel> data = new TreeMap<>();
 
         //init hash map
         Integer keyValueMin = 0, keyValueMax = -1;
@@ -2790,7 +2790,7 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        HashMap<Integer, HandExaminationResponseModel> sorted = new HashMap<>();
+        TreeMap<Integer, HandExaminationResponseModel> sorted = new TreeMap<>();
 
         for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
 
@@ -2798,7 +2798,7 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        HashMap<Integer, HandExaminationResponseModel> detailedStatistics = new HashMap<>();
+        TreeMap<Integer, HandExaminationResponseModel> detailedStatistics = new TreeMap<>();
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
@@ -2857,7 +2857,7 @@ public class TaskManagementController extends BaseController {
 
     public EvaluateJudgeStatisticsPaginationResponse getEvaluateJudgeStatistics(TaskManagementController.StatisticsRequestBody requestBody) {
 
-        Map<String, Object> paramaterMap = new HashMap<String, Object>();
+        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
         List<String> whereCause = new ArrayList<String>();
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -3000,7 +3000,7 @@ public class TaskManagementController extends BaseController {
 
         List<Object> result = jpaQuery.getResultList();
 
-        HashMap<Integer, EvaluateJudgeResponseModel> data = new HashMap<>();
+        TreeMap<Integer, EvaluateJudgeResponseModel> data = new TreeMap<>();
 
 
         //init hash map
@@ -3061,7 +3061,7 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        HashMap<Integer, EvaluateJudgeResponseModel> sorted = new HashMap<>();
+        TreeMap<Integer, EvaluateJudgeResponseModel> sorted = new TreeMap<>();
 
 //        data.entrySet()
 //                .stream()
@@ -3075,7 +3075,7 @@ public class TaskManagementController extends BaseController {
         }
 
 
-        HashMap<Integer, EvaluateJudgeResponseModel> detailedStatistics = new HashMap<>();
+        TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics = new TreeMap<>();
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
@@ -3138,7 +3138,7 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        HashMap<Integer, String> temp = new HashMap<Integer, String>();
+        TreeMap<Integer, String> temp = new TreeMap<Integer, String>();
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
         response = getJudgeStatistics(requestBody);
@@ -3230,7 +3230,7 @@ public class TaskManagementController extends BaseController {
         Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList()));
         Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandUserId, Collectors.toList()));
 
-        HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
+        TreeMap<Long, TotalStatistics> listTotalStatistics = new TreeMap<Long, TotalStatistics>();
 
         for (Map.Entry<Long, List<SerScan>> entry : scans.entrySet()) {
             Long userId = entry.getKey();
@@ -3445,7 +3445,7 @@ public class TaskManagementController extends BaseController {
         Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeDeviceId, Collectors.toList()));
         Map<Long, List<SerHandExamination>> handExaminations = IterableUtils.toList(serHandExaminationRepository.findAll(predicateHand)).stream().collect(Collectors.groupingBy(SerHandExamination::getHandDeviceId, Collectors.toList()));
 
-        HashMap<Long, TotalStatistics> listTotalStatistics = new HashMap<Long, TotalStatistics>();
+        TreeMap<Long, TotalStatistics> listTotalStatistics = new TreeMap<Long, TotalStatistics>();
 
         for (Map.Entry<Long, List<SerScan>> entry : scans.entrySet()) {
             Long deviceId = entry.getKey();
