@@ -758,8 +758,8 @@ public class TaskManagementController extends BaseController {
         int endIndex = keyValueMax;
 
         if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
+            startIndex = (curPage - 1) * perPage + keyValueMin;
+            endIndex = (curPage) * perPage + keyValueMin - 1;
 
             if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
                 startIndex = keyValueMin + startIndex - 1;
@@ -1597,8 +1597,8 @@ public class TaskManagementController extends BaseController {
 
         if (curPage != 0 && perPage != 0) {
 
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
+            startIndex = (curPage - 1) * perPage + keyValueMin;
+            endIndex = (curPage) * perPage + keyValueMin - 1;
 
             if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
                 startIndex = keyValueMin + startIndex - 1;
