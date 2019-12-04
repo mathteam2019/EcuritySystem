@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Map;
+
 /**
  * Judge statistics Response Body
  */
@@ -35,6 +37,8 @@ public class JudgeStatisticsResponseModel {
     double avgArtificialJudgeDuration; //人工判图平均时长
     double maxArtificialJudgeDuration; //人工判图最高时长
     double minArtificialJudgeDuration; //人工判图最低时长
+
+    Map<String, Integer> handGoods;
 
 }
 

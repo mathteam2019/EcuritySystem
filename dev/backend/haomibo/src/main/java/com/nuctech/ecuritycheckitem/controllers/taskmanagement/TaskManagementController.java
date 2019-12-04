@@ -13,6 +13,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
+import io.swagger.models.auth.In;
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,14 @@ public class TaskManagementController extends BaseController {
         public static final String QUARTER = "quarter";
         public static final String YEAR = "year";
     }
+
+    List<String> handGoodsIDList = Arrays.asList(new String[]{
+            "1000001601",
+            "1000001602",
+            "1000001603",
+            "1000001604",
+            "1000001605"
+    });
 
     /**
      * Get Statistics by user request body
@@ -2258,6 +2267,8 @@ public class TaskManagementController extends BaseController {
                 record.setScanResultRate(record.getAtrResult() / (double) record.getTotal());
                 record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
 
+                TreeMap<String, Integer> handGoods = new TreeMap<>();
+
             } catch (Exception e) {
 
             }
@@ -2395,6 +2406,188 @@ public class TaskManagementController extends BaseController {
 
         }
 
+        return response;
+
+    }
+
+    private TreeMap<String, Long> getSuspicionHandGoodsByDate(TaskManagementController.StatisticsRequestBody requestBody, Integer byDate) {
+
+        TreeMap<String, Long> suspicionResult = new TreeMap<>();
+
+        QHistory history = QHistory.history;
+
+        StatisticsRequestBody.Filter filter = requestBody.getFilter();
+
+        for (int i = 0; i < handGoodsIDList.size(); i ++) {
+
+            BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
+
+            if (byDate != null) {
+
+                String statWidth = "";
+                try {
+                    statWidth = requestBody.getFilter().getStatWidth();
+                }
+                catch (Exception e) {
+
+                }
+
+                if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+
+                    switch (statWidth) {
+                        case StatisticWidth.YEAR:
+                            predicate.and(history.handStartTime.year().eq(byDate));
+                            break;
+                        case StatisticWidth.MONTH:
+                            predicate.and(history.handStartTime.month().eq(byDate));
+                            break;
+                        case StatisticWidth.DAY:
+                            predicate.and(history.handStartTime.dayOfMonth().eq(byDate));
+                            break;
+                        case StatisticWidth.HOUR:
+                            predicate.and(history.handStartTime.hour().eq(byDate));
+                            break;
+                        case StatisticWidth.WEEK:
+                            predicate.and( history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
+                            break;
+                        case StatisticWidth.QUARTER:
+                            predicate.and(history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));
+                            break;
+                    }
+                }
+
+            }
+
+            if (requestBody.getFilter().getFieldId() != null) {
+
+                predicate.and(history.task.fieldId.eq(requestBody.getFilter().getFieldId()));
+
+            }
+            if (requestBody.getFilter().getDeviceId() != null) {
+
+                predicate.and(history.handDeviceId.eq(requestBody.getFilter().getDeviceId()));
+
+            }
+            if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+
+                predicate.and(history.handUser.userName.contains(requestBody.getFilter().getUserName()));
+
+            }
+            if (requestBody.getFilter().getStartTime() != null) {
+
+                predicate.and(history.handStartTime.after(requestBody.getFilter().getStartTime()));
+
+            }
+            if (requestBody.getFilter().getEndTime() != null) {
+
+                predicate.and(history.handEndTime.before(requestBody.getFilter().getEndTime()));
+
+            }
+
+            predicate.and(history.handGoods.eq(handGoodsIDList.get(i)));
+
+            suspicionResult.put(handGoodsIDList.get(i), historyRespository.count(predicate));
+
+        }
+
+        return suspicionResult;
+    }
+
+    public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(TaskManagementController.StatisticsRequestBody requestBody) {
+
+        SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
+
+        TreeMap<String, Long> totalStatistics = new TreeMap<>();
+
+        totalStatistics = getSuspicionHandGoodsByDate(requestBody, null);
+
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+
+
+        Integer startIndex = 0, endIndex = 0;
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+
+            startIndex = keyValueMin;
+            endIndex = keyValueMax;
+
+        }
+        catch (Exception e) {
+
+        }
+
+        int curPage = 0;
+        int perPage = 0;
+
+        try {
+            curPage = requestBody.getCurrentPage();
+            perPage = requestBody.getPerPage();
+        }
+        catch (Exception e) {
+
+        }
+
+        if (curPage != 0 && perPage != 0) {
+            startIndex = (curPage - 1) * perPage + 1;
+            endIndex = (curPage) * perPage;
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                startIndex = keyValueMin + startIndex - 1;
+                endIndex = startIndex + perPage - 1;
+            }
+
+            if (startIndex < keyValueMin) {
+                startIndex = keyValueMin;
+            }
+            if (endIndex > keyValueMax) {
+                endIndex = keyValueMax;
+            }
+
+
+            if (requestBody.getFilter().getStatWidth().equals(StatisticWidth.YEAR)) {
+                response.setFrom(startIndex - keyValueMin + 1);
+                response.setTo(endIndex - keyValueMin + 1);
+            } else {
+                response.setFrom(startIndex);
+                response.setTo(endIndex);
+            }
+
+            try {
+
+                response.setTotal(endIndex - startIndex);
+                response.setPer_page(requestBody.getPerPage());
+                response.setCurrent_page(requestBody.getCurrentPage());
+
+                if (response.getTotal() % response.getPer_page() == 0) {
+                    response.setLast_page(response.getTotal() / response.getPer_page());
+                }
+                else {
+                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+                }
+
+            }
+            catch (Exception e) {
+
+            }
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
+
+        for (Integer i = startIndex; i <= endIndex; i ++ ) {
+
+            TreeMap<String, Long> suspictionStat = getSuspicionHandGoodsByDate(requestBody, i);
+            suspictionStat.put("time", (long)i);
+            detailedStatistics.put(i, suspictionStat);
+
+        }
+
+
+        response.setTotalStatistics(totalStatistics);
+        response.setDetailedStatistics(detailedStatistics);
         return response;
 
     }
@@ -2959,6 +3152,22 @@ public class TaskManagementController extends BaseController {
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
         response = getJudgeStatistics(requestBody);
 
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+
+    @RequestMapping(value = "/statistics/get-suspicionhandgoods-statistics", method = RequestMethod.POST)
+    public Object getSuspicionHandGoodsSummary(
+            @RequestBody @Valid TaskManagementController.StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
+        response = getSuspicionHandGoodsStastistics(requestBody);
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
