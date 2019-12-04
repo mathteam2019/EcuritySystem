@@ -1,10 +1,13 @@
 <style lang="scss">
   @import '../../../assets/css/dual-list.css';
-
+  $cyan-button-color: #178af7;
   .device-config {
-
-    $cyan-button-color: #178af7;
-
+    .p-left-0 {
+      padding-left: 0;
+    }
+    .p-right-0 {
+      padding-right: 0;
+    }
     div.label-center label {
       display: flex;
       align-self: center;
@@ -93,6 +96,54 @@
     }
 
   }
+  body.rtl {
+    .device-config {
+      .switch-button {
+        padding-right: unset;
+        padding-left: 1rem;
+        span {
+          &:first-child {
+            border-right-color: #cccccc!important;
+            border-left-color: transparent !important;
+          }
+          &:last-child {
+            border-left-color: #cccccc!important;
+            border-right-color: transparent !important;
+          }
+        }
+      }
+      .search-box {
+        .form-control {
+          max-width: calc(100% - 75px);
+          border-radius: 0rem 0.3rem 0.3rem 0rem;
+        }
+
+        .btn {
+          border-radius: 0.3rem 0rem 0rem 0.3rem;
+          display: flex;
+          align-items: center;
+          i {
+            padding-left: 3px;
+          }
+        }
+      }
+      .section {
+        background-color: #f4f4f4;
+        padding: 1rem 0 0.5rem 0 !important;
+      }
+      ul.tree-root {
+        overflow-x: hidden;
+        .tree-arrow.expanded.has-child:after {
+          transform: rotate(-135deg) translateY(11%) translateX(10px)
+        }
+      }
+      .vue-dual-list .list ul.pd {
+        padding-right: 0;
+      }
+
+
+    }
+  }
 
 </style>
 <template>
@@ -139,7 +190,7 @@
               </b-row>
             </div>
           </b-col>
-          <b-col cols="8" class="d-flex flex-column pl-0">
+          <b-col cols="8" class="d-flex flex-column " :class="direction==='ltr'?'p-left-0':'p-right-0'">
             <div class="section d-flex flex-column h-100">
               <b-row class="mx-4 flex-grow-1">
                 <b-col>
@@ -147,8 +198,7 @@
                 </b-col>
               </b-row>
               <b-row class="mx-4">
-                <b-col cols="12" class="d-flex justify-content-end align-self-end"
-                       style="margin-left: 1.5rem; margin-right: 1.5rem;">
+                <b-col cols="12" class="d-flex justify-content-end align-self-end">
                   <b-button :disabled="selectedFieldId === 0" size="sm" variant="info default mr-1"
                             @click="onSaveDeviceToField()">
                     <i class="icofont-save"></i>
@@ -471,15 +521,10 @@
   import {apiBaseUrl} from "../../../constants/config";
   import {getApiManager} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import _ from 'lodash';
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import vSelect from 'vue-select'
-  import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
-
-  import Switches from 'vue-switches'
   import Vue from 'vue'
   import VueDualList from '../../../components/Duallist/VueDualList'
   import LiquorTree from 'liquor-tree'
@@ -500,9 +545,7 @@
   Vue.treeFilter = '';//redefined filter option.
   export default {
     components: {
-      'v-select': vSelect,
       'vuetable': Vuetable,
-      'switches': Switches,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'VueDualList': VueDualList

@@ -19,8 +19,8 @@
       </div>
       <div class="d-flex flex-grow-0 justify-content-center align-items-center flex-column">
         <div class="move-button-container">
-          <span @click='transferToRight(options.items.indexOf(item))'><i class="icofont-long-arrow-right"></i></span>
-          <span @click='transferToLeft(-1)'><i class="icofont-long-arrow-left"></i></span>
+          <span  @click='transferToRight(options.items.indexOf(item))'><i :class="options.isLtr === 'ltr'?'icofont-long-arrow-right':'icofont-long-arrow-left'"></i></span>
+          <span @click='transferToLeft(-1)'><i :class="options.isLtr === 'rtl'?'icofont-long-arrow-right':'icofont-long-arrow-left'"></i></span>
         </div>
       </div>
       <div class="d-flex flex-grow-1 flex-column dual-list-column">
@@ -101,7 +101,6 @@
         width: 100%;
         font-size: 1rem;
         margin-top: 1rem;
-
         li {
           padding: $item-horizontal-margin/2 $item-horizontal-margin;
           margin: 0px;
@@ -127,7 +126,7 @@
     props: {
       'options': {
         type: Object,
-        default: {isLtr: 'rtl'},
+        isLtr: 'ltr',
         required: true
       }
     },

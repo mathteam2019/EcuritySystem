@@ -381,7 +381,7 @@ body.rtl {
     }
   }
   main {
-    margin: $nav-height + $bread-height +0.625rem, $side-bar-width+1.25rem 0 1.25rem !important;
+    margin: $nav-height + $bread-height +0.625rem $side-bar-width+1.25rem 0 1.25rem !important;
     div.container-fluid {
       .breadcrumb-container {
         position: fixed;
