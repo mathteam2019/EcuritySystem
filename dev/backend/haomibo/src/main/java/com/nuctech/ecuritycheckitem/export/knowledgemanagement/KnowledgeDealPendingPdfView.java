@@ -38,7 +38,7 @@ public class KnowledgeDealPendingPdfView {
             String fontName = "resources/fonts/NotoSansCJKsc-Regular.otf";
 
             Font font = FontFactory.getFont(fontName, Constants.PDF_TITLE_FONT_SIZE, Font.BOLD);
-            Paragraph title = new Paragraph("人员案例", font);
+            Paragraph title = new Paragraph("待审批案例", font);
             title.setSpacingAfter(Constants.PDF_TITLE_SPACING);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);

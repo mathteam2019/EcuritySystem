@@ -18,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class KnowledgeDealPersonalExcelView {
@@ -30,15 +32,29 @@ public class KnowledgeDealPersonalExcelView {
 
             Sheet sheet = workbook.createSheet("Knowledge-Personal");
 
-            Row header = sheet.createRow(0);
+
 
             CellStyle headerStyle = workbook.createCellStyle();
+
 
             XSSFFont font = ((XSSFWorkbook) workbook).createFont();
             font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
             font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
             font.setBold(true);
             headerStyle.setFont(font);
+
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("人员案例");
+            titleCell.setCellStyle(headerStyle);
+
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            Date curTime = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
+            timeCell.setCellValue(dateFormat.format(curTime));
+
+            Row header = sheet.createRow(3);
 
             Cell headerCellNo = header.createCell(0);
             headerCellNo.setCellValue("序号");
@@ -70,7 +86,7 @@ public class KnowledgeDealPersonalExcelView {
 
 
 
-            int counter = 1;
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
