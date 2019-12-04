@@ -33,9 +33,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/condition-monitoring")
@@ -56,8 +59,8 @@ public class DeviceStatusController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String fieldDesignation;
-            String categoryName;
+            Long fieldId;
+            Long categoryId;
             String deviceName;
         }
 
@@ -69,6 +72,15 @@ public class DeviceStatusController extends BaseController {
         int perPage;
 
         Filter filter;
+    }
+
+    private List<SerDeviceStatus.MonitorRecord> getRecordList(long deviceId, int deviceTrafficSetting) {
+        SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
+        record.setTime("10:10");
+        record.setCount(50);
+        List<SerDeviceStatus.MonitorRecord> result = new ArrayList<>();
+        result.add(record);
+        return result;
     }
 
 
@@ -93,24 +105,72 @@ public class DeviceStatusController extends BaseController {
 
         DeviceStatusGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.device.field.fieldDesignation.contains(filter.getFieldDesignation()));
-            }
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.device.archive.archiveTemplate.deviceCategory.categoryName.contains(filter.getCategoryName()));
+            if (filter.getFieldId() != null) {
+                predicate.and(builder.device.fieldId.eq(filter.getFieldId()));
             }
             if (!StringUtils.isEmpty(filter.getDeviceName())) {
                 predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
             }
         }
 
+
+
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        int startIndex = perPage * currentPage;
+        int endIndex = perPage * (currentPage + 1);
 
-        long total = serDeviceStatusRepository.count(predicate);
-        List<SerDeviceStatus> data = serDeviceStatusRepository.findAll(predicate, pageRequest).getContent();
+        long total = 0;
+        List<SerDeviceStatus> allData = StreamSupport
+                .stream(serDeviceStatusRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SerDeviceStatus> data = new ArrayList<>();
+
+
+        if(filter != null && filter.getCategoryId() != null) {
+
+            for(int i = 0; i < allData.size(); i ++) {
+                SerDeviceStatus deviceStatusData = allData.get(i);
+                try {
+                    if(deviceStatusData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
+                        if(total >= startIndex && total < endIndex) {
+                            data.add(deviceStatusData);
+                        }
+                        total ++;
+
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            for(int i = 0; i < allData.size(); i ++) {
+                SerDeviceStatus deviceStatusData = allData.get(i);
+                if(i >= startIndex && i < endIndex) {
+                    data.add(deviceStatusData);
+                }
+            }
+            total = allData.size();
+        }
+
+        int deviceTrafficSetting = 10;
+        int deviceTrafficMiddle = 30;
+        int deviceTrafficHigh = 80;
+        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
+        if(paramList != null && paramList.size() > 0) {
+            deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
+            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
+            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
+        }
+
+        for(int i = 0; i < data.size(); i ++) {
+            SerDeviceStatus deviceStatus = data.get(i);
+            deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
+            deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
+            deviceStatus.setRecordList(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
+        }
+
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -130,7 +190,8 @@ public class DeviceStatusController extends BaseController {
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("config", "scan"));
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
 
         value.setFilters(filters);

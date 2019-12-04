@@ -51,8 +51,14 @@ public class SerPlatformOtherParams implements Serializable {
     @Column(name = "LOG_MAX_NUMBER", length = 11)
     Long logMaxNumber;
 
-    @Column(name = "DEVICE_TRAFFIC_SETTINGS", length = 10)
-    String deviceTrafficSettings;
+    @Column(name = "DEVICE_TRAFFIC_SETTINGS", length = 11)
+    Integer deviceTrafficSettings;
+
+    @Column(name = "DEVICE_TRAFFIC_HIGH", length = 11)
+    Integer deviceTrafficHigh;
+
+    @Column(name = "DEVICE_TRAFFIC_MIDDLE", length = 11)
+    Integer deviceTrafficMiddle;
 
     @Column(name = "STORAGE_DETECTION_CYCLE", length = 11)
     Long storageDetectionCycle;
