@@ -14,7 +14,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.on-site')">
-              <b-form-select v-model="filter.fieldId" :options="onSiteOptions" plain/>
+              <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
             </b-form-group>
           </b-col>
 
@@ -48,13 +48,15 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm" placeholder=""></date-picker>
+              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
-              <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
+              <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
@@ -389,42 +391,43 @@
 
 <script>
 
-    import {apiBaseUrl} from "../../../constants/config";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-    import Switches from 'vue-switches';
-    import ECharts from 'vue-echarts'
-    import 'echarts/lib/chart/pie';
-    import 'echarts/lib/chart/bar';
-    import 'echarts/lib/component/tooltip';
-    import 'echarts/lib/component/legend';
-    import {getApiManager} from "../../../api";
-    import {responseMessages} from "../../../constants/response-messages";
-    import DatePicker from 'vue2-datepicker';
-    import 'vue2-datepicker/index.css';
-    import 'vue2-datepicker/locale/zh-cn';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import Switches from 'vue-switches';
+  import ECharts from 'vue-echarts'
+  import 'echarts/lib/chart/pie';
+  import 'echarts/lib/chart/bar';
+  import 'echarts/lib/component/tooltip';
+  import 'echarts/lib/component/legend';
+  import {getApiManager} from "../../../api";
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
-    const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+  const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
-    export default {
-        components: {
-            'vuetable': Vuetable,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-            'switches': Switches,
-            'v-chart': ECharts,
-            'date-picker': DatePicker
-        },
-        mounted() {
-            console.log(this.filter.statWidth);
-            this.getPreviewData();
-        },
-        data() {
-            return {
-                doublePieChartOptions: {
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: `
+  export default {
+    components: {
+      'vuetable': Vuetable,
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'switches': Switches,
+      'v-chart': ECharts,
+      'date-picker': DatePicker
+    },
+    mounted() {
+      console.log(this.filter.statWidth);
+      this.getSiteOption();
+      this.getPreviewData();
+    },
+    data() {
+      return {
+        doublePieChartOptions: {
+          tooltip: {
+            trigger: 'item',
+            formatter: `
 <div style='position: relative'>
 <div style='position: absolute;
     left: -8px;
@@ -436,465 +439,478 @@
 <div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
 </div>
 `,
-                        backgroundColor: 'rgba(0,0,0,0)',
-                        transitionDuration: 0,
-                        position: function (point, params, dom, rect, size) {
-                            // fixed at top
-                            return [point[0] + 8, point[1] + 8];
-                        }
-                    },
-                    color: [
-                        '#cccccc',
-                        '#1989fa',
-                        '#ff6600',
-                        '#009900',
-                    ],
-                    series: [
-                        {
-                            type: 'pie',
-                            hoverAnimation: false,
-                            radius: ['80%', '90%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'outside',
-                                },
-                            },
-                            labelLine: {
-                                show: false,
-                                length: -34,
-                                length2: -30
-                            },
-                            data: [
-                                {
-                                    value: 100,
-                                    name: '无效扫描'
-                                },
-                                {
-                                    value: 500,
-                                    name: '有效扫描'
-                                },
-                            ]
-                        },
-                        {
-                            type: 'pie',
-                            hoverAnimation: false,
-                            radius: ['40%', '50%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'outside',
-                                    align: 'center'
-                                }
-                            },
-                            labelLine: {
-                                show: false,
-                                length: -40,
-                                length2: -15
-                            },
-                            data: [
-                                {value: 300, name: '报警'},
-                                {value: 600, name: '通过'},
-                            ]
-                        }
-                    ]
-                },
-                bar3ChartOptions: {
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'shadow'
-                        }
-                    },
-                    legend: {
-                        data: ['通过', '报警', '无效扫描'],
-                        icon: 'rect',
-                        right: 25
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
-                        axisLine: {
-                            show: true
-                        },
-                        axisTick: {
-                            show: false
-                        }
-
-                    },
-                    yAxis: {
-                        type: 'value',
-                        splitLine: {
-                            show: true
-                        },
-                        axisLabel: {
-                            show: true,
-                            interval: 100
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        axisLine: {
-                            show: false
-                        }
-                    },
-                    color: ['#ff6600', '#009900', '#cccccc'],
-                    series: [
-                        {
-                            name: '报警',
-                            type: 'bar',
-                            stack: '总量',
-                            data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
-                        },
-                        {
-                            name: '通过',
-                            type: 'bar',
-                            stack: '总量',
-
-                            data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
-                        },
-                        {
-                            name: '无效扫描',
-                            type: 'bar',
-                            stack: '总量',
-                            data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
-                        }
-                    ]
-                },
-
-                isExpanded: false,
-                pageStatus: 'charts',
-
-                filter: {
-                    fieldId: null,
-                    deviceId: null,
-                    userCategory: null,
-                    userName: null,
-                    startTime: null,
-                    endTime: null,
-                    statWidth: 'hour',
-                },
-
-                preViewData: [],
-
-                xYear:[],
-                xQuarter:['1', '2', '3', '4'],
-                xMonth :['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                xWeek : ['1', '2', '3', '4', '5'],
-                xDay :[],
-                xHour :['0-1', '1-2', '2-3', '1', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12', '0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
-
-                preViewDataTemp: {
-                    axisLabel: null,
-                    invalidScan: null,
-                    validScan: null,
-                    passedScan: null,
-                    alarmScan: null,
-                    totalScan: null,
-                    invalidScanRate: null,
-                    totalJudge: null,
-                    totalHandExamination: null,
-                    noSuspictionJudge: null,
-                    noSuspictionJudgeRate: null,
-                    seizureHandExamination: null,
-                    seizureHandExaminationRate: null,
-                    noSeizureHandExamination: null,
-                    noSeizureHandExaminationRate: null,
-                },
-                onSiteOptions: [
-                    {value: null, text: "全部"},
-                    {value: 'way_1', text: "通道1"},
-                    {value: 'way_2', text: "通道2"},
-                    {value: 'way_3', text: "通道3"},
-                ],
-                securityDeviceOptions: [
-                    {value: null, text: "全部"},
-                    {value: 'security_device_1', text: "安检仪001"},
-                    {value: 'security_device_2', text: "安检仪002"},
-                    {value: 'security_device_3', text: "安检仪003"},
-                ],
-                operatorTypeOptions: [
-                    {value: null, text: "全部"},
-                    {value: '引导员', text: "引导员"},
-                    {value: '判图员', text: "判图员"},
-                    {value: '手检员', text: "手检员"},
-                ],
-                statisticalStepSizeOptions: [
-                    {value: 'hour', text: "时"},
-                    {value: 'day', text: "天"},
-                    {value: 'week', text: "周"},
-                    {value: 'month', text: "月"},
-                    {value: 'quarter', text: "季度"},
-                    {value: 'year', text: "年"},
-                ],
-
-                taskVuetableItems: {
-                    apiUrl: `${apiBaseUrl}/task/statistics/preview`,
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: '__sequence',
-                            title: '序号',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'time',
-                            title: '时间段',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '扫描总量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.totalScan;
-                            }
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '无效扫描量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.invalidScan;
-                            }
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '无效率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.invalidScanRate;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '判图量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.totalJudge;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '手检量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.totalHandExamination;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '无嫌疑量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.noSuspictionJudge;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '无嫌疑率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.noSuspictionJudgeRate;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '无查获量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.noSeizureHandExamination;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '无查获率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.noSeizureHandExaminationRate;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '查获量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.seizureHandExamination;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '查获率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.seizureHandExaminationRate;
-                            }
-                        },
-                    ],
-                    perPage: 5,
-                },
-
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
             }
-        },
-        watch: {
-          'taskVuetableItems.perPage': function (newVal) {
-            this.$refs.taskVuetable.refresh();
           },
-          'operatingLogTableItems.perPage': function (newVal) {
-            this.$refs.operatingLogTable.refresh();
+          color: [
+            '#cccccc',
+            '#1989fa',
+            '#ff6600',
+            '#009900',
+          ],
+          series: [
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -34,
+                length2: -30
+              },
+              data: [
+                {
+                  value: 100,
+                  name: '无效扫描'
+                },
+                {
+                  value: 500,
+                  name: '有效扫描'
+                },
+              ]
+            },
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['40%', '50%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                  align: 'center'
+                }
+              },
+              labelLine: {
+                show: false,
+                length: -40,
+                length2: -15
+              },
+              data: [
+                {value: 300, name: '报警'},
+                {value: 600, name: '通过'},
+              ]
+            }
+          ]
+        },
+        bar3ChartOptions: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['通过', '报警', '无效扫描'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: [],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#ff6600', '#009900', '#cccccc'],
+          series: [
+            {
+              name: '报警',
+              type: 'bar',
+              stack: '总量',
+              data: []
+            },
+            {
+              name: '通过',
+              type: 'bar',
+              stack: '总量',
+
+              data: []
+            },
+            {
+              name: '无效扫描',
+              type: 'bar',
+              stack: '总量',
+              data: []
+            }
+          ]
+        },
+
+        isExpanded: false,
+        pageStatus: 'charts',
+
+        filter: {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        },
+
+        siteData: [],
+        preViewData: [],
+
+        xYear: [],
+        xQuarter: ['1', '2', '3', '4'],
+        xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        xWeek: ['1', '2', '3', '4', '5'],
+        xDay: [],
+        xHour: ['0-1', '1-2', '2-3', '1', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12', '0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+
+        onSiteOptions: [
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
+        ],
+        onSiteOption: [],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
+        ],
+
+        taskVuetableItems: {
+          apiUrl: `${apiBaseUrl}/task/statistics/preview`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '__sequence',
+              title: '序号',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'time',
+              title: '时间段',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'scanStatistics',
+              title: '扫描总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.totalScan;
+              }
+            },
+            {
+              name: 'scanStatistics',
+              title: '无效扫描量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.invalidScan;
+              }
+            },
+            {
+              name: 'scanStatistics',
+              title: '无效率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.invalidScanRate;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '判图量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.totalJudge;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '手检量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.totalHandExamination;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '无嫌疑量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.noSuspictionJudge;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '无嫌疑率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.noSuspictionJudgeRate;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '无查获量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExamination;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '无查获率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExaminationRate;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '查获量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.seizureHandExamination;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '查获率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.seizureHandExaminationRate;
+              }
+            },
+          ],
+          perPage: 5,
+        },
+
+      }
+    },
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+      siteData: function (newVal, oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
+    methods: {
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
           }
-        },
-        methods: {
+        })
+          .catch((error) => {
+          });
 
-            getPreviewData() {
-                getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
-                    filter: this.filter
-                }).then((response) => {
-                    let message = response.data.message;
-                    this.preViewData = response.data.data;
-                    this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
-                    this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
-                    this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
-                    this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+      },
 
-                    if(this.filter.statWidth === 'year') {
-                        this.bar3ChartOptions.xAxis.data = this.xHour;
-                    }
-                    else {
-                        this.xDay = Object.keys(this.preViewData.detailedStatistics);
-                        console.log(this.xDay);
-                        this.bar3ChartOptions.xAxis.data = this.xDay;
-                        for(let i = 0; i<this.xDay.length; i++) {
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.preViewData = response.data.data;
+          this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
+          this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
+          this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
+          this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
 
-                            if(this.preViewData.detailedStatistics[i] != null) {
-                                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
-                                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
-                                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
-                            }
-                        }
-                    }
+          if (this.filter.statWidth === 'year') {
+            this.bar3ChartOptions.xAxis.data = this.xHour;
+          } else {
+            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+            console.log(this.xDay);
+            this.bar3ChartOptions.xAxis.data = this.xDay;
+            for (let i = 0; i < this.xDay.length; i++) {
 
-                });
-            },
+              if (this.preViewData.detailedStatistics[i] != null) {
+                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
+                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
+                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
+              }
+            }
+          }
 
-            onSearchButton() {
-                console.log(this.filter.startTime);
-                console.log(this.filter.endTime);
-                this.getPreviewData();
-                this.$refs.taskVuetable.refresh();
-            },
-            onResetButton() {
-                this.filter = {
-                    fieldId: null,
-                    deviceId: null,
-                    userCategory: null,
-                    userName: null,
-                    statWidth: 'hour',
-                    startTime: null,
-                    endTime: null
-                };
-                this.getPreviewData();
-                this.$refs.taskVuetable.refresh();
+        })
+          .catch((error) => {
+          });
+      },
 
-            },
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        };
+        
 
-            onTaskVuetablePaginationData(paginationData) {
-                this.$refs.taskVuetablePagination.setPaginationData(paginationData)
-            },
-            onTaskVuetableChangePage(page) {
-                this.$refs.taskVuetable.changePage(page)
-            },
-            onDisplaceButton() {
-                if (this.pageStatus === 'charts') {
-                    this.pageStatus = 'table';
-                    //this.$refs.taskVuetable.refresh();
-                } else {
-                    this.pageStatus = 'charts';
-                }
-            },
+      },
 
-            transform(response) {
+      onTaskVuetablePaginationData(paginationData) {
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+      },
+      onTaskVuetableChangePage(page) {
+        this.$refs.taskVuetable.changePage(page)
+      },
+      onDisplaceButton() {
+        if (this.pageStatus === 'charts') {
+          this.pageStatus = 'table';
+          //this.$refs.taskVuetable.refresh();
+        } else {
+          this.pageStatus = 'charts';
+        }
+      },
 
-                let transformed = {};
+      transform(response) {
 
-                let data = response.data;
+        let transformed = {};
 
-                console.log(data.per_page);
+        let data = response.data;
 
-                transformed.pagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
 
-                //console.log(Object.keys(data.data.detailedStatistics).length);
-                console.log(Object.keys(data.detailedStatistics).length);
-                transformed.tKey = Object.keys(data.detailedStatistics);
-                transformed.data = [];
-                let temp;
-                for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
-                    let j = transformed.tKey[i-1];
-                    console.log(j);
-                    temp = data.detailedStatistics[j];
-                    transformed.data.push(temp)
-                }
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i];
+          console.log(j);
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
 
-                return transformed
+        return transformed
 
-            },
+      },
 
 
-            taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-                return getApiManager().post(apiUrl, {
-                    currentPage: httpOptions.params.page,
-                    perPage: this.taskVuetableItems.perPage,
-                    filter: this.filter
-                });
-            },
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter
+        });
+      },
 
-        },
+    },
 
-    }
+  }
 </script>
 
 <style lang="scss">

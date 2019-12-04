@@ -66,7 +66,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{this.total.day}} {{this.total.hour}} : {{this.total.minute}} : {{this.total.second}}</span></div>
+              <div><span>D{{total.day}} {{total.hour}} : {{total.minute}} : {{total.second}}</span></div>
               <div><span>累计工时</span></div>
             </div>
           </div>
@@ -79,7 +79,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{this.scan.day}} {{this.scan.hour}} : {{this.scan.minute}} : {{this.scan.second}}</span></div>
+              <div><span>D{{scan.day}} {{scan.hour}} : {{scan.minute}} : {{scan.second}}</span></div>
               <div><span>扫描累计工时</span></div>
             </div>
           </div>
@@ -92,7 +92,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{this.judge.day}} {{this.judge.hour}} : {{this.judge.minute}} : {{this.judge.second}}</span></div>
+              <div><span>D{{judge.day}} {{judge.hour}} : {{judge.minute}} : {{judge.second}}</span></div>
               <div><span>判图累计工时</span></div>
             </div>
           </div>
@@ -105,7 +105,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>D{{this.total.day}} {{this.total.hour}} : {{this.total.minute}} : {{this.total.second}}</span></div>
+              <div><span>D{{hand.day}} {{hand.hour}} : {{hand.minute}} : {{hand.second}}</span></div>
               <div><span>手检累计工时</span></div>
             </div>
           </div>
@@ -145,21 +145,21 @@
                 </div>
                 <b-row>
                   <b-col class="legend-item">
-                    <div class="value">{{this.scan.rate}}%</div>
+                    <div class="value">{{scan.rate}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       扫描
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{this.judge.rate}}%</div>
+                    <div class="value">{{judge.rate}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       判图
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{this.hand.rate}}%</div>
+                    <div class="value">{{hand.rate}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       手检
@@ -290,26 +290,10 @@
     },
     mounted() {
 
+      this.getGraphData();
       this.getPreviewData();
     },
     data() {
-
-
-      let doublePieChartData = {
-        '扫描': {
-          value: 800,
-          color: '#1989fa'
-        },
-        '判图': {
-          value: 300,
-          color: '#ffd835',
-        },
-        '手检': {
-          value: 200,
-          color: '#ff0000',
-        }
-      };
-
       return {
         doublePieChartOptions: {
           tooltip: {
@@ -334,9 +318,9 @@
             }
           },
           color: [
-            doublePieChartData['扫描'].color,
-            doublePieChartData['判图'].color,
-            doublePieChartData['手检'].color
+            '#1989fa',
+            '#ffd835',
+            '#ff0000'
           ],
           series: [
             {
@@ -356,9 +340,9 @@
                 length2: -30
               },
               data: [
-                {value: doublePieChartData['扫描'].value, name: '扫描'},
-                {value: doublePieChartData['判图'].value, name: '判图'},
-                {value: doublePieChartData['手检'].value, name: '手检'},
+                {value: 500, name: '扫描'},
+                {value: 300, name: '判图'},
+                {value: 100, name: '手检'},
               ]
             }
           ]
@@ -441,13 +425,26 @@
           endTime: null,
           statWidth: 'hour',
         },
+
         preViewData: [],
+        graphData :[],
         total: [],
         scan: [],
         judge:[],
         hand:[],
 
         graphData :[],
+
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
+        ],
+
+
 
         // TODO: refactor temp table data to api mode
         tempData: {
@@ -615,11 +612,24 @@
     methods: {
 
       getGraphData() {
-        getApiManager().post(`${apiBaseUrl}/task/statistics/`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-statistics-filter-by-user`, {
           filter : this.filter
         }).then((response) => {
           this.graphData = response.data.data;
 
+          let keyData = Object.keys(this.graphData.detailedStatistics);
+          let xAxisChart = [];
+          
+          for(let i=0; i<keyData.length; i++){
+            
+            xAxisChart[i] = this.graphData.detailedStatistics[i].name;
+            //this.bar3ChartOptions.xAxis.data[i].value = this.graphData.detailedStatistics[i].name;
+            this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
+            this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
+            this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
+          }
+          
+          this.bar3ChartOptions.xAxis.data = xAxisChart;
         })
       },
 
@@ -629,41 +639,43 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          this.total = [];
+          this.scan = [];
+          this.judge = [];
+          this.hand = [];
+          
           this.total.second = this.preViewData.totalSeconds%60;
           this.total.minute = ((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60;
           this.total.hour = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24;
           this.total.day = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60-(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24)/24;
+          this.scan.second = this.preViewData.scanSeconds%60;
+          this.scan.minute = ((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60;
+          this.scan.hour = (((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60)%24;
+          this.scan.day = (((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60-(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60)%24)/24;
+          this.judge.second = this.preViewData.judgeSeconds%60;
+          this.judge.minute = ((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60;
+          this.judge.hour = (((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60)%24;
+          this.judge.day = (((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60-(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60)%24)/24;
+          this.hand.second = this.preViewData.handSeconds%60;
+          this.hand.minute = ((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60;
+          this.hand.hour = (((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60)%24;
+          this.hand.day = (((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60-(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60)%24)/24;
+
           this.scan.rate = Math.floor(this.preViewData.scanSeconds/this.preViewData.totalSeconds*100);
           this.judge.rate = Math.floor(this.preViewData.judgeSeconds/this.preViewData.totalSeconds*100);
           this.hand.rate = Math.floor(this.preViewData.handSeconds/this.preViewData.totalSeconds*100);
 
-          this.doublePieChartOptions.series.data[0].value = this.scan.rate;
-          this.doublePieChartOptions.series.data[1].value = this.judge.rate;
-          this.doublePieChartOptions.series.data[2].value = this.hand.rate;
-          // this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
-          //
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-          //   this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          //   console.log(this.xDay);
-          //   this.bar3ChartOptions.xAxis.data = this.xDay;
-          //   for (let i = 0; i < this.xDay.length; i++) {
-          //
-          //     if (this.preViewData.detailedStatistics[i] != null) {
-          //       this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
-          //       this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
-          //       this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
-          //     }
-          //   }
-          // }
+          this.doublePieChartOptions.series[0].data[0].value = this.scan.rate;
+          this.doublePieChartOptions.series[0].data[1].value = this.judge.rate;
+          this.doublePieChartOptions.series[0].data[2].value = this.hand.rate;
+          
 
+        }) .catch((error) => {
         });
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+        
         this.getPreviewData();
         this.$refs.taskVuetable.refresh();
       },
@@ -677,8 +689,7 @@
           startTime: null,
           endTime: null
         };
-        this.getPreviewData();
-        this.$refs.taskVuetable.refresh();
+        
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -700,8 +711,7 @@
 
         let data = response.data;
 
-        console.log(data.per_page);
-
+        
         transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
@@ -711,8 +721,7 @@
           to: data.to
         };
 
-        //console.log(Object.keys(data.data.detailedStatistics).length);
-        console.log(Object.keys(data.detailedStatistics).length);
+        
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;

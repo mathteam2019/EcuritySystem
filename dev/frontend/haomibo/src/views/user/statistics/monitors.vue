@@ -13,26 +13,26 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="'现场'">
-              <b-form-select v-model="filter.onSite" :options="onSiteOptions" plain/>
+            <b-form-group :label="$t('statistics.view.on-site')">
+              <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'安检仪'">
-              <b-form-select v-model="filter.securityDevice" :options="securityDeviceOptions" plain/>
+            <b-form-group :label="$t('statistics.view.security-device')">
+              <b-form-select v-model="filter.deviceId" :options="securityDeviceOptions" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="'判图员'">
-              <b-form-input></b-form-input>
+              <b-form-input v-model="filter.userName"></b-form-input>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'时间'">
-              <b-form-input></b-form-input>
+            <b-form-group :label="'统计步长'">
+              <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
 
@@ -46,20 +46,24 @@
       <b-col cols="8" v-if="isExpanded">
         <b-row>
 
-
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                           placeholder=""></date-picker>
+
+
             </b-form-group>
           </b-col>
 
-          
+          <b-col></b-col>
+          <b-col></b-col>
           <b-col></b-col>
           <b-col></b-col>
 
@@ -85,7 +89,7 @@
             <div style="">
               <b-img src="/assets/img/picture.svg"/>
             </div>
-            <div><span>2000</span></div>
+            <div><span>{{preViewData.totalStatistics.total}}</span></div>
             <div><span>判图</span></div>
           </div>
         </b-card>
@@ -99,7 +103,7 @@
                   <b-img src="/assets/img/person.svg"/>
                 </div>
                 <div>
-                  <div><span>1000</span></div>
+                  <div><span>{{preViewData.totalStatistics.artificialJudge}}</span></div>
                   <div><span>人工结论</span></div>
                 </div>
               </div>
@@ -112,7 +116,7 @@
                   <b-img src="/assets/img/user_group.svg"/>
                 </div>
                 <div>
-                  <div><span>100</span></div>
+                  <div><span>{{preViewData.totalStatistics.assignTimeout}}</span></div>
                   <div><span>分低超时结论</span></div>
                 </div>
               </div>
@@ -125,7 +129,7 @@
                   <b-img src="/assets/img/picture.svg"/>
                 </div>
                 <div>
-                  <div><span>100</span></div>
+                  <div><span>{{preViewData.totalStatistics.judgeTimeout}}</span></div>
                   <div><span>判图超时结论</span></div>
                 </div>
               </div>
@@ -138,7 +142,7 @@
                   <b-img src="/assets/img/atr.svg"/>
                 </div>
                 <div>
-                  <div><span>300</span></div>
+                  <div><span>{{preViewData.totalStatistics.atrResult}}</span></div>
                   <div><span>ATR结论</span></div>
                 </div>
               </div>
@@ -153,7 +157,7 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>1200</span></div>
+                  <div><span>{{preViewData.totalStatistics.noSuspiction}}</span></div>
                   <div><span>无嫌疑</span></div>
                 </div>
               </div>
@@ -167,7 +171,7 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>83%</span></div>
+                  <div><span>{{Math.floor(preViewData.totalStatistics.noSuspictionRate * 100)}}%</span></div>
                   <div><span>无嫌疑率</span></div>
                 </div>
               </div>
@@ -181,7 +185,7 @@
                   <b-img src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
-                  <div><span>24</span></div>
+                  <div><span>{{preViewData.totalStatistics.suspiction}}</span></div>
                   <div><span>嫌疑</span></div>
                 </div>
               </div>
@@ -195,7 +199,7 @@
                   <b-img src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
-                  <div><span>17%</span></div>
+                  <div><span>{{Math.floor(preViewData.totalStatistics.suspictionRate * 100)}}%</span></div>
                   <div><span>嫌疑率</span></div>
                 </div>
               </div>
@@ -210,7 +214,7 @@
                   <b-img src="/assets/img/time_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>20s</span></div>
+                  <div><span>{{preViewData.totalStatistics.limitedArtificialDuration}}s</span></div>
                   <div><span>人工判图时长阈值</span></div>
                 </div>
               </div>
@@ -223,7 +227,7 @@
                   <b-img src="/assets/img/right_arrow_icon2.svg"/>
                 </div>
                 <div>
-                  <div><span>10s</span></div>
+                  <div><span>{{preViewData.totalStatistics.avgArtificialJudgeDuration}}s</span></div>
                   <div><span>人工判图平均时长</span></div>
                 </div>
               </div>
@@ -236,7 +240,7 @@
                   <b-img src="/assets/img/up_arrow_icon2.svg"/>
                 </div>
                 <div>
-                  <div><span>18s</span></div>
+                  <div><span>{{preViewData.totalStatistics.maxArtificialJudgeDuration}}s</span></div>
                   <div><span>人工判图最高时长</span></div>
                 </div>
               </div>
@@ -249,7 +253,7 @@
                   <b-img src="/assets/img/down_arrow_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>5s</span></div>
+                  <div><span>{{preViewData.totalStatistics.minArtificialJudgeDuration}}s</span></div>
                   <div><span>人工判图最低时长</span></div>
                 </div>
               </div>
@@ -265,7 +269,7 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"></i>&nbsp;切换
+            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
@@ -297,23 +301,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">人工判图</div>
-                      <div class="value">1500</div>
+                      <div class="value">{{preViewData.totalStatistics.artificialJudge}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">分派超时</div>
-                      <div class="value">500</div>
+                      <div class="value">{{preViewData.totalStatistics.assignTimeout}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">判图超时</div>
-                      <div class="value">500</div>
+                      <div class="value">{{preViewData.totalStatistics.judgeTimeout}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">ATR</div>
-                      <div class="value">500</div>
+                      <div class="value">{{preViewData.totalStatistics.atrResult}}</div>
                     </div>
                   </div>
                 </div>
@@ -354,12 +358,12 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">嫌疑</div>
-                      <div class="value">1500</div>
+                      <div class="value">{{preViewData.totalStatistics.suspiction}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无嫌疑</div>
-                      <div class="value">500</div>
+                      <div class="value">{{preViewData.totalStatistics.noSuspiction}}</div>
                     </div>
                   </div>
                 </div>
@@ -417,27 +421,36 @@
             <div class="container-fluid">
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
-                <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-else>{{filter.fieldId}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
-                <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
+                  <span v-else>{{filter.deviceId}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员类型:</b></b-col>
-                <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+                <b-col cols="11"><span>判图员</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
-                <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.userName===null">张三, 李四, 王五</span>
+                  <span v-else>{{filter.userName}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>小时</span></b-col>
+                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
               </b-row>
               <b-row class="no-gutters">
 
@@ -446,22 +459,16 @@
                   <div class="table-wrapper overflow-auto">
                     <vuetable
                       ref="taskVuetable"
-                      :api-mode="false"
-                      :data="tempData"
-                      data-path="data"
-                      pagination-path="pagination"
+                      :api-url="taskVuetableItems.apiUrl"
                       :fields="taskVuetableItems.fields"
+                      :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
-                      :data-total="tempData.data.length"
-                      class="table table-hover"
-                      style="min-width: 2000px;"
+                      track-by="time"
+                      pagination-path="pagination"
+                      class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
-                      <template slot="period" slot-scope="props">
-                          <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                            {{props.rowData.period}}
-                          </span>
-                      </template>
+
                     </vuetable>
                   </div>
                   <div class="pagination-wrapper">
@@ -495,14 +502,16 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
-
-
   import ECharts from 'vue-echarts'
-
   import 'echarts/lib/chart/pie';
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
+  import {getApiManager} from "../../../api";
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -511,10 +520,13 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'v-chart': ECharts
+      'v-chart': ECharts,
+      'date-picker': DatePicker
     },
     mounted() {
-
+      console.log(this.filter.statWidth);
+      this.getSiteOption();
+      this.getPreviewData();
     },
     data() {
 
@@ -645,7 +657,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -675,22 +687,22 @@
             {
               name: '人工',
               type: 'bar',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+              data: []
             },
             {
               name: '分派超时',
               type: 'bar',
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+              data: []
             },
             {
               name: '判图超时',
               type: 'bar',
-              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
+              data: []
             },
             {
               name: 'ATR',
               type: 'bar',
-              data: [270, 132, 151, 274, 220, 300, 350, 350, 240, 120, 130, 220]
+              data: []
             }
           ]
         },
@@ -715,7 +727,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -745,12 +757,12 @@
             {
               name: '判图超时',
               type: 'bar',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+              data: []
             },
             {
               name: 'ATR',
               type: 'bar',
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+              data: []
             },
           ]
         },
@@ -775,7 +787,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -805,18 +817,18 @@
             {
               name: '平均时长',
               type: 'bar',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+              data: []
             },
             {
               name: '最高时长',
               type: 'bar',
 
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+              data: []
             },
             {
               name: '最低时长',
               type: 'bar',
-              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
+              data: []
             }
           ]
         },
@@ -826,20 +838,32 @@
         pageStatus: 'charts',
 
         filter: {
-          onSite: null,
-          securityDevice: null,
-          operatorType: null,
-          operator: null,
-          time: null,
-          statisticalStepSize: 'hour',
-
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
         },
+
+        siteData: [],
+        preViewData: [],
+
+        xYear: [],
+        xQuarter: ['1', '2', '3', '4'],
+        xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        xWeek: ['1', '2', '3', '4', '5'],
+        xDay: [],
+        xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+
         onSiteOptions: [
           {value: null, text: "全部"},
           {value: 'way_1', text: "通道1"},
           {value: 'way_2', text: "通道2"},
           {value: 'way_3', text: "通道3"},
         ],
+        onSiteOption: [],
         securityDeviceOptions: [
           {value: null, text: "全部"},
           {value: 'security_device_1', text: "安检仪001"},
@@ -860,27 +884,9 @@
           {value: 'quarter', text: "季度"},
           {value: 'year', text: "年"},
         ],
-        // TODO: refactor temp table data to api mode
-        tempData: {
-          data: [1, 2, 3, 4, 5].map((e) => {
-
-            return {
-              id: e,
-              period: '201-1104 00:00:00-20191104 00:59:59',
-            }
-          }),
-          pagination: {
-            total: 5,
-            per_page: 5,
-            current_page: 1,
-            last_page: 1,
-            from: 1,
-            to: 5
-          }
-        },
 
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/...`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-judge-statistics`,
           fields: [
             {
               name: '__checkbox',
@@ -888,136 +894,227 @@
               dataClass: 'text-center'
             },
             {
-              name: 'id',
+              name: 'time',
               title: '序号',
               sortField: 'id',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (time) => {
+                return time + 1;
+              }
             },
             {
-              name: '__slot:period',
+              name: 'time',
               title: '时间段',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
             {
-              name: 'key1',
+              name: 'total',
               title: '判图总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key2',
+              name: 'artificialResult',
               title: '人工结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key3',
+              name: 'artificialResultRate',
               title: '人工结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key4',
+              name: 'assignTimeout',
               title: '分派超时结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key5',
+              name: 'assignTimeoutResultRate',
               title: '分派超时结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key6',
+              name: 'judgeTimeout',
               title: '判图超时结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key7',
+              name: 'judgeTimeoutResultRate',
               title: '判图超时结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key8',
+              name: 'scanResult',
               title: '扫描结论量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key9',
+              name: 'scanResultRate',
               title: '扫描结论率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key10',
+              name: 'noSuspiction',
               title: '无嫌疑量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key11',
+              name: 'noSuspictionRate',
               title: '无嫌疑率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key12',
+              name: 'suspiction',
               title: '嫌疑量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key13',
+              name: 'suspictionRate',
               title: '嫌疑率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key14',
+              name: 'limitedArtificialDuration',
               title: '人工判图时长阈值',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key15',
+              name: 'avgArtificialJudgeDuration',
               title: '人工判图平均时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key16',
+              name: 'maxArtificialJudgeDuration',
               title: '人工判图最高时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'key17',
+              name: 'minArtificialJudgeDuration',
               title: '人工判图最低时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
 
           ],
-          perPage: 10,
+          perPage: 5,
         },
 
       }
     },
-    watch: {},
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+      siteData: function (newVal, oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
     methods: {
-      onSearchButton() {
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        })
+          .catch((error) => {
+          });
 
+      },
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-judge-statistics`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.preViewData = response.data.data;
+
+          this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.artificialJudge;
+          this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.assignTimeout;
+          this.pieChart1Options.series[0].data[2].value = this.preViewData.totalStatistics.judgeTimeout;
+          this.pieChart1Options.series[0].data[3].value = this.preViewData.totalStatistics.atrResult;
+          this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
+          this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
+
+          if (this.filter.statWidth === 'year') {
+            this.bar3ChartOptions.xAxis.data = this.xHour;
+          } else {
+            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+            console.log(this.xDay);
+            this.barChart1Options.xAxis.data = this.xDay;
+            this.barChart2Options.xAxis.data = this.xDay;
+            this.barChart3Options.xAxis.data = this.xDay;
+            for (let i = 0; i < this.xDay.length; i++) {
+
+              if (this.preViewData.detailedStatistics[i] != null) {
+                this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[i].artificialJudge;
+                this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[i].assignTimeout;
+                this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[i].judgeTimeout;
+                this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[i].atrResult;
+                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].suspiction;
+                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].noSuspiction;
+                this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[i].avgArtificialJudgeDuration;
+                this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[i].maxArtificialJudgeDuration;
+                this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[i].minArtificialJudgeDuration;
+              }
+            }
+          }
+        });
+      },
+
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
-
-      },
-      onRowClicked() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userName: null,
+          statWidth: 'hour',
+          startTime: null,
+          endTime: null
+        };
+        
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -1034,8 +1131,50 @@
         }
       },
 
+      transform(response) {
 
-    }
+        let transformed = {};
+
+        let data = response.data;
+
+        console.log(data.per_page);
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        //console.log(Object.keys(data.data.detailedStatistics).length);
+        console.log(Object.keys(data.detailedStatistics).length);
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i];
+          console.log(j);
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter,
+        });
+      },
+
+    },
+
   }
 </script>
 
