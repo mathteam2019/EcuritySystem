@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.models.response;
+package com.nuctech.ecuritycheckitem.models.response.userstatistics;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -37,3 +37,4 @@ public class JudgeStatisticsResponseModel {
     double minArtificialJudgeDuration; //人工判图最低时长
 
 }
+

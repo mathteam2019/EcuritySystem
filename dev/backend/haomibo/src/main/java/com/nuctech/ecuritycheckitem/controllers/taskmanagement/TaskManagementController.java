@@ -8,14 +8,11 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.models.response.EvaluateJudgeResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.HandExaminationResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.JudgeStatisticsResponseModel;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
-import com.querydsl.jpa.impl.JPAUtil;
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +38,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/task")
 public class TaskManagementController extends BaseController {
 
-
     /**
      * Table type
      */
@@ -56,66 +52,6 @@ public class TaskManagementController extends BaseController {
         private final Integer value;
     }
 
-    @Getter
-    @Setter
-    public class JudgeStatisticsPaginationResponse {
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-        JudgeStatisticsResponseModel totalStatistics;
-        Map<Integer, JudgeStatisticsResponseModel> detailedStatistics;
-
-    }
-
-    @Getter
-    @Setter
-    public class HandExaminationStatisticsPaginationResponse {
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-        HandExaminationResponseModel totalStatistics;
-        Map<Integer, HandExaminationResponseModel> detailedStatistics;
-
-    }
-
-
-    @Getter
-    @Setter
-    public class EvaluateJudgeStatisticsPaginationResponse {
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-        EvaluateJudgeResponseModel totalStatistics;
-        Map<Integer, EvaluateJudgeResponseModel> detailedStatistics;
-
-    }
-
-    @Getter
-    @Setter
-    public class StatisticsByUserResponse {
-
-        long totalSeconds;
-        long scanSeconds;
-        long judgeSeconds;
-        long handSeconds;
-
-    }
-
     /**
      * Statistics Response Type
      */
@@ -126,163 +62,6 @@ public class TaskManagementController extends BaseController {
         public static final String MONTH = "month";
         public static final String QUARTER = "quarter";
         public static final String YEAR = "year";
-    }
-
-    /**
-     * Scan Statistics Response Body
-     */
-    @Getter
-    @Setter
-    class ScanStatisticsResponse {
-
-        ScanStatistics totalStatistics;
-        Map<Integer, ScanStatistics> detailedStatistics;
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-    }
-
-    /**
-     * Judge Statistics Response Body
-     */
-    @Getter
-    @Setter
-    class JudgeStatisticsResponse {
-        JudgeStatisticsModelForPreview totalStatistics;
-        Map<Integer, JudgeStatisticsModelForPreview> detailedStatistics;
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-    }
-
-    /**
-     * HandExamination Statistics Response Body
-     */
-    @Getter
-    @Setter
-    class HandExaminationStatisticsResponse {
-        HandExaminationStatisticsForPreview totalStatistics;
-        Map<Integer, HandExaminationStatisticsForPreview> detailedStatistics;
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-
-    }
-
-    /**
-     * Total Statistics Response Body
-     */
-    @Getter
-    @Setter
-    class TotalStatistics {
-
-        long id;
-        long time;
-        String name; //user or device name
-
-        ScanStatistics scanStatistics;
-        JudgeStatisticsModelForPreview judgeStatistics;
-        HandExaminationStatisticsForPreview handExaminationStatistics;
-
-    }
-
-    /**
-     * Total Statistics Response Body
-     */
-    @Getter
-    @Setter
-    class TotalStatisticsResponse {
-
-        TotalStatistics totalStatistics;
-        Map<Long, TotalStatistics> detailedStatistics;
-
-        long total;
-        long per_page;
-        long current_page;
-        long last_page;
-        long from;
-        long to;
-    }
-
-    /**
-     * Statistics Response Body
-     */
-    @Getter
-    @Setter
-    @ToString
-    class ScanStatistics {
-
-        String axisLabel;
-        long id;
-        long time;
-        long workingSeconds;
-        long totalScan;
-        long invalidScan;
-        double invalidScanRate;
-        long validScan;
-        double validScanRate;
-        long passedScan;
-        double passedScanRate;
-        long alarmScan;
-        double alarmScanRate;
-
-    }
-
-    /**
-     * Judge Statistics Body
-     */
-    @Getter
-    @Setter
-    @ToString
-    public class JudgeStatisticsModelForPreview {
-
-        String axisLabel;
-        long id;
-        long time;
-        long workingSeconds;
-        long totalJudge;
-        long noSuspictionJudge;
-        double noSuspictionJudgeRate;
-        long suspictionJudge;
-        double suspictionJudgeRate;
-
-    }
-
-
-    /**
-     * Hand Examination Response Body
-     */
-    @Getter
-    @Setter
-    @ToString
-    class HandExaminationStatisticsForPreview {
-
-        String axisLabel;
-        long id;
-        long time;
-        long workingSeconds;
-        long totalHandExamination;
-        long seizureHandExamination;
-        double seizureHandExaminationRate;
-        long noSeizureHandExamination;
-        double noSeizureHandExaminationRate;
-
-        long checkDuration;
-
     }
 
     /**
@@ -639,6 +418,7 @@ public class TaskManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+
     }
 
     /**
@@ -954,8 +734,16 @@ public class TaskManagementController extends BaseController {
             }
         }
 
-        int curPage = requestBody.getCurrentPage();
-        int perPage = requestBody.getPerPage();
+        int curPage = 0;
+        int perPage = 0;
+
+        try {
+            curPage = requestBody.getCurrentPage();
+            perPage = requestBody.getPerPage();
+        }
+        catch (Exception e) {
+
+        }
 
         int startIndex = keyValueMin;
         int endIndex = keyValueMax;
@@ -1237,8 +1025,17 @@ public class TaskManagementController extends BaseController {
             }
         }
 
-        int curPage = requestBody.getCurrentPage();
-        int perPage = requestBody.getPerPage();
+
+        int curPage = 0;
+        int perPage = 0;
+
+        try {
+            curPage = requestBody.getCurrentPage();
+            perPage = requestBody.getPerPage();
+        }
+        catch (Exception e) {
+
+        }
 
         int startIndex = keyValueMin;
         int endIndex = keyValueMax;
@@ -1507,8 +1304,16 @@ public class TaskManagementController extends BaseController {
         }
 
 
-        int curPage = requestBody.getCurrentPage();
-        int perPage = requestBody.getPerPage();
+        int curPage = 0;
+        int perPage = 0;
+
+        try {
+            curPage = requestBody.getCurrentPage();
+            perPage = requestBody.getPerPage();
+        }
+        catch (Exception e) {
+
+        }
 
         int startIndex = keyValueMin;
         int endIndex = keyValueMax;
@@ -1764,8 +1569,19 @@ public class TaskManagementController extends BaseController {
             }
         }
 
-        int curPage = requestBody.getCurrentPage();
-        int perPage = requestBody.getPerPage();
+        int curPage = 0;
+        int perPage = 0;
+
+        try {
+
+            curPage = requestBody.getCurrentPage();
+            perPage = requestBody.getPerPage();
+
+        }
+        catch(Exception e) {
+
+        }
+
 
         int startIndex = keyValueMin;
         int endIndex = keyValueMax;
