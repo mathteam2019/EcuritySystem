@@ -14,7 +14,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.on-site')">
-              <b-form-select v-model="filter.fieldId" :options="onSiteOptions" plain/>
+              <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
             </b-form-group>
           </b-col>
 
@@ -347,11 +347,7 @@
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
                     >
-                      <template slot="period" slot-scope="props">
-                          <span class="cursor-p text-primary">
-                            {{props.rowData.period}}
-                          </span>
-                      </template>
+
                     </vuetable>
                   </div>
                   <div class="pagination-wrapper">
@@ -408,6 +404,7 @@
         },
         mounted() {
             console.log(this.filter.statWidth);
+            this.getSiteOption();
             this.getPreviewData();
         },
         data() {
@@ -587,13 +584,14 @@
                 filter: {
                     fieldId: null,
                     deviceId: null,
-                    userCategory: '引导员',
+                    userCategory: null,
                     userName: null,
                     startTime: null,
                     endTime: null,
                     statWidth: 'hour',
                 },
 
+                siteData: [],
                 preViewData: [],
 
                 xYear: [],
@@ -626,6 +624,7 @@
                     {value: 'way_2', text: "通道2"},
                     {value: 'way_3', text: "通道3"},
                 ],
+                onSiteOption: [],
                 securityDeviceOptions: [
                     {value: null, text: "全部"},
                     {value: 'security_device_1', text: "安检仪001"},
@@ -739,9 +738,42 @@
           },
           'operatingLogTableItems.perPage': function (newVal) {
             this.$refs.operatingLogTable.refresh();
+          },
+          siteData:function (newVal,oldVal) {
+            console.log(newVal);
+            this.onSiteOption = [];
+            this.onSiteOption = newVal.map(site => ({
+              text: site.fieldDesignation,
+              value: site.fieldId
+            }));
+            this.onSiteOption.push({
+              text: this.$t('personal-inspection.all'),
+              value: null
+            });
+            if (this.onSiteOption.length === 0)
+              this.onSiteOption.push({
+                text: this.$t('system-setting.none'),
+                value: 0
+              });
           }
         },
         methods: {
+          getSiteOption(){
+            getApiManager()
+              .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']:
+                  this.siteData = data;
+                  break;
+              }
+            })
+              .catch((error) => {
+              });
+
+          },
+
             getPreviewData() {
                 getApiManager().post(`${apiBaseUrl}/task/statistics/scan`, {
                     filter: this.filter
@@ -774,57 +806,7 @@
                             }
                         }
                     }
-                    // switch (this.filter.statWidth) {
-                    //     case 'hour':
-                    //         console.log(Object.keys(this.preViewData.detailedStatistics).length);
-                    //         // for(let i=0; i<Object.keys(this.preViewData.detailedStatistics).length; i++){
-                    //         //
-                    //         // }
-                    //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
-                    //         console.log(this.xDay);
-                    //         this.bar3ChartOptions.xAxis.data = this.xDay;
-                    //         for(let i = 0; i<this.xDay.length; i++) {
-                    //
-                    //             if(this.preViewData.detailedStatistics[i] != null) {
-                    //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
-                    //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
-                    //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
-                    //             }
-                    //         }
-                    //
-                    //         break;
-                    //     case 'day':
-                    //         this.bar3ChartOptions.xAxis.data = this.xHour;
-                    //         break;
-                    //     case 'week':
-                    //         this.bar3ChartOptions.xAxis.data = this.xWeek;
-                    //         break;
-                    //     case 'month':
-                    //         this.bar3ChartOptions.xAxis.data = this.xMonth;
-                    //         break;
-                    //     case 'quarter':
-                    //         this.bar3ChartOptions.xAxis.data = this.xQuarter;
-                    //         break;
-                    //     case 'year':
-                    //         this.bar3ChartOptions.xAxis.data = this.xYear;
-                    //         break;
-                    //     default:
-                    //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
-                    //         console.log(this.xDay);
-                    //         this.bar3ChartOptions.xAxis.data = this.xDay;
-                    //         for(let i = 0; i<this.xDay.length; i++) {
-                    //
-                    //             if(this.preViewData.detailedStatistics[i] != null) {
-                    //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
-                    //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
-                    //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
-                    //             }
-                    //         }
-                    //
-                    //         break;
-                    //
-                    // }
-
+                    
                 });
             },
 
@@ -844,8 +826,7 @@
                     startTime: null,
                     endTime: null
                 };
-                this.getPreviewData();
-                this.$refs.taskVuetable.refresh();
+                
 
             },
 

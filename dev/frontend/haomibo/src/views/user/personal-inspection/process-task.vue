@@ -33,7 +33,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-input v-model="filter.fieldId"/>
+                  <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
                 </b-form-group>
               </b-col>
 
@@ -811,6 +811,8 @@
     mounted() {
 
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+      this.getSiteOption();
+
     },
     data() {
       return {
@@ -827,36 +829,9 @@
           // TODO: search filter
         },
 
+        siteData: [],
         showPage: [],
 
-        showPage1: { // modify page
-          selectedOrg: {},
-          taskNumber: '',
-          onSite: '',
-          machine: '',
-          sex: '',
-          scanImage: '',
-          operationMode: '',
-          status: '',
-          guide: '',
-          atrCon: '',
-          footAlarm: '',
-          scanStartTime: '',
-          scanEndTime: '',
-          dispatchTimeout: '',
-          judgementStation: '',
-          judgementType: '',
-          judgement: '',
-          judgementTimeout: '',
-          judgementStartTime: '',
-          judgementStationIde: '',
-          judgementEndTime: '',
-          judge: '',
-          handCheckStation: '',
-          handCheckStartTime: '',
-          handChecker: '',
-
-        },
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -879,6 +854,8 @@
           {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
         ],
+
+        onSiteOption: [],
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/process-task/get-by-filter-and-page`,
@@ -1052,9 +1029,42 @@
       },
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
+      },
+      siteData:function (newVal,oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
+
+        getSiteOption(){
+          getApiManager()
+            .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.siteData = data;
+                break;
+              }
+            })
+            .catch((error) => {
+            });
+
+        },
         onRowClicked: function (taskNumber) {
 
             console.log(taskNumber);
@@ -1096,7 +1106,7 @@
           startTime: null,
           endTime: null
         };
-        this.$refs.taskVuetable.refresh();
+        
       },
 
       transform(response) {

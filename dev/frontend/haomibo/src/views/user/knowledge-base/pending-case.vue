@@ -40,7 +40,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.site')">
-                  <b-form-input v-model="filter.fieldDesignation"/>
+                  <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -164,22 +164,29 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
+    mounted() {
+      //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+      this.getSiteOption();
+
+    },
     data() {
       return {
         isExpanded:false,
         filter: {
-              caseStatus : 'submit_approval',
-              taskNumber: null,
-              modeName: null,
-              taskResult: null,
-              fieldDesignation:null,
-              handGoods:null,
-          },
-        actionFilter: {
-            caseId:null,
-            status: null,
+          fieldId : null,
+          caseStatus: 'submit_approval',
+          taskNumber: null,
+          modeName: null,
+          taskResult: null,
+          fieldDesignation: null,
+          handGoods: null,
         },
-        modeOptions:[
+        actionFilter: {
+          caseId: null,
+          status: null,
+        },
+        siteData: [],
+        modeOptions: [
           {value: '1', text: this.$t('knowledge-base.security-instrument')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test')},
           {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test-and-device')},
@@ -195,6 +202,7 @@
           {value: 'female', text: this.$t('knowledge-base.seized')},
           {value: 'unknown', text: this.$t('knowledge-base.no-seized')},
         ],
+        onSiteOption: [],
         pendingListTableItems: {
           apiUrl: `${apiBaseUrl}/knowledge-base/get-by-filter-and-page`,
           perPage: 10,
@@ -292,13 +300,45 @@
         },
       }
     },
-      watch: {
-          'pendingListTableItems.perPage': function (newVal) {
-              this.$refs.pendingListTable.refresh();
-          },
+    watch: {
+      'pendingListTableItems.perPage': function (newVal) {
+        this.$refs.pendingListTable.refresh();
       },
+      siteData: function (newVal, oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
     methods: {
-        onSearchButton(){
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        })
+          .catch((error) => {
+          });
+
+      },
+      onSearchButton() {
         this.$refs.pendingListTable.refresh();
       },
       onGenerateExcelButton(){
@@ -356,9 +396,10 @@
             modeName: null,
             taskResult: null,
             fieldDesignation:null,
+          fieldId : null,
             handGoods:null,
         };
-        this.$refs.pendingListTable.refresh();
+        
       },
 
         transform(response) {

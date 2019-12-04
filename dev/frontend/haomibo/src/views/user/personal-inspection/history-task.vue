@@ -34,7 +34,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.on-site')">
-                  <b-form-input v-model="filter.fieldId"/>
+                  <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
                 </b-form-group>
               </b-col>
 
@@ -896,6 +896,8 @@
     },
     mounted() {
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+      this.getSiteOption();
+
     },
     data: function () {
       return {
@@ -912,6 +914,7 @@
           // TODO: search filter
         },
 
+        siteData: [],
         showPage: [],
 
         // TODO: select options
@@ -936,6 +939,8 @@
           {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
         ],
+
+        onSiteOption: [],
 
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/history-task/get-by-filter-and-page`,
@@ -1121,9 +1126,42 @@
       },
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
+      },
+      siteData:function (newVal,oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
+
+        getSiteOption(){
+          getApiManager()
+            .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.siteData = data;
+                break;
+              }
+            })
+            .catch((error) => {
+            });
+
+        },
       onRowClicked(taskNumber) {
         // call api
         getApiManager()
@@ -1164,7 +1202,7 @@
           startTime: null,
           endTime: null
         };
-        this.$refs.taskVuetable.refresh();
+        
       },
 
       transform(response) {
@@ -1194,16 +1232,6 @@
             },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-        console.log(this.filter.taskNumber);
-        console.log(this.filter.mode);
-        console.log(this.filter.status);
-        console.log(this.filter.fieldId);
-        console.log(this.filter.userName);
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
-        console.log(httpOptions.params.page);
-        console.log(this.taskVuetableItems.perPage);
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

@@ -165,22 +165,22 @@
           <b-row>
             <b-col>
               <b-form-group :label="$t('statistics.evaluate-monitors.on-site')">
-                <b-form-select :options="onSiteOptions" plain/>
+                <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
               </b-form-group>
             </b-col>
             <b-col>
               <b-form-group :label="$t('statistics.evaluate-monitors.security-device')">
-                <b-form-select :options="[]" plain/>
+                <b-form-select v-model="filter.deviceId" :options="securityDeviceOptions" plain/>
               </b-form-group>
             </b-col>
             <b-col>
               <b-form-group :label="$t('statistics.evaluate-monitors.hand-checker')">
-                <b-form-input plain/>
+                <b-form-input v-model="filter.userName"></b-form-input>
               </b-form-group>
             </b-col>
-            <b-col cols="3">
-              <b-form-group :label="$t('statistics.evaluate-monitors.step-size')">
-                <b-form-select :options="[]" plain/>
+            <b-col>
+              <b-form-group :label="$t('statistics.evaluate-monitors.time')">
+                <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
               </b-form-group>
             </b-col>
             <b-col class="d-flex align-items-center" style="padding-top: 10px;">
@@ -193,28 +193,35 @@
         <b-col cols="8" v-if="isExpanded">
           <b-row>
             <b-col>
-            <b-form-group :label="$t('statistics.view.start-time')">
-              <b-form-input></b-form-input>
-            </b-form-group>
-          </b-col>
+              <b-form-group :label="$t('statistics.view.start-time')">
+                <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                             placeholder=""></date-picker>
+              </b-form-group>
+            </b-col>
 
-          <b-col>
-            <b-form-group :label="$t('statistics.view.end-time')">
-              <b-form-input></b-form-input>
-            </b-form-group>
-          </b-col>
-	  
-	  
-          <b-col></b-col>
-          <b-col></b-col>
+            <b-col>
+              <b-form-group :label="$t('statistics.view.end-time')">
+                <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                             placeholder=""></date-picker>
+
+
+              </b-form-group>
+            </b-col>
+
+            <b-col></b-col>
+            <b-col></b-col>
+            <b-col></b-col>
+            <b-col></b-col>
+
+
           </b-row>
         </b-col>
         <b-col cols="4" class="d-flex justify-content-end align-items-center">
           <div>
-            <b-button size="sm" class="ml-2" variant="info default">
+            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
               <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="info default">
+            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
             </b-button>
           </div>
@@ -228,7 +235,7 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>3243</span></div>
+                <div><span>{{preViewData.totalStatistics.total}}</span></div>
                 <div><span>手检</span></div>
               </div>
             </div>
@@ -241,7 +248,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>123</span></div>
+                <div><span>{{preViewData.totalStatistics.missingReport}}</span></div>
                 <div><span>误报</span></div>
               </div>
             </div>
@@ -254,7 +261,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>15%</span></div>
+                <div><span>{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span></div>
                 <div><span>误报率</span></div>
               </div>
             </div>
@@ -267,7 +274,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>500</span></div>
+                <div><span>{{preViewData.totalStatistics.falseReport}}</span></div>
                 <div><span>漏报</span></div>
               </div>
             </div>
@@ -280,7 +287,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>23%</span></div>
+                <div><span>{{Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)}}%</span></div>
                 <div><span>漏报率</span></div>
               </div>
             </div>
@@ -295,7 +302,7 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>3243</span></div>
+                <div><span>{{preViewData.totalStatistics.artificialJudge}}</span></div>
                 <div><span>手检（人工判图）</span></div>
               </div>
             </div>
@@ -308,7 +315,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>123</span></div>
+                <div><span>{{preViewData.totalStatistics.artificialJudgeMissing}}</span></div>
                 <div><span>人工判图误报</span></div>
               </div>
             </div>
@@ -321,7 +328,8 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>15%</span></div>
+                <div><span>{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                </div>
                 <div><span>人工判图误报率</span></div>
               </div>
             </div>
@@ -334,7 +342,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>500</span></div>
+                <div><span>{{preViewData.totalStatistics.artificialJudgeMistake}}</span></div>
                 <div><span>人工判图漏报</span></div>
               </div>
             </div>
@@ -347,7 +355,8 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>23%</span></div>
+                <div><span>{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                </div>
                 <div><span>人工判图漏报率</span></div>
               </div>
             </div>
@@ -362,7 +371,7 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>3243</span></div>
+                <div><span>{{preViewData.totalStatistics.intelligenceJudge}}</span></div>
                 <div><span>手检（智能判图）</span></div>
               </div>
             </div>
@@ -375,7 +384,7 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>123</span></div>
+                <div><span>{{preViewData.totalStatistics.intelligenceJudgeMissing}}</span></div>
                 <div><span>智能判图误报</span></div>
               </div>
             </div>
@@ -388,7 +397,9 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>15%</span></div>
+                <div>
+                  <span>{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                </div>
                 <div><span>智能判图误报率</span></div>
               </div>
             </div>
@@ -401,7 +412,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>500</span></div>
+                <div><span>{{preViewData.totalStatistics.intelligenceJudgeMistake}}</span></div>
                 <div><span>智能判图漏报</span></div>
               </div>
             </div>
@@ -414,7 +425,9 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>23%</span></div>
+                <div>
+                  <span>{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                </div>
                 <div><span>智能判图漏报率</span></div>
               </div>
             </div>
@@ -448,13 +461,13 @@
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)}}%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -468,7 +481,7 @@
               </b-card-header>
               <b-row>
                 <b-col>
-                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                  <v-chart :options="lineChart1Options" style="width: 100%; height: 300px" :autoresize="true"/>
                 </b-col>
               </b-row>
             </b-card>
@@ -483,13 +496,13 @@
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
                   <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -503,7 +516,7 @@
               </b-card-header>
               <b-row>
                 <b-col>
-                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                  <v-chart :options="lineChart2Options" style="width: 100%; height: 300px" :autoresize="true"/>
                 </b-col>
               </b-row>
             </b-card>
@@ -518,13 +531,13 @@
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
                   <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
                   <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">30%</span>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -538,7 +551,7 @@
               </b-card-header>
               <b-row>
                 <b-col>
-                  <v-chart :options="lineChartOptions" style="width: 100%; height: 300px" :autoresize="true"/>
+                  <v-chart :options="lineChart3Options" style="width: 100%; height: 300px" :autoresize="true"/>
                 </b-col>
               </b-row>
             </b-card>
@@ -555,41 +568,51 @@
 
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
-                <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-else>{{filter.fieldId}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>安检仪:</b></b-col>
-                <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
+                  <span v-else>{{filter.deviceId}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员类型:</b></b-col>
-                <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.userCategory === null">引导员, 判图员, 手检员</span>
+                  <span v-else>{{filter.userCategory}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>操作员:</b></b-col>
-                <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.userName===null">张三, 李四, 王五</span>
+                  <span v-else>{{filter.userName}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>小时</span></b-col>
+                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
               </b-row>
 
               <div class="table-wrapper table-responsive overflow-auto">
                 <vuetable
                   ref="taskVuetable"
-                  :api-mode="false"
-                  :data="tempData"
-                  data-path="data"
-                  pagination-path="pagination"
+                  :api-url="taskVuetableItems.apiUrl"
                   :fields="taskVuetableItems.fields"
+                  :http-fetch="taskVuetableHttpFetch"
                   :per-page="taskVuetableItems.perPage"
-                  :data-total="tempData.data.length"
+                  track-by="time"
+                  pagination-path="pagination"
                   class="table-hover"
-                  style="min-width: 1800px;"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
                 >
                 </vuetable>
@@ -614,7 +637,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import Vuetable from 'vuetable-2/src/components/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap"
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches'
@@ -624,6 +647,11 @@
   import 'echarts/lib/component/legend'
   import 'echarts/lib/component/tooltip'
   import _ from 'lodash'
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
+  import {getApiManager} from "../../../api";
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -633,15 +661,18 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
       'radial-progress-bar': RadialProgressBar,
-      'v-chart': ECharts
+      'v-chart': ECharts,
+      'date-picker': DatePicker
     },
     mounted() {
-
+      console.log(this.filter.statWidth);
+      this.getSiteOption();
+      this.getPreviewData();
     },
     data() {
       return {
         showTable: false,
-        lineChartOptions: {
+        lineChart1Options: {
           tooltip: {
             trigger: 'axis'
           },
@@ -685,15 +716,144 @@
           ],
           color: ['#ff0000', '#ff6600']
         },
+
+        lineChart2Options: {
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['误报', '漏报'],
+            right: 30,
+            icon: 'circle'
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12']
+          },
+          yAxis: {
+            type: 'value',
+            axisLine: {
+              show: false
+            }
+          },
+          series: [
+            {
+              name: '误报',
+              type: 'line',
+              stack: '总量',
+              symbolSize: 12,
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+            },
+            {
+              name: '漏报',
+              type: 'line',
+              symbolSize: 12,
+              stack: '总量',
+              data: [220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+            }
+          ],
+          color: ['#ff0000', '#ff6600']
+        },
+
+        lineChart3Options: {
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['误报', '漏报'],
+            right: 30,
+            icon: 'circle'
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12']
+          },
+          yAxis: {
+            type: 'value',
+            axisLine: {
+              show: false
+            }
+          },
+          series: [
+            {
+              name: '误报',
+              type: 'line',
+              stack: '总量',
+              symbolSize: 12,
+              data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+            },
+            {
+              name: '漏报',
+              type: 'line',
+              symbolSize: 12,
+              stack: '总量',
+              data: [220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+            }
+          ],
+          color: ['#ff0000', '#ff6600']
+        },
+
+        filter: {
+          fieldId: null,
+          deviceId: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        },
+        siteData: [],
+        preViewData: [],
+
+        xYear: [],
+        xQuarter: ['1', '2', '3', '4'],
+        xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        xWeek: ['1', '2', '3', '4', '5'],
+        xDay: [],
+        xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+
         isExpanded: false,
         onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
         ],
+        onSiteOption: [],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
+        ],
+        // TODO: refactor temp table data to api mode
         tempData: {
           data: [1, 2, 3, 4, 5].map((e) => {
             let statusSet = [
@@ -734,123 +894,265 @@
           }
         },
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/...`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics`,
           fields: [
             {
-              name: 'id',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-1',
+              name: 'time',
               title: '时间段',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-2',
+              name: 'total',
               title: '手检总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-3',
+              name: 'missingReport',
               title: '误报总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-4',
+              name: 'missingReportRate',
               title: '误报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-5',
+              name: 'mistakeReport',
               title: '漏报总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-6',
+              name: 'mistakeReportRate',
               title: '漏报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-7',
+              name: 'artificialJudge',
               title: '手检（人工判图）量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-8',
+              name: 'artificialJudgeMissing',
               title: '人工判图误报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-9',
+              name: 'artificialJudgeMissingRate',
               title: '人工判图误报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-10',
+              name: 'artificialJudgeMistake',
               title: '人工判图漏报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-11',
+              name: 'artificialJudgeMistakeRate',
               title: '人工判图漏报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-12',
+              name: 'intelligenceJudge',
               title: '手检（智能判图）量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-13',
+              name: 'intelligenceJudgeMissing',
               title: '智能判图误报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-14',
+              name: 'intelligenceJudgeMissingRate',
               title: '智能判图误报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-15',
+              name: 'intelligenceJudgeMistake',
               title: '智能判图漏报量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-16',
+              name: 'intelligenceJudgeMistakeRate',
               title: '智能判图漏报率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             }
           ],
-          perPage: 10,
+          perPage: 5,
         }
       }
     },
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+      siteData:function (newVal,oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
     methods: {
+      getSiteOption(){
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        })
+          .catch((error) => {
+          });
+
+      },
+
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.preViewData = response.data.data;
+
+          // this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
+          // this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
+
+          if (this.filter.statWidth === 'year') {
+            this.bar3ChartOptions.xAxis.data = this.xHour;
+          } else {
+            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+            console.log(this.xDay);
+            this.lineChart1Options.xAxis.data = this.xDay;
+            this.lineChart2Options.xAxis.data = this.xDay;
+            this.lineChart3Options.xAxis.data = this.xDay;
+            for (let i = 0; i < this.xDay.length; i++) {
+
+              if (this.preViewData.detailedStatistics[i] != null) {
+                this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[i].missingReport;
+                this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[i].mistakeReport;
+                this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].artificialJudgeMissing;
+                this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].artificialJudgeMistake;
+                this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMissing;
+                this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMistake;
+              }
+            }
+          }
+        });
+      },
+
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userName: null,
+          statWidth: 'hour',
+          startTime: null,
+          endTime: null
+        };
+        
+
+      },
+
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData)
-      }
+      },
+
+      onDisplaceButton() {
+        if (this.pageStatus1 === 'charts') {
+          this.pageStatus1 = 'table';
+        } else {
+          this.pageStatus1 = 'charts';
+        }
+      },
+
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        console.log(data.per_page);
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        //console.log(Object.keys(data.data.detailedStatistics).length);
+        console.log(Object.keys(data.detailedStatistics).length);
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i - 1];
+          console.log(j);
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter,
+        });
+      },
     }
   }
 </script>

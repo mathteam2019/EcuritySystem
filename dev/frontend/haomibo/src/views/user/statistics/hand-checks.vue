@@ -13,26 +13,26 @@
         <b-row>
 
           <b-col>
-            <b-form-group :label="'现场'">
-              <b-form-select plain/>
+            <b-form-group :label="$t('statistics.view.on-site')">
+              <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
-            <b-form-group :label="'安检仪'">
-              <b-form-select plain/>
+            <b-form-group :label="$t('statistics.view.security-device')">
+              <b-form-select v-model="filter.deviceId" :options="securityDeviceOptions" plain/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="'引导员'">
-              <b-form-input />
+              <b-form-input v-model="filter.userName"></b-form-input>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="'统计步长'">
-              <b-form-input />
+              <b-form-select v-model="filter.statWidth" :options="statisticalStepSizeOptions" plain/>
             </b-form-group>
           </b-col>
 
@@ -48,33 +48,40 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                           placeholder=""></date-picker>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
-              <b-form-input></b-form-input>
+              <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                           placeholder=""></date-picker>
+
+
             </b-form-group>
           </b-col>
 
-          
           <b-col></b-col>
           <b-col></b-col>
+          <b-col></b-col>
+          <b-col></b-col>
+
 
         </b-row>
       </b-col>
       <b-col cols="4" class="d-flex justify-content-end align-items-center">
         <div>
-          <b-button size="sm" class="ml-2" variant="info default" >
+          <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
             <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="info default" >
+          <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
             <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
           </b-button>
         </div>
       </b-col>
     </b-row>
+
     <b-row class="parameter-items">
       <b-col>
         <b-card class="no-padding w-100 h-100" style="background-color: #1989fa;">
@@ -82,7 +89,7 @@
             <div style="">
               <b-img src="/assets/img/scan.svg"/>
             </div>
-            <div><span class="font-weight-bold">3243</span></div>
+            <div><span class="font-weight-bold">{{preViewData.totalStatistics.total}}</span></div>
             <div><span>手检</span></div>
           </div>
         </b-card>
@@ -96,7 +103,7 @@
                   <b-img src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>3243</span></div>
+                  <div><span>{{preViewData.totalStatistics.noSeizure}}</span></div>
                   <div><span>无查获</span></div>
                 </div>
               </div>
@@ -109,7 +116,8 @@
                   <b-img src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>80%</span></div>
+                  <div><span>{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                  </div>
                   <div><span>无查获率</span></div>
                 </div>
               </div>
@@ -122,7 +130,7 @@
                   <b-img src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>3243</span></div>
+                  <div><span>{{preViewData.totalStatistics.seizure}}</span></div>
                   <div><span>查获</span></div>
                 </div>
               </div>
@@ -135,8 +143,9 @@
                   <b-img src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>20</span></div>
-                  <div><span>报警率</span></div>
+                  <div><span>{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                  </div>
+                  <div><span>查获率</span></div>
                 </div>
               </div>
             </b-card>
@@ -150,7 +159,9 @@
                   <b-img src="/assets/img/clock.svg"/>
                 </div>
                 <div>
-                  <div><span>7m6s</span></div>
+                  <div>
+                    <span>{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{preViewData.totalStatistics.avgDuration%60}}s</span>
+                  </div>
                   <div><span>手检平均时长</span></div>
                 </div>
               </div>
@@ -163,7 +174,9 @@
                   <b-img src="/assets/img/up_arrow.svg"/>
                 </div>
                 <div>
-                  <div><span>20m8s</span></div>
+                  <div>
+                    <span>{{(preViewData.totalStatistics.maxDuration-preViewData.totalStatistics.maxDuration%60)/60}}m{{preViewData.totalStatistics.maxDuration%60}}s</span>
+                  </div>
                   <div><span>手检最高时长</span></div>
                 </div>
               </div>
@@ -176,7 +189,9 @@
                   <b-img src="/assets/img/down_arrow.svg"/>
                 </div>
                 <div>
-                  <div><span>3m0s</span></div>
+                  <div>
+                    <span>{{(preViewData.totalStatistics.minDuration-preViewData.totalStatistics.minDuration%60)/60}}m{{preViewData.totalStatistics.minDuration%60}}s</span>
+                  </div>
                   <div><span>手检最低时长</span></div>
                 </div>
               </div>
@@ -191,7 +206,7 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
-            <i class="icofont-exchange"></i>&nbsp;切换
+            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
@@ -218,13 +233,13 @@
                   <div class="legend-group part-2">
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">嫌疑</div>
-                      <div class="value">1500</div>
+                      <div class="legend-name">查获</div>
+                      <div class="value">{{preViewData.totalStatistics.seizure}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
-                      <div class="legend-name">无嫌疑</div>
-                      <div class="value">500</div>
+                      <div class="legend-name">无查获</div>
+                      <div class="value">{{preViewData.totalStatistics.noSeizure}}</div>
                     </div>
                   </div>
                 </div>
@@ -258,15 +273,13 @@
           <div class="table-wrapper table-responsive overflow-auto">
             <vuetable
               ref="taskVuetable"
-              :api-mode="false"
-              :data="tempData"
-              data-path="data"
-              pagination-path="pagination"
+              :api-url="taskVuetableItems.apiUrl"
               :fields="taskVuetableItems.fields"
+              :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
-              :data-total="tempData.data.length"
+              track-by="time"
+              pagination-path="pagination"
               class="table-hover"
-              style="min-width: 1800px;"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
             </vuetable>
@@ -302,7 +315,8 @@
         <b-row>
           <b-col cols="4">
             <b-card>
-              <b-img src="/assets/img/brand.png" class="w-100 h-100" style="object-fit: contain; object-position: center"/>
+              <b-img src="/assets/img/brand.png" class="w-100 h-100"
+                     style="object-fit: contain; object-position: center"/>
             </b-card>
           </b-col>
           <b-col cols="8">
@@ -355,31 +369,29 @@
 
           <div class="table-wrapper table-responsive">
             <vuetable
-              ref="taskVuetable"
-              :api-mode="false"
-              :data="tempData"
-              data-path="data"
+              ref="taskVuetable2"
+              :api-url="taskVuetable2Items.apiUrl"
+              :fields="taskVuetable2Items.fields"
+              :http-fetch="taskVuetable2HttpFetch"
+              :per-page="taskVuetable2Items.perPage"
+              track-by="time"
               pagination-path="pagination"
-              :fields="taskVuetableItems.fields"
-              :per-page="taskVuetableItems.perPage"
-              :data-total="tempData.data.length"
               class="table-hover"
-              @vuetable:pagination-data="onTaskVuetablePaginationData"
+              @vuetable:pagination-data="onTaskVuetable2PaginationData"
             >
             </vuetable>
           </div>
           <div class="pagination-wrapper">
             <vuetable-pagination-bootstrap
-              ref="taskVuetablePagination"
-              @vuetable-pagination:change-page="onTaskVuetableChangePage"
-              :initial-per-page="taskVuetableItems.perPage"
-              @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
+              ref="taskVuetable2Pagination"
+              @vuetable-pagination:change-page="onTaskVuetable2ChangePage"
+              :initial-per-page="taskVuetable2Items.perPage"
+              @onUpdatePerPage="taskVuetable2Items.perPage = Number($event)"
             ></vuetable-pagination-bootstrap>
           </div>
         </b-card>
       </b-col>
     </b-row>
-
 
 
   </div>
@@ -399,6 +411,11 @@
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
   import _ from 'lodash'
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
+  import {getApiManager} from "../../../api";
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -407,10 +424,13 @@
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'v-chart': ECharts
+      'v-chart': ECharts,
+      'date-picker': DatePicker
     },
     mounted() {
-
+      this.getSiteOption();
+      this.getPreviewData();
+      this.getGraphData();
     },
     data() {
 
@@ -460,8 +480,8 @@
                 length2: -30
               },
               data: [
-                {value: 1500, name: '嫌疑'},
-                {value: 500, name: '无嫌疑'}
+                {value: 1500, name: '查获'},
+                {value: 500, name: '无查获'}
               ]
             },
 
@@ -475,7 +495,7 @@
             }
           },
           legend: {
-            data: ['判图超时', 'ATR'],
+            data: ['无查获', '查获'],
             icon: 'rect',
             right: 25
           },
@@ -515,14 +535,14 @@
           color: ['#ff6600', '#ff0000'],
           series: [
             {
-              name: '判图超时',
+              name: '无查获',
               type: 'bar',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
+              data: []
             },
             {
-              name: 'ATR',
+              name: '查获',
               type: 'bar',
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
+              data: []
             },
           ]
         },
@@ -532,6 +552,11 @@
             axisPointer: {
               type: 'shadow'
             }
+          },
+          legend: {
+            data: ['查获'],
+            icon: 'rect',
+            right: 25
           },
           grid: {
             left: '3%',
@@ -569,178 +594,313 @@
           color: ['#1989fa'],
           series: [
             {
-              name: '安检仪',
+              name: '查获',
               type: 'bar',
-              stack: '总量',
               barWidth: '30%',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120]
+              data: []
             }
           ]
         },
 
         pageStatus1: 'charts',
         pageStatus2: 'charts',
-
-        // TODO: refactor temp table data to api mode
-        tempData: {
-          data: [1, 2, 3, 4, 5].map((e) => {
-            let statusSet = [
-              "pending_dispatch",
-              "pending_review",
-              "while_review",
-              "pending_inspection",
-              "while_inspection"
-            ];
-
-            return {
-              id: e,
-              taskNumber: 'HR201909210001',
-              // operationMode: 'HR201909210001',
-              status: _.sample(statusSet),
-              onSite: '',
-              securityInstrument: '',
-              guide: '张怡宁',
-              scanStartTime: '2019-10-23.10:30',
-              scanEndTime: '2019-10-23.10:30',
-              judgementStation: '丹东站',
-              judge: '张怡宁',
-              judgementStartTime: '2019-10-23.10:30',
-              judgementEndTime: '2019-10-23.10:30',
-              handCheckStation: '丹东站',
-              handChecker: '张怡宁',
-              handCheckStartTime: '2019-10-23.10:30'
-
-            }
-          }),
-          pagination: {
-            total: 5,
-            per_page: 5,
-            current_page: 1,
-            last_page: 1,
-            from: 1,
-            to: 5
-          }
+        filter: {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
         },
+
+        siteData: [],
+        preViewData: [],
+        graphData:[],
+
+        xYear: [],
+        xQuarter: ['1', '2', '3', '4'],
+        xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        xWeek: ['1', '2', '3', '4', '5'],
+        xDay: [],
+        xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+
+        preViewDataTemp: {
+          axisLabel: null,
+          invalidScan: null,
+          validScan: null,
+          passedScan: null,
+          alarmScan: null,
+          totalScan: null,
+          invalidScanRate: null,
+          totalJudge: null,
+          totalHandExamination: null,
+          noSuspictionJudge: null,
+          noSuspictionJudgeRate: null,
+          seizureHandExamination: null,
+          seizureHandExaminationRate: null,
+          noSeizureHandExamination: null,
+          noSeizureHandExaminationRate: null,
+        },
+        onSiteOptions: [
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
+        ],
+        onSiteOption: [],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
+        ],
+
         taskVuetableItems: {
-          apiUrl: `${apiBaseUrl}/...`,
+          apiUrl: `${apiBaseUrl}/task/statistics/get-handexamination-statistics`,
           fields: [
             {
-              name: 'id',
+              name: '__sequence',
               title: this.$t('personal-inspection.serial-number'),
               sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-1',
+              name: 'time',
               title: '时间段',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-2',
+              name: 'total',
               title: '手检总量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-3',
-              title: '误报总量',
+              name: 'noSeizure',
+              title: '无查获量',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-4',
-              title: '误报率',
+              name: 'noSeizureRate',
+              title: '无查获率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-5',
-              title: '漏报总量',
+              name: 'seizure',
+              title: '查获',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-6',
-              title: '漏报率',
+              name: 'seizureRate',
+              title: '查获率',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-7',
-              title: '手检（人工判图）量',
+              name: 'avgDuration',
+              title: '手检平均时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-8',
-              title: '人工判图误报量',
+              name: 'maxDuration',
+              title: '手检最高时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
-              name: 'toto-field-9',
-              title: '人工判图误报率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-10',
-              title: '人工判图漏报量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-11',
-              title: '人工判图漏报率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-12',
-              title: '手检（智能判图）量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-13',
-              title: '智能判图误报量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-14',
-              title: '智能判图误报率',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-15',
-              title: '智能判图漏报量',
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'toto-field-16',
-              title: '智能判图漏报率',
+              name: 'minDuration',
+              title: '手检最低时长',
               titleClass: 'text-center',
               dataClass: 'text-center'
             }
           ],
-          perPage: 10,
+          perPage: 5,
+        },
+
+        taskVuetable2Items: {
+          apiUrl: `${apiBaseUrl}/task/statistics/get-suspicionhandgoods-statistics`,
+          fields: [
+            {
+              name: '__sequence',
+              title: this.$t('personal-inspection.serial-number'),
+              sortField: 'id',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'time',
+              title: '时间段',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '1000001601',
+              title: '物品1',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '1000001602',
+              title: '物品2',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '1000001603',
+              title: '物品3',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '1000001604',
+              title: '物品4',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '1000001605',
+              title: '物品5',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            }
+          ],
+          perPage: 5,
         }
       }
     },
-    watch: {},
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'taskVuetable2Items.perPage': function (newVal) {
+        this.$refs.taskVuetable2.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+      siteData: function (newVal, oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
     methods: {
-      onSearchButton() {
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        })
+          .catch((error) => {
+          });
 
+      },
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-handexamination-statistics`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          //this.preViewData = [];
+          this.preViewData = response.data.data;
+
+          this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.seizure;
+          this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSeizure;
+
+          if (this.filter.statWidth === 'year') {
+            this.barChart2Options.xAxis.data = this.xHour;
+          } else {
+            //this.xDay = [];
+            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+            console.log(this.xDay);
+            this.barChart2Options.xAxis.data = this.xDay;
+            for (let i = 0; i < this.xDay.length; i++) {
+
+              if (this.preViewData.detailedStatistics[i] != null) {
+                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].noSeizure;
+                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].seizure;
+
+              }
+            }
+          }
+        });
+      },
+      getGraphData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-suspicionhandgoods-statistics`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.graphData = response.data.data;
+
+          this.xDay = Object.keys(this.graphData.totalStatistics);
+          console.log(this.xDay);
+          this.bar3ChartOptions.xAxis.data = this.xDay;
+          for (let i = 0; i < this.xDay.length; i++) {
+
+            if (this.graphData.totalStatistics != null) {
+              let key = this.xDay[i];
+              console.log(this.graphData.totalStatistics[key]);
+              this.bar3ChartOptions.series[0].data[i] = this.graphData.totalStatistics[key];
+
+            }
+          }
+
+        });
+      },
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
-
-      },
-      onRowClicked() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          statWidth: 'hour',
+          startTime: null,
+          endTime: null
+        };
+        
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -748,6 +908,12 @@
       },
       onTaskVuetableChangePage(page) {
         this.$refs.taskVuetable.changePage(page)
+      },
+      onTaskVuetable2PaginationData(paginationData) {
+        this.$refs.taskVuetable2Pagination.setPaginationData(paginationData)
+      },
+      onTaskVuetable2ChangePage(page) {
+        this.$refs.taskVuetable2.changePage(page)
       },
       onDisplaceButton1() {
         if (this.pageStatus1 === 'charts') {
@@ -763,7 +929,55 @@
           this.pageStatus2 = 'charts';
         }
       },
-    }
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        console.log(data.per_page);
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        //console.log(Object.keys(data.data.detailedStatistics).length);
+        console.log(Object.keys(data.detailedStatistics).length);
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i - 1];
+          console.log(j);
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter,
+        });
+      },
+      taskVuetable2HttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetable2Items.perPage,
+          filter: this.filter,
+        });
+      },
+    },
   }
 </script>
 

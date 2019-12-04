@@ -602,6 +602,7 @@
                 filter: {
                     taskNumber: null,
                     mode: null,
+          	    status: null,
                     fieldId: null,
                     userName: null,
                     startTime: null,
@@ -611,56 +612,28 @@
 
                 showPage: [],
 
-                showPage1: { // modify page
-                    selectedOrg: {},
-                    taskNumber: '',
-                    onSite: '',
-                    machine: '',
-                    sex: '',
-                    scanImage: '',
-                    operationMode: '',
-                    status: '',
-                    guide: '',
-                    atrCon: '',
-                    footAlarm: '',
-                    scanStartTime: '',
-                    scanEndTime: '',
-                    dispatchTimeout: '',
-                    judgementStation: '',
-                    judgementType: '',
-                    judgement: '',
-                    judgementTimeout: '',
-                    judgementStartTime: '',
-                    judgementStationIde: '',
-                    judgementEndTime: '',
-                    judge: '',
-                    handCheckStation: '',
-                    handCheckStartTime: '',
-                    handChecker: '',
-
-                },
-                // TODO: select options
-                operationModeOptions: [
-                    {value: null, text: this.$t('personal-inspection.all')},
-                    {value: 'security', text: this.$t('personal-inspection.security-instrument')},
-                    {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
-                ],
-                statusOptions: [
-                    {value: null, text: this.$t('personal-inspection.all')},
-                    {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-                    {value: 'pending-review', text: this.$t('personal-inspection.pending-review')},
-                    {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-                    {value: 'pending-inspection', text: this.$t('personal-inspection.pending-inspection')},
-                    {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')}
-                ],
-                onSiteOptions: [
-                    {value: null, text: this.$t('personal-inspection.all')},
-                    {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-                    {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-                    {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-                    {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-                    {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
-                ],
+        // TODO: select options
+        operationModeOptions: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 'security', text: this.$t('personal-inspection.security-instrument')},
+          {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+        ],
+        statusOptions: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
+          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
+          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
+          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
+          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
+        ],
+        onSiteOptions: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
+          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
+          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
+          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
+          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+        ],
 
                 taskVuetableItems: {
                     apiUrl: `${apiBaseUrl}/task/invalid-task/get-by-filter-and-page`,
@@ -673,7 +646,7 @@
                         {
                             name: 'taskId',
                             title: this.$t('personal-inspection.serial-number'),
-                            sortField: 'id',
+              		    sortField: 'taskId',
                             titleClass: 'text-center',
                             dataClass: 'text-center'
                         },
@@ -712,6 +685,7 @@
                             dataClass: 'text-center',
                             callback: (serScan) => {
                                 if (serScan == null) return '';
+                  		if(serScan.scanDevice==null) return '';
                                 return serScan.scanDevice.deviceName;
                             }
                         },
@@ -722,6 +696,7 @@
                             dataClass: 'text-center',
                             callback: (serScan) => {
                                 if (serScan == null) return '';
+                		if(serScan.scanPointsman==null)  return '';
                                 return serScan.scanPointsman.userName;
                             }
                         },
@@ -746,7 +721,7 @@
                             }
                         },
                     ],
-                    perPage: 5,
+                    perPage: 10,
                 },
                 power: true
 
@@ -795,12 +770,13 @@
                 this.filter = {
                     taskNumber: null,
                     mode: null,
+          	    status: null,
                     fieldId: null,
                     userName: null,
                     startTime: null,
                     endTime: null
                 };
-                this.$refs.taskVuetable.refresh();
+                
             },
 
             transform(response) {
@@ -837,10 +813,11 @@
                     filter: {
                         taskNumber: this.filter.taskNumber,
                         mode: this.filter.mode,
+            		status: this.filter.status,
                         fieldId: this.filter.fieldId,
                         userName: this.filter.userName,
-                        startTime: null,
-                        endTime: null
+            		startTime: this.filter.startTime,
+            		endTime: this.filter.endTime
 
                     },
 
