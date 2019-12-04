@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
+import com.nuctech.ecuritycheckitem.controllers.knowledgemanagement.KnowledgeDealManagementController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.PreviewStatisticsController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -18,8 +21,12 @@ import io.swagger.models.auth.In;
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +38,12 @@ import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/task")
@@ -46,7 +55,6 @@ public class TaskManagementController extends BaseController {
     @AllArgsConstructor
     @Getter
     public enum TableType {
-
         SER_SCAN(1),
         SER_JUDGE_GRAPH(2),
         SER_HAND_EXAMINATION(3);
@@ -54,6 +62,9 @@ public class TaskManagementController extends BaseController {
         private final Integer value;
     }
 
+    /**
+     * Statistics period width
+     */
     public static class StatisticWidth {
         public static final String HOUR = "hour";
         public static final String DAY = "day";
@@ -63,8 +74,9 @@ public class TaskManagementController extends BaseController {
         public static final String YEAR = "year";
     }
 
-
-
+    /**
+     * Normal Statistics RequestBody
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -91,14 +103,9 @@ public class TaskManagementController extends BaseController {
         }
 
         Integer currentPage;
-
         Integer perPage;
-
         StatisticsRequestBody.Filter filter;
-
     }
-
-
 
     /**
      * Process Task datatable request body.
@@ -133,9 +140,11 @@ public class TaskManagementController extends BaseController {
         @NotNull
         int perPage;
         TaskGetByFilterAndPageRequestBody.Filter filter;
-
     }
 
+    /**
+     * Get detailed info of task request body
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -149,6 +158,9 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    /**
+     * Get detailed info of a history task request body
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -198,6 +210,22 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    /**
+     * process task generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class TaskGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        TaskGenerateRequestBody.Filter filter;
+    }
 
     /**
      * Task datatable data.
@@ -238,12 +266,9 @@ public class TaskManagementController extends BaseController {
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"));
-
-
         value.setFilters(filters);
 
         return value;
-
     }
 
     /**
@@ -257,14 +282,12 @@ public class TaskManagementController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        QSerTask builder = QSerTask.serTask;
 
+        QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
         if (filter != null) {
-
             predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
@@ -280,7 +303,6 @@ public class TaskManagementController extends BaseController {
                 predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
             if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
                 Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
@@ -292,7 +314,6 @@ public class TaskManagementController extends BaseController {
             if (filter.getEndTime() != null) {
                 predicate.and(builder.createdTime.before(filter.getEndTime()));
             }
-
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
@@ -302,7 +323,6 @@ public class TaskManagementController extends BaseController {
 
         long total = serTaskRespository.count(predicate);
         List<SerTask> data = serTaskRespository.findAll(predicate, pageRequest).getContent();
-
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -336,6 +356,75 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
+     * Task table generate excel file request.
+     */
+    @RequestMapping(value = "/generate/process-task/export", method = RequestMethod.POST)
+    public Object knowledgeCasePersonalGenerateExcelFile(@RequestBody @Valid KnowledgeDealManagementController.KnowledgeCaseGenerateRequestBody requestBody,
+                                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all pending case deal list
+        List<SerKnowledgeCaseDeal> dealList = StreamSupport
+                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+
+
+        InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Knowledge Case personal generate pdf file request.
+     */
+    @RequestMapping(value = "/generate/personal/print", method = RequestMethod.POST)
+    public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeDealManagementController.KnowledgeCaseGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all pending case deal list
+        List<SerKnowledgeCaseDeal> dealList = StreamSupport
+                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+
+    /**
      * History Task datatable data.
      */
     @RequestMapping(value = "/history-task/get-one", method = RequestMethod.POST)
@@ -346,14 +435,12 @@ public class TaskManagementController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
         QHistory builder = QHistory.history;
-
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
         Long id = requestBody.getHistoryId();
 
         Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
-
         if (!optionalHistory.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -370,7 +457,6 @@ public class TaskManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
-
     }
 
     /**
@@ -416,7 +502,6 @@ public class TaskManagementController extends BaseController {
             if (filter.getEndTime() != null) {
                 predicate.and(builder.createdTime.before(filter.getEndTime()));
             }
-
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
@@ -426,7 +511,6 @@ public class TaskManagementController extends BaseController {
 
         long total = historyRespository.count(predicate);
         List<History> data = historyRespository.findAll(predicate, pageRequest).getContent();
-
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -442,7 +526,6 @@ public class TaskManagementController extends BaseController {
                         .build()));
 
         // Set filters.
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
@@ -466,11 +549,9 @@ public class TaskManagementController extends BaseController {
         }
 
         QSerTask builder = QSerTask.serTask;
-
         Long id = requestBody.getTaskId();
 
         Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
-
         if (!optionalTask.isPresent()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -490,11 +571,9 @@ public class TaskManagementController extends BaseController {
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"));
-
         value.setFilters(filters);
 
         return value;
-
     }
 
     /**
@@ -508,13 +587,12 @@ public class TaskManagementController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        QSerTask builder = QSerTask.serTask;
 
+        QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
         TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
         if (filter != null) {
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
@@ -530,7 +608,6 @@ public class TaskManagementController extends BaseController {
                 predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
             if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
                 Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
                         .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
@@ -542,7 +619,6 @@ public class TaskManagementController extends BaseController {
             if (filter.getEndTime() != null) {
                 predicate.and(builder.createdTime.before(filter.getEndTime()));
             }
-
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
