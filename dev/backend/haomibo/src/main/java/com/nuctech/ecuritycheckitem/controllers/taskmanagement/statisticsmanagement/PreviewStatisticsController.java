@@ -85,31 +85,7 @@ public class PreviewStatisticsController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/statistics/handexamination", method = RequestMethod.POST)
-    public Object handExaminationStatisticsGet(
-            @RequestBody @Valid StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        Date dateFrom, dateTo;
-        dateFrom = requestBody.getFilter().getStartTime();
-        dateTo = requestBody.getFilter().getEndTime();
-
-
-        //get Scan statistics
-        HandExaminationStatisticsResponse handStatistics = getHandExaminationStatisticsForPreview(requestBody);
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, handStatistics));
-
-        return value;
-
-    }
-
-
-    @RequestMapping(value = "/statistics/scan", method = RequestMethod.POST)
+    @RequestMapping(value = "/scan", method = RequestMethod.POST)
     public Object scanStatisticsGet(
             @RequestBody @Valid StatisticsRequestBody requestBody,
             BindingResult bindingResult) {
@@ -122,29 +98,6 @@ public class PreviewStatisticsController extends BaseController {
         ScanStatisticsResponse scanStatistics = getScanStatisticsForPreview(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
-
-        return value;
-
-    }
-
-    @RequestMapping(value = "/statistics/judgegraph", method = RequestMethod.POST)
-    public Object judgegraphStatisticsGet(
-            @RequestBody @Valid StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        Date dateFrom, dateTo;
-        dateFrom = requestBody.getFilter().getStartTime();
-        dateTo = requestBody.getFilter().getEndTime();
-
-
-        //get Scan statistics
-        JudgeStatisticsResponse judgeStatistics = getJudgeStatisticsForPreview(requestBody);
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, judgeStatistics));
 
         return value;
 
