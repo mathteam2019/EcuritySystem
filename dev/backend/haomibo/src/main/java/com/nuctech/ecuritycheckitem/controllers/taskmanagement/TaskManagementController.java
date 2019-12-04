@@ -2558,7 +2558,7 @@ public class TaskManagementController extends BaseController {
 
             try {
 
-                response.setTotal(endIndex - startIndex);
+                response.setTotal(keyValueMax - keyValueMin + 1);
                 response.setPer_page(requestBody.getPerPage());
                 response.setCurrent_page(requestBody.getCurrentPage());
 
