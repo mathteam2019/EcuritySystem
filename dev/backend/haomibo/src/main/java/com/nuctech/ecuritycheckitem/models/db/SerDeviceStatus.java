@@ -41,8 +41,8 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @Getter
     @Setter
     public static class MonitorRecord {
-        String time;
-        Integer count;
+        List<String> timeList;
+        List<Integer> countList;
     }
 
     @Id
@@ -133,6 +133,6 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     Integer deviceTrafficMiddle;
 
     @javax.persistence.Transient
-    List<MonitorRecord> recordList;
+    MonitorRecord record;
 
 }

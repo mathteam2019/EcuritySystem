@@ -12,6 +12,7 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -26,6 +27,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -226,6 +228,7 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_CREATE)
     @RequestMapping(value = "/category/create", method = RequestMethod.POST)
     public Object deviceCategoryCreate(
             @RequestBody @Valid DeviceCategoryCreateRequestBody requestBody,
@@ -259,6 +262,7 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_MODIFY)
     @RequestMapping(value = "/category/modify", method = RequestMethod.POST)
     public Object deviceCategoryModify(
             @RequestBody @Valid DeviceCategoryModifyRequestBody requestBody,
@@ -307,6 +311,7 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_DELETE)
     @RequestMapping(value = "/category/delete", method = RequestMethod.POST)
     public Object deviceCategoryDelete(
             @RequestBody @Valid DeviceCateogryDeleteRequestBody requestBody,
@@ -523,6 +528,7 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_UPDATE_STATUS)
     @RequestMapping(value = "/category/update-status", method = RequestMethod.POST)
     public Object deviceCategoryUpdateStatus(
             @RequestBody @Valid DeviceCategoryUpdateStatusRequestBody requestBody,

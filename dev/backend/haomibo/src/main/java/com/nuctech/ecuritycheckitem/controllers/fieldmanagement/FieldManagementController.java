@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
@@ -37,6 +38,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -246,6 +248,7 @@ public class FieldManagementController extends BaseController {
     /**
      * Field create request.
      */
+    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/field/create", method = RequestMethod.POST)
     public Object fieldCreate(
             @RequestBody @Valid FieldCreateRequestBody requestBody,
@@ -278,6 +281,7 @@ public class FieldManagementController extends BaseController {
     /**
      * Field modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/field/modify", method = RequestMethod.POST)
     public Object fieldModify(
             @RequestBody @Valid FieldModifyRequestBody requestBody,
@@ -327,6 +331,7 @@ public class FieldManagementController extends BaseController {
     /**
      * Field delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/field/delete", method = RequestMethod.POST)
     public Object fieldDelete(
             @RequestBody @Valid FieldDeleteRequestBody requestBody,
@@ -357,6 +362,7 @@ public class FieldManagementController extends BaseController {
     /**
      * Field update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_FIELD_UPDATE_STATUS)
     @RequestMapping(value = "/field/update-status", method = RequestMethod.POST)
     public Object fieldUpdateStatus(
             @RequestBody @Valid FieldUpdateStatusRequestBody requestBody,

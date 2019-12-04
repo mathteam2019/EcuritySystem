@@ -15,6 +15,7 @@ import com.mysql.cj.xdevapi.JsonParser;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchivePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -26,6 +27,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -317,6 +319,7 @@ public class ArchiveManagementController extends BaseController {
     /**
      * Archive update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_UPDATE_STATUS)
     @RequestMapping(value = "/archive/update-status", method = RequestMethod.POST)
     public Object archiveUpdateStatus(
             @RequestBody @Valid ArchiveUpdateStatusRequestBody requestBody,
@@ -349,6 +352,7 @@ public class ArchiveManagementController extends BaseController {
     /**
      * Archive create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_CREATE)
     @RequestMapping(value = "/archive/create", method = RequestMethod.POST)
     public Object archiveCreate(
             @ModelAttribute @Valid ArchiveCreateRequestBody requestBody,
@@ -426,6 +430,7 @@ public class ArchiveManagementController extends BaseController {
     /**
      * Archive modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_MODIFY)
     @RequestMapping(value = "/archive/modify", method = RequestMethod.POST)
     public Object archiveModify(
             @ModelAttribute @Valid ArchiveModifyRequestBody requestBody,
@@ -520,6 +525,7 @@ public class ArchiveManagementController extends BaseController {
     /**
      * Archive delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_DELETE)
     @RequestMapping(value = "/archive/delete", method = RequestMethod.POST)
     public Object archiveDelete(
             @RequestBody @Valid ArchiveDeleteRequestBody requestBody,

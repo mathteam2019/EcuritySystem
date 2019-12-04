@@ -72,17 +72,17 @@ public class DeviceStatusController extends BaseController {
         Filter filter;
     }
 
-    private List<SerDeviceStatus.MonitorRecord> getRecordList(long deviceId, int deviceTrafficSetting) {
+    private SerDeviceStatus.MonitorRecord getRecordList(long deviceId, int deviceTrafficSetting) {
         Date curDate = new Date();
         long times = curDate.getTime();
         long unitMiliSecond = deviceTrafficSetting * 60 * 1000;
         long lastDateTime = (times / unitMiliSecond + 1) * unitMiliSecond;
         long startDateTime = lastDateTime - unitMiliSecond * 10;
         Date[] rangeDate = new Date[20];
-        int[] countList = new int[20];
+        int[] countArray = new int[20];
         for(int i = 0; i <= 10; i ++) {
             rangeDate[i] = new Date(startDateTime + unitMiliSecond * i);
-            countList[i] = 0;
+            countArray[i] = 0;
         }
         QSerScan builder = QSerScan.serScan;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -98,22 +98,25 @@ public class DeviceStatusController extends BaseController {
                 Date scanStartTime = scan.getScanStartTime();
                 for(int j = 0; j < 10; j ++) {
                     if((scanStartTime.after(rangeDate[i]) || scanStartTime.equals(rangeDate[i])) && scanStartTime.before(rangeDate[i + 1])) {
-                        countList[i] ++;
+                        countArray[i] ++;
                     }
                 }
             }
         }
 
-        List<SerDeviceStatus.MonitorRecord> result = new ArrayList<>();
+        SerDeviceStatus.MonitorRecord result = new SerDeviceStatus.MonitorRecord();
+        List<String> timeList = new ArrayList<>();
+        List<Integer> countList = new ArrayList<>();
 
         for(int i = 0; i < 10; i ++) {
             SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
             SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
             String strTime = formatter.format(rangeDate[i + 1]);
-            record.setTime(strTime);
-            record.setCount(countList[i]);
-            result.add(record);
+            timeList.add(strTime);
+            countList.add(countArray[i]);
         }
+        result.setTimeList(timeList);
+        result.setCountList(countList);
 
 
 
@@ -207,7 +210,7 @@ public class DeviceStatusController extends BaseController {
             SerDeviceStatus deviceStatus = data.get(i);
             deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
-            deviceStatus.setRecordList(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
+            deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
         }
 
 

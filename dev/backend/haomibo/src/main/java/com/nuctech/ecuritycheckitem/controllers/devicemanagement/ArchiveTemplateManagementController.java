@@ -12,6 +12,7 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplatePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -24,6 +25,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -447,6 +449,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_UPDATE_STATUS)
     @RequestMapping(value = "/archive-template/update-status", method = RequestMethod.POST)
     public Object archiveTemplateUpdateStatus(
             @RequestBody @Valid ArchiveTemplateUpdateStatusRequestBody requestBody,
@@ -489,6 +492,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Indicator update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_UPDATE_ISNULL)
     @RequestMapping(value = "/archive-indicator/update-isnull", method = RequestMethod.POST)
     public Object archiveIndicatorUpdateIsNull(
             @RequestBody @Valid ArchiveIndicatorUpdateIsNullRequestBody requestBody,
@@ -526,6 +530,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_CREATE)
     @RequestMapping(value = "/archive-template/create", method = RequestMethod.POST)
     public Object archiveTemplateCreate(
             @RequestBody @Valid ArchiveTemplateCreateRequestBody requestBody,
@@ -561,6 +566,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Indicator create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_CREATE)
     @RequestMapping(value = "/archive-indicator/create", method = RequestMethod.POST)
     public Object archiveIndicatorCreate(
             @RequestBody @Valid ArchiveIndicatorCreateRequestBody requestBody,
@@ -584,6 +590,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_MODIFY)
     @RequestMapping(value = "/archive-template/modify", method = RequestMethod.POST)
     public Object archiveTemplateModify(
             @RequestBody @Valid ArchiveTemplateModifyRequestBody requestBody,
@@ -640,6 +647,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_DELETE)
     @RequestMapping(value = "/archive-template/delete", method = RequestMethod.POST)
     public Object archiveTemplateDelete(
             @RequestBody @Valid ArchiveTemplateDeleteRequestBody requestBody,
@@ -682,6 +690,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Indicators delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_INDICATOR_DELETE)
     @RequestMapping(value = "/archive-indicator/delete", method = RequestMethod.POST)
     public Object archiveIndicatorDelete(
             @RequestBody @Valid ArchiveIndicatorDeleteRequestBody requestBody,

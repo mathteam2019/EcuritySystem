@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupExcelView;
@@ -32,6 +33,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -410,6 +412,7 @@ public class UserManagementController extends BaseController {
     /**
      * User create request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_CREATE)
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)
     public Object userCreate(
             @ModelAttribute @Valid UserCreateRequestBody requestBody,
@@ -473,6 +476,7 @@ public class UserManagementController extends BaseController {
     /**
      * User modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_MODIFY)
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
     public Object userModify(
             @ModelAttribute @Valid UserModifyRequestBody requestBody,
@@ -725,6 +729,7 @@ public class UserManagementController extends BaseController {
     /**
      * User update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
     public Object userUpdateStatus(
             @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
@@ -799,6 +804,7 @@ public class UserManagementController extends BaseController {
     /**
      * User group create request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_GROUP_CREATE)
     @RequestMapping(value = "/user-group/create", method = RequestMethod.POST)
     public Object userGroupCreate(
             @RequestBody @Valid UserGroupCreateRequestBody requestBody,
@@ -989,6 +995,7 @@ public class UserManagementController extends BaseController {
     /**
      * User group modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_GROUP_MODIFY)
     @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
     public Object userGroupModify(
             @RequestBody @Valid UserGroupModifyRequestBody requestBody,
@@ -1040,6 +1047,7 @@ public class UserManagementController extends BaseController {
     /**
      * User group delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_USER_GROUP_DELETE)
     @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
     public Object userGroupDelete(
             @RequestBody @Valid UserGroupDeleteRequestBody requestBody,
