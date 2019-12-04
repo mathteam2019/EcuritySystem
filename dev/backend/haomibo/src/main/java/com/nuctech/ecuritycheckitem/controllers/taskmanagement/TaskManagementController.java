@@ -15,6 +15,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
+import com.querydsl.jpa.impl.JPAUtil;
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +67,8 @@ public class TaskManagementController extends BaseController {
         long from;
         long to;
 
-        Map<String, JudgeStatisticsResponseModel> data;
+        JudgeStatisticsResponseModel totalStatistics;
+        Map<Integer, JudgeStatisticsResponseModel> detailedStatistics;
 
     }
 
@@ -2220,11 +2222,11 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
-     *
      * Private purpose Only
      * Get Start KeyDate and End Key Date for statistics
-     *
+     * <p>
      * Ex: In case of Hour - it returns [1, 24], In case of Month it returns [1, 12]
+     *
      * @param requestBody
      * @return [startKeyDate, endKeyDate]
      */
@@ -2264,7 +2266,7 @@ public class TaskManagementController extends BaseController {
 //                    }
 
                     //if (yearMin < 1970) {
-                     yearMin = 1970;
+                    yearMin = 1970;
                     //}
 
                     Calendar calendar = Calendar.getInstance();
@@ -2343,6 +2345,7 @@ public class TaskManagementController extends BaseController {
                 "\tMIN( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n" +
                 "FROM\n" +
                 "\tser_judge_graph g\n" +
+                "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
                 "\tLEFT JOIN ser_login_info l ON g.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tLEFT JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
                 "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
@@ -2363,7 +2366,7 @@ public class TaskManagementController extends BaseController {
         }
         if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
 
-            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%' ");
 
         }
         if (requestBody.getFilter().getStartTime() != null) {
@@ -2386,46 +2389,12 @@ public class TaskManagementController extends BaseController {
         }
 
 
-        //.................
+        //.... Get Total Statistics
         queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
 
-        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+        Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
 
-            Integer from, to;
-            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
-            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1;
-
-            response.setFrom(from);
-            response.setTo(to);
-            response.setPer_page(requestBody.getPerPage());
-            response.setCurrent_page(requestBody.getCurrentPage());
-
-            queryBuilder.append(" LIMIT " + from + ", " + requestBody.getPerPage());
-
-        }
-
-        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
-
-
-        List<Object> result = jpaQuery.getResultList();
-
-        HashMap<String, JudgeStatisticsResponseModel> data = new HashMap<>();
-
-        //init hash map
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        }
-        catch (Exception e) {
-
-        }
-
-        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
-            data.put(i.toString(), new JudgeStatisticsResponseModel());
-        }
+        List<Object> resultTotal = jpaQueryTotal.getResultList();
 
         SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
         try {
@@ -2434,6 +2403,73 @@ public class TaskManagementController extends BaseController {
 
         }
 
+        for (int i = 0; i < resultTotal.size(); i++) {
+
+            Object[] item = (Object[]) resultTotal.get(i);
+
+            JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
+            try {
+
+                record.setTime(Integer.parseInt(item[0].toString()));
+                record.setArtificialJudge(Long.parseLong(item[1].toString()));
+                record.setAssignTimeout(Long.parseLong(item[2].toString()));
+                record.setJudgeTimeout(Long.parseLong(item[3].toString()));
+                record.setAtrResult(Long.parseLong(item[4].toString()));
+                record.setSuspiction(Long.parseLong(item[5].toString()));
+                record.setNoSuspiction(Long.parseLong(item[6].toString()));
+                record.setTotal(Long.parseLong(item[7].toString()));
+                record.setAvgDuration(Double.parseDouble(item[8].toString()));
+                record.setMaxDuration(Double.parseDouble(item[9].toString()));
+                record.setMinDuration(Double.parseDouble(item[1].toString()));
+                record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+                record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+                record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+
+
+                record.setArtificialResultRate(record.getArtificialResult() / (double) record.getTotal());
+                record.setAssignTimeoutResultRate(record.getAssignTimeout() / (double) record.getTotal());
+                record.setJudgeTimeoutResultRate(record.getJudgeTimeout() / (double) record.getTotal());
+                record.setSuspictionRate(record.getSuspiction() / (double) record.getTotal());
+                record.setNoSuspictionRate(record.getNoSuspiction() / (double) record.getTotal());
+                record.setScanResultRate(record.getAtrResult() / (double) record.getTotal());
+                record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
+
+            } catch (Exception e) {
+
+            }
+
+            response.setTotalStatistics(record);
+
+        }
+
+
+        //.... Get Detailed Statistics
+
+        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
+
+        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+
+
+        List<Object> result = jpaQuery.getResultList();
+
+        HashMap<Integer, JudgeStatisticsResponseModel> data = new HashMap<>();
+
+        //init hash map
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) {
+
+        }
+
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+            data.put(i, new JudgeStatisticsResponseModel());
+        }
+
+
+
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
@@ -2441,7 +2477,7 @@ public class TaskManagementController extends BaseController {
             JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
             try {
 
-                record.setTime(item[0].toString());
+                record.setTime(Integer.parseInt(item[0].toString()));
                 record.setArtificialJudge(Long.parseLong(item[1].toString()));
                 record.setAssignTimeout(Long.parseLong(item[2].toString()));
                 record.setJudgeTimeout(Long.parseLong(item[3].toString()));
@@ -2473,6 +2509,50 @@ public class TaskManagementController extends BaseController {
 
         }
 
+        HashMap<Integer, JudgeStatisticsResponseModel> sorted = new HashMap<>();
+
+        for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
+
+            sorted.put(i, data.get(i));
+
+        }
+
+
+        HashMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new HashMap<>();
+
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+
+            Integer from, to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
+
+            if (from < keyValueMin) {
+                from  = keyValueMin;
+            }
+
+            if (to > keyValueMax) {
+                to = keyValueMax;
+            }
+
+            response.setFrom(from);
+            response.setTo(to);
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+
+            for (Integer i = from ; i <= to; i ++) {
+
+                detailedStatistics.put(i, sorted.get(i));
+
+            }
+
+            response.setDetailedStatistics(detailedStatistics);
+
+        }
+        else {
+
+            response.setDetailedStatistics(sorted);
+
+        }
 
         try {
             response.setTotal(result.size());
@@ -2480,8 +2560,6 @@ public class TaskManagementController extends BaseController {
         } catch (Exception e) {
 
         }
-
-        response.setData(data);
 
         return response;
 
@@ -2602,12 +2680,11 @@ public class TaskManagementController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
-        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
+        for (Integer i = keyValueMin; i < keyValueMax; i++) {
             data.put(i.toString(), new HandExaminationResponseModel());
         }
 
@@ -2620,24 +2697,23 @@ public class TaskManagementController extends BaseController {
 
             try {
 
-            record.setTime(item[0].toString());
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSeizure(Long.parseLong(item[2].toString()));
-            record.setNoSeizure(Long.parseLong(item[3].toString()));
-            record.setTotalJudge(Long.parseLong(item[4].toString()));
-            record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setMistakeReport(Long.parseLong(item[6].toString()));
-            record.setArtificialJudge(Long.parseLong(item[7].toString()));
-            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+                record.setTime(item[0].toString());
+                record.setTotal(Long.parseLong(item[1].toString()));
+                record.setSeizure(Long.parseLong(item[2].toString()));
+                record.setNoSeizure(Long.parseLong(item[3].toString()));
+                record.setTotalJudge(Long.parseLong(item[4].toString()));
+                record.setMissingReport(Long.parseLong(item[5].toString()));
+                record.setMistakeReport(Long.parseLong(item[6].toString()));
+                record.setArtificialJudge(Long.parseLong(item[7].toString()));
+                record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+                record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+                record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+                record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+                record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
 
-            record.setMaxDuration(Double.parseDouble(item[13].toString()));
-            record.setMinDuration(Double.parseDouble(item[14].toString()));
-            record.setAvgDuration(Double.parseDouble(item[15].toString()));
-
+                record.setMaxDuration(Double.parseDouble(item[13].toString()));
+                record.setMinDuration(Double.parseDouble(item[14].toString()));
+                record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
 
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
@@ -2766,10 +2842,7 @@ public class TaskManagementController extends BaseController {
             response.setPer_page(requestBody.getPerPage());
             response.setCurrent_page(requestBody.getCurrentPage());
 
-            queryBuilder.append(" LIMIT " + from + ", " + requestBody.getPerPage());
-
         }
-
 
         Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
 
@@ -2785,12 +2858,11 @@ public class TaskManagementController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
-        for (Integer i = keyValueMin; i < keyValueMax; i ++) {
+        for (Integer i = keyValueMin; i < keyValueMax; i++) {
             data.put(i.toString(), new EvaluateJudgeResponseModel());
         }
 
@@ -2802,24 +2874,23 @@ public class TaskManagementController extends BaseController {
             EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
 
             try {
-            record.setTime(item[0].toString());
-            record.setTotal(Long.parseLong(item[1].toString()));
-            record.setSeizure(Long.parseLong(item[2].toString()));
-            record.setNoSeizure(Long.parseLong(item[3].toString()));
-            record.setTotalJudge(Long.parseLong(item[4].toString()));
-            record.setMissingReport(Long.parseLong(item[5].toString()));
-            record.setMistakeReport(Long.parseLong(item[6].toString()));
-            record.setArtificialJudge(Long.parseLong(item[7].toString()));
-            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+                record.setTime(item[0].toString());
+                record.setTotal(Long.parseLong(item[1].toString()));
+                record.setSeizure(Long.parseLong(item[2].toString()));
+                record.setNoSeizure(Long.parseLong(item[3].toString()));
+                record.setTotalJudge(Long.parseLong(item[4].toString()));
+                record.setMissingReport(Long.parseLong(item[5].toString()));
+                record.setMistakeReport(Long.parseLong(item[6].toString()));
+                record.setArtificialJudge(Long.parseLong(item[7].toString()));
+                record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+                record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+                record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+                record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+                record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
 
-            record.setMaxDuration(Double.parseDouble(item[13].toString()));
-            record.setMinDuration(Double.parseDouble(item[14].toString()));
-            record.setAvgDuration(Double.parseDouble(item[15].toString()));
-
+                record.setMaxDuration(Double.parseDouble(item[13].toString()));
+                record.setMinDuration(Double.parseDouble(item[14].toString()));
+                record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
 
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
@@ -2835,7 +2906,6 @@ public class TaskManagementController extends BaseController {
 
         }
 
-
         try {
             response.setTotal(result.size());
             response.setLast_page(response.getTotal() / response.getPer_page() + 1);
@@ -2843,7 +2913,13 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        response.setData(data);
+        HashMap<String, EvaluateJudgeResponseModel> sorted = new HashMap<>();
+        data.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
+
+        response.setData(sorted);
 
         return response;
 
@@ -2860,9 +2936,6 @@ public class TaskManagementController extends BaseController {
         }
 
         HashMap<Integer, String> temp = new HashMap<Integer, String>();
-
-        temp.put(1, "Apple");
-        temp.put(1, "Bear");
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
         response = getJudgeStatistics(requestBody);
