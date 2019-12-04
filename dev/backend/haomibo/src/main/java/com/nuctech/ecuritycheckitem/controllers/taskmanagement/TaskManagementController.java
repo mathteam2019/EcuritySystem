@@ -2858,8 +2858,6 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        response.setDetailedStatistics(detailedStatistics);
-
         return response;
 
     }
