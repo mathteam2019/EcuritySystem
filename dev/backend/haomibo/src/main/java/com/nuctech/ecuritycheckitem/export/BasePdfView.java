@@ -28,4 +28,13 @@ public class BasePdfView {
         time.setAlignment(Element.ALIGN_RIGHT);
         return time;
     }
+
+    public static String formatDate(Date date) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
+
+        String strDate = dateFormat.format(date);
+
+        return strDate;
+    }
 }

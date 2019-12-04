@@ -25,4 +25,13 @@ public class BaseExcelView {
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.EXCEL_DATETIME_FORMAT);
         return dateFormat.format(curTime);
     }
+
+    public static String formatDate(Date date) {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
+
+        String strDate = dateFormat.format(date);
+
+        return strDate;
+    }
 }

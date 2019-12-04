@@ -9,6 +9,8 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagem
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalPdfView;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskExcelView;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -224,7 +226,7 @@ public class TaskManagementController extends BaseController {
         @NotNull
         Boolean isAll;
 
-        TaskGenerateRequestBody.Filter filter;
+        TaskGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
@@ -355,11 +357,72 @@ public class TaskManagementController extends BaseController {
 
     }
 
+    private BooleanBuilder getPredicate(TaskGetByFilterAndPageRequestBody.Filter filter) {
+
+        QSerTask builder = QSerTask.serTask;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+
+            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
+                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
+            }
+            if (filter.getMode() != null) {
+                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
+            }
+            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
+                predicate.and(builder.taskStatus.eq(filter.getStatus()));
+            }
+            if (filter.getFieldId() != null) {
+                predicate.and(builder.fieldId.eq(filter.getFieldId()));
+            }
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
+                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
+                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
+                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
+                predicate.and(scanUserName);
+            }
+            if (filter.getStartTime() != null) {
+                predicate.and(builder.createdTime.after(filter.getStartTime()));
+            }
+            if (filter.getEndTime() != null) {
+                predicate.and(builder.createdTime.before(filter.getEndTime()));
+            }
+        }
+
+        return predicate;
+    }
+
+    private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
+
+        List<SerTask> exportList = new ArrayList<>();
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            for(int i = 0; i < taskList.size(); i ++) {
+                SerTask task = taskList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(task.getTaskId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(task);
+                }
+            }
+        } else {
+            exportList = taskList;
+        }
+        return exportList;
+    }
+
     /**
      * Task table generate excel file request.
      */
     @RequestMapping(value = "/generate/process-task/export", method = RequestMethod.POST)
-    public Object knowledgeCasePersonalGenerateExcelFile(@RequestBody @Valid KnowledgeDealManagementController.KnowledgeCaseGenerateRequestBody requestBody,
+    public Object processTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -370,14 +433,14 @@ public class TaskManagementController extends BaseController {
 
 
         //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+        List<SerTask> taskList = StreamSupport
+                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
 
-        InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
+        InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(taskList);
 
 
         HttpHeaders headers = new HttpHeaders();
@@ -394,7 +457,7 @@ public class TaskManagementController extends BaseController {
      * Knowledge Case personal generate pdf file request.
      */
     @RequestMapping(value = "/generate/personal/print", method = RequestMethod.POST)
-    public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeDealManagementController.KnowledgeCaseGenerateRequestBody requestBody,
+    public Object processTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -405,13 +468,13 @@ public class TaskManagementController extends BaseController {
 
 
         //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+        List<SerTask> taskList = StreamSupport
+                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-        InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
+        InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
