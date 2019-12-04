@@ -50,6 +50,8 @@ public class KnowledgeDealPersonalPdfView {
             document.add(time);
 
             PdfPTable table = new PdfPTable(7);
+
+            table.setWidthPercentage(100);
             Stream.of("序号", "任务编号", "图像", "任务结论", "现场", "通道", "查获物品")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

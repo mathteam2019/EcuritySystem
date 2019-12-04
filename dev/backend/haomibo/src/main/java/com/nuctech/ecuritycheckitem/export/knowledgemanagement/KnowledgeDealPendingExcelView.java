@@ -43,7 +43,7 @@ public class KnowledgeDealPendingExcelView  {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员案例");
+            titleCell.setCellValue("待审批案例");
             titleCell.setCellStyle(headerStyle);
 
             Row time = sheet.createRow(1);
