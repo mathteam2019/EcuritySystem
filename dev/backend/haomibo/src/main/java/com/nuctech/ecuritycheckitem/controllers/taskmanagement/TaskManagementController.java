@@ -456,7 +456,7 @@ public class TaskManagementController extends BaseController {
     /**
      * Knowledge Case personal generate pdf file request.
      */
-    @RequestMapping(value = "/generate/personal/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/process-task/print", method = RequestMethod.POST)
     public Object processTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
