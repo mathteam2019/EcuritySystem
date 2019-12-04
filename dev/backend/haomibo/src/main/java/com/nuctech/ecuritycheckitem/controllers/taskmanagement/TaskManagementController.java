@@ -2566,8 +2566,15 @@ public class TaskManagementController extends BaseController {
         }
 
         try {
-            response.setTotal(result.size());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+            response.setTotal(sorted.size());
+            if (response.getTotal() % response.getPer_page() == 0) {
+                response.setLast_page(response.getTotal() / response.getPer_page());
+            }
+            else {
+                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+            }
+            
         } catch (Exception e) {
 
         }
@@ -2829,8 +2836,15 @@ public class TaskManagementController extends BaseController {
 
 
         try {
-            response.setTotal(result.size());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+
+            response.setTotal(sorted.size());
+            if (response.getTotal() % response.getPer_page() == 0) {
+                response.setLast_page(response.getTotal() / response.getPer_page());
+            }
+            else {
+                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+            }
+
         } catch (Exception e) {
 
         }
@@ -3098,8 +3112,14 @@ public class TaskManagementController extends BaseController {
         }
 
         try {
-            response.setTotal(result.size());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+            response.setTotal(sorted.size());
+            if (response.getTotal() % response.getPer_page() == 0) {
+                response.setLast_page(response.getTotal() / response.getPer_page());
+            }
+            else {
+                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+            }
+
         } catch (Exception e) {
 
         }
