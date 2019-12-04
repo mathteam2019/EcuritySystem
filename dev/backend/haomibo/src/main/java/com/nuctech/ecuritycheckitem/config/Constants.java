@@ -33,8 +33,14 @@ public class Constants {
             Constants.PORTRAIT_FILE_SERVING_BASE_URL + "**"
     };
 
-    public static final short EXCEL_HEAD_FONT_SIZE = 11;
+    public static final short EXCEL_HEAD_FONT_SIZE = 14;
     public static final String EXCEL_HEAD_FONT_NAME = "Arial";
+
+    public static final short PDF_TITLE_FONT_SIZE = 24;
+    public static final String PDF_TITLE_FONT_NAME = "Arial";
+    public static final short PDF_HEAD_FONT_SIZE = 14;
+    public static final short PDF_TITLE_SPACING = 20;
+    public static final short PDF_TIME_SPACING = 10;
 
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 

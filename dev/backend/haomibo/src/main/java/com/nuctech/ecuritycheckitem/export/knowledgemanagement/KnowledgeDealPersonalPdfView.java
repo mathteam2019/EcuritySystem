@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class KnowledgeDealPersonalPdfView {
-    public static InputStream buildExcelDocument(List<SerKnowledgeCaseDeal> exportDealList) {
+    public static InputStream buildPDFDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

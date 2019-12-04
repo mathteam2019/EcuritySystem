@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -29,7 +31,7 @@ public class KnowledgeDealPendingExcelView  {
 
             Sheet sheet = workbook.createSheet("Knowledge-Pending");
 
-            Row header = sheet.createRow(0);
+
 
             CellStyle headerStyle = workbook.createCellStyle();
 
@@ -39,49 +41,51 @@ public class KnowledgeDealPendingExcelView  {
             font.setBold(true);
             headerStyle.setFont(font);
 
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("人员案例");
+            titleCell.setCellStyle(headerStyle);
+
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            Date curTime = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            timeCell.setCellValue(dateFormat.format(curTime));
+
+            Row header = sheet.createRow(3);
             Cell headerCellNo = header.createCell(0);
             headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
 
             Cell headerCellNumber = header.createCell(1);
             headerCellNumber.setCellValue("任务编号");
-            headerCellNumber.setCellStyle(headerStyle);
 
             Cell headerCellImage = header.createCell(2);
             headerCellImage.setCellValue("图像");
-            headerCellImage.setCellStyle(headerStyle);
 
             Cell headerCellMode = header.createCell(3);
             headerCellMode.setCellValue("工作模式");
-            headerCellMode.setCellStyle(headerStyle);
 
             Cell headerCellResult = header.createCell(4);
             headerCellResult.setCellValue("任务结论");
-            headerCellResult.setCellStyle(headerStyle);
 
             Cell headerCellField = header.createCell(5);
             headerCellField.setCellValue("现场");
-            headerCellField.setCellStyle(headerStyle);
 
             Cell headerCellScanDevice = header.createCell(6);
             headerCellScanDevice.setCellValue("安检仪");
-            headerCellScanDevice.setCellStyle(headerStyle);
 
             Cell headerCellJudgeDevice = header.createCell(7);
             headerCellJudgeDevice.setCellValue("判图站");
-            headerCellJudgeDevice.setCellStyle(headerStyle);
 
             Cell headerCellHandDevice = header.createCell(8);
             headerCellHandDevice.setCellValue("手检站");
-            headerCellHandDevice.setCellStyle(headerStyle);
 
             Cell headerCellGoods = header.createCell(9);
             headerCellGoods.setCellValue("查获物品");
-            headerCellGoods.setCellStyle(headerStyle);
 
 
 
-            int counter = 1;
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
