@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class HandExaminationResponseModel {
 
-    Integer time;
+    int time;
     long total;
     long seizure;
     long noSeizure;

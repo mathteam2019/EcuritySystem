@@ -12,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class JudgeStatisticsResponseModel {
 
-    Integer time; //时间段
+    int time; //时间段
     long artificialJudge; //人工判图
     long assignTimeout; //分派超时
     long judgeTimeout; //判图超时
