@@ -183,10 +183,32 @@
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-setting')">
                       <b-form-select v-model="platFormOtherData.deviceTrafficSettings" :options="levelOptions"
                                      plain></b-form-select>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && !$v.platFormOtherData.deviceTrafficSettings.required) ?
+                        $t('device-management.device-classify-item.field-is-mandatory') : " " }}
+                      </div>
+
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-high')">
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh"></b-form-input>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue || !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
+                        $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-middle')">
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle"></b-form-input>
+                      <div class="invalid-feedback d-block">
+                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue || !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
+                        $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
+                      </div>
                     </b-form-group>
                   </b-col>
                 </b-row>
-
                 <b-row class="mb-3 mt-2">
                   <b-col cols="7">
                     <b-row>
@@ -237,10 +259,6 @@
           <b-button size="sm" variant="info default" class="mr-3" @click="savePlatFormData()">
             <i class="icofont-save"></i>
             {{$t('permission-management.permission-control.save')}}
-          </b-button>
-          <b-button size="sm" variant="info default">
-            <i class="icofont-long-arrow-left"></i>
-            {{$t('permission-management.return')}}
           </b-button>
         </div>
 
@@ -499,15 +517,18 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button v-if="scanForm.status === 'inactive'" @click="onAction('activate')" variant="success default" size="sm"><i
+              <b-button v-if="scanForm.status === 'inactive'" @click="onAction('activate')" variant="success default"
+                        size="sm"><i
                 class="icofont-check-circled"></i> {{
                 $t('permission-management.action-make-active') }}
               </b-button>
-              <b-button v-if="scanForm.status === 'active'" @click="onAction('inactivate')" variant="warning default" size="sm"><i
+              <b-button v-if="scanForm.status === 'active'" @click="onAction('inactivate')" variant="warning default"
+                        size="sm"><i
                 class="icofont-ban"></i> {{
                 $t('permission-management.action-make-inactive') }}
               </b-button>
-              <b-button v-if="scanForm.status === 'inactive'" @click="onSaveScanFormData()" variant="success default" size="sm"><i class="icofont-save"></i>
+              <b-button v-if="scanForm.status === 'inactive'" @click="onSaveScanFormData()" variant="success default"
+                        size="sm"><i class="icofont-save"></i>
                 {{ $t('permission-management.save-button') }}
               </b-button>
               <b-button @click="onAction('back')" variant="info default" size="sm"><i
@@ -563,6 +584,9 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
+  import {validationMixin} from 'vuelidate';
+
+  const {required, minValue, maxValue} = require('vuelidate/lib/validators');
 
   export default {
     components: {
@@ -570,6 +594,20 @@
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'colorpicker': ColorPicker
+    },
+    mixins: [validationMixin],
+    validations: {
+      platFormOtherData: {
+        deviceTrafficSettings: {
+          required
+        },
+        deviceTrafficHigh: {
+          minValue: minValue(0), maxValue: maxValue(400)
+        },
+        deviceTrafficMiddle: {
+          minValue: minValue(0), maxValue: maxValue(400)
+        }
+      }
     },
     mounted() {
       this.getPlatFormData();
@@ -600,6 +638,7 @@
     data() {
       return {
         tabIndex: 0,
+        submitted: false,
         pageStatus: 'table',
         filter: {
           deviceName: '',
@@ -691,10 +730,12 @@
           initialPassword: null,
           loginNumber: null,
           logMaxNumber: null,
-          deviceTrafficSettings: null,
+          deviceTrafficSettings: 10,
           storageDetectionCycle: null,
           storageAlarm: null,
           historyDataCycle: null,
+          deviceTrafficHigh: null,
+          deviceTrafficMiddle: null,
         },
         dataStorageOptions: [
           {value: 'business', text: this.$t('system-setting.storage-business')},
@@ -703,9 +744,10 @@
           {value: 'original', text: this.$t('system-setting.storage-original')},
         ],
         levelOptions: [
-          {value: 'low', text: this.$t('system-setting.level-low')},
-          {value: 'middle', text: this.$t('system-setting.level-middle')},
-          {value: 'high', text: this.$t('system-setting.level-high')},
+          {value: 10, text: '10'},
+          {value: 20, text: '20'},
+          {value: 30, text: '30'},
+          {value: 60, text: '60'}
         ],
         scanForm: {
           scanParamsId: 0,
@@ -734,6 +776,16 @@
     methods: {
       hideModal(modal) {
         this.$refs[modal].hide();
+      },
+      onSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          deviceName: '',
+          status: null
+        };
+        this.$refs.vuetable.refresh();
       },
       onAction(action, data) {
         switch (action) {
@@ -775,7 +827,7 @@
           temp.deviceNumber = temp.device ? temp.device.deviceSerial : '';
           temp.deviceName = temp.device ? temp.device.deviceName : '';
           /* temp.siteName = temp.device ? temp.device.field.fieldDesignation : '';*/
-           temp.configValue = temp.fromParamsList.length > 0 ? temp.fromParamsList[0].device.deviceName : "";
+          temp.configValue = temp.fromParamsList.length > 0 ? temp.fromParamsList[0].device.deviceName : "";
           transformed.data.push(temp);
         }
         return transformed
@@ -803,11 +855,12 @@
 
       },
       initializeSpanFormData(result) {
+        this.submitted = false;
         for (let key in this.scanForm) {
           if (Object.keys(result).includes(key)) {
             this.scanForm[key] = result[key];
-          } else if(key === 'status'){
-            this.scanForm.status = result.device?result.device.status:null;
+          } else if (key === 'status') {
+            this.scanForm.status = result.device ? result.device.status : null;
           }
           else if (key === 'fromDeviceId') {
             this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
@@ -844,9 +897,10 @@
         this.$refs['modal-inactive'].hide();
       },
       //save scanform
-      onSaveScanFormData(){
+      onSaveScanFormData() {
+
         this.scanForm.deviceId = this.selectedDeviceId;
-        getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`,this.scanForm).then((response) => {
+        getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`, this.scanForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
           switch (message) {
@@ -898,8 +952,10 @@
               if (result.length > 0) {
                 result = result[0];
                 for (let key in this.platFormOtherData) {
-                  if (Object.keys(result).includes(key))
+                  if (Object.keys(result).includes(key)) {
                     this.platFormOtherData[key] = result[key];
+                  }
+
                 }
               }
           }
@@ -923,6 +979,11 @@
           });
         }
         else { //save platform other data
+          this.submitted = true;
+          this.$v.platFormOtherData.$touch();
+          if (this.$v.platFormOtherData.$invalid) {
+            return;
+          }
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-other/modify`, this.platFormOtherData
           ).then((response) => {
             let message = response.data.message;
