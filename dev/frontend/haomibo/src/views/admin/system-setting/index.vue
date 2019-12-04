@@ -777,6 +777,16 @@
       hideModal(modal) {
         this.$refs[modal].hide();
       },
+      onSearchButton() {
+        this.$refs.vuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          deviceName: '',
+          status: null
+        };
+        this.$refs.vuetable.refresh();
+      },
       onAction(action, data) {
         switch (action) {
           case 'modify':
