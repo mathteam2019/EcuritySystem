@@ -357,6 +357,7 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_ORG_UPDATE_STATUS)
     @RequestMapping(value = "/organization/update-status", method = RequestMethod.POST)
     public Object organizationUpdateStatus(
             @RequestBody @Valid OrganizationUpdateStatusRequestBody requestBody,

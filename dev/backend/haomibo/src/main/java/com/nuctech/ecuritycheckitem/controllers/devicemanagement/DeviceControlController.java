@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DevicePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.querydsl.core.BooleanBuilder;
@@ -526,6 +528,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device update status request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_UPDATE_STATUS)
     @RequestMapping(value = "/device/update-status", method = RequestMethod.POST)
     public Object deviceUpdateStatus(
             @RequestBody @Valid DeviceUpdateStatusRequestBody requestBody,
@@ -558,6 +561,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CREATE)
     @RequestMapping(value = "/device/create", method = RequestMethod.POST)
     public Object deviceCreate(
             @ModelAttribute @Valid DeviceCreateRequestBody requestBody,
@@ -618,6 +622,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_MODIFY)
     @RequestMapping(value = "/device/modify", method = RequestMethod.POST)
     public Object deviceModify(
             @ModelAttribute @Valid DeviceModifyRequestBody requestBody,
@@ -681,6 +686,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_DELETE)
     @RequestMapping(value = "/device/delete", method = RequestMethod.POST)
     public Object deviceDelete(
             @RequestBody @Valid DeviceDeleteRequestBody requestBody,
@@ -739,6 +745,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device field modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_MODIFY)
     @RequestMapping(value = "/device/field-modify", method = RequestMethod.POST)
     public Object deviceFieldModify(
             @RequestBody @Valid DeviceFieldModifyRequestBody requestBody,

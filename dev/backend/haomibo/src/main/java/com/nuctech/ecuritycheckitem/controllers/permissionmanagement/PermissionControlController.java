@@ -652,6 +652,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Data group create request.
      */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_CREATE)
     @RequestMapping(value = "/data-group/create", method = RequestMethod.POST)
     public Object dataGroupCreate(
             @RequestBody @Valid DataGroupCreateRequestBody requestBody,
@@ -831,6 +832,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Data group modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_MODIFY)
     @RequestMapping(value = "/data-group/modify", method = RequestMethod.POST)
     public Object dataGroupModify(
             @RequestBody @Valid DataGroupModifyRequestBody requestBody,
@@ -883,6 +885,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Data group delete request.
      */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_DELETE)
     @RequestMapping(value = "/data-group/delete", method = RequestMethod.POST)
     public Object dataGroupDelete(
             @RequestBody @Valid DataGroupDeleteRequestBody requestBody,

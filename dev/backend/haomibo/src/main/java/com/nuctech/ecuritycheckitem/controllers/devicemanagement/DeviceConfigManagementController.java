@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -22,6 +23,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -255,6 +257,7 @@ public class DeviceConfigManagementController extends BaseController {
     /**
      * Device config modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CONFIG_MODIFY)
     @RequestMapping(value = "/config/modify", method = RequestMethod.POST)
     public Object deviceConfigModify(
             @RequestBody @Valid DeviceConfigModifyRequestBody requestBody,

@@ -12,11 +12,13 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import lombok.Getter;
@@ -206,6 +208,7 @@ public class ScanParamManagementController extends BaseController {
     /**
      * Scan Param modify request.
      */
+    @PreAuthorize(Role.Authority.HAS_SCAN_PARAM_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public Object scanParamModify(
             @RequestBody @Valid ScanParamModifyRequestBody requestBody,

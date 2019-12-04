@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserGroupExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserGroupPdfView;
@@ -33,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -212,6 +214,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User assign role and data range request.
      */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_CREATE)
     @RequestMapping(value = "/user/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userAssignRoleAndDataRange(
             @RequestBody @Valid UserAssignRoleAndDataRangeRequestBody requestBody,
@@ -283,6 +286,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User group assign role and data range request.
      */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_CREATE)
     @RequestMapping(value = "/user-group/assign-role-and-data-range", method = RequestMethod.POST)
     public Object userGroupAssignRoleAndDataRange(
             @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
