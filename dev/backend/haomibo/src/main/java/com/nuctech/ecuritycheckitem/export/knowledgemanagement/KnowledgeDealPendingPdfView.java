@@ -44,7 +44,7 @@ public class KnowledgeDealPendingPdfView {
             document.add(title);
 
             Date curTime = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
             Paragraph time = new Paragraph(dateFormat.format(curTime));
             time.setSpacingAfter(Constants.PDF_TIME_SPACING);
             time.setAlignment(Element.ALIGN_RIGHT);

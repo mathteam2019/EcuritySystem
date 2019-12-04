@@ -49,7 +49,7 @@ public class KnowledgeDealPendingExcelView  {
             Row time = sheet.createRow(1);
             Cell timeCell = time.createCell(0);
             Date curTime = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
             timeCell.setCellValue(dateFormat.format(curTime));
 
             Row header = sheet.createRow(3);

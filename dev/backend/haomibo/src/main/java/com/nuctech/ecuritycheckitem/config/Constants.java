@@ -42,6 +42,7 @@ public class Constants {
     public static final short PDF_TITLE_SPACING = 20;
     public static final short PDF_TIME_SPACING = 10;
 
+    public static final String PDF_DATETIME_FORMAT = "yyyy/MM/dd";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 }
