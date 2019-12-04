@@ -825,9 +825,18 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        QSysDevice builder = QSysDevice.sysDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        predicate.and(builder.fieldId.isNull());
 
 
-        List<SysDevice> preSysDeviceList = sysDeviceRepository.findAll();
+
+
+        List<SysDevice> preSysDeviceList = StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
         List<SysDevice> sysDeviceList;
 
         Long categoryId = requestBody.getCategoryId();
