@@ -3,35 +3,37 @@
     <div class="h-100 flex-row d-flex">
       <div class="d-flex flex-grow-1 flex-column dual-list-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
-          <b-form-select :options="[]" plain></b-form-select>
+          <b-form-select v-model="availableFilter"  :options="filterOptions" plain></b-form-select>
         </b-form-group>
         <div class='list' v-bind:class="options.resizeBox">
           <div class="d-block">
             {{$t('device-management.before-selected')}}
           </div>
           <ul class='pd'>
-            <li class="mb-1" v-for='item in filtering' :key="item.name" @click='transferToRight(options.items.indexOf(item))'>
-                {{ item.name }}
+            <li class="mb-1" v-for='item in availableFilterData' :key="item.name"
+                @click='transferToRight(options.items.indexOf(item))'>
+              {{ item.name }}
             </li>
           </ul>
         </div>
       </div>
       <div class="d-flex flex-grow-0 justify-content-center align-items-center flex-column">
         <div class="move-button-container">
-          <span @click='transferToRight(options.items.indexOf(item))'><i class="icofont-long-arrow-right"></i></span>
-          <span @click='transferToLeft(-1)'><i class="icofont-long-arrow-left"></i></span>
+          <span  @click='transferToRight(options.items.indexOf(item))'><i :class="options.isLtr === 'ltr'?'icofont-long-arrow-right':'icofont-long-arrow-left'"></i></span>
+          <span @click='transferToLeft(-1)'><i :class="options.isLtr === 'rtl'?'icofont-long-arrow-right':'icofont-long-arrow-left'"></i></span>
         </div>
       </div>
       <div class="d-flex flex-grow-1 flex-column dual-list-column">
         <b-form-group class="mt-2" :label="$t('menu.device-classify')">
-          <b-form-select :options="[]" plain></b-form-select>
+          <b-form-select v-model="appliedFilter" :options="filterOptions" plain></b-form-select>
         </b-form-group>
         <div class='list' v-bind:class="options.resizeBox">
           <div class="d-block">
             {{$t('device-management.selected')}}
           </div>
           <ul class='pd'>
-            <li class="mb-1" v-for='item in options.selectedItems' :key="item.name" @click='transferToLeft(options.selectedItems.indexOf(item))'>
+            <li class="mb-1" v-for='item in appliedFilterData' :key="item.name"
+                @click='transferToLeft(options.selectedItems.indexOf(item))'>
               {{ item.name }}
             </li>
           </ul>
@@ -48,7 +50,7 @@
     $move-button-color: #178af7;
 
     .form-control {
-      max-width: none!important;
+      max-width: none !important;
     }
 
     .move-button-container {
@@ -86,7 +88,7 @@
       height: 100%;
       background-color: white;
 
-      &>div {
+      & > div {
         padding: $item-horizontal-margin/2 #{$item-horizontal-margin - .2rem};
         font-size: 1rem;
         background-color: #ebebeb;
@@ -95,11 +97,10 @@
 
       ul.pd {
         padding-left: 0px;
-        list-style-type: none!important;
+        list-style-type: none !important;
         width: 100%;
         font-size: 1rem;
         margin-top: 1rem;
-
         li {
           padding: $item-horizontal-margin/2 $item-horizontal-margin;
           margin: 0px;
@@ -125,19 +126,21 @@
     props: {
       'options': {
         type: Object,
-        default: {isLtr: 'rtl'},
+        isLtr: 'ltr',
         required: true
       }
     },
     data: function () {
       return {
-        search: '',
+        filterOptions: [],
+        availableFilter: null,
+        appliedFilter: null,
         item: {}
       }
     },
     methods: {
       transferToRight: function (index) {
-        this.search = ''
+        //this.search = ''
         if (index >= 0) {
           this.options.selectedItems.push(this.options.items[index])
           this.options.items.splice(index, 1)
@@ -150,7 +153,6 @@
         }
       },
       transferToLeft: function (index) {
-        this.search = ''
         if (index >= 0) {
           this.options.items.push(this.options.selectedItems[index])
           this.options.selectedItems.splice(index, 1)
@@ -160,16 +162,39 @@
           this.options.items.push(this.options.selectedItems[cont])
         }
         this.options.selectedItems.splice(0, this.options.selectedItems.length)
+      },
+      setAvailableItem: function (data = []) {
+        this.options.items = data;
+      },
+      setAppliedItem: function (data = []) {
+        this.options.selectedItems = data;
+      },
+      setFilterOptions: function (data = []) {
+        this.filterOptions = data;
+      },
+      resetFilterOption:function () {
+        this.availableFilter = null;
+        this.appliedFilter = null;
       }
     },
     computed: {
-      filtering: function () {
-        if (this.search) {
+      availableFilterData: function () {
+        if (this.availableFilter) {
           return this.options.items.filter((item) => {
-            return item.name.toLowerCase().indexOf(this.search) !== -1
+            return item.category === this.availableFilter
+            //return item.name.toLowerCase().indexOf(this.search) !== -1
           })
         }
         return this.options.items
+      },
+      appliedFilterData: function () {
+        if (this.appliedFilter) {
+          return this.options.selectedItems.filter((item) => {
+            return item.category === this.appliedFilter
+            //return item.name.toLowerCase().indexOf(this.search) !== -1
+          })
+        }
+        return this.options.selectedItems
       }
     }
   }

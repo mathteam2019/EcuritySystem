@@ -77,24 +77,6 @@
                   </b-col>
                 </b-row>
                 <b-row>
-                  <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.seized-item-classification')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                  <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.seized-items')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                  <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.check-item-level')">
-                      <b-form-input></b-form-input>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-
-                <b-row>
                   <b-col>
                     <label
                       class="font-weight-bold">{{$t('system-setting.parameter-setting.hand-process-history')}}</label>

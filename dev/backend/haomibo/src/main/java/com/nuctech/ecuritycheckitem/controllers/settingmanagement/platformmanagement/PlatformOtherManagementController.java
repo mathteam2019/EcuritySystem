@@ -44,19 +44,28 @@ public class PlatformOtherManagementController extends BaseController {
 
         String initialPassword;
 
+        @NotNull
         Long loginNumber;
 
+        @NotNull
         Long logMaxNumber;
 
         @NotNull
-        @Pattern(regexp = SerPlatformOtherParams.Setting.HIGH + "|" + SerPlatformOtherParams.Setting.MIDDLE
-                + "|" + SerPlatformOtherParams.Setting.LOW)
-        String deviceTrafficSettings;
+        Integer deviceTrafficSettings;
 
+        @NotNull
+        Integer deviceTrafficHigh;
+
+        @NotNull
+        Integer deviceTrafficMiddle;
+
+        @NotNull
         Long storageDetectionCycle;
 
+        @NotNull
         Long storageAlarm;
 
+        @NotNull
         Long historyDataCycle;
 
 
@@ -68,6 +77,8 @@ public class PlatformOtherManagementController extends BaseController {
                     .loginNumber(this.getLoginNumber())
                     .logMaxNumber(this.getLogMaxNumber())
                     .deviceTrafficSettings(this.getDeviceTrafficSettings())
+                    .deviceTrafficHigh(this.getDeviceTrafficHigh())
+                    .deviceTrafficMiddle(this.getDeviceTrafficMiddle())
                     .storageDetectionCycle(this.getStorageDetectionCycle())
                     .storageAlarm(this.getStorageAlarm())
                     .historyDataCycle(this.getHistoryDataCycle())

@@ -9,12 +9,17 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.utils.Utils;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The base controller for all controllers. This class defines common fields and methods.
@@ -158,6 +163,47 @@ public class BaseController {
 
     @Autowired
     public SerKnowledgeCaseRepository serKnowledgeCaseRepository;
+
+    @Getter
+    @Setter
+    public static class FilterDataByCategory<T> {
+        List<T> data;
+        long total;
+    }
+
+    public FilterDataByCategory<SysDevice> getFilterDeviceByCategory(List<SysDevice> preDeviceList, Long categoryId, int startIndex, int endIndex) {
+        long total = 0;
+        List<SysDevice> data = new ArrayList<>();
+        if(categoryId != null) {
+
+            for(int i = 0; i < preDeviceList.size(); i ++) {
+                SysDevice deviceData = preDeviceList.get(i);
+                try {
+                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
+                        if(total >= startIndex && total < endIndex) {
+                            data.add(deviceData);
+                        }
+                        total ++;
+
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } else {
+            for(int i = 0; i < preDeviceList.size(); i ++) {
+                SysDevice deviceData = preDeviceList.get(i);
+                if(i >= startIndex && i < endIndex) {
+                    data.add(deviceData);
+                }
+            }
+            total = preDeviceList.size();
+        }
+        FilterDataByCategory<SysDevice> result = new FilterDataByCategory<>();
+        result.setTotal(total);
+        result.setData(data);
+        return result;
+    }
 
 
 }

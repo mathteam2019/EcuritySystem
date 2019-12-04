@@ -392,35 +392,16 @@ public class DeviceControlController extends BaseController {
         int startIndex = perPage * currentPage;
         int endIndex = perPage * (currentPage + 1);
 
-        long total = 0;
         List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody);
-        List<SysDevice> data = new ArrayList<>();
-        if(filter != null && filter.getCategoryId() != null) {
-
-            for(int i = 0; i < allData.size(); i ++) {
-                SysDevice deviceData = allData.get(i);
-                try {
-                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
-                        if(total >= startIndex && total < endIndex) {
-                            data.add(deviceData);
-                        }
-                        total ++;
-
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            for(int i = 0; i < allData.size(); i ++) {
-                SysDevice deviceData = allData.get(i);
-                if(i >= startIndex && i < endIndex) {
-                    data.add(deviceData);
-                }
-            }
-            total = allData.size();
+        List<SysDevice> data;
+        long total = 0;
+        Long categoryId = null;
+        if(filter != null) {
+            categoryId = filter.getCategoryId();
         }
-
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
+        data = result.getData();
+        total = result.getTotal();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -488,21 +469,13 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> preDeviceList = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
-        List<SysDevice> deviceList = new ArrayList<>();
-        if(filter != null && filter.getCategoryId() != null) {
-            for(int i = 0; i < preDeviceList.size(); i ++) {
-                SysDevice deviceData = preDeviceList.get(i);
-                try {
-                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
-                        deviceList.add(deviceData);
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            deviceList = preDeviceList;
+        List<SysDevice> deviceList;
+        Long categoryId = null;
+        if(filter != null) {
+            categoryId = filter.getCategoryId();
         }
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preDeviceList, categoryId, 0, preDeviceList.size());
+        deviceList = result.getData();
         List<SysDevice> exportList = new ArrayList<>();
         if(requestBody.getIsAll() == false) {
             String[] splits = requestBody.getIdList().split(",");
@@ -782,7 +755,7 @@ public class DeviceControlController extends BaseController {
             SysDevice realDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                     .deviceId.eq(device.getDeviceId())).orElse(null);
             if(realDevice != null) {
-                realDevice.setField(device.getField());
+                realDevice.setFieldId(device.getFieldId());
                 realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                 sysDeviceRepository.save(realDevice);
             }
@@ -855,30 +828,11 @@ public class DeviceControlController extends BaseController {
 
 
         List<SysDevice> preSysDeviceList = sysDeviceRepository.findAll();
-        List<SysDevice> sysDeviceList = new ArrayList<>();
-        if(requestBody.getCategoryId() != null) {
-            for(int i = 0; i < preSysDeviceList.size(); i ++) {
-                SysDevice device = preSysDeviceList.get(i);
-                if(device.getFieldId() != null) {
-                    continue;
-                }
-                try {
-                    if(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == requestBody.getCategoryId()) {
-                        sysDeviceList.add(device);
-                    }
-                } catch(Exception ex) {
+        List<SysDevice> sysDeviceList;
 
-                }
-            }
-        } else {
-            for(int i = 0; i < preSysDeviceList.size(); i ++) {
-                SysDevice device = preSysDeviceList.get(i);
-                if (device.getFieldId() != null) {
-                    continue;
-                }
-                sysDeviceList.add(device);
-            }
-        }
+        Long categoryId = requestBody.getCategoryId();
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size());
+        sysDeviceList = result.getData();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 
@@ -887,7 +841,6 @@ public class DeviceControlController extends BaseController {
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-
 
 
         value.setFilters(filters);
@@ -921,21 +874,11 @@ public class DeviceControlController extends BaseController {
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
-        List<SysDevice> sysDeviceList = new ArrayList<>();
-        if(requestBody.getCategoryId() != null) {
-            for(int i = 0; i < preSysDeviceList.size(); i ++) {
-                SysDevice device = preSysDeviceList.get(i);
-                try {
-                    if(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == requestBody.getCategoryId()) {
-                        sysDeviceList.add(device);
-                    }
-                } catch(Exception ex) {
+        List<SysDevice> sysDeviceList;
 
-                }
-            }
-        } else {
-            sysDeviceList = preSysDeviceList;
-        }
+        Long categoryId = requestBody.getCategoryId();
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size());
+        sysDeviceList = result.getData();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 

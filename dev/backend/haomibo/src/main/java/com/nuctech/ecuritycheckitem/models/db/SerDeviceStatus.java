@@ -20,6 +20,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +36,13 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     public static class Status {
         public static final String ACTIVE = "active";
         public static final String INACTIVE = "inactive";
+    }
+
+    @Getter
+    @Setter
+    public static class MonitorRecord {
+        String time;
+        Integer count;
     }
 
     @Id
@@ -117,5 +125,14 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
     private SysDevice device; // Relation to SysDevice table.
+
+    @javax.persistence.Transient
+    Integer deviceTrafficHigh;
+
+    @javax.persistence.Transient
+    Integer deviceTrafficMiddle;
+
+    @javax.persistence.Transient
+    List<MonitorRecord> recordList;
 
 }
