@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class EvaluateJudgeResponseModel {
 
-    String time;
+    int time;
     long total;
     long seizure;
     long noSeizure;

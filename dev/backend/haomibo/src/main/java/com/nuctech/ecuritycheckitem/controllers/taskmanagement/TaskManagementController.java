@@ -100,7 +100,8 @@ public class TaskManagementController extends BaseController {
         long from;
         long to;
 
-        Map<String, EvaluateJudgeResponseModel> data;
+        EvaluateJudgeResponseModel totalStatistics;
+        Map<Integer, EvaluateJudgeResponseModel> detailedStatistics;
 
     }
 
@@ -2321,7 +2322,11 @@ public class TaskManagementController extends BaseController {
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-        String groupBy = requestBody.getFilter().getStatWidth();
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
 
@@ -2391,7 +2396,9 @@ public class TaskManagementController extends BaseController {
 
 
         //.... Get Total Statistics
-        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
 
         Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
 
@@ -2466,8 +2473,11 @@ public class TaskManagementController extends BaseController {
         }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            data.put(i, new JudgeStatisticsResponseModel());
+            JudgeStatisticsResponseModel item = new JudgeStatisticsResponseModel();
+            item.setTime(i);
+            data.put(i, item);
         }
+
 
 
 
@@ -2575,7 +2585,11 @@ public class TaskManagementController extends BaseController {
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-        String groupBy = requestBody.getFilter().getStatWidth();
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
 
         HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
 
@@ -2651,7 +2665,9 @@ public class TaskManagementController extends BaseController {
 
 
         //................. get total statistics ....
-        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
 
         Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
 
@@ -2718,8 +2734,10 @@ public class TaskManagementController extends BaseController {
 
         }
 
-        for (Integer i = keyValueMin; i < keyValueMax; i++) {
-            data.put(i, new HandExaminationResponseModel());
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+            HandExaminationResponseModel item = new HandExaminationResponseModel();
+            item.setTime(i);
+            data.put(i, item);
         }
 
 
@@ -2831,8 +2849,11 @@ public class TaskManagementController extends BaseController {
         StringBuilder queryBuilder = new StringBuilder();
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
 
-        String groupBy = requestBody.getFilter().getStatWidth();
 
         EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
 
@@ -2862,6 +2883,7 @@ public class TaskManagementController extends BaseController {
                 "\t\n" +
                 "FROM\n" +
                 "\tser_hand_examination h\n" +
+                "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
                 "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
                 "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
@@ -2905,55 +2927,23 @@ public class TaskManagementController extends BaseController {
 
         }
 
-
-        //.................
-        queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
-
-        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
-
-            Integer from, to;
-            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage();
-            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1;
-
-            response.setFrom(from);
-            response.setTo(to);
-            response.setPer_page(requestBody.getPerPage());
-            response.setCurrent_page(requestBody.getCurrentPage());
-
+//.... Get Total Statistics
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
-        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+        Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
 
+        List<Object> resultTotal = jpaQueryTotal.getResultList();
 
-        List<Object> result = jpaQuery.getResultList();
+        for (int i = 0; i < resultTotal.size(); i++) {
 
-        HashMap<String, EvaluateJudgeResponseModel> data = new HashMap<>();
-
-
-        //init hash map
-        Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
-
-        }
-
-        for (Integer i = keyValueMin; i < keyValueMax; i++) {
-            data.put(i.toString(), new EvaluateJudgeResponseModel());
-        }
-
-
-        for (int i = 0; i < result.size(); i++) {
-
-            Object[] item = (Object[]) result.get(i);
+            Object[] item = (Object[]) resultTotal.get(i);
 
             EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
-
             try {
-                record.setTime(item[0].toString());
+
+                record.setTime(Integer.parseInt(item[0].toString()));
                 record.setTotal(Long.parseLong(item[1].toString()));
                 record.setSeizure(Long.parseLong(item[2].toString()));
                 record.setNoSeizure(Long.parseLong(item[3].toString()));
@@ -2978,10 +2968,132 @@ public class TaskManagementController extends BaseController {
                 record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
                 record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
                 record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+
+            } catch (Exception e) {
+
+            }
+
+            response.setTotalStatistics(record);
+
+        }
+
+        //................. Get Detailed Statistics
+
+        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
+
+        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+
+
+        List<Object> result = jpaQuery.getResultList();
+
+        HashMap<Integer, EvaluateJudgeResponseModel> data = new HashMap<>();
+
+
+        //init hash map
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) {
+
+        }
+
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+            EvaluateJudgeResponseModel item = new EvaluateJudgeResponseModel();
+            item.setTime(i);
+            data.put(i, item);
+        }
+
+
+        for (int i = 0; i < result.size(); i++) {
+
+            Object[] item = (Object[]) result.get(i);
+
+            EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
+
+            try {
+
+                record.setTime(Integer.parseInt(item[0].toString()));
+                record.setTotal(Long.parseLong(item[1].toString()));
+                record.setSeizure(Long.parseLong(item[2].toString()));
+                record.setNoSeizure(Long.parseLong(item[3].toString()));
+                record.setTotalJudge(Long.parseLong(item[4].toString()));
+                record.setMissingReport(Long.parseLong(item[5].toString()));
+                record.setMistakeReport(Long.parseLong(item[6].toString()));
+                record.setArtificialJudge(Long.parseLong(item[7].toString()));
+                record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+                record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+                record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+                record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+                record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+
+                record.setMaxDuration(Double.parseDouble(item[13].toString()));
+                record.setMinDuration(Double.parseDouble(item[14].toString()));
+                record.setAvgDuration(Double.parseDouble(item[15].toString()));
+
+
+                record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
+                record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
+                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
+                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
+                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
+                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+
             } catch (Exception e) {
 
             }
             data.put(record.getTime(), record);
+
+        }
+
+        HashMap<Integer, EvaluateJudgeResponseModel> sorted = new HashMap<>();
+
+//        data.entrySet()
+//                .stream()
+//                .sorted(Map.Entry.comparingByKey())
+//                .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
+
+        for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
+
+            sorted.put(i, data.get(i));
+
+        }
+
+
+        HashMap<Integer, EvaluateJudgeResponseModel> detailedStatistics = new HashMap<>();
+
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+
+            Integer from, to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
+
+            if (from < keyValueMin) {
+                from  = keyValueMin;
+            }
+
+            if (to > keyValueMax) {
+                to = keyValueMax;
+            }
+
+            response.setFrom(from);
+            response.setTo(to);
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+
+            for (Integer i = from ; i <= to; i ++) {
+
+                detailedStatistics.put(i, sorted.get(i));
+
+            }
+
+            response.setDetailedStatistics(detailedStatistics);
+
+        }
+        else {
+
+            response.setDetailedStatistics(sorted);
 
         }
 
@@ -2991,14 +3103,6 @@ public class TaskManagementController extends BaseController {
         } catch (Exception e) {
 
         }
-
-        HashMap<String, EvaluateJudgeResponseModel> sorted = new HashMap<>();
-        data.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
-
-        response.setData(sorted);
 
         return response;
 
