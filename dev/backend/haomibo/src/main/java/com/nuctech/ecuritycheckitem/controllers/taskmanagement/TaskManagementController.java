@@ -2715,6 +2715,8 @@ public class TaskManagementController extends BaseController {
                 record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
 
+                record.setSeizureRate(record.getSeizure() / (double)record.getTotal());
+                record.setNoSeizureRate(record.getNoSeizure() / (double)record.getTotal());
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
                 record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
                 record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
@@ -2783,7 +2785,8 @@ public class TaskManagementController extends BaseController {
                 record.setMinDuration(Double.parseDouble(item[14].toString()));
                 record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
-
+                record.setSeizureRate(record.getSeizure() / (double)record.getTotal());
+                record.setNoSeizureRate(record.getNoSeizure() / (double)record.getTotal());
                 record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
                 record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
                 record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());

@@ -30,6 +30,9 @@ public class HandExaminationResponseModel {
     double intelligenceJudgeMissingRate;
     double intelligenceJudgeMistakeRate;
 
+    double seizureRate;
+    double noSeizureRate;
+
     double maxDuration;
     double minDuration;
     double avgDuration;
