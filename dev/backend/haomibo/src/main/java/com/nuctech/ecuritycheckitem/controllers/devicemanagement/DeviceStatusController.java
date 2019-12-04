@@ -33,10 +33,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -75,11 +73,53 @@ public class DeviceStatusController extends BaseController {
     }
 
     private List<SerDeviceStatus.MonitorRecord> getRecordList(long deviceId, int deviceTrafficSetting) {
-        SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
-        record.setTime("10:10");
-        record.setCount(50);
+        Date curDate = new Date();
+        long times = curDate.getTime();
+        long unitMiliSecond = deviceTrafficSetting * 60 * 1000;
+        long lastDateTime = (times / unitMiliSecond + 1) * unitMiliSecond;
+        long startDateTime = lastDateTime - unitMiliSecond * 10;
+        Date[] rangeDate = new Date[20];
+        int[] countList = new int[20];
+        for(int i = 0; i <= 10; i ++) {
+            rangeDate[i] = new Date(startDateTime + unitMiliSecond * i);
+            countList[i] = 0;
+        }
+        QSerScan builder = QSerScan.serScan;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        predicate.and(builder.scanStartTime.after(rangeDate[0]));
+        predicate.and(builder.scanDeviceId.eq(deviceId));
+        List<SerScan> scanDataList = StreamSupport
+                .stream(serScanRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        if(scanDataList != null) {
+            for(int i = 0; i < scanDataList.size(); i ++) {
+                SerScan scan = scanDataList.get(i);
+                Date scanStartTime = scan.getScanStartTime();
+                for(int j = 0; j < 10; j ++) {
+                    if((scanStartTime.after(rangeDate[i]) || scanStartTime.equals(rangeDate[i])) && scanStartTime.before(rangeDate[i + 1])) {
+                        countList[i] ++;
+                    }
+                }
+            }
+        }
+
         List<SerDeviceStatus.MonitorRecord> result = new ArrayList<>();
-        result.add(record);
+
+        for(int i = 0; i < 10; i ++) {
+            SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+            String strTime = formatter.format(rangeDate[i + 1]);
+            record.setTime(strTime);
+            record.setCount(countList[i]);
+            result.add(record);
+        }
+
+
+
+
+
+
         return result;
     }
 
@@ -141,7 +181,6 @@ public class DeviceStatusController extends BaseController {
 
                     }
                 } catch(Exception ex) {
-                    ex.printStackTrace();
                 }
             }
         } else {
@@ -191,6 +230,9 @@ public class DeviceStatusController extends BaseController {
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
+                .addFilter(ModelJsonFilters.FILTER_SER_ARCHIVE_TEMPLATE, SimpleBeanPropertyFilter.serializeAllExcept("archiveIndicatorsList"))
+                .addFilter(ModelJsonFilters.FILTER_SER_ARCHIVES, SimpleBeanPropertyFilter.serializeAllExcept("archiveValueList"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
 
