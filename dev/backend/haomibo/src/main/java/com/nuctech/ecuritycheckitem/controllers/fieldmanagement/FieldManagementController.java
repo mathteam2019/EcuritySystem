@@ -164,8 +164,7 @@ public class FieldManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class FieldGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull

@@ -86,7 +86,7 @@ public class DeviceStatusController extends BaseController {
         }
         QSerScan builder = QSerScan.serScan;
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        predicate.and(builder.scanStartTime.after(rangeDate[0]));
+        //predicate.and(builder.scanStartTime.after(rangeDate[0]));
         predicate.and(builder.scanDeviceId.eq(deviceId));
         List<SerScan> scanDataList = StreamSupport
                 .stream(serScanRepository.findAll(predicate).spliterator(), false)
@@ -97,8 +97,8 @@ public class DeviceStatusController extends BaseController {
                 SerScan scan = scanDataList.get(i);
                 Date scanStartTime = scan.getScanStartTime();
                 for(int j = 0; j < 10; j ++) {
-                    if((scanStartTime.after(rangeDate[i]) || scanStartTime.equals(rangeDate[i])) && scanStartTime.before(rangeDate[i + 1])) {
-                        countArray[i] ++;
+                    if((scanStartTime.after(rangeDate[j]) || scanStartTime.equals(rangeDate[j])) && scanStartTime.before(rangeDate[j + 1])) {
+                        countArray[j] ++;
                     }
                 }
             }

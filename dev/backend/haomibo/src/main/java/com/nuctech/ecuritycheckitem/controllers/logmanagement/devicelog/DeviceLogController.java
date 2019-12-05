@@ -91,8 +91,6 @@ public class DeviceLogController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceLogGenerateRequestBody {
-        @NotNull
-        String exportType;
 
         String idList;
         @NotNull

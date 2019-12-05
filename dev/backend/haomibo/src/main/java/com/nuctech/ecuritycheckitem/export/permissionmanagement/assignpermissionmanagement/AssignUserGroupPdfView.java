@@ -71,7 +71,7 @@ public class AssignUserGroupPdfView extends BasePdfView {
                 });
                 if(sysRoleList.size() > 0) {
                     strRole = sysRoleList.get(0).getRoleName();
-                    for(int i = 1; i < sysUserList.size(); i ++) {
+                    for(int i = 1; i < sysRoleList.size(); i ++) {
                         strRole = strRole + "," + sysRoleList.get(i).getRoleName();
                     }
                 }

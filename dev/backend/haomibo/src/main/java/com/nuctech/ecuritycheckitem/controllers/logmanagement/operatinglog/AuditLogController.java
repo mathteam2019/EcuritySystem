@@ -88,8 +88,7 @@ public class AuditLogController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class AuditLogGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull

@@ -242,8 +242,7 @@ public class ArchiveManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class ArchiveGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull
