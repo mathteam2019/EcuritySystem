@@ -14,6 +14,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 
 import java.io.ByteArrayInputStream;
@@ -24,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class KnowledgeDealPendingPdfView {
+public class KnowledgeDealPendingPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -35,29 +36,17 @@ public class KnowledgeDealPendingPdfView {
 
             document.open();
 
-            String fontName = "resources/fonts/NotoSansCJKsc-Regular.otf";
+            document.add(getTitle("待审批案例"));
+            document.add(getTime());
 
-            Font font = FontFactory.getFont(fontName, Constants.PDF_TITLE_FONT_SIZE, Font.BOLD);
-            Paragraph title = new Paragraph("待审批案例", font);
-            title.setSpacingAfter(Constants.PDF_TITLE_SPACING);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
-
-            Date curTime = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
-            Paragraph time = new Paragraph(dateFormat.format(curTime));
-            time.setSpacingAfter(Constants.PDF_TIME_SPACING);
-            time.setAlignment(Element.ALIGN_RIGHT);
-            document.add(time);
-
-
-            Font fontHeader = FontFactory.getFont(Constants.PDF_TITLE_FONT_NAME, Constants.PDF_HEAD_FONT_SIZE , Font.BOLD);
             PdfPTable table = new PdfPTable(10);
             table.setWidthPercentage(100);
             Stream.of("序号", "任务编号", "图像", "工作模式", "任务结论", "现场", "安检仪", "判图站", "手检站", "查获物品")
                     .forEach(columnTitle -> {
-                        PdfPCell header = new PdfPCell(new Phrase(columnTitle, fontHeader));
+                        PdfPCell header = new PdfPCell();
+                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
                         header.setBorderWidth(2);
+                        header.setPhrase(new Phrase(columnTitle));
                         table.addCell(header);
                     });
 
@@ -67,44 +56,44 @@ public class KnowledgeDealPendingPdfView {
                 if(deal.getTask() != null) {
                     table.addCell(deal.getTask().getTaskNumber());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getScanImage() != null) {
                     table.addCell(deal.getScanImage().getImageUrl());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getWorkMode() != null) {
                     table.addCell(deal.getWorkMode().getModeName());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 table.addCell(deal.getHandResult());
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     table.addCell(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getScanDevice() != null) {
                     table.addCell(deal.getScanDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getJudgeDevice() != null) {
                     table.addCell(deal.getJudgeDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getHandDevice() != null) {
                     table.addCell(deal.getHandDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
                 table.addCell(deal.getHandResult());
             }

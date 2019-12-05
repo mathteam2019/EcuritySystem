@@ -13,6 +13,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class KnowledgeDealPersonalPdfView {
+public class KnowledgeDealPersonalPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -34,20 +35,8 @@ public class KnowledgeDealPersonalPdfView {
 
             document.open();
 
-            String fontName = "resources/fonts/NotoSansCJKsc-Regular.otf";
-
-            Font font = FontFactory.getFont(fontName, Constants.PDF_TITLE_FONT_SIZE, Font.BOLD);
-            Paragraph title = new Paragraph("人员案例", font);
-            title.setSpacingAfter(Constants.PDF_TITLE_SPACING);
-            title.setAlignment(Element.ALIGN_CENTER);
-            document.add(title);
-
-            Date curTime = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
-            Paragraph time = new Paragraph(dateFormat.format(curTime));
-            time.setSpacingAfter(Constants.PDF_TIME_SPACING);
-            time.setAlignment(Element.ALIGN_RIGHT);
-            document.add(time);
+            document.add(getTitle("人员案例"));
+            document.add(getTime());
 
             PdfPTable table = new PdfPTable(7);
 
@@ -67,13 +56,13 @@ public class KnowledgeDealPersonalPdfView {
                 if(deal.getTask() != null) {
                     table.addCell(deal.getTask().getTaskNumber());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getScanImage() != null) {
                     table.addCell(deal.getScanImage().getImageUrl());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
 
@@ -81,13 +70,13 @@ public class KnowledgeDealPersonalPdfView {
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     table.addCell(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 if(deal.getScanDevice() != null) {
                     table.addCell(deal.getScanDevice().getDevicePassageWay());
                 } else {
-                    table.addCell("");
+                    table.addCell("无");
                 }
 
                 table.addCell(deal.getHandResult());
