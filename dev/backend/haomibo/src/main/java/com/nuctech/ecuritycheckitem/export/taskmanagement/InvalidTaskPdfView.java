@@ -100,8 +100,22 @@ public class InvalidTaskPdfView extends BasePdfView {
                         table.addCell("");
                     }
 
-                    table.addCell(formatDate(task.getSerScan().getScanStartTime()));
-                    table.addCell(formatDate(task.getSerScan().getScanEndTime()));
+                    if (task.getSerScan().getScanStartTime() != null) {
+                        table.addCell(formatDate(task.getSerScan().getScanStartTime()));
+                    }
+                    else {
+                        table.addCell("");
+                    }
+
+                    if (task.getSerScan().getScanEndTime() != null) {
+                        table.addCell(formatDate(task.getSerScan().getScanEndTime()));
+                    }
+                    else {
+                        table.addCell("");
+                    }
+
+
+
                 } else {
                     table.addCell("");
                     table.addCell("");
