@@ -366,6 +366,7 @@ body.rtl {
       ul {
         li {
           margin-right: 0 !important;
+          z-index: 99;
           border: 1px solid $menu-color-5;
           border-bottom-color: $menu-color-3;
           border-right-color: $menu-color-2;

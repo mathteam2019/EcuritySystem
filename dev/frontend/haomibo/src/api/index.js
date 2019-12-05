@@ -76,12 +76,12 @@ const getApiManager = function () {
   return apiManager;
 };
 
-const getDateTimeWithFormat = (datetime,lang = 'cn') => {
+const getDateTimeWithFormat = (datetime,formatType = 'cn') => {
   if(datetime === "" || datetime == null)
     return "";
   //todo need to format datetime with its language value
   let format = 'MM/DD/YYYY HH:mm';
-  switch (lang) {
+  switch (formatType) {
     case 'cn':
     case 'en':
       format = 'MM/DD/YYYY HH:mm';
@@ -89,7 +89,11 @@ const getDateTimeWithFormat = (datetime,lang = 'cn') => {
     case 'default': //to set value on client side
       format = 'YYYY-MM-DD';
       break;
+    case 'monitor':
+      format = 'YYYYMMDD HH:mm';
+      break;
   }
+  console.log(moment(String(datetime)));
   return moment(String(datetime)).format(format)
 };
 
