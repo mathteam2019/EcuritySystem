@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -20,7 +21,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class DeviceCategoryExcelView {
+public class DeviceCategoryExcelView extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellNumber = header.createCell(1);
+        headerCellNumber.setCellValue("分类编号");
+
+        Cell headerCellName = header.createCell(2);
+        headerCellName.setCellValue("分类");
+
+        Cell headerCellStatus = header.createCell(3);
+        headerCellStatus.setCellValue("生效");
+
+        Cell headerCellParentNumber = header.createCell(4);
+        headerCellParentNumber.setCellValue("上级机构编号");
+
+        Cell headerCellParentName = header.createCell(5);
+        headerCellParentName.setCellValue("上级分类");
+
+        Cell headerCellNote = header.createCell(6);
+        headerCellNote.setCellValue("备注");
+    }
 
     public static InputStream buildExcelDocument(List<SysDeviceCategory> exportCategoryList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -30,46 +57,17 @@ public class DeviceCategoryExcelView {
 
             Sheet sheet = workbook.createSheet("DeviceCategory");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("设备分类");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellNumber = header.createCell(1);
-            headerCellNumber.setCellValue("分类编号");
-            headerCellNumber.setCellStyle(headerStyle);
-
-            Cell headerCellName = header.createCell(2);
-            headerCellName.setCellValue("分类");
-            headerCellName.setCellStyle(headerStyle);
-
-            Cell headerCellStatus = header.createCell(3);
-            headerCellStatus.setCellValue("生效");
-            headerCellStatus.setCellStyle(headerStyle);
-
-            Cell headerCellParentNumber = header.createCell(4);
-            headerCellParentNumber.setCellValue("上级机构编号");
-            headerCellParentNumber.setCellStyle(headerStyle);
-
-            Cell headerCellParentName = header.createCell(5);
-            headerCellParentName.setCellValue("上级分类");
-            headerCellParentName.setCellStyle(headerStyle);
-
-            Cell headerCellNote = header.createCell(6);
-            headerCellNote.setCellValue("备注");
-            headerCellNote.setCellStyle(headerStyle);
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);

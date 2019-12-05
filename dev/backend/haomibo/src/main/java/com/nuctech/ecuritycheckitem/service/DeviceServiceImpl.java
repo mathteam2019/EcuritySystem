@@ -20,12 +20,11 @@ public class DeviceServiceImpl implements DeviceService {
     SysDeviceRepository sysDeviceRepository;
 
     @Override
-    public List<SysDevice> getFilterDeviceList(DeviceControlController.DeviceGetByFilterAndPageRequestBody requestBody) {
+    public List<SysDevice> getFilterDeviceList(DeviceControlController.DeviceGetByFilterAndPageRequestBody.Filter filter) {
         QSysDevice builder = QSysDevice.sysDevice;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        DeviceControlController.DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getArchivesName())) {
                 predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));

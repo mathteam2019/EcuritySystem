@@ -252,6 +252,26 @@ public class ArchiveManagementController extends BaseController {
         ArchiveGetByFilterAndPageRequestBody.Filter filter;
     }
 
+    private BooleanBuilder getPredicate(ArchiveGetByFilterAndPageRequestBody.Filter filter) {
+        QSerArchive builder = QSerArchive.serArchive;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getArchivesName())) {
+                predicate.and(builder.archivesName.contains(filter.getArchivesName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
+            }
+        }
+
+        return predicate;
+    }
+
     /**
      * Archive datatable data.
      */
@@ -265,23 +285,7 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        QSerArchive builder = QSerArchive.serArchive;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        ArchiveGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getArchivesName())) {
-                predicate.and(builder.archivesName.contains(filter.getArchivesName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (filter.getCategoryId() != null) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
-            }
-        }
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -584,41 +588,10 @@ public class ArchiveManagementController extends BaseController {
         return value;
     }
 
-    /**
-     * Archive generate file request.
-     */
-    @RequestMapping(value = "/archive/export", method = RequestMethod.POST)
-    public Object archiveGenerateFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
-                                                    BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSerArchive builder = QSerArchive.serArchive;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        ArchiveGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getArchivesName())) {
-                predicate.and(builder.archivesName.contains(filter.getArchivesName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (filter.getCategoryId() != null) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
-            }
-        }
-
-        //get all archive list
-        List<SerArchive> archiveList = StreamSupport
-                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SerArchive> getExportList(List<SerArchive> archiveList, boolean isAll, String idList) {
         List<SerArchive> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < archiveList.size(); i ++) {
                 SerArchive archive = archiveList.get(i);
                 boolean isExist = false;
@@ -635,21 +608,64 @@ public class ArchiveManagementController extends BaseController {
         } else {
             exportList = archiveList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
+    /**
+     * Archive generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_EXPORT)
+    @RequestMapping(value = "/archive/export", method = RequestMethod.POST)
+    public Object archiveGenerateExcelFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=archive.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all archive list
+        List<SerArchive> archiveList = StreamSupport
+                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerArchive> exportList = getExportList(archiveList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Archive generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_PRINT)
+    @RequestMapping(value = "/archive/print", method = RequestMethod.POST)
+    public Object archiveGeneratePDFFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
+                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all archive list
+        List<SerArchive> archiveList = StreamSupport
+                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerArchive> exportList = getExportList(archiveList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

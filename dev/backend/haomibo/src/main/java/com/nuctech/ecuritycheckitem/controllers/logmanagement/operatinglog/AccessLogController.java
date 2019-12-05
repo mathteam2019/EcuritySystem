@@ -11,6 +11,7 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,25 +97,11 @@ public class AccessLogController extends BaseController {
         AccessLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    /**
-     * Access Log datatable data.
-     */
-    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object accessLogGetByFilterAndPage(
-            @RequestBody @Valid AccessLogGetByFilterAndPageRequestBody requestBody,
-            BindingResult bindingResult) {
-
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-
+    private BooleanBuilder getPredicate(AccessLogGetByFilterAndPageRequestBody.Filter filter) {
         QSysAccessLog builder = QSysAccessLog.sysAccessLog;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        AccessLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getClientIp())) {
                 predicate.and(builder.clientIp.contains(filter.getClientIp()));
@@ -132,6 +120,26 @@ public class AccessLogController extends BaseController {
             }
 
         }
+        return predicate;
+    }
+
+
+
+    /**
+     * Access Log datatable data.
+     */
+    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object accessLogGetByFilterAndPage(
+            @RequestBody @Valid AccessLogGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -165,48 +173,10 @@ public class AccessLogController extends BaseController {
         return value;
     }
 
-    /**
-     * Access Log generate file request.
-     */
-    @RequestMapping(value = "/export", method = RequestMethod.POST)
-    public Object accessLogGenerateFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
-                                        BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysAccessLog builder = QSysAccessLog.sysAccessLog;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        AccessLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getClientIp())) {
-                predicate.and(builder.clientIp.contains(filter.getClientIp()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateAccount())) {
-                predicate.and(builder.operateAccount.contains(filter.getOperateAccount()));
-            }
-
-            if(filter.getOperateStartTime() != null) {
-                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
-
-            }
-            if(filter.getOperateEndTime() != null){
-                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
-            }
-
-        }
-
-        //get all access log list
-        List<SysAccessLog> logList = StreamSupport
-                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysAccessLog> getExportList(List<SysAccessLog> logList, boolean isAll, String idList) {
         List<SysAccessLog> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
                 SysAccessLog log = logList.get(i);
                 boolean isExist = false;
@@ -223,21 +193,66 @@ public class AccessLogController extends BaseController {
         } else {
             exportList = logList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
+    /**
+     * Access Log generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_EXPORT)
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public Object accessLogGenerateExcelFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=access-log.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all access log list
+        List<SysAccessLog> logList = StreamSupport
+                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysAccessLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=access-log.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Access Log generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_PRINT)
+    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    public Object accessLogGeneratePDFFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all access log list
+        List<SysAccessLog> logList = StreamSupport
+                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysAccessLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

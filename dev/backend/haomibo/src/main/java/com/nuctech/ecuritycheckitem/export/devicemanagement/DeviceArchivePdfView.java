@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchive;
 
 import java.io.ByteArrayInputStream;
@@ -23,14 +24,18 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DeviceArchivePdfView {
+public class DeviceArchivePdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SerArchive> exportArchiveList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("档案管理"));
+            document.add(getTime());
             PdfPTable table = new PdfPTable(7);
+            table.setWidthPercentage(100);
             Stream.of("序号", "档案编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

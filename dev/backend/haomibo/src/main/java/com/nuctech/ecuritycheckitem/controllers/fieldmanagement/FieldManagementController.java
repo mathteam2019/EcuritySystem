@@ -422,6 +422,25 @@ public class FieldManagementController extends BaseController {
         return value;
     }
 
+    private BooleanBuilder getPredicate(FieldGetByFilterAndPageRequestBody.Filter filter) {
+        QSysField builder = QSysField.sysField;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
+                predicate.and(builder.fieldDesignation.contains(filter.getFieldDesignation()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentFieldDesignation())) {
+                predicate.and(builder.parent.fieldDesignation.contains(filter.getParentFieldDesignation()));
+            }
+        }
+        return predicate;
+    }
+
 
     /**
      * Field datatable data.
@@ -436,23 +455,8 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
-        QSysField builder = QSysField.sysField;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        FieldGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.fieldDesignation.contains(filter.getFieldDesignation()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentFieldDesignation())) {
-                predicate.and(builder.parent.fieldDesignation.contains(filter.getParentFieldDesignation()));
-            }
-        }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -498,41 +502,10 @@ public class FieldManagementController extends BaseController {
         return value;
     }
 
-    /**
-     * Field generate file request.
-     */
-    @RequestMapping(value = "/field/export", method = RequestMethod.POST)
-    public Object fieldGenerateFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
-                                     BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysField builder = QSysField.sysField;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        FieldGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.fieldDesignation.contains(filter.getFieldDesignation()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentFieldDesignation())) {
-                predicate.and(builder.parent.fieldDesignation.contains(filter.getParentFieldDesignation()));
-            }
-        }
-
-        //get all field list
-        List<SysField> fieldList = StreamSupport
-                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysField> getExportList(List<SysField> fieldList, boolean isAll, String idList) {
         List<SysField> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < fieldList.size(); i ++) {
                 SysField field = fieldList.get(i);
                 boolean isExist = false;
@@ -549,21 +522,65 @@ public class FieldManagementController extends BaseController {
         } else {
             exportList = fieldList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
+    /**
+     * Field generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
+    @RequestMapping(value = "/field/export", method = RequestMethod.POST)
+    public Object fieldGenerateExcelFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
+                                     BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=field.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all field list
+        List<SysField> fieldList = StreamSupport
+                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysField> exportList = getExportList(fieldList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=field.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Field generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
+    @RequestMapping(value = "/field/print", method = RequestMethod.POST)
+    public Object fieldGeneratePDFFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
+                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all field list
+        List<SysField> fieldList = StreamSupport
+                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysField> exportList = getExportList(fieldList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

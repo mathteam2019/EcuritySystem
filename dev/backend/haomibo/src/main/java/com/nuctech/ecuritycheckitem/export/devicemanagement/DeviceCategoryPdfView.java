@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DeviceCategoryPdfView {
+public class DeviceCategoryPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysDeviceCategory> exportCategoryList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -31,7 +32,12 @@ public class DeviceCategoryPdfView {
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("设备分类"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(7);
+            table.setWidthPercentage(100);
             Stream.of("序号", "分类编号", "分类", "生效", "上级机构编号", "上级分类", "备注")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

@@ -11,6 +11,7 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
@@ -27,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,25 +98,11 @@ public class AuditLogController extends BaseController {
         AuditLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    /**
-     * Audit Log datatable data.
-     */
-    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object auditLogGetByFilterAndPage(
-            @RequestBody @Valid AuditLogGetByFilterAndPageRequestBody requestBody,
-            BindingResult bindingResult) {
-
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-
+    private BooleanBuilder getPredicate(AuditLogGetByFilterAndPageRequestBody.Filter filter) {
         QSysAuditLog builder = QSysAuditLog.sysAuditLog;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        AuditLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if (filter != null) {
             if (!StringUtils.isEmpty(filter.getClientIp())) {
                 predicate.and(builder.clientIp.contains(filter.getClientIp()));
@@ -137,6 +125,23 @@ public class AuditLogController extends BaseController {
                 predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
             }
         }
+        return predicate;
+    }
+
+    /**
+     * Audit Log datatable data.
+     */
+    @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
+    public Object auditLogGetByFilterAndPage(
+            @RequestBody @Valid AuditLogGetByFilterAndPageRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -170,53 +175,10 @@ public class AuditLogController extends BaseController {
         return value;
     }
 
-    /**
-     * Audit Log generate file request.
-     */
-    @RequestMapping(value = "/export", method = RequestMethod.POST)
-    public Object auditLogGenerateFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
-                                        BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysAuditLog builder = QSysAuditLog.sysAuditLog;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        AuditLogGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getClientIp())) {
-                predicate.and(builder.clientIp.contains(filter.getClientIp()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateResult())) {
-                predicate.and(builder.operateResult.eq(filter.getOperateResult()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateObject())) {
-                predicate.and(builder.operateObject.contains(filter.getOperateObject()));
-            }
-
-
-            if(filter.getOperateStartTime() != null) {
-                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
-
-            }
-            if(filter.getOperateEndTime() != null){
-                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
-            }
-        }
-
-
-        //get all audit log list
-        List<SysAuditLog> logList = StreamSupport
-                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysAuditLog> getExportList(List<SysAuditLog> logList, boolean isAll, String idList) {
         List<SysAuditLog> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
                 SysAuditLog log = logList.get(i);
                 boolean isExist = false;
@@ -233,21 +195,68 @@ public class AuditLogController extends BaseController {
         } else {
             exportList = logList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
+    /**
+     * Audit Log generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_EXPORT)
+    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    public Object auditLogGenerateExcelFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all audit log list
+        List<SysAuditLog> logList = StreamSupport
+                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysAuditLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Audit Log generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_PRINT)
+    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    public Object auditLogGeneratePDFFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
+                                       BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all audit log list
+        List<SysAuditLog> logList = StreamSupport
+                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysAuditLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

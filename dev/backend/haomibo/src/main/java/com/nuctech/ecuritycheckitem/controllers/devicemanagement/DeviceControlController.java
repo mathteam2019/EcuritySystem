@@ -17,6 +17,8 @@ import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceFieldExcelView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceFieldPdfView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DevicePdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -385,8 +387,6 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -394,7 +394,7 @@ public class DeviceControlController extends BaseController {
         int startIndex = perPage * currentPage;
         int endIndex = perPage * (currentPage + 1);
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody);
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
         List<SysDevice> data;
         long total = 0;
         Long categoryId = null;
@@ -431,56 +431,10 @@ public class DeviceControlController extends BaseController {
         return value;
     }
 
-    /**
-     * Device generate file request.
-     */
-    @RequestMapping(value = "/device/export", method = RequestMethod.POST)
-    public Object deviceGenerateFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
-                                             BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysDevice builder = QSysDevice.sysDevice;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getArchivesName())) {
-                predicate.and(builder.archive.archivesName.contains(filter.getArchivesName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.deviceName.contains(filter.getDeviceName()));
-            }
-
-            if(filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-//            if (filter.getCategoryId() != null) {
-//                predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
-//            }
-        }
-
-        //get all device list
-        List<SysDevice> preDeviceList = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-        List<SysDevice> deviceList;
-        Long categoryId = null;
-        if(filter != null) {
-            categoryId = filter.getCategoryId();
-        }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preDeviceList, categoryId, 0, preDeviceList.size());
-        deviceList = result.getData();
+    private List<SysDevice> getExportList(List<SysDevice> deviceList, boolean isAll, String idList) {
         List<SysDevice> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < deviceList.size(); i ++) {
                 SysDevice device = deviceList.get(i);
                 boolean isExist = false;
@@ -497,22 +451,146 @@ public class DeviceControlController extends BaseController {
         } else {
             exportList = deviceList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
+    /**
+     * Device generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_EXPORT)
+    @RequestMapping(value = "/device/export", method = RequestMethod.POST)
+    public Object deviceGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=device.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
+
+        List<SysDevice> deviceList;
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
+        deviceList = result.getData();
+
+        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
+    @RequestMapping(value = "/device/print", method = RequestMethod.POST)
+    public Object deviceGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
+
+        List<SysDevice> deviceList;
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
+        deviceList = result.getData();
+
+        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+
+    /**
+     * Device generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
+    @RequestMapping(value = "/device/field/export", method = RequestMethod.POST)
+    public Object deviceFieldGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                          BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
+
+        List<SysDevice> deviceList;
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
+        deviceList = result.getData();
+
+        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_PRINT)
+    @RequestMapping(value = "/device/field/print", method = RequestMethod.POST)
+    public Object deviceFieldGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
+
+        List<SysDevice> deviceList;
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
+        deviceList = result.getData();
+
+        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=device.pdf");

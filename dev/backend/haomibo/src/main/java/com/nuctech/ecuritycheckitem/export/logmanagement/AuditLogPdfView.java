@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 
 import java.io.ByteArrayInputStream;
@@ -25,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AuditLogPdfView {
+public class AuditLogPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysAuditLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -35,7 +36,11 @@ public class AuditLogPdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
+            document.add(getTitle("操作日志"));
+            document.add(getTime());
             PdfPTable table = new PdfPTable(9);
+
+            table.setWidthPercentage(100);
             Stream.of("序号", "操作员ID", "客户端ip", "操作对象", "操作", "操作内容", "操作结果", "失败原因代码", "操作时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
@@ -46,7 +51,6 @@ public class AuditLogPdfView {
                     });
 
 
-            DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm");
 
             for (SysAuditLog log : exportLogList) {
                 table.addCell(log.getId().toString());
@@ -57,7 +61,7 @@ public class AuditLogPdfView {
                 table.addCell(log.getOperateContent());
                 table.addCell(log.getOperateResult());
                 table.addCell(log.getReasonCode());
-                table.addCell(dateFormat.format(log.getOperateTime()));
+                table.addCell(formatDate(log.getOperateTime()));
             }
 
             document.add(table);

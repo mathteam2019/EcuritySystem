@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 
 import java.io.ByteArrayInputStream;
@@ -23,14 +24,19 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DevicePdfView {
+public class DevicePdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysDevice> exportDeviceList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("设备管理"));
+            document.add(getTime());
             PdfPTable table = new PdfPTable(7);
+
+            table.setWidthPercentage(100);
             Stream.of("序号", "设备编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

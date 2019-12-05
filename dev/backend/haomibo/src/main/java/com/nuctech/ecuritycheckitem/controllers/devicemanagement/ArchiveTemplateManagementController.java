@@ -302,6 +302,25 @@ public class ArchiveTemplateManagementController extends BaseController {
         Long indicatorsId;
     }
 
+    private BooleanBuilder getPredicate(ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter) {
+        QSerArchiveTemplate builder = QSerArchiveTemplate.serArchiveTemplate;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getTemplateName())) {
+                predicate.and(builder.templateName.contains(filter.getTemplateName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (filter.getCategoryId() != null) {
+                predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
+            }
+        }
+        return predicate;
+    }
+
 
     /**
      * Archive Template datatable data.
@@ -317,22 +336,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
 
-        QSerArchiveTemplate builder = QSerArchiveTemplate.serArchiveTemplate;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getTemplateName())) {
-                predicate.and(builder.templateName.contains(filter.getTemplateName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (filter.getCategoryId() != null) {
-                predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
-            }
-        }
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -367,41 +371,10 @@ public class ArchiveTemplateManagementController extends BaseController {
         return value;
     }
 
-    /**
-     * Archive Template generate file request.
-     */
-    @RequestMapping(value = "/archive-template/export", method = RequestMethod.POST)
-    public Object archiveTemplateGenerateFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
-                                      BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSerArchiveTemplate builder = QSerArchiveTemplate.serArchiveTemplate;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        ArchiveTemplateGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getTemplateName())) {
-                predicate.and(builder.templateName.contains(filter.getTemplateName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (filter.getCategoryId() != null) {
-                predicate.and(builder.deviceCategory.categoryId.eq(filter.getCategoryId()));
-            }
-        }
-
-        //get all archive template list
-        List<SerArchiveTemplate> archiveTemplateList = StreamSupport
-                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SerArchiveTemplate> getExportList(List<SerArchiveTemplate> archiveTemplateList, boolean isAll, String idList) {
         List<SerArchiveTemplate> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < archiveTemplateList.size(); i ++) {
                 SerArchiveTemplate archiveTemplate = archiveTemplateList.get(i);
                 boolean isExist = false;
@@ -418,21 +391,67 @@ public class ArchiveTemplateManagementController extends BaseController {
         } else {
             exportList = archiveTemplateList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList);
+    /**
+     * Archive Template generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_EXPORT)
+    @RequestMapping(value = "/archive-template/export", method = RequestMethod.POST)
+    public Object archiveTemplateGenerateExcelFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
+                                      BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=archive-template.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+                //get all archive template list
+        List<SerArchiveTemplate> archiveTemplateList = StreamSupport
+                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, requestBody.getIsAll(), requestBody.getIdList());
+
+
+        InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive-template.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Archive Template generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_PRINT)
+    @RequestMapping(value = "/archive-template/print", method = RequestMethod.POST)
+    public Object archiveTemplateGeneratePDFFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
+                                              BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all archive template list
+        List<SerArchiveTemplate> archiveTemplateList = StreamSupport
+                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

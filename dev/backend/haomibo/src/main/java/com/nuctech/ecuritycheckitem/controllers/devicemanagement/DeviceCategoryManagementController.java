@@ -375,6 +375,24 @@ public class DeviceCategoryManagementController extends BaseController {
         return value;
     }
 
+    private BooleanBuilder getPredicate(DeviceCategoryGetByFilterAndPageRequestBody.Filter filter) {
+        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getCategoryName())) {
+                predicate.and(builder.categoryName.contains(filter.getCategoryName()));
+            }
+            if (!StringUtils.isEmpty(filter.getStatus())) {
+                predicate.and(builder.status.eq(filter.getStatus()));
+            }
+            if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
+                predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));
+            }
+        }
+        return predicate;
+    }
 
     /**
      * Device Category datatable data.
@@ -389,23 +407,7 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        DeviceCategoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.categoryName.contains(filter.getCategoryName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
-                predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));
-            }
-        }
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -446,41 +448,10 @@ public class DeviceCategoryManagementController extends BaseController {
         return value;
     }
 
-    /**
-     * Device Category generate file request.
-     */
-    @RequestMapping(value = "/category/export", method = RequestMethod.POST)
-    public Object deviceCategoryGenerateFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
-                                              BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        DeviceCategoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.categoryName.contains(filter.getCategoryName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
-                predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));
-            }
-        }
-
-        //get all device category list
-        List<SysDeviceCategory> categoryList = StreamSupport
-                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysDeviceCategory> getExportList(List<SysDeviceCategory> categoryList, boolean isAll, String idList) {
         List<SysDeviceCategory> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < categoryList.size(); i ++) {
                 SysDeviceCategory category = categoryList.get(i);
                 boolean isExist = false;
@@ -497,21 +468,67 @@ public class DeviceCategoryManagementController extends BaseController {
         } else {
             exportList = categoryList;
         }
-
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList);
-
+        return exportList;
+    }
 
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=device-category.xlsx");
+    /**
+     * Device Category generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_EXPORT)
+    @RequestMapping(value = "/category/export", method = RequestMethod.POST)
+    public Object deviceCategoryGenerateExcelFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
+                                              BindingResult bindingResult) {
 
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all device category list
+        List<SysDeviceCategory> categoryList = StreamSupport
+                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDeviceCategory> exportList = getExportList(categoryList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-category.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device Category generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_PRINT)
+    @RequestMapping(value = "/category/print", method = RequestMethod.POST)
+    public Object deviceCategoryGeneratePDFFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+        //get all device category list
+        List<SysDeviceCategory> categoryList = StreamSupport
+                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDeviceCategory> exportList = getExportList(categoryList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
