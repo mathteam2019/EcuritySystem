@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -20,7 +21,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class UserGroupExcelView {
+public class UserGroupExcelView extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellNumber = header.createCell(1);
+        headerCellNumber.setCellValue("人员分组编号");
+
+        Cell headerCellName = header.createCell(2);
+        headerCellName.setCellValue("人员组");
+    }
 
     public static InputStream buildExcelDocument(List<SysUserGroup> exportUserGroupList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -30,32 +45,18 @@ public class UserGroupExcelView {
 
             Sheet sheet = workbook.createSheet("UserGroup");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("人员组");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
+            setHeader(sheet);
+            int counter = 4;
 
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellNumber = header.createCell(1);
-            headerCellNumber.setCellValue("人员分组编号");
-            headerCellNumber.setCellStyle(headerStyle);
-
-            Cell headerCellName = header.createCell(2);
-            headerCellName.setCellValue("人员组");
-            headerCellName.setCellStyle(headerStyle);
-
-
-
-
-            int counter = 1;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 
 import java.io.ByteArrayInputStream;
@@ -23,14 +24,19 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class RolePdfView {
+public class RolePdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysRole> exportRoleList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("角色设置"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(3);
+            table.setWidthPercentage(100);
             Stream.of("序号", "角色编号", "角色")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

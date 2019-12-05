@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
@@ -23,7 +24,28 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssignUserGroupExcelView {
+public class AssignUserGroupExcelView  extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+
+        Cell headerCellName = header.createCell(1);
+        headerCellName.setCellValue("人员组");
+
+        Cell headerCellUser = header.createCell(2);
+        headerCellUser.setCellValue("组员");
+
+        Cell headerCellRole = header.createCell(3);
+        headerCellRole.setCellValue("角色");
+
+        Cell headerCellCategory = header.createCell(4);
+        headerCellCategory.setCellValue("数据范围");
+    }
 
     public static InputStream buildExcelDocument(List<SysUserGroup> exportUserGroupList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -33,41 +55,17 @@ public class AssignUserGroupExcelView {
 
             Sheet sheet = workbook.createSheet("AssignUserGroup");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("人员组授权");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-
-            Cell headerCellName = header.createCell(1);
-            headerCellName.setCellValue("人员组");
-            headerCellName.setCellStyle(headerStyle);
-
-            Cell headerCellUser = header.createCell(2);
-            headerCellUser.setCellValue("组员");
-            headerCellUser.setCellStyle(headerStyle);
-
-            Cell headerCellRole = header.createCell(3);
-            headerCellRole.setCellValue("角色");
-            headerCellRole.setCellStyle(headerStyle);
-
-            Cell headerCellCategory = header.createCell(4);
-            headerCellCategory.setCellValue("数据范围");
-            headerCellCategory.setCellStyle(headerStyle);
-
-
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);

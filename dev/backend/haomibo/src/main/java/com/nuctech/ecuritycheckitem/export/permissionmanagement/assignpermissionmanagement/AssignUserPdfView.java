@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -26,14 +27,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AssignUserPdfView {
+public class AssignUserPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysUser> exportUserList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("人员授权"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(7);
+            table.setWidthPercentage(100);
             Stream.of("序号",  "人员", "性别", "账号", "隶属机构", "角色", "数据范围")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
