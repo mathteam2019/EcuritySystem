@@ -16,6 +16,8 @@ import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -163,6 +165,9 @@ public class BaseController {
 
     @Autowired
     public SerKnowledgeCaseRepository serKnowledgeCaseRepository;
+
+    @Value("classpath:font/NotoSansCJKsc-Regular.otf")
+    public Resource res;
 
     @Getter
     @Setter

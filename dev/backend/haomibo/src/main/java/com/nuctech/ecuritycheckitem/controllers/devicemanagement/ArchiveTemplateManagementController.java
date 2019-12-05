@@ -97,8 +97,6 @@ public class ArchiveTemplateManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class ArchiveTemplateGenerateRequestBody {
-        @NotNull
-        String exportType;
 
         String idList;
         @NotNull

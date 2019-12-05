@@ -32,6 +32,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -109,7 +110,7 @@ public class DeviceConfigManagementController extends BaseController {
     }
 
     /**
-     * Device delete request body.
+     * Device config delete request body.
      */
     @Getter
     @Setter
@@ -123,7 +124,21 @@ public class DeviceConfigManagementController extends BaseController {
     }
 
     /**
-     * Device get all request body.
+     * Device config get by id request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DeviceConfigGetByIdRequestBody {
+
+        @NotNull
+        Long configId;
+    }
+
+    /**
+     * Device config get all request body.
      */
     @Getter
     @Setter
@@ -135,6 +150,30 @@ public class DeviceConfigManagementController extends BaseController {
     }
 
 
+    @RequestMapping(value = "/config/get-by-id", method = RequestMethod.POST)
+    public Object deviceConfigGetById(
+            @RequestBody @Valid DeviceConfigGetByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        Long configId = requestBody.getConfigId();
+
+        Optional<SysDeviceConfig> optionalSysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.
+                sysDeviceConfig.configId.eq(configId));
+        if (!optionalSysDeviceConfig.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SysDeviceConfig sysDeviceConfig = optionalSysDeviceConfig.get();
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfig));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        value.setFilters(filters);
+        return value;
+    }
 
     /**
      * Device config datatable data.

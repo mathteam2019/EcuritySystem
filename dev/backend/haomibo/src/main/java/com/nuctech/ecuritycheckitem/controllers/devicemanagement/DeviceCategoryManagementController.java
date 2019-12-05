@@ -153,8 +153,7 @@ public class DeviceCategoryManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceCategoryGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull

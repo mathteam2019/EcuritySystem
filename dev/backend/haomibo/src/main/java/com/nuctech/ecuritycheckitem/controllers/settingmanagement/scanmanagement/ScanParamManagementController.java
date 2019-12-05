@@ -35,10 +35,27 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/system-setting/scan-param")
 public class ScanParamManagementController extends BaseController {
+
+    /**
+     * Scan Param datatable request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ScanParamByIdRequestBody {
+
+        @NotNull
+        Long paramId;
+    }
+
+
     /**
      * Scan Param datatable request body.
      */
@@ -117,6 +134,32 @@ public class ScanParamManagementController extends BaseController {
 
         Long fromDeviceId;
 
+    }
+
+    @RequestMapping(value = "/get-by-id", method = RequestMethod.POST)
+    public Object scanParamGetById(
+            @RequestBody @Valid ScanParamByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        Long paramId = requestBody.getParamId();
+
+        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
+                serScanParam.scanParamsId.eq(paramId));
+        if (!optionalSerScanParam.isPresent()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SerScanParam serScanParam = optionalSerScanParam.get();
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serScanParam));
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName", "field", "deviceSerial", "guid"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
+        value.setFilters(filters);
+        return value;
     }
 
     /**

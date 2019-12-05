@@ -107,8 +107,6 @@ public class DeviceControlController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DeviceGenerateRequestBody {
-        @NotNull
-        String exportType;
 
         String idList;
         @NotNull

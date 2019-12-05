@@ -149,8 +149,7 @@ public class AssignPermissionManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class UserGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull

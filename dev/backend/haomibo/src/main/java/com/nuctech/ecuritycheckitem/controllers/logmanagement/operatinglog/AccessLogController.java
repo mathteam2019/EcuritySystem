@@ -87,8 +87,7 @@ public class AccessLogController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class AccessLogGenerateRequestBody {
-        @NotNull
-        String exportType;
+
 
         String idList;
         @NotNull
