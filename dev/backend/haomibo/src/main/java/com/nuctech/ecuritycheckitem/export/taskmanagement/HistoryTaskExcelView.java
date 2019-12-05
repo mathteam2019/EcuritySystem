@@ -30,8 +30,8 @@ public class HistoryTaskExcelView extends BaseExcelView {
         Cell headerCellTaskNumber = header.createCell(1);
         headerCellTaskNumber.setCellValue("任务编号");
 
-        Cell headerCellState = header.createCell(2);
-        headerCellState.setCellValue("图像");
+        Cell headerCellScanImage = header.createCell(2);
+        headerCellScanImage.setCellValue("图像");
 
         Cell headerCellWorkMode = header.createCell(3);
         headerCellWorkMode.setCellValue("工作模式");
