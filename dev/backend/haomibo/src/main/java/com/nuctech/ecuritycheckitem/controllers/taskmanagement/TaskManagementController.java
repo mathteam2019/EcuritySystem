@@ -160,57 +160,6 @@ public class TaskManagementController extends BaseController {
 
     }
 
-    /**
-     * Get detailed info of a history task request body
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class HistoryTaskGetByIdRequestBody {
-
-        @NotNull
-        @Min(1)
-        Long historyId;
-
-    }
-
-    /**
-     * History Task datatable request body.
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class HistoryGetByFilterAndPageRequestBody {
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        static class Filter {
-            String taskNumber;
-            Long mode;
-            String status;
-            Long fieldId;
-            String userName;
-            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date startTime;
-            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date endTime;
-        }
-
-        @NotNull
-        @Min(1)
-        int currentPage;
-
-        @NotNull
-        int perPage;
-        TaskManagementController.HistoryGetByFilterAndPageRequestBody.Filter filter;
-
-    }
 
     /**
      * process task generate request body.
@@ -286,37 +235,7 @@ public class TaskManagementController extends BaseController {
         }
 
         QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
-
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -421,7 +340,7 @@ public class TaskManagementController extends BaseController {
     /**
      * Task table generate excel file request.
      */
-    @RequestMapping(value = "/generate/process-task/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/generate/export", method = RequestMethod.POST)
     public Object processTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
@@ -454,9 +373,9 @@ public class TaskManagementController extends BaseController {
     }
 
     /**
-     * Knowledge Case personal generate pdf file request.
+     * Process-task generate pdf file request.
      */
-    @RequestMapping(value = "/generate/process-task/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/generate/print", method = RequestMethod.POST)
     public Object processTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
@@ -486,118 +405,6 @@ public class TaskManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
-
-    /**
-     * History Task datatable data.
-     */
-    @RequestMapping(value = "/history-task/get-one", method = RequestMethod.POST)
-    public Object historyTaskGetById(
-            @RequestBody @Valid TaskManagementController.HistoryTaskGetByIdRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QHistory builder = QHistory.history;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        Long id = requestBody.getHistoryId();
-
-        Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
-        if (!optionalHistory.isPresent()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory.get()));
-
-        // Set filters.
-        SimpleFilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        value.setFilters(filters);
-
-        return value;
-    }
-
-    /**
-     * History datatable data.
-     */
-    @RequestMapping(value = "/history-task/get-by-filter-and-page", method = RequestMethod.POST)
-    public Object historyTaskGetByFilterAndPage(
-            @RequestBody @Valid TaskManagementController.HistoryGetByFilterAndPageRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-        QHistory builder = QHistory.history;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        TaskManagementController.HistoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.mode.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.task.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.task.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
-                Predicate scanUserName = builder.scanPointsman.userName.contains(filter.getUserName());
-                builder.scanPointsman.userName.contains(filter.getUserName()).or(
-                        builder.judgeUser.userName.contains(filter.getUserName())
-                ).or(builder.handUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = historyRespository.count(predicate);
-        List<History> data = historyRespository.findAll(predicate, pageRequest).getContent();
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
-                FilteringAndPaginationResult
-                        .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
-                        .build()));
-
-        // Set filters.
-        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        value.setFilters(filters);
-
-        return value;
-    }
 
     /**
      * Task datatable data.

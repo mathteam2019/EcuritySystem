@@ -58,85 +58,97 @@ public class ProcessTaskPdfView extends BasePdfView {
 
                 table.addCell(task.getTaskNumber());
 
-                if (task.getWorkFlow().getWorkMode().getModeName() != null) {
-                    table.addCell(task.getWorkFlow().getWorkMode().getModeName());
+                if (task.getWorkFlow() != null) {
+                    if (task.getWorkFlow().getWorkMode() != null) {
+                        table.addCell(task.getWorkFlow().getWorkMode().getModeName());
+                    } else {
+                        table.addCell("");
+                    }
                 } else {
                     table.addCell("");
                 }
 
                 table.addCell(task.getTaskStatus());
 
-                if (task.getField().getFieldDesignation() != null) {
+                if (task.getField() != null) {
                     table.addCell(task.getField().getFieldDesignation());
                 } else {
                     table.addCell("");
                 }
 
-                if (task.getSerScan().getScanDevice() != null) {
-                    table.addCell(task.getSerScan().getScanDevice().getDeviceName());
-                } else {
-                    table.addCell("");
-                }
+                if (task.getSerScan() != null) {
 
-                if (task.getSerScan().getScanPointsman() != null) {
-                    table.addCell(task.getSerScan().getScanPointsman().getUserName());
-                } else {
-                    table.addCell("");
-                }
+                    if (task.getSerScan().getScanDevice() != null) {
+                        table.addCell(task.getSerScan().getScanDevice().getDeviceName());
+                    } else {
+                        table.addCell("");
+                    }
 
-                if (task.getSerScan().getScanStartTime() != null) {
+                    if (task.getSerScan().getScanPointsman() != null) {
+                        table.addCell(task.getSerScan().getScanPointsman().getUserName());
+                    } else {
+                        table.addCell("");
+                    }
+
                     table.addCell(formatDate(task.getSerScan().getScanStartTime()));
-                } else {
-                    table.addCell("");
-                }
-
-                if (task.getSerScan().getScanEndTime() != null) {
                     table.addCell(formatDate(task.getSerScan().getScanEndTime()));
                 } else {
                     table.addCell("");
-                }
-
-                if (task.getSerJudgeGraph().getJudgeDevice().getDeviceName() != null) {
-                    table.addCell(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
-                } else {
+                    table.addCell("");
+                    table.addCell("");
                     table.addCell("");
                 }
 
-                if (task.getSerJudgeGraph().getJudgeUser().getUserName() != null) {
-                    table.addCell(task.getSerJudgeGraph().getJudgeUser().getUserName());
-                } else {
-                    table.addCell("");
-                }
+                if (task.getSerJudgeGraph() != null) {
+                    if (task.getSerJudgeGraph().getJudgeDevice() != null) {
+                        table.addCell(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
+                    } else {
+                        table.addCell("");
+                    }
 
-                if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
+                    if (task.getSerJudgeGraph().getJudgeUser() != null) {
+                        table.addCell(task.getSerJudgeGraph().getJudgeUser().getUserName());
+                    } else {
+                        table.addCell("");
+                    }
+
                     table.addCell(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
-                } else {
-                    table.addCell("");
-                }
-
-                if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
                     table.addCell(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
+
                 } else {
+
                     table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+
                 }
 
-                if (task.getSerHandExamination().getHandUser().getUserName() != null) {
-                    table.addCell(task.getSerHandExamination().getHandUser().getUserName());
-                } else {
-                    table.addCell("");
-                }
+                if (task.getSerHandExamination() != null) {
 
-                if (task.getSerHandExamination().getHandDevice().getDeviceName() != null) {
-                    table.addCell(task.getSerHandExamination().getHandDevice().getDeviceName());
-                } else {
-                    table.addCell("");
-                }
+                    if (task.getSerHandExamination().getHandUser() != null) {
+                        table.addCell(task.getSerHandExamination().getHandUser().getUserName());
+                    } else {
+                        table.addCell("");
+                    }
 
-                if (task.getSerHandExamination().getHandEndTime() != null) {
+                    if (task.getSerHandExamination().getHandDevice() != null) {
+                        table.addCell(task.getSerHandExamination().getHandDevice().getDeviceName());
+                    } else {
+                        table.addCell("");
+                    }
+
                     table.addCell(formatDate(task.getSerHandExamination().getHandEndTime()));
-                } else {
-                    table.addCell("");
+
                 }
+                else {
+
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+
+                }
+
             }
 
             document.add(table);

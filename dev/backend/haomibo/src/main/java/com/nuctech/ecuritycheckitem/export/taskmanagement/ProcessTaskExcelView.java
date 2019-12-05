@@ -112,84 +112,93 @@ public class ProcessTaskExcelView extends BaseExcelView {
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
 
-                if (task.getWorkFlow().getWorkMode().getModeName() != null) {
-                    row.createCell(2).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
+                if (task.getWorkFlow() != null) {
+                    if (task.getWorkFlow().getWorkMode() != null) {
+                        row.createCell(2).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
+                    } else {
+                        row.createCell(2).setCellValue("");
+                    }
                 } else {
-                    row.createCell(2).setCellValue("");
+
                 }
 
                 row.createCell(3).setCellValue(task.getTaskStatus());
 
-                if (task.getField().getFieldDesignation() != null) {
+                if (task.getField() != null) {
                     row.createCell(4).setCellValue(task.getField().getFieldDesignation());
                 } else {
                     row.createCell(4).setCellValue("");
                 }
 
-                if (task.getSerScan().getScanDevice() != null) {
-                    row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
+                if (task.getSerScan() != null) {
+                    if (task.getSerScan().getScanDevice() != null) {
+                        row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
+                    } else {
+                        row.createCell(5).setCellValue("");
+                    }
+
+                    if (task.getSerScan().getScanPointsman() != null) {
+                        row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
+                    } else {
+                        row.createCell(6).setCellValue("");
+                    }
+
+                    row.createCell(7).setCellValue(task.getSerScan().getScanStartTime());
+                    row.createCell(8).setCellValue(task.getSerScan().getScanEndTime());
+
                 } else {
                     row.createCell(5).setCellValue("");
-                }
-
-                if (task.getSerScan().getScanPointsman() != null) {
-                    row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
-                } else {
                     row.createCell(6).setCellValue("");
-                }
-
-                if (task.getSerScan().getScanStartTime() != null) {
-                    row.createCell(7).setCellValue(task.getSerScan().getScanStartTime());
-                } else {
                     row.createCell(7).setCellValue("");
-                }
-
-                if (task.getSerScan().getScanEndTime() != null) {
-                    row.createCell(8).setCellValue(task.getSerScan().getScanEndTime());
-                } else {
                     row.createCell(8).setCellValue("");
                 }
 
-                if (task.getSerJudgeGraph().getJudgeDevice().getDeviceName() != null) {
-                    row.createCell(9).setCellValue(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
-                } else {
-                    row.createCell(9).setCellValue("");
-                }
+                if (task.getSerJudgeGraph() != null) {
+                    if (task.getSerJudgeGraph().getJudgeDevice() != null) {
+                        row.createCell(9).setCellValue(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
+                    } else {
+                        row.createCell(9).setCellValue("");
+                    }
 
-                if (task.getSerJudgeGraph().getJudgeUser().getUserName() != null) {
-                    row.createCell(10).setCellValue(task.getSerJudgeGraph().getJudgeUser().getUserName());
-                } else {
-                    row.createCell(10).setCellValue("");
-                }
+                    if (task.getSerJudgeGraph().getJudgeUser() != null) {
+                        row.createCell(10).setCellValue(task.getSerJudgeGraph().getJudgeUser().getUserName());
+                    } else {
+                        row.createCell(10).setCellValue("");
+                    }
 
-                if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
                     row.createCell(11).setCellValue(task.getSerJudgeGraph().getJudgeStartTime());
-                } else {
-                    row.createCell(11).setCellValue("");
-                }
-
-                if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
                     row.createCell(12).setCellValue(task.getSerJudgeGraph().getJudgeEndTime());
-                } else {
+
+                }
+                else {
+
+                    row.createCell(9).setCellValue("");
+                    row.createCell(10).setCellValue("");
+                    row.createCell(11).setCellValue("");
                     row.createCell(12).setCellValue("");
                 }
 
-                if (task.getSerHandExamination().getHandUser().getUserName() != null) {
-                    row.createCell(13).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
-                } else {
+                if(task.getSerHandExamination() != null) {
+                    if (task.getSerHandExamination().getHandUser() != null) {
+                        row.createCell(13).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
+                    } else {
+                        row.createCell(13).setCellValue("");
+                    }
+
+                    if (task.getSerHandExamination().getHandDevice() != null) {
+                        row.createCell(14).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
+                    } else {
+                        row.createCell(14).setCellValue("");
+                    }
+
+                        row.createCell(15).setCellValue(task.getSerHandExamination().getHandEndTime());
+                }
+                else {
+
                     row.createCell(13).setCellValue("");
-                }
-
-                if (task.getSerHandExamination().getHandDevice().getDeviceName() != null) {
-                    row.createCell(14).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
-                } else {
                     row.createCell(14).setCellValue("");
-                }
-
-                if (task.getSerHandExamination().getHandEndTime() != null) {
-                    row.createCell(15).setCellValue(task.getSerHandExamination().getHandEndTime());
-                } else {
                     row.createCell(15).setCellValue("");
+
                 }
 
             }

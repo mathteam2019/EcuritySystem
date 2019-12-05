@@ -31,7 +31,7 @@ public class History extends BaseEntity implements Serializable {
     Long historyId;
 
     @Column(name = "TASK_ID", length = 20)
-    Long task_id;
+    Long taskId;
 
     @Column(name = "MODE", length = 20)
     Long mode;
