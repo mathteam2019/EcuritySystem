@@ -4,13 +4,19 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +25,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TreeMap;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static java.lang.Math.round;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -64,6 +75,24 @@ public class PreviewStatisticsController extends BaseController {
 
     }
 
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class PreviewStatisticsGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsRequestBody filter;
+    }
+
+
     @RequestMapping(value = "/preview", method = RequestMethod.POST)
     public Object previewStatisticsGet(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -101,6 +130,91 @@ public class PreviewStatisticsController extends BaseController {
 
         return value;
 
+    }
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/preview/generate/print", method = RequestMethod.POST)
+    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid PreviewStatisticsGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=previewStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/preview/generate/export", method = RequestMethod.POST)
+    public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid PreviewStatisticsGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = PreviewStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=previewStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+
+                TotalStatistics record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
     }
 
     private ScanStatistics getScanStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
@@ -249,10 +363,10 @@ public class PreviewStatisticsController extends BaseController {
             scanStatistics.setPassedScan(passedScan);
             scanStatistics.setAlarmScan(alarmScan);
 
-            scanStatistics.setValidScanRate(validScan / (double) totalScan);
-            scanStatistics.setInvalidScanRate(invalidScan / (double) totalScan);
-            scanStatistics.setPassedScanRate(passedScan / (double) totalScan);
-            scanStatistics.setAlarmScanRate(alarmScan / (double) totalScan);
+            scanStatistics.setValidScanRate(validScan * 100 / (double) totalScan);
+            scanStatistics.setInvalidScanRate(invalidScan * 100 / (double) totalScan);
+            scanStatistics.setPassedScanRate(passedScan * 100 / (double) totalScan);
+            scanStatistics.setAlarmScanRate(alarmScan * 100 / (double) totalScan);
 
         } catch (Exception e) {
 
@@ -645,8 +759,8 @@ public class PreviewStatisticsController extends BaseController {
             judgeStatistics.setTotalJudge(totalJudge);
             judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
             judgeStatistics.setSuspictionJudge(suspictionJudge);
-            judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge / (double) totalJudge);
-            judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge / (double) totalJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge * 100 / (double) totalJudge);
+            judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge * 100 / (double) totalJudge);
 
         } catch (Exception e) {
             judgeStatistics.setNoSuspictionJudgeRate(0);
@@ -918,14 +1032,13 @@ public class PreviewStatisticsController extends BaseController {
             }
 
             handExaminationStatistics.setWorkingSeconds(workingSecs);
-
             handExaminationStatistics.setId(keyDate);
             handExaminationStatistics.setTime(keyDate);
             handExaminationStatistics.setTotalHandExamination(totalHandExam);
             handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
             handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
-            handExaminationStatistics.setSeizureHandExaminationRate(seizureHandExam / (double) totalHandExam);
-            handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam / (double) totalHandExam);
+            handExaminationStatistics.setSeizureHandExaminationRate(round( seizureHandExam * 100 / (double) totalHandExam));
+            handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam * 100 / (double) totalHandExam);
 
         } catch (Exception e) {
 

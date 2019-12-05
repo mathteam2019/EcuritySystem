@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskPdfView;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskExcelView;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -45,7 +42,7 @@ import java.util.stream.StreamSupport;
 public class InvalidTaskController extends BaseController {
 
     /**
-     * Process Task datatable request body.
+     * Invalid Task datatable request body.
      */
     @Getter
     @Setter
@@ -96,7 +93,7 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * process task generate request body.
+     * invalid task generate request body.
      */
     @Getter
     @Setter
@@ -301,7 +298,7 @@ public class InvalidTaskController extends BaseController {
      * Task table generate excel file request.
      */
     @RequestMapping(value = "/generate/export", method = RequestMethod.POST)
-    public Object processTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
+    public Object invalidTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -319,11 +316,11 @@ public class InvalidTaskController extends BaseController {
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
 
-        InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(taskList);
+        InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(taskList);
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=invalid-task.xlsx");
 
         return ResponseEntity
                 .ok()
@@ -333,10 +330,10 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * Process-task generate pdf file request.
+     * Invalid-task generate pdf file request.
      */
     @RequestMapping(value = "/generate/print", method = RequestMethod.POST)
-    public Object processTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
+    public Object invalidTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -353,10 +350,10 @@ public class InvalidTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-        InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
+        InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+        headers.add("Content-Disposition", "attachment; filename=invalid-task.pdf");
 
         return ResponseEntity
                 .ok()

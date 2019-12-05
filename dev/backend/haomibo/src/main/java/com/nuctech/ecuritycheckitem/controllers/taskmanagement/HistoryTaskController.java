@@ -7,8 +7,6 @@ import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskPdfView;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskExcelView;
-import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -98,7 +96,7 @@ public class HistoryTaskController extends BaseController {
 
 
     /**
-     * process task generate request body.
+     * history task generate request body.
      */
     @Getter
     @Setter
@@ -203,7 +201,7 @@ public class HistoryTaskController extends BaseController {
      * Task table generate excel file request.
      */
     @RequestMapping(value = "/generate/export", method = RequestMethod.POST)
-    public Object processTaskGenerateExcelFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
+    public Object historyTaskGenerateExcelFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -224,7 +222,7 @@ public class HistoryTaskController extends BaseController {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=history-task.xlsx");
 
         return ResponseEntity
                 .ok()
@@ -234,10 +232,10 @@ public class HistoryTaskController extends BaseController {
     }
 
     /**
-     * Process-task generate pdf file request.
+     * history-task generate pdf file request.
      */
     @RequestMapping(value = "/generate/print", method = RequestMethod.POST)
-    public Object processTaskPDFGenerateFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
+    public Object historyTaskPDFGenerateFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -257,7 +255,7 @@ public class HistoryTaskController extends BaseController {
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+        headers.add("Content-Disposition", "attachment; filename=history-task.pdf");
 
         return ResponseEntity
                 .ok()

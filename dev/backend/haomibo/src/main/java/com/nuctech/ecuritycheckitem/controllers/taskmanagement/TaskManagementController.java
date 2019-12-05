@@ -363,7 +363,7 @@ public class TaskManagementController extends BaseController {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=process-task.xlsx");
 
         return ResponseEntity
                 .ok()
@@ -396,7 +396,7 @@ public class TaskManagementController extends BaseController {
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+        headers.add("Content-Disposition", "attachment; filename=process-task.pdf");
 
         return ResponseEntity
                 .ok()

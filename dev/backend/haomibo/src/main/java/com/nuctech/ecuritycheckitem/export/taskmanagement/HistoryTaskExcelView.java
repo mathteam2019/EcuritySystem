@@ -37,7 +37,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
         headerCellWorkMode.setCellValue("工作模式");
 
         Cell headerCellTaskResult = header.createCell(4);
-        headerCellWorkMode.setCellValue("任务结论");
+        headerCellTaskResult.setCellValue("任务结论");
 
         Cell headerCellField = header.createCell(5);
         headerCellField.setCellValue("现场");

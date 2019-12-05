@@ -3,7 +3,7 @@ package com.nuctech.ecuritycheckitem.models.response.userstatistics;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Total Statistics Response Body
@@ -13,7 +13,7 @@ import java.util.Map;
 public class TotalStatisticsResponse {
 
     TotalStatistics totalStatistics;
-    Map<Long, TotalStatistics> detailedStatistics;
+    TreeMap<Long, TotalStatistics> detailedStatistics;
 
     long total;
     long per_page;

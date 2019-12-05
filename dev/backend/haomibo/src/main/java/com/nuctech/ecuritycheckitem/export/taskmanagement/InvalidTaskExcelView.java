@@ -61,7 +61,7 @@ public class InvalidTaskExcelView extends BaseExcelView {
 
             Workbook workbook = new XSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet("process-task");
+            Sheet sheet = workbook.createSheet("invalid-task");
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
