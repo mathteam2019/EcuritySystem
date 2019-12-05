@@ -3,13 +3,14 @@
     $remSize: $size / 16px;
     @return #{$remSize}rem;
   }
+
   .device-monitoring {
     $item-height: calc(50% - 0.3rem);
     $item-width: 25% ;
     $item-padding: calculateRem(20px);
     $item-extra-add-height: calculateRem(50px);
     .main-without-tab {
-      overflow-x: hidden!important;
+      overflow-x: hidden !important;
     }
 
     .item-wrapper {
@@ -59,6 +60,9 @@
             img {
               width: calculateRem(20px);
               margin-left: 0.5rem;
+              &.disabled {
+                filter: grayscale(1);
+              }
               img:first-child {
                 margin-left: 0;
               }
@@ -92,6 +96,9 @@
               }
             }
             .img {
+              flex-grow: 1;
+              display: flex;
+              align-items: center;
               img {
                 width: 90%;
                 object-fit: contain;
@@ -148,8 +155,8 @@
         left: calculateRem(30px);
         background: black;
         z-index: 0;
-        &>div {
-          &>div {
+        & > div {
+          & > div {
             margin-bottom: calculateRem(4px);
             align-items: center;
             &:first-child {
@@ -197,7 +204,7 @@
         }
       }
       &.slide-left {
-        &>.item-extra-info {
+        & > .item-extra-info {
           left: 0;
         }
         &:hover {
@@ -211,7 +218,7 @@
         & > .item {
           z-index: 4;
         }
-        &> .item-extra-info {
+        & > .item-extra-info {
           opacity: 0.9;
           transition: 300ms;
           left: 100%;
@@ -233,15 +240,21 @@
           text-align: center;
           font-size: calculateRem(12px);
           cursor: pointer;
-          &.active{
+          &.active {
             border: solid 1px #1782d4;
             background: #1782d4;
             color: white;
           }
-          &:hover {
-            border: solid 1px lighten(#1782d4,20%);
-            background: lighten(#1782d4,20%);
+          &:hover:not(.disabled) {
+            border: solid 1px lighten(#1782d4, 20%);
+            background: lighten(#1782d4, 20%);
             color: white;
+          }
+          &.disabled {
+            cursor: not-allowed;
+            border: solid 1px #eeeeee;
+            background: #eeeeee;
+            color: #939394;
           }
         }
 
@@ -249,6 +262,90 @@
     }
   }
 
+  body.rtl {
+    .device-monitoring {
+      $item-height: calc(50% - 0.3rem);
+      $item-width: 25% ;
+      $item-padding: calculateRem(20px);
+      $item-extra-add-height: calculateRem(50px);
+
+      .item-wrapper {
+        padding-right: $item-padding;
+        padding-left: initial;
+        & > .item {
+          .item-header {
+            background: #f3f3f3;
+            border-bottom: solid 2px #c6c6c6;
+            height: calculateRem(50px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 calculateRem(20px) 0 calculateRem(20px);
+            .action-list {
+              img {
+                margin-left: initial;
+                margin-right: 0.5rem;
+                img:first-child {
+                  margin-right: 0;
+                  margin-left: initial;
+                }
+              }
+
+            }
+          }
+        }
+        & > .item-extra-info {
+          left: unset;
+          right: calculateRem(30px);
+          background: black;
+          z-index: 0;
+          & > div {
+            & > div {
+              margin-bottom: calculateRem(4px);
+              align-items: center;
+
+              &:last-child {
+                span {
+                  margin-left: 0;
+                  margin-right: calculateRem(5px);
+                  &.without {
+                    margin-left: 0;
+                    margin-right: calculateRem(18px);
+                  }
+                }
+
+              }
+            }
+          }
+        }
+        &.slide-left {
+          & > .item-extra-info {
+            left: unset;
+            right: 0;
+          }
+          &:hover {
+            & > .item-extra-info {
+              left: unset;
+              right: calc(1.25rem - 100%);
+            }
+
+          }
+        }
+        &:hover {
+          & > .item {
+            z-index: 4;
+          }
+          & > .item-extra-info {
+            right: 100%;
+            opacity: 0.9;
+            left: unset;
+            z-index: 2;
+          }
+
+        }
+      }
+    }
+  }
 </style>
 <template>
   <div class="device-monitoring">
@@ -266,27 +363,27 @@
             <b-row>
               <b-col>
                 <b-form-group :label="$t('device-management.site')">
-                  <b-form-select v-model="package" :options="packageData" plain/>
+                  <b-form-select v-model="filter.fieldId" :options="siteSelectOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('device-management.device-classify')">
-                  <b-form-select v-model="deviceClassify" :options="deviceClassifyData" plain/>
+                  <b-form-select v-model="filter.categoryId" :options="deviceCategoryOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.device-name')">
-                  <b-form-input></b-form-input>
+                  <b-form-input v-model="filter.deviceName"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
           </b-col>
           <b-col cols="6" class="d-flex justify-content-end align-items-center">
-            <b-button size="sm" class="ml-2" variant="info default">
+            <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
               <i class="icofont-search-1"></i>&nbsp;{{ $t('permission-management.search') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="info default">
+            <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
           </b-col>
@@ -297,7 +394,7 @@
                :class="index%4===0?(index===0?'pl-0':'pl-0'):index%4===3?(index>4?'slide-left':'slide-left'):(index>4?'':'')">
             <div class="item d-flex flex-column">
               <div class="item-header">
-                <div class="label">MW1000AA-001 00000dd</div>
+                <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
                   <img src="../../../assets/img/icon_user_graphic.png">
                   <img src="../../../assets/img/icon_layout.png">
@@ -309,11 +406,14 @@
                 <b-row class="h-100">
                   <b-col cols="4" class="left-side d-flex flex-column align-items-center justify-content-between">
                     <div class="action d-flex flex-column">
-                      <b-button variant="info skyblue default" size="xs">空气难为</b-button>
-                      <b-button variant="success default" size="xs">正常</b-button>
+                      <b-button variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
+                      <b-button class="default" size="xs" :variant="['WaitToStart','Preparing'].includes(item.currentStatus)?'info skyblue':
+                      ['Executing','OkFinished','OkReady'].includes(item.currentStatus)?'success':
+                      ['WarnContinuing','WarnFinished'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
                     <div class="img">
-                      <img src="../../../assets/img/small_device.png">
+                      <img v-if="item.imageUrl" :src="item.imageUrl">
+                      <img v-else src="../../../assets/img/small_device.png">
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
@@ -321,34 +421,34 @@
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
                         <label>{{$t('device-management.site')}}:</label>
-                        <label>通道001</label>
+                        <label>{{item.fieldName}}</label>
                       </div>
                       <div class="w-100">
                         <label>IP:</label>
-                        <label>111.111.111.12</label>
+                        <label>{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
                         <label class="disabled">{{$t('device-management.no')}}:</label>
-                        <label class="disabled">zhangshan</label>
+                        <label :class="item.account===null?`disabled`:``">{{item.account}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
-                        <label>通道001</label>
+                        <label>{{item.landTime}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.classify')}}:</label>
-                        <label>人体查验</label>
+                        <label>{{item.category}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.manufacture')}}:</label>
-                        <label>同方威视</label>
+                        <label>{{item.manufacturerName}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-model')}}:</label>
-                        <label>MW0001-001-000000</label></div>
+                        <label>{{item.originalModel}}</label></div>
                       <div class="w-100">
-                        <label >{{$t('device-management.device-monitoring.disk-space')}}:</label>
-                        <label></label>
+                        <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
+                        <label>{{item.diskSpace}}/120 (GB)</label>
                       </div>
                     </div>
                   </b-col>
@@ -359,37 +459,68 @@
             <div class="item-extra-info flex-column d-flex">
               <div class="w-100 d-flex">
                 <div>PLC:</div>
-                <div><img src="../../../assets/img/radio_danger.png" /> <span class="danger">急停按下</span> </div>
+                <div v-if="item.plcStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                  class="success">{{item.plcStatusName}}</span></div>
+                <div v-else-if="item.plcStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.plcStatusName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.plcStatusName}}</span>
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.main-acquire-card')}}:</div>
-                <div><img src="../../../assets/img/radio_succss.png" /> <span class="success">急停弹起</span> </div>
+                <div v-if="item.masterCardStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                  class="success">{{item.masterCardStatusName}}</span></div>
+                <div v-else-if="item.masterCardStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.masterCardStatusName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.masterCardStatusName}}</span>
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.from-acquire-card')}}:</div>
-                <div><img src="../../../assets/img/radio_pending.png" /> <span class="pending">未知</span> </div>
+                <div v-if="item.slaveCardStatus === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                  class="success">{{item.slaveCardStatusName}}</span></div>
+                <div v-else-if="item.slaveCardStatus === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.slaveCardStatusName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.slaveCardStatusName}}</span>
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.servo')}}：</div>
-                <div><span class="without">2000(mm)</span> </div>
+                <div v-if="item.servo === '1'"><img src="../../../assets/img/radio_succss.png"/> <span class="success">{{item.servoName}}</span>
+                </div>
+                <div v-else-if="item.servo === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.servoName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span
+                  class="pending">{{item.servoName}}</span></div>
+
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.slider-position')}}:</div>
-                <div><img src="../../../assets/img/radio_danger.png" /> <span class="danger">就绪</span> </div>
+                <div><span class="without">{{item.slidePosition}}(mm)</span></div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.emergency-stop')}}:</div>
-                <div><img src="../../../assets/img/radio_pending.png" /> <span class="pending">急停按下</span> </div>
+                <div v-if="item.emergencyStop === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                  class="success">{{item.emergencyStopName}}</span></div>
+                <div v-else-if="item.emergencyStop === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.emergencyStopName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.emergencyStopName}}</span>
+                </div>
               </div>
               <div class="w-100 d-flex">
                 <div>{{$t('device-management.device-monitoring.footstep-alarm')}}:</div>
-                <div><img src="../../../assets/img/radio_succss.png" /> <span class="success">不在线</span> </div>
+                <div v-if="item.footWarning === '1'"><img src="../../../assets/img/radio_succss.png"/> <span
+                  class="success">{{item.footWarningName}}</span></div>
+                <div v-else-if="item.footWarning === '0'"><img src="../../../assets/img/radio_danger.png"/> <span
+                  class="danger">{{item.footWarningName}}</span></div>
+                <div v-else><img src="../../../assets/img/radio_pending.png"/> <span class="pending">{{item.footWarningName}}</span>
+                </div>
               </div>
               <div class="w-100 d-flex flex-grow-1">
                 <div>{{$t('device-management.device-monitoring.data-monitor')}}:</div>
                 <div>
                   <div class="chart-container">
-                    <line-chart :data="lineChartData" :height="100"/>
+                    <v-chart :options="item.lineChartOptions" style="height: 5rem; width: 100%" :autoresize="true"/>
                   </div>
                 </div>
               </div>
@@ -397,14 +528,26 @@
           </div>
         </div>
         <div class="d-flex align-items-center justify-content-between footer-pager">
-            <label >共600条信息</label>
-            <div class="pagination">
-              <span class="left"><i class="icofont-simple-left"></i> </span>
-              <span class="active">1</span>
-              <span >2</span>
-              <span >3</span>
-              <span class="right"><i class="icofont-simple-right"></i></span>
-            </div>
+          <label>{{$t('vuetable.total')}} {{pagination.total}} {{$t('vuetable.record')}}</label>
+          <div class="pagination">
+            <span @click="onFirstPage()" :class="pagination.currentPage === 1?`disabled`:``"><i
+              :class="direction === 'ltr'?'icofont-double-left':'icofont-double-right'"></i> </span>
+            <span class="left" @click="onPrevPage()" :class="pagination.currentPage === 1?`disabled`:``"><i
+              :class="direction === 'ltr'?'icofont-simple-left':'icofont-simple-right'"></i> </span>
+            <template v-if="pagination.lastPage <= 5">
+              <span @click="goToPage(pageNum)" v-for="pageNum in pagination.lastPage"
+                    :class="pageNum === pagination.currentPage?`active`:``">{{pageNum}}</span>
+            </template>
+            <template v-if="pagination.lastPage > 5">
+              <span @click="goToPage(pageNum)" v-for="pageNum in pageRange()"
+                    :class="pageNum === pagination.currentPage?`active`:``">{{pageNum}}</span>
+            </template>
+            <span class="right" @click="onNextPage()"
+                  :class="pagination.currentPage === pagination.lastPage?`disabled`:``"><i
+              :class="direction === 'rtl'?'icofont-simple-left':'icofont-simple-right'"></i></span>
+            <span @click="onLastPage()" :class="pagination.currentPage === pagination.lastPage?`disabled`:``"><i
+              :class="direction === 'ltr'?'icofont-double-right':'icofont-double-left'"></i> </span>
+          </div>
         </div>
       </div>
     </b-card>
@@ -413,137 +556,351 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import _ from 'lodash';
   import {getDirection} from "../../../utils";
   import Vue from 'vue'
-  import LineChart from '../../../components/Charts/Line'
-  import {lineChartData} from '../../../data/charts'
+  import ECharts from 'vue-echarts'
+  import 'echarts/lib/chart/line';
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
+
+  let getSiteFullName = orgData => {
+    let orgFullName = '';
+    if (orgData == null)
+      return orgFullName;
+    while (orgData.parent != null) {
+      orgFullName += '/' + orgData.fieldDesignation;
+      orgData = orgData.parent;
+    }
+    orgFullName = orgData.fieldDesignation + orgFullName;
+    return orgFullName;
+  };
+
+  let findDicTextData = (options, value, flag = true) => {
+    let name = null;
+    if (options == null || options.length === 0)
+      return name;
+    options.forEach(option => {
+      if (option.value === value)
+        name = flag ? option.text : option;
+    });
+    return name;
+  };
 
   export default {
     components: {
-      'line-chart': LineChart,
+      'v-chart': ECharts
+    },
+    mounted() {
+      this.getCategoryData();
+      this.getSiteData();
+      this.getDataFetch();
     },
     data() {
       return {
-        lineChartData,
-        package: '',
-        deviceClassify: '',
+        manufacturerDicData: {
+          '0': "同方威视",
+          '1': "海康威视",
+          '2': "大华股份",
+          '3': "华为"
+        },
+        currentFlowDicData: [
+          {text: "扫描", value: "Rescan"},
+          {text: "空气校准", value: 'AirCalibrate'},
+        ],
+        currentStatusDicData: [
+          {text: "未执行", value: "Preparing"},
+          {text: "执行中", value: "WarnContinuing"},
+          {text: "正常待机", value: "OkFinished"},
+          {text: "停止执行", value: "ErrorStopped"},
+        ],
+        deviceStatusDicData: [
+          {text: "急停按下", value: "0"},
+          {text: "急停弹起", value: "1"},
+          {text: "未知", value: "-1"},
+        ],
+        servoStatusDicData: [
+          {text: "就绪", value: "0"},
+          {text: "未就绪", value: "1"},
+          {text: "未知", value: "-1"},
+        ],
+        footStatusDicData: [
+          {text: "在线", value: "0"},
+          {text: "不在线", value: "1"},
+          {text: "未知", value: "-1"},
+        ],
+        siteData: [],
+        categoryData: [],
+        deviceCategoryOptions: [],
+        siteSelectOptions: [],
+        filter: {
+          fieldId: null,
+          categoryId: null,
+          deviceName: null
+        },
+        pagination: {
+          perPage: 8,
+          total: 0,
+          currentPage: 1,
+          lastPage: 0,
+          from: 1,
+          to: 1
+        },
         direction: getDirection().direction,
-        packageData: [
-          '全部',
-          '通道001',
-          '通道002',
-          '通道12',
-        ],
-        deviceClassifyData: [
-          '全部',
-          '监管查验设备 / 人体查验设备',
-          '监管查验设备 / 物品查验设备',
-          '监管查验设备 / 车辆查验设备',
-          '单兵设备',
-          '音视频监控设备 / 视频监控设备',
-          '音视频监控设备 / 音频监控设备',
-        ],
-        items: [
-          {
-            "no": 1,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
+        items: [],
+        chartOption: {
+          tooltip: {
+            trigger: 'axis'
           },
-          {
-            "no": 2,
-            "device-no": "A001",
-            "device-name": "MW毫米波安检仪000",
-            "status": "inactive",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10002"
+          color: '#0b78ff',
+          toolbox: {
+            show: false
           },
-          {
-            "no": 3,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            axisLabel:{
+              fontSize:8,
+              color:'white'
+            },
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
           },
-          {
-            "no": 4,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
+          yAxis: {
+            type: 'value',
+            axisLabel: {
+              formatter: '{value}',
+              fontSize:8,
+              color:'white'
+            },
+            splitLine: {
+              lineStyle :{
+                type: 'dotted',
+                color:'#403738'
+              }
+            },
           },
-          {
-            "no": 4,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
-          },
-          {
-            "no": 4,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
-          },
-          {
-            "no": 4,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
-          },
-          {
-            "no": 4,
-            "device-no": "A000",
-            "device-name": "MW毫米波安检仪000",
-            "status": "active",
-            "passage": null,
-            "classify": '单兵设备',
-            "manufacturer": "张三",
-            "origin_no": "13800001234",
-            "ip": "192.168.3.14",
-            "number": "MX10001"
-          },
-        ],
+          series: [
+            {
+              name: this.$t('device-management.device-monitoring.data-monitor'),
+              type: 'line',
+              data: [11, 11, 15, 13, 12, 13, 10]
+            },
+            {
+              name: this.$t('system-setting.parameter-setting.security-instrument-flow-high'),
+              type: 'line',
+              lineStyle : {
+                color: 'red',
+                type : 'dotted'
+              },
+              data: [],
+            },
+            {
+              name: this.$t('system-setting.parameter-setting.security-instrument-flow-middle'),
+              type: 'line',
+              lineStyle : {
+                color: 'yellow',
+                type : 'dotted'
+              },
+              data: [],
+            }
+          ]
+        }
       }
     },
-    methods: {}
+    methods: {
+      generateChartData(data,hValue,mValue) {
+        let xValues = data.timeList;
+        let yValues = data.countList;
+        let hValues = [];
+        let mValues = [];
+        yValues.forEach(index => {
+          hValues.push(hValue);
+          mValues.push(mValue);
+        });
+        let option = this.chartOption;
+        option.xAxis.data = xValues;
+        option.series[0].data = yValues;
+        option.series[1].data = hValues;
+        option.series[2].data = mValues;
+        return option;
+      },
+      //getting all device category options
+      getCategoryData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.categoryData = data;
+              break;
+          }
+        });
+      },
+      //getting all site options
+      getSiteData() {
+        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`, {
+          type: 'with_parent'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+        });
+      },
+      onSearchButton() {
+        this.getDataFetch();
+      },
+      onResetButton() {
+        this.filter = {
+          fieldId: null,
+          categoryId: null,
+          deviceName: null
+        };
+      },
+      transformData(data) {
+        let result = [];
+        this.pagination.total = data.total;
+        this.pagination.lastPage = data.last_page;
+        let temp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          temp.deviceNumber = temp.device ? temp.device.deviceSerial : 'Unknown';
+          temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
+          temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
+          temp.category = temp.device ? temp.device.archive.archiveTemplate.deviceCategory.categoryName : '';
+          temp.manufacturerName = temp.manufacturer ? this.manufacturerDicData[temp.manufacturer] : '';
+          temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
+          temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
+          temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;
+          temp.plcStatusName = findDicTextData(this.deviceStatusDicData, temp.plcStatus);
+          temp.masterCardStatusName = findDicTextData(this.deviceStatusDicData, temp.masterCardStatus);
+          temp.slaveCardStatusName = findDicTextData(this.deviceStatusDicData, temp.slaveCardStatus);
+          temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
+          temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
+          temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
+          temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
+          temp.lineChartOptions = this.generateChartData(temp.record,temp.deviceTrafficHigh,temp.deviceTrafficMiddle);
+          result.push(temp);
+        }
+        this.items = result;
+      },
+      getDataFetch() { // customize data loading for table from server
+        getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
+          {
+            currentPage: this.pagination.currentPage,
+            perPage: this.pagination.perPage,
+            filter: this.filter
+          }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.transformData(data);
+              break;
+          }
+        });
+      },
+      //pagination methods
+      pageRange() {
+        let min = 0, max = 0;
+        min = this.pagination.currentPage < 3 ? 1 :
+          this.pagination.lastPage - this.pagination.currentPage < 2 ?
+            5 - this.pagination.lastPage + this.pagination.currentPage : this.pagination.currentPage - 2;
+        let array = [], j = 0;
+        max = this.pagination.lastPage > min + 4 ? min + 4 : this.pagination.lastPage;
+        min = max - 4;
+        for (let i = min; i <= max; i++) {
+          array[j] = i;
+          j++;
+        }
+        return array;
+      },
+      goToPage(pageNum) {
+        this.pagination.currentPage = pageNum;
+      },
+      onFirstPage() {
+        this.pagination.currentPage = 1;
+      },
+      onLastPage() {
+        this.pagination.currentPage = this.pagination.lastPage;
+      },
+      onPrevPage() {
+        if (this.pagination.currentPage === 1)
+          return;
+        this.pagination.currentPage--;
+      },
+      onNextPage() {
+        if (this.pagination.currentPage === this.pagination.lastPage)
+          return;
+        this.pagination.currentPage++;
+      }
+    },
+    watch: {
+      'pagination.currentPage': function (newVal, oldVal) {
+        this.getDataFetch();
+      },
+      categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
+
+        let options = [];
+        if (newVal.length === 0) {
+          options.push({
+            value: null,
+            html: `${this.$t('system-setting.none')}`
+          });
+        }
+        else {
+          options = newVal.map(site => ({
+            text: site.categoryName,
+            value: site.categoryId
+          }));
+        }
+        this.deviceCategoryOptions = JSON.parse(JSON.stringify(options));
+        this.deviceCategoryOptions.push({value: null, text: `${this.$t('permission-management.all')}`});
+      },
+      siteData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let getLevel = (org) => {
+
+          let getParent = (org) => {
+            for (let i = 0; i < newVal.length; i++) {
+              if (newVal[i].fieldId == org.parentFieldId) {
+                return newVal[i];
+              }
+            }
+            return null;
+          };
+
+          let stepValue = org;
+          let level = 0;
+          while (getParent(stepValue) !== null) {
+            stepValue = getParent(stepValue);
+            level++;
+          }
+
+          return level;
+
+        };
+
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
+        this.siteSelectOptions = [];
+        this.siteSelectOptions = newVal.map(org => ({
+          value: org.fieldId,
+          html: `${generateSpace(getLevel(org))}${org.fieldDesignation}`
+        }));
+        this.siteSelectOptions.push({
+          value: null,
+          html: `${this.$t('permission-management.all')}`
+        });
+      },
+    }
   }
 </script>

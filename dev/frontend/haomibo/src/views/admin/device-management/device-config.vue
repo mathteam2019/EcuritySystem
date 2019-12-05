@@ -620,7 +620,7 @@
         judgeDeviceOptions: [],
         configForm: {},
         direction: getDirection().direction,
-
+        appliedItems:[],
         isRequired: false,
         fieldSelectOptions: {
           label: this.$t('device-management.filter'),
@@ -890,19 +890,23 @@
       onSaveDeviceToField() {
         let options = this.$refs.fieldSelectList.options.selectedItems;
         let updatedDevice = [];
+        let selectedDeviceIds = [];
         if(options.length > 0){
           options.forEach(opt => {
             updatedDevice.push({
               deviceId: opt.id,
               fieldId: this.selectedFieldId
-            })
+            });
+            selectedDeviceIds.push(opt.id);
           });
-        } else {
-          updatedDevice.push({
-            deviceId: 0,
-            fieldId: this.selectedFieldId
-          })
         }
+        this.appliedItems.forEach(item => {
+          if(!selectedDeviceIds.includes(item.id))
+            updatedDevice.push({
+              deviceId: item.id,
+              fieldId: null
+            })
+        });
         getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/field-modify`, {
           deviceList:updatedDevice
         }).then((response) => {
@@ -1195,6 +1199,7 @@
           name: opt.deviceName,
           category: opt.archive.archiveTemplate.deviceCategory.categoryId
         }));
+        this.appliedItems = JSON.parse(JSON.stringify(options));
         this.$refs.fieldSelectList.setAppliedItem(options);
       },
       fromConfigDeviceData(newVal, oldVal) { // maybe called when the org data is loaded from server
