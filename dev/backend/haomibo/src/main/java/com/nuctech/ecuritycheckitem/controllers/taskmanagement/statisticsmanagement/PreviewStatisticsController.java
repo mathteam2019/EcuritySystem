@@ -6,6 +6,8 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementCon
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
@@ -27,10 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static java.lang.Math.round;
 
@@ -83,7 +82,7 @@ public class PreviewStatisticsController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class PreviewStatisticsGenerateRequestBody {
+    private static class StatisticsGenerateRequestBody {
 
         String idList;
         @NotNull
@@ -136,7 +135,7 @@ public class PreviewStatisticsController extends BaseController {
      * Preview Statistics generate pdf file request.
      */
     @RequestMapping(value = "/preview/generate/print", method = RequestMethod.POST)
-    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid PreviewStatisticsGenerateRequestBody requestBody,
+    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -165,7 +164,7 @@ public class PreviewStatisticsController extends BaseController {
      * Preview Statistics generate pdf file request.
      */
     @RequestMapping(value = "/preview/generate/export", method = RequestMethod.POST)
-    public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid PreviewStatisticsGenerateRequestBody requestBody,
+    public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -187,6 +186,96 @@ public class PreviewStatisticsController extends BaseController {
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
     }
+
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/scan/generate/export", method = RequestMethod.POST)
+    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, ScanStatistics> scanStatistics = getScanStatisticsForPreview(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, ScanStatistics> exportList = getScanExportList(scanStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=scanStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/scan/generate/print", method = RequestMethod.POST)
+    public Object scanStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        StatisticsRequestBody body = requestBody.getFilter();
+
+        TreeMap<Long, ScanStatistics> scanStatistics = getScanStatisticsForPreview(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, ScanStatistics> exportList = getScanExportList(scanStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=scanStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+
+    private TreeMap<Long, ScanStatistics> getScanExportList(TreeMap<Long, ScanStatistics> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Long, ScanStatistics> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+
+                ScanStatistics record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
+    }
+
 
     private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
 
@@ -387,7 +476,7 @@ public class PreviewStatisticsController extends BaseController {
 
         ScanStatistics totalStatistics = new ScanStatistics();
 
-        TreeMap<Integer, ScanStatistics> detailedStatistics = new TreeMap<Integer, ScanStatistics>();
+        TreeMap<Long, ScanStatistics> detailedStatistics = new TreeMap<Long, ScanStatistics>();
 
         totalStatistics = getScanStatisticsByDateForPreview(requestBody, null);
 
@@ -491,7 +580,7 @@ public class PreviewStatisticsController extends BaseController {
 
             scanStat.setId(i - startIndex + 1);
 
-            detailedStatistics.put(i, scanStat);
+            detailedStatistics.put((long)i, scanStat);
 
         }
 

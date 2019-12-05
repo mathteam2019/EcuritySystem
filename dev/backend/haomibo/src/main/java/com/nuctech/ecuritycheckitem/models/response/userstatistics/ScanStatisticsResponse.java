@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Scan Statistics Response Body
@@ -14,7 +15,7 @@ public
 class ScanStatisticsResponse {
 
     ScanStatistics totalStatistics;
-    Map<Integer, ScanStatistics> detailedStatistics;
+    TreeMap<Long, ScanStatistics> detailedStatistics;
 
     long total;
     long per_page;
