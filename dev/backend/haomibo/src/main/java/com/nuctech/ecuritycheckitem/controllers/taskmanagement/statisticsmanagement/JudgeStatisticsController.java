@@ -4,13 +4,21 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsPaginationResponse;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.Query;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -58,6 +68,129 @@ public class JudgeStatisticsController extends BaseController {
 
         StatisticsRequestBody.Filter filter;
 
+    }
+
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsRequestBody filter;
+    }
+
+
+
+    @RequestMapping(value = "/get-judge-statistics", method = RequestMethod.POST)
+    public Object getJudgeSummary(
+            @RequestBody @Valid StatisticsRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, String> temp = new TreeMap<Integer, String>();
+
+        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
+        response = getJudgeStatistics(requestBody);
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/judge/generate/print", method = RequestMethod.POST)
+    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = getJudgeStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        JudgeStatisticsPdfView.setResource(res);
+        InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/judge/generate/export", method = RequestMethod.POST)
+    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> judgeStatistics = getJudgeStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+
+    private TreeMap<Integer, JudgeStatisticsResponseModel> getExportList(TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
+
+                JudgeStatisticsResponseModel record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
     }
 
     /**
@@ -422,22 +555,6 @@ public class JudgeStatisticsController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/get-judge-statistics", method = RequestMethod.POST)
-    public Object getJudgeSummary(
-            @RequestBody @Valid StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        TreeMap<Integer, String> temp = new TreeMap<Integer, String>();
-
-        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
-        response = getJudgeStatistics(requestBody);
-
-        return new CommonResponseBody(ResponseMessage.OK, response);
-
-    }
 
 }

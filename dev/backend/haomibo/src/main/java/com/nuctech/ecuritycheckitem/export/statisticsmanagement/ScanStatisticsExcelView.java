@@ -69,7 +69,7 @@ public class ScanStatisticsExcelView extends BaseExcelView {
 
             Workbook workbook = new XSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet("history-task");
+            Sheet sheet = workbook.createSheet("ScanStatistics");
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);

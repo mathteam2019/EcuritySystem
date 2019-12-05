@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by Tiny 2019/12/04
@@ -23,7 +24,7 @@ public class JudgeStatisticsPaginationResponse {
     long to;
 
     JudgeStatisticsResponseModel totalStatistics;
-    Map<Integer, JudgeStatisticsResponseModel> detailedStatistics;
+    TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics;
 
 }
 

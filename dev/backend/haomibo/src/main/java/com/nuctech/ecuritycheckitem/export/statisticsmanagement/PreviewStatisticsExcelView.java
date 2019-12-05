@@ -77,7 +77,7 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
 
             Workbook workbook = new XSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet("history-task");
+            Sheet sheet = workbook.createSheet("Preview-Statistics");
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
