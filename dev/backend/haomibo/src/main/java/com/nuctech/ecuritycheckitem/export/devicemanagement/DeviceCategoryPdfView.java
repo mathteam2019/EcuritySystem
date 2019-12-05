@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 
@@ -41,27 +42,27 @@ public class DeviceCategoryPdfView extends BasePdfView {
             Stream.of("序号", "分类编号", "分类", "生效", "上级机构编号", "上级分类", "备注")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysDeviceCategory category : exportCategoryList) {
-                table.addCell(category.getCategoryId().toString());
-                table.addCell(category.getCategoryNumber());
-                table.addCell(category.getCategoryName());
-                table.addCell(category.getStatus());
+                addTableCell(table, category.getCategoryId().toString());
+                addTableCell(table, category.getCategoryNumber());
+                addTableCell(table, category.getCategoryName());
+                addTableCell(table, category.getStatus());
                 if(category.getParent() != null) {
-                    table.addCell(category.getParent().getCategoryNumber());
-                    table.addCell(category.getParent().getCategoryName());
+                    addTableCell(table, category.getParent().getCategoryNumber());
+                    addTableCell(table, category.getParent().getCategoryName());
                 } else {
-                    table.addCell("无");
-                    table.addCell("无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
-                table.addCell(category.getNote());
+                addTableCell(table, category.getNote());
 
             }
 

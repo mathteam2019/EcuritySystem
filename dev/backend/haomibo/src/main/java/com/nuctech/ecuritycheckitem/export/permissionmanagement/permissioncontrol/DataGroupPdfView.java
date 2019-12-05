@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 
@@ -40,17 +41,17 @@ public class DataGroupPdfView extends BasePdfView {
             Stream.of("序号", "数据组编号", "数据组", "数据组范围")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (SysDataGroup dataGroup : exportDataGroupList) {
-                table.addCell(dataGroup.getDataGroupId().toString());
-                table.addCell(dataGroup.getDataGroupNumber());
-                table.addCell(dataGroup.getDataGroupName());
-                table.addCell("");
+                addTableCell(table, dataGroup.getDataGroupId().toString());
+                addTableCell(table, dataGroup.getDataGroupNumber());
+                addTableCell(table, dataGroup.getDataGroupName());
+                addTableCell(table, "");
             }
 
             document.add(table);

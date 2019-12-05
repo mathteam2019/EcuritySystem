@@ -43,28 +43,28 @@ public class OrganizationPdfView extends BasePdfView {
             Stream.of("序号", "机构编号", "机构名称", "生效", "上级机构编号", "上级机构", "负责人", "联系方式", "备注")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (SysOrg org : exportOrgList) {
-                table.addCell(org.getOrgId().toString());
-                table.addCell(org.getOrgNumber());
-                table.addCell(org.getOrgName());
-                table.addCell(org.getStatus());
+                addTableCell(table, org.getOrgId().toString());
+                addTableCell(table, org.getOrgNumber());
+                addTableCell(table, org.getOrgName());
+                addTableCell(table, org.getStatus());
                 if(org.getParent() != null) {
-                    table.addCell(org.getParent().getOrgNumber());
-                    table.addCell(org.getParent().getOrgName());
+                    addTableCell(table, org.getParent().getOrgNumber());
+                    addTableCell(table, org.getParent().getOrgName());
                 } else {
-                    table.addCell("无");
-                    table.addCell("无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
 
-                table.addCell(org.getLeader());
-                table.addCell(org.getMobile());
-                table.addCell(org.getNote());
+                addTableCell(table, org.getLeader());
+                addTableCell(table, org.getMobile());
+                addTableCell(table, org.getNote());
             }
 
             document.add(table);

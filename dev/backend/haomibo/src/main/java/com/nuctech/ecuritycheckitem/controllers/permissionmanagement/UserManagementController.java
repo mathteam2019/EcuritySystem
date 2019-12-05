@@ -715,7 +715,7 @@ public class UserManagementController extends BaseController {
 
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-
+        UserPdfView.setResource(res);
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -1003,7 +1003,7 @@ public class UserManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, requestBody.getIsAll(),requestBody.getIdList());
-
+        UserGroupPdfView.setResource(res);
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

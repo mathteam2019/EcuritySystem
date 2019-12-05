@@ -664,7 +664,7 @@ public class ArchiveManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerArchive> exportList = getExportList(archiveList, requestBody.getIsAll(), requestBody.getIdList());
-
+        DeviceArchivePdfView.setResource(res);
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

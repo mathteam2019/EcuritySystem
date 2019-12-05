@@ -392,7 +392,7 @@ public class TaskManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        ProcessTaskPdfView.setResource(res);
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

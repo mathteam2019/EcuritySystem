@@ -579,7 +579,7 @@ public class FieldManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysField> exportList = getExportList(fieldList, requestBody.getIsAll(), requestBody.getIdList());
-
+        FieldManagementPdfView.setResource(res);
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

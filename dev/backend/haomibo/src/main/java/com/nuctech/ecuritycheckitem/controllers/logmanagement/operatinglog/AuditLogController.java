@@ -255,7 +255,7 @@ public class AuditLogController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysAuditLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
-
+        AuditLogPdfView.setResource(res);
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 
@@ -40,18 +41,18 @@ public class RolePdfView extends BasePdfView {
             Stream.of("序号", "角色编号", "角色")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysRole role : exportRoleList) {
-                table.addCell(role.getRoleId().toString());
-                table.addCell(role.getRoleNumber());
-                table.addCell(role.getRoleName());
+                addTableCell(table, role.getRoleId().toString());
+                addTableCell(table, role.getRoleNumber());
+                addTableCell(table, role.getRoleName());
             }
 
             document.add(table);

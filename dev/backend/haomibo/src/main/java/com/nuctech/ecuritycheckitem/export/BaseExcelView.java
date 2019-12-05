@@ -30,7 +30,13 @@ public class BaseExcelView {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
 
-        String strDate = dateFormat.format(date);
+        String strDate = "";
+        try {
+            dateFormat.format(date);
+        } catch(Exception ex) {
+
+        }
+
 
         return strDate;
     }

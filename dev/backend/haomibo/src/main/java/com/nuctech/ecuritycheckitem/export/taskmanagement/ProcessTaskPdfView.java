@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 
@@ -46,106 +47,106 @@ public class ProcessTaskPdfView extends BasePdfView {
             Stream.of("序号", "任务编号", "工作模式", "状态", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (SerTask task : exportTaskList) {
 
-                table.addCell(task.getTaskId().toString());
+                addTableCell(table, task.getTaskId().toString());
 
-                table.addCell(task.getTaskNumber());
+                addTableCell(table, task.getTaskNumber());
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        table.addCell(task.getWorkFlow().getWorkMode().getModeName());
+                        addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
-                table.addCell(task.getTaskStatus());
+                addTableCell(table, task.getTaskStatus());
 
                 if (task.getField() != null) {
-                    table.addCell(task.getField().getFieldDesignation());
+                    addTableCell(table, task.getField().getFieldDesignation());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getSerScan() != null) {
 
                     if (task.getSerScan().getScanDevice() != null) {
-                        table.addCell(task.getSerScan().getScanDevice().getDeviceName());
+                        addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
-                        table.addCell(task.getSerScan().getScanPointsman().getUserName());
+                        addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
-                    table.addCell(formatDate(task.getSerScan().getScanStartTime()));
-                    table.addCell(formatDate(task.getSerScan().getScanEndTime()));
+                    addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
+                    addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
                 } else {
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
                 }
 
                 if (task.getSerJudgeGraph() != null) {
                     if (task.getSerJudgeGraph().getJudgeDevice() != null) {
-                        table.addCell(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
+                        addTableCell(table, task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerJudgeGraph().getJudgeUser() != null) {
-                        table.addCell(task.getSerJudgeGraph().getJudgeUser().getUserName());
+                        addTableCell(table, task.getSerJudgeGraph().getJudgeUser().getUserName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
-                    table.addCell(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
-                    table.addCell(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
+                    addTableCell(table, formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
+                    addTableCell(table, formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
 
                 } else {
 
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
 
                 }
 
                 if (task.getSerHandExamination() != null) {
 
                     if (task.getSerHandExamination().getHandUser() != null) {
-                        table.addCell(task.getSerHandExamination().getHandUser().getUserName());
+                        addTableCell(table, task.getSerHandExamination().getHandUser().getUserName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerHandExamination().getHandDevice() != null) {
-                        table.addCell(task.getSerHandExamination().getHandDevice().getDeviceName());
+                        addTableCell(table, task.getSerHandExamination().getHandDevice().getDeviceName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
-                    table.addCell(formatDate(task.getSerHandExamination().getHandEndTime()));
+                    addTableCell(table, formatDate(task.getSerHandExamination().getHandEndTime()));
 
                 }
                 else {
 
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
 
                 }
 

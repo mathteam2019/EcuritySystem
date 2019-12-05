@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 
@@ -44,31 +45,31 @@ public class DeviceLogPdfView extends BasePdfView {
             Stream.of("序号", "设备", "账号", "用户", "类别", "级别", "内容", "操作时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
             for (SerDevLog log : exportLogList) {
-                table.addCell(log.getId().toString());
+                addTableCell(table, log.getId().toString());
                 if(log.getDevice() != null) {
-                    table.addCell(log.getDevice().getDeviceName());
+                    addTableCell(table, log.getDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
-                table.addCell(log.getLoginName());
+                addTableCell(table, log.getLoginName());
                 if(log.getUser() != null) {
-                    table.addCell(log.getUser().getUserName());
+                    addTableCell(table, log.getUser().getUserName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
-                table.addCell(log.getCategory().toString());
-                table.addCell(log.getLevel().toString());
-                table.addCell(log.getContent());
-                table.addCell(formatDate(log.getTime()));
+                addTableCell(table, log.getCategory().toString());
+                addTableCell(table, log.getLevel().toString());
+                addTableCell(table, log.getContent());
+                addTableCell(table, formatDate(log.getTime()));
             }
 
             document.add(table);

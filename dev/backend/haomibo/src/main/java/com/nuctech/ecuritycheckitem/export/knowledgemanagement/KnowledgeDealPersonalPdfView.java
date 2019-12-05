@@ -44,42 +44,42 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
             Stream.of("序号", "任务编号", "图像", "任务结论", "现场", "通道", "查获物品")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
             for (SerKnowledgeCaseDeal deal : exportDealList) {
-                table.addCell(deal.getCaseDealId().toString());
+                addTableCell(table, deal.getCaseDealId().toString());
                 if(deal.getTask() != null) {
-                    table.addCell(deal.getTask().getTaskNumber());
+                    addTableCell(table, deal.getTask().getTaskNumber());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
 
                 if(deal.getScanImage() != null) {
-                    table.addCell(deal.getScanImage().getImageUrl());
+                    addTableCell(table, deal.getScanImage().getImageUrl());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
 
 
-                table.addCell(deal.getHandResult());
+                addTableCell(table, deal.getHandResult());
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    table.addCell(deal.getScanDevice().getField().getFieldDesignation());
+                    addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
 
                 if(deal.getScanDevice() != null) {
-                    table.addCell(deal.getScanDevice().getDevicePassageWay());
+                    addTableCell(table, deal.getScanDevice().getDevicePassageWay());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
 
-                table.addCell(deal.getHandResult());
+                addTableCell(table, deal.getHandResult());
             }
 
             document.add(table);

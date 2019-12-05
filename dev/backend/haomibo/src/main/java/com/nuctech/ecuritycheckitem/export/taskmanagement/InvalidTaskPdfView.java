@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 
@@ -46,81 +47,81 @@ public class InvalidTaskPdfView extends BasePdfView {
             Stream.of("序号", "任务编号", "图像", "工作模式", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (SerTask task : exportTaskList) {
 
-                table.addCell(task.getTaskId().toString());
+                addTableCell(table, task.getTaskId().toString());
 
-                table.addCell(task.getTaskNumber());
+                addTableCell(table, task.getTaskNumber());
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanImage() != null) {
-                        table.addCell(task.getSerScan().getScanImage().getImageLabel());
+                        addTableCell(table, task.getSerScan().getScanImage().getImageLabel());
                     }
                     else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
                 }
                 else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        table.addCell(task.getWorkFlow().getWorkMode().getModeName());
+                        addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getField() != null) {
-                    table.addCell(task.getField().getFieldDesignation());
+                    addTableCell(table, task.getField().getFieldDesignation());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getSerScan() != null) {
 
                     if (task.getSerScan().getScanDevice() != null) {
-                        table.addCell(task.getSerScan().getScanDevice().getDeviceName());
+                        addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
-                        table.addCell(task.getSerScan().getScanPointsman().getUserName());
+                        addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
-                        table.addCell(formatDate(task.getSerScan().getScanStartTime()));
+                        addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
-                        table.addCell(formatDate(task.getSerScan().getScanEndTime()));
+                        addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        table.addCell("");
+                        addTableCell(table, "");
                     }
 
 
 
                 } else {
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
-                    table.addCell("");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
+                    addTableCell(table, "");
                 }
 
             }

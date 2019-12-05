@@ -251,7 +251,7 @@ public class AccessLogController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysAccessLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
-
+        AccessLogPdfView.setResource(res);
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

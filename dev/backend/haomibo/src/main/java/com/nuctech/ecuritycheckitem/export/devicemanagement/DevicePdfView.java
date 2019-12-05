@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 
@@ -40,37 +41,37 @@ public class DevicePdfView extends BasePdfView {
             Stream.of("序号", "设备编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysDevice device : exportDeviceList) {
-                table.addCell(device.getDeviceId().toString());
-                table.addCell(device.getDeviceSerial());
+                addTableCell(table, device.getDeviceId().toString());
+                addTableCell(table, device.getDeviceSerial());
 
 
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null) {
-                    table.addCell(device.getArchive().getArchiveTemplate().getTemplateName());
+                    addTableCell(table, device.getArchive().getArchiveTemplate().getTemplateName());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
-                table.addCell(device.getStatus());
+                addTableCell(table, device.getStatus());
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null &&
                         device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
-                    table.addCell(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                    addTableCell(table, device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
                 if(device.getArchive() != null &&  device.getArchive().getArchiveTemplate() != null) {
-                    table.addCell(device.getArchive().getArchiveTemplate().getManufacturer());
-                    table.addCell(device.getArchive().getArchiveTemplate().getOriginalModel());
+                    addTableCell(table, device.getArchive().getArchiveTemplate().getManufacturer());
+                    addTableCell(table, device.getArchive().getArchiveTemplate().getOriginalModel());
                 } else {
-                    table.addCell("无");
-                    table.addCell("无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
             }
 

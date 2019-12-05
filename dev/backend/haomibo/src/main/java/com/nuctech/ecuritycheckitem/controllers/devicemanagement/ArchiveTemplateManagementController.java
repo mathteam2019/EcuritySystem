@@ -449,7 +449,7 @@ public class ArchiveTemplateManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, requestBody.getIsAll(), requestBody.getIdList());
-
+        DeviceArchiveTemplatePdfView.setResource(res);
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

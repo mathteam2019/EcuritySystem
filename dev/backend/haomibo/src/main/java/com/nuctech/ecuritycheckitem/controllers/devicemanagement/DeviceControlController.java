@@ -513,6 +513,7 @@ public class DeviceControlController extends BaseController {
         deviceList = result.getData();
 
         List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        DevicePdfView.setResource(res);
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -588,6 +589,7 @@ public class DeviceControlController extends BaseController {
         deviceList = result.getData();
 
         List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        DeviceFieldPdfView.setResource(res);
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

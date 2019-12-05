@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchive;
 
@@ -39,36 +40,36 @@ public class DeviceArchivePdfView extends BasePdfView {
             Stream.of("序号", "档案编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SerArchive archive : exportArchiveList) {
-                table.addCell(archive.getArchiveId().toString());
-                table.addCell(archive.getArchivesNumber());
+                addTableCell(table, archive.getArchiveId().toString());
+                addTableCell(table, archive.getArchivesNumber());
 
 
                 if(archive.getArchiveTemplate() != null) {
-                    table.addCell(archive.getArchiveTemplate().getTemplateName());
+                    addTableCell(table, archive.getArchiveTemplate().getTemplateName());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
-                table.addCell(archive.getStatus());
+                addTableCell(table, archive.getStatus());
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
-                    table.addCell(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
+                    addTableCell(table, archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
                 if(archive.getArchiveTemplate() != null) {
-                    table.addCell(archive.getArchiveTemplate().getManufacturer());
-                    table.addCell(archive.getArchiveTemplate().getOriginalModel());
+                    addTableCell(table, archive.getArchiveTemplate().getManufacturer());
+                    addTableCell(table, archive.getArchiveTemplate().getOriginalModel());
                 } else {
-                    table.addCell("无");
-                    table.addCell("无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
             }
 

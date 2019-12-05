@@ -349,7 +349,7 @@ public class InvalidTaskController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        InvalidTaskPdfView.setResource(res);
         InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

@@ -565,7 +565,7 @@ public class AssignPermissionManagementController extends BaseController {
                 .stream(sysUserRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-
+        AssignUserPdfView.setResource(res);
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -737,7 +737,7 @@ public class AssignPermissionManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
-
+        AssignUserGroupPdfView.setResource(res);
         InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

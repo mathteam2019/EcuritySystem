@@ -251,7 +251,7 @@ public class HistoryTaskController extends BaseController {
                 .collect(Collectors.toList());
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        HistoryTaskPdfView.setResource(res);
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

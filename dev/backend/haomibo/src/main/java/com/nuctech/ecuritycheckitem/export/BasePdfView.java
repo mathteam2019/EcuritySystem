@@ -1,23 +1,50 @@
 package com.nuctech.ecuritycheckitem.export;
 
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BasePdfView {
-    public static Paragraph getTitle(String name) {
-        String fontName = "resources/fonts/NotoSansCJKsc-Regular.otf";
 
-        Font font = FontFactory.getFont(fontName, Constants.PDF_TITLE_FONT_SIZE, Font.BOLD);
+    private static Resource res;
+
+    public static void setResource(Resource res_other) {
+        res = res_other;
+    }
+
+    public static BaseFont getBaseFont() {
+        try {
+            BaseFont baseFont = BaseFont.createFont(res.getURI().getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            return baseFont;
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Font getFontWithSize(int size) {
+        BaseFont baseFont = getBaseFont();
+        Font font = new Font(baseFont, size);
+        return font;
+    }
+
+    public static Paragraph getTitle(String name) {
+        BaseFont baseFont = getBaseFont();
+        Font font = new Font(baseFont, Constants.PDF_TITLE_FONT_SIZE);
         Paragraph title = new Paragraph(name, font);
         title.setSpacingAfter(Constants.PDF_TITLE_SPACING);
         title.setAlignment(Element.ALIGN_CENTER);
         return title;
+    }
+
+    public static void addTableCell(PdfPTable table, String str) {
+        table.addCell(new Phrase(str, getFontWithSize(Constants.PDF_CONTENT_FONT_SIZE)));
     }
 
     public static Paragraph getTime() {
@@ -33,7 +60,12 @@ public class BasePdfView {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.PDF_DATETIME_FORMAT);
 
-        String strDate = dateFormat.format(date);
+        String strDate = "";
+        try {
+            dateFormat.format(date);
+        } catch(Exception ex) {
+
+        }
 
         return strDate;
     }
