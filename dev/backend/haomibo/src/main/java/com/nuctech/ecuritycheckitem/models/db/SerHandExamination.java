@@ -87,7 +87,4 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
 
-    public long getCheckDuration() {
-        return handEndTime.getTime() - handStartTime.getTime();
-    }
 }

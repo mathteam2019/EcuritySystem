@@ -143,6 +143,8 @@ public class PreviewStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        StatisticsRequestBody body = requestBody.getFilter();
+
         TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());

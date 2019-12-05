@@ -143,8 +143,20 @@ public class ProcessTaskExcelView extends BaseExcelView {
                         row.createCell(6).setCellValue("");
                     }
 
-                    row.createCell(7).setCellValue(task.getSerScan().getScanStartTime());
-                    row.createCell(8).setCellValue(task.getSerScan().getScanEndTime());
+                    if (task.getSerScan().getScanStartTime() != null) {
+                        row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
+                    }
+                    else {
+                        row.createCell(7).setCellValue("");
+                    }
+
+                    if (task.getSerScan().getScanEndTime() != null) {
+                        row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
+                    }
+                    else {
+                        row.createCell(8).setCellValue("");
+                    }
+
 
                 } else {
                     row.createCell(5).setCellValue("");
@@ -166,8 +178,20 @@ public class ProcessTaskExcelView extends BaseExcelView {
                         row.createCell(10).setCellValue("");
                     }
 
-                    row.createCell(11).setCellValue(task.getSerJudgeGraph().getJudgeStartTime());
-                    row.createCell(12).setCellValue(task.getSerJudgeGraph().getJudgeEndTime());
+                    if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
+                        row.createCell(11).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
+                    }
+                    else {
+                        row.createCell(11).setCellValue("");
+                    }
+
+                    if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
+                        row.createCell(12).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
+                    }
+                    else {
+                        row.createCell(12).setCellValue("");
+                    }
+
 
                 }
                 else {
@@ -191,7 +215,12 @@ public class ProcessTaskExcelView extends BaseExcelView {
                         row.createCell(14).setCellValue("");
                     }
 
-                        row.createCell(15).setCellValue(task.getSerHandExamination().getHandEndTime());
+                    if (task.getSerHandExamination().getHandEndTime() != null) {
+                        row.createCell(15).setCellValue(formatDate(task.getSerHandExamination().getHandEndTime()));
+                    }
+                    else {
+                        row.createCell(15).setCellValue("");
+                    }
                 }
                 else {
 

@@ -127,8 +127,8 @@ public class InvalidTaskExcelView extends BaseExcelView {
                         row.createCell(6).setCellValue("");
                     }
 
-                    row.createCell(7).setCellValue(task.getSerScan().getScanStartTime());
-                    row.createCell(8).setCellValue(task.getSerScan().getScanEndTime());
+                    row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
+                    row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
 
                 } else {
                     row.createCell(5).setCellValue("");

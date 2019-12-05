@@ -147,13 +147,13 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 }
 
                 if (task.getScanStartTime() != null) {
-                    row.createCell(8).setCellValue(task.getScanStartTime());
+                    row.createCell(8).setCellValue(formatDate(task.getScanStartTime()));
                 } else {
                     row.createCell(8).setCellValue("");
                 }
 
                 if (task.getScanEndTime() != null) {
-                    row.createCell(9).setCellValue(task.getScanEndTime());
+                    row.createCell(9).setCellValue(formatDate(task.getScanEndTime()));
                 } else {
                     row.createCell(9).setCellValue("");
                 }
@@ -171,13 +171,13 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 }
 
                 if (task.getJudgeStartTime() != null) {
-                    row.createCell(12).setCellValue(task.getJudgeStartTime());
+                    row.createCell(12).setCellValue(formatDate(task.getJudgeStartTime()));
                 } else {
                     row.createCell(12).setCellValue("");
                 }
 
                 if (task.getJudgeEndTime() != null) {
-                    row.createCell(13).setCellValue(task.getJudgeEndTime());
+                    row.createCell(13).setCellValue(formatDate(task.getJudgeEndTime()));
                 } else {
                     row.createCell(13).setCellValue("");
                 }
@@ -195,7 +195,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 }
 
                 if (task.getHandEndTime() != null) {
-                    row.createCell(16).setCellValue(task.getHandEndTime());
+                    row.createCell(16).setCellValue(formatDate(task.getHandEndTime()));
                 } else {
                     row.createCell(16).setCellValue("");
                 }
