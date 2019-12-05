@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 
 import java.io.ByteArrayInputStream;
@@ -25,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AccessLogPdfView {
+public class AccessLogPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysAccessLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -35,7 +36,11 @@ public class AccessLogPdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
+            document.add(getTitle("访问日志"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(5);
+            table.setWidthPercentage(100);
             Stream.of("序号", "访问时间", "动作", "访问ip", "访问用户")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
@@ -46,11 +51,9 @@ public class AccessLogPdfView {
                     });
 
 
-            DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm");
-
             for (SysAccessLog log : exportLogList) {
                 table.addCell(log.getId().toString());
-                table.addCell(dateFormat.format(log.getOperateTime()));
+                table.addCell(formatDate(log.getOperateTime()));
                 table.addCell(log.getAction());
                 table.addCell(log.getClientIp());
                 table.addCell(log.getOperateAccount());

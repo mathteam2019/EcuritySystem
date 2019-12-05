@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 
 import java.io.ByteArrayInputStream;
@@ -23,14 +24,19 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DataGroupPdfView {
+public class DataGroupPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysDataGroup> exportDataGroupList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("数据组"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(4);
+            table.setWidthPercentage(100);
             Stream.of("序号", "数据组编号", "数据组", "数据组范围")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
@@ -39,8 +45,6 @@ public class DataGroupPdfView {
                         header.setPhrase(new Phrase(columnTitle));
                         table.addCell(header);
                     });
-
-
 
             for (SysDataGroup dataGroup : exportDataGroupList) {
                 table.addCell(dataGroup.getDataGroupId().toString());

@@ -8,11 +8,9 @@
  */
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
-import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -21,45 +19,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class DeviceArchiveTemplateExcelView extends BaseExcelView {
+public class DeviceFieldExcelView extends BaseExcelView {
 
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
-
         Cell headerCellNo = header.createCell(0);
         headerCellNo.setCellValue("序号");
 
-        Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("模板编号");
+        Cell headerCellDevice = header.createCell(1);
+        headerCellDevice.setCellValue("设备编号");
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("模板");
+        headerCellName.setCellValue("设备");
 
-        Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
-
-        Cell headerCellCategory = header.createCell(4);
+        Cell headerCellCategory = header.createCell(3);
         headerCellCategory.setCellValue("设备分类");
 
-        Cell headerCellManufacturer = header.createCell(5);
-        headerCellManufacturer.setCellValue("生产厂商");
-
-        Cell headerCellOriginalModel = header.createCell(6);
-        headerCellOriginalModel.setCellValue("设备型号");
+        Cell headerCellOriginalModel = header.createCell(4);
+        headerCellOriginalModel.setCellValue("场地");
     }
 
-    public static InputStream buildExcelDocument(List<SerArchiveTemplate> exportTemplateList) {
+    public static InputStream buildExcelDocument(List<SysDevice> exportDeviceList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
             Workbook workbook = new XSSFWorkbook();
 
-            Sheet sheet = workbook.createSheet("DeviceArchiveTemplate");
+            Sheet sheet = workbook.createSheet("DeviceArchive");
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("模板设置");
+            titleCell.setCellValue("场地配置");
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -71,20 +62,23 @@ public class DeviceArchiveTemplateExcelView extends BaseExcelView {
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
-            for (SerArchiveTemplate template : exportTemplateList) {
+            for (SysDevice device : exportDeviceList) {
                 Row row = sheet.createRow(counter++);
-                row.createCell(0).setCellValue(template.getArchivesTemplateId().toString());
-                row.createCell(1).setCellValue(template.getArchivesTemplateNumber());
-                row.createCell(2).setCellValue(template.getTemplateName());
-                row.createCell(3).setCellValue(template.getStatus());
-                if(template.getDeviceCategory() != null) {
-                    row.createCell(4).setCellValue(template.getDeviceCategory().getCategoryName());
+                row.createCell(0).setCellValue(device.getDeviceId().toString());
+                row.createCell(1).setCellValue(device.getDeviceSerial());
+
+                row.createCell(2).setCellValue(device.getDeviceName());
+                if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null
+                        && device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
+                    row.createCell(3).setCellValue(device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());
+                } else {
+                    row.createCell(3).setCellValue("无");
+                }
+                if(device.getField() != null) {
+                    row.createCell(4).setCellValue(device.getField().getFieldDesignation());
                 } else {
                     row.createCell(4).setCellValue("无");
-
                 }
-                row.createCell(5).setCellValue(template.getManufacturer());
-                row.createCell(6).setCellValue(template.getOriginalModel());
 
             }
 

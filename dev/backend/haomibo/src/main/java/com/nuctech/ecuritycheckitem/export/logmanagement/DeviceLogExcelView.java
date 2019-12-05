@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -22,7 +23,35 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class DeviceLogExcelView {
+public class DeviceLogExcelView extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellDevice = header.createCell(1);
+        headerCellDevice.setCellValue("设备");
+
+        Cell headerCellAccount = header.createCell(2);
+        headerCellAccount.setCellValue("账号");
+
+        Cell headerCellUserName = header.createCell(3);
+        headerCellUserName.setCellValue("用户");
+
+        Cell headerCellCategory = header.createCell(4);
+        headerCellCategory.setCellValue("类别");
+
+        Cell headerCellLevel = header.createCell(5);
+        headerCellLevel.setCellValue("级别");
+
+        Cell headerCellContent = header.createCell(6);
+        headerCellContent.setCellValue("内容");
+
+        Cell headerCellTime = header.createCell(7);
+        headerCellTime.setCellValue("操作时间");
+    }
 
     public static InputStream buildExcelDocument(List<SerDevLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -32,54 +61,20 @@ public class DeviceLogExcelView {
 
             Sheet sheet = workbook.createSheet("Device-Log");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("设备日志");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellDevice = header.createCell(1);
-            headerCellDevice.setCellValue("设备");
-            headerCellDevice.setCellStyle(headerStyle);
-
-            Cell headerCellAccount = header.createCell(2);
-            headerCellAccount.setCellValue("账号");
-            headerCellAccount.setCellStyle(headerStyle);
-
-            Cell headerCellUserName = header.createCell(3);
-            headerCellUserName.setCellValue("用户");
-            headerCellUserName.setCellStyle(headerStyle);
-
-            Cell headerCellCategory = header.createCell(4);
-            headerCellCategory.setCellValue("类别");
-            headerCellCategory.setCellStyle(headerStyle);
-
-            Cell headerCellLevel = header.createCell(5);
-            headerCellLevel.setCellValue("级别");
-            headerCellLevel.setCellStyle(headerStyle);
-
-            Cell headerCellContent = header.createCell(6);
-            headerCellContent.setCellValue("内容");
-            headerCellContent.setCellStyle(headerStyle);
-
-            Cell headerCellTime = header.createCell(7);
-            headerCellTime.setCellValue("操作时间");
-            headerCellTime.setCellStyle(headerStyle);
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
-            DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm");
             for (SerDevLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
@@ -97,7 +92,7 @@ public class DeviceLogExcelView {
                 row.createCell(4).setCellValue(log.getCategory().toString());
                 row.createCell(5).setCellValue(log.getLevel().toString());
                 row.createCell(6).setCellValue(log.getContent());
-                row.createCell(7).setCellValue(dateFormat.format(log.getTime()));
+                row.createCell(7).setCellValue(formatDate(log.getTime()));
 
             }
 

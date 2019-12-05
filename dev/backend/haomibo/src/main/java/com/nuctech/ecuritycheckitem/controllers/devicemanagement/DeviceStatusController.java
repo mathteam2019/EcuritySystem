@@ -199,17 +199,20 @@ public class DeviceStatusController extends BaseController {
         int deviceTrafficSetting = 10;
         int deviceTrafficMiddle = 30;
         int deviceTrafficHigh = 80;
+        int storageAlarm = 0;
         List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
         if(paramList != null && paramList.size() > 0) {
             deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
             deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
             deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
+            storageAlarm = paramList.get(0).getStorageAlarm();
         }
 
         for(int i = 0; i < data.size(); i ++) {
             SerDeviceStatus deviceStatus = data.get(i);
             deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
+            deviceStatus.setStorageAlarm(storageAlarm);
             deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
         }
 

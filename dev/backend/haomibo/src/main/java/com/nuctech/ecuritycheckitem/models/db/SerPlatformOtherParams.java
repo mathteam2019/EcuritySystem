@@ -61,13 +61,13 @@ public class SerPlatformOtherParams implements Serializable {
     Integer deviceTrafficMiddle;
 
     @Column(name = "STORAGE_DETECTION_CYCLE", length = 11)
-    Long storageDetectionCycle;
+    Integer storageDetectionCycle;
 
     @Column(name = "STORAGE_ALARM", length = 11)
-    Long storageAlarm;
+    Integer storageAlarm;
 
     @Column(name = "HISTORY_DATA_CYCLE", length = 11)
-    Long historyDataCycle;
+    Integer historyDataCycle;
 
 
 

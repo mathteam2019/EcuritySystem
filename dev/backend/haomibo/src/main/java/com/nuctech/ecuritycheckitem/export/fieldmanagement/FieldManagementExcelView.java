@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.fieldmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -20,7 +21,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class FieldManagementExcelView {
+public class FieldManagementExcelView extends BaseExcelView {
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellSerial = header.createCell(1);
+        headerCellSerial.setCellValue("场地编号");
+
+        Cell headerCellDesignation = header.createCell(2);
+        headerCellDesignation.setCellValue("场地");
+
+        Cell headerCellStatus = header.createCell(3);
+        headerCellStatus.setCellValue("生效");
+
+        Cell headerCellParentSerial = header.createCell(4);
+        headerCellParentSerial.setCellValue("上级场地编号");
+
+        Cell headerCellParentDesignation = header.createCell(5);
+        headerCellParentDesignation.setCellValue("上级场地");
+
+        Cell headerCellLeader = header.createCell(6);
+        headerCellLeader.setCellValue("负责人");
+
+        Cell headerCellMobile = header.createCell(7);
+        headerCellMobile.setCellValue("联系电话");
+
+        Cell headerCellNote = header.createCell(8);
+        headerCellNote.setCellValue("备注");
+    }
+
 
     public static InputStream buildExcelDocument(List<SysField> exportFieldList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -30,54 +63,17 @@ public class FieldManagementExcelView {
 
             Sheet sheet = workbook.createSheet("Field");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("场地管理");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellSerial = header.createCell(1);
-            headerCellSerial.setCellValue("场地编号");
-            headerCellSerial.setCellStyle(headerStyle);
-
-            Cell headerCellDesignation = header.createCell(2);
-            headerCellDesignation.setCellValue("场地");
-            headerCellDesignation.setCellStyle(headerStyle);
-
-            Cell headerCellStatus = header.createCell(3);
-            headerCellStatus.setCellValue("生效");
-            headerCellStatus.setCellStyle(headerStyle);
-
-            Cell headerCellParentSerial = header.createCell(4);
-            headerCellParentSerial.setCellValue("上级场地编号");
-            headerCellParentSerial.setCellStyle(headerStyle);
-
-            Cell headerCellParentDesignation = header.createCell(5);
-            headerCellParentDesignation.setCellValue("上级场地");
-            headerCellParentDesignation.setCellStyle(headerStyle);
-
-            Cell headerCellLeader = header.createCell(6);
-            headerCellLeader.setCellValue("负责人");
-            headerCellLeader.setCellStyle(headerStyle);
-
-            Cell headerCellMobile = header.createCell(7);
-            headerCellMobile.setCellValue("联系电话");
-            headerCellMobile.setCellStyle(headerStyle);
-
-            Cell headerCellNote = header.createCell(8);
-            headerCellNote.setCellValue("备注");
-            headerCellNote.setCellStyle(headerStyle);
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);

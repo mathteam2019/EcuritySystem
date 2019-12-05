@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -20,7 +21,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class DataGroupExcelView {
+public class DataGroupExcelView extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellNumber = header.createCell(1);
+        headerCellNumber.setCellValue("数据组编号");
+
+        Cell headerCellName = header.createCell(2);
+        headerCellName.setCellValue("数据组");
+
+        Cell headerCellRange = header.createCell(3);
+        headerCellRange.setCellValue("数据组范围");
+    }
 
     public static InputStream buildExcelDocument(List<SysDataGroup> exportDataGroupList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -30,36 +48,17 @@ public class DataGroupExcelView {
 
             Sheet sheet = workbook.createSheet("DataGroup");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("数据组");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellNumber = header.createCell(1);
-            headerCellNumber.setCellValue("数据组编号");
-            headerCellNumber.setCellStyle(headerStyle);
-
-            Cell headerCellName = header.createCell(2);
-            headerCellName.setCellValue("数据组");
-            headerCellName.setCellStyle(headerStyle);
-
-            Cell headerCellRange = header.createCell(3);
-            headerCellRange.setCellValue("数据组范围");
-            headerCellRange.setCellStyle(headerStyle);
-
-
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);

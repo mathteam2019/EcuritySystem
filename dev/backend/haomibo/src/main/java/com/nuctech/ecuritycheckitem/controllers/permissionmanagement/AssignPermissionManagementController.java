@@ -513,6 +513,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User generate file request.
      */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_EXPORT)
     @RequestMapping(value = "/user/export", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
@@ -548,6 +549,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User generate file request.
      */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_PRINT)
     @RequestMapping(value = "/user/print", method = RequestMethod.POST)
     public Object userGeneratePDFFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
@@ -577,6 +579,27 @@ public class AssignPermissionManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    private BooleanBuilder getUserGroupPredicate(UserGroupGetByFilterAndPageRequestBody.Filter filter) {
+        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getGroupName())) {
+                predicate.and(builder.groupName.contains(filter.getGroupName()));
+            }
+            if (!StringUtils.isEmpty(filter.getUserName())) {
+                predicate.and(builder.users.any().userName.contains(filter.getUserName()));
+            }
+            if (!StringUtils.isEmpty(filter.getRoleName())) {
+                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
+            }
+
+        }
+        return predicate;
+    }
+
 
 
     /**
@@ -593,24 +616,7 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         // Build query.
-        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        UserGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getGroupName())) {
-                predicate.and(builder.groupName.contains(filter.getGroupName()));
-            }
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.users.any().userName.contains(filter.getUserName()));
-            }
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
-            }
-
-        }
+        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
 
         // Pagination.
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
@@ -652,87 +658,99 @@ public class AssignPermissionManagementController extends BaseController {
         return value;
     }
 
-//    /**
-//     * User Group generate file request.
-//     */
-//    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
-//    public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
-//                                   BindingResult bindingResult) {
-//
-//        if (bindingResult.hasErrors()) {
-//            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-//        }
-//
-//        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
-//
-//        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-//
-//        UserGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-//
-//        if (filter != null) {
-//            if (!StringUtils.isEmpty(filter.getGroupName())) {
-//                predicate.and(builder.groupName.contains(filter.getGroupName()));
-//            }
-//            if (!StringUtils.isEmpty(filter.getUserName())) {
-//                predicate.and(builder.users.any().userName.contains(filter.getUserName()));
-//            }
-//            if (!StringUtils.isEmpty(filter.getRoleName())) {
-//                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
-//            }
-//
-//        }
-//
-//
-//        //get all user group list
-//        List<SysUserGroup> userGroupList = StreamSupport
-//                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-//                .collect(Collectors.toList());
-//        List<SysUserGroup> exportList = new ArrayList<>();
-//        if(requestBody.getIsAll() == false) {
-//            String[] splits = requestBody.getIdList().split(",");
-//            for(int i = 0; i < userGroupList.size(); i ++) {
-//                SysUserGroup userGroup = userGroupList.get(i);
-//                boolean isExist = false;
-//                for(int j = 0; j < splits.length; j ++) {
-//                    if(splits[j].equals(userGroup.getUserGroupId().toString())) {
-//                        isExist = true;
-//                        break;
-//                    }
-//                }
-//                if(isExist == true) {
-//                    exportList.add(userGroup);
-//                }
-//            }
-//        } else {
-//            exportList = userGroupList;
-//        }
-//
-//        if(requestBody.exportType.equals("excel")) {
-//            InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList);
-//
-//
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add("Content-Disposition", "attachment; filename=assign-user-group.xlsx");
-//
-//            return ResponseEntity
-//                    .ok()
-//                    .headers(headers)
-//                    .contentType(MediaType.valueOf("application/x-msexcel"))
-//                    .body(new InputStreamResource(inputStream));
-//        }
-//        InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Disposition", "attachment; filename=assign-user-group.pdf");
-//
-//        return ResponseEntity
-//                .ok()
-//                .headers(headers)
-//                .contentType(MediaType.APPLICATION_PDF)
-//                .body(new InputStreamResource(inputStream));
-//
-//    }
+    private List<SysUserGroup> getUserGroupExportList(List<SysUserGroup> userGroupList, boolean isAll, String idList) {
+        List<SysUserGroup> exportList = new ArrayList<>();
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+            for(int i = 0; i < userGroupList.size(); i ++) {
+                SysUserGroup userGroup = userGroupList.get(i);
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(userGroup.getUserGroupId().toString())) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.add(userGroup);
+                }
+            }
+        } else {
+            exportList = userGroupList;
+        }
+        return exportList;
+    }
+
+    /**
+     * User Group generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_EXPORT)
+    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
+                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+
+
+        //get all user group list
+        List<SysUserGroup> userGroupList = StreamSupport
+                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=assign-user-group.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * User Group generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_PRINT)
+    @RequestMapping(value = "/user-group/print", method = RequestMethod.POST)
+    public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+
+
+        //get all user group list
+        List<SysUserGroup> userGroupList = StreamSupport
+                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=assign-user-group.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+
+    }
 
 
 }

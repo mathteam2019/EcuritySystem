@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -22,7 +23,26 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class AccessLogExcelView {
+public class AccessLogExcelView extends BaseExcelView {
+
+    private static void setHeader(Sheet sheet) {
+        Row header = sheet.createRow(3);
+
+        Cell headerCellNo = header.createCell(0);
+        headerCellNo.setCellValue("序号");
+
+        Cell headerCellOperateTime = header.createCell(1);
+        headerCellOperateTime.setCellValue("访问时间");
+
+        Cell headerCellAction = header.createCell(2);
+        headerCellAction.setCellValue("动作");
+
+        Cell headerCellClientIp = header.createCell(3);
+        headerCellClientIp.setCellValue("访问ip");
+
+        Cell headerCellOperateAccount = header.createCell(4);
+        headerCellOperateAccount.setCellValue("访问用户");
+    }
 
     public static InputStream buildExcelDocument(List<SysAccessLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -32,46 +52,24 @@ public class AccessLogExcelView {
 
             Sheet sheet = workbook.createSheet("Access-Log");
 
-            Row header = sheet.createRow(0);
+            Row title = sheet.createRow(0);
+            Cell titleCell = title.createCell(0);
+            titleCell.setCellValue("访问日志");
+            titleCell.setCellStyle(getHeaderStyle(workbook));
 
-            CellStyle headerStyle = workbook.createCellStyle();
+            Row time = sheet.createRow(1);
+            Cell timeCell = time.createCell(0);
+            timeCell.setCellValue(getCurrentTime());
 
-            XSSFFont font = ((XSSFWorkbook) workbook).createFont();
-            font.setFontName(Constants.EXCEL_HEAD_FONT_NAME);
-            font.setFontHeightInPoints(Constants.EXCEL_HEAD_FONT_SIZE);
-            font.setBold(true);
-            headerStyle.setFont(font);
-
-            Cell headerCellNo = header.createCell(0);
-            headerCellNo.setCellValue("序号");
-            headerCellNo.setCellStyle(headerStyle);
-
-            Cell headerCellOperateTime = header.createCell(1);
-            headerCellOperateTime.setCellValue("访问时间");
-            headerCellOperateTime.setCellStyle(headerStyle);
-
-            Cell headerCellAction = header.createCell(2);
-            headerCellAction.setCellValue("动作");
-            headerCellAction.setCellStyle(headerStyle);
-
-            Cell headerCellClientIp = header.createCell(3);
-            headerCellClientIp.setCellValue("访问ip");
-            headerCellClientIp.setCellStyle(headerStyle);
-
-            Cell headerCellOperateAccount = header.createCell(4);
-            headerCellOperateAccount.setCellValue("访问用户");
-            headerCellOperateAccount.setCellStyle(headerStyle);
-
-
-            int counter = 1;
+            setHeader(sheet);
+            int counter = 4;
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
-            DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm");
             for (SysAccessLog log : exportLogList) {
                 Row row = sheet.createRow(counter++);
                 row.createCell(0).setCellValue(log.getId().toString());
-                row.createCell(1).setCellValue(dateFormat.format(log.getOperateTime()));
+                row.createCell(1).setCellValue(formatDate(log.getOperateTime()));
                 row.createCell(2).setCellValue(log.getAction());
                 row.createCell(3).setCellValue(log.getClientIp());
                 row.createCell(4).setCellValue(log.getOperateAccount());

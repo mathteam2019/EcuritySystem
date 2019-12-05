@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class FieldManagementPdfView {
+public class FieldManagementPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysField> exportFieldList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -32,7 +33,13 @@ public class FieldManagementPdfView {
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("场地管理"));
+            document.add(getTime());
             PdfPTable table = new PdfPTable(9);
+
+            table.setWidthPercentage(100);
+
             Stream.of("序号", "场地编号", "场地", "生效", "上级场地编号", "上级场地", "负责人", "联系电话", "备注")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

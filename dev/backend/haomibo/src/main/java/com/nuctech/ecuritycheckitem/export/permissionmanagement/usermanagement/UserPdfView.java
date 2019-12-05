@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 
 import java.io.ByteArrayInputStream;
@@ -23,14 +24,19 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class UserPdfView {
+public class UserPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SysUser> exportUserList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("人员列表"));
+            document.add(getTime());
+
             PdfPTable table = new PdfPTable(7);
+            table.setWidthPercentage(100);
             Stream.of("序号", "人员编号", "人员", "性别", "状态", "隶属机构", "账号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();

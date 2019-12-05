@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 
 import java.io.ByteArrayInputStream;
@@ -25,7 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DeviceLogPdfView {
+public class DeviceLogPdfView extends BasePdfView {
     public static InputStream buildPDFDocument(List<SerDevLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -34,7 +35,12 @@ public class DeviceLogPdfView {
         try {
             PdfWriter.getInstance(document, out);
             document.open();
+
+            document.add(getTitle("设备日志"));
+            document.add(getTime());
             PdfPTable table = new PdfPTable(8);
+
+            table.setWidthPercentage(100);
             Stream.of("序号", "设备", "账号", "用户", "类别", "级别", "内容", "操作时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
@@ -44,8 +50,6 @@ public class DeviceLogPdfView {
                         table.addCell(header);
                     });
 
-
-            DateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy hh:mm");
 
             for (SerDevLog log : exportLogList) {
                 table.addCell(log.getId().toString());
@@ -64,7 +68,7 @@ public class DeviceLogPdfView {
                 table.addCell(log.getCategory().toString());
                 table.addCell(log.getLevel().toString());
                 table.addCell(log.getContent());
-                table.addCell(dateFormat.format(log.getTime()));
+                table.addCell(formatDate(log.getTime()));
             }
 
             document.add(table);

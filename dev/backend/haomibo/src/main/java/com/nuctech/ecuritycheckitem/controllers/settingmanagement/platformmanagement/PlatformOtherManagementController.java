@@ -62,13 +62,13 @@ public class PlatformOtherManagementController extends BaseController {
         Integer deviceTrafficMiddle;
 
         @NotNull
-        Long storageDetectionCycle;
+        Integer storageDetectionCycle;
 
         @NotNull
-        Long storageAlarm;
+        Integer storageAlarm;
 
         @NotNull
-        Long historyDataCycle;
+        Integer historyDataCycle;
 
 
         SerPlatformOtherParams convert2SerPlatformOtherParam() {

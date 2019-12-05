@@ -6,5 +6,5 @@ import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import java.util.List;
 
 public interface DeviceService {
-    List<SysDevice> getFilterDeviceList(DeviceControlController.DeviceGetByFilterAndPageRequestBody body);
+    List<SysDevice> getFilterDeviceList(DeviceControlController.DeviceGetByFilterAndPageRequestBody.Filter filter);
 }

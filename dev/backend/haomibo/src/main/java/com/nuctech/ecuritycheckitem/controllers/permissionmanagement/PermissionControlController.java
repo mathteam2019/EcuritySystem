@@ -147,8 +147,6 @@ public class PermissionControlController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class RoleGenerateRequestBody {
-        @NotNull
-        String exportType;
 
         String idList;
         @NotNull
@@ -212,8 +210,6 @@ public class PermissionControlController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class DataGroupGenerateRequestBody {
-        @NotNull
-        String exportType;
 
         String idList;
         @NotNull
@@ -386,6 +382,19 @@ public class PermissionControlController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
+    private BooleanBuilder getRolePredicate(RoleGetByFilterAndPageRequestBody.Filter filter) {
+        QSysRole builder = QSysRole.sysRole;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getRoleName())) {
+                predicate.and(builder.roleName.contains(filter.getRoleName()));
+            }
+        }
+        return predicate;
+    }
+
 
     /**
      * Role datatable request.
@@ -400,17 +409,7 @@ public class PermissionControlController extends BaseController {
             return null;
         }
 
-        QSysRole builder = QSysRole.sysRole;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        RoleGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roleName.contains(filter.getRoleName()));
-            }
-        }
+        BooleanBuilder predicate = getRolePredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -443,37 +442,10 @@ public class PermissionControlController extends BaseController {
         return value;
     }
 
-    /**
-     * Role generate file request.
-     */
-    @RequestMapping(value = "/role/export", method = RequestMethod.POST)
-    public Object roleGenerateFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
-                                   BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysRole builder = QSysRole.sysRole;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        RoleGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roleName.contains(filter.getRoleName()));
-            }
-        }
-
-
-        //get all role list
-        List<SysRole> roleList = StreamSupport
-                .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysRole> getRoleExportList(List<SysRole> roleList, boolean isAll, String idList) {
         List<SysRole> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < roleList.size(); i ++) {
                 SysRole role = roleList.get(i);
                 boolean isExist = false;
@@ -490,21 +462,68 @@ public class PermissionControlController extends BaseController {
         } else {
             exportList = roleList;
         }
+        return exportList;
+    }
 
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = RoleExcelView.buildExcelDocument(exportList);
+    /**
+     * Role generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ROLE_EXPORT)
+    @RequestMapping(value = "/role/export", method = RequestMethod.POST)
+    public Object roleGenerateExelFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
+                                   BindingResult bindingResult) {
 
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=role.xlsx");
-
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getRolePredicate(requestBody.getFilter());
+
+
+        //get all role list
+        List<SysRole> roleList = StreamSupport
+                .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
+        List<SysRole> exportList = getRoleExportList(roleList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = RoleExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=role.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Role generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
+    @RequestMapping(value = "/role/print", method = RequestMethod.POST)
+    public Object roleGeneratePDFFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
+                                       BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getRolePredicate(requestBody.getFilter());
+
+
+        //get all role list
+        List<SysRole> roleList = StreamSupport
+                .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
+        List<SysRole> exportList = getRoleExportList(roleList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -694,6 +713,19 @@ public class PermissionControlController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
+    private BooleanBuilder getDataGroupPredicate(DataGroupGetByFilterAndPageRequestBody.Filter filter) {
+        QSysDataGroup builder = QSysDataGroup.sysDataGroup;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getDataGroupName())) {
+                predicate.and(builder.dataGroupName.contains(filter.getDataGroupName()));
+            }
+        }
+        return predicate;
+    }
+
 
     /**
      * Data group datatable request.
@@ -708,17 +740,7 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSysDataGroup builder = QSysDataGroup.sysDataGroup;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        DataGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getDataGroupName())) {
-                predicate.and(builder.dataGroupName.contains(filter.getDataGroupName()));
-            }
-        }
+        BooleanBuilder predicate = getDataGroupPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -753,38 +775,10 @@ public class PermissionControlController extends BaseController {
         return value;
     }
 
-
-    /**
-     * Data Group generate file request.
-     */
-    @RequestMapping(value = "/data-group/export", method = RequestMethod.POST)
-    public Object dataGroupGenerateFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
-                                   BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        QSysDataGroup builder = QSysDataGroup.sysDataGroup;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        DataGroupGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getDataGroupName())) {
-                predicate.and(builder.dataGroupName.contains(filter.getDataGroupName()));
-            }
-        }
-
-
-        //get all data group list
-        List<SysDataGroup> dataGroupList = StreamSupport
-                .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+    private List<SysDataGroup> getDataGroupExportList(List<SysDataGroup> dataGroupList, boolean isAll, String idList) {
         List<SysDataGroup> exportList = new ArrayList<>();
-        if(requestBody.getIsAll() == false) {
-            String[] splits = requestBody.getIdList().split(",");
+        if(isAll == false) {
+            String[] splits = idList.split(",");
             for(int i = 0; i < dataGroupList.size(); i ++) {
                 SysDataGroup dataGroup = dataGroupList.get(i);
                 boolean isExist = false;
@@ -801,21 +795,68 @@ public class PermissionControlController extends BaseController {
         } else {
             exportList = dataGroupList;
         }
-
-        if(requestBody.exportType.equals("excel")) {
-            InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList);
-
+        return exportList;
+    }
 
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=data-group.xlsx");
+    /**
+     * Data Group generate excel file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_EXPORT)
+    @RequestMapping(value = "/data-group/export", method = RequestMethod.POST)
+    public Object dataGroupGenerateExcelFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
+                                   BindingResult bindingResult) {
 
-            return ResponseEntity
-                    .ok()
-                    .headers(headers)
-                    .contentType(MediaType.valueOf("application/x-msexcel"))
-                    .body(new InputStreamResource(inputStream));
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        BooleanBuilder predicate = getDataGroupPredicate(requestBody.getFilter());
+
+
+        //get all data group list
+        List<SysDataGroup> dataGroupList = StreamSupport
+                .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=data-group.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Data Group generate pdf file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_PRINT)
+    @RequestMapping(value = "/data-group/print", method = RequestMethod.POST)
+    public Object dataGroupGeneratePDFFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getDataGroupPredicate(requestBody.getFilter());
+
+
+        //get all data group list
+        List<SysDataGroup> dataGroupList = StreamSupport
+                .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
