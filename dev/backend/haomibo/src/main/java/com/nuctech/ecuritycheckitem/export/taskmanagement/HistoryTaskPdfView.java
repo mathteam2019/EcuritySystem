@@ -43,10 +43,10 @@ public class HistoryTaskPdfView extends BasePdfView {
             document.add(getTitle("历史任务"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(17);
+            PdfPTable table = new PdfPTable(16);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "图像", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
+            Stream.of("序号", "任务编号", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -66,15 +66,20 @@ public class HistoryTaskPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if (task.getScanImage().getImageLabel() != null) {
-                    addTableCell(table, task.getScanImage().getImageLabel());
-                } else {
-                    addTableCell(table, "无");
-                }
+//                if (task.getScanImage() != null) {
+//                    if (task.getScanImage().getImageLabel() != null) {
+//                        addTableCell(table, task.getScanImage().getImageLabel());
+//                    } else {
+//                        addTableCell(table, "无");
+//                    }
+//                }
+//                else {
+//                    addTableCell(table, "无");
+//                }
 
 
                 if (task.getWorkMode() != null) {
-                    addTableCell(table, task.getWorkMode().getModeName());
+                    addTableCell(table, ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));
                 } else {
                     addTableCell(table, "无");
                 }

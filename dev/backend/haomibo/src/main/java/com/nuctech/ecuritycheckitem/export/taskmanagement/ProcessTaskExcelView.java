@@ -115,7 +115,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        row.createCell(2).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
+                        row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
                         row.createCell(2).setCellValue("无");
                     }
