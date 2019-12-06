@@ -37,7 +37,7 @@ public class ErrorHandlingController extends BaseController implements ErrorCont
 
         if (status == HttpStatus.FORBIDDEN.value()) {
             // Forbidden error.
-            utils.writeResponse(response, ResponseMessage.FORBIDDEN);
+            utils.writeForbbidenResponse(response, ResponseMessage.FORBIDDEN);
             return null;
         }
         if (status == HttpStatus.BAD_REQUEST.value()) {

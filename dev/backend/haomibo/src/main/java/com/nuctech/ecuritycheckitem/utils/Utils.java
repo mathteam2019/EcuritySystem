@@ -140,4 +140,22 @@ public class Utils {
         }
     }
 
+
+    /**
+     * Write Forbbiden response using HttpServletResponse object. This is often used in filters and error handling parts.
+     *
+     * @param response The HttpServletResponse object.
+     * @param message  Response message to write.
+     */
+    public void writeForbbidenResponse(HttpServletResponse response, ResponseMessage message) {
+        try {
+            // We need to serialize response to JSON string.
+            response.getWriter().write(this.convertObjectToJson(new CommonResponseBody(message)));
+            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        } catch (Exception e) {
+            // Hope there won't any exception for this.
+            e.printStackTrace();
+        }
+    }
+
 }
