@@ -38,10 +38,10 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
             document.add(getTitle("人员案例"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(7);
+            PdfPTable table = new PdfPTable(6);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "图像", "任务结论", "现场", "通道", "查获物品")
+            Stream.of("序号", "任务编号", "任务结论", "现场", "通道", "查获物品")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -59,11 +59,6 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if(deal.getScanImage() != null) {
-                    addTableCell(table, deal.getScanImage().getImageUrl());
-                } else {
-                    addTableCell(table, "无");
-                }
 
 
                 addTableCell(table, deal.getHandResult());

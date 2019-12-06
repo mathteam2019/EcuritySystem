@@ -112,7 +112,7 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
 

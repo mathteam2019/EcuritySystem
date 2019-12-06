@@ -51,7 +51,7 @@ public class DataGroupPdfView extends BasePdfView {
                 addTableCell(table, dataGroup.getDataGroupId().toString());
                 addTableCell(table, dataGroup.getDataGroupNumber());
                 addTableCell(table, dataGroup.getDataGroupName());
-                addTableCell(table, "");
+                addTableCell(table, "无");
             }
 
             document.add(table);

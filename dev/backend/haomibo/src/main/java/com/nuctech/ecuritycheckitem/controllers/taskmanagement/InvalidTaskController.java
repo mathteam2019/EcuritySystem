@@ -239,7 +239,7 @@ public class InvalidTaskController extends BaseController {
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
         if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
             if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
                 predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
@@ -316,7 +316,7 @@ public class InvalidTaskController extends BaseController {
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
 
-        InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(taskList);
+        InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(exportList);
 
 
         HttpHeaders headers = new HttpHeaders();

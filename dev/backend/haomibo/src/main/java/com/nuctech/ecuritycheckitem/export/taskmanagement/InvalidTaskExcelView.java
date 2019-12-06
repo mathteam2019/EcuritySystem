@@ -91,18 +91,18 @@ public class InvalidTaskExcelView extends BaseExcelView {
                         row.createCell(2).setCellValue(task.getSerScan().getScanImage().getImageLabel());
                     }
                     else {
-                        row.createCell(2).setCellValue("");
+                        row.createCell(2).setCellValue("无");
                     }
                 }
                 else {
-                    row.createCell(2).setCellValue("");
+                    row.createCell(2).setCellValue("无");
                 }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         row.createCell(3).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        row.createCell(3).setCellValue("");
+                        row.createCell(3).setCellValue("无");
                     }
                 } else {
 
@@ -111,41 +111,41 @@ public class InvalidTaskExcelView extends BaseExcelView {
                 if (task.getField() != null) {
                     row.createCell(4).setCellValue(task.getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("");
+                    row.createCell(4).setCellValue("无");
                 }
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanDevice() != null) {
                         row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        row.createCell(5).setCellValue("");
+                        row.createCell(5).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        row.createCell(6).setCellValue("");
+                        row.createCell(6).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
                         row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        row.createCell(7).setCellValue("");
+                        row.createCell(7).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
                         row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        row.createCell(8).setCellValue("");
+                        row.createCell(8).setCellValue("无");
                     }
 
                 } else {
-                    row.createCell(5).setCellValue("");
-                    row.createCell(6).setCellValue("");
-                    row.createCell(7).setCellValue("");
-                    row.createCell(8).setCellValue("");
+                    row.createCell(5).setCellValue("无");
+                    row.createCell(6).setCellValue("无");
+                    row.createCell(7).setCellValue("无");
+                    row.createCell(8).setCellValue("无");
                 }
 
             }

@@ -4,12 +4,21 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.util.*;
 
 @RestController
@@ -56,7 +67,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
     }
 
-    List<String> handGoodsIDList = Arrays.asList(new String[]{
+    public static final List<String> handGoodsIDList = Arrays.asList(new String[]{
             "1000001601",
             "1000001602",
             "1000001603",
@@ -64,6 +75,23 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             "1000001605"
     });
 
+
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsRequestBody filter;
+    }
 
     @RequestMapping(value = "/get-suspicionhandgoods-statistics", method = RequestMethod.POST)
     public Object getSuspicionHandGoodsSummary(
@@ -79,6 +107,92 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/suspiciongoods/generate/print", method = RequestMethod.POST)
+    public Object suspicionGoodsStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                          BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        HandExaminationStatisticsPdfView.setResource(res);
+        InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
+    public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> judgeStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    private TreeMap<Integer, TreeMap<String, Long>> getExportList(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = new TreeMap<>();
+
+        if (isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
+
+                TreeMap<String, Long> record = entry.getValue();
+
+                boolean isExist = false;
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.get("time")))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if (isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
+    }
+
 
     public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(StatisticsRequestBody requestBody) {
 
@@ -102,8 +216,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             startIndex = keyValueMin;
             endIndex = keyValueMax;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -113,19 +226,18 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
         if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
+            startIndex = (curPage - 1) * perPage;
+            endIndex = (curPage) * perPage - 1;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+            //if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            startIndex = keyValueMin + startIndex;
+            endIndex = keyValueMin + endIndex;
+            //}
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
@@ -134,14 +246,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 endIndex = keyValueMax;
             }
 
-
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
-            }
+            response.setFrom((curPage - 1) * perPage + 1);
+            response.setTo((curPage) * perPage);
 
             try {
 
@@ -151,23 +257,21 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
                 if (response.getTotal() % response.getPer_page() == 0) {
                     response.setLast_page(response.getTotal() / response.getPer_page());
-                }
-                else {
+                } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
             }
         }
 
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
 
-        for (Integer i = startIndex; i <= endIndex; i ++ ) {
+        for (Integer i = startIndex; i <= endIndex; i++) {
 
             TreeMap<String, Long> suspictionStat = getSuspicionHandGoodsByDate(requestBody, i);
-            suspictionStat.put("time", (long)i);
+            suspictionStat.put("time", (long) i);
             detailedStatistics.put(i, suspictionStat);
 
         }
@@ -187,7 +291,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-        for (int i = 0; i < handGoodsIDList.size(); i ++) {
+        for (int i = 0; i < handGoodsIDList.size(); i++) {
 
             BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
 
@@ -196,8 +300,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 String statWidth = "";
                 try {
                     statWidth = requestBody.getFilter().getStatWidth();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -217,7 +320,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                             predicate.and(history.handStartTime.hour().eq(byDate));
                             break;
                         case TaskManagementController.StatisticWidth.WEEK:
-                            predicate.and( history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
+                            predicate.and(history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
                             break;
                         case TaskManagementController.StatisticWidth.QUARTER:
                             predicate.and(history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));

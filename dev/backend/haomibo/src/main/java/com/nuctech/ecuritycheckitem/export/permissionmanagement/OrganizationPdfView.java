@@ -12,6 +12,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
@@ -53,7 +54,7 @@ public class OrganizationPdfView extends BasePdfView {
                 addTableCell(table, org.getOrgId().toString());
                 addTableCell(table, org.getOrgNumber());
                 addTableCell(table, org.getOrgName());
-                addTableCell(table, org.getStatus());
+                addTableCell(table, ConstantDictionary.getDataValue(org.getStatus()));
                 if(org.getParent() != null) {
                     addTableCell(table, org.getParent().getOrgNumber());
                     addTableCell(table, org.getParent().getOrgName());

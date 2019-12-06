@@ -359,7 +359,7 @@ public class TaskManagementController extends BaseController {
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
 
-        InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(taskList);
+        InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
 
 
         HttpHeaders headers = new HttpHeaders();

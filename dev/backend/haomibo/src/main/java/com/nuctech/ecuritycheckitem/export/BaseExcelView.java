@@ -32,7 +32,7 @@ public class BaseExcelView {
 
         String strDate = "";
         try {
-            dateFormat.format(date);
+            strDate = dateFormat.format(date);
         } catch(Exception ex) {
 
         }

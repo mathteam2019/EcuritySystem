@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
@@ -56,7 +57,7 @@ public class FieldManagementPdfView extends BasePdfView {
                 addTableCell(table, field.getFieldId().toString());
                 addTableCell(table, field.getFieldSerial());
                 addTableCell(table, field.getFieldDesignation());
-                addTableCell(table, field.getStatus());
+                addTableCell(table, ConstantDictionary.getDataValue(field.getStatus()));
                 if(field.getParent() != null) {
                     addTableCell(table, field.getParent().getFieldSerial());
                     addTableCell(table, field.getParent().getFieldDesignation());

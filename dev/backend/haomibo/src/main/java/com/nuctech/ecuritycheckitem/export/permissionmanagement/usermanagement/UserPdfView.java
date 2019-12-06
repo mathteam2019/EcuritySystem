@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -53,8 +54,8 @@ public class UserPdfView extends BasePdfView {
                 addTableCell(table, user.getUserId().toString());
                 addTableCell(table, user.getUserNumber());
                 addTableCell(table, user.getUserName());
-                addTableCell(table, user.getGender());
-                addTableCell(table, user.getStatus());
+                addTableCell(table, ConstantDictionary.getDataValue(user.getGender()));
+                addTableCell(table, ConstantDictionary.getDataValue(user.getStatus()));
                 addTableCell(table, user.getOrg().getOrgName());
                 addTableCell(table, user.getUserAccount());
             }

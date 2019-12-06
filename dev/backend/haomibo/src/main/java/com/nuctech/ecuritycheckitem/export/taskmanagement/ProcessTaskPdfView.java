@@ -63,10 +63,10 @@ public class ProcessTaskPdfView extends BasePdfView {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 addTableCell(table, task.getTaskStatus());
@@ -74,7 +74,7 @@ public class ProcessTaskPdfView extends BasePdfView {
                 if (task.getField() != null) {
                     addTableCell(table, task.getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 if (task.getSerScan() != null) {
@@ -82,35 +82,35 @@ public class ProcessTaskPdfView extends BasePdfView {
                     if (task.getSerScan().getScanDevice() != null) {
                         addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
                     addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
                 } else {
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
 
                 if (task.getSerJudgeGraph() != null) {
                     if (task.getSerJudgeGraph().getJudgeDevice() != null) {
                         addTableCell(table, task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerJudgeGraph().getJudgeUser() != null) {
                         addTableCell(table, task.getSerJudgeGraph().getJudgeUser().getUserName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     addTableCell(table, formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
@@ -118,10 +118,10 @@ public class ProcessTaskPdfView extends BasePdfView {
 
                 } else {
 
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
 
                 }
 
@@ -130,13 +130,13 @@ public class ProcessTaskPdfView extends BasePdfView {
                     if (task.getSerHandExamination().getHandUser() != null) {
                         addTableCell(table, task.getSerHandExamination().getHandUser().getUserName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerHandExamination().getHandDevice() != null) {
                         addTableCell(table, task.getSerHandExamination().getHandDevice().getDeviceName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     addTableCell(table, formatDate(task.getSerHandExamination().getHandEndTime()));
@@ -144,9 +144,9 @@ public class ProcessTaskPdfView extends BasePdfView {
                 }
                 else {
 
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
 
                 }
 

@@ -61,16 +61,15 @@ public class PreviewStatisticsPdfView extends BasePdfView {
                     });
 
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
 
                 TotalStatistics record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                addTableCell(table, Long.toString(index));
+                addTableCell(table, Long.toString(index ++));
                 addTableCell(table, Long.toString(record.getTime()));
                 addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
                 addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));

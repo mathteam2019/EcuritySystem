@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
@@ -59,7 +60,7 @@ public class DevicePdfView extends BasePdfView {
                 } else {
                     addTableCell(table, "无");
                 }
-                addTableCell(table, device.getStatus());
+                addTableCell(table, ConstantDictionary.getDataValue(device.getStatus()));
                 if(device.getArchive() != null && device.getArchive().getArchiveTemplate() != null &&
                         device.getArchive().getArchiveTemplate().getDeviceCategory() != null) {
                     addTableCell(table, device.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryName());

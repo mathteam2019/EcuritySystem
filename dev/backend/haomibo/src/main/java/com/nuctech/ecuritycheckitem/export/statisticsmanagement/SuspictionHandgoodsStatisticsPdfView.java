@@ -16,9 +16,10 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.HandExaminationStatisticsController;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,9 +29,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-public class ScanStatisticsPdfView extends BasePdfView {
+public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
-    public static InputStream buildPDFDocument(TreeMap<Long, ScanStatistics> detailedStatistics) {
+    public static InputStream buildPDFDocument(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics) {
 
         Document document = new Document();
 
@@ -41,13 +42,24 @@ public class ScanStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("扫描统计"));
+            document.add(getTitle("毫米波人体查验手检统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(11);
+            PdfPTable table = new PdfPTable(SuspicionHandgoodsStatisticsController.handGoodsIDList.size() + 2);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "扫描总量", "有效扫描量", "有效率", "无效扫描量", "无效率", "通过量", "通过率", "报警量", "报警率")
+
+            PdfPCell headerNo = new PdfPCell();
+            headerNo.setBorderWidth(2);
+            headerNo.setPhrase(new Phrase("序号", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            table.addCell(headerNo);
+
+            PdfPCell headerTime = new PdfPCell();
+            headerTime.setBorderWidth(2);
+            headerTime.setPhrase(new Phrase("时间段", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            table.addCell(headerTime);
+
+            SuspicionHandgoodsStatisticsController.handGoodsIDList
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -58,23 +70,23 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
 
-                ScanStatistics record = entry.getValue();
+                TreeMap<String, Long> record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.getTime()));
-                addTableCell(table, Long.toString(record.getTotalScan()));
-                addTableCell(table, Long.toString(record.getValidScan()));
-                addTableCell(table, df.format(record.getValidScanRate()));
-                addTableCell(table, Long.toString(record.getInvalidScan()));
-                addTableCell(table, df.format(record.getInvalidScanRate()));
-                addTableCell(table, Long.toString(record.getPassedScan()));
-                addTableCell(table, df.format(record.getPassedScanRate()));
-                addTableCell(table, Long.toString(record.getAlarmScan()));
-                addTableCell(table, df.format(record.getAlarmScanRate()));
+                addTableCell(table, Long.toString(record.get("time")));
+
+
+                for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
+
+                    addTableCell(table, record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)).toString());
+
+                }
+
+
 
             }
 

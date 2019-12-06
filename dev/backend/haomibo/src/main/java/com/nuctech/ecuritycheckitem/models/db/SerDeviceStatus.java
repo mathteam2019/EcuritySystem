@@ -136,6 +136,9 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     Integer storageAlarm;
 
     @javax.persistence.Transient
+    Date registerTime;
+
+    @javax.persistence.Transient
     MonitorRecord record;
 
 }

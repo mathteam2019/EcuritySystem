@@ -17,8 +17,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-public class ScanStatisticsPdfView extends BasePdfView {
+public class HandExaminationStatisticsPdfView extends BasePdfView {
 
-    public static InputStream buildPDFDocument(TreeMap<Long, ScanStatistics> detailedStatistics) {
+    public static InputStream buildPDFDocument(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics) {
 
         Document document = new Document();
 
@@ -41,13 +41,13 @@ public class ScanStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("扫描统计"));
+            document.add(getTitle("毫米波人体查验手检统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(11);
+            PdfPTable table = new PdfPTable(10);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "扫描总量", "有效扫描量", "有效率", "无效扫描量", "无效率", "通过量", "通过率", "报警量", "报警率")
+            Stream.of("序号", "时间段", "手检总量", "无查获量", "无查获率", "查获", "查获率", "手检平均时长", "手检最高时长", "手检最低时长")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -58,23 +58,23 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
 
-                ScanStatistics record = entry.getValue();
+                HandExaminationResponseModel record = entry.getValue();
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
                 addTableCell(table, Long.toString(index ++));
                 addTableCell(table, Long.toString(record.getTime()));
-                addTableCell(table, Long.toString(record.getTotalScan()));
-                addTableCell(table, Long.toString(record.getValidScan()));
-                addTableCell(table, df.format(record.getValidScanRate()));
-                addTableCell(table, Long.toString(record.getInvalidScan()));
-                addTableCell(table, df.format(record.getInvalidScanRate()));
-                addTableCell(table, Long.toString(record.getPassedScan()));
-                addTableCell(table, df.format(record.getPassedScanRate()));
-                addTableCell(table, Long.toString(record.getAlarmScan()));
-                addTableCell(table, df.format(record.getAlarmScanRate()));
+                addTableCell(table, Long.toString(record.getTotal()));
+                addTableCell(table, Long.toString(record.getNoSeizure()));
+                addTableCell(table, df.format(record.getNoSeizureRate()));
+                addTableCell(table, Long.toString(record.getSeizure()));
+                addTableCell(table, df.format(record.getSeizureRate()));
+                addTableCell(table, Double.toString(record.getAvgDuration()));
+                addTableCell(table, Double.toString(record.getMaxDuration()));
+                addTableCell(table, Double.toString(record.getMinDuration()));
+
 
             }
 

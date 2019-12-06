@@ -88,7 +88,6 @@ public class JudgeStatisticsController extends BaseController {
     }
 
 
-
     @RequestMapping(value = "/get-judge-statistics", method = RequestMethod.POST)
     public Object getJudgeSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -108,11 +107,11 @@ public class JudgeStatisticsController extends BaseController {
     }
 
     /**
-     * Preview Statistics generate pdf file request.
+     * Judge Statistics generate pdf file request.
      */
     @RequestMapping(value = "/judge/generate/print", method = RequestMethod.POST)
-    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                   BindingResult bindingResult) {
+    public Object judgeStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                 BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -138,8 +137,8 @@ public class JudgeStatisticsController extends BaseController {
      * Scan Statistics generate pdf file request.
      */
     @RequestMapping(value = "/judge/generate/export", method = RequestMethod.POST)
-    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                  BindingResult bindingResult) {
+    public Object judgeStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -166,7 +165,7 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
@@ -174,13 +173,13 @@ public class JudgeStatisticsController extends BaseController {
                 JudgeStatisticsResponseModel record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -404,12 +403,22 @@ public class JudgeStatisticsController extends BaseController {
                 record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
 
 
-                record.setArtificialResultRate(record.getArtificialResult() / (double) record.getTotal());
-                record.setAssignTimeoutResultRate(record.getAssignTimeout() / (double) record.getTotal());
-                record.setJudgeTimeoutResultRate(record.getJudgeTimeout() / (double) record.getTotal());
-                record.setSuspictionRate(record.getSuspiction() / (double) record.getTotal());
-                record.setNoSuspictionRate(record.getNoSuspiction() / (double) record.getTotal());
-                record.setScanResultRate(record.getAtrResult() / (double) record.getTotal());
+                if (record.getTotal() > 0) {
+                    record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
+                    record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
+                    record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
+                    record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
+                    record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
+                    record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
+                } else {
+                    record.setArtificialResultRate(0);
+                    record.setAssignTimeoutResultRate(0);
+                    record.setJudgeTimeoutResultRate(0);
+                    record.setSuspictionRate(0);
+                    record.setNoSuspictionRate(0);
+                    record.setScanResultRate(0);
+                }
+
                 record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
 
                 TreeMap<String, Integer> handGoods = new TreeMap<>();
@@ -451,8 +460,6 @@ public class JudgeStatisticsController extends BaseController {
         }
 
 
-
-
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
@@ -475,13 +482,22 @@ public class JudgeStatisticsController extends BaseController {
                 record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
                 record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
 
+                if (record.getTotal() > 0) {
+                    record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
+                    record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
+                    record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
+                    record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
+                    record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
+                    record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
+                } else {
+                    record.setArtificialResultRate(0);
+                    record.setAssignTimeoutResultRate(0);
+                    record.setJudgeTimeoutResultRate(0);
+                    record.setSuspictionRate(0);
+                    record.setNoSuspictionRate(0);
+                    record.setScanResultRate(0);
+                }
 
-                record.setArtificialResultRate(record.getArtificialResult() / (double) record.getTotal());
-                record.setAssignTimeoutResultRate(record.getAssignTimeout() / (double) record.getTotal());
-                record.setJudgeTimeoutResultRate(record.getJudgeTimeout() / (double) record.getTotal());
-                record.setSuspictionRate(record.getSuspiction() / (double) record.getTotal());
-                record.setNoSuspictionRate(record.getNoSuspiction() / (double) record.getTotal());
-                record.setScanResultRate(record.getAtrResult() / (double) record.getTotal());
                 record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
 
             } catch (Exception e) {
@@ -494,7 +510,7 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> sorted = new TreeMap<>();
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
 
             sorted.put(i, data.get(i));
 
@@ -510,7 +526,7 @@ public class JudgeStatisticsController extends BaseController {
             to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
 
             if (from < keyValueMin) {
-                from  = keyValueMin;
+                from = keyValueMin;
             }
 
             if (to > keyValueMax) {
@@ -522,7 +538,7 @@ public class JudgeStatisticsController extends BaseController {
             response.setPer_page(requestBody.getPerPage());
             response.setCurrent_page(requestBody.getCurrentPage());
 
-            for (Integer i = from ; i <= to; i ++) {
+            for (Integer i = from; i <= to; i++) {
 
                 detailedStatistics.put(i, sorted.get(i));
 
@@ -530,8 +546,7 @@ public class JudgeStatisticsController extends BaseController {
 
             response.setDetailedStatistics(detailedStatistics);
 
-        }
-        else {
+        } else {
 
             response.setDetailedStatistics(sorted);
 
@@ -542,8 +557,7 @@ public class JudgeStatisticsController extends BaseController {
             response.setTotal(sorted.size());
             if (response.getTotal() % response.getPer_page() == 0) {
                 response.setLast_page(response.getTotal() / response.getPer_page());
-            }
-            else {
+            } else {
                 response.setLast_page(response.getTotal() / response.getPer_page() + 1);
             }
 
@@ -554,7 +568,6 @@ public class JudgeStatisticsController extends BaseController {
         return response;
 
     }
-
 
 
 }
