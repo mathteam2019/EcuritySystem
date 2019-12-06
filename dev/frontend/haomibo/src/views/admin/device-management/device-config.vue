@@ -333,7 +333,7 @@
                                 @click="onAction('show',props.rowData)">
                         <i class="icofont-edit"></i>
                       </b-button>
-                      <b-button size="sm" variant="success default btn-square">
+                      <b-button size="sm" variant="success default btn-square" @click="onRefreshItem(props.rowData,props.rowIndex)">
                         <i class="icofont-refresh"></i>
                       </b-button>
                     </div>
@@ -536,11 +536,11 @@
     if (orgData == null)
       return orgFullName;
     while (orgData.parent != null) {
-      orgFullName += '/' + orgData.fieldDesignation;
+      orgFullName = orgData.fieldDesignation +  '/' + orgFullName;
       orgData = orgData.parent;
     }
-    orgFullName = orgData.fieldDesignation + orgFullName;
-    return orgFullName;
+    orgFullName = orgData.fieldDesignation +'/'+ orgFullName;
+    return orgFullName.slice(0,-1);
   };
 
   Vue.use(LiquorTree);
@@ -985,6 +985,9 @@
       ///////////////////////////////////////////
       /////   setting device with config ////////
       ///////////////////////////////////////////
+      onRefreshItem(data,index){
+        this.$refs.pendingListTable.reload();
+      },
       onPendingSearchButton() {
         this.$refs.pendingListTable.refresh();
       },

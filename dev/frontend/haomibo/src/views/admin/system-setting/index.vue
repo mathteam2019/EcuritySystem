@@ -325,7 +325,7 @@
                         <b-button
                           size="sm"
                           variant="success default btn-square"
-                          @click="onAction('restart', props.rowData)">
+                          @click="onRefreshItem('restart', props.rowData)">
                           <i class="icofont-refresh"></i>
                         </b-button>
 
@@ -785,6 +785,9 @@
           deviceName: '',
           status: null
         };
+      },
+      onRefreshItem(data,index){
+        this.$refs.vuetable.reload();
       },
       onAction(action, data) {
         switch (action) {
