@@ -38,7 +38,7 @@ public class InvalidTaskPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("过程任务"));
+            document.add(getTitle("无效任务"));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(9);

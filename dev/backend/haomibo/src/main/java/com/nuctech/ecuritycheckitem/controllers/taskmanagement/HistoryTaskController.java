@@ -138,7 +138,8 @@ public class HistoryTaskController extends BaseController {
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
+        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));

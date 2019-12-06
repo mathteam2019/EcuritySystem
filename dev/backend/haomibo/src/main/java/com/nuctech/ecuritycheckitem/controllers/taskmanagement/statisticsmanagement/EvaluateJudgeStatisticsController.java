@@ -6,13 +6,14 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementCon
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -50,7 +51,6 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-
             Long fieldId;
             Long deviceId;
             Long userCategory;
@@ -60,11 +60,9 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date endTime;
             String statWidth;
-
         }
 
         Integer currentPage;
-
         Integer perPage;
 
         StatisticsRequestBody.Filter filter;

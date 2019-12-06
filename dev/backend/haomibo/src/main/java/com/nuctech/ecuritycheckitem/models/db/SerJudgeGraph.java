@@ -71,4 +71,9 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser judgeUser;
 
+//    @OneToOne()
+//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    SerTask task;
+
 }

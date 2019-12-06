@@ -40,10 +40,10 @@ public class HistoryTaskPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("过程任务"));
+            document.add(getTitle("历史任务"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(16);
+            PdfPTable table = new PdfPTable(17);
 
             table.setWidthPercentage(100);
             Stream.of("序号", "任务编号", "图像", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
@@ -59,7 +59,12 @@ public class HistoryTaskPdfView extends BasePdfView {
 
                 addTableCell(table, task.getHistoryId().toString());
 
-                addTableCell(table, task.getTask().getTaskNumber());
+                if (task.getTask() != null) {
+                    addTableCell(table, task.getTask().getTaskNumber());
+                }
+                else {
+                    addTableCell(table, "无");
+                }
 
                 if (task.getScanImage().getImageLabel() != null) {
                     addTableCell(table, task.getScanImage().getImageLabel());
@@ -68,7 +73,7 @@ public class HistoryTaskPdfView extends BasePdfView {
                 }
 
 
-                if (task.getWorkMode().getModeName() != null) {
+                if (task.getWorkMode() != null) {
                     addTableCell(table, task.getWorkMode().getModeName());
                 } else {
                     addTableCell(table, "无");
@@ -76,11 +81,22 @@ public class HistoryTaskPdfView extends BasePdfView {
 
                 addTableCell(table, ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
-                if (task.getTask().getField().getFieldDesignation() != null) {
-                    addTableCell(table, task.getTask().getField().getFieldDesignation());
-                } else {
+                if (task.getTask() != null) {
+                    if (task.getTask().getField() != null) {
+                        if (task.getTask().getField().getFieldDesignation() != null) {
+                            addTableCell(table, task.getTask().getField().getFieldDesignation());
+                        } else {
+                            addTableCell(table, "无");
+                        }
+                    } else {
+                        addTableCell(table, "无");
+                    }
+
+                }
+                else {
                     addTableCell(table, "无");
                 }
+
 
                 if (task.getScanDevice() != null) {
                     addTableCell(table, task.getScanDevice().getDeviceName());

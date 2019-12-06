@@ -1078,6 +1078,8 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getFieldId() != null) {
 
+            //predicateField = builder.task.field.
+
         }
 
 
