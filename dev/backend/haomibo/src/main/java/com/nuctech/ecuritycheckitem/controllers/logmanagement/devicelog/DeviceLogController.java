@@ -10,6 +10,7 @@ package com.nuctech.ecuritycheckitem.controllers.logmanagement.devicelog;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -66,9 +67,9 @@ public class DeviceLogController extends BaseController {
             String userName;
             Long category;
             Long level;
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateStartTime;
-            @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateEndTime;
         }
 

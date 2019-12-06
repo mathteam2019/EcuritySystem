@@ -45,6 +45,7 @@ public class Constants {
 
     public static final String PDF_DATETIME_FORMAT = "MM/dd/yyyy HH:mm";
     public static final String EXCEL_DATETIME_FORMAT = "yyyy/MM/dd";
+    public static final String LOG_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 }
