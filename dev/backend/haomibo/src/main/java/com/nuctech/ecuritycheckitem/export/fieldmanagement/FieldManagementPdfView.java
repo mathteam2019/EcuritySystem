@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
 
@@ -43,29 +44,29 @@ public class FieldManagementPdfView extends BasePdfView {
             Stream.of("序号", "场地编号", "场地", "生效", "上级场地编号", "上级场地", "负责人", "联系电话", "备注")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysField field : exportFieldList) {
-                table.addCell(field.getFieldId().toString());
-                table.addCell(field.getFieldSerial());
-                table.addCell(field.getFieldDesignation());
-                table.addCell(field.getStatus());
+                addTableCell(table, field.getFieldId().toString());
+                addTableCell(table, field.getFieldSerial());
+                addTableCell(table, field.getFieldDesignation());
+                addTableCell(table, field.getStatus());
                 if(field.getParent() != null) {
-                    table.addCell(field.getParent().getFieldSerial());
-                    table.addCell(field.getParent().getFieldDesignation());
+                    addTableCell(table, field.getParent().getFieldSerial());
+                    addTableCell(table, field.getParent().getFieldDesignation());
                 } else {
-                    table.addCell("无");
-                    table.addCell("无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
-                table.addCell(field.getLeader());
-                table.addCell(field.getMobile());
-                table.addCell(field.getNote());
+                addTableCell(table, field.getLeader());
+                addTableCell(table, field.getMobile());
+                addTableCell(table, field.getNote());
 
             }
 

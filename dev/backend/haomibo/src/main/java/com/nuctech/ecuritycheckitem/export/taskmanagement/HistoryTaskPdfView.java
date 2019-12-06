@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
@@ -47,103 +48,103 @@ public class HistoryTaskPdfView extends BasePdfView {
             Stream.of("序号", "任务编号", "图像", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (History task : exportTaskList) {
 
-                table.addCell(task.getHistoryId().toString());
+                addTableCell(table, task.getHistoryId().toString());
 
-                table.addCell(task.getTask().getTaskNumber());
+                addTableCell(table, task.getTask().getTaskNumber());
 
                 if (task.getScanImage().getImageLabel() != null) {
-                    table.addCell(task.getScanImage().getImageLabel());
+                    addTableCell(table, task.getScanImage().getImageLabel());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
 
                 if (task.getWorkMode().getModeName() != null) {
-                    table.addCell(task.getWorkMode().getModeName());
+                    addTableCell(table, task.getWorkMode().getModeName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
-                table.addCell(task.getHandTaskResult());
+                addTableCell(table, task.getHandTaskResult());
 
                 if (task.getTask().getField().getFieldDesignation() != null) {
-                    table.addCell(task.getTask().getField().getFieldDesignation());
+                    addTableCell(table, task.getTask().getField().getFieldDesignation());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getScanDevice() != null) {
-                    table.addCell(task.getScanDevice().getDeviceName());
+                    addTableCell(table, task.getScanDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getScanPointsman() != null) {
-                    table.addCell(task.getScanPointsman().getUserName());
+                    addTableCell(table, task.getScanPointsman().getUserName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getScanStartTime() != null) {
-                    table.addCell(formatDate(task.getScanStartTime()));
+                    addTableCell(table, formatDate(task.getScanStartTime()));
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getScanEndTime() != null) {
-                    table.addCell(formatDate(task.getScanEndTime()));
+                    addTableCell(table, formatDate(task.getScanEndTime()));
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getJudgeDevice() != null) {
-                    table.addCell(task.getJudgeDevice().getDeviceName());
+                    addTableCell(table, task.getJudgeDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getJudgeUser() != null) {
-                    table.addCell(task.getJudgeUser().getUserName());
+                    addTableCell(table, task.getJudgeUser().getUserName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getJudgeStartTime() != null) {
-                    table.addCell(formatDate(task.getJudgeStartTime()));
+                    addTableCell(table, formatDate(task.getJudgeStartTime()));
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getJudgeEndTime() != null) {
-                    table.addCell(formatDate(task.getJudgeEndTime()));
+                    addTableCell(table, formatDate(task.getJudgeEndTime()));
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getHandUser() != null) {
-                    table.addCell(task.getHandUser().getUserName());
+                    addTableCell(table, task.getHandUser().getUserName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getHandDevice() != null) {
-                    table.addCell(task.getHandDevice().getDeviceName());
+                    addTableCell(table, task.getHandDevice().getDeviceName());
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
                 if (task.getHandEndTime() != null) {
-                    table.addCell(formatDate(task.getHandEndTime()));
+                    addTableCell(table, formatDate(task.getHandEndTime()));
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
             }
 

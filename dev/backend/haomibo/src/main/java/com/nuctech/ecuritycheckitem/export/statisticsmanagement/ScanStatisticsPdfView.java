@@ -64,17 +64,17 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                table.addCell(Long.toString(index));
-                table.addCell(Long.toString(record.getTime()));
-                table.addCell(Long.toString(record.getTotalScan()));
-                table.addCell(Long.toString(record.getValidScan()));
-                table.addCell(df.format(record.getValidScanRate()));
-                table.addCell(Long.toString(record.getInvalidScan()));
-                table.addCell(df.format(record.getInvalidScanRate()));
-                table.addCell(Long.toString(record.getPassedScan()));
-                table.addCell(df.format(record.getPassedScanRate()));
-                table.addCell(Long.toString(record.getAlarmScan()));
-                table.addCell(df.format(record.getAlarmScanRate()));
+                addTableCell(table, Long.toString(index));
+                addTableCell(table, Long.toString(record.getTime()));
+                addTableCell(table, Long.toString(record.getTotalScan()));
+                addTableCell(table, Long.toString(record.getValidScan()));
+                addTableCell(table, df.format(record.getValidScanRate()));
+                addTableCell(table, Long.toString(record.getInvalidScan()));
+                addTableCell(table, df.format(record.getInvalidScanRate()));
+                addTableCell(table, Long.toString(record.getPassedScan()));
+                addTableCell(table, df.format(record.getPassedScanRate()));
+                addTableCell(table, Long.toString(record.getAlarmScan()));
+                addTableCell(table, df.format(record.getAlarmScanRate()));
 
             }
 

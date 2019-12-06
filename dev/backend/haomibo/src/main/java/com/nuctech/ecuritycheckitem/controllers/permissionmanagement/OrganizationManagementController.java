@@ -592,7 +592,7 @@ public class OrganizationManagementController extends BaseController {
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
-
+        OrganizationPdfView.setResource(res);
         InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

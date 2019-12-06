@@ -527,7 +527,7 @@ public class DeviceCategoryManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysDeviceCategory> exportList = getExportList(categoryList, requestBody.getIsAll(), requestBody.getIdList());
-
+        DeviceCategoryPdfView.setResource(res);
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 
@@ -40,18 +41,18 @@ public class UserGroupPdfView extends BasePdfView {
             Stream.of("序号", "人员分组编号", "人员组")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysUserGroup userGroup : exportUserGroupList) {
-                table.addCell(userGroup.getUserGroupId().toString());
-                table.addCell(userGroup.getGroupNumber());
-                table.addCell(userGroup.getGroupName());
+                addTableCell(table, userGroup.getUserGroupId().toString());
+                addTableCell(table, userGroup.getGroupNumber());
+                addTableCell(table, userGroup.getGroupName());
             }
 
             document.add(table);

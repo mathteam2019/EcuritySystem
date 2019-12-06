@@ -147,7 +147,7 @@ public class PreviewStatisticsController extends BaseController {
         TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        PreviewStatisticsPdfView.setResource(res);
         InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -232,6 +232,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, ScanStatistics> exportList = getScanExportList(scanStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
+        ScanStatisticsPdfView.setResource(res);
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

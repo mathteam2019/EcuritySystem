@@ -321,6 +321,9 @@ public class KnowledgeDealManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+        new KnowledgeDealPendingPdfView();
+
+        KnowledgeDealPendingPdfView.setResource(res);
 
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList);
 
@@ -389,7 +392,7 @@ public class KnowledgeDealManagementController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
-
+        KnowledgeDealPersonalPdfView.setResource(res);
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 
@@ -40,22 +41,22 @@ public class UserPdfView extends BasePdfView {
             Stream.of("序号", "人员编号", "人员", "性别", "状态", "隶属机构", "账号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysUser user : exportUserList) {
-                table.addCell(user.getUserId().toString());
-                table.addCell(user.getUserNumber());
-                table.addCell(user.getUserName());
-                table.addCell(user.getGender());
-                table.addCell(user.getStatus());
-                table.addCell(user.getOrg().getOrgName());
-                table.addCell(user.getUserAccount());
+                addTableCell(table, user.getUserId().toString());
+                addTableCell(table, user.getUserNumber());
+                addTableCell(table, user.getUserName());
+                addTableCell(table, user.getGender());
+                addTableCell(table, user.getStatus());
+                addTableCell(table, user.getOrg().getOrgName());
+                addTableCell(table, user.getUserAccount());
             }
 
             document.add(table);

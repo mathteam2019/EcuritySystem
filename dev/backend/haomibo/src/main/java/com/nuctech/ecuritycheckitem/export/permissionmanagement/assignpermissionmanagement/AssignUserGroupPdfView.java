@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -43,15 +44,15 @@ public class AssignUserGroupPdfView extends BasePdfView {
             Stream.of("序号", "人员组", "组员", "角色", "数据范围")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
             for (SysUserGroup userGroup : exportUserGroupList) {
-                table.addCell(userGroup.getUserGroupId().toString());
-                table.addCell(userGroup.getGroupName());
+                addTableCell(table, userGroup.getUserGroupId().toString());
+                addTableCell(table, userGroup.getGroupName());
                 String strMember = "";
                 List<SysUser> sysUserList = new ArrayList<>();
                 userGroup.getUsers().forEach(sysUser -> {
@@ -63,7 +64,7 @@ public class AssignUserGroupPdfView extends BasePdfView {
                         strMember = strMember + "," + sysUserList.get(i).getUserName();
                     }
                 }
-                table.addCell(strMember);
+                addTableCell(table, strMember);
                 String strRole = "";
                 List<SysRole> sysRoleList = new ArrayList<>();
                 userGroup.getRoles().forEach(sysRole -> {
@@ -75,8 +76,8 @@ public class AssignUserGroupPdfView extends BasePdfView {
                         strRole = strRole + "," + sysRoleList.get(i).getRoleName();
                     }
                 }
-                table.addCell(strRole);
-                table.addCell(userGroup.getDataRangeCategory());
+                addTableCell(table, strRole);
+                addTableCell(table, userGroup.getDataRangeCategory());
             }
 
             document.add(table);

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
 
@@ -39,26 +40,26 @@ public class DeviceArchiveTemplatePdfView extends BasePdfView {
             Stream.of("序号", "模板编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SerArchiveTemplate template : exportTemplateList) {
-                table.addCell(template.getArchivesTemplateId().toString());
-                table.addCell(template.getArchivesTemplateNumber());
-                table.addCell(template.getTemplateName());
-                table.addCell(template.getStatus());
+                addTableCell(table, template.getArchivesTemplateId().toString());
+                addTableCell(table, template.getArchivesTemplateNumber());
+                addTableCell(table, template.getTemplateName());
+                addTableCell(table, template.getStatus());
                 if(template.getDeviceCategory() != null) {
-                    table.addCell(template.getDeviceCategory().getCategoryName());
+                    addTableCell(table, template.getDeviceCategory().getCategoryName());
                 } else {
-                    table.addCell("无");
+                    addTableCell(table, "无");
                 }
-                table.addCell(template.getManufacturer());
-                table.addCell(template.getOriginalModel());
+                addTableCell(table, template.getManufacturer());
+                addTableCell(table, template.getOriginalModel());
             }
 
             document.add(table);

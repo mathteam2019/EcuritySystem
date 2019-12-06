@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 
@@ -44,24 +45,24 @@ public class AuditLogPdfView extends BasePdfView {
             Stream.of("序号", "操作员ID", "客户端ip", "操作对象", "操作", "操作内容", "操作结果", "失败原因代码", "操作时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysAuditLog log : exportLogList) {
-                table.addCell(log.getId().toString());
-                table.addCell(log.getOperatorId().toString());
-                table.addCell(log.getClientIp());
-                table.addCell(log.getOperateObject());
-                table.addCell(log.getAction());
-                table.addCell(log.getOperateContent());
-                table.addCell(log.getOperateResult());
-                table.addCell(log.getReasonCode());
-                table.addCell(formatDate(log.getOperateTime()));
+                addTableCell(table, log.getId().toString());
+                addTableCell(table, log.getOperatorId().toString());
+                addTableCell(table, log.getClientIp());
+                addTableCell(table, log.getOperateObject());
+                addTableCell(table, log.getAction());
+                addTableCell(table, log.getOperateContent());
+                addTableCell(table, log.getOperateResult());
+                addTableCell(table, log.getReasonCode());
+                addTableCell(table, formatDate(log.getOperateTime()));
             }
 
             document.add(table);

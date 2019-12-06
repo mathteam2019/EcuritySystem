@@ -523,7 +523,7 @@ public class PermissionControlController extends BaseController {
 
 
         List<SysRole> exportList = getRoleExportList(roleList, requestBody.getIsAll(), requestBody.getIdList());
-
+        RolePdfView.setResource(res);
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -856,7 +856,7 @@ public class PermissionControlController extends BaseController {
                 .collect(Collectors.toList());
 
         List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, requestBody.getIsAll(), requestBody.getIdList());
-
+        DataGroupPdfView.setResource(res);
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

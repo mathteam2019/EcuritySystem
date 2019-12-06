@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
@@ -43,22 +44,22 @@ public class AssignUserPdfView extends BasePdfView {
             Stream.of("序号",  "人员", "性别", "账号", "隶属机构", "角色", "数据范围")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
 
 
             for (SysUser user : exportUserList) {
-                table.addCell(user.getUserId().toString());
-                table.addCell(user.getUserName());
-                table.addCell(user.getGender());
-                table.addCell(user.getUserAccount());
+                addTableCell(table, user.getUserId().toString());
+                addTableCell(table, user.getUserName());
+                addTableCell(table, user.getGender());
+                addTableCell(table, user.getUserAccount());
 
 
-                table.addCell(user.getOrg().getOrgName());
+                addTableCell(table, user.getOrg().getOrgName());
 
                 List<SysRole> sysRoleList = new ArrayList<>();
                 user.getRoles().forEach(sysRole -> {
@@ -69,14 +70,14 @@ public class AssignUserPdfView extends BasePdfView {
                     for(int i = 1; i < sysRoleList.size(); i ++) {
                         str = str + ", " + sysRoleList.get(i).getRoleName();
                     }
-                    table.addCell(str);
+                    addTableCell(table, str);
                 } else {
-                    table.addCell("");
+                    addTableCell(table, "");
                 }
 
 
 
-                table.addCell(user.getDataRangeCategory());
+                addTableCell(table, user.getDataRangeCategory());
 
             }
 
