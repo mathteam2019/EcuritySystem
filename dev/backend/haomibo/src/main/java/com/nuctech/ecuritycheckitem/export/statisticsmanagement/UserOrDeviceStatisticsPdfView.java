@@ -40,7 +40,12 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("人员工时统计"));
+            if (type) {
+                document.add(getTitle("人员工时统计"));
+            }
+            else {
+                document.add(getTitle("设备运行时长统计"));
+            }
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(13);
