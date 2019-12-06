@@ -553,10 +553,10 @@ public class PreviewStatisticsController extends BaseController {
             startIndex = (curPage - 1) * perPage + keyValueMin;
             endIndex = (curPage) * perPage + keyValueMin - 1;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+//                startIndex = keyValueMin + startIndex - 1;
+//                endIndex = startIndex + perPage - 1;
+//            }
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
@@ -683,10 +683,10 @@ public class PreviewStatisticsController extends BaseController {
             startIndex = (curPage - 1) * perPage + 1;
             endIndex = (curPage) * perPage;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+//                startIndex = keyValueMin + startIndex - 1;
+//                endIndex = startIndex + perPage - 1;
+//            }
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
@@ -961,10 +961,10 @@ public class PreviewStatisticsController extends BaseController {
             startIndex = (curPage - 1) * perPage + 1;
             endIndex = (curPage) * perPage;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+//                startIndex = keyValueMin + startIndex - 1;
+//                endIndex = startIndex + perPage - 1;
+//            }
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
@@ -1253,10 +1253,10 @@ public class PreviewStatisticsController extends BaseController {
             startIndex = (curPage - 1) * perPage + keyValueMin;
             endIndex = (curPage) * perPage + keyValueMin - 1;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+//                startIndex = keyValueMin + startIndex - 1;
+//                endIndex = startIndex + perPage - 1;
+//            }
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;

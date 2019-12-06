@@ -62,7 +62,7 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
 

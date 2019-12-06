@@ -73,7 +73,7 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("判图统计");
+            titleCell.setCellValue("毫米波人体查验手检统计");
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -86,7 +86,7 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
 

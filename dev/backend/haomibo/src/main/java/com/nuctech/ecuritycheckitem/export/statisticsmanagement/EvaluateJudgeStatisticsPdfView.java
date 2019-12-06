@@ -56,12 +56,11 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
 
                 EvaluateJudgeResponseModel record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 

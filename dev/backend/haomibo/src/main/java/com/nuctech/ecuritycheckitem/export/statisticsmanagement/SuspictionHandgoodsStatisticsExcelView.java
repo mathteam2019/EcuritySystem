@@ -67,7 +67,7 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
 

@@ -56,12 +56,11 @@ public class ScanStatisticsPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
 
                 ScanStatistics record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 

@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -18,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -89,19 +91,21 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
             timeCell.setCellValue(getCurrentTime());
 
             setHeader(sheet);
-            AtomicInteger counter = new AtomicInteger(4);
 
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
             long index = 0;
+            int counter = 4;
 
-            detailedStatistics.forEach((key, record) -> {
-                Row row = sheet.createRow(counter.getAndIncrement());
+            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+                TotalStatistics record = entry.getValue();
+
+                Row row = sheet.createRow(counter ++);
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                row.createCell(0).setCellValue(counter.get() - 4);
+                row.createCell(0).setCellValue(index ++);
                 row.createCell(1).setCellValue(record.getTime());
                 row.createCell(2).setCellValue(record.getScanStatistics().getTotalScan());
                 row.createCell(3).setCellValue(record.getScanStatistics().getInvalidScan());
@@ -115,7 +119,7 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
                 row.createCell(11).setCellValue(record.getHandExaminationStatistics().getNoSeizureHandExamination());
                 row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
 
-            });
+            }
 
             workbook.write(out);
             workbook.close();

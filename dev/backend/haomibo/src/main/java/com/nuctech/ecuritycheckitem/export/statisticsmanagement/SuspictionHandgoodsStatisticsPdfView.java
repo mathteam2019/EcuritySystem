@@ -58,12 +58,11 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
 
                 TreeMap<String, Long> record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 

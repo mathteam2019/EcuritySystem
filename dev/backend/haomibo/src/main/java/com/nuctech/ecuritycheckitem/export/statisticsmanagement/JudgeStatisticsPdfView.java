@@ -44,7 +44,7 @@ public class JudgeStatisticsPdfView extends BasePdfView {
             document.add(getTitle("判图统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(19);
 
             table.setWidthPercentage(100);
             Stream.of("序号", "时间段", "判图总量", "人工结论量", "人工结论率", "分派超时结论量", "分派超时结论率", "判图超时结论量", "判图超时结论率", "扫描结论量", "扫描结论率", "无嫌疑量", "无嫌疑率", "嫌疑量", "嫌疑率", "人工判图时长阈值", "人工判图平均时长", "人工判图最高时长", "人工判图最低时长")
@@ -56,12 +56,11 @@ public class JudgeStatisticsPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            long index = 0;
+            long index = 1;
 
             for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
 
                 JudgeStatisticsResponseModel record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
