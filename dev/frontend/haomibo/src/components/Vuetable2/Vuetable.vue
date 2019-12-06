@@ -12,7 +12,7 @@
                 :style="{width: field.width}"
                 :class="['vuetable-th-checkbox-'+trackBy, field.titleClass]"
               >
-                <input type="checkbox" :id="`vuetable-check-header-1-${uuid}`" @change="toggleAllCheckboxes(field.name, $event)"
+                <input type="checkbox" v-model="checkedAllStatus" :id="`vuetable-check-header-1-${uuid}`" @change="toggleAllCheckboxes(field.name, $event)"
                   :checked="checkCheckboxesState(field.name)">
                 <label :for="`vuetable-check-header-1-${uuid}`"></label>
               </th>
@@ -497,6 +497,7 @@ export default {
       scrollBarWidth: '17px', //chrome default
       scrollVisible: false,
       uuid: '',
+      checkedAllStatus:false,
     }
   },
   mounted () {
@@ -1068,7 +1069,6 @@ export default {
     },
     checkCheckboxesState (fieldName) {
       if (! this.tableData) return
-
       let self = this
       let idColumn = this.trackBy
       let selector = 'th.vuetable-th-checkbox-' + idColumn + ' input[type=checkbox]'
@@ -1079,24 +1079,34 @@ export default {
         els.forEach=function(cb){
           [].forEach.call(els, cb);
         }
-
       // count how many checkbox row in the current page has been checked
       let selected = this.tableData.filter(function(item) {
         return self.selectedTo.indexOf(item[idColumn]) >= 0
       })
+      let totalRecords = this.tablePagination?this.tablePagination.total:0;
 
       // count == 0, clear the checkbox
       if (selected.length <= 0) {
         els.forEach(function(el) {
           el.indeterminate = false
         })
+        this.checkedAllStatus = false;
         return false
       }
       // count > 0 and count < perPage, set checkbox state to 'indeterminate'
-      else if (selected.length < this.perPage) {
+      else if (selected.length < totalRecords) {
         els.forEach(function(el) {
-          el.indeterminate = true
+          el.indeterminate = false
         })
+        this.checkedAllStatus = false;
+        this.checkedAllStatus = false;
+        return false
+      }
+      else if (selected.length === totalRecords) {
+        els.forEach(function(el) {
+          el.indeterminate = false
+        })
+        this.checkedAllStatus = true;
         return true
       }
       // count == perPage, set checkbox state to 'checked'
@@ -1104,6 +1114,7 @@ export default {
         els.forEach(function(el) {
           el.indeterminate = false
         })
+        this.checkedAllStatus = true;
         return true
       }
     },

@@ -62,10 +62,10 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
             <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
@@ -83,6 +83,7 @@
                 :http-fetch="vuetableHttpFetch"
                 :per-page="vuetableItems.perPage"
                 pagination-path="pagination"
+                track-by="archiveId"
                 @vuetable:pagination-data="onPaginationData"
                 class="table-striped"
               >
@@ -285,7 +286,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
 
   const {required} = require('vuelidate/lib/validators');
@@ -451,6 +452,29 @@
       }
     },
     methods: {
+
+      onExportButton(){
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filterOption,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/document-management/archive/export`;
+        downLoadFileFromServer(link,params,'document');
+      },
+      onPrintButton(){
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filterOption,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/document-management/archive/print`;
+        printFileFromServer(link,params);
+      },
       hideModal(modal) {
         this.$refs[modal].hide();
       },

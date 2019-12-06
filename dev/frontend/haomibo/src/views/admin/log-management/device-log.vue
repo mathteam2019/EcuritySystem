@@ -69,12 +69,14 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="deviceFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueTypet="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueTypet="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="deviceFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="deviceFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -90,10 +92,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onDeviceResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -110,6 +112,7 @@
                     :fields="securityLogTableItems.fields"
                     :per-page="securityLogTableItems.perPage"
                     pagination-path="pagination"
+                    track-by="id"
                     class="table-striped"
                     @vuetable:pagination-data="onSecurityLogTablePaginationData"
                   >
@@ -134,7 +137,7 @@
       <b-tab :title="$t('log-management.device-log.decision-log')">
         <b-row v-if="pageStatus=='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="8">
                 <b-row>
 
@@ -162,7 +165,8 @@
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded.judge = !isExpanded.judge">
+                      <span class="rounded-span flex-grow-0 text-center text-light"
+                            @click="isExpanded.judge = !isExpanded.judge">
                         <i :class="!isExpanded.judge?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
@@ -172,12 +176,14 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="judgeFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="judgeFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="judgeFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss"></date-picker>
+                      <date-picker v-model="judgeFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss"></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -193,10 +199,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onJudgeResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('judge')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('judge')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -214,6 +220,7 @@
                     :per-page="decisionLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
+                    track-by="id"
                     @vuetable:pagination-data="ondecisionLogTablePaginationData"
                   >
                   </vuetable>
@@ -265,7 +272,8 @@
                     </b-form-group>
                   </b-col>
                   <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded.manual = !isExpanded.manual">
+                      <span class="rounded-span flex-grow-0 text-center text-light"
+                            @click="isExpanded.manual = !isExpanded.manual">
                         <i :class="!isExpanded.manual?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
                   </b-col>
@@ -275,12 +283,14 @@
                 <b-row>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
-                      <date-picker v-model="manualFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.end-time')">
-                      <date-picker v-model="manualFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm" valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                      <date-picker v-model="manualFilter.operateEndTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col></b-col>
@@ -296,10 +306,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onManualResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('manual')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('manual')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -317,6 +327,7 @@
                     :per-page="handCheckLogTableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
+                    track-by="id"
                     @onUpdatePerPage="handCheckLogTableItems.perPage = Number($event)"
                     @vuetable:pagination-data="onhandCheckLogTablePaginationData"
                   >
@@ -348,7 +359,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -605,6 +616,33 @@
       }
     },
     methods: {
+      onExportButton(page = 'device') {
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
+        let checkedAll = this.$refs[vueField].checkedAllStatus;
+        let checkedIds = this.$refs[vueField].selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': filter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/device-log/export`;
+        downLoadFileFromServer(link, params, 'access-log');
+      },
+      onPrintButton(page = 'device') {
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
+        let checkedAll = this.$refs[vueField].checkedAllStatus;
+        let checkedIds = this.$refs[vueField].selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': filter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/device-log/print`;
+        printFileFromServer(link, params);
+      },
+
       transformTable(response) {
         let transformed = {};
         let data = response.data;

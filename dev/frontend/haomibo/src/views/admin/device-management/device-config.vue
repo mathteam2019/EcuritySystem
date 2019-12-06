@@ -240,11 +240,11 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onConfigResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
-                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton"><i class="icofont-printer"></i>&nbsp;
                   {{ $t('permission-management.export') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton">
+                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
               </b-col>
             </b-row>
@@ -258,6 +258,7 @@
                     :http-fetch="configListTableHttpFetch"
                     :per-page="configListTableItems.perPage"
                     pagination-path="pagination"
+                    track-by="deviceId"
                     @vuetable:pagination-data="onConfigTablePaginationData"
                     class="table-striped"
                   >
@@ -519,7 +520,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
@@ -841,6 +842,28 @@
       ///////////////////////////////////////////
       /////   setting device with field /////////
       ///////////////////////////////////////////
+      onExportButton(){
+        let checkedAll = this.$refs.configListTable.checkedAllStatus;
+        let checkedIds = this.$refs.configListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.configFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/device-config/config/export`;
+        downLoadFileFromServer(link,params,'device-config');
+      },
+      onPrintButton(){
+        let checkedAll = this.$refs.configListTable.checkedAllStatus;
+        let checkedIds = this.$refs.configListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.configFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/device-config/config/print`;
+        printFileFromServer(link,params);
+      },
       changeSwitchStatus(status) {
         this.switchStatus = status;
       },

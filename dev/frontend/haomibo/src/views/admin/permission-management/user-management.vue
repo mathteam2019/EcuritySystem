@@ -64,10 +64,10 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
                   <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
                   <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
                 <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
@@ -84,6 +84,7 @@
                     :fields="vuetableItems.fields"
                     :http-fetch="userTableHttpFetch"
                     :per-page="vuetableItems.perPage"
+                    track-by="userId"
                     pagination-path="pagination"
                     class="table-striped"
                     @vuetable:pagination-data="onUserTablePaginationData"
@@ -574,10 +575,10 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupResetButton()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" variant="success default">
@@ -596,6 +597,7 @@
                       :fields="userGroupTableItems.fields"
                       :http-fetch="userGroupTableHttpFetch"
                       pagination-path="userGroupPagination"
+                      track-by="userGroupId"
                       class="table-hover"
                       @vuetable:pagination-data="onUserGroupTablePaginationData"
                     >
@@ -747,7 +749,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {getDirection} from "../../../utils";
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
   import VTree from 'vue-tree-halower';
@@ -931,7 +933,7 @@
               name: '__checkbox',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'60px'
+              width: '60px'
             },
             {
               name: 'userId',
@@ -939,7 +941,7 @@
               sortField: 'userId',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'6%'
+              width: '6%'
             },
             {
               name: '__slot:userNumber',
@@ -947,7 +949,7 @@
               sortField: 'userNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'12%'
+              width: '12%'
             },
             {
               name: 'userName',
@@ -955,7 +957,7 @@
               sortField: 'userName',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'12%'
+              width: '12%'
             },
             {
               name: 'gender',
@@ -972,7 +974,7 @@
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               },
-              width:'11%'
+              width: '11%'
             },
             {
               name: 'status',
@@ -991,7 +993,7 @@
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               },
-              width:'11%',
+              width: '11%',
             },
             {
               name: 'orgName',
@@ -1006,14 +1008,14 @@
               sortField: 'userAccount',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'13%'
+              width: '13%'
             },
             {
               name: '__slot:actions',
               title: this.$t('permission-management.th-action'),
               titleClass: 'text-center',
               dataClass: 'text-center btn-actions',
-              width:'250px'
+              width: '250px'
             },
 
           ],
@@ -1033,6 +1035,12 @@
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
           perPage: 5,
           fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              width: '60px'
+            },
             {
               name: 'userGroupId',
               title: this.$t('permission-management.th-no'),
@@ -1158,6 +1166,51 @@
       }
     },
     methods: {
+      onExportUserButton() {
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/user-management/user/export`;
+        downLoadFileFromServer(link, params, 'user');
+      },
+      onPrintUserButton() {
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/user-management/user/print`;
+        printFileFromServer(link, params);
+      },
+      onExportGroupButton() {
+        let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
+        let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.groupFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/user-management/user-group/print`;
+        downLoadFileFromServer(link, params, 'userGroup');
+      },
+      onPrintGroupButton() {
+        let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
+        let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.groupFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/user-management/user-group/print`;
+        printFileFromServer(link, params);
+      },
+
       onCreatePage() { // move to create page
         // reset models
         this.onInitialUserData();
