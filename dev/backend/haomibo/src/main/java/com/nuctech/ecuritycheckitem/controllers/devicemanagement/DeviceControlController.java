@@ -9,6 +9,7 @@
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -165,10 +166,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;
@@ -246,10 +247,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;

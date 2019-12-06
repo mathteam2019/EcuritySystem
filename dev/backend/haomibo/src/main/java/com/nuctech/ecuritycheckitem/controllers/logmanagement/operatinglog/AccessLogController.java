@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
@@ -63,9 +64,9 @@ public class AccessLogController extends BaseController {
         static class Filter {
             String clientIp;
             String operateAccount;
-            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateStartTime;
-            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateEndTime;
         }
 

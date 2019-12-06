@@ -8,6 +8,8 @@
  */
 package com.nuctech.ecuritycheckitem.controllers.logmanagement.devicelog;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -67,9 +69,11 @@ public class DeviceLogController extends BaseController {
             String userName;
             Long category;
             Long level;
-            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateStartTime;
-            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
+
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateEndTime;
         }
 
