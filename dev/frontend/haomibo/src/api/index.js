@@ -76,7 +76,7 @@ const getApiManager = function () {
   return apiManager;
 };
 
-const getDateTimeWithFormat = (datetime, formatType = 'cn') => {
+const getDateTimeWithFormat = (datetime, formatType = 'zh') => {
   if (datetime === "" || datetime == null)
     return "";
 
