@@ -109,7 +109,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/evaluatejudge/generate/print", method = RequestMethod.POST)
     public Object evaluateJudgeStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                           BindingResult bindingResult) {
+                                                         BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -136,7 +136,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/evaluatejudge/generate/export", method = RequestMethod.POST)
     public Object evaluateJudgeGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                  BindingResult bindingResult) {
+                                                 BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -162,7 +162,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, EvaluateJudgeResponseModel> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
@@ -170,13 +170,13 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 EvaluateJudgeResponseModel record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -400,14 +400,30 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 record.setMinDuration(Double.parseDouble(item[14].toString()));
                 record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
+                if (record.getTotal() > 0) {
+                    record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
+                    record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
+                } else {
+                    record.setMissingReportRate(0);
+                    record.setMistakeReportRate(0);
+                }
 
-                record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
-                record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
-                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
-                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
-                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
-                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+                if (record.getArtificialJudge() > 0) {
+                    record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
+                    record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
+                } else {
+                    record.setArtificialJudgeMissingRate(0);
+                    record.setArtificialJudgeMistakeRate(0);
+                }
 
+                if (record.getIntelligenceJudge() > 0) {
+
+                    record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
+                    record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
+                } else {
+                    record.setIntelligenceJudgeMissingRate(0);
+                    record.setIntelligenceJudgeMistakeRate(0);
+                }
             } catch (Exception e) {
 
             }
@@ -434,18 +450,22 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
 
         }
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+        for (
+                Integer i = keyValueMin;
+                i <= keyValueMax; i++) {
             EvaluateJudgeResponseModel item = new EvaluateJudgeResponseModel();
             item.setTime(i);
             data.put(i, item);
         }
 
 
-        for (int i = 0; i < result.size(); i++) {
+        for (
+                int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
 
@@ -472,13 +492,30 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 record.setAvgDuration(Double.parseDouble(item[15].toString()));
 
 
-                record.setMissingReportRate(record.getMissingReport() / (double) record.getTotal());
-                record.setMistakeReportRate(record.getMistakeReport() / (double) record.getTotal());
-                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() / (double) record.getArtificialJudge());
-                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() / (double) record.getArtificialJudge());
-                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() / (double) record.getIntelligenceJudge());
-                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() / (double) record.getIntelligenceJudge());
+                if (record.getTotal() > 0) {
+                    record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
+                    record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
+                } else {
+                    record.setMissingReportRate(0);
+                    record.setMistakeReportRate(0);
+                }
 
+                if (record.getArtificialJudge() > 0) {
+                    record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
+                    record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
+                } else {
+                    record.setArtificialJudgeMissingRate(0);
+                    record.setArtificialJudgeMistakeRate(0);
+                }
+
+                if (record.getIntelligenceJudge() > 0) {
+
+                    record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
+                    record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
+                } else {
+                    record.setIntelligenceJudgeMissingRate(0);
+                    record.setIntelligenceJudgeMistakeRate(0);
+                }
             } catch (Exception e) {
 
             }
@@ -493,7 +530,9 @@ public class EvaluateJudgeStatisticsController extends BaseController {
 //                .sorted(Map.Entry.comparingByKey())
 //                .forEachOrdered(x -> sorted.put(x.getKey(), x.getValue()));
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i ++) {
+        for (
+                Integer i = keyValueMin;
+                i <= keyValueMax; i++) {
 
             sorted.put(i, data.get(i));
 
@@ -509,7 +548,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
 
             if (from < keyValueMin) {
-                from  = keyValueMin;
+                from = keyValueMin;
             }
 
             if (to > keyValueMax) {
@@ -521,7 +560,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             response.setPer_page(requestBody.getPerPage());
             response.setCurrent_page(requestBody.getCurrentPage());
 
-            for (Integer i = from ; i <= to; i ++) {
+            for (Integer i = from; i <= to; i++) {
 
                 detailedStatistics.put(i, sorted.get(i));
 
@@ -529,8 +568,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
 
             response.setDetailedStatistics(detailedStatistics);
 
-        }
-        else {
+        } else {
 
             response.setDetailedStatistics(sorted);
 
@@ -540,12 +578,13 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             response.setTotal(sorted.size());
             if (response.getTotal() % response.getPer_page() == 0) {
                 response.setLast_page(response.getTotal() / response.getPer_page());
-            }
-            else {
+            } else {
                 response.setLast_page(response.getTotal() / response.getPer_page() + 1);
             }
 
-        } catch (Exception e) {  }
+        } catch (
+                Exception e) {
+        }
 
         return response;
 

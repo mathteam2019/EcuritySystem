@@ -64,27 +64,27 @@ public class InvalidTaskPdfView extends BasePdfView {
                         addTableCell(table, task.getSerScan().getScanImage().getImageLabel());
                     }
                     else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
                 }
                 else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 if (task.getField() != null) {
                     addTableCell(table, task.getField().getFieldDesignation());
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 if (task.getSerScan() != null) {
@@ -92,36 +92,36 @@ public class InvalidTaskPdfView extends BasePdfView {
                     if (task.getSerScan().getScanDevice() != null) {
                         addTableCell(table, task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         addTableCell(table, task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
                         addTableCell(table, formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
                         addTableCell(table, formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        addTableCell(table, "");
+                        addTableCell(table, "无");
                     }
 
 
 
                 } else {
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
                 }
 
             }

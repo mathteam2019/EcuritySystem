@@ -92,7 +92,7 @@ public class AssignUserExcelView extends BaseExcelView {
                     }
                     row.createCell(5).setCellValue(str);
                 } else {
-                    row.createCell(5).setCellValue("");
+                    row.createCell(5).setCellValue("无");
                 }
 
                 row.createCell(6).setCellValue(user.getDataRangeCategory());
