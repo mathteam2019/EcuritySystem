@@ -57,13 +57,13 @@ public class DeviceLogPdfView extends BasePdfView {
                 if(log.getDevice() != null) {
                     addTableCell(table, log.getDevice().getDeviceName());
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
                 addTableCell(table, log.getLoginName());
                 if(log.getUser() != null) {
                     addTableCell(table, log.getUser().getUserName());
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
                 addTableCell(table, log.getCategory().toString());

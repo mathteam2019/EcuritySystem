@@ -142,6 +142,10 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
         BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
 
+        predicateScan.and(scanbuilder.scanPointsman.isNotNull());
+        predicateJudge.and(judgeBuilder.judgeUser.isNotNull());
+        predicateHand.and(handBuilder.handUser.isNotNull());
+
         StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
@@ -191,7 +195,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             String strName = "";
 
+            boolean userNullFlag = false;
+
             for (int i = 0; i < listScans.size(); i++) {
+
+                if(listScans.get(i).getScanPointsman() == null) {
+                    userNullFlag = true;
+                    break;
+                }
 
                 try {
 
@@ -214,9 +225,17 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (userNullFlag) {
+                continue;
+            }
             scanStat.setValidScan(validScan);
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
+
+            if (listScans.size() > 0) {
+                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
+                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double) scanStat.getTotalScan());
+            }
 
             totalStat.setName(strName);
             totalStat.setScanStatistics(scanStat);
@@ -236,7 +255,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             long noSuspiction = 0;
             String strName = "";
 
+            boolean userNullFlag = false;
+
             for (int i = 0; i < listJudge.size(); i++) {
+
+                if (listJudge.get(i).getJudgeUser() == null) {
+                        userNullFlag = true;
+                        break;
+                }
 
                 try {
                     strName = listJudge.get(i).getJudgeUser().getUserName();
@@ -257,9 +283,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (userNullFlag) {
+                continue;
+            }
+
             judgeStat.setSuspictionJudge(suspiction);
             judgeStat.setNoSuspictionJudge(noSuspiction);
             judgeStat.setTotalJudge(listJudge.size());
+
+            if (listJudge.size() > 0) {
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+            }
 
             if (listTotalStatistics.containsKey(userId)) {
 
@@ -287,8 +322,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             long noSeizure = 0;
             String strName = "";
 
+            boolean userNullFlag = false;
+
             for (int i = 0; i < listHand.size(); i++) {
 
+                if (listHand.get(i).getHandUser() == null) {
+                    userNullFlag = true;
+                    break;
+                }
                 try {
                     strName = listHand.get(i).getHandUser().getUserName();
                 } catch (Exception e) {
@@ -308,9 +349,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (userNullFlag) {
+                continue;
+            }
+
             handStat.setSeizureHandExamination(seizure);
             handStat.setNoSeizureHandExamination(noSeizure);
             handStat.setTotalHandExamination(listHand.size());
+
+            if (listHand.size() > 0) {
+                handStat.setSeizureHandExaminationRate(seizure * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double)handStat.getTotalHandExamination());
+            }
 
             if (listTotalStatistics.containsKey(userId)) {
 
@@ -335,7 +385,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
     }
 
-    private TotalStatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
+    private TotalsetatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
 
         QSerScan scanbuilder = QSerScan.serScan;
         QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
@@ -344,6 +394,10 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         BooleanBuilder predicateScan = new BooleanBuilder(scanbuilder.isNotNull());
         BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
         BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
+
+        predicateScan.and(scanbuilder.scanDevice.isNotNull());
+        predicateJudge.and(judgeBuilder.judgeDevice.isNotNull());
+        predicateHand.and(handBuilder.handDevice.isNotNull());
 
         StatisticsByDeviceRequestBody.Filter filter = requestBody.getFilter();
 
@@ -381,6 +435,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> listTotalStatistics = new TreeMap<Long, TotalStatistics>();
 
         for (Map.Entry<Long, List<SerScan>> entry : scans.entrySet()) {
+
             Long deviceId = entry.getKey();
             List<SerScan> listScans = entry.getValue();
 
@@ -392,8 +447,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             long invalidScan = 0;
             String strName = "";
 
+            boolean deviceNullFlag = false;
+
             for (int i = 0; i < listScans.size(); i++) {
 
+                if (listScans.get(i).getScanDevice() == null) {
+                    deviceNullFlag = true;
+                    break;
+                }
                 try {
                     strName = listScans.get(i).getScanDevice().getDeviceName();
                 } catch (Exception e) {
@@ -413,10 +474,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (deviceNullFlag) {
+                continue;
+            }
+
             scanStat.setValidScan(validScan);
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
 
+            if (listScans.size() > 0) {
+                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
+                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double) scanStat.getTotalScan());
+            }
             totalStat.setName(strName);
             totalStat.setScanStatistics(scanStat);
             listTotalStatistics.put(deviceId, totalStat);
@@ -435,8 +504,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             long noSuspiction = 0;
             String strName = "";
 
+            boolean deviceNullFlag = false;
+
             for (int i = 0; i < listJudge.size(); i++) {
 
+                if(listJudge.get(i).getJudgeDevice() == null) {
+                    deviceNullFlag = true;
+                    break;
+                }
                 try {
                     strName = listJudge.get(i).getJudgeDevice().getDeviceName();
                 } catch (Exception e) {
@@ -457,9 +532,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (deviceNullFlag) {
+                continue;
+            }
+
             judgeStat.setSuspictionJudge(suspiction);
             judgeStat.setNoSuspictionJudge(noSuspiction);
             judgeStat.setTotalJudge(listJudge.size());
+
+            if (listJudge.size() > 0) {
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+            }
 
             if (listTotalStatistics.containsKey(deviceId)) {
 
@@ -487,7 +571,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             long noSeizure = 0;
             String strName = "";
 
+            boolean deviceNullFlag = false;
+
             for (int i = 0; i < listHand.size(); i++) {
+
+                if (listHand.get(i).getHandDevice() == null) {
+                    deviceNullFlag = true;
+                    break;
+                }
 
                 try {
                     strName = listHand.get(i).getHandDevice().getDeviceName();
@@ -509,9 +600,18 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
             }
 
+            if (deviceNullFlag) {
+                continue;
+            }
+
             handStat.setSeizureHandExamination(seizure);
             handStat.setNoSeizureHandExamination(noSeizure);
             handStat.setTotalHandExamination(listHand.size());
+
+            if (listHand.size() > 0) {
+                handStat.setSeizureHandExaminationRate(seizure * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double)handStat.getTotalHandExamination());
+            }
 
             if (listTotalStatistics.containsKey(deviceId)) {
 

@@ -72,7 +72,7 @@ public class DataGroupExcelView extends BaseExcelView {
                  * data group range value
                  *
                 */
-                row.createCell(3).setCellValue("");
+                row.createCell(3).setCellValue("无");
             }
 
             workbook.write(out);

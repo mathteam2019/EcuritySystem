@@ -116,7 +116,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
                     if (task.getWorkFlow().getWorkMode() != null) {
                         row.createCell(2).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
                     } else {
-                        row.createCell(2).setCellValue("");
+                        row.createCell(2).setCellValue("无");
                     }
                 } else {
 
@@ -127,106 +127,106 @@ public class ProcessTaskExcelView extends BaseExcelView {
                 if (task.getField() != null) {
                     row.createCell(4).setCellValue(task.getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("");
+                    row.createCell(4).setCellValue("无");
                 }
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanDevice() != null) {
                         row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
                     } else {
-                        row.createCell(5).setCellValue("");
+                        row.createCell(5).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanPointsman() != null) {
                         row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
                     } else {
-                        row.createCell(6).setCellValue("");
+                        row.createCell(6).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanStartTime() != null) {
                         row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
                     }
                     else {
-                        row.createCell(7).setCellValue("");
+                        row.createCell(7).setCellValue("无");
                     }
 
                     if (task.getSerScan().getScanEndTime() != null) {
                         row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
-                        row.createCell(8).setCellValue("");
+                        row.createCell(8).setCellValue("无");
                     }
 
 
                 } else {
-                    row.createCell(5).setCellValue("");
-                    row.createCell(6).setCellValue("");
-                    row.createCell(7).setCellValue("");
-                    row.createCell(8).setCellValue("");
+                    row.createCell(5).setCellValue("无");
+                    row.createCell(6).setCellValue("无");
+                    row.createCell(7).setCellValue("无");
+                    row.createCell(8).setCellValue("无");
                 }
 
                 if (task.getSerJudgeGraph() != null) {
                     if (task.getSerJudgeGraph().getJudgeDevice() != null) {
                         row.createCell(9).setCellValue(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
                     } else {
-                        row.createCell(9).setCellValue("");
+                        row.createCell(9).setCellValue("无");
                     }
 
                     if (task.getSerJudgeGraph().getJudgeUser() != null) {
                         row.createCell(10).setCellValue(task.getSerJudgeGraph().getJudgeUser().getUserName());
                     } else {
-                        row.createCell(10).setCellValue("");
+                        row.createCell(10).setCellValue("无");
                     }
 
                     if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
                         row.createCell(11).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
                     }
                     else {
-                        row.createCell(11).setCellValue("");
+                        row.createCell(11).setCellValue("无");
                     }
 
                     if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
                         row.createCell(12).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
                     }
                     else {
-                        row.createCell(12).setCellValue("");
+                        row.createCell(12).setCellValue("无");
                     }
 
 
                 }
                 else {
 
-                    row.createCell(9).setCellValue("");
-                    row.createCell(10).setCellValue("");
-                    row.createCell(11).setCellValue("");
-                    row.createCell(12).setCellValue("");
+                    row.createCell(9).setCellValue("无");
+                    row.createCell(10).setCellValue("无");
+                    row.createCell(11).setCellValue("无");
+                    row.createCell(12).setCellValue("无");
                 }
 
                 if(task.getSerHandExamination() != null) {
                     if (task.getSerHandExamination().getHandUser() != null) {
                         row.createCell(13).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
                     } else {
-                        row.createCell(13).setCellValue("");
+                        row.createCell(13).setCellValue("无");
                     }
 
                     if (task.getSerHandExamination().getHandDevice() != null) {
                         row.createCell(14).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
                     } else {
-                        row.createCell(14).setCellValue("");
+                        row.createCell(14).setCellValue("无");
                     }
 
                     if (task.getSerHandExamination().getHandEndTime() != null) {
                         row.createCell(15).setCellValue(formatDate(task.getSerHandExamination().getHandEndTime()));
                     }
                     else {
-                        row.createCell(15).setCellValue("");
+                        row.createCell(15).setCellValue("无");
                     }
                 }
                 else {
 
-                    row.createCell(13).setCellValue("");
-                    row.createCell(14).setCellValue("");
-                    row.createCell(15).setCellValue("");
+                    row.createCell(13).setCellValue("无");
+                    row.createCell(14).setCellValue("无");
+                    row.createCell(15).setCellValue("无");
 
                 }
 

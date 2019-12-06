@@ -72,7 +72,7 @@ public class AssignUserPdfView extends BasePdfView {
                     }
                     addTableCell(table, str);
                 } else {
-                    addTableCell(table, "");
+                    addTableCell(table, "无");
                 }
 
 

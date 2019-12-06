@@ -24,16 +24,21 @@ import java.util.TreeMap;
 
 public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
 
-    private static void setHeader(Sheet sheet) {
+    private static void setHeader(Sheet sheet, boolean type) {
         Row header = sheet.createRow(3);
-
 
 
         Cell headerCellNo = header.createCell(0);
         headerCellNo.setCellValue("序号");
 
-        Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        if (type) {
+            Cell headerCellTime = header.createCell(1);
+            headerCellTime.setCellValue("用户名");
+        }
+        else {
+            Cell headerCellTime = header.createCell(1);
+            headerCellTime.setCellValue("设备名");
+        }
 
         Cell headerCellTotalHandExam = header.createCell(2);
         headerCellTotalHandExam.setCellValue("扫描总量");
@@ -85,8 +90,7 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
 
             if (type) {
                 titleCell.setCellValue("人员工时统计");
-            }
-            else {
+            } else {
                 titleCell.setCellValue("设备运行时长统计");
             }
             titleCell.setCellStyle(getHeaderStyle(workbook));
@@ -95,7 +99,7 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
             Cell timeCell = time.createCell(0);
             timeCell.setCellValue(getCurrentTime());
 
-            setHeader(sheet);
+            setHeader(sheet, type);
 
             int counter = 4;
             CellStyle style = workbook.createCellStyle();
@@ -107,23 +111,58 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
 
                 TotalStatistics record = entry.getValue();
 
-                Row row = sheet.createRow(counter ++);
+                Row row = sheet.createRow(counter++);
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                row.createCell(0).setCellValue(index ++);
-                row.createCell(1).setCellValue(record.getTime());
-                row.createCell(2).setCellValue( Long.toString(record.getScanStatistics().getTotalScan()));
-                row.createCell(3).setCellValue( Long.toString(record.getScanStatistics().getInvalidScan()));
-                row.createCell(4).setCellValue( df.format(record.getScanStatistics().getInvalidScanRate()));
-                row.createCell(5).setCellValue( Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                row.createCell(6).setCellValue( Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                row.createCell(7).setCellValue( df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
-                row.createCell(8).setCellValue( df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                row.createCell(9).setCellValue( Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                row.createCell(10).setCellValue( df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
-                row.createCell(11).setCellValue( Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                row.createCell(12).setCellValue( df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                row.createCell(0).setCellValue(index++);
+                row.createCell(1).setCellValue(record.getName());
+                if (record.getScanStatistics() != null) {
+                    row.createCell(2).setCellValue(Long.toString(record.getScanStatistics().getTotalScan()));
+                    row.createCell(3).setCellValue(Long.toString(record.getScanStatistics().getInvalidScan()));
+                    row.createCell(4).setCellValue(df.format(record.getScanStatistics().getInvalidScanRate()));
+                }
+                else {
+                    row.createCell(2).setCellValue("无");
+                    row.createCell(3).setCellValue("无");
+                    row.createCell(4).setCellValue("无");
+                }
+
+                if (record.getJudgeStatistics() != null) {
+                    row.createCell(5).setCellValue(Long.toString(record.getJudgeStatistics().getTotalJudge()));
+                }
+                else {
+                    row.createCell(5).setCellValue("无");
+                }
+
+                if (record.getHandExaminationStatistics() != null) {
+                    row.createCell(6).setCellValue(Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
+                }
+                else {
+                    row.createCell(6);
+                }
+
+                if (record.getJudgeStatistics() != null) {
+                    row.createCell(7).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
+                    row.createCell(8).setCellValue(df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
+                }
+                else {
+                    row.createCell(7);
+                    row.createCell(8);
+                }
+
+                if (record.getHandExaminationStatistics() != null) {
+                    row.createCell(9).setCellValue(Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
+                    row.createCell(10).setCellValue(df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                    row.createCell(11).setCellValue(Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
+                    row.createCell(12).setCellValue(df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                }
+                else {
+                    row.createCell(9);
+                    row.createCell(10);
+                    row.createCell(11);
+                    row.createCell(12);
+                }
 
             }
 

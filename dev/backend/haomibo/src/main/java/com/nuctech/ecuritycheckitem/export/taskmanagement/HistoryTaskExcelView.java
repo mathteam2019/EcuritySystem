@@ -112,23 +112,23 @@ public class HistoryTaskExcelView extends BaseExcelView {
                         row.createCell(1).setCellValue(task.getTask().getTaskNumber());
                     }
                     else {
-                        row.createCell(1).setCellValue("");
+                        row.createCell(1).setCellValue("无");
                     }
                 }
                 else {
-                    row.createCell(1).setCellValue("");
+                    row.createCell(1).setCellValue("无");
                 }
 
                 if (task.getScanImage() != null) {
                     row.createCell(2).setCellValue(task.getScanImage().getImageLabel());
                 } else {
-                    row.createCell(2).setCellValue("");
+                    row.createCell(2).setCellValue("无");
                 }
 
                 if (task.getWorkMode() != null) {
                     row.createCell(3).setCellValue(task.getWorkMode().getModeName());
                 } else {
-                    row.createCell(3).setCellValue("");
+                    row.createCell(3).setCellValue("无");
                 }
 
                 row.createCell(4).setCellValue(task.getHandTaskResult());
@@ -138,82 +138,82 @@ public class HistoryTaskExcelView extends BaseExcelView {
                         if (task.getTask().getField().getFieldDesignation() != null) {
                             row.createCell(5).setCellValue(task.getTask().getField().getFieldDesignation());
                         } else {
-                            row.createCell(5).setCellValue("");
+                            row.createCell(5).setCellValue("无");
                         }
                     }
                     else {
-                        row.createCell(5).setCellValue("");
+                        row.createCell(5).setCellValue("无");
                     }
                 }
                 else {
-                    row.createCell(5).setCellValue("");
+                    row.createCell(5).setCellValue("无");
                 }
 
 
                 if (task.getScanDevice() != null) {
                     row.createCell(6).setCellValue(task.getScanDevice().getDeviceName());
                 } else {
-                    row.createCell(6).setCellValue("");
+                    row.createCell(6).setCellValue("无");
                 }
 
                 if (task.getScanPointsman() != null) {
                     row.createCell(7).setCellValue(task.getScanPointsman().getUserName());
                 } else {
-                    row.createCell(7).setCellValue("");
+                    row.createCell(7).setCellValue("无");
                 }
 
                 if (task.getScanStartTime() != null) {
                     row.createCell(8).setCellValue(formatDate(task.getScanStartTime()));
                 } else {
-                    row.createCell(8).setCellValue("");
+                    row.createCell(8).setCellValue("无");
                 }
 
                 if (task.getScanEndTime() != null) {
                     row.createCell(9).setCellValue(formatDate(task.getScanEndTime()));
                 } else {
-                    row.createCell(9).setCellValue("");
+                    row.createCell(9).setCellValue("无");
                 }
 
                 if (task.getJudgeDevice() != null) {
                     row.createCell(10).setCellValue(task.getJudgeDevice().getDeviceName());
                 } else {
-                    row.createCell(10).setCellValue("");
+                    row.createCell(10).setCellValue("无");
                 }
 
                 if (task.getJudgeUser() != null) {
                     row.createCell(11).setCellValue(task.getJudgeUser().getUserName());
                 } else {
-                    row.createCell(11).setCellValue("");
+                    row.createCell(11).setCellValue("无");
                 }
 
                 if (task.getJudgeStartTime() != null) {
                     row.createCell(12).setCellValue(formatDate(task.getJudgeStartTime()));
                 } else {
-                    row.createCell(12).setCellValue("");
+                    row.createCell(12).setCellValue("无");
                 }
 
                 if (task.getJudgeEndTime() != null) {
                     row.createCell(13).setCellValue(formatDate(task.getJudgeEndTime()));
                 } else {
-                    row.createCell(13).setCellValue("");
+                    row.createCell(13).setCellValue("无");
                 }
 
                 if (task.getHandUser() != null) {
                     row.createCell(14).setCellValue(task.getHandUser().getUserName());
                 } else {
-                    row.createCell(14).setCellValue("");
+                    row.createCell(14).setCellValue("无");
                 }
 
                 if (task.getHandDevice() != null) {
                     row.createCell(15).setCellValue(task.getHandDevice().getDeviceName());
                 } else {
-                    row.createCell(15).setCellValue("");
+                    row.createCell(15).setCellValue("无");
                 }
 
                 if (task.getHandEndTime() != null) {
                     row.createCell(16).setCellValue(formatDate(task.getHandEndTime()));
                 } else {
-                    row.createCell(16).setCellValue("");
+                    row.createCell(16).setCellValue("无");
                 }
 
             }

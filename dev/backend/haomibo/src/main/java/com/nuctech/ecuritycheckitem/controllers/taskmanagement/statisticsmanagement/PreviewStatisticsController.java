@@ -136,7 +136,7 @@ public class PreviewStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/preview/generate/print", method = RequestMethod.POST)
     public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                             BindingResult bindingResult) {
+                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -165,7 +165,7 @@ public class PreviewStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/preview/generate/export", method = RequestMethod.POST)
     public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                             BindingResult bindingResult) {
+                                                     BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -193,7 +193,7 @@ public class PreviewStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/scan/generate/export", method = RequestMethod.POST)
     public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                     BindingResult bindingResult) {
+                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -220,7 +220,7 @@ public class PreviewStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/scan/generate/print", method = RequestMethod.POST)
     public Object scanStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                   BindingResult bindingResult) {
+                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -250,7 +250,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, ScanStatistics> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
@@ -258,13 +258,13 @@ public class PreviewStatisticsController extends BaseController {
                 ScanStatistics record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -282,7 +282,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
@@ -290,13 +290,13 @@ public class PreviewStatisticsController extends BaseController {
                 TotalStatistics record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -428,45 +428,41 @@ public class PreviewStatisticsController extends BaseController {
         predicateAlarm.and(predicateUserCategory);
         predicateAlarm.and(predicateKeyDate);
 
-        try {
+        long totalScan = serScanRepository.count(predicateTotal);
+        long validScan = serScanRepository.count(predicateValid);
+        long invalidScan = serScanRepository.count(predicateInvalid);
+        long passedScan = serScanRepository.count(predicatePassed);
+        long alarmScan = serScanRepository.count(predicateAlarm);
 
-            long totalScan = serScanRepository.count(predicateTotal);
-            long validScan = serScanRepository.count(predicateValid);
-            long invalidScan = serScanRepository.count(predicateInvalid);
-            long passedScan = serScanRepository.count(predicatePassed);
-            long alarmScan = serScanRepository.count(predicateAlarm);
+        Iterable<SerScan> listScans = serScanRepository.findAll(predicateTotal);
 
-            Iterable<SerScan> listScans = serScanRepository.findAll(predicateTotal);
+        long workingSecs = 0;
 
-            long workingSecs = 0;
+        for (SerScan item : listScans) {
 
-            for (SerScan item : listScans) {
+            workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime()) / 1000;
 
-                workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime()) / 1000;
+        }
 
-            }
+        scanStatistics.setWorkingSeconds(workingSecs);
+        scanStatistics.setId(keyDate);
+        scanStatistics.setTime(keyDate);
+        scanStatistics.setTotalScan(totalScan);
+        scanStatistics.setValidScan(validScan);
+        scanStatistics.setInvalidScan(invalidScan);
+        scanStatistics.setPassedScan(passedScan);
+        scanStatistics.setAlarmScan(alarmScan);
 
-            scanStatistics.setWorkingSeconds(workingSecs);
-            scanStatistics.setId(keyDate);
-            scanStatistics.setTime(keyDate);
-            scanStatistics.setTotalScan(totalScan);
-            scanStatistics.setValidScan(validScan);
-            scanStatistics.setInvalidScan(invalidScan);
-            scanStatistics.setPassedScan(passedScan);
-            scanStatistics.setAlarmScan(alarmScan);
-
+        if (totalScan > 0) {
             scanStatistics.setValidScanRate(validScan * 100 / (double) totalScan);
             scanStatistics.setInvalidScanRate(invalidScan * 100 / (double) totalScan);
             scanStatistics.setPassedScanRate(passedScan * 100 / (double) totalScan);
             scanStatistics.setAlarmScanRate(alarmScan * 100 / (double) totalScan);
-
-        } catch (Exception e) {
-
+        } else {
             scanStatistics.setValidScanRate(0);
             scanStatistics.setInvalidScanRate(0);
             scanStatistics.setPassedScanRate(0);
             scanStatistics.setAlarmScanRate(0);
-
         }
 
         return scanStatistics;
@@ -541,8 +537,7 @@ public class PreviewStatisticsController extends BaseController {
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -581,7 +576,7 @@ public class PreviewStatisticsController extends BaseController {
 
             scanStat.setId(i - startIndex + 1);
 
-            detailedStatistics.put((long)i, scanStat);
+            detailedStatistics.put((long) i, scanStat);
 
         }
 
@@ -670,8 +665,7 @@ public class PreviewStatisticsController extends BaseController {
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -832,32 +826,32 @@ public class PreviewStatisticsController extends BaseController {
         long noSuspictionJudge = serJudgeGraphRepository.count(predicateNoSuspiction);
         long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
 
-        try {
+        Iterable<SerJudgeGraph> listScans = serJudgeGraphRepository.findAll(predicateTotal);
 
-            Iterable<SerJudgeGraph> listScans = serJudgeGraphRepository.findAll(predicateTotal);
+        long workingSecs = 0;
 
-            long workingSecs = 0;
+        for (SerJudgeGraph item : listScans) {
 
-            for (SerJudgeGraph item : listScans) {
+            workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime()) / 1000;
 
-                workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime()) / 1000;
+        }
 
-            }
+        judgeStatistics.setWorkingSeconds(workingSecs);
 
-            judgeStatistics.setWorkingSeconds(workingSecs);
+        judgeStatistics.setId(keyDate);
+        judgeStatistics.setTime(keyDate);
+        judgeStatistics.setTotalJudge(totalJudge);
+        judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
+        judgeStatistics.setSuspictionJudge(suspictionJudge);
 
-            judgeStatistics.setId(keyDate);
-            judgeStatistics.setTime(keyDate);
-            judgeStatistics.setTotalJudge(totalJudge);
-            judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
-            judgeStatistics.setSuspictionJudge(suspictionJudge);
+        if (totalJudge > 0) {
             judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge * 100 / (double) totalJudge);
             judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge * 100 / (double) totalJudge);
-
-        } catch (Exception e) {
+        } else {
             judgeStatistics.setNoSuspictionJudgeRate(0);
             judgeStatistics.setNoSuspictionJudgeRate(0);
         }
+
 
         return judgeStatistics;
 
@@ -948,8 +942,7 @@ public class PreviewStatisticsController extends BaseController {
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -1111,33 +1104,32 @@ public class PreviewStatisticsController extends BaseController {
 
         //List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
 
-        try {
+        Iterable<SerHandExamination> listScans = serHandExaminationRepository.findAll(predicateTotal);
 
-            Iterable<SerHandExamination> listScans = serHandExaminationRepository.findAll(predicateTotal);
+        long workingSecs = 0;
 
-            long workingSecs = 0;
+        for (SerHandExamination item : listScans) {
 
-            for (SerHandExamination item : listScans) {
+            workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime()) / 1000;
 
-                workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime()) / 1000;
+        }
 
-            }
+        handExaminationStatistics.setWorkingSeconds(workingSecs);
+        handExaminationStatistics.setId(keyDate);
+        handExaminationStatistics.setTime(keyDate);
+        handExaminationStatistics.setTotalHandExamination(totalHandExam);
+        handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
+        handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
 
-            handExaminationStatistics.setWorkingSeconds(workingSecs);
-            handExaminationStatistics.setId(keyDate);
-            handExaminationStatistics.setTime(keyDate);
-            handExaminationStatistics.setTotalHandExamination(totalHandExam);
-            handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
-            handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
-            handExaminationStatistics.setSeizureHandExaminationRate(round( seizureHandExam * 100 / (double) totalHandExam));
+        if (totalHandExam != 0) {
+            handExaminationStatistics.setSeizureHandExaminationRate(round(seizureHandExam * 100 / (double) totalHandExam));
             handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam * 100 / (double) totalHandExam);
-
-        } catch (Exception e) {
-
+        } else {
             handExaminationStatistics.setSeizureHandExaminationRate(0.0);
             handExaminationStatistics.setNoSeizureHandExaminationRate(0.0);
 
         }
+
 
         return handExaminationStatistics;
 
@@ -1239,8 +1231,7 @@ public class PreviewStatisticsController extends BaseController {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
 
         }
 

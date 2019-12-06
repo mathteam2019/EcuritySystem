@@ -24,8 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class UserOrDeviceStatisticsPdfView extends BasePdfView {
@@ -43,17 +42,25 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             document.open();
             if (type) {
                 document.add(getTitle("人员工时统计"));
-            }
-            else {
+            } else {
                 document.add(getTitle("设备运行时长统计"));
             }
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(13);
 
+            List<String> strHeaderList = new ArrayList<>();
+
+            if (type) {
+                strHeaderList = Arrays.asList(new String[]{"序号", "用户名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+            }
+            else {
+                strHeaderList = Arrays.asList(new String[]{"序号", "设备名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+            }
+
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率")
+            strHeaderList
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -67,23 +74,57 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
 
                 TotalStatistics record = entry.getValue();
-                index++;
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                addTableCell(table, Long.toString(index ++));
-                addTableCell(table, Long.toString(record.getTime()));
-                addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
-                addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));
-                addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));
-                addTableCell(table, Long.toString(record.getJudgeStatistics().getTotalJudge()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
-                addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
-                addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
-                addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
-                addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
-                addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                addTableCell(table, Long.toString(index++));
+                addTableCell(table, record.getName());
+                if (record.getScanStatistics() != null) {
+                    addTableCell(table, Long.toString(record.getScanStatistics().getTotalScan()));
+                    addTableCell(table, Long.toString(record.getScanStatistics().getInvalidScan()));
+                    addTableCell(table, df.format(record.getScanStatistics().getInvalidScanRate()));
+                }
+                else {
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                }
+
+                if (record.getJudgeStatistics() != null) {
+                    addTableCell(table, Long.toString(record.getJudgeStatistics().getTotalJudge()));
+                }
+                else {
+                    addTableCell(table, "无");
+                }
+
+                if (record.getHandExaminationStatistics() != null) {
+                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getTotalHandExamination()));
+                }
+                else {
+                    addTableCell(table, "无");
+                }
+
+                if (record.getJudgeStatistics() != null) {
+                    addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudge()));
+                    addTableCell(table, df.format(record.getJudgeStatistics().getNoSuspictionJudgeRate()));
+                }
+                else {
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                }
+
+                if (record.getHandExaminationStatistics() != null) {
+                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getNoSeizureHandExamination()));
+                    addTableCell(table, df.format(record.getHandExaminationStatistics().getNoSeizureHandExaminationRate()));
+                    addTableCell(table, Long.toString(record.getHandExaminationStatistics().getSeizureHandExamination()));
+                    addTableCell(table, df.format(record.getHandExaminationStatistics().getSeizureHandExaminationRate()));
+                }
+                else {
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                    addTableCell(table, "无");
+                }
 
             }
 
@@ -92,10 +133,13 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             document.close();
 
-        } catch (DocumentException e) {
+        } catch (
+                DocumentException e) {
             e.printStackTrace();
         }
 
-        return new ByteArrayInputStream(out.toByteArray());
+        return new
+
+                ByteArrayInputStream(out.toByteArray());
     }
 }
