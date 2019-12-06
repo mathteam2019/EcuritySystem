@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
@@ -49,9 +50,9 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
             Stream.of("序号", "时间段", "手检总量", "误报总量", "误报率", "漏报总量", "漏报率", "手检（人工判图）量", "人工判图误报量", "人工判图误报率", "人工判图漏报量", "人工判图漏报率", "手检（智能判图）量", "智能判图误报量", "智能判图误报率", "智能判图漏报量", "智能判图漏报率")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

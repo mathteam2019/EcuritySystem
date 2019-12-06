@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.HandExaminationStatisticsController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
@@ -51,9 +52,9 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
             Stream.of(SuspicionHandgoodsStatisticsController.handGoodsIDList)
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(String.valueOf(columnTitle)));
+                        header.setPhrase(new Phrase(String.valueOf(columnTitle), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

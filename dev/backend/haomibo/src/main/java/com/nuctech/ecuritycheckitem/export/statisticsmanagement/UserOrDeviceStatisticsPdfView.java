@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
@@ -55,9 +56,9 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
             Stream.of("序号", "时间段", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

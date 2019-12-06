@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
@@ -49,9 +50,9 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
             Stream.of("序号", "时间段", "手检总量", "无查获量", "无查获率", "查获", "查获率", "手检平均时长", "手检最高时长", "手检最低时长")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

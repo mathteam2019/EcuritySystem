@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
@@ -43,15 +44,15 @@ public class ScanStatisticsPdfView extends BasePdfView {
             document.add(getTitle("扫描统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(11);
 
             table.setWidthPercentage(100);
             Stream.of("序号", "时间段", "扫描总量", "有效扫描量", "有效率", "无效扫描量", "无效率", "通过量", "通过率", "报警量", "报警率")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
@@ -49,9 +50,9 @@ public class JudgeStatisticsPdfView extends BasePdfView {
             Stream.of("序号", "时间段", "判图总量", "人工结论量", "人工结论率", "分派超时结论量", "分派超时结论率", "判图超时结论量", "判图超时结论率", "扫描结论量", "扫描结论率", "无嫌疑量", "无嫌疑率", "嫌疑量", "嫌疑率", "人工判图时长阈值", "人工判图平均时长", "人工判图最高时长", "人工判图最低时长")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
-                        header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
