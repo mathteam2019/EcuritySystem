@@ -385,7 +385,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
     }
 
-    private TotalsetatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
+    private TotalStatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
 
         QSerScan scanbuilder = QSerScan.serScan;
         QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
