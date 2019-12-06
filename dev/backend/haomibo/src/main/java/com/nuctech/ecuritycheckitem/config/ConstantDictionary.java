@@ -29,6 +29,11 @@ public class ConstantDictionary {
             new Dictionary("inactive", "未生效"),
             new Dictionary("male", "男"),
             new Dictionary("female", "女"),
+            new Dictionary("1000001301", "安检仪+(本地手检)"),
+            new Dictionary("1000001302", "安检仪+手检端"),
+            new Dictionary("1000001303", "安检仪+审图端"),
+            new Dictionary("1000001304", "安检仪+审图端+手检端"),
+
     };
 
     public static String getDataValue(String dataCode) {

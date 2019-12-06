@@ -13,6 +13,7 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
@@ -39,9 +40,9 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
             document.add(getTitle("待审批案例"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(10);
+            PdfPTable table = new PdfPTable(9);
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "图像", "工作模式", "任务结论", "现场", "安检仪", "判图站", "手检站", "查获物品")
+            Stream.of("序号", "任务编号", "工作模式", "任务结论", "现场", "安检仪", "判图站", "手检站", "查获物品")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
@@ -58,14 +59,8 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if(deal.getScanImage() != null) {
-                    addTableCell(table, deal.getScanImage().getImageUrl());
-                } else {
-                    addTableCell(table, "无");
-                }
-
                 if(deal.getWorkMode() != null) {
-                    addTableCell(table, deal.getWorkMode().getModeName());
+                    addTableCell(table, ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
                 } else {
                     addTableCell(table, "无");
                 }

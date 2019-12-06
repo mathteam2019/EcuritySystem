@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
@@ -33,28 +34,25 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
         Cell headerCellNumber = header.createCell(1);
         headerCellNumber.setCellValue("任务编号");
 
-        Cell headerCellImage = header.createCell(2);
-        headerCellImage.setCellValue("图像");
-
-        Cell headerCellMode = header.createCell(3);
+        Cell headerCellMode = header.createCell(2);
         headerCellMode.setCellValue("工作模式");
 
-        Cell headerCellResult = header.createCell(4);
+        Cell headerCellResult = header.createCell(3);
         headerCellResult.setCellValue("任务结论");
 
-        Cell headerCellField = header.createCell(5);
+        Cell headerCellField = header.createCell(4);
         headerCellField.setCellValue("现场");
 
-        Cell headerCellScanDevice = header.createCell(6);
+        Cell headerCellScanDevice = header.createCell(5);
         headerCellScanDevice.setCellValue("安检仪");
 
-        Cell headerCellJudgeDevice = header.createCell(7);
+        Cell headerCellJudgeDevice = header.createCell(6);
         headerCellJudgeDevice.setCellValue("判图站");
 
-        Cell headerCellHandDevice = header.createCell(8);
+        Cell headerCellHandDevice = header.createCell(7);
         headerCellHandDevice.setCellValue("手检站");
 
-        Cell headerCellGoods = header.createCell(9);
+        Cell headerCellGoods = header.createCell(8);
         headerCellGoods.setCellValue("查获物品");
     }
 
@@ -89,43 +87,37 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
                     row.createCell(1).setCellValue("无");
                 }
 
-                if(deal.getScanImage() != null) {
-                    row.createCell(2).setCellValue(deal.getScanImage().getImageUrl());
+                if(deal.getWorkMode() != null) {
+                    row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getWorkMode().getModeName()));
                 } else {
                     row.createCell(2).setCellValue("无");
                 }
 
-                if(deal.getWorkMode() != null) {
-                    row.createCell(3).setCellValue(deal.getWorkMode().getModeName());
+                row.createCell(3).setCellValue(deal.getHandResult());
+                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
+                    row.createCell(4).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
-                    row.createCell(3).setCellValue("无");
+                    row.createCell(4).setCellValue("无");
                 }
 
-                row.createCell(4).setCellValue(deal.getHandResult());
-                if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
-                    row.createCell(5).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
+                if(deal.getScanDevice() != null) {
+                    row.createCell(5).setCellValue(deal.getScanDevice().getDeviceName());
                 } else {
                     row.createCell(5).setCellValue("无");
                 }
 
-                if(deal.getScanDevice() != null) {
-                    row.createCell(6).setCellValue(deal.getScanDevice().getDeviceName());
+                if(deal.getJudgeDevice() != null) {
+                    row.createCell(6).setCellValue(deal.getJudgeDevice().getDeviceName());
                 } else {
                     row.createCell(6).setCellValue("无");
                 }
 
-                if(deal.getJudgeDevice() != null) {
-                    row.createCell(7).setCellValue(deal.getJudgeDevice().getDeviceName());
+                if(deal.getHandDevice() != null) {
+                    row.createCell(7).setCellValue(deal.getHandDevice().getDeviceName());
                 } else {
                     row.createCell(7).setCellValue("无");
                 }
-
-                if(deal.getHandDevice() != null) {
-                    row.createCell(8).setCellValue(deal.getHandDevice().getDeviceName());
-                } else {
-                    row.createCell(8).setCellValue("无");
-                }
-                row.createCell(9).setCellValue(deal.getHandResult());
+                row.createCell(8).setCellValue(deal.getHandResult());
             }
 
             workbook.write(out);
