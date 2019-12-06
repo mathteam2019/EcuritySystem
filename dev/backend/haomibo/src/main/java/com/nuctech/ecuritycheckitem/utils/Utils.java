@@ -151,7 +151,7 @@ public class Utils {
         try {
             // We need to serialize response to JSON string.
             response.getWriter().write(this.convertObjectToJson(new CommonResponseBody(message)));
-            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            response.setStatus(HttpServletResponse.SC_CREATED);
         } catch (Exception e) {
             // Hope there won't any exception for this.
             e.printStackTrace();
