@@ -1389,7 +1389,6 @@
         };
         if (this.defaultOrgId !== '')
           this.filter.orgId = this.defaultOrgId;
-        this.$refs.vuetable.refresh();
       },
       onInitialUserData() {
         this.profileForm = {
@@ -1617,7 +1616,6 @@
         this.groupFilter = {
           name: null
         };
-        this.$refs.userGroupTable.refresh();
       },
       onUserGroupCreateButton() {
         this.selectedUserGroupItem = {

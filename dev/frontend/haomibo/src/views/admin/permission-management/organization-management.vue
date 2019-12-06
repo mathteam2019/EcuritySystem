@@ -767,7 +767,6 @@
           status: null,
           parentOrgName: ''
         };
-        this.$refs.vuetable.refresh();
       },
       transform(response) {
 

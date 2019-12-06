@@ -517,7 +517,6 @@
           status: null,
           parentCategoryName: ''
         };
-        this.$refs.deviceClassifyTable.refresh();
       },
       onAction(value,data = null) {
         switch (value) {

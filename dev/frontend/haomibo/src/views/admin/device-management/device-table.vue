@@ -890,7 +890,6 @@
           archiveName: null,
           categoryId: null
         };
-        this.$refs.vuetable.refresh();
       },
       onAction(value, data = null) {
         this.initialize(data);

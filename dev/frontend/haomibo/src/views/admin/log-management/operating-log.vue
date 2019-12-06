@@ -419,7 +419,6 @@
           operateStartTime: null,
           operateEndTime: null
         };
-        this.$refs.vuetable.refresh();
       },
       transformTable(response) {
         let transformed = {};
@@ -493,7 +492,6 @@
           operateStartTime: null,
           operateEndTime: null
         };
-        this.$refs.operatingLogTable.refresh();
       },
       onOperatingLogTablePaginationData(paginationData) {
         this.$refs.operatingLogPagination.setPaginationData(paginationData);

@@ -785,7 +785,6 @@
           deviceName: '',
           status: null
         };
-        this.$refs.vuetable.refresh();
       },
       onAction(action, data) {
         switch (action) {

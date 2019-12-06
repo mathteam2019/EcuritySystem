@@ -731,7 +731,6 @@
           status: null,
           parentFieldDesignation: ''
         };
-        this.$refs.vuetable.refresh();
       },
       /**
        * save new site item

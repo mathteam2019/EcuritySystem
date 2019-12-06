@@ -1207,7 +1207,6 @@
           dataRange: null,
           filterGroup: null
         };
-        this.$refs.userGroupTable.refresh();
       },
 
       onAssignUserCreatePage() {
@@ -1394,7 +1393,6 @@
           roleName: '',
           dataRange: ''
         };
-        this.$refs.userVuetable.refresh();
       },
       initializeUserForm() {
         this.userForm = {

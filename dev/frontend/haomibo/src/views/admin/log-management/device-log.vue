@@ -677,7 +677,6 @@
           level: '',
           deviceType: 'device'
         };
-        this.$refs.securityLogTable.refresh();
       },
       securityLogTableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {
@@ -707,7 +706,6 @@
           level: '',
           deviceType: 'device'
         };
-        this.$refs.decisionLogTable.refresh();
       },
       decisionLogTableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {
@@ -737,7 +735,6 @@
           level: '',
           deviceType: 'device'
         };
-        this.$refs.handCheckLogTable.refresh();
       },
       handCheckLogTableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {

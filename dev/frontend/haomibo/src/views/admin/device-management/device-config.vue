@@ -877,7 +877,6 @@
           categoryId: null,
           fieldId: null
         };
-        this.$refs.configListTable.refresh();
       },
       onNodeSelected(node) {
         this.selectedFieldId = node.data.fieldId;
@@ -995,7 +994,6 @@
           categoryId: null,
           fieldId: null
         };
-        this.$refs.pendingListTable.refresh();
       },
       onAction(value, data = null) {
         switch (value) {
