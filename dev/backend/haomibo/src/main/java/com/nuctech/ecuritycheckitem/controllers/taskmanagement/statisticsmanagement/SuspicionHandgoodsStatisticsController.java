@@ -113,7 +113,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/suspiciongoods/generate/print", method = RequestMethod.POST)
     public Object suspicionGoodsStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                           BindingResult bindingResult) {
+                                                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -140,7 +140,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
      */
     @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                  BindingResult bindingResult) {
+                                                           BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -166,7 +166,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
@@ -174,13 +174,13 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 TreeMap<String, Long> record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.get("time")))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.get("time")))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -216,8 +216,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             startIndex = keyValueMin;
             endIndex = keyValueMax;
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -227,19 +226,18 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 
         if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
+            startIndex = (curPage - 1) * perPage;
+            endIndex = (curPage) * perPage - 1;
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                startIndex = keyValueMin + startIndex - 1;
-                endIndex = startIndex + perPage - 1;
-            }
+            //if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            startIndex = keyValueMin + startIndex;
+            endIndex = keyValueMin + endIndex;
+            //}
 
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
@@ -248,14 +246,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 endIndex = keyValueMax;
             }
 
-
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
-            }
+            response.setFrom((curPage - 1) * perPage + 1);
+            response.setTo((curPage) * perPage);
 
             try {
 
@@ -265,23 +257,21 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
                 if (response.getTotal() % response.getPer_page() == 0) {
                     response.setLast_page(response.getTotal() / response.getPer_page());
-                }
-                else {
+                } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
             }
         }
 
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
 
-        for (Integer i = startIndex; i <= endIndex; i ++ ) {
+        for (Integer i = startIndex; i <= endIndex; i++) {
 
             TreeMap<String, Long> suspictionStat = getSuspicionHandGoodsByDate(requestBody, i);
-            suspictionStat.put("time", (long)i);
+            suspictionStat.put("time", (long) i);
             detailedStatistics.put(i, suspictionStat);
 
         }
@@ -301,7 +291,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
-        for (int i = 0; i < handGoodsIDList.size(); i ++) {
+        for (int i = 0; i < handGoodsIDList.size(); i++) {
 
             BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
 
@@ -310,8 +300,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 String statWidth = "";
                 try {
                     statWidth = requestBody.getFilter().getStatWidth();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
 
                 }
 
@@ -331,7 +320,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                             predicate.and(history.handStartTime.hour().eq(byDate));
                             break;
                         case TaskManagementController.StatisticWidth.WEEK:
-                            predicate.and( history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
+                            predicate.and(history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
                             break;
                         case TaskManagementController.StatisticWidth.QUARTER:
                             predicate.and(history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));

@@ -64,7 +64,7 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                addTableCell(table, Long.toString(index));
+                addTableCell(table, Long.toString(index ++));
                 addTableCell(table, Long.toString(record.getTime()));
                 addTableCell(table, Long.toString(record.getTotalScan()));
                 addTableCell(table, Long.toString(record.getValidScan()));

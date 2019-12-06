@@ -42,19 +42,29 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("判图统计"));
+            document.add(getTitle("毫米波人体查验手检统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(SuspicionHandgoodsStatisticsController.handGoodsIDList.size() + 2);
 
             table.setWidthPercentage(100);
 
-            Stream.of(SuspicionHandgoodsStatisticsController.handGoodsIDList)
+            PdfPCell headerNo = new PdfPCell();
+            headerNo.setBorderWidth(2);
+            headerNo.setPhrase(new Phrase("序号", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            table.addCell(headerNo);
+
+            PdfPCell headerTime = new PdfPCell();
+            headerTime.setBorderWidth(2);
+            headerTime.setPhrase(new Phrase("时间段", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            table.addCell(headerTime);
+
+            SuspicionHandgoodsStatisticsController.handGoodsIDList
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(String.valueOf(columnTitle), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
