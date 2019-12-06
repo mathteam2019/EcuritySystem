@@ -436,7 +436,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime,this.$i18n.locale);
           transformed.data.push(temp);
         }
         return transformed

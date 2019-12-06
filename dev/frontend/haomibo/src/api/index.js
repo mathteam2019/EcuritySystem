@@ -79,10 +79,11 @@ const getApiManager = function () {
 const getDateTimeWithFormat = (datetime, formatType = 'cn') => {
   if (datetime === "" || datetime == null)
     return "";
+
   //todo need to format datetime with its language value
   let format = 'MM/DD/YYYY HH:mm';
   switch (formatType) {
-    case 'cn':
+    case 'zh':
     case 'en':
       format = 'MM/DD/YYYY HH:mm';
       break;

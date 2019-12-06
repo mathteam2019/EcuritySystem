@@ -244,7 +244,7 @@
       <b-tab :title="$t('log-management.device-log.hand-check-log')">
         <b-row v-if="pageStatus=='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
-            <b-row class="pt-4">
+            <b-row class="pt-2">
               <b-col cols="8">
                 <b-row>
 
@@ -359,7 +359,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -470,7 +470,7 @@
               dataClass: 'text-center',
             },
             {
-              name: 'time',
+              name: 'operateTime',
               title: this.$t('log-management.device-log.operating-time'),
               sortField: 'time',
               titleClass: 'text-center',
@@ -537,9 +537,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'operatingTime',
+              name: 'operateTime',
               title: this.$t('log-management.device-log.operating-time'),
-              sortField: 'operatingTime',
+              sortField: 'time',
               titleClass: 'text-center',
               dataClass: 'text-center',
             }
@@ -604,9 +604,9 @@
               dataClass: 'text-center',
             },
             {
-              name: 'operatingTime',
+              name: 'operateTime',
               title: this.$t('log-management.device-log.operating-time'),
-              sortField: 'operatingTime',
+              sortField: 'time',
               titleClass: 'text-center',
               dataClass: 'text-center',
             }
@@ -659,6 +659,7 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           temp.deviceName = temp.device.deviceName;
+          temp.operateTime  = getDateTimeWithFormat(temp.time,this.$i18n.locale);
           transformed.data.push(temp);
         }
         return transformed
