@@ -65,7 +65,7 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                addTableCell(table, deal.getHandResult());
+                addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
                 } else {

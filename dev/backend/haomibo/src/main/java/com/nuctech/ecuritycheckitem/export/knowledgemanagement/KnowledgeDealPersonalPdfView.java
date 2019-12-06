@@ -12,6 +12,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
@@ -61,7 +62,7 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
 
 
 
-                addTableCell(table, deal.getHandResult());
+                addTableCell(table, ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     addTableCell(table, deal.getScanDevice().getField().getFieldDesignation());
                 } else {

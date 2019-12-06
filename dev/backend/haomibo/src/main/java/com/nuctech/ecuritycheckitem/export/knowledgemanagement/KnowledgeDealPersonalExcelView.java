@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
@@ -82,7 +83,7 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
 
 
 
-                row.createCell(2).setCellValue(deal.getHandResult());
+                row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     row.createCell(3).setCellValue(deal.getScanDevice().getField().getFieldDesignation());
                 } else {
