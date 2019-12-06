@@ -365,6 +365,8 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getFieldId() != null) {
 
+            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
+
         }
 
 
@@ -789,7 +791,7 @@ public class PreviewStatisticsController extends BaseController {
 
 
         if (requestBody.getFilter().getFieldId() != null) {
-
+            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
         }
 
 
@@ -1078,7 +1080,7 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getFieldId() != null) {
 
-            //predicateField = builder.task.field.
+            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
 
         }
 

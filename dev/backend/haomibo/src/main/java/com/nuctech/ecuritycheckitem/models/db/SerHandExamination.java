@@ -87,8 +87,8 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
 
-//    @OneToOne()
-//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    SerTask task;
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SerTask task;
 }
