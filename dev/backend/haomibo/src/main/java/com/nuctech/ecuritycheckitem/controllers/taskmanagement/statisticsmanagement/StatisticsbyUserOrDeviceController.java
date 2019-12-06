@@ -29,10 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -64,6 +62,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         }
 
+
+        Integer currentPage;
+
+        Integer perPage;
+
+
         StatisticsByUserRequestBody.Filter filter;
 
     }
@@ -92,6 +96,10 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             Date endTime;
 
         }
+
+        Integer currentPage;
+
+        Integer perPage;
 
         StatisticsByDeviceRequestBody.Filter filter;
 
@@ -377,9 +385,30 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         }
 
+        Map<String, Object> paginatedList = getPaginatedList(listTotalStatistics, requestBody.getCurrentPage(), requestBody.getPerPage());
+        TreeMap<Long, TotalStatistics> subList = null;
+        try {
+            subList = (TreeMap<Long, TotalStatistics>) paginatedList.get("list");
+        }
+        catch(Exception e) {
+
+        }
+
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        response.setDetailedStatistics(listTotalStatistics);
-        response.setTotal(listTotalStatistics.keySet().size());
+
+        if (subList == null) {
+            response.setDetailedStatistics(listTotalStatistics);
+        }
+        else {
+            response.setDetailedStatistics(subList);
+            response.setTotal(listTotalStatistics.keySet().size());
+            response.setFrom(Long.parseLong(paginatedList.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedList.get("to").toString()));
+            response.setLast_page(Long.parseLong(paginatedList.get("lastpage").toString()));
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
+        }
+
 
         return response;
 
@@ -627,13 +656,79 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         }
 
+        Map<String, Object> paginatedList = getPaginatedList(listTotalStatistics, requestBody.getCurrentPage(), requestBody.getPerPage());
+        TreeMap<Long, TotalStatistics> subList = null;
+        try {
+            subList = (TreeMap<Long, TotalStatistics>) paginatedList.get("list");
+        }
+        catch(Exception e) {
+
+        }
+
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        response.setDetailedStatistics(listTotalStatistics);
-        response.setTotal(listTotalStatistics.keySet().size());
+
+        if (subList == null) {
+            response.setDetailedStatistics(listTotalStatistics);
+        }
+        else {
+            response.setDetailedStatistics(subList);
+            response.setTotal(listTotalStatistics.keySet().size());
+            response.setFrom(Long.parseLong(paginatedList.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedList.get("to").toString()));
+            response.setLast_page(Long.parseLong(paginatedList.get("lastpage").toString()));
+        }
 
         return response;
 
     }
+
+    Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Integer currentPage, Integer perPage) {
+
+        HashMap<String, Object> paginationResult = new HashMap<String, Object>();
+        TreeMap<Long, TotalStatistics> subList = new TreeMap<>();
+
+        if (currentPage == null || perPage == null) {
+            return null;
+        }
+
+        if (currentPage < 0 || perPage < 0) {
+            return  null;
+        }
+
+        Integer from = (currentPage - 1) * perPage + 1;
+        Integer to  = (currentPage) * perPage;
+
+        if (from > list.size()) {
+            return null;
+        }
+        else if (to > list.size()) {
+            to = list.size();
+        }
+
+        paginationResult.put("from", from);
+        paginationResult.put("to", to);
+        paginationResult.put("total", list.size());
+
+        if (list.size() % perPage == 0) {
+            paginationResult.put("lastpage", list.size() / perPage);
+        }
+        else {
+            paginationResult.put("lastpage", list.size() / perPage + 1);
+        }
+
+        int index = 0;
+        for (Map.Entry<Long, TotalStatistics> entry : list.entrySet()) {
+            if (index >= from - 1 && index <= to - 1) {
+                subList.put(entry.getKey(), entry.getValue());
+            }
+            index ++;
+        }
+
+        paginationResult.put("list", subList);
+
+        return paginationResult;
+    }
+
 
     @RequestMapping(value = "/get-statistics-filter-by-user", method = RequestMethod.POST)
     public Object getStatisticsByUserSummary(
