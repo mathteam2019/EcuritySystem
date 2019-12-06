@@ -65,7 +65,7 @@ const getApiManager = function () {
   }, (error) => {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
-    console.error(error);
+    console.log(error);
     app.$notify('error', app.$t(`api-call-error-messages.error-title`), app.$t(`api-call-error-messages.network-error`), {
       duration: 3000,
       permanent: false
@@ -103,25 +103,22 @@ const downLoadFileFromServer = (link,params, name = 'statics') => {
       responseType: 'blob'
     })
     .then((response) => {
-      let message = response.data.message;
-      switch (message) {
-        case responseMessages['ok']:
-          let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-          let fileLink = document.createElement('a');
-          fileLink.href = fileURL;
-          fileLink.setAttribute('download', name + '.xlsx');
-          document.body.appendChild(fileLink);
-          fileLink.click();
-          fileLink.parentNode.removeChild(fileLink);
-          break;
-        case responseMessages['forbidden']:
-          app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
-            duration: 3000,
-            permanent: false
-          });
-
-          break;
+      let status = response.status;
+      if(status === 200) {
+        let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        let fileLink = document.createElement('a');
+        fileLink.href = fileURL;
+        fileLink.setAttribute('download', name + '.xlsx');
+        document.body.appendChild(fileLink);
+        fileLink.click();
+        fileLink.parentNode.removeChild(fileLink);
+      } else if(status === 201) {
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
+          duration: 3000,
+          permanent: false
+        });
       }
+
     })
     .catch(error => {
       throw new Error(error);
@@ -135,31 +132,26 @@ const printFileFromServer = (link,params) => {
       responseType: 'blob'
     })
     .then((response) => {
-      let message = response.data.message;
-      switch (message) {
-        case responseMessages['ok']:
-          let els = document.querySelectorAll('body>iframe');
-          els.forEach(item => {
-            item.parentNode.removeChild(item);
-          });
-          let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-          var objFra = document.createElement('iframe');
-          objFra.style.visibility = "hidden";
-          objFra.style.display = 'none';
-          objFra.src = fileURL;
-          document.body.appendChild(objFra);
-          objFra.contentWindow.focus();
-          objFra.contentWindow.print();
-          break;
-        case responseMessages['forbidden']:
-          app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
-            duration: 3000,
-            permanent: false
-          });
-
-          break;
+      let status = response.status;
+      if(status === 200) {
+        let els = document.querySelectorAll('body>iframe');
+        els.forEach(item => {
+          item.parentNode.removeChild(item);
+        });
+        let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+        var objFra = document.createElement('iframe');
+        objFra.style.visibility = "hidden";
+        objFra.style.display = 'none';
+        objFra.src = fileURL;
+        document.body.appendChild(objFra);
+        objFra.contentWindow.focus();
+        objFra.contentWindow.print();
+      } else if(status === 201) {
+        app.$notify('error', app.$t(`auth-token-messages.error-title`), app.$t(`api-call-error-messages.forbidden`), {
+          duration: 3000,
+          permanent: false
+        });
       }
-
     })
     .catch(error => {
       throw new Error(error);
