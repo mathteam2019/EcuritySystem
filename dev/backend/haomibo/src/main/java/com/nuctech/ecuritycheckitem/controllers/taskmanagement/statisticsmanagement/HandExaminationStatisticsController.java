@@ -4,12 +4,22 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.Query;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -59,6 +71,25 @@ public class HandExaminationStatisticsController extends BaseController {
 
     }
 
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsRequestBody filter;
+    }
+
+
+
     @RequestMapping(value = "/get-handexamination-statistics", method = RequestMethod.POST)
     public Object getHandExaminationSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -73,6 +104,93 @@ public class HandExaminationStatisticsController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
+
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/handexamination/generate/print", method = RequestMethod.POST)
+    public Object handExaminationStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        HandExaminationStatisticsPdfView.setResource(res);
+        InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=handStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/handexamination/generate/export", method = RequestMethod.POST)
+    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, HandExaminationResponseModel> judgeStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=handStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    private TreeMap<Integer, HandExaminationResponseModel> getExportList(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Integer, HandExaminationResponseModel> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
+
+                HandExaminationResponseModel record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
+    }
+
 
     public HandExaminationStatisticsPaginationResponse getHandStatistics(StatisticsRequestBody requestBody) {
 

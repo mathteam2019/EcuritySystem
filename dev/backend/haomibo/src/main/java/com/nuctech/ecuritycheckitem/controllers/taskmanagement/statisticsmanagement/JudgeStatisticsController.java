@@ -108,10 +108,10 @@ public class JudgeStatisticsController extends BaseController {
     }
 
     /**
-     * Preview Statistics generate pdf file request.
+     * Judge Statistics generate pdf file request.
      */
     @RequestMapping(value = "/judge/generate/print", method = RequestMethod.POST)
-    public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+    public Object judgeStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -138,7 +138,7 @@ public class JudgeStatisticsController extends BaseController {
      * Scan Statistics generate pdf file request.
      */
     @RequestMapping(value = "/judge/generate/export", method = RequestMethod.POST)
-    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+    public Object judgeStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
