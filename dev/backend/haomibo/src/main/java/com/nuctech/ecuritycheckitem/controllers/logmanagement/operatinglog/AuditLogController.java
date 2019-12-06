@@ -9,6 +9,7 @@
 package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -63,9 +64,9 @@ public class AuditLogController extends BaseController {
             String clientIp;
             String operateResult;
             String operateObject;
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateStartTime;
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            @DateTimeFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateEndTime;
         }
 
