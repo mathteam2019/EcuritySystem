@@ -107,7 +107,7 @@ public class HandExaminationStatisticsController extends BaseController {
 
 
     /**
-     * Preview Statistics generate pdf file request.
+     * HandExamination Statistics generate pdf file request.
      */
     @RequestMapping(value = "/handexamination/generate/print", method = RequestMethod.POST)
     public Object handExaminationStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -134,10 +134,10 @@ public class HandExaminationStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate pdf file request.
+     * HandExamination Statistics generate pdf file request.
      */
     @RequestMapping(value = "/handexamination/generate/export", method = RequestMethod.POST)
-    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+    public Object handExaminationsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
