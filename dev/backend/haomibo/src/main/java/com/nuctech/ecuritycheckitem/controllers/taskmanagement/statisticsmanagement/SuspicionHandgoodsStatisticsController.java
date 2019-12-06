@@ -4,12 +4,21 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.util.*;
 
 @RestController
@@ -56,7 +67,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
     }
 
-    List<String> handGoodsIDList = Arrays.asList(new String[]{
+    public static final List<String> handGoodsIDList = Arrays.asList(new String[]{
             "1000001601",
             "1000001602",
             "1000001603",
@@ -64,6 +75,23 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             "1000001605"
     });
 
+
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsRequestBody filter;
+    }
 
     @RequestMapping(value = "/get-suspicionhandgoods-statistics", method = RequestMethod.POST)
     public Object getSuspicionHandGoodsSummary(
@@ -79,6 +107,92 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
+
+    /**
+     * Preview Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/suspiciongoods/generate/print", method = RequestMethod.POST)
+    public Object suspicionGoodsStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        HandExaminationStatisticsPdfView.setResource(res);
+        InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
+    public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> judgeStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    private TreeMap<Integer, TreeMap<String, Long>> getExportList(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Integer, TreeMap<String, Long>> entry : detailedStatistics.entrySet()) {
+
+                TreeMap<String, Long> record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.get("time")))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
+    }
+
 
     public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(StatisticsRequestBody requestBody) {
 
