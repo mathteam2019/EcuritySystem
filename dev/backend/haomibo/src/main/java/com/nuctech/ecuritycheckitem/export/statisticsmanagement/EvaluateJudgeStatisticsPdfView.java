@@ -41,10 +41,10 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("评价判图"));
+            document.add(getTitle("毫米波人体查验评价判图统计"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(13);
+            PdfPTable table = new PdfPTable(17);
 
  table.setWidthPercentage(100);
             Stream.of("序号", "时间段", "手检总量", "误报总量", "误报率", "漏报总量", "漏报率", "手检（人工判图）量", "人工判图误报量", "人工判图误报率", "人工判图漏报量", "人工判图漏报率", "手检（智能判图）量", "智能判图误报量", "智能判图误报率", "智能判图漏报量", "智能判图漏报率")
