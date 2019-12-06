@@ -166,6 +166,9 @@ public class BaseController {
     @Autowired
     public SerKnowledgeCaseRepository serKnowledgeCaseRepository;
 
+    @Autowired
+    public SerDeviceRegisterRepository serDeviceRegisterRepository;
+
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
 

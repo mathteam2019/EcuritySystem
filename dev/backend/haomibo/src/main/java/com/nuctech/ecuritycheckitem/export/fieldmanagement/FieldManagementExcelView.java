@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.fieldmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
@@ -82,7 +83,7 @@ public class FieldManagementExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(field.getFieldId().toString());
                 row.createCell(1).setCellValue(field.getFieldSerial());
                 row.createCell(2).setCellValue(field.getFieldDesignation());
-                row.createCell(3).setCellValue(field.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(field.getStatus()));
                 if(field.getParent() != null) {
                     row.createCell(4).setCellValue(field.getParent().getFieldSerial());
                     row.createCell(5).setCellValue(field.getParent().getFieldDesignation());

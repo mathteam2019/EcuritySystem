@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.permissionmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
@@ -84,7 +85,7 @@ public class OrganizationExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(org.getOrgId().toString());
                 row.createCell(1).setCellValue(org.getOrgNumber());
                 row.createCell(2).setCellValue(org.getOrgName());
-                row.createCell(3).setCellValue(org.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(org.getStatus()));
                 if(org.getParent() != null) {
                     row.createCell(4).setCellValue(org.getParent().getOrgNumber());
                     row.createCell(5).setCellValue(org.getParent().getOrgName());

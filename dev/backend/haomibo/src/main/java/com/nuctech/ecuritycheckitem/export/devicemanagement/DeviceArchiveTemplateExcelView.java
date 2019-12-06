@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
@@ -76,7 +77,7 @@ public class DeviceArchiveTemplateExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(template.getArchivesTemplateId().toString());
                 row.createCell(1).setCellValue(template.getArchivesTemplateNumber());
                 row.createCell(2).setCellValue(template.getTemplateName());
-                row.createCell(3).setCellValue(template.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
                     row.createCell(4).setCellValue(template.getDeviceCategory().getCategoryName());
                 } else {

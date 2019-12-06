@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchive;
@@ -80,7 +81,7 @@ public class DeviceArchiveExcelView extends BaseExcelView {
                 } else {
                     row.createCell(2).setCellValue("无");
                 }
-                row.createCell(3).setCellValue(archive.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(archive.getStatus()));
                 if(archive.getArchiveTemplate() != null && archive.getArchiveTemplate().getDeviceCategory() != null) {
                     row.createCell(4).setCellValue(archive.getArchiveTemplate().getDeviceCategory().getCategoryName());
                 } else {

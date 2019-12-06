@@ -92,6 +92,8 @@ public class DeviceStatusController extends BaseController {
                 .stream(serScanRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
+
+
         if(scanDataList != null) {
             for(int i = 0; i < scanDataList.size(); i ++) {
                 SerScan scan = scanDataList.get(i);
@@ -214,6 +216,16 @@ public class DeviceStatusController extends BaseController {
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
             deviceStatus.setStorageAlarm(storageAlarm);
             deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
+
+            SerDeviceRegister serDeviceRegister = serDeviceRegisterRepository.findOne(QSerDeviceRegister.serDeviceRegister
+                    .deviceId.eq(deviceStatus.getDeviceId())).orElse(null);
+
+            Date registyerDate = null;
+
+            if(serDeviceRegister != null) {
+                registyerDate = serDeviceRegister.getRegisterTime();
+            }
+            deviceStatus.setRegisterTime(registyerDate);
         }
 
 

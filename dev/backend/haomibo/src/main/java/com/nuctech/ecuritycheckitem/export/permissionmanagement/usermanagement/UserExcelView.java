@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -77,8 +78,8 @@ public class UserExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(user.getUserId().toString());
                 row.createCell(1).setCellValue(user.getUserNumber());
                 row.createCell(2).setCellValue(user.getUserName());
-                row.createCell(3).setCellValue(user.getGender());
-                row.createCell(4).setCellValue(user.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(user.getGender()));
+                row.createCell(4).setCellValue(ConstantDictionary.getDataValue(user.getStatus()));
                 row.createCell(5).setCellValue(user.getOrg().getOrgName());
                 row.createCell(6).setCellValue(user.getUserAccount());
 

@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
@@ -52,7 +53,7 @@ public class DeviceArchiveTemplatePdfView extends BasePdfView {
                 addTableCell(table, template.getArchivesTemplateId().toString());
                 addTableCell(table, template.getArchivesTemplateNumber());
                 addTableCell(table, template.getTemplateName());
-                addTableCell(table, template.getStatus());
+                addTableCell(table, ConstantDictionary.getDataValue(template.getStatus()));
                 if(template.getDeviceCategory() != null) {
                     addTableCell(table, template.getDeviceCategory().getCategoryName());
                 } else {

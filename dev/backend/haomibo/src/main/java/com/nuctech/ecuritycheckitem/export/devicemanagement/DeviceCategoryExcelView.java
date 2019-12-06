@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
@@ -76,7 +77,7 @@ public class DeviceCategoryExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(category.getCategoryId().toString());
                 row.createCell(1).setCellValue(category.getCategoryNumber());
                 row.createCell(2).setCellValue(category.getCategoryName());
-                row.createCell(3).setCellValue(category.getStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(category.getStatus()));
                 if(category.getParent() != null) {
                     row.createCell(4).setCellValue(category.getParent().getCategoryNumber());
                     row.createCell(5).setCellValue(category.getParent().getCategoryName());
