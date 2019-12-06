@@ -676,6 +676,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             response.setFrom(Long.parseLong(paginatedList.get("from").toString()));
             response.setTo(Long.parseLong(paginatedList.get("to").toString()));
             response.setLast_page(Long.parseLong(paginatedList.get("lastpage").toString()));
+            response.setCurrent_page(requestBody.getCurrentPage());
+            response.setPer_page(requestBody.getPerPage());
         }
 
         return response;
