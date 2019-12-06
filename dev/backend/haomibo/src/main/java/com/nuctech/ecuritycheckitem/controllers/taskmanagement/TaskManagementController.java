@@ -288,7 +288,7 @@ public class TaskManagementController extends BaseController {
                 predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
             }
             if (filter.getMode() != null) {
-                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
+                predicate.and(builder.workFlow.workMode.modeId.eq(filter.getMode()));
             }
             if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
                 predicate.and(builder.taskStatus.eq(filter.getStatus()));
