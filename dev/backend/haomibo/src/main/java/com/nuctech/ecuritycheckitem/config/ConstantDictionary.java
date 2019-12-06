@@ -33,6 +33,10 @@ public class ConstantDictionary {
             new Dictionary("1000001302", "安检仪+手检端"),
             new Dictionary("1000001303", "安检仪+审图端"),
             new Dictionary("1000001304", "安检仪+审图端+手检端"),
+            new Dictionary("noseizure", "无查获"),
+            new Dictionary("seized", "有查获"),
+            new Dictionary("doubt", "有嫌疑"),
+            new Dictionary("nodoubt", "无嫌疑"),
 
     };
 
