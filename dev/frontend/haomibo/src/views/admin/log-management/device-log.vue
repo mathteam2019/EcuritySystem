@@ -627,7 +627,7 @@
           'idList': checkedIds.join()
         };
         let link = `log-management/device-log/export`;
-        downLoadFileFromServer(link, params, 'access-log');
+        downLoadFileFromServer(link, params, 'device-log');
       },
       onPrintButton(page = 'device') {
         let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
