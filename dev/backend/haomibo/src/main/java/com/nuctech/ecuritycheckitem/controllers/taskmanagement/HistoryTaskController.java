@@ -218,7 +218,7 @@ public class HistoryTaskController extends BaseController {
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
 
-        InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(taskList);
+        InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList);
 
 
         HttpHeaders headers = new HttpHeaders();

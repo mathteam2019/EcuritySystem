@@ -107,8 +107,13 @@ public class HistoryTaskExcelView extends BaseExcelView {
 
                 row.createCell(0).setCellValue(task.getHistoryId());
 
-                if (task.getTask().getTaskNumber() != null) {
-                    row.createCell(1).setCellValue(task.getTask().getTaskNumber());
+                if (task.getTask() != null) {
+                    if (task.getTask().getTaskNumber() != null) {
+                        row.createCell(1).setCellValue(task.getTask().getTaskNumber());
+                    }
+                    else {
+                        row.createCell(1).setCellValue("");
+                    }
                 }
                 else {
                     row.createCell(1).setCellValue("");
@@ -128,11 +133,22 @@ public class HistoryTaskExcelView extends BaseExcelView {
 
                 row.createCell(4).setCellValue(task.getHandTaskResult());
 
-                if (task.getTask().getField().getFieldDesignation() != null) {
-                    row.createCell(5).setCellValue(task.getTask().getField().getFieldDesignation());
-                } else {
+                if (task.getTask() != null) {
+                    if (task.getTask().getField() != null) {
+                        if (task.getTask().getField().getFieldDesignation() != null) {
+                            row.createCell(5).setCellValue(task.getTask().getField().getFieldDesignation());
+                        } else {
+                            row.createCell(5).setCellValue("");
+                        }
+                    }
+                    else {
+                        row.createCell(5).setCellValue("");
+                    }
+                }
+                else {
                     row.createCell(5).setCellValue("");
                 }
+
 
                 if (task.getScanDevice() != null) {
                     row.createCell(6).setCellValue(task.getScanDevice().getDeviceName());
