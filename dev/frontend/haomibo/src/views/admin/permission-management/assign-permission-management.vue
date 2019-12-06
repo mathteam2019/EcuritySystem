@@ -64,10 +64,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
@@ -314,10 +314,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
@@ -336,6 +336,7 @@
                     :fields="userGroupTableItems.fields"
                     :http-fetch="userGroupTableHttpFetch"
                     pagination-path="userGroupTablePagination"
+                    track-by="userGroupId"
                     class="table-hover"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
                   >
@@ -510,7 +511,7 @@
   import 'vue-select/dist/vue-select.css'
   import {getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
   const {required} = require('vuelidate/lib/validators');
@@ -992,6 +993,51 @@
     },
     methods: {
 
+      onExportUserButton() {
+        let checkedAll = this.$refs.userVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.userVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.userFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/assign-permission-management/user/export`;
+        downLoadFileFromServer(link, params, 'assign-user');
+      },
+      onPrintUserButton() {
+        let checkedAll = this.$refs.userVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.userVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.userFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/assign-permission-management/user/print`;
+        printFileFromServer(link, params);
+      },
+      onExportGroupButton() {
+        let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
+        let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.groupFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/assign-permission-management/user-group/export`;
+        downLoadFileFromServer(link, params, 'assign-userGroup');
+      },
+      onPrintGroupButton() {
+        let checkedAll = this.$refs.userGroupTable.checkedAllStatus;
+        let checkedIds = this.$refs.userGroupTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.groupFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/assign-permission-management/user-group/print`;
+        printFileFromServer(link, params);
+      },
+
       userVuetableFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
@@ -1161,7 +1207,6 @@
           dataRange: null,
           filterGroup: null
         };
-        this.$refs.userGroupTable.refresh();
       },
 
       onAssignUserCreatePage() {
@@ -1348,7 +1393,6 @@
           roleName: '',
           dataRange: ''
         };
-        this.$refs.userVuetable.refresh();
       },
       initializeUserForm() {
         this.userForm = {

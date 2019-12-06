@@ -61,10 +61,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAccessResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportAccessButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintAccessButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -79,6 +79,7 @@
                     :api-url="vuetableItems.apiUrl"
                     :http-fetch="vuetableHttpFetch"
                     :per-page="vuetableItems.perPage"
+                    track-by="id"
                     pagination-path="pagination"
                     class="table-striped"
                     @vuetable:pagination-data="onvueTablePaginationData"
@@ -152,10 +153,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onOperatingResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportOperatingButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintOperatingButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -170,6 +171,7 @@
                     :api-url="operatingLogTableItems.apiUrl"
                     :http-fetch="operatingTableHttpFetch"
                     pagination-path="pagination"
+                    track-by="id"
                     class="table-striped"
                     @vuetable:pagination-data="onOperatingLogTablePaginationData"
                   >
@@ -197,7 +199,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager,getDateTimeWithFormat} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -362,6 +364,51 @@
       }
     },
     methods: {
+
+      onExportAccessButton() {
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.accessFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/operating-log/access/export`;
+        downLoadFileFromServer(link, params, 'access-log');
+      },
+      onPrintAccessButton() {
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.accessFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/operating-log/access/print`;
+        printFileFromServer(link, params);
+      },
+      onExportOperatingButton() {
+        let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
+        let checkedIds = this.$refs.operatingLogTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.operatingFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/operating-log/audit/export`;
+        downLoadFileFromServer(link, params, 'operating-log');
+      },
+      onPrintOperatingButton() {
+        let checkedAll = this.$refs.operatingLogTable.checkedAllStatus;
+        let checkedIds = this.$refs.operatingLogTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.operatingFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `log-management/operating-log/audit/print`;
+        printFileFromServer(link, params);
+      },
       onAccessSearchButton() {
         this.$refs.vuetable.refresh();
       },
@@ -372,7 +419,6 @@
           operateStartTime: null,
           operateEndTime: null
         };
-        this.$refs.vuetable.refresh();
       },
       transformTable(response) {
         let transformed = {};
@@ -389,7 +435,7 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime);
+          temp.operateTimeFormat  = getDateTimeWithFormat(temp.operateTime,this.$i18n.locale);
           transformed.data.push(temp);
         }
         return transformed
@@ -446,7 +492,6 @@
           operateStartTime: null,
           operateEndTime: null
         };
-        this.$refs.operatingLogTable.refresh();
       },
       onOperatingLogTablePaginationData(paginationData) {
         this.$refs.operatingLogPagination.setPaginationData(paginationData);

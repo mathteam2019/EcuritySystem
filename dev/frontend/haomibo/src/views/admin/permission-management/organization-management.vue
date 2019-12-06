@@ -72,10 +72,10 @@
                     @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
                     {{ $t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default">
+                  <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                  <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
                     {{ $t('permission-management.export') }}
                   </b-button>
                   <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
@@ -95,6 +95,7 @@
                     :per-page="vuetableItems.perPage"
                     pagination-path="pagination"
                     class="table-striped"
+                    track-by="orgId"
                     @vuetable:pagination-data="onPaginationData"
                   >
                     <template slot="actions" slot-scope="props">
@@ -435,7 +436,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import {validationMixin} from 'vuelidate';
   import Vue2OrgTree from '../../../components/vue2-org-tree'
-  import {getApiManager} from '../../../api';
+  import {getApiManager,downLoadFileFromServer,printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
 
   const {required} = require('vuelidate/lib/validators');
@@ -735,7 +736,28 @@
       }
     },
     methods: {
-
+      onExportButton(){
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/organization-management/organization/export`;
+        downLoadFileFromServer(link,params,'organization');
+      },
+      onPrintButton(){
+        let checkedAll = this.$refs.vuetable.checkedAllStatus;
+        let checkedIds = this.$refs.vuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/organization-management/organization/print`;
+        printFileFromServer(link,params);
+      },
       onSearchButton() {
         this.$refs.vuetable.refresh();
       },
@@ -745,7 +767,6 @@
           status: null,
           parentOrgName: ''
         };
-        this.$refs.vuetable.refresh();
       },
       transform(response) {
 

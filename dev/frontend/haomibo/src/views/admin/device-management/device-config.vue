@@ -240,11 +240,12 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onConfigResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default">
-                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
-                </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton">
+                  <i class="icofont-share-alt"></i>&nbsp;
                   {{ $t('permission-management.export') }}
+                </b-button>
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton">
+                  <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
               </b-col>
             </b-row>
@@ -258,6 +259,7 @@
                     :http-fetch="configListTableHttpFetch"
                     :per-page="configListTableItems.perPage"
                     pagination-path="pagination"
+                    track-by="deviceId"
                     @vuetable:pagination-data="onConfigTablePaginationData"
                     class="table-striped"
                   >
@@ -331,7 +333,7 @@
                                 @click="onAction('show',props.rowData)">
                         <i class="icofont-edit"></i>
                       </b-button>
-                      <b-button size="sm" variant="success default btn-square">
+                      <b-button size="sm" variant="success default btn-square" @click="onRefreshItem(props.rowData,props.rowIndex)">
                         <i class="icofont-refresh"></i>
                       </b-button>
                     </div>
@@ -519,7 +521,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {getApiManager} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
@@ -534,11 +536,11 @@
     if (orgData == null)
       return orgFullName;
     while (orgData.parent != null) {
-      orgFullName += '/' + orgData.fieldDesignation;
+      orgFullName = orgData.fieldDesignation +  '/' + orgFullName;
       orgData = orgData.parent;
     }
-    orgFullName = orgData.fieldDesignation + orgFullName;
-    return orgFullName;
+    orgFullName = orgData.fieldDesignation +'/'+ orgFullName;
+    return orgFullName.slice(0,-1);
   };
 
   Vue.use(LiquorTree);
@@ -841,6 +843,28 @@
       ///////////////////////////////////////////
       /////   setting device with field /////////
       ///////////////////////////////////////////
+      onExportButton(){
+        let checkedAll = this.$refs.configListTable.checkedAllStatus;
+        let checkedIds = this.$refs.configListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.configFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/device-table/device/field/export`;
+        downLoadFileFromServer(link,params,'device-config');
+      },
+      onPrintButton(){
+        let checkedAll = this.$refs.configListTable.checkedAllStatus;
+        let checkedIds = this.$refs.configListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.configFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/device-table/device/field/print`;
+        printFileFromServer(link,params);
+      },
       changeSwitchStatus(status) {
         this.switchStatus = status;
       },
@@ -853,7 +877,6 @@
           categoryId: null,
           fieldId: null
         };
-        this.$refs.configListTable.refresh();
       },
       onNodeSelected(node) {
         this.selectedFieldId = node.data.fieldId;
@@ -962,6 +985,9 @@
       ///////////////////////////////////////////
       /////   setting device with config ////////
       ///////////////////////////////////////////
+      onRefreshItem(data,index){
+        this.$refs.pendingListTable.reload();
+      },
       onPendingSearchButton() {
         this.$refs.pendingListTable.refresh();
       },
@@ -971,7 +997,6 @@
           categoryId: null,
           fieldId: null
         };
-        this.$refs.pendingListTable.refresh();
       },
       onAction(value, data = null) {
         switch (value) {

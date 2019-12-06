@@ -29,10 +29,10 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetRoleSearchForm()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportRoleButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintRoleButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" @click="onClickCreateRole()" variant="success default">
@@ -266,10 +266,10 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetDataGroupSearchForm()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" variant="success default">
@@ -291,6 +291,7 @@
                       :per-page="dataGroupVuetableItems.perPage"
                       pagination-path="data"
                       data-path="data.data"
+                      track-by="dataGroupId"
                       class="table-hover"
                       @vuetable:pagination-data="onDataGroupPaginationData"
                     >
@@ -513,7 +514,7 @@
   import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
-  import {getApiManager} from "../../../api";
+  import {downLoadFileFromServer, getApiManager, printFileFromServer} from "../../../api";
 
   export default {
     components: {
@@ -800,6 +801,51 @@
       }
     },
     methods: {
+      onExportRoleButton() {
+        let checkedAll = this.$refs.roleVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.roleVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {roleName : this.roleKeyword},
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/permission-control/role/export`;
+        downLoadFileFromServer(link, params, 'permission-role');
+      },
+      onPrintRoleButton() {
+        let checkedAll = this.$refs.roleVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.roleVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {roleName : this.roleKeyword},
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/permission-control/role/print`;
+        printFileFromServer(link, params);
+      },
+      onExportGroupButton() {
+        let checkedAll = this.$refs.dataGroupVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {dataGroupName : this.dataRangeKeyword},
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/permission-control/data-group/export`;
+        downLoadFileFromServer(link, params, 'permission-dataGroup');
+      },
+      onPrintGroupButton() {
+        let checkedAll = this.$refs.dataGroupVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.dataGroupVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {dataGroupName : this.dataRangeKeyword},
+          'idList': checkedIds.join()
+        };
+        let link = `permission-management/permission-control/data-group/print`;
+        printFileFromServer(link, params);
+      },
+
       hideModal(refName) {
         this.$refs[refName].hide();
       },

@@ -3,7 +3,7 @@ import {getAuthTokenInfo, removeLoginInfo} from "../utils";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import moment from '../../node_modules/moment';
-
+import {apiBaseUrl} from '../constants/config';
 const getApiManager = function () {
 
   const apiManager = axios.create({
@@ -76,13 +76,14 @@ const getApiManager = function () {
   return apiManager;
 };
 
-const getDateTimeWithFormat = (datetime,formatType = 'cn') => {
-  if(datetime === "" || datetime == null)
+const getDateTimeWithFormat = (datetime, formatType = 'zh') => {
+  if (datetime === "" || datetime == null)
     return "";
+
   //todo need to format datetime with its language value
   let format = 'MM/DD/YYYY HH:mm';
   switch (formatType) {
-    case 'cn':
+    case 'zh':
     case 'en':
       format = 'MM/DD/YYYY HH:mm';
       break;
@@ -93,8 +94,51 @@ const getDateTimeWithFormat = (datetime,formatType = 'cn') => {
       format = 'YYYYMMDD HH:mm';
       break;
   }
-  console.log(moment(String(datetime)));
   return moment(String(datetime)).format(format)
 };
 
-export {getApiManager, getDateTimeWithFormat};
+const downLoadFileFromServer = (link,params, name = 'statics') => {
+  getApiManager()
+    .post(`${apiBaseUrl}/` + link,params,{
+      responseType: 'blob'
+    })
+    .then((response) => {
+      let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+      let fileLink = document.createElement('a');
+      fileLink.href = fileURL;
+      fileLink.setAttribute('download', name + '.xlsx');
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      fileLink.parentNode.removeChild(fileLink);
+    })
+    .catch(error => {
+      throw new Error(error);
+    });
+
+};
+
+const printFileFromServer = (link,params) => {
+  getApiManager()
+    .post(`${apiBaseUrl}/` + link,params,{
+      responseType: 'blob'
+    })
+    .then((response) => {
+      let els = document.querySelectorAll('body>iframe');
+      els.forEach(item => {
+        item.parentNode.removeChild(item);
+      });
+      let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+      var objFra = document.createElement('iframe');
+      objFra.style.visibility = "hidden";
+      objFra.style.display = 'none';
+      objFra.src = fileURL;
+      document.body.appendChild(objFra);
+      objFra.contentWindow.focus();
+      objFra.contentWindow.print();
+    })
+    .catch(error => {
+      throw new Error(error);
+    });
+};
+
+export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer,printFileFromServer};
