@@ -80,6 +80,10 @@ public class SerScan extends BaseEntity implements Serializable {
     @Column(name = "SCAN_ASSIGN_TIMEOUT", length = 10)
     String scanAssignTimeout;
 
+    @Column(name = "SCAN_IMAGEGENDER", length = 10)
+    String scanImageGender;
+
+
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)

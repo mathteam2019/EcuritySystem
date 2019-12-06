@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
@@ -122,7 +123,7 @@ public class ProcessTaskExcelView extends BaseExcelView {
 
                 }
 
-                row.createCell(3).setCellValue(task.getTaskStatus());
+                row.createCell(3).setCellValue(ConstantDictionary.getDataValue(task.getTaskStatus()));
 
                 if (task.getField() != null) {
                     row.createCell(4).setCellValue(task.getField().getFieldDesignation());

@@ -440,13 +440,25 @@ public class PreviewStatisticsController extends BaseController {
 
         for (SerScan item : listScans) {
 
-            workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime()) / 1000;
+            try {
+                workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime()) / 1000;
+            }
+            catch(Exception e) {
+
+            }
 
         }
 
         scanStatistics.setWorkingSeconds(workingSecs);
-        scanStatistics.setId(keyDate);
-        scanStatistics.setTime(keyDate);
+
+        try {
+            scanStatistics.setId(keyDate);
+            scanStatistics.setTime(keyDate);
+        }
+        catch (Exception e ) {
+
+        }
+
         scanStatistics.setTotalScan(totalScan);
         scanStatistics.setValidScan(validScan);
         scanStatistics.setInvalidScan(invalidScan);
@@ -832,14 +844,25 @@ public class PreviewStatisticsController extends BaseController {
 
         for (SerJudgeGraph item : listScans) {
 
-            workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime()) / 1000;
+            try {
+                workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime()) / 1000;
+            }
+            catch (Exception e) {
+
+            }
 
         }
 
         judgeStatistics.setWorkingSeconds(workingSecs);
 
-        judgeStatistics.setId(keyDate);
-        judgeStatistics.setTime(keyDate);
+        try {
+            judgeStatistics.setId(keyDate);
+            judgeStatistics.setTime(keyDate);
+        }
+        catch (Exception e) {
+
+        }
+
         judgeStatistics.setTotalJudge(totalJudge);
         judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
         judgeStatistics.setSuspictionJudge(suspictionJudge);
@@ -1110,13 +1133,25 @@ public class PreviewStatisticsController extends BaseController {
 
         for (SerHandExamination item : listScans) {
 
-            workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime()) / 1000;
+            try {
+                workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime()) / 1000;
+            }
+            catch (Exception e) {
+
+            }
 
         }
 
         handExaminationStatistics.setWorkingSeconds(workingSecs);
-        handExaminationStatistics.setId(keyDate);
-        handExaminationStatistics.setTime(keyDate);
+        try {
+            handExaminationStatistics.setId(keyDate);
+            handExaminationStatistics.setTime(keyDate);
+        }
+        catch(Exception e) {
+            handExaminationStatistics.setId(0);
+            handExaminationStatistics.setTime(0);
+        }
+
         handExaminationStatistics.setTotalHandExamination(totalHandExam);
         handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
         handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);

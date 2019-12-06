@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.History;
@@ -73,7 +74,7 @@ public class HistoryTaskPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                addTableCell(table, task.getHandTaskResult());
+                addTableCell(table, ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
                 if (task.getTask().getField().getFieldDesignation() != null) {
                     addTableCell(table, task.getTask().getField().getFieldDesignation());

@@ -37,6 +37,11 @@ public class ConstantDictionary {
             new Dictionary("seized", "有查获"),
             new Dictionary("doubt", "有嫌疑"),
             new Dictionary("nodoubt", "无嫌疑"),
+            new Dictionary("pending_dispatch", "待分派"),
+            new Dictionary("pending_review", "待审图"),
+            new Dictionary("while_review", "审图中"),
+            new Dictionary("pending_inspection", "待查验"),
+            new Dictionary("while_inspection", "查验中"),
 
     };
 

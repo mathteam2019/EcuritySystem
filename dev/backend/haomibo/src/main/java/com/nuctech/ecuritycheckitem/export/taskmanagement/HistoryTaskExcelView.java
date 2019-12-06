@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import org.apache.poi.ss.usermodel.*;
@@ -131,7 +132,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
                     row.createCell(3).setCellValue("无");
                 }
 
-                row.createCell(4).setCellValue(task.getHandTaskResult());
+                row.createCell(4).setCellValue(ConstantDictionary.getDataValue(task.getHandTaskResult()));
 
                 if (task.getTask() != null) {
                     if (task.getTask().getField() != null) {
