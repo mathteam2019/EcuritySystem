@@ -72,7 +72,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
     /**
-     * preview statistics generate request body.
+     * statistics generate request body.
      */
     @Getter
     @Setter
@@ -105,7 +105,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
     /**
-     * HandExamination Statistics generate pdf file request.
+     * Evaluate Statistics generate pdf file request.
      */
     @RequestMapping(value = "/evaluatejudge/generate/print", method = RequestMethod.POST)
     public Object evaluateJudgeStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -132,7 +132,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
     /**
-     * HandExamination Statistics generate pdf file request.
+     * EvaluateJudge Statistics generate pdf file request.
      */
     @RequestMapping(value = "/evaluatejudge/generate/export", method = RequestMethod.POST)
     public Object evaluateJudgeGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,

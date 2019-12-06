@@ -4,6 +4,10 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
@@ -11,7 +15,11 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
 import org.apache.commons.collections4.IterableUtils;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -88,15 +98,41 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
 
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsByDeviceGenerateRequestBody {
 
-    @RequestMapping(value = "/get-statistics-filter-by-user", method = RequestMethod.POST)
-    public Object getStatisticsByUser(
-            @RequestBody @Valid StatisticsByUserRequestBody requestBody,
-            BindingResult bindingResult) {
+        String idList;
+        @NotNull
+        Boolean isAll;
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+        StatisticsByDeviceRequestBody filter;
+    }
+
+    /**
+     * preview statistics generate request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class StatisticsByUserGenerateRequestBody {
+
+        String idList;
+        @NotNull
+        Boolean isAll;
+
+        StatisticsByUserRequestBody filter;
+    }
+
+    private TotalStatisticsResponse getStatisticsByUser (StatisticsByUserRequestBody requestBody) {
 
         QSerScan scanbuilder = QSerScan.serScan;
         QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
@@ -295,18 +331,11 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         response.setDetailedStatistics(listTotalStatistics);
         response.setTotal(listTotalStatistics.keySet().size());
 
-        return new CommonResponseBody(ResponseMessage.OK, response);
+        return response;
 
     }
 
-    @RequestMapping(value = "/get-statistics-filter-by-device", method = RequestMethod.POST)
-    public Object getStatisticsByDevice(
-            @RequestBody @Valid StatisticsByDeviceRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+    private TotalStatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
 
         QSerScan scanbuilder = QSerScan.serScan;
         QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
@@ -502,6 +531,36 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         response.setDetailedStatistics(listTotalStatistics);
         response.setTotal(listTotalStatistics.keySet().size());
 
+        return response;
+
+    }
+
+    @RequestMapping(value = "/get-statistics-filter-by-user", method = RequestMethod.POST)
+    public Object getStatisticsByUserSummary(
+            @RequestBody @Valid StatisticsByUserRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TotalStatisticsResponse response = getStatisticsByUser(requestBody);
+
+        return new CommonResponseBody(ResponseMessage.OK, response);
+
+    }
+
+    @RequestMapping(value = "/get-statistics-filter-by-device", method = RequestMethod.POST)
+    public Object getStatisticsByDeviceSummary(
+            @RequestBody @Valid StatisticsByDeviceRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TotalStatisticsResponse response = getStatisticsByDevice(requestBody);
+
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
@@ -564,6 +623,146 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         return new CommonResponseBody(ResponseMessage.OK, response);
 
+    }
+
+    /**
+     * Evaluate Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/userstatistics/generate/print", method = RequestMethod.POST)
+    public Object userStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
+                                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> totalStatistics = getStatisticsByUser(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        UserOrDeviceStatisticsPdfView.setResource(res);
+        InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, true);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsbyuser.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * EvaluateJudge Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/userstatistics/generate/export", method = RequestMethod.POST)
+    public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
+                                                 BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> userStatistics = getStatisticsByUser(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, true);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsByUser.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Evaluate Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/devicestatistics/generate/print", method = RequestMethod.POST)
+    public Object deviceStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
+                                                BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> totalStatistics = getStatisticsByDevice(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        UserOrDeviceStatisticsPdfView.setResource(res);
+        InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, false);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsbydevice.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * EvaluateJudge Statistics generate pdf file request.
+     */
+    @RequestMapping(value = "/devicestatistics/generate/export", method = RequestMethod.POST)
+    public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> deviceStatistics = getStatisticsByDevice(requestBody.getFilter()).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(deviceStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, false);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsByDevice.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+
+    private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
+
+        TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
+
+        if(isAll == false) {
+            String[] splits = idList.split(",");
+
+            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+
+                TotalStatistics record = entry.getValue();
+
+                boolean isExist = false;
+                for(int j = 0; j < splits.length; j ++) {
+                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == true) {
+                    exportList.put(entry.getKey(), record);
+                }
+
+            }
+
+        } else {
+            exportList = detailedStatistics;
+        }
+
+        return exportList;
     }
 
     public long getWorkingSecondsByUser(StatisticsByUserRequestBody requestBody, TaskManagementController.TableType tbType) {

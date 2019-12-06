@@ -59,25 +59,25 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
         Cell headerCellArtificialJudgeMissingRate = header.createCell(9);
         headerCellArtificialJudgeMissingRate.setCellValue("人工判图误报率");
 
-        Cell headerCellArtificialJudgeMistake = header.createCell(8);
+        Cell headerCellArtificialJudgeMistake = header.createCell(10);
         headerCellArtificialJudgeMistake.setCellValue("人工判图漏报量");
 
-        Cell headerCellArtificialJudgeMistakeRate = header.createCell(9);
+        Cell headerCellArtificialJudgeMistakeRate = header.createCell(11);
         headerCellArtificialJudgeMistakeRate.setCellValue("人工判图漏报率");
 
-        Cell headerCellIntelligenceJudge = header.createCell(8);
+        Cell headerCellIntelligenceJudge = header.createCell(12);
         headerCellIntelligenceJudge.setCellValue("手检（智能判图）量");
 
-        Cell headerCellIntelligenceJudgeMistake = header.createCell(9);
+        Cell headerCellIntelligenceJudgeMistake = header.createCell(13);
         headerCellIntelligenceJudgeMistake.setCellValue("智能判图误报量");
 
-        Cell headerCellIntelligenceJudgeMistakeRate = header.createCell(8);
+        Cell headerCellIntelligenceJudgeMistakeRate = header.createCell(14);
         headerCellIntelligenceJudgeMistakeRate.setCellValue("智能判图误报率");
 
-        Cell headerCellIntelligenceJudgeMissing = header.createCell(9);
+        Cell headerCellIntelligenceJudgeMissing = header.createCell(15);
         headerCellIntelligenceJudgeMissing.setCellValue("智能判图漏报量");
 
-        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(8);
+        Cell headerCellIntelligenceJudgeMissingRate = header.createCell(16);
         headerCellIntelligenceJudgeMissingRate.setCellValue("智能判图漏报率");
 
 

@@ -66,16 +66,16 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-//                addTableCell(table, Long.toString(index ++));
-//                addTableCell(table, Long.toString(record.getTime()));
-//                addTableCell(table, Long.toString(record.getTotal()));
-//                addTableCell(table, Long.toString(record.getNoSeizure()));
-//                addTableCell(table, df.format(record.getNoSeizureRate()));
-//                addTableCell(table, Long.toString(record.getSeizure()));
-//                addTableCell(table, df.format(record.getSeizureRate()));
-//                addTableCell(table, Double.toString(record.getAvgDuration()));
-//                addTableCell(table, Double.toString(record.getMaxDuration()));
-//                addTableCell(table, Double.toString(record.getMinDuration()));
+                addTableCell(table, Long.toString(index ++));
+                addTableCell(table, Long.toString(record.get("time")));
+
+
+                for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
+
+                    addTableCell(table, record.get(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)).toString());
+
+                }
+
 
 
             }
