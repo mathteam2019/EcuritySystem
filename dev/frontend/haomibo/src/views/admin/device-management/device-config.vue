@@ -240,11 +240,12 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onConfigResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton"><i class="icofont-printer"></i>&nbsp;
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton">
+                  <i class="icofont-share-alt"></i>&nbsp;
                   {{ $t('permission-management.export') }}
                 </b-button>
                 <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton">
-                  <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
+                  <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
               </b-col>
             </b-row>
@@ -850,7 +851,7 @@
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-config/config/export`;
+        let link = `device-management/device-table/device/field/export`;
         downLoadFileFromServer(link,params,'device-config');
       },
       onPrintButton(){
@@ -861,7 +862,7 @@
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-config/config/print`;
+        let link = `device-management/device-table/device/field/print`;
         printFileFromServer(link,params);
       },
       changeSwitchStatus(status) {
