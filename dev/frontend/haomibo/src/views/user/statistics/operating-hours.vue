@@ -24,9 +24,9 @@
             </b-form-group>
           </b-col>
 
-           <b-col>
+          <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+              <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""></date-picker>
             </b-form-group>
           </b-col>
@@ -65,7 +65,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{total.day}} {{total.hour}} : {{total.minute}} : {{total.second}}</span></div>
+              <div><span>D{{total.day}} {{total.hour}}h: {{total.minute}}m: {{total.second}}s</span></div>
               <div><span>累计运行时长</span></div>
             </div>
           </div>
@@ -78,7 +78,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{scan.day}} {{scan.hour}} : {{scan.minute}} : {{scan.second}}</span></div>
+              <div><span>D{{scan.day}} {{scan.hour}}h: {{scan.minute}}m: {{scan.second}}s</span></div>
               <div><span>安检仪累计运行时长</span></div>
             </div>
           </div>
@@ -91,7 +91,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{judge.day}} {{judge.hour}} : {{judge.minute}} : {{judge.second}}</span></div>
+              <div><span>D{{judge.day}} {{judge.hour}}h: {{judge.minute}}m: {{judge.second}}s</span></div>
               <div><span>判图站累计运行时长</span></div>
             </div>
           </div>
@@ -104,7 +104,7 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>D{{hand.day}} {{hand.hour}} : {{hand.minute}} : {{hand.second}}</span></div>
+              <div><span>D{{hand.day}} {{hand.hour}}h: {{hand.minute}}m: {{hand.second}}s</span></div>
               <div><span>手检站累计运行时长</span></div>
             </div>
           </div>
@@ -117,10 +117,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -145,15 +145,24 @@
                 <b-row>
                   <b-col class="legend-item">
                     <div class="value">{{scan.rate}}%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>安检仪累计运行时长</div>
-                  </b-col>
-                  <b-col class="legend-item">
-                    <div class="value">{{judge.rate}}%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>判图站累计运行时长</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      安检仪累计运行时长
+                    </div>
                   </b-col>
                   <b-col class="legend-item">
                     <div class="value">{{hand.rate}}%</div>
-                    <div class="legend-name"><div class="legend-icon"></div>手检站累计运行时长</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      手检站累计运行时长
+                    </div>
+                  </b-col>
+                  <b-col class="legend-item">
+                    <div class="value">{{judge.rate}}%</div>
+                    <div class="legend-name">
+                      <div class="legend-icon"></div>
+                      判图站累计运行时长
+                    </div>
                   </b-col>
                 </b-row>
               </div>
@@ -180,16 +189,20 @@
       <b-col v-if="pageStatus==='table'">
         <b-card>
           <b-card-header>
-            <h5 class="text-center my-4">人员工时统计</h5>
+            <h5 class="text-center my-4">设备运行时长统计</h5>
           </b-card-header>
 
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>现场:</b></b-col>
-            <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+            <b-col cols="11">
+              <span>{{this.allField}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>安检仪:</b></b-col>
-            <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+            <b-col cols="11">
+              <span>安检仪001, 安检仪002, 安检仪003</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员类型:</b></b-col>
@@ -204,26 +217,36 @@
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>时间:</b></b-col>
-            <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
+            <b-col cols="11">
+              <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>统计步长:</b></b-col>
-            <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.statWidth==='hour'">时</span>
+              <span v-else-if="filter.statWidth==='day'">天</span>
+              <span v-else-if="filter.statWidth==='week'">周</span>
+              <span v-else-if="filter.statWidth==='month'">月</span>
+              <span v-else-if="filter.statWidth==='quarter'">季度</span>
+              <span v-else>年</span>
+            </b-col>
           </b-row>
 
 
-                  <div class="table-wrapper table-responsive">
-                    <vuetable
-                      ref="taskVuetable"
-                      :api-url="taskVuetableItems.apiUrl"
-                      :fields="taskVuetableItems.fields"
-                      :http-fetch="taskVuetableHttpFetch"
-                      :per-page="taskVuetableItems.perPage"
-                      track-by="time"
-                      pagination-path="pagination"
-                      class="table-hover"
-                      @vuetable:pagination-data="onTaskVuetablePaginationData"
-                    >
+          <div class="table-wrapper table-responsive">
+            <vuetable
+              ref="taskVuetable"
+              :api-url="taskVuetableItems.apiUrl"
+              :fields="taskVuetableItems.fields"
+              :http-fetch="taskVuetableHttpFetch"
+              :per-page="taskVuetableItems.perPage"
+              track-by="time"
+              @vuetable:checkbox-toggled-all="onCheckEvent"
+              pagination-path="pagination"
+              class="table-hover"
+              @vuetable:pagination-data="onTaskVuetablePaginationData"
+            >
               <template slot="period" slot-scope="props">
                         <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
                           {{props.rowData.period}}
@@ -262,7 +285,7 @@
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from "../../../constants/response-messages";
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -280,8 +303,9 @@
     },
     mounted() {
 
-      this.getGraphData();
+      this.getSiteOption();
       this.getPreviewData();
+      this.getGraphData();
     },
     data() {
 
@@ -293,11 +317,11 @@
         },
         '判图站累计运行时长': {
           value: 300,
-          color: '#ffd835',
+          color: '#ff0000',
         },
         '手检站累计运行时长': {
           value: 200,
-          color: '#ff0000',
+          color: '#ffd835',
         }
       };
 
@@ -374,7 +398,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['张三', '李四', '王五', '曹静', '孙俪', '小明', '小张', '小白', '小红', '小李', '小兰'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -399,26 +423,26 @@
               show: false
             }
           },
-          color: ['#ff0000', '#ffd835', '#1989fa'],
+          color: ['#1989fa', '#ff0000', '#ffd835'],
           series: [
             {
               name: '安检仪',
               type: 'bar',
               stack: '总量',
-              data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120]
+              data: []
             },
             {
               name: '判图',
               type: 'bar',
               stack: '总量',
 
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30]
+              data: []
             },
             {
               name: '手检',
               type: 'bar',
               stack: '总量',
-              data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30]
+              data: []
             }
           ]
         },
@@ -433,14 +457,16 @@
           statWidth: 'hour',
         },
 
+        siteData: [],
+        allField: '',
         preViewData: [],
-        graphData :[],
+        graphData: [],
         total: [],
         scan: [],
-        judge:[],
-        hand:[],
+        judge: [],
+        hand: [],
 
-        graphData :[],
+
         statisticalStepSizeOptions: [
           {value: 'hour', text: "时"},
           {value: 'day', text: "天"},
@@ -449,7 +475,6 @@
           {value: 'quarter', text: "季度"},
           {value: 'year', text: "年"},
         ],
-
 
 
         // TODO: refactor temp table data to api mode
@@ -472,138 +497,142 @@
         },
 
         taskVuetableItems: {
-                    apiUrl: `${apiBaseUrl}/task/statistics/preview`,
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: '__sequence',
-                            title: '序号',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'time',
-                            title: '时间段',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '扫描总量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.totalScan;
-                            }
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '无效扫描量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.invalidScan;
-                            }
-                        },
-                        {
-                            name: 'scanStatistics',
-                            title: '无效率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (scanStatistics) => {
-                                if(scanStatistics==null)  return '';
-                                return scanStatistics.invalidScanRate;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '判图量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.totalJudge;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '手检量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.totalHandExamination;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '无嫌疑量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.noSuspictionJudge;
-                            }
-                        },
-                        {
-                            name: 'judgeStatistics',
-                            title: '无嫌疑率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (judgeStatistics) => {
-                                if(judgeStatistics==null)  return '';
-                                return judgeStatistics.noSuspictionJudgeRate;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '无查获量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.noSeizureHandExamination;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '无查获率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.noSeizureHandExaminationRate;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '查获量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.seizureHandExamination;
-                            }
-                        },
-                        {
-                            name: 'handExaminationStatistics',
-                            title: '查获率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                            callback: (handExaminationStatistics) => {
-                                if(handExaminationStatistics==null)  return '';
-                                return handExaminationStatistics.seizureHandExaminationRate;
-                            }
-                        },
-                    ],
-                    perPage: 5,
-                },
+          apiUrl: `${apiBaseUrl}/task/statistics/get-statistics-filter-by-device`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: '__sequence',
+              title: '序号',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time + 1;
+                else return time;
+              }
+            },
+            {
+              name: 'name',
+              title: '时间段',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'scanStatistics',
+              title: '扫描总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.totalScan;
+              }
+            },
+            {
+              name: 'scanStatistics',
+              title: '无效扫描量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.invalidScan;
+              }
+            },
+            {
+              name: 'scanStatistics',
+              title: '无效率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (scanStatistics) => {
+                if (scanStatistics == null) return '';
+                return scanStatistics.invalidScanRate;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '判图量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.totalJudge;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '手检量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.totalHandExamination;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '无嫌疑量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.noSuspictionJudge;
+              }
+            },
+            {
+              name: 'judgeStatistics',
+              title: '无嫌疑率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (judgeStatistics) => {
+                if (judgeStatistics == null) return '';
+                return judgeStatistics.noSuspictionJudgeRate;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '无查获量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExamination;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '无查获率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.noSeizureHandExaminationRate;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '查获量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.seizureHandExamination;
+              }
+            },
+            {
+              name: 'handExaminationStatistics',
+              title: '查获率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (handExaminationStatistics) => {
+                if (handExaminationStatistics == null) return '';
+                return handExaminationStatistics.seizureHandExaminationRate;
+              }
+            },
+          ],
+          perPage: 5,
+        },
 
       }
     },
@@ -616,10 +645,136 @@
       }
     },
     methods: {
+      getDateTimeFormat(datatime) {
+        if (datatime == null) return '';
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/devicestatistics/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Workinghour.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/devicestatistics/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
+        })
+          .catch((error) => {
+          });
+
+      },
 
       getGraphData() {
         getApiManager().post(`${apiBaseUrl}/task/statistics/get-statistics-filter-by-device`, {
-          filter : this.filter
+          filter: this.filter
         }).then((response) => {
           this.graphData = response.data.data;
 
@@ -627,15 +782,30 @@
           let xAxisChart = [];
           console.log(this.graphData.detailedStatistics.length);
           console.log(keyData);
-          for(let i=0; i<keyData.length; i++){
+          for (let i = 1; i <= keyData.length; i++) {
             // console.log(keyData[i]);
             // let key = keyData[i];
             console.log(this.graphData.detailedStatistics[i].name);
-            xAxisChart[i] = this.graphData.detailedStatistics[i].name;
+            xAxisChart[i-1] = this.graphData.detailedStatistics[i].name;
             //this.bar3ChartOptions.xAxis.data[i].value = this.graphData.detailedStatistics[i].name;
-            this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
-            this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
-            this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
+            if(this.graphData.detailedStatistics[i].scanStatistics!=null) {
+              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
+            }
+            else {
+              this.bar3ChartOptions.series[0].data[i] = 0;
+            }
+            if(this.graphData.detailedStatistics[i].judgeStatistics!=null) {
+              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
+            }
+            else {
+              this.bar3ChartOptions.series[1].data[i]=0;
+            }
+            if(this.graphData.detailedStatistics[i].handExaminationStatistics!=null) {
+              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
+            }
+            else {
+              this.bar3ChartOptions.series[2].data[i]=0;
+            }
           }
           console.log(xAxisChart);
           this.bar3ChartOptions.xAxis.data = xAxisChart;
@@ -652,26 +822,26 @@
           this.judge = [];
           this.hand = [];
           //this.total = [];
-          this.total.second = this.preViewData.totalSeconds%60;
-          this.total.minute = ((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60;
-          this.total.hour = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24;
-          this.total.day = (((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60-(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60 -(((this.preViewData.totalSeconds-this.preViewData.totalSeconds%60)/60)%60))/60)%24)/24;
-          this.scan.second = this.preViewData.scanSeconds%60;
-          this.scan.minute = ((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60;
-          this.scan.hour = (((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60)%24;
-          this.scan.day = (((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60-(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60 -(((this.preViewData.scanSeconds-this.preViewData.scanSeconds%60)/60)%60))/60)%24)/24;
-          this.judge.second = this.preViewData.judgeSeconds%60;
-          this.judge.minute = ((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60;
-          this.judge.hour = (((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60)%24;
-          this.judge.day = (((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60-(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60 -(((this.preViewData.judgeSeconds-this.preViewData.judgeSeconds%60)/60)%60))/60)%24)/24;
-          this.hand.second = this.preViewData.handSeconds%60;
-          this.hand.minute = ((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60;
-          this.hand.hour = (((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60)%24;
-          this.hand.day = (((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60-(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60 -(((this.preViewData.handSeconds-this.preViewData.handSeconds%60)/60)%60))/60)%24)/24;
+          this.total.second = this.preViewData.totalSeconds % 60;
+          this.total.minute = ((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60;
+          this.total.hour = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.total.day = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.scan.second = this.preViewData.scanSeconds % 60;
+          this.scan.minute = ((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60;
+          this.scan.hour = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.scan.day = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.judge.second = this.preViewData.judgeSeconds % 60;
+          this.judge.minute = ((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60;
+          this.judge.hour = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.judge.day = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.hand.second = this.preViewData.handSeconds % 60;
+          this.hand.minute = ((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60;
+          this.hand.hour = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.hand.day = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.scan.rate = Math.floor(this.preViewData.scanSeconds/this.preViewData.totalSeconds*100);
-          this.judge.rate = Math.floor(this.preViewData.judgeSeconds/this.preViewData.totalSeconds*100);
-          this.hand.rate = Math.floor(this.preViewData.handSeconds/this.preViewData.totalSeconds*100);
+          this.scan.rate = Math.floor(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
+          this.judge.rate = Math.floor(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
+          this.hand.rate = Math.floor(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
 
           this.doublePieChartOptions.series[0].data[0].value = this.scan.rate;
           this.doublePieChartOptions.series[0].data[1].value = this.judge.rate;
@@ -694,7 +864,7 @@
           //   }
           // }
 
-        }) .catch((error) => {
+        }).catch((error) => {
         });
       },
 
@@ -713,7 +883,10 @@
           endTime: null
         };
 
-        
+        //this.getGraphData();
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
+
       },
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData)
@@ -734,8 +907,6 @@
 
         let data = response.data;
 
-        console.log(data.per_page);
-
         transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
@@ -745,8 +916,6 @@
           to: data.to
         };
 
-        //console.log(Object.keys(data.data.detailedStatistics).length);
-        console.log(Object.keys(data.detailedStatistics).length);
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;

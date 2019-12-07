@@ -48,7 +48,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+              <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""></date-picker>
             </b-form-group>
           </b-col>
@@ -89,7 +89,10 @@
             <div style="">
               <b-img src="/assets/img/picture.svg"/>
             </div>
-            <div><span>{{preViewData.totalStatistics.total}}</span></div>
+            <div>
+              <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
+              <span v-else>None</span>
+            </div>
             <div><span>判图</span></div>
           </div>
         </b-card>
@@ -103,7 +106,10 @@
                   <b-img src="/assets/img/person.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.artificialJudge}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>人工结论</span></div>
                 </div>
               </div>
@@ -116,7 +122,10 @@
                   <b-img src="/assets/img/user_group.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.assignTimeout}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>分低超时结论</span></div>
                 </div>
               </div>
@@ -129,7 +138,10 @@
                   <b-img src="/assets/img/picture.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.judgeTimeout}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>判图超时结论</span></div>
                 </div>
               </div>
@@ -142,7 +154,10 @@
                   <b-img src="/assets/img/atr.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.atrResult}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>ATR结论</span></div>
                 </div>
               </div>
@@ -157,7 +172,10 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.noSuspiction}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>无嫌疑</span></div>
                 </div>
               </div>
@@ -171,7 +189,10 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.noSuspictionRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSuspictionRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>无嫌疑率</span></div>
                 </div>
               </div>
@@ -185,7 +206,10 @@
                   <b-img src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.suspiction}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>嫌疑</span></div>
                 </div>
               </div>
@@ -199,7 +223,10 @@
                   <b-img src="/assets/img/question_mark.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.suspictionRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.suspictionRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>嫌疑率</span></div>
                 </div>
               </div>
@@ -214,7 +241,10 @@
                   <b-img src="/assets/img/time_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.limitedArtificialDuration}}s</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.limitedArtificialDuration}}s</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>人工判图时长阈值</span></div>
                 </div>
               </div>
@@ -227,7 +257,10 @@
                   <b-img src="/assets/img/right_arrow_icon2.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.avgArtificialJudgeDuration}}s</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.avgArtificialJudgeDuration}}s</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>人工判图平均时长</span></div>
                 </div>
               </div>
@@ -240,7 +273,10 @@
                   <b-img src="/assets/img/up_arrow_icon2.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.maxArtificialJudgeDuration}}s</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.maxArtificialJudgeDuration}}s</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>人工判图最高时长</span></div>
                 </div>
               </div>
@@ -253,7 +289,10 @@
                   <b-img src="/assets/img/down_arrow_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.minArtificialJudgeDuration}}s</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.minArtificialJudgeDuration}}s</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>人工判图最低时长</span></div>
                 </div>
               </div>
@@ -271,10 +310,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -422,7 +461,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
                   <span v-else>{{filter.fieldId}}</span>
                 </b-col>
               </b-row>
@@ -446,11 +485,20 @@
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
+                <b-col cols="11">
+                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.statWidth==='hour'">时</span>
+                  <span v-else-if="filter.statWidth==='day'">天</span>
+                  <span v-else-if="filter.statWidth==='week'">周</span>
+                  <span v-else-if="filter.statWidth==='month'">月</span>
+                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
+                  <span v-else>年</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters">
 
@@ -464,6 +512,7 @@
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
                       track-by="time"
+                      @vuetable:checkbox-toggled-all="onCheckEvent"
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -507,7 +556,7 @@
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from "../../../constants/response-messages";
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -524,12 +573,10 @@
       'date-picker': DatePicker
     },
     mounted() {
-      console.log(this.filter.statWidth);
       this.getSiteOption();
       this.getPreviewData();
     },
     data() {
-
       return {
         pieChart1Options: {
           tooltip: {
@@ -682,7 +729,7 @@
               show: false
             }
           },
-          color: ['#009900', '#9900ff', '#1989fa', '#ff6600'],
+          color: ['#ff6600', '#1989fa', '#9900ff', '#009900'],
           series: [
             {
               name: '人工',
@@ -715,7 +762,7 @@
             }
           },
           legend: {
-            data: ['判图超时', 'ATR'],
+            data: ['嫌疑', '无嫌疑'],
             icon: 'rect',
             right: 25
           },
@@ -755,12 +802,12 @@
           color: ['#1989fa', '#ff6600'],
           series: [
             {
-              name: '判图超时',
+              name: '嫌疑',
               type: 'bar',
               data: []
             },
             {
-              name: 'ATR',
+              name: '无嫌疑',
               type: 'bar',
               data: []
             },
@@ -833,8 +880,9 @@
           ]
         },
 
-
         isExpanded: false,
+        isCheckAll: false,
+
         pageStatus: 'charts',
 
         filter: {
@@ -848,6 +896,7 @@
         },
 
         siteData: [],
+        allField: '',
         preViewData: [],
 
         xYear: [],
@@ -896,11 +945,11 @@
             {
               name: 'time',
               title: '序号',
-              sortField: 'id',
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (time) => {
-                return time + 1;
+                if (this.filter.statWidth === 'hour') return time+1;
+                else return time;
               }
             },
             {
@@ -1044,6 +1093,105 @@
       }
     },
     methods: {
+      getDateTimeFormat(datatime) {
+        if(datatime==null)return '';
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/judge/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Judge.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/judge/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -1054,6 +1202,18 @@
               this.siteData = data;
               break;
           }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
         })
           .catch((error) => {
           });
@@ -1110,11 +1270,12 @@
           fieldId: null,
           deviceId: null,
           userName: null,
-          statWidth: 'hour',
           startTime: null,
-          endTime: null
+          endTime: null,
+          statWidth: 'hour',
         };
-        
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -1137,8 +1298,6 @@
 
         let data = response.data;
 
-        console.log(data.per_page);
-
         transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
@@ -1148,8 +1307,6 @@
           to: data.to
         };
 
-        //console.log(Object.keys(data.data.detailedStatistics).length);
-        console.log(Object.keys(data.detailedStatistics).length);
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;
@@ -1204,7 +1361,7 @@
       .statistics-item {
         display: flex;
         align-items: center;
-        $padding-x: 50px;
+        $padding-x: 30px;
         $padding-y: 20px;
         padding: $padding-y $padding-x;
         justify-content: stretch;
