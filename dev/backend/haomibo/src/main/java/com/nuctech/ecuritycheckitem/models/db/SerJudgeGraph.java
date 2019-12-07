@@ -32,6 +32,16 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
         public static final String FALSE = "false";
     }
 
+    public static class AssignTimeout {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class JudgeTimeout {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "JUDGE_ID", length = 20)
