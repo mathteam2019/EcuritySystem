@@ -32,6 +32,16 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
         public static final String FALSE = "false";
     }
 
+    public static class AssignTimeout {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
+    public static class JudgeTimeout {
+        public static final String TRUE = "true";
+        public static final String FALSE = "false";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "JUDGE_ID", length = 20)
@@ -71,9 +81,9 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser judgeUser;
 
-//    @OneToOne()
-//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    SerTask task;
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SerTask task;
 
 }

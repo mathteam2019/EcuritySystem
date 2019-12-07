@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
@@ -41,10 +42,10 @@ public class InvalidTaskPdfView extends BasePdfView {
             document.add(getTitle("无效任务"));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(9);
+            PdfPTable table = new PdfPTable(8);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "图像", "工作模式", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间")
+            Stream.of("序号", "任务编号", "工作模式", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -59,21 +60,21 @@ public class InvalidTaskPdfView extends BasePdfView {
 
                 addTableCell(table, task.getTaskNumber());
 
-                if (task.getSerScan() != null) {
-                    if (task.getSerScan().getScanImage() != null) {
-                        addTableCell(table, task.getSerScan().getScanImage().getImageLabel());
-                    }
-                    else {
-                        addTableCell(table, "无");
-                    }
-                }
-                else {
-                    addTableCell(table, "无");
-                }
+//                if (task.getSerScan() != null) {
+//                    if (task.getSerScan().getScanImage() != null) {
+//                        addTableCell(table, task.getSerScan().getScanImage().getImageLabel());
+//                    }
+//                    else {
+//                        addTableCell(table, "无");
+//                    }
+//                }
+//                else {
+//                    addTableCell(table, "无");
+//                }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
+                        addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
                         addTableCell(table, "无");
                     }

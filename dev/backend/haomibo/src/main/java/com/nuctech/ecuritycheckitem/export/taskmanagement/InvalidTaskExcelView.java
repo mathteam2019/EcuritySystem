@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import org.apache.poi.ss.usermodel.*;
@@ -30,25 +31,25 @@ public class InvalidTaskExcelView extends BaseExcelView {
         Cell headerCellTaskNumber = header.createCell(1);
         headerCellTaskNumber.setCellValue("任务编号");
 
-        Cell headerCellScanImage = header.createCell(2);
-        headerCellScanImage.setCellValue("图像");
+//        Cell headerCellScanImage = header.createCell(2);
+//        headerCellScanImage.setCellValue("图像");
 
-        Cell headerCellWorkMode = header.createCell(3);
+        Cell headerCellWorkMode = header.createCell(2);
         headerCellWorkMode.setCellValue("工作模式");
 
-        Cell headerCellField = header.createCell(4);
+        Cell headerCellField = header.createCell(3);
         headerCellField.setCellValue("现场");
 
-        Cell headerCellScanDevice = header.createCell(5);
+        Cell headerCellScanDevice = header.createCell(4);
         headerCellScanDevice.setCellValue("安检仪");
 
-        Cell headerCellScanUser = header.createCell(6);
+        Cell headerCellScanUser = header.createCell(5);
         headerCellScanUser.setCellValue("引导员");
 
-        Cell headerCellScanStartTime = header.createCell(7);
+        Cell headerCellScanStartTime = header.createCell(6);
         headerCellScanStartTime.setCellValue("扫描开始时间");
 
-        Cell headerCellScanEndTime = header.createCell(8);
+        Cell headerCellScanEndTime = header.createCell(7);
         headerCellScanEndTime.setCellValue("扫描结束时间");
 
     }
@@ -86,66 +87,66 @@ public class InvalidTaskExcelView extends BaseExcelView {
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
 
-                if (task.getSerScan() != null) {
-                    if (task.getSerScan().getScanImage() != null) {
-                        row.createCell(2).setCellValue(task.getSerScan().getScanImage().getImageLabel());
-                    }
-                    else {
-                        row.createCell(2).setCellValue("无");
-                    }
-                }
-                else {
-                    row.createCell(2).setCellValue("无");
-                }
+//                if (task.getSerScan() != null) {
+//                    if (task.getSerScan().getScanImage() != null) {
+//                        row.createCell(2).setCellValue(task.getSerScan().getScanImage().getImageLabel());
+//                    }
+//                    else {
+//                        row.createCell(2).setCellValue("无");
+//                    }
+//                }
+//                else {
+//                    row.createCell(2).setCellValue("无");
+//                }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        row.createCell(3).setCellValue(task.getWorkFlow().getWorkMode().getModeName());
+                        row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
-                        row.createCell(3).setCellValue("无");
+                        row.createCell(2).setCellValue("无");
                     }
                 } else {
 
                 }
 
                 if (task.getField() != null) {
-                    row.createCell(4).setCellValue(task.getField().getFieldDesignation());
+                    row.createCell(3).setCellValue(task.getField().getFieldDesignation());
                 } else {
-                    row.createCell(4).setCellValue("无");
+                    row.createCell(3).setCellValue("无");
                 }
 
                 if (task.getSerScan() != null) {
                     if (task.getSerScan().getScanDevice() != null) {
-                        row.createCell(5).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
+                        row.createCell(4).setCellValue(task.getSerScan().getScanDevice().getDeviceName());
+                    } else {
+                        row.createCell(4).setCellValue("无");
+                    }
+
+                    if (task.getSerScan().getScanPointsman() != null) {
+                        row.createCell(5).setCellValue(task.getSerScan().getScanPointsman().getUserName());
                     } else {
                         row.createCell(5).setCellValue("无");
                     }
 
-                    if (task.getSerScan().getScanPointsman() != null) {
-                        row.createCell(6).setCellValue(task.getSerScan().getScanPointsman().getUserName());
-                    } else {
+                    if (task.getSerScan().getScanStartTime() != null) {
+                        row.createCell(6).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
+                    }
+                    else {
                         row.createCell(6).setCellValue("无");
                     }
 
-                    if (task.getSerScan().getScanStartTime() != null) {
-                        row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanStartTime()));
+                    if (task.getSerScan().getScanEndTime() != null) {
+                        row.createCell(7).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
                     }
                     else {
                         row.createCell(7).setCellValue("无");
                     }
 
-                    if (task.getSerScan().getScanEndTime() != null) {
-                        row.createCell(8).setCellValue(formatDate(task.getSerScan().getScanEndTime()));
-                    }
-                    else {
-                        row.createCell(8).setCellValue("无");
-                    }
-
                 } else {
+                    row.createCell(4).setCellValue("无");
                     row.createCell(5).setCellValue("无");
                     row.createCell(6).setCellValue("无");
                     row.createCell(7).setCellValue("无");
-                    row.createCell(8).setCellValue("无");
                 }
 
             }

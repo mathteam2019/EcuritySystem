@@ -31,6 +31,11 @@ public class SerHandExamination extends BaseEntity implements Serializable {
         public static final String FALSE = "false";
     }
 
+    public static class HandAppraise {
+        public static final String MISSING = "missing";
+        public static final String MISTAKE = "mistake";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HAND_EXAMINATION_ID", length = 20)
@@ -87,8 +92,8 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SysUser handUser;
 
-//    @OneToOne()
-//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    SerTask task;
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SerTask task;
 }

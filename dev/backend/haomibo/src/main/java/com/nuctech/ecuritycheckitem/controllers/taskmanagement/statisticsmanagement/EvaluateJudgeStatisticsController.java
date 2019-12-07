@@ -6,6 +6,10 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementCon
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
+import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
+import com.nuctech.ecuritycheckitem.models.db.SerScan;
+import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;
@@ -224,44 +228,27 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                     keyValueMax = 4;
                     break;
                 case TaskManagementController.StatisticWidth.YEAR:
-
                     Integer yearMax = serJudgeGraphRepository.findMaxYear();
-                    Integer yearMin = serJudgeGraphRepository.findMinYear();
-
-//                    if (yearMax > Calendar.getInstance().get(Calendar.YEAR)) {
-//                        yearMax = Calendar.getInstance().get(Calendar.YEAR);
-//                    }
-
-                    //if (yearMin < 1970) {
-                    yearMin = 1970;
-                    //}
-
+                    Integer yearMin = 1970;
                     Calendar calendar = Calendar.getInstance();
                     if (requestBody.getFilter().getStartTime() != null) {
                         calendar.setTime(requestBody.getFilter().getStartTime());
                         keyValueMin = calendar.get(Calendar.YEAR);
-
                     } else {
                         keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
                     }
                     if (requestBody.getFilter().getEndTime() != null) {
                         calendar.setTime(requestBody.getFilter().getEndTime());
                         keyValueMax = calendar.get(Calendar.YEAR);
-
                     } else {
-
                         keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
                     }
-
                     if (keyValueMin < yearMin) {
                         keyValueMin = yearMin;
                     }
-
                     if (keyValueMax > yearMax) {
                         keyValueMax = yearMax;
                     }
-
                     break;
                 default:
                     keyValueMin = 0;
@@ -299,19 +286,33 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 groupBy +
                 "\t (h.HAND_START_TIME) as time,\n" +
                 "\tcount( HAND_EXAMINATION_ID ) AS total,\n" +
-                "\tsum( IF ( h.HAND_RESULT LIKE 'true', 1, 0 ) ) AS seizure,\n" +
-                "\tsum( IF ( h.HAND_RESULT LIKE 'false', 1, 0 ) ) AS noSeizure,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like 'true', 1, 0)) as totalJudge,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE LIKE 'missing', 1, 0 ) ) AS missingReport,\n" +
-                "\tsum( IF ( c.HAND_APPRAISE LIKE 'mistake', 1, 0 ) ) AS falseReport,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "' , 1, 0 ) ) AS seizure,\n" +
+                "\tsum( IF ( h.HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "' , 1, 0 ) ) AS noSeizure,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "', 1, 0)) as totalJudge,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0 ) ) AS missingReport,\n" +
+                "\tsum( IF ( c.HAND_APPRAISE LIKE '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS falseReport,\n" +
                 "\t\n" +
-                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong', 1, 0)) as artificialJudge,\n" +
-                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'missing', 1, 0)) as artificialJudgeMissing,\n" +
-                "\tsum( IF ( j.JUDGE_TIMEOUT like 'weikong' and c.HAND_APPRAISE like 'mistake', 1, 0)) as artificialJudgeMistake,\n" +
+                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT), 1, 0)) as artificialJudge,\n" +
+                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING  + "', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMistake,\n" +
                 "\t\n" +
-                "\tsum( IF ( s.SCAN_INVALID like 'true' and (wm.MODE_NAME like '1000001301' OR wm.MODE_NAME like '1000001302') and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true', 1, 0)) as intelligenceJudge,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like 'true' and (wm.MODE_NAME like '1000001301' OR wm.MODE_NAME like '1000001302') and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'missing', 1, 0)) as intelligenceJudgeMissing,\n" +
-                "\tsum( IF ( s.SCAN_INVALID like 'true' and (wm.MODE_NAME like '1000001301' OR wm.MODE_NAME like '1000001302') and a.ASSIGN_TIMEOUT like 'true' and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like 'true' and c.HAND_APPRAISE like 'mistake', 1, 0)) as intelligenceJudgeMistake,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
+                "and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
+                "OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "')" +
+                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
+                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + " ', 1, 0)) as intelligenceJudge,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
+                " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
+                " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
+                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
+                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
+                " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMissing,\n" +
+                "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
+                " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
+                " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
+                " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
+                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
+                " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMistake,\n" +
                 "\t\n" +
                 "\t\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +

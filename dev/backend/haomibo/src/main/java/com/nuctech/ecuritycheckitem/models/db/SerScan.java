@@ -104,9 +104,9 @@ public class SerScan extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     SerImage scanImage;
 
-//    @OneToOne()
-//    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    SerTask task;
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    SerTask task;
 
 }

@@ -65,9 +65,9 @@ public class AuditLogController extends BaseController {
             String clientIp;
             String operateResult;
             String operateObject;
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.LOG_DATETIME_FORMAT)
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateStartTime;
-            @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.LOG_DATETIME_FORMAT)
+            @JsonFormat(pattern = Constants.LOG_DATETIME_FORMAT)
             Date operateEndTime;
         }
 

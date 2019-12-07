@@ -62,7 +62,7 @@ public class ProcessTaskPdfView extends BasePdfView {
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {
-                        addTableCell(table, task.getWorkFlow().getWorkMode().getModeName());
+                        addTableCell(table, ConstantDictionary.getDataValue(task.getWorkFlow().getWorkMode().getModeName()));
                     } else {
                         addTableCell(table, "无");
                     }

@@ -48,7 +48,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+              <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""></date-picker>
             </b-form-group>
           </b-col>
@@ -90,7 +90,10 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.totalScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.totalScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>扫描总量</span></div>
             </div>
           </div>
@@ -105,7 +108,10 @@
                   <b-img src="/assets/img/check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.validScan}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>有效扫描</span></div>
                 </div>
               </div>
@@ -118,7 +124,10 @@
                   <b-img src="/assets/img/check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.validScanRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.validScanRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>有效扫描率</span></div>
                 </div>
               </div>
@@ -131,7 +140,10 @@
                   <b-img src="/assets/img/forbidden.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.invalidScan}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>无效扫描</span></div>
                 </div>
               </div>
@@ -144,7 +156,10 @@
                   <b-img src="/assets/img/forbidden.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.invalidScanRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.invalidScanRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>无效扫描率</span></div>
                 </div>
               </div>
@@ -159,7 +174,10 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.passedScan}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>通过</span></div>
                 </div>
               </div>
@@ -172,7 +190,10 @@
                   <b-img src="/assets/img/round_check.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.passedScanRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.passedScanRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>通过率</span></div>
                 </div>
               </div>
@@ -185,7 +206,10 @@
                   <b-img src="/assets/img/bell_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.alarmScan}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>报警</span></div>
                 </div>
               </div>
@@ -198,7 +222,10 @@
                   <b-img src="/assets/img/bell_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.alarmScanRate * 100)}}%</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.alarmScanRate)}}%</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>报警率</span></div>
                 </div>
               </div>
@@ -215,10 +242,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -302,7 +329,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
                   <span v-else>{{filter.fieldId}}</span>
                 </b-col>
               </b-row>
@@ -326,11 +353,20 @@
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
+                <b-col cols="11">
+                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.statWidth==='hour'">时</span>
+                  <span v-else-if="filter.statWidth==='day'">天</span>
+                  <span v-else-if="filter.statWidth==='week'">周</span>
+                  <span v-else-if="filter.statWidth==='month'">月</span>
+                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
+                  <span v-else>年</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters">
 
@@ -343,6 +379,8 @@
                       :fields="taskVuetableItems.fields"
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
+                      track-by="time"
+                      @vuetable:checkbox-toggled-all="onCheckEvent"
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -376,70 +414,69 @@
 
 <script>
 
-    import {apiBaseUrl} from "../../../constants/config";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-    import Switches from 'vue-switches';
-    import ECharts from 'vue-echarts'
-    import 'echarts/lib/chart/pie';
-    import 'echarts/lib/chart/bar';
-    import 'echarts/lib/component/tooltip';
-    import 'echarts/lib/component/legend';
-    import {getApiManager} from "../../../api";
-    import {responseMessages} from "../../../constants/response-messages";
-    import DatePicker from 'vue2-datepicker';
-    import 'vue2-datepicker/index.css';
-    import 'vue2-datepicker/locale/zh-cn';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import Switches from 'vue-switches';
+  import ECharts from 'vue-echarts'
+  import 'echarts/lib/chart/pie';
+  import 'echarts/lib/chart/bar';
+  import 'echarts/lib/component/tooltip';
+  import 'echarts/lib/component/legend';
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {responseMessages} from "../../../constants/response-messages";
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
-    const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+  const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
-    export default {
-        components: {
-            'vuetable': Vuetable,
-            'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-            'switches': Switches,
-            'v-chart': ECharts,
-            'date-picker': DatePicker
+  export default {
+    components: {
+      'vuetable': Vuetable,
+      'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
+      'switches': Switches,
+      'v-chart': ECharts,
+      'date-picker': DatePicker
+    },
+    mounted() {
+      this.getSiteOption();
+      this.getPreviewData();
+    },
+    data() {
+
+      let doublePieChartData = {
+        '无效扫描': {
+          value: 200,
+          color: '#cccccc'
         },
-        mounted() {
-            console.log(this.filter.statWidth);
-            this.getSiteOption();
-            this.getPreviewData();
+        '有效扫描': {
+          value: 1500,
+          color: '#1989fa',
         },
-        data() {
+        '报警': {
+          value: 200,
+          color: '#ff6600',
+        },
+        '通过': {
+          value: 500,
+          color: '#009900'
+        },
+      };
 
-            let doublePieChartData = {
-                '无效扫描': {
-                    value: 200,
-                    color: '#cccccc'
-                },
-                '有效扫描': {
-                    value: 1500,
-                    color: '#1989fa',
-                },
-                '报警': {
-                    value: 200,
-                    color: '#ff6600',
-                },
-                '通过': {
-                    value: 500,
-                    color: '#009900'
-                },
-            };
-
-            return {
-                selectedValueRange: {
-                    start: new Date(2018, 12, 9),
-                    end: new Date(2018, 12, 18)
-                },
-                formats: {
-                    input: ['YYYYMMDD']
-                },
-                doublePieChartOptions: {
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: `
+      return {
+        selectedValueRange: {
+          start: new Date(2018, 12, 9),
+          end: new Date(2018, 12, 18)
+        },
+        formats: {
+          input: ['YYYYMMDD']
+        },
+        doublePieChartOptions: {
+          tooltip: {
+            trigger: 'item',
+            formatter: `
 <div style='position: relative'>
 <div style='position: absolute;
     left: -8px;
@@ -451,446 +488,589 @@
 <div style='background-color: #cccccc; color: #303133; padding: 4px 8px; border-radius: 4px;'>{b}:{c}&nbsp;&nbsp;&nbsp;<span style='color:#1989fa'>{d}%</span></div>
 </div>
 `,
-                        backgroundColor: 'rgba(0,0,0,0)',
-                        transitionDuration: 0,
-                        position: function (point, params, dom, rect, size) {
-                            // fixed at top
-                            return [point[0] + 8, point[1] + 8];
-                        }
-                    },
-                    color: [
-                        doublePieChartData['无效扫描'].color,
-                        doublePieChartData['有效扫描'].color,
-                        doublePieChartData['报警'].color,
-                        doublePieChartData['通过'].color,
-                    ],
-                    series: [
-                        {
-                            type: 'pie',
-                            hoverAnimation: false,
-                            radius: ['80%', '90%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'outside',
-                                },
-                            },
-                            labelLine: {
-                                show: false,
-                                length: -34,
-                                length2: -30
-                            },
-                            data: [
-                                {value: doublePieChartData['无效扫描'].value, name: '无效扫描'},
-                                {value: doublePieChartData['有效扫描'].value, name: '有效扫描'},
-                            ]
-                        },
-                        {
-                            type: 'pie',
-                            hoverAnimation: false,
-                            radius: ['40%', '50%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'outside',
-                                    align: 'center'
-                                }
-                            },
-                            labelLine: {
-                                show: false,
-                                length: -40,
-                                length2: -15
-                            },
-                            data: [
-                                {value: doublePieChartData['报警'].value, name: '报警'},
-                                {value: doublePieChartData['通过'].value, name: '通过'},
-                            ]
-                        }
-                    ]
-                },
-                bar3ChartOptions: {
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'shadow'
-                        }
-                    },
-                    legend: {
-                        data: ['通过', '报警', '无效扫描'],
-                        icon: 'rect',
-                        right: 25
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
-                        axisLine: {
-                            show: true
-                        },
-                        axisTick: {
-                            show: false
-                        }
-
-                    },
-                    yAxis: {
-                        type: 'value',
-                        splitLine: {
-                            show: true
-                        },
-                        axisLabel: {
-                            show: true,
-                            interval: 100
-                        },
-                        axisTick: {
-                            show: false
-                        },
-                        axisLine: {
-                            show: false
-                        }
-                    },
-                    color: ['#ff6600', '#009900', '#cccccc'],
-                    series: [
-                        {
-                            name: '报警',
-                            type: 'bar',
-                            stack: '总量',
-                            data: [320, 302, 301, 334, 390, 330, 320, 100, 240, 290, 120, 300]
-                        },
-                        {
-                            name: '通过',
-                            type: 'bar',
-                            stack: '总量',
-                            data: [120, 132, 101, 134, 90, 230, 210, 120, 320, 100, 30, 80]
-                        },
-                        {
-                            name: '无效扫描',
-                            type: 'bar',
-                            stack: '总量',
-                            data: [220, 182, 191, 234, 290, 330, 310, 300, 200, 20, 30, 200]
-                        }
-                    ]
-                },
-
-                isExpanded: false,
-                pageStatus: 'charts',
-
-                filter: {
-                    fieldId: null,
-                    deviceId: null,
-                    userCategory: null,
-                    userName: null,
-                    startTime: null,
-                    endTime: null,
-                    statWidth: 'hour',
-                },
-
-                siteData: [],
-                preViewData: [],
-
-                xYear: [],
-                xQuarter: ['1', '2', '3', '4'],
-                xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                xWeek: ['1', '2', '3', '4', '5'],
-                xDay: [],
-                xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-
-                preViewDataTemp: {
-                    axisLabel: null,
-                    invalidScan: null,
-                    validScan: null,
-                    passedScan: null,
-                    alarmScan: null,
-                    totalScan: null,
-                    invalidScanRate: null,
-                    totalJudge: null,
-                    totalHandExamination: null,
-                    noSuspictionJudge: null,
-                    noSuspictionJudgeRate: null,
-                    seizureHandExamination: null,
-                    seizureHandExaminationRate: null,
-                    noSeizureHandExamination: null,
-                    noSeizureHandExaminationRate: null,
-                },
-                onSiteOptions: [
-                    {value: null, text: "全部"},
-                    {value: 'way_1', text: "通道1"},
-                    {value: 'way_2', text: "通道2"},
-                    {value: 'way_3', text: "通道3"},
-                ],
-                onSiteOption: [],
-                securityDeviceOptions: [
-                    {value: null, text: "全部"},
-                    {value: 'security_device_1', text: "安检仪001"},
-                    {value: 'security_device_2', text: "安检仪002"},
-                    {value: 'security_device_3', text: "安检仪003"},
-                ],
-                operatorTypeOptions: [
-                    {value: null, text: "全部"},
-                    {value: '引导员', text: "引导员"},
-                    {value: '判图员', text: "判图员"},
-                    {value: '手检员', text: "手检员"},
-                ],
-                statisticalStepSizeOptions: [
-                    {value: 'hour', text: "时"},
-                    {value: 'day', text: "天"},
-                    {value: 'week', text: "周"},
-                    {value: 'month', text: "月"},
-                    {value: 'quarter', text: "季度"},
-                    {value: 'year', text: "年"},
-                ],
-
-
-
-                taskVuetableItems: {
-                    apiUrl: `${apiBaseUrl}/task/statistics/scan`,
-                    fields: [
-                        {
-                            name: '__checkbox',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: '__sequence',
-                            title: '序号',
-                            sortField: 'id',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'time',
-                            title: '时间段',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'totalScan',
-                            title: '扫描总量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'validScan',
-                            title: '有效扫描量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'validScanRate',
-                            title: '有效率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
-                            name: 'invalidScan',
-                            title: '无效扫描量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-
-                        },
-                        {
-                            name: 'invalidScanRate',
-                            title: '无效率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-
-                        },
-                        {
-                            name: 'passedScan',
-                            title: '通过量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'passedScanRate',
-                            title: '通过率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'alarmScan',
-                            title: '报警量',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-                        {
-                            name: 'alarmScanRate',
-                            title: '报警率',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center'
-                        },
-
-                    ],
-                    perPage: 5,
-                },
-
+            backgroundColor: 'rgba(0,0,0,0)',
+            transitionDuration: 0,
+            position: function (point, params, dom, rect, size) {
+              // fixed at top
+              return [point[0] + 8, point[1] + 8];
             }
-        },
-        watch: {
-          'taskVuetableItems.perPage': function (newVal) {
-            this.$refs.taskVuetable.refresh();
           },
-          'operatingLogTableItems.perPage': function (newVal) {
-            this.$refs.operatingLogTable.refresh();
-          },
-          siteData:function (newVal,oldVal) {
-            console.log(newVal);
-            this.onSiteOption = [];
-            this.onSiteOption = newVal.map(site => ({
-              text: site.fieldDesignation,
-              value: site.fieldId
-            }));
-            this.onSiteOption.push({
-              text: this.$t('personal-inspection.all'),
-              value: null
-            });
-            if (this.onSiteOption.length === 0)
-              this.onSiteOption.push({
-                text: this.$t('system-setting.none'),
-                value: 0
-              });
-          }
+          color: [
+            doublePieChartData['无效扫描'].color,
+            doublePieChartData['有效扫描'].color,
+            doublePieChartData['报警'].color,
+            doublePieChartData['通过'].color,
+          ],
+          series: [
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['80%', '90%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                },
+              },
+              labelLine: {
+                show: false,
+                length: -34,
+                length2: -30
+              },
+              data: [
+                {value: doublePieChartData['无效扫描'].value, name: '无效扫描'},
+                {value: doublePieChartData['有效扫描'].value, name: '有效扫描'},
+              ]
+            },
+            {
+              type: 'pie',
+              hoverAnimation: false,
+              radius: ['40%', '50%'],
+              avoidLabelOverlap: false,
+              label: {
+                normal: {
+                  show: true,
+                  position: 'outside',
+                  align: 'center'
+                }
+              },
+              labelLine: {
+                show: false,
+                length: -40,
+                length2: -15
+              },
+              data: [
+                {value: doublePieChartData['报警'].value, name: '报警'},
+                {value: doublePieChartData['通过'].value, name: '通过'},
+              ]
+            }
+          ]
         },
-        methods: {
-          getSiteOption(){
-            getApiManager()
-              .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
-              let message = response.data.message;
-              let data = response.data.data;
-              switch (message) {
-                case responseMessages['ok']:
-                  this.siteData = data;
-                  break;
+        bar3ChartOptions: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'shadow'
+            }
+          },
+          legend: {
+            data: ['通过', '报警', '无效扫描'],
+            icon: 'rect',
+            right: 25
+          },
+          grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+          },
+          xAxis: {
+            type: 'category',
+            data: [],
+            axisLine: {
+              show: true
+            },
+            axisTick: {
+              show: false
+            }
+
+          },
+          yAxis: {
+            type: 'value',
+            splitLine: {
+              show: true
+            },
+            axisLabel: {
+              show: true,
+              interval: 100
+            },
+            axisTick: {
+              show: false
+            },
+            axisLine: {
+              show: false
+            }
+          },
+          color: ['#ff6600', '#009900', '#cccccc'],
+          series: [
+            {
+              name: '报警',
+              type: 'bar',
+              stack: '总量',
+              data: []
+            },
+            {
+              name: '通过',
+              type: 'bar',
+              stack: '总量',
+
+              data: []
+            },
+            {
+              name: '无效扫描',
+              type: 'bar',
+              stack: '总量',
+              data: []
+            }
+          ]
+        },
+
+        isExpanded: false,
+        isCheckAll: false,
+        pageStatus: 'charts',
+
+        filter: {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        },
+
+        siteData: [],
+        allField: '',
+        preViewData: [],
+
+        xYear: [],
+        xQuarter: ['1', '2', '3', '4'],
+        xMonth: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        xWeek: ['1', '2', '3', '4', '5'],
+        xDay: [],
+        xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+
+        onSiteOptions: [
+          {value: null, text: "全部"},
+          {value: 'way_1', text: "通道1"},
+          {value: 'way_2', text: "通道2"},
+          {value: 'way_3', text: "通道3"},
+        ],
+        onSiteOption: [],
+        securityDeviceOptions: [
+          {value: null, text: "全部"},
+          {value: 'security_device_1', text: "安检仪001"},
+          {value: 'security_device_2', text: "安检仪002"},
+          {value: 'security_device_3', text: "安检仪003"},
+        ],
+        operatorTypeOptions: [
+          {value: null, text: "全部"},
+          {value: '引导员', text: "引导员"},
+          {value: '判图员', text: "判图员"},
+          {value: '手检员', text: "手检员"},
+        ],
+        statisticalStepSizeOptions: [
+          {value: 'hour', text: "时"},
+          {value: 'day', text: "天"},
+          {value: 'week', text: "周"},
+          {value: 'month', text: "月"},
+          {value: 'quarter', text: "季度"},
+          {value: 'year', text: "年"},
+        ],
+
+
+        taskVuetableItems: {
+          apiUrl: `${apiBaseUrl}/task/statistics/scan`,
+          fields: [
+            {
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'time',
+              title: '序号',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time+1;
+                else return time;
               }
-            })
-              .catch((error) => {
-              });
-
-          },
-
-            getPreviewData() {
-                getApiManager().post(`${apiBaseUrl}/task/statistics/scan`, {
-                    filter: this.filter
-                }).then((response) => {
-                    let message = response.data.message;
-                    this.preViewData = response.data.data;
-                    // doublePieChartData['无效扫描'].value = this.preViewData.totalStatistics.invalidScan;
-                    // doublePieChartData['有效扫描'].value = this.preViewData.totalStatistics.validScan;
-                    // doublePieChartData['报警'].value = this.preViewData.totalStatistics.alarmScan;
-                    // doublePieChartData['通过'].value = this.preViewData.totalStatistics.passedScan;
-
-                    this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.invalidScan;
-                    this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
-                    this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
-                    this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.passedScan;
-
-                    if(this.filter.statWidth === 'year') {
-                        this.bar3ChartOptions.xAxis.data = this.xHour;
-                    }
-                    else {
-                        this.xDay = Object.keys(this.preViewData.detailedStatistics);
-                        console.log(this.xDay);
-                        this.bar3ChartOptions.xAxis.data = this.xDay;
-                        for(let i = 0; i<this.xDay.length; i++) {
-
-                            if(this.preViewData.detailedStatistics[i] != null) {
-                                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
-                                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
-                                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
-                            }
-                        }
-                    }
-                    
-                });
             },
-
-            onSearchButton() {
-                console.log(this.filter.startTime);
-                console.log(this.filter.endTime);
-                this.getPreviewData();
-                this.$refs.taskVuetable.refresh();
+            {
+              name: 'time',
+              title: '时间段',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
             },
-            onResetButton() {
-                this.filter = {
-                    fieldId: null,
-                    deviceId: null,
-                    userCategory: null,
-                    userName: null,
-                    statWidth: 'hour',
-                    startTime: null,
-                    endTime: null
-                };
-                
+            {
+              name: 'totalScan',
+              title: '扫描总量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'validScan',
+              title: '有效扫描量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'validScanRate',
+              title: '有效率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            },
+            {
+              name: 'invalidScan',
+              title: '无效扫描量',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
 
             },
-
-            onTaskVuetablePaginationData(paginationData) {
-                this.$refs.taskVuetablePagination.setPaginationData(paginationData)
-            },
-            onTaskVuetableChangePage(page) {
-                this.$refs.taskVuetable.changePage(page)
-            },
-            onDisplaceButton() {
-                if (this.pageStatus === 'charts') {
-
-                    this.pageStatus = 'table';
-                } else {
-                    this.pageStatus = 'charts';
-                }
-            },
-
-            transform(response) {
-
-                let transformed = {};
-
-                let data = response.data;
-
-                console.log(data.per_page);
-
-                transformed.pagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
-
-                //console.log(Object.keys(data.data.detailedStatistics).length);
-                console.log(Object.keys(data.detailedStatistics).length);
-                transformed.tKey = Object.keys(data.detailedStatistics);
-                transformed.data = [];
-                let temp;
-                for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
-                    let j = transformed.tKey[i-1];
-                    temp = data.detailedStatistics[j];
-                    console.log(temp);
-                    transformed.data.push(temp)
-                }
-
-                return transformed
+            {
+              name: 'invalidScanRate',
+              title: '无效率',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
 
             },
-
-
-            taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
-
-                return getApiManager().post(apiUrl, {
-                    currentPage: httpOptions.params.page,
-                    perPage: this.taskVuetableItems.perPage,
-                    filter: this.filter
-                });
+            {
+              name: 'passedScan',
+              title: '通过量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'passedScanRate',
+              title: '通过率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'alarmScan',
+              title: '报警量',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'alarmScanRate',
+              title: '报警率',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
             },
 
+          ],
+          perPage: 5,
         },
 
-    }
+      }
+    },
+    watch: {
+      'taskVuetableItems.perPage': function (newVal) {
+        this.$refs.taskVuetable.refresh();
+      },
+      'operatingLogTableItems.perPage': function (newVal) {
+        this.$refs.operatingLogTable.refresh();
+      },
+      siteData: function (newVal, oldVal) {
+        console.log(newVal);
+        this.onSiteOption = [];
+        this.onSiteOption = newVal.map(site => ({
+          text: site.fieldDesignation,
+          value: site.fieldId
+        }));
+        this.onSiteOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.onSiteOption.length === 0)
+          this.onSiteOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      }
+    },
+    methods: {
+      getDateTimeFormat(datatime) {
+        if(datatime==null)return '';
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/scan/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Scan.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/scan/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              break;
+          }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
+        })
+          .catch((error) => {
+          });
+
+      },
+
+      getPreviewData() {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/scan`, {
+          filter: this.filter
+        }).then((response) => {
+          let message = response.data.message;
+          this.preViewData = response.data.data;
+          // doublePieChartData['无效扫描'].value = this.preViewData.totalStatistics.invalidScan;
+          // doublePieChartData['有效扫描'].value = this.preViewData.totalStatistics.validScan;
+          // doublePieChartData['报警'].value = this.preViewData.totalStatistics.alarmScan;
+          // doublePieChartData['通过'].value = this.preViewData.totalStatistics.passedScan;
+
+          this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.invalidScan;
+          this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
+          this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
+          this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.passedScan;
+
+          if (this.filter.statWidth === 'year') {
+            this.bar3ChartOptions.xAxis.data = this.xHour;
+          } else {
+            this.xDay = Object.keys(this.preViewData.detailedStatistics);
+            console.log(this.xDay);
+            this.bar3ChartOptions.xAxis.data = this.xDay;
+            for (let i = 0; i < this.xDay.length; i++) {
+
+              if (this.preViewData.detailedStatistics[i] != null) {
+                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
+                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
+                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
+              }
+            }
+          }
+          // switch (this.filter.statWidth) {
+          //     case 'hour':
+          //         console.log(Object.keys(this.preViewData.detailedStatistics).length);
+          //         // for(let i=0; i<Object.keys(this.preViewData.detailedStatistics).length; i++){
+          //         //
+          //         // }
+          //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          //         console.log(this.xDay);
+          //         this.bar3ChartOptions.xAxis.data = this.xDay;
+          //         for(let i = 0; i<this.xDay.length; i++) {
+          //
+          //             if(this.preViewData.detailedStatistics[i] != null) {
+          //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
+          //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
+          //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
+          //             }
+          //         }
+          //
+          //         break;
+          //     case 'day':
+          //         this.bar3ChartOptions.xAxis.data = this.xHour;
+          //         break;
+          //     case 'week':
+          //         this.bar3ChartOptions.xAxis.data = this.xWeek;
+          //         break;
+          //     case 'month':
+          //         this.bar3ChartOptions.xAxis.data = this.xMonth;
+          //         break;
+          //     case 'quarter':
+          //         this.bar3ChartOptions.xAxis.data = this.xQuarter;
+          //         break;
+          //     case 'year':
+          //         this.bar3ChartOptions.xAxis.data = this.xYear;
+          //         break;
+          //     default:
+          //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
+          //         console.log(this.xDay);
+          //         this.bar3ChartOptions.xAxis.data = this.xDay;
+          //         for(let i = 0; i<this.xDay.length; i++) {
+          //
+          //             if(this.preViewData.detailedStatistics[i] != null) {
+          //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
+          //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
+          //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
+          //             }
+          //         }
+          //
+          //         break;
+          //
+          // }
+
+        });
+      },
+
+      onSearchButton() {
+        console.log(this.filter.startTime);
+        console.log(this.filter.endTime);
+        this.getPreviewData();
+        this.$refs.taskVuetable.refresh();
+      },
+      onResetButton() {
+        this.filter = {
+          fieldId: null,
+          deviceId: null,
+          userCategory: null,
+          userName: null,
+          startTime: null,
+          endTime: null,
+          statWidth: 'hour',
+        };
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
+
+      },
+
+      onTaskVuetablePaginationData(paginationData) {
+        this.$refs.taskVuetablePagination.setPaginationData(paginationData)
+      },
+      onTaskVuetableChangePage(page) {
+        this.$refs.taskVuetable.changePage(page)
+      },
+      onDisplaceButton() {
+        if (this.pageStatus === 'charts') {
+          this.pageStatus = 'table';
+        } else {
+          this.pageStatus = 'charts';
+        }
+      },
+
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
+
+        transformed.tKey = Object.keys(data.detailedStatistics);
+        transformed.data = [];
+        let temp;
+        for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
+          let j = transformed.tKey[i - 1];
+          temp = data.detailedStatistics[j];
+          transformed.data.push(temp)
+        }
+
+        return transformed
+
+      },
+
+
+      taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        return getApiManager().post(apiUrl, {
+          currentPage: httpOptions.params.page,
+          perPage: this.taskVuetableItems.perPage,
+          filter: this.filter
+        });
+      },
+
+    },
+
+  }
 </script>
 
 <style lang="scss">

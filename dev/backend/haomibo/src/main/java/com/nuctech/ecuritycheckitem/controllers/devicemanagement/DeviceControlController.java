@@ -166,10 +166,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
-        @JsonFormat(pattern = "yyyy-MM-dd")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
-        @JsonFormat(pattern = "yyyy-MM-dd")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;
@@ -247,10 +247,10 @@ public class DeviceControlController extends BaseController {
 
         String originalFactoryNumber;
 
-        @JsonFormat(pattern = "yyyy-MM-dd")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
 
-        @JsonFormat(pattern = "yyyy-MM-dd")
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
 
         String supplier;

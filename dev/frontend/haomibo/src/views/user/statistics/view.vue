@@ -48,7 +48,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+              <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""></date-picker>
             </b-form-group>
           </b-col>
@@ -92,7 +92,10 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.scanStatistics.totalScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>扫描</span></div>
             </div>
           </div>
@@ -105,7 +108,10 @@
               <b-img src="/assets/img/check.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.scanStatistics.validScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>有效扫描</span></div>
             </div>
           </div>
@@ -118,7 +124,10 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.scanStatistics.passedScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>通过</span></div>
             </div>
           </div>
@@ -131,7 +140,10 @@
               <b-img src="/assets/img/bell_icon.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>报警</span></div>
             </div>
           </div>
@@ -144,7 +156,10 @@
               <b-img src="/assets/img/forbidden.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>无效扫描</span></div>
             </div>
           </div>
@@ -160,7 +175,10 @@
               <b-img src="/assets/img/picture.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.judgeStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>判图</span></div>
             </div>
           </div>
@@ -173,7 +191,10 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.judgeStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>无嫌疑</span></div>
             </div>
           </div>
@@ -186,7 +207,10 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>手检</span></div>
             </div>
           </div>
@@ -199,7 +223,10 @@
               <b-img src="/assets/img/glass_delete_icon.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>无查获</span></div>
             </div>
           </div>
@@ -212,7 +239,10 @@
               <b-img src="/assets/img/glass_check_icon.svg"/>
             </div>
             <div>
-              <div><span>{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span></div>
+              <div>
+                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span>
+                <span v-else>None</span>
+              </div>
               <div><span>查获</span></div>
             </div>
           </div>
@@ -226,10 +256,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -257,23 +287,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无效扫描</div>
-                      <div class="value">{{preViewData.invalidScan}}</div>
+                      <div class="value">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">有效扫描</div>
-                      <div class="value">{{preViewData.validScan}}</div>
+                      <div class="value">{{preViewData.totalStatistics.scanStatistics.validScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">报警</div>
-                      <div class="value">{{preViewData.alarmScan}}</div>
+                      <div class="value">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">通过</div>
-                      <div class="value">{{preViewData.passedScan}}</div>
+                      <div class="value">{{preViewData.totalStatistics.scanStatistics.passedScan}}</div>
                     </div>
                   </div>
                 </div>
@@ -313,7 +343,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
                   <span v-else>{{filter.fieldId}}</span>
                 </b-col>
               </b-row>
@@ -340,11 +370,20 @@
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
+                <b-col cols="11">
+                  <span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
+                <b-col cols="11">
+                  <span v-if="filter.statWidth==='hour'">时</span>
+                  <span v-else-if="filter.statWidth==='day'">天</span>
+                  <span v-else-if="filter.statWidth==='week'">周</span>
+                  <span v-else-if="filter.statWidth==='month'">月</span>
+                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
+                  <span v-else>年</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters">
 
@@ -358,6 +397,7 @@
                       :http-fetch="taskVuetableHttpFetch"
                       :per-page="taskVuetableItems.perPage"
                       track-by="time"
+                      @vuetable:checkbox-toggled-all="onCheckEvent"
                       pagination-path="pagination"
                       class="table-hover"
                       @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -401,7 +441,7 @@
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from "../../../constants/response-messages";
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
@@ -418,7 +458,6 @@
       'date-picker': DatePicker
     },
     mounted() {
-      console.log(this.filter.statWidth);
       this.getSiteOption();
       this.getPreviewData();
     },
@@ -574,6 +613,7 @@
         },
 
         isExpanded: false,
+        isCheckAll: false,
         pageStatus: 'charts',
 
         filter: {
@@ -587,6 +627,7 @@
         },
 
         siteData: [],
+        allField: '',
         preViewData: [],
 
         xYear: [],
@@ -633,10 +674,14 @@
               dataClass: 'text-center'
             },
             {
-              name: '__sequence',
+              name: 'time',
               title: '序号',
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time+1;
+                else return time;
+              }
             },
             {
               name: 'time',
@@ -786,6 +831,105 @@
       }
     },
     methods: {
+      getDateTimeFormat(datatime) {
+        if(datatime==null)return '';
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/preview/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Preview.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/preview/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -796,11 +940,24 @@
               this.siteData = data;
               break;
           }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
         })
           .catch((error) => {
           });
 
       },
+
 
       getPreviewData() {
         getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
@@ -850,7 +1007,8 @@
           endTime: null,
           statWidth: 'hour',
         };
-        
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
 
       },
 
@@ -863,7 +1021,6 @@
       onDisplaceButton() {
         if (this.pageStatus === 'charts') {
           this.pageStatus = 'table';
-          //this.$refs.taskVuetable.refresh();
         } else {
           this.pageStatus = 'charts';
         }

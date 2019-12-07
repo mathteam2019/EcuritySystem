@@ -21,9 +21,10 @@
     }
 
     .statistics-item {
+      height: 9vw;
       display: flex;
       align-items: center;
-      $padding-x: 50px;
+      $padding-x: 40px;
       $padding-y: 20px;
       padding: $padding-y $padding-x;
       justify-content: stretch;
@@ -194,7 +195,7 @@
           <b-row>
             <b-col>
               <b-form-group :label="$t('statistics.view.start-time')">
-                <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+                <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                              placeholder=""></date-picker>
               </b-form-group>
             </b-col>
@@ -261,7 +262,10 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span></div>
+                <div>
+                  <span v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else>0%</span>
+                </div>
                 <div><span>误报率</span></div>
               </div>
             </div>
@@ -274,7 +278,7 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.falseReport}}</span></div>
+                <div><span>{{preViewData.totalStatistics.mistakeReport}}</span></div>
                 <div><span>漏报</span></div>
               </div>
             </div>
@@ -287,7 +291,10 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)}}%</span></div>
+                <div>
+                  <span v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else>0%</span>
+                </div>
                 <div><span>漏报率</span></div>
               </div>
             </div>
@@ -328,7 +335,9 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                <div>
+                  <span v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else>0%</span>
                 </div>
                 <div><span>人工判图误报率</span></div>
               </div>
@@ -355,7 +364,9 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                <div>
+                  <span v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else>0%</span>
                 </div>
                 <div><span>人工判图漏报率</span></div>
               </div>
@@ -398,7 +409,8 @@
               </div>
               <div>
                 <div>
-                  <span>{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else>0%</span>
                 </div>
                 <div><span>智能判图误报率</span></div>
               </div>
@@ -426,7 +438,8 @@
               </div>
               <div>
                 <div>
-                  <span>{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else>0%</span>
                 </div>
                 <div><span>智能判图漏报率</span></div>
               </div>
@@ -442,10 +455,10 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
               <i class="icofont-exchange"></i>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white">
+            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white" @click="onGenerateExcelButton()">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white">
+            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white" @click="onGeneratePdfButton()">
               <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
             </b-button>
           </div>
@@ -460,14 +473,16 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.falseReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -495,14 +510,16 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -530,14 +547,16 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="30" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -569,7 +588,7 @@
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>现场:</b></b-col>
                 <b-col cols="11">
-                  <span v-if="filter.fieldId === null">通道01, 通道02, 通道03, 通道04</span>
+                  <span v-if="filter.fieldId === null">{{this.allField}}</span>
                   <span v-else>{{filter.fieldId}}</span>
                 </b-col>
               </b-row>
@@ -596,11 +615,16 @@
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>{{filter.startTime}}-{{filter.endTime}}</span></b-col>
+                <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span></b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
-                <b-col cols="11"><span>{{filter.statWidth}}</span></b-col>
+                <b-col cols="11"><span v-if="filter.statWidth==='hour'">时</span>
+                  <span v-else-if="filter.statWidth==='day'">天</span>
+                  <span v-else-if="filter.statWidth==='week'">周</span>
+                  <span v-else-if="filter.statWidth==='month'">月</span>
+                  <span v-else-if="filter.statWidth==='quarter'">季度</span>
+                  <span v-else>年</span></b-col>
               </b-row>
 
               <div class="table-wrapper table-responsive overflow-auto">
@@ -611,6 +635,7 @@
                   :http-fetch="taskVuetableHttpFetch"
                   :per-page="taskVuetableItems.perPage"
                   track-by="time"
+                  @vuetable:checkbox-toggled-all="onCheckEvent"
                   pagination-path="pagination"
                   class="table-hover"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -637,7 +662,7 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import Vuetable from 'vuetable-2/src/components/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap"
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches'
@@ -651,7 +676,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -665,7 +690,7 @@
       'date-picker': DatePicker
     },
     mounted() {
-      console.log(this.filter.statWidth);
+
       this.getSiteOption();
       this.getPreviewData();
     },
@@ -816,6 +841,7 @@
           statWidth: 'hour',
         },
         siteData: [],
+        allField: '',
         preViewData: [],
 
         xYear: [],
@@ -897,11 +923,19 @@
           apiUrl: `${apiBaseUrl}/task/statistics/get-evaluatejudge-statistics`,
           fields: [
             {
-              name: '__sequence',
-              title: this.$t('personal-inspection.serial-number'),
-              sortField: 'id',
+              name: '__checkbox',
               titleClass: 'text-center',
               dataClass: 'text-center'
+            },
+            {
+              name: 'time',
+              title: '序号',
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time+1;
+                else return time;
+              }
             },
             {
               name: 'time',
@@ -1030,6 +1064,105 @@
       }
     },
     methods: {
+      getDateTimeFormat(datatime) {
+        if(datatime==null)return '';
+        return getDateTimeWithFormat(datatime);
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/evaluatejudge/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Evaluate.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/evaluatejudge/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
       getSiteOption(){
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -1040,6 +1173,18 @@
               this.siteData = data;
               break;
           }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
         })
           .catch((error) => {
           });
@@ -1094,7 +1239,8 @@
           startTime: null,
           endTime: null
         };
-        
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
 
       },
 
