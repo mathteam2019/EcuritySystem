@@ -79,7 +79,7 @@
                     </span>
                 </template>
                 <template slot="scanImage" slot-scope="props">
-                  <b-img :src="props.rowData.serScan.scanImage.imageUrl" class="operation-icon"/>
+                  <b-img :src="props.rowData.scanImageUrl" class="operation-icon"/>
                 </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workFlow==null"> </div>
@@ -967,9 +967,16 @@
 
         transformed.data = [];
         let temp;
+        let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp)
+          temp.scanImageUrl = apiBaseUrl+ temp.serScan.scanImage.imageUrl;
+          transformed.data.push(temp);
+
+          idTemp = temp.taskId;
+          if(this.isCheckAll === true){
+            this.$refs.taskVuetable.selectedTo.push(idTemp);
+          }
         }
 
         return transformed

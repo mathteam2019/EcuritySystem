@@ -96,7 +96,7 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="taskVuetable"
-                track-by="taskId"
+                track-by="historyId"
                 :api-url="taskVuetableItems.apiUrl"
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
@@ -113,8 +113,8 @@
                     </span>
                   <span v-else> </span>
                 </template>
-                <template slot="scanImage" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImage != null" :src="props.rowData.scanImage.imageUrl"
+                <template slot="scanImageUrl" slot-scope="props">
+                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl"
                          class="operation-icon"/>
                   <b-img v-else/>
                 </template>
@@ -177,9 +177,25 @@
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                <div v-if="showPage.workMode==null">None</div>
+                <div v-else>
+                  <div v-if="showPage.workMode.modeName==='1000001304'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001301'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001302'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001303'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                </div>
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -421,7 +437,7 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-img v-if="showPage.scanImage != null" :src="showPage.scanImage.imageUrl" class="operation-icon"/>
+                  <b-img v-if="showPage.scanImage != null" :src="this.apiBaseURL + showPage.scanImage.imageUrl" class="operation-icon"/>
                   <!--                  <label v-if="showPage.serScan != null">{{showPage.scanImage.imageUrl}}</label>-->
                   <!--                  <label v-else>None</label>-->
                 </b-form-group>
@@ -538,7 +554,10 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeResult}}</label>
+                  <label v-if="showPage.judgeResult == null">None</label>
+                  <label v-else-if="showPage.judgeResult==='true'">无嫌疑</label>
+                  <label v-else-if="showPage.judgeResult==='false'">嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -997,6 +1016,7 @@
     mounted() {
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
       this.getSiteOption();
+      //this.apiBaseURL = apiBaseUrl;
 
     },
     data: function () {
@@ -1004,6 +1024,7 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'table',
+        apiBaseURL : '',
         filter: {
           taskNumber: null,
           mode: null,
@@ -1072,7 +1093,7 @@
 
             },
             {
-              name: '__slot:scanImage',
+              name: '__slot:scanImageUrl',
               title: this.$t('personal-inspection.image'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -1372,6 +1393,7 @@
           switch (message) {
             case responseMessages['ok']:
               this.siteData = data;
+              this.apiBaseURL = apiBaseUrl;
               break;
           }
         })
@@ -1441,9 +1463,16 @@
 
         transformed.data = [];
         let temp;
+        let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp)
+          temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
+          transformed.data.push(temp);
+
+          idTemp = temp.historyId;
+          if(this.isCheckAll === true){
+            this.$refs.taskVuetable.selectedTo.push(idTemp);
+          }
         }
 
         return transformed
@@ -1452,6 +1481,7 @@
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
+        this.apiBaseURL = {apiBaseUrl};
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
 

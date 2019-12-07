@@ -170,9 +170,29 @@
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                <div v-if="showPage.workFlow==null">None</div>
+                <div v-else-if="showPage.workFlow.workMode==null">None</div>
+                <div v-else>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001304'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001301'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001302'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001303'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                </div>
+<!--                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>-->
+<!--                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>-->
+<!--                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>-->
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -417,7 +437,7 @@
                   </template>
                   <b-img v-if="showPage.serScan == null"/>
                   <b-img v-else-if="showPage.serScan.scanImage == null"/>
-                  <b-img v-else :src="showPage.serScan.scanImage.imageUrl" class="operation-icon"/>
+                  <b-img v-else :src="this.apiBaseURL + showPage.serScan.scanImage.imageUrl" class="operation-icon"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -560,8 +580,10 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serJudgeGraph != null">{{showPage.serJudgeGraph.judgeResult}}</label>
-                  <label v-else>None</label>
+                  <label v-if="showPage.serJudgeGraph == null">None</label>
+                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='true'">无嫌疑</label>
+                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='false'">嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -882,6 +904,7 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'table',
+        apiBaseURL: '',
         filter: {
           taskNumber: null,
           mode: null,
@@ -1235,6 +1258,7 @@
             switch (message) {
               case responseMessages['ok']: // okay
                 this.showPage = response.data.data;
+                this.apiBaseURL =apiBaseUrl;
                 break;
 
             }
@@ -1296,9 +1320,15 @@
 
         transformed.data = [];
         let temp;
+        let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp)
+          transformed.data.push(temp);
+
+          idTemp = temp.taskId;
+          if(this.isCheckAll === true){
+            this.$refs.taskVuetable.selectedTo.push(idTemp);
+          }
         }
 
         return transformed

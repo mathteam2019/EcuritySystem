@@ -107,7 +107,7 @@
                     <span v-else> </span>
                 </template>
                 <template slot="scanImage" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImage != null" :src="props.rowData.scanImage.imageUrl" class="operation-icon" />
+                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl" class="operation-icon" />
                   <b-img v-else/>
                 </template>
                 <template slot="mode" slot-scope="props">
@@ -515,6 +515,7 @@
             for (let i = 0; i < data.data.length; i++) {
                 temp = data.data[i];
                 idTemp = data.data[i].caseDealId;
+                temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
                 transformed.data.push(temp);
                 this.idList.push(idTemp);
                 if(this.isCheckAll === true){
