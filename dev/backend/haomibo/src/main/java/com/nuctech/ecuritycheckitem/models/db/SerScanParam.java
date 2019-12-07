@@ -103,6 +103,12 @@ public class SerScanParam extends BaseEntity implements Serializable {
     @Column(name = "DICTIONARY_NAME", length = 50)
     String dictionaryName;
 
+    @Column(name = "STORAGE_ALARM", length = 10)
+    Long storageAlarm;
+
+    @Column(name = "STORAGE_ALARM_PERCENT", length = 10)
+    Long storageAlarmPercent;
+
     @ToString.Exclude
     @ManyToOne()
     @JoinColumn(name = "DEV_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
