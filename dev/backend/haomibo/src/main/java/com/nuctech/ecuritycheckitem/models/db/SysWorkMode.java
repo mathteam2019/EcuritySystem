@@ -29,6 +29,14 @@ import java.io.Serializable;
 @Table(name = "sys_work_mode")
 public class SysWorkMode extends BaseEntity implements Serializable {
 
+    public static class WorkModeValue {
+
+        public static final String MODE_1000001301 = "1000001301";
+        public static final String MODE_1000001302 = "1000001302";
+        public static final String MODE_1000001303 = "1000001303";
+        public static final String MODE_1000001304 = "1000001304";
+
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
