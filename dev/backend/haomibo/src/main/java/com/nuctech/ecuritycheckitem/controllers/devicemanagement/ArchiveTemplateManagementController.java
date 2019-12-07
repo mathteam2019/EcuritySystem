@@ -498,12 +498,9 @@ public class ArchiveTemplateManagementController extends BaseController {
     }
 
     private boolean isUsedTemplate(long archiveTemplateId) {
-        Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
+        boolean result = serArchiveRepository.exists(QSerArchive.
                 serArchive.archivesTemplateId.eq(archiveTemplateId));
-        if (!optionalSerArchive.isPresent()) {
-            return false;
-        }
-        return true;
+        return result;
     }
 
     /**
