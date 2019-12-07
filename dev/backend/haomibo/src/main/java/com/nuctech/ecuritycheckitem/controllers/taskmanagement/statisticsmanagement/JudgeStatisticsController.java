@@ -8,7 +8,9 @@ import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsE
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
+import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
+import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import lombok.*;
@@ -304,11 +306,13 @@ public class JudgeStatisticsController extends BaseController {
                 groupBy +
                 "\t( judge_start_time ) AS time,\n" +
                 "\tsum( IF ( g.judge_user_id != l.USER_ID, 1, 0 ) ) AS artificialJudge,\n" +
-                "\tsum( IF ( s.SCAN_INVALID LIKE 'true' AND a.ASSIGN_TIMEOUT LIKE 'true', 1, 0 ) ) AS assignResult,\n" +
+                "\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "' AND a.ASSIGN_TIMEOUT LIKE 'true', 1, 0 ) ) AS assignResult,\n" +
                 "\tsum( IF ( g.judge_user_id = l.USER_ID, 1, 0 ) ) AS judgeTimeout,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'true', 1, 0 ) ) AS atrResult,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'true' AND g.JUDGE_RESULT LIKE 'true', 1, 0 ) ) AS suspiction,\n" +
-                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE 'false' AND g.JUDGE_RESULT LIKE 'false', 1, 0 ) ) AS noSuspiction,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS atrResult,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +
+                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspiction,\n" +
+                "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.FALSE + "' " +
+                " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspiction,\n" +
                 "\tcount( JUDGE_ID ) AS total ,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS avgDuration,\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
