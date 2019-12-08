@@ -42,7 +42,6 @@ import java.util.*;
 @RequestMapping("/task/statistics/")
 public class EvaluateJudgeStatisticsController extends BaseController {
 
-
     @Getter
     @Setter
     @NoArgsConstructor
@@ -175,7 +174,6 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
-
             }
 
         } else {
@@ -187,9 +185,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     /**
      * Private purpose Only
      * Get Start KeyDate and End Key Date for statistics
-     * <p>
      * Ex: In case of Hour - it returns [0, 23], In case of Month it returns [1, 12]
-     *
      * @param requestBody
      * @return [startKeyDate, endKeyDate]
      */
@@ -268,22 +264,9 @@ public class EvaluateJudgeStatisticsController extends BaseController {
 
     }
 
-    public EvaluateJudgeStatisticsPaginationResponse getEvaluateJudgeStatistics(StatisticsRequestBody requestBody) {
+    private String getQueryForSelectPart(String groupBy) {
 
-        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
-        List<String> whereCause = new ArrayList<String>();
-
-        StringBuilder queryBuilder = new StringBuilder();
-
-        StatisticsRequestBody.Filter filter = requestBody.getFilter();
-        String groupBy = "hour";
-        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
-            groupBy = requestBody.getFilter().getStatWidth();
-        }
-
-        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
-
-        queryBuilder.append("SELECT\n" +
+        return "SELECT\n" +
                 "\n" +
                 groupBy +
                 "\t (h.HAND_START_TIME) as time,\n" +
@@ -319,9 +302,12 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
                 "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
-                "\t\n" +
-                "FROM\n" +
-                "\tser_hand_examination h\n" +
+                "\t\n";
+
+    }
+
+    private String getQueryForJoin() {
+        return "\tser_hand_examination h\n" +
                 "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
                 "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
@@ -330,7 +316,12 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
                 "\tleft join ser_assign a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
-                "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n");
+                "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
+    }
+
+    private List<String> getWhereCause(StatisticsRequestBody requestBody) {
+
+        List<String> whereCause = new ArrayList<String>();
 
         if (requestBody.getFilter().getFieldId() != null) {
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
@@ -354,23 +345,24 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
-        //.... Get Total Statistics
-        if (!whereCause.isEmpty()) {
-            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        }
+        return whereCause;
+    }
 
-        Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
+    private EvaluateJudgeResponseModel getTotalStatistics(String query) {
+        Query jpaQueryTotal = entityManager.createNativeQuery(query);
+        EvaluateJudgeResponseModel record = new EvaluateJudgeResponseModel();
 
         List<Object> resultTotal = jpaQueryTotal.getResultList();
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
-            EvaluateJudgeResponseModel record = initModelFromObject(item);
-            response.setTotalStatistics(record);
+            record = initModelFromObject(item);
         }
 
-        //................. Get Detailed Statistics
-        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
-        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+        return record;
+    }
+
+    private TreeMap<Integer, EvaluateJudgeResponseModel> getDetailedStatistics(String query, StatisticsRequestBody requestBody) {
+        Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
 
         TreeMap<Integer, EvaluateJudgeResponseModel> data = new TreeMap<>();
@@ -398,7 +390,21 @@ public class EvaluateJudgeStatisticsController extends BaseController {
             sorted.put(i, data.get(i));
         }
 
+        return sorted;
+    }
+
+    private Map<String, Object> getPaginatedList(TreeMap<Integer, EvaluateJudgeResponseModel> sorted, StatisticsRequestBody requestBody) {
+
+        Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics = new TreeMap<>();
+
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) { }
+
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
             Integer from, to;
             from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
@@ -412,30 +418,60 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 to = keyValueMax;
             }
 
-            response.setFrom(from);
-            response.setTo(to);
-            response.setPer_page(requestBody.getPerPage());
-            response.setCurrent_page(requestBody.getCurrentPage());
+            result.put("from", from - keyValueMin);
+            result.put("to", to - keyValueMin);
 
             for (Integer i = from; i <= to; i++) {
                 detailedStatistics.put(i, sorted.get(i));
             }
-            response.setDetailedStatistics(detailedStatistics);
+        }
 
-        } else {
+        result.put("list", detailedStatistics);
+        return result;
+    }
+
+
+    public EvaluateJudgeStatisticsPaginationResponse getEvaluateJudgeStatistics(StatisticsRequestBody requestBody) {
+
+        StringBuilder queryBuilder = new StringBuilder();
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
+        EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
+
+        queryBuilder.append(getQueryForSelectPart(groupBy) +"FROM\n" + getQueryForJoin());
+        List<String> whereCause = getWhereCause(requestBody);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+        response.setTotalStatistics(getTotalStatistics(queryBuilder.toString()));
+
+        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
+        TreeMap<Integer, EvaluateJudgeResponseModel> sorted = getDetailedStatistics(queryBuilder.toString(), requestBody);
+        try {
+            Map<String, Object> paginatedResult = getPaginatedList(sorted, requestBody);
+            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setDetailedStatistics((TreeMap<Integer, EvaluateJudgeResponseModel>)getPaginatedList(sorted, requestBody).get("list"));
+        }
+        catch (Exception e) {
             response.setDetailedStatistics(sorted);
         }
 
-        try {
-            response.setTotal(sorted.size());
-            if (response.getTotal() % response.getPer_page() == 0) {
-                response.setLast_page(response.getTotal() / response.getPer_page());
-            } else {
-                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-            }
-
-        } catch (Exception e) { }
-
+        if (requestBody.getPerPage() != null && requestBody.getCurrentPage() != null) {
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+            try {
+                response.setTotal(sorted.size());
+                if (response.getTotal() % response.getPer_page() == 0) {
+                    response.setLast_page(response.getTotal() / response.getPer_page());
+                } else {
+                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+                }
+            } catch (Exception e) { }
+        }
         return response;
     }
 
