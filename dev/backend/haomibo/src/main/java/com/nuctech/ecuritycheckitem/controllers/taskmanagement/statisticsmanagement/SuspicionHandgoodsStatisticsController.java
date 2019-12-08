@@ -13,6 +13,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
 import lombok.*;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -195,8 +196,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
 
     public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(StatisticsRequestBody requestBody) {
-
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
+
         TreeMap<String, Long> totalStatistics = new TreeMap<>();
         totalStatistics = getSuspicionHandGoodsByDate(requestBody, null);
         List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
@@ -204,8 +205,6 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-            startIndex = keyValueMin;
-            endIndex = keyValueMax;
         } catch (Exception e) { }
 
         int curPage = 0;
@@ -216,10 +215,9 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         } catch (Exception e) { }
 
         if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage;
-            endIndex = (curPage) * perPage - 1;
-            startIndex = keyValueMin + startIndex;
-            endIndex = keyValueMin + endIndex;
+            startIndex = (curPage - 1) * perPage + keyValueMin;
+            endIndex = (curPage) * perPage - 1 + keyValueMin;
+
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
             }
@@ -253,6 +251,43 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         return response;
     }
 
+    private Predicate getTimePredicate(StatisticsRequestBody requestBody, Integer byDate) {
+        Predicate predicateTime = null;
+        QHistory history = QHistory.history;
+
+        if (byDate != null) {
+            String statWidth = "";
+            try {
+                statWidth = requestBody.getFilter().getStatWidth();
+            } catch (Exception e) { }
+
+            if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+
+                switch (statWidth) {
+                    case TaskManagementController.StatisticWidth.YEAR:
+                        predicateTime = (history.handStartTime.year().eq(byDate));
+                        break;
+                    case TaskManagementController.StatisticWidth.MONTH:
+                        predicateTime = (history.handStartTime.month().eq(byDate));
+                        break;
+                    case TaskManagementController.StatisticWidth.DAY:
+                        predicateTime = (history.handStartTime.dayOfMonth().eq(byDate));
+                        break;
+                    case TaskManagementController.StatisticWidth.HOUR:
+                        predicateTime = (history.handStartTime.hour().eq(byDate));
+                        break;
+                    case TaskManagementController.StatisticWidth.WEEK:
+                        predicateTime = (history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
+                        break;
+                    case TaskManagementController.StatisticWidth.QUARTER:
+                        predicateTime = (history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));
+                        break;
+                }
+            }
+        }
+        return predicateTime;
+    }
+
     private TreeMap<String, Long> getSuspicionHandGoodsByDate(StatisticsRequestBody requestBody, Integer byDate) {
 
         TreeMap<String, Long> suspicionResult = new TreeMap<>();
@@ -261,37 +296,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         for (int i = 0; i < handGoodsIDList.size(); i++) {
             BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
-            if (byDate != null) {
-                String statWidth = "";
-                try {
-                    statWidth = requestBody.getFilter().getStatWidth();
-                } catch (Exception e) { }
-
-                if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-
-                    switch (statWidth) {
-                        case TaskManagementController.StatisticWidth.YEAR:
-                            predicate.and(history.handStartTime.year().eq(byDate));
-                            break;
-                        case TaskManagementController.StatisticWidth.MONTH:
-                            predicate.and(history.handStartTime.month().eq(byDate));
-                            break;
-                        case TaskManagementController.StatisticWidth.DAY:
-                            predicate.and(history.handStartTime.dayOfMonth().eq(byDate));
-                            break;
-                        case TaskManagementController.StatisticWidth.HOUR:
-                            predicate.and(history.handStartTime.hour().eq(byDate));
-                            break;
-                        case TaskManagementController.StatisticWidth.WEEK:
-                            predicate.and(history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
-                            break;
-                        case TaskManagementController.StatisticWidth.QUARTER:
-                            predicate.and(history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));
-                            break;
-                    }
-                }
-            }
-
+            predicate.and(getTimePredicate(requestBody, byDate));
             if (requestBody.getFilter().getFieldId() != null) {
                 predicate.and(history.task.fieldId.eq(requestBody.getFilter().getFieldId()));
             }

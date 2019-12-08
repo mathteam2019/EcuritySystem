@@ -427,7 +427,6 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         return result;
     }
 
-
     public EvaluateJudgeStatisticsPaginationResponse getEvaluateJudgeStatistics(StatisticsRequestBody requestBody) {
 
         StringBuilder queryBuilder = new StringBuilder();
