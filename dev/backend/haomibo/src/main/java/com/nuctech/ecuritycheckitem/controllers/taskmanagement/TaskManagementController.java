@@ -273,7 +273,6 @@ public class TaskManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
-
     }
 
     private BooleanBuilder getPredicate(TaskGetByFilterAndPageRequestBody.Filter filter) {

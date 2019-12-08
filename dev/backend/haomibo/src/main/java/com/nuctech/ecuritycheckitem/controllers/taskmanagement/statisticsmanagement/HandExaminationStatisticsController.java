@@ -6,8 +6,6 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementCon
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -15,9 +13,11 @@ import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsResponse;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -68,9 +68,7 @@ public class HandExaminationStatisticsController extends BaseController {
         }
 
         Integer currentPage;
-
         Integer perPage;
-
         StatisticsRequestBody.Filter filter;
 
     }
@@ -92,7 +90,6 @@ public class HandExaminationStatisticsController extends BaseController {
         StatisticsRequestBody filter;
     }
 
-
     @RequestMapping(value = "/get-handexamination-statistics", method = RequestMethod.POST)
     public Object getHandExaminationSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -108,7 +105,6 @@ public class HandExaminationStatisticsController extends BaseController {
 
     }
 
-
     /**
      * HandExamination Statistics generate pdf file request.
      */
@@ -121,7 +117,6 @@ public class HandExaminationStatisticsController extends BaseController {
         }
 
         TreeMap<Integer, HandExaminationResponseModel> totalStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
-
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(res);
         InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);
@@ -148,9 +143,7 @@ public class HandExaminationStatisticsController extends BaseController {
         }
 
         TreeMap<Integer, HandExaminationResponseModel> judgeStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
-
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
         InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -169,11 +162,8 @@ public class HandExaminationStatisticsController extends BaseController {
 
         if (isAll == false) {
             String[] splits = idList.split(",");
-
             for (Map.Entry<Integer, HandExaminationResponseModel> entry : detailedStatistics.entrySet()) {
-
                 HandExaminationResponseModel record = entry.getValue();
-
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
                     if (splits[j].equals(Long.toString(record.getTime()))) {
@@ -184,13 +174,10 @@ public class HandExaminationStatisticsController extends BaseController {
                 if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
-
             }
-
         } else {
             exportList = detailedStatistics;
         }
-
         return exportList;
     }
 
@@ -201,14 +188,12 @@ public class HandExaminationStatisticsController extends BaseController {
         List<String> whereCause = new ArrayList<String>();
 
         StringBuilder queryBuilder = new StringBuilder();
-
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
         String groupBy = "hour";
         if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
             groupBy = requestBody.getFilter().getStatWidth();
         }
-
 
         HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
 
@@ -224,7 +209,7 @@ public class HandExaminationStatisticsController extends BaseController {
                 "\tsum( IF ( c.HAND_APPRAISE LIKE '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0 ) ) AS falseReport,\n" +
                 "\t\n" +
                 "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT), 1, 0)) as artificialJudge,\n" +
-                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING  + "', 1, 0)) as artificialJudgeMissing,\n" +
+                "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as artificialJudgeMissing,\n" +
                 "\tsum( IF ( ISNULL (j.JUDGE_TIMEOUT) and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as artificialJudgeMistake,\n" +
                 "\t\n" +
                 "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
@@ -263,39 +248,26 @@ public class HandExaminationStatisticsController extends BaseController {
                 "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n");
 
         if (requestBody.getFilter().getFieldId() != null) {
-
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
-
         }
         if (requestBody.getFilter().getDeviceId() != null) {
-
             whereCause.add("h.HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
-
         }
         if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-
             whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%'");
-
         }
         if (requestBody.getFilter().getStartTime() != null) {
-
             Date date = requestBody.getFilter().getStartTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-
             whereCause.add("h.HAND_START_TIME >= '" + strDate + "'");
-
         }
         if (requestBody.getFilter().getEndTime() != null) {
-
             Date date = requestBody.getFilter().getEndTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
-
         }
-
 
         //................. get total statistics ....
         if (!whereCause.isEmpty()) {
@@ -305,74 +277,16 @@ public class HandExaminationStatisticsController extends BaseController {
         Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
 
         List<Object> resultTotal = jpaQueryTotal.getResultList();
-
         for (int i = 0; i < resultTotal.size(); i++) {
-
             Object[] item = (Object[]) resultTotal.get(i);
-
             HandExaminationResponseModel record = new HandExaminationResponseModel();
-            try {
-
-                record.setTime(Integer.parseInt(item[0].toString()));
-                record.setTotal(Long.parseLong(item[1].toString()));
-                record.setSeizure(Long.parseLong(item[2].toString()));
-                record.setNoSeizure(Long.parseLong(item[3].toString()));
-                record.setTotalJudge(Long.parseLong(item[4].toString()));
-                record.setMissingReport(Long.parseLong(item[5].toString()));
-                record.setMistakeReport(Long.parseLong(item[6].toString()));
-                record.setArtificialJudge(Long.parseLong(item[7].toString()));
-                record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-                record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-                record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-                record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-                record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
-
-                record.setMaxDuration(Double.parseDouble(item[13].toString()));
-                record.setMinDuration(Double.parseDouble(item[14].toString()));
-                record.setAvgDuration(Double.parseDouble(item[15].toString()));
-
-
-                if (record.getTotal() > 0) {
-                    record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
-                    record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
-                } else {
-                    record.setMissingReportRate(0);
-                    record.setMistakeReportRate(0);
-                }
-
-                if (record.getArtificialJudge() > 0) {
-                    record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
-                    record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
-                } else {
-                    record.setArtificialJudgeMissingRate(0);
-                    record.setArtificialJudgeMistakeRate(0);
-                }
-
-                if (record.getIntelligenceJudge() > 0) {
-
-                    record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
-                    record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
-                } else {
-                    record.setIntelligenceJudgeMissingRate(0);
-                    record.setIntelligenceJudgeMistakeRate(0);
-                }
-
-            } catch (Exception e) {
-
-            }
-
             response.setTotalStatistics(record);
-
         }
 
         //.... Get Detailed Statistics ....
         queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
-
         Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
-
-
         List<Object> result = jpaQuery.getResultList();
-
         TreeMap<Integer, HandExaminationResponseModel> data = new TreeMap<>();
 
         //init hash map
@@ -391,76 +305,18 @@ public class HandExaminationStatisticsController extends BaseController {
             data.put(i, item);
         }
 
-
         for (int i = 0; i < result.size(); i++) {
-
             Object[] item = (Object[]) result.get(i);
-
             HandExaminationResponseModel record = new HandExaminationResponseModel();
-
-            try {
-
-                record.setTime(Integer.parseInt(item[0].toString()));
-                record.setTotal(Long.parseLong(item[1].toString()));
-                record.setSeizure(Long.parseLong(item[2].toString()));
-                record.setNoSeizure(Long.parseLong(item[3].toString()));
-                record.setTotalJudge(Long.parseLong(item[4].toString()));
-                record.setMissingReport(Long.parseLong(item[5].toString()));
-                record.setMistakeReport(Long.parseLong(item[6].toString()));
-                record.setArtificialJudge(Long.parseLong(item[7].toString()));
-                record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
-                record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
-                record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
-                record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
-                record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
-
-                record.setMaxDuration(Double.parseDouble(item[13].toString()));
-                record.setMinDuration(Double.parseDouble(item[14].toString()));
-                record.setAvgDuration(Double.parseDouble(item[15].toString()));
-
-                if (record.getTotal() > 0) {
-                    record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
-                    record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
-                } else {
-                    record.setMissingReportRate(0);
-                    record.setMistakeReportRate(0);
-                }
-
-                if (record.getArtificialJudge() > 0) {
-                    record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
-                    record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
-                } else {
-                    record.setArtificialJudgeMissingRate(0);
-                    record.setArtificialJudgeMistakeRate(0);
-                }
-
-                if (record.getIntelligenceJudge() > 0) {
-
-                    record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
-                    record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
-                } else {
-                    record.setIntelligenceJudgeMissingRate(0);
-                    record.setIntelligenceJudgeMistakeRate(0);
-                }
-
-            } catch (Exception e) {
-
-            }
-
             data.put(record.getTime(), record);
-
         }
 
         TreeMap<Integer, HandExaminationResponseModel> sorted = new TreeMap<>();
-
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-
             sorted.put(i, data.get(i));
-
         }
 
         TreeMap<Integer, HandExaminationResponseModel> detailedStatistics = new TreeMap<>();
-
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
             Integer from, to;
@@ -481,22 +337,14 @@ public class HandExaminationStatisticsController extends BaseController {
             response.setCurrent_page(requestBody.getCurrentPage());
 
             for (Integer i = from; i <= to; i++) {
-
                 detailedStatistics.put(i, sorted.get(i));
-
             }
-
             response.setDetailedStatistics(detailedStatistics);
-
         } else {
-
             response.setDetailedStatistics(sorted);
-
         }
 
-
         try {
-
             response.setTotal(sorted.size());
             if (response.getTotal() % response.getPer_page() == 0) {
                 response.setLast_page(response.getTotal() / response.getPer_page());
@@ -505,26 +353,23 @@ public class HandExaminationStatisticsController extends BaseController {
             }
 
         } catch (Exception e) {
-
         }
 
         return response;
-
     }
 
     /**
      * Private purpose Only
      * Get Start KeyDate and End Key Date for statistics
      * <p>
-     * Ex: In case of Hour - it returns [1, 24], In case of Month it returns [1, 12]
+     * Ex: In case of Hour - it returns [0, 23], In case of Month it returns [1, 12]
      *
      * @param requestBody
      * @return [startKeyDate, endKeyDate]
      */
     public List<Integer> getKeyValuesforStatistics(StatisticsRequestBody requestBody) {
 
-        Integer keyValueMin = 0, keyValueMax = 0;
-
+        Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case TaskManagementController.StatisticWidth.HOUR:
@@ -532,60 +377,21 @@ public class HandExaminationStatisticsController extends BaseController {
                     keyValueMax = 23;
                     break;
                 case TaskManagementController.StatisticWidth.DAY:
-                    keyValueMin = 1;
                     keyValueMax = 31;
                     break;
                 case TaskManagementController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
                     keyValueMax = 5;
                     break;
                 case TaskManagementController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
                     keyValueMax = 12;
                     break;
                 case TaskManagementController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
                     keyValueMax = 4;
                     break;
                 case TaskManagementController.StatisticWidth.YEAR:
-
-                    Integer yearMax = serJudgeGraphRepository.findMaxYear();
-                    Integer yearMin = serJudgeGraphRepository.findMinYear();
-
-//                    if (yearMax > Calendar.getInstance().get(Calendar.YEAR)) {
-//                        yearMax = Calendar.getInstance().get(Calendar.YEAR);
-//                    }
-
-                    //if (yearMin < 1970) {
-                    yearMin = 1970;
-                    //}
-
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-
-                    } else {
-
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-
-                    if (keyValueMin < yearMin) {
-                        keyValueMin = yearMin;
-                    }
-
-                    if (keyValueMax > yearMax) {
-                        keyValueMax = yearMax;
-                    }
-
+                    Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
+                    keyValueMax = availableYearRage.get("max");
+                    keyValueMin = availableYearRage.get("min");
                     break;
                 default:
                     keyValueMin = 0;
@@ -599,7 +405,82 @@ public class HandExaminationStatisticsController extends BaseController {
         result.add(keyValueMax);
 
         return result;
+    }
 
+    private Map<String, Integer> getAvailableYearRange(StatisticsRequestBody requestBody) {
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        Integer yearMax = serJudgeGraphRepository.findMaxYear();
+        Integer yearMin = 1970;
+        Calendar calendar = Calendar.getInstance();
+        if (requestBody.getFilter().getStartTime() != null) {
+            calendar.setTime(requestBody.getFilter().getStartTime());
+            keyValueMin = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
+        }
+        if (requestBody.getFilter().getEndTime() != null) {
+            calendar.setTime(requestBody.getFilter().getEndTime());
+            keyValueMax = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+        }
+        if (keyValueMin < yearMin) {
+            keyValueMin = yearMin;
+        }
+        if (keyValueMax > yearMax) {
+            keyValueMax = yearMax;
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+
+        result.put("min", keyValueMin);
+        result.put("max", keyValueMax);
+
+        return result;
+    }
+
+    private HandExaminationResponseModel initModelFromObject(Object[] item) {
+        HandExaminationResponseModel record = new HandExaminationResponseModel();
+        try {
+            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setTotal(Long.parseLong(item[1].toString()));
+            record.setSeizure(Long.parseLong(item[2].toString()));
+            record.setNoSeizure(Long.parseLong(item[3].toString()));
+            record.setTotalJudge(Long.parseLong(item[4].toString()));
+            record.setMissingReport(Long.parseLong(item[5].toString()));
+            record.setMistakeReport(Long.parseLong(item[6].toString()));
+            record.setArtificialJudge(Long.parseLong(item[7].toString()));
+            record.setArtificialJudgeMissing(Long.parseLong(item[8].toString()));
+            record.setArtificialJudgeMistake(Long.parseLong(item[9].toString()));
+            record.setIntelligenceJudge(Long.parseLong(item[10].toString()));
+            record.setIntelligenceJudgeMissing(Long.parseLong(item[11].toString()));
+            record.setIntelligenceJudgeMistake(Long.parseLong(item[12].toString()));
+            record.setMaxDuration(Double.parseDouble(item[13].toString()));
+            record.setMinDuration(Double.parseDouble(item[14].toString()));
+            record.setAvgDuration(Double.parseDouble(item[15].toString()));
+            record.setMissingReportRate(0);
+            record.setMistakeReportRate(0);
+            record.setArtificialJudgeMissingRate(0);
+            record.setArtificialJudgeMistakeRate(0);
+            record.setIntelligenceJudgeMissingRate(0);
+            record.setIntelligenceJudgeMistakeRate(0);
+            if (record.getTotal() > 0) {
+                record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
+                record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
+            }
+            if (record.getArtificialJudge() > 0) {
+                record.setArtificialJudgeMissingRate(record.getArtificialJudgeMissing() * 100 / (double) record.getArtificialJudge());
+                record.setArtificialJudgeMistakeRate(record.getArtificialJudgeMistake() * 100 / (double) record.getArtificialJudge());
+            }
+            if (record.getIntelligenceJudge() > 0) {
+                record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
+                record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
+            }
+        } catch (Exception e) { }
+
+        return record;
     }
 
 }

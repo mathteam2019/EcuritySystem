@@ -197,60 +197,38 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(StatisticsRequestBody requestBody) {
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
-
         TreeMap<String, Long> totalStatistics = new TreeMap<>();
-
         totalStatistics = getSuspicionHandGoodsByDate(requestBody, null);
-
         List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
-
-
-        Integer startIndex = 0, endIndex = 0;
-
-        Integer keyValueMin = 0, keyValueMax = 0;
-
+        Integer startIndex = 0, endIndex = 0, keyValueMin = 0, keyValueMax = 0;
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-
             startIndex = keyValueMin;
             endIndex = keyValueMax;
-
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) { }
 
         int curPage = 0;
         int perPage = 0;
-
         try {
             curPage = requestBody.getCurrentPage();
             perPage = requestBody.getPerPage();
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) { }
 
         if (curPage != 0 && perPage != 0) {
             startIndex = (curPage - 1) * perPage;
             endIndex = (curPage) * perPage - 1;
-
-            //if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
             startIndex = keyValueMin + startIndex;
             endIndex = keyValueMin + endIndex;
-            //}
-
             if (startIndex < keyValueMin) {
                 startIndex = keyValueMin;
             }
             if (endIndex > keyValueMax) {
                 endIndex = keyValueMax;
             }
-
             response.setFrom((curPage - 1) * perPage + 1);
             response.setTo((curPage) * perPage);
-
             try {
-
                 response.setTotal(keyValueMax - keyValueMin + 1);
                 response.setPer_page(requestBody.getPerPage());
                 response.setCurrent_page(requestBody.getCurrentPage());
@@ -260,49 +238,34 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-
-            } catch (Exception e) {
-
-            }
+            } catch (Exception e) { }
         }
 
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
-
         for (Integer i = startIndex; i <= endIndex; i++) {
-
             TreeMap<String, Long> suspictionStat = getSuspicionHandGoodsByDate(requestBody, i);
             suspictionStat.put("time", (long) i);
             detailedStatistics.put(i, suspictionStat);
-
         }
-
 
         response.setTotalStatistics(totalStatistics);
         response.setDetailedStatistics(detailedStatistics);
         return response;
-
     }
 
     private TreeMap<String, Long> getSuspicionHandGoodsByDate(StatisticsRequestBody requestBody, Integer byDate) {
 
         TreeMap<String, Long> suspicionResult = new TreeMap<>();
-
         QHistory history = QHistory.history;
-
         StatisticsRequestBody.Filter filter = requestBody.getFilter();
 
         for (int i = 0; i < handGoodsIDList.size(); i++) {
-
             BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
-
             if (byDate != null) {
-
                 String statWidth = "";
                 try {
                     statWidth = requestBody.getFilter().getStatWidth();
-                } catch (Exception e) {
-
-                }
+                } catch (Exception e) { }
 
                 if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
 
@@ -327,41 +290,26 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                             break;
                     }
                 }
-
             }
 
             if (requestBody.getFilter().getFieldId() != null) {
-
                 predicate.and(history.task.fieldId.eq(requestBody.getFilter().getFieldId()));
-
             }
             if (requestBody.getFilter().getDeviceId() != null) {
-
                 predicate.and(history.handDeviceId.eq(requestBody.getFilter().getDeviceId()));
-
             }
             if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-
                 predicate.and(history.handUser.userName.contains(requestBody.getFilter().getUserName()));
-
             }
             if (requestBody.getFilter().getStartTime() != null) {
-
                 predicate.and(history.handStartTime.after(requestBody.getFilter().getStartTime()));
-
             }
             if (requestBody.getFilter().getEndTime() != null) {
-
                 predicate.and(history.handEndTime.before(requestBody.getFilter().getEndTime()));
-
             }
-
             predicate.and(history.handGoods.eq(handGoodsIDList.get(i)));
-
             suspicionResult.put(handGoodsIDList.get(i), historyRespository.count(predicate));
-
         }
-
         return suspicionResult;
     }
 
@@ -376,8 +324,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
      */
     public List<Integer> getKeyValuesforStatistics(StatisticsRequestBody requestBody) {
 
-        Integer keyValueMin = 0, keyValueMax = 0;
-
+        Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case TaskManagementController.StatisticWidth.HOUR:
@@ -385,60 +332,21 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                     keyValueMax = 23;
                     break;
                 case TaskManagementController.StatisticWidth.DAY:
-                    keyValueMin = 1;
                     keyValueMax = 31;
                     break;
                 case TaskManagementController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
                     keyValueMax = 5;
                     break;
                 case TaskManagementController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
                     keyValueMax = 12;
                     break;
                 case TaskManagementController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
                     keyValueMax = 4;
                     break;
                 case TaskManagementController.StatisticWidth.YEAR:
-
-                    Integer yearMax = serJudgeGraphRepository.findMaxYear();
-                    Integer yearMin = serJudgeGraphRepository.findMinYear();
-
-//                    if (yearMax > Calendar.getInstance().get(Calendar.YEAR)) {
-//                        yearMax = Calendar.getInstance().get(Calendar.YEAR);
-//                    }
-
-                    //if (yearMin < 1970) {
-                    yearMin = 1970;
-                    //}
-
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-
-                    } else {
-
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-
-                    if (keyValueMin < yearMin) {
-                        keyValueMin = yearMin;
-                    }
-
-                    if (keyValueMax > yearMax) {
-                        keyValueMax = yearMax;
-                    }
-
+                    Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
+                    keyValueMax = availableYearRage.get("max");
+                    keyValueMin = availableYearRage.get("min");
                     break;
                 default:
                     keyValueMin = 0;
@@ -452,7 +360,40 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         result.add(keyValueMax);
 
         return result;
+    }
 
+    private Map<String, Integer> getAvailableYearRange(StatisticsRequestBody requestBody) {
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        Integer yearMax = serJudgeGraphRepository.findMaxYear();
+        Integer yearMin = 1970;
+        Calendar calendar = Calendar.getInstance();
+        if (requestBody.getFilter().getStartTime() != null) {
+            calendar.setTime(requestBody.getFilter().getStartTime());
+            keyValueMin = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
+        }
+        if (requestBody.getFilter().getEndTime() != null) {
+            calendar.setTime(requestBody.getFilter().getEndTime());
+            keyValueMax = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+        }
+        if (keyValueMin < yearMin) {
+            keyValueMin = yearMin;
+        }
+        if (keyValueMax > yearMax) {
+            keyValueMax = yearMax;
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+
+        result.put("min", keyValueMin);
+        result.put("max", keyValueMax);
+
+        return result;
     }
 
 }

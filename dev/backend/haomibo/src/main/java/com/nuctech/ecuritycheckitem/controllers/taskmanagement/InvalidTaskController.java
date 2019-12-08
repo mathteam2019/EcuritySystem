@@ -163,37 +163,7 @@ public class InvalidTaskController extends BaseController {
         }
 
         QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-
-        TaskGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();

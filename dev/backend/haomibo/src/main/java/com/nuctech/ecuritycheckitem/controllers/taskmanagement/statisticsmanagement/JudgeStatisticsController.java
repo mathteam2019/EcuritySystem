@@ -6,21 +6,22 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementCon
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,9 +66,7 @@ public class JudgeStatisticsController extends BaseController {
         }
 
         Integer currentPage;
-
         Integer perPage;
-
         StatisticsRequestBody.Filter filter;
 
     }
@@ -147,9 +146,7 @@ public class JudgeStatisticsController extends BaseController {
         }
 
         TreeMap<Integer, JudgeStatisticsResponseModel> judgeStatistics = getJudgeStatistics(requestBody.getFilter()).getDetailedStatistics();
-
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
         InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -205,8 +202,7 @@ public class JudgeStatisticsController extends BaseController {
      */
     public List<Integer> getKeyValuesforStatistics(StatisticsRequestBody requestBody) {
 
-        Integer keyValueMin = 0, keyValueMax = 0;
-
+        Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case TaskManagementController.StatisticWidth.HOUR:
@@ -214,60 +210,21 @@ public class JudgeStatisticsController extends BaseController {
                     keyValueMax = 23;
                     break;
                 case TaskManagementController.StatisticWidth.DAY:
-                    keyValueMin = 1;
                     keyValueMax = 31;
                     break;
                 case TaskManagementController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
                     keyValueMax = 5;
                     break;
                 case TaskManagementController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
                     keyValueMax = 12;
                     break;
                 case TaskManagementController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
                     keyValueMax = 4;
                     break;
                 case TaskManagementController.StatisticWidth.YEAR:
-
-                    Integer yearMax = serJudgeGraphRepository.findMaxYear();
-                    Integer yearMin = serJudgeGraphRepository.findMinYear();
-
-//                    if (yearMax > Calendar.getInstance().get(Calendar.YEAR)) {
-//                        yearMax = Calendar.getInstance().get(Calendar.YEAR);
-//                    }
-
-                    //if (yearMin < 1970) {
-                    yearMin = 1970;
-                    //}
-
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-
-                    } else {
-
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-
-                    if (keyValueMin < yearMin) {
-                        keyValueMin = yearMin;
-                    }
-
-                    if (keyValueMax > yearMax) {
-                        keyValueMax = yearMax;
-                    }
-
+                    Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
+                    keyValueMax = availableYearRage.get("max");
+                    keyValueMin = availableYearRage.get("min");
                     break;
                 default:
                     keyValueMin = 0;
@@ -281,7 +238,40 @@ public class JudgeStatisticsController extends BaseController {
         result.add(keyValueMax);
 
         return result;
+    }
 
+    private Map<String, Integer> getAvailableYearRange(StatisticsRequestBody requestBody) {
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        Integer yearMax = serJudgeGraphRepository.findMaxYear();
+        Integer yearMin = 1970;
+        Calendar calendar = Calendar.getInstance();
+        if (requestBody.getFilter().getStartTime() != null) {
+            calendar.setTime(requestBody.getFilter().getStartTime());
+            keyValueMin = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
+        }
+        if (requestBody.getFilter().getEndTime() != null) {
+            calendar.setTime(requestBody.getFilter().getEndTime());
+            keyValueMax = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+        }
+        if (keyValueMin < yearMin) {
+            keyValueMin = yearMin;
+        }
+        if (keyValueMax > yearMax) {
+            keyValueMax = yearMax;
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+
+        result.put("min", keyValueMin);
+        result.put("max", keyValueMax);
+
+        return result;
     }
 
     public JudgeStatisticsPaginationResponse getJudgeStatistics(StatisticsRequestBody requestBody) {
@@ -297,7 +287,6 @@ public class JudgeStatisticsController extends BaseController {
         if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
             groupBy = requestBody.getFilter().getStatWidth();
         }
-
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
 
@@ -387,54 +376,11 @@ public class JudgeStatisticsController extends BaseController {
         for (int i = 0; i < resultTotal.size(); i++) {
 
             Object[] item = (Object[]) resultTotal.get(i);
-
-            JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
-            try {
-
-                record.setTime(Integer.parseInt(item[0].toString()));
-                record.setArtificialJudge(Long.parseLong(item[1].toString()));
-                record.setAssignTimeout(Long.parseLong(item[2].toString()));
-                record.setJudgeTimeout(Long.parseLong(item[3].toString()));
-                record.setAtrResult(Long.parseLong(item[4].toString()));
-                record.setSuspiction(Long.parseLong(item[5].toString()));
-                record.setNoSuspiction(Long.parseLong(item[6].toString()));
-                record.setTotal(Long.parseLong(item[7].toString()));
-                record.setAvgDuration(Double.parseDouble(item[8].toString()));
-                record.setMaxDuration(Double.parseDouble(item[9].toString()));
-                record.setMinDuration(Double.parseDouble(item[1].toString()));
-                record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-                record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-                record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-
-
-                if (record.getTotal() > 0) {
-                    record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
-                    record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
-                    record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
-                    record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
-                    record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
-                    record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
-                } else {
-                    record.setArtificialResultRate(0);
-                    record.setAssignTimeoutResultRate(0);
-                    record.setJudgeTimeoutResultRate(0);
-                    record.setSuspictionRate(0);
-                    record.setNoSuspictionRate(0);
-                    record.setScanResultRate(0);
-                }
-
-                record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
-
-                TreeMap<String, Integer> handGoods = new TreeMap<>();
-
-            } catch (Exception e) {
-
-            }
-
+            JudgeStatisticsResponseModel record = initModelFromObject(item);
+            record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
             response.setTotalStatistics(record);
 
         }
-
 
         //.... Get Detailed Statistics
 
@@ -467,47 +413,8 @@ public class JudgeStatisticsController extends BaseController {
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
-
-            JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
-            try {
-
-                record.setTime(Integer.parseInt(item[0].toString()));
-                record.setArtificialJudge(Long.parseLong(item[1].toString()));
-                record.setAssignTimeout(Long.parseLong(item[2].toString()));
-                record.setJudgeTimeout(Long.parseLong(item[3].toString()));
-                record.setAtrResult(Long.parseLong(item[4].toString()));
-                record.setSuspiction(Long.parseLong(item[5].toString()));
-                record.setNoSuspiction(Long.parseLong(item[6].toString()));
-                record.setTotal(Long.parseLong(item[7].toString()));
-                record.setAvgDuration(Double.parseDouble(item[8].toString()));
-                record.setMaxDuration(Double.parseDouble(item[9].toString()));
-                record.setMinDuration(Double.parseDouble(item[1].toString()));
-                record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-                record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-                record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
-
-                if (record.getTotal() > 0) {
-                    record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
-                    record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
-                    record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
-                    record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
-                    record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
-                    record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
-                } else {
-                    record.setArtificialResultRate(0);
-                    record.setAssignTimeoutResultRate(0);
-                    record.setJudgeTimeoutResultRate(0);
-                    record.setSuspictionRate(0);
-                    record.setNoSuspictionRate(0);
-                    record.setScanResultRate(0);
-                }
-
-                record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
-
-            } catch (Exception e) {
-
-            }
-
+            JudgeStatisticsResponseModel record = initModelFromObject(item);
+            record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
             data.put(record.getTime(), record);
 
         }
@@ -543,35 +450,61 @@ public class JudgeStatisticsController extends BaseController {
             response.setCurrent_page(requestBody.getCurrentPage());
 
             for (Integer i = from; i <= to; i++) {
-
                 detailedStatistics.put(i, sorted.get(i));
-
             }
-
             response.setDetailedStatistics(detailedStatistics);
-
         } else {
-
             response.setDetailedStatistics(sorted);
-
         }
 
         try {
-
             response.setTotal(sorted.size());
             if (response.getTotal() % response.getPer_page() == 0) {
                 response.setLast_page(response.getTotal() / response.getPer_page());
             } else {
                 response.setLast_page(response.getTotal() / response.getPer_page() + 1);
             }
-
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) { }
 
         return response;
-
     }
 
+    private JudgeStatisticsResponseModel initModelFromObject(Object[] item) {
+
+        JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
+
+        try {
+            record.setTime(Integer.parseInt(item[0].toString()));
+            record.setArtificialJudge(Long.parseLong(item[1].toString()));
+            record.setAssignTimeout(Long.parseLong(item[2].toString()));
+            record.setJudgeTimeout(Long.parseLong(item[3].toString()));
+            record.setAtrResult(Long.parseLong(item[4].toString()));
+            record.setSuspiction(Long.parseLong(item[5].toString()));
+            record.setNoSuspiction(Long.parseLong(item[6].toString()));
+            record.setTotal(Long.parseLong(item[7].toString()));
+            record.setAvgDuration(Double.parseDouble(item[8].toString()));
+            record.setMaxDuration(Double.parseDouble(item[9].toString()));
+            record.setMinDuration(Double.parseDouble(item[1].toString()));
+            record.setAvgArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+            record.setMaxArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+            record.setMinArtificialJudgeDuration(Long.parseLong(item[1].toString()));
+            record.setArtificialResultRate(0);
+            record.setAssignTimeoutResultRate(0);
+            record.setJudgeTimeoutResultRate(0);
+            record.setSuspictionRate(0);
+            record.setNoSuspictionRate(0);
+            record.setScanResultRate(0);
+            if (record.getTotal() > 0) {
+                record.setArtificialResultRate(record.getArtificialResult() * 100 / (double) record.getTotal());
+                record.setAssignTimeoutResultRate(record.getAssignTimeout() * 100 / (double) record.getTotal());
+                record.setJudgeTimeoutResultRate(record.getJudgeTimeout() * 100 / (double) record.getTotal());
+                record.setSuspictionRate(record.getSuspiction() * 100 / (double) record.getTotal());
+                record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
+                record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
+            }
+        } catch (Exception e) { }
+
+        return record;
+    }
 
 }

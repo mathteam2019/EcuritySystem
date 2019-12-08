@@ -4,8 +4,6 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsExcelView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -13,7 +11,12 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import lombok.*;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,11 +64,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         }
 
-
         Integer currentPage;
-
         Integer perPage;
-
 
         StatisticsByUserRequestBody.Filter filter;
 
@@ -98,9 +97,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
 
         Integer currentPage;
-
         Integer perPage;
-
         StatisticsByDeviceRequestBody.Filter filter;
 
     }
@@ -140,49 +137,78 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         StatisticsByUserRequestBody filter;
     }
 
-    private TotalStatisticsResponse getStatisticsByUser (StatisticsByUserRequestBody requestBody) {
-
+    private BooleanBuilder getScanPredicateByUser(StatisticsByUserRequestBody requestBody) {
         QSerScan scanbuilder = QSerScan.serScan;
-        QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
-        QSerHandExamination handBuilder = QSerHandExamination.serHandExamination;
-
         BooleanBuilder predicateScan = new BooleanBuilder(scanbuilder.isNotNull());
-        BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
-        BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
 
+        StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
         predicateScan.and(scanbuilder.scanPointsman.isNotNull());
-        predicateJudge.and(judgeBuilder.judgeUser.isNotNull());
-        predicateHand.and(handBuilder.handUser.isNotNull());
+        if (filter != null) {
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
+                predicateScan.and(scanbuilder.scanPointsman.userName.contains(filter.getUserName()));
+            }
+            if (filter.getStartTime() != null) {
+                predicateScan.and(scanbuilder.scanStartTime.after(filter.getStartTime()));
+            }
+            if (filter.getEndTime() != null) {
+                predicateScan.and(scanbuilder.scanEndTime.before(filter.getEndTime()));
+            }
+        }
 
+        return predicateScan;
+    }
+
+    private BooleanBuilder getJudgePredicateByUser(StatisticsByUserRequestBody requestBody) {
+
+        QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
+        BooleanBuilder predicateJudge = new BooleanBuilder(judgeBuilder.isNotNull());
+        predicateJudge.and(judgeBuilder.judgeUser.isNotNull());
         StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
 
             if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
-                predicateScan.and(scanbuilder.scanPointsman.userName.contains(filter.getUserName()));
                 predicateJudge.and(judgeBuilder.judgeUser.userName.contains(filter.getUserName()));
-                predicateHand.and(handBuilder.handUser.userName.contains(filter.getUserName()));
-
-
             }
             if (filter.getStartTime() != null) {
-
-                predicateScan.and(scanbuilder.scanStartTime.after(filter.getStartTime()));
                 predicateJudge.and(judgeBuilder.judgeStartTime.after(filter.getStartTime()));
-                predicateHand.and(handBuilder.handEndTime.after(filter.getStartTime()));
+            }
+            if (filter.getEndTime() != null) {
+                predicateJudge.and(judgeBuilder.judgeEndTime.before(filter.getEndTime()));
+            }
+        }
 
+        return predicateJudge;
+    }
+
+    private BooleanBuilder getHandPredicateByUser(StatisticsByUserRequestBody requestBody) {
+        QSerHandExamination handBuilder = QSerHandExamination.serHandExamination;
+        BooleanBuilder predicateHand = new BooleanBuilder(handBuilder.isNotNull());
+
+        predicateHand.and(handBuilder.handUser.isNotNull());
+        StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
+
+        if (filter != null) {
+            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
+                predicateHand.and(handBuilder.handUser.userName.contains(filter.getUserName()));
+            }
+            if (filter.getStartTime() != null) {
+                predicateHand.and(handBuilder.handEndTime.after(filter.getStartTime()));
             }
 
             if (filter.getEndTime() != null) {
-
-                predicateScan.and(scanbuilder.scanEndTime.before(filter.getEndTime()));
-                predicateJudge.and(judgeBuilder.judgeEndTime.before(filter.getEndTime()));
                 predicateHand.and(handBuilder.handEndTime.before(filter.getEndTime()));
-
             }
-
         }
+
+        return predicateHand;
+    }
+
+    private TotalStatisticsResponse getStatisticsByUser (StatisticsByUserRequestBody requestBody) {
+
+        BooleanBuilder predicateScan = getScanPredicateByUser(requestBody);
+        BooleanBuilder predicateJudge = getJudgePredicateByUser(requestBody);
+        BooleanBuilder predicateHand = getHandPredicateByUser(requestBody);
 
         Map<Long, List<SerScan>> scans = IterableUtils.toList(serScanRepository.findAll(predicateScan)).stream().collect(Collectors.groupingBy(SerScan::getScanPointsmanId, Collectors.toList()));
         Map<Long, List<SerJudgeGraph>> judges = IterableUtils.toList(serJudgeGraphRepository.findAll(predicateJudge)).stream().collect(Collectors.groupingBy(SerJudgeGraph::getJudgeUserId, Collectors.toList()));
@@ -965,70 +991,42 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     public long getWorkingSecondsByUser(StatisticsByUserRequestBody requestBody, TaskManagementController.TableType tbType) {
 
         QSerTask serTask = QSerTask.serTask;
-
         BooleanBuilder predicate = new BooleanBuilder(serTask.isNotNull());
-
         StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
 
         if (filter != null) {
-
             if (filter.getModeId() != null) {
                 predicate.and(serTask.workFlow.workMode.modeId.eq(filter.getModeId()));
             }
             if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
                 if (tbType == TaskManagementController.TableType.SER_SCAN) {
-
                     Predicate scanUserName = serTask.serScan.scanPointsman.userName.contains(filter.getUserName());
                     predicate.and(scanUserName);
-
                 } else if (tbType == TaskManagementController.TableType.SER_JUDGE_GRAPH) {
-
                     Predicate judgeUserName = serTask.serJudgeGraph.judgeUser.userName.contains(filter.getUserName());
                     predicate.and(judgeUserName);
-
                 } else if (tbType == TaskManagementController.TableType.SER_HAND_EXAMINATION) {
-
                     Predicate handUserName = serTask.serHandExamination.handUser.userName.contains(filter.getUserName());
                     predicate.and(handUserName);
-
                 }
-
             }
             if (filter.getStartTime() != null) {
-
                 if (tbType == TaskManagementController.TableType.SER_SCAN) {
-
                     predicate.and(serTask.serScan.scanStartTime.after(filter.getStartTime()));
-
                 } else if (tbType == TaskManagementController.TableType.SER_JUDGE_GRAPH) {
-
                     predicate.and(serTask.serJudgeGraph.judgeStartTime.after(filter.getStartTime()));
-
                 } else {
-
                     predicate.and(serTask.serHandExamination.handStartTime.after(filter.getStartTime()));
-
                 }
-
-
             }
             if (filter.getEndTime() != null) {
-
                 if (tbType == TaskManagementController.TableType.SER_SCAN) {
-
                     predicate.and(serTask.serScan.scanEndTime.before(filter.getEndTime()));
-
                 } else if (tbType == TaskManagementController.TableType.SER_JUDGE_GRAPH) {
-
                     predicate.and(serTask.serJudgeGraph.judgeEndTime.before(filter.getEndTime()));
-
                 } else {
-
                     predicate.and(serTask.serHandExamination.handEndTime.before(filter.getEndTime()));
-
                 }
-
             }
         }
 
