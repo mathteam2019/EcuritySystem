@@ -274,23 +274,8 @@ public class JudgeStatisticsController extends BaseController {
         return result;
     }
 
-    public JudgeStatisticsPaginationResponse getJudgeStatistics(StatisticsRequestBody requestBody) {
-
-        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
-        List<String> whereCause = new ArrayList<String>();
-
-        StringBuilder queryBuilder = new StringBuilder();
-
-        StatisticsRequestBody.Filter filter = requestBody.getFilter();
-
-        String groupBy = "hour";
-        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
-            groupBy = requestBody.getFilter().getStatWidth();
-        }
-
-        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
-
-        queryBuilder.append("SELECT\n" +
+    private String getSelectQuery(String groupBy) {
+        return "SELECT\n" +
                 "\n" +
                 groupBy +
                 "\t( judge_start_time ) AS time,\n" +
@@ -310,98 +295,83 @@ public class JudgeStatisticsController extends BaseController {
                 "\tAVG( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
                 "\t AS artificialAvgDuration,\n" +
                 "\tMAX( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
-                "\tMIN( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n" +
-                "FROM\n" +
-                "\tser_judge_graph g\n" +
+                "\tMIN( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
+
+    }
+
+    private String getJoinQuery() {
+        return "\tser_judge_graph g\n" +
                 "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
                 "\tLEFT JOIN ser_login_info l ON g.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tLEFT JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
                 "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
                 "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n");
+                "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n";
+    }
 
+    private List<String> getWhereCause(StatisticsRequestBody requestBody) {
+        List<String> whereCause = new ArrayList<String>();
         whereCause.add("s.SCAN_INVALID like 'true'");
 
         if (requestBody.getFilter().getFieldId() != null) {
-
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
-
         }
         if (requestBody.getFilter().getDeviceId() != null) {
-
             whereCause.add("g.JUDGE_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
-
         }
         if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-
             whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%' ");
-
         }
         if (requestBody.getFilter().getStartTime() != null) {
-
             Date date = requestBody.getFilter().getStartTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-
             whereCause.add("g.JUDGE_START_TIME >= '" + strDate + "'");
-
         }
         if (requestBody.getFilter().getEndTime() != null) {
-
             Date date = requestBody.getFilter().getEndTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-
             whereCause.add("g.JUDGE_END_TIME <= '" + strDate + "'");
-
         }
+        return whereCause;
+    }
 
-
-        //.... Get Total Statistics
-        if (!whereCause.isEmpty()) {
-            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        }
-
-        Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
-
-        List<Object> resultTotal = jpaQueryTotal.getResultList();
+    private JudgeStatisticsResponseModel getTotalStatistics(String query) {
+        Query jpaQuery = entityManager.createNativeQuery(query);
+        List<Object> resultTotal = jpaQuery.getResultList();
 
         SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
         try {
             systemConstants = serPlatformCheckParamRepository.getOne(0);
-        } catch (Exception e) {
+        } catch (Exception e) { }
 
-        }
-
+        JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
         for (int i = 0; i < resultTotal.size(); i++) {
-
             Object[] item = (Object[]) resultTotal.get(i);
-            JudgeStatisticsResponseModel record = initModelFromObject(item);
+            record = initModelFromObject(item);
             record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
-            response.setTotalStatistics(record);
-
         }
 
-        //.... Get Detailed Statistics
+        return record;
+    }
 
-        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
-
-        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
-
-
+    private TreeMap<Integer, JudgeStatisticsResponseModel> getDetailedStatistics(String query, StatisticsRequestBody requestBody) {
+        Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
-
         TreeMap<Integer, JudgeStatisticsResponseModel> data = new TreeMap<>();
 
-        //init hash map
         Integer keyValueMin = 0, keyValueMax = -1;
         List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
+        } catch (Exception e) { }
 
-        }
+        SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
+        try {
+            systemConstants = serPlatformCheckParamRepository.getOne(0);
+        } catch (Exception e) { }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             JudgeStatisticsResponseModel item = new JudgeStatisticsResponseModel();
@@ -409,29 +379,29 @@ public class JudgeStatisticsController extends BaseController {
             data.put(i, item);
         }
 
-
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
             JudgeStatisticsResponseModel record = initModelFromObject(item);
             record.setLimitedArtificialDuration(systemConstants.getJudgeProcessingTime());
             data.put(record.getTime(), record);
-
         }
 
-        TreeMap<Integer, JudgeStatisticsResponseModel> sorted = new TreeMap<>();
+        return  data;
+    }
 
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-
-            sorted.put(i, data.get(i));
-
-        }
-
-
+    private Map<String, Object> getPaginatedList(TreeMap<Integer, JudgeStatisticsResponseModel> sorted, StatisticsRequestBody requestBody) {
+        Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new TreeMap<>();
 
-        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) { }
 
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
             Integer from, to;
             from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
             to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
@@ -444,27 +414,63 @@ public class JudgeStatisticsController extends BaseController {
                 to = keyValueMax;
             }
 
-            response.setFrom(from);
-            response.setTo(to);
-            response.setPer_page(requestBody.getPerPage());
-            response.setCurrent_page(requestBody.getCurrentPage());
+            result.put("from", from - keyValueMin + 1);
+            result.put("to", to - keyValueMin + 1);
 
             for (Integer i = from; i <= to; i++) {
                 detailedStatistics.put(i, sorted.get(i));
             }
-            response.setDetailedStatistics(detailedStatistics);
-        } else {
-            response.setDetailedStatistics(sorted);
         }
 
+        result.put("list", detailedStatistics);
+        return result;
+    }
+
+
+    public JudgeStatisticsPaginationResponse getJudgeStatistics(StatisticsRequestBody requestBody) {
+
+        StringBuilder queryBuilder = new StringBuilder();
+
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
+        JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
+
+        //.... Get Total Statistics
+        queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+        List<String> whereCause = getWhereCause(requestBody);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        //.... Get Detailed Statistics
+        queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
+        TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), requestBody);
+
         try {
-            response.setTotal(sorted.size());
-            if (response.getTotal() % response.getPer_page() == 0) {
-                response.setLast_page(response.getTotal() / response.getPer_page());
-            } else {
-                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-            }
-        } catch (Exception e) { }
+            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, requestBody);
+            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setDetailedStatistics((TreeMap<Integer, JudgeStatisticsResponseModel>)getPaginatedList(detailedStatistics, requestBody).get("list"));
+        }
+        catch (Exception e) {
+            response.setDetailedStatistics(detailedStatistics);
+        }
+
+        if (requestBody.getPerPage() != null && requestBody.getCurrentPage() != null) {
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+            try {
+                response.setTotal(detailedStatistics.size());
+                if (response.getTotal() % response.getPer_page() == 0) {
+                    response.setLast_page(response.getTotal() / response.getPer_page());
+                } else {
+                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+                }
+            } catch (Exception e) { }
+        }
 
         return response;
     }
@@ -502,7 +508,8 @@ public class JudgeStatisticsController extends BaseController {
                 record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
                 record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         return record;
     }

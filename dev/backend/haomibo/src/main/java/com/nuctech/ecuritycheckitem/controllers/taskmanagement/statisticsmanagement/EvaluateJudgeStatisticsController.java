@@ -382,15 +382,12 @@ public class EvaluateJudgeStatisticsController extends BaseController {
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
             EvaluateJudgeResponseModel record = initModelFromObject(item);
-            data.put(record.getTime(), record);
+            if (record.getTime() >= keyValueMin && record.getTime() <= keyValueMax) {
+                data.put(record.getTime(), record);
+            }
         }
 
-        TreeMap<Integer, EvaluateJudgeResponseModel> sorted = new TreeMap<>();
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            sorted.put(i, data.get(i));
-        }
-
-        return sorted;
+        return data;
     }
 
     private Map<String, Object> getPaginatedList(TreeMap<Integer, EvaluateJudgeResponseModel> sorted, StatisticsRequestBody requestBody) {
@@ -418,8 +415,8 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 to = keyValueMax;
             }
 
-            result.put("from", from - keyValueMin);
-            result.put("to", to - keyValueMin);
+            result.put("from", from - keyValueMin + 1);
+            result.put("to", to - keyValueMin + 1);
 
             for (Integer i = from; i <= to; i++) {
                 detailedStatistics.put(i, sorted.get(i));
@@ -435,7 +432,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
 
         StringBuilder queryBuilder = new StringBuilder();
         String groupBy = "hour";
-        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             groupBy = requestBody.getFilter().getStatWidth();
         }
 

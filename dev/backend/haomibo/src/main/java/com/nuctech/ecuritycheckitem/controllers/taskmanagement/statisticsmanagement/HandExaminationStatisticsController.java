@@ -11,6 +11,7 @@ import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
 import lombok.Getter;
@@ -181,23 +182,8 @@ public class HandExaminationStatisticsController extends BaseController {
         return exportList;
     }
 
-
-    public HandExaminationStatisticsPaginationResponse getHandStatistics(StatisticsRequestBody requestBody) {
-
-        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
-        List<String> whereCause = new ArrayList<String>();
-
-        StringBuilder queryBuilder = new StringBuilder();
-        StatisticsRequestBody.Filter filter = requestBody.getFilter();
-
-        String groupBy = "hour";
-        if (requestBody.getFilter().getStatWidth() != null && requestBody.getFilter().getStatWidth().isEmpty()) {
-            groupBy = requestBody.getFilter().getStatWidth();
-        }
-
-        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
-
-        queryBuilder.append("SELECT\n" +
+    private String getSelectQuery(String groupBy) {
+        return "SELECT\n" +
                 "\n" +
                 groupBy +
                 "\t (h.HAND_START_TIME) as time,\n" +
@@ -229,14 +215,13 @@ public class HandExaminationStatisticsController extends BaseController {
                 " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
                 " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
                 " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMistake,\n" +
-                "\t\n" +
-                "\t\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS minDuration,\n" +
-                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n" +
-                "\t\n" +
-                "FROM\n" +
-                "\tser_hand_examination h\n" +
+                "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n";
+    }
+
+    private String getJoinQuery() {
+        return "\tser_hand_examination h\n" +
                 "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
                 "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
@@ -245,7 +230,11 @@ public class HandExaminationStatisticsController extends BaseController {
                 "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
                 "\tleft join ser_assign a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
-                "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n");
+                "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
+    }
+
+    private List<String> getWhereCause(StatisticsRequestBody requestBody) {
+        List<String> whereCause = new ArrayList<>();
 
         if (requestBody.getFilter().getFieldId() != null) {
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
@@ -269,23 +258,24 @@ public class HandExaminationStatisticsController extends BaseController {
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
-        //................. get total statistics ....
-        if (!whereCause.isEmpty()) {
-            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
-        }
+        return whereCause;
+    }
 
-        Query jpaQueryTotal = entityManager.createNativeQuery(queryBuilder.toString());
+    private HandExaminationResponseModel getTotalStatistics(String query) {
+        HandExaminationResponseModel record = new HandExaminationResponseModel();
+        Query jpaQueryTotal = entityManager.createNativeQuery(query);
 
         List<Object> resultTotal = jpaQueryTotal.getResultList();
         for (int i = 0; i < resultTotal.size(); i++) {
             Object[] item = (Object[]) resultTotal.get(i);
-            HandExaminationResponseModel record = new HandExaminationResponseModel();
-            response.setTotalStatistics(record);
+            record = initModelFromObject(item);
         }
+        return record;
+    }
 
-        //.... Get Detailed Statistics ....
-        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
-        Query jpaQuery = entityManager.createNativeQuery(queryBuilder.toString());
+    private TreeMap<Integer, HandExaminationResponseModel> getDetailedStatistics(String query, StatisticsRequestBody requestBody) {
+
+        Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
         TreeMap<Integer, HandExaminationResponseModel> data = new TreeMap<>();
 
@@ -295,11 +285,9 @@ public class HandExaminationStatisticsController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
+        } catch (Exception e) { }
 
-        }
-
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+        for (Integer i = keyValueMin;i <= keyValueMax; i++) {
             HandExaminationResponseModel item = new HandExaminationResponseModel();
             item.setTime(i);
             data.put(i, item);
@@ -307,18 +295,27 @@ public class HandExaminationStatisticsController extends BaseController {
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
-            HandExaminationResponseModel record = new HandExaminationResponseModel();
-            data.put(record.getTime(), record);
+            HandExaminationResponseModel record = initModelFromObject(item);
+            if (record.getTime() >= keyValueMin && record.getTime() <= keyValueMax) {
+                data.put(record.getTime(), record);
+            }
         }
 
-        TreeMap<Integer, HandExaminationResponseModel> sorted = new TreeMap<>();
-        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
-            sorted.put(i, data.get(i));
-        }
+        return data;
+    }
 
+    private Map<String, Object> getPaginatedList(TreeMap<Integer, HandExaminationResponseModel> sorted, StatisticsRequestBody requestBody) {
+        Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, HandExaminationResponseModel> detailedStatistics = new TreeMap<>();
-        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
 
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) { }
+
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
             Integer from, to;
             from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
             to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
@@ -331,28 +328,66 @@ public class HandExaminationStatisticsController extends BaseController {
                 to = keyValueMax;
             }
 
-            response.setFrom(from);
-            response.setTo(to);
-            response.setPer_page(requestBody.getPerPage());
-            response.setCurrent_page(requestBody.getCurrentPage());
+            result.put("from", from - keyValueMin + 1);
+            result.put("to", to - keyValueMin + 1);
 
             for (Integer i = from; i <= to; i++) {
                 detailedStatistics.put(i, sorted.get(i));
             }
-            response.setDetailedStatistics(detailedStatistics);
-        } else {
+        }
+
+        result.put("list", detailedStatistics);
+        return result;
+    }
+
+    public HandExaminationStatisticsPaginationResponse getHandStatistics(StatisticsRequestBody requestBody) {
+
+        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
+        List<String> whereCause = new ArrayList<String>();
+
+        StringBuilder queryBuilder = new StringBuilder();
+        StatisticsRequestBody.Filter filter = requestBody.getFilter();
+
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
+        HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
+        queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
+
+        //................. get total statistics ....
+        whereCause = getWhereCause(requestBody);
+        if (!whereCause.isEmpty()) {
+            queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+        response.setTotalStatistics(getTotalStatistics(queryBuilder.toString()));
+
+        //.... Get Detailed Statistics ....
+        queryBuilder.append(" GROUP BY  " + groupBy + "(h.HAND_START_TIME)");
+        TreeMap<Integer, HandExaminationResponseModel> sorted = getDetailedStatistics(queryBuilder.toString(), requestBody);
+
+        try {
+            Map<String, Object> paginatedResult = getPaginatedList(sorted, requestBody);
+            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setDetailedStatistics((TreeMap<Integer, HandExaminationResponseModel>)getPaginatedList(sorted, requestBody).get("list"));
+        }
+        catch (Exception e) {
             response.setDetailedStatistics(sorted);
         }
 
-        try {
-            response.setTotal(sorted.size());
-            if (response.getTotal() % response.getPer_page() == 0) {
-                response.setLast_page(response.getTotal() / response.getPer_page());
-            } else {
-                response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-            }
-
-        } catch (Exception e) {
+        if (requestBody.getPerPage() != null && requestBody.getCurrentPage() != null) {
+            response.setPer_page(requestBody.getPerPage());
+            response.setCurrent_page(requestBody.getCurrentPage());
+            try {
+                response.setTotal(sorted.size());
+                if (response.getTotal() % response.getPer_page() == 0) {
+                    response.setLast_page(response.getTotal() / response.getPer_page());
+                } else {
+                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+                }
+            } catch (Exception e) { }
         }
 
         return response;
@@ -361,9 +396,7 @@ public class HandExaminationStatisticsController extends BaseController {
     /**
      * Private purpose Only
      * Get Start KeyDate and End Key Date for statistics
-     * <p>
      * Ex: In case of Hour - it returns [0, 23], In case of Month it returns [1, 12]
-     *
      * @param requestBody
      * @return [startKeyDate, endKeyDate]
      */
