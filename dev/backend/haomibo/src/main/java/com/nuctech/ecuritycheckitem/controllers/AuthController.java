@@ -16,8 +16,10 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
+import com.nuctech.ecuritycheckitem.service.AuthService;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,9 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
+
+    @Autowired
+    AuthService authService;
 
     /**
      * Login request body.
@@ -98,17 +103,12 @@ public class AuthController extends BaseController {
         }
 
         // Find user by his email address.
-        QSysUser qSysUser = QSysUser.sysUser;
-        Predicate predicate = qSysUser.email.eq(requestBody.getEmail());
+        SysUser sysUser = authService.getSysUserByEmail(requestBody.getEmail());
 
-        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(predicate);
-
-        if (!optionalSysUser.isPresent()) {
+        if (sysUser == null) {
             // This is when no user is found.
             return new CommonResponseBody(ResponseMessage.USER_NOT_FOUND);
         }
-
-        SysUser sysUser = optionalSysUser.get();
 
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
