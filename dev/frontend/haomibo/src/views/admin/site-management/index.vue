@@ -227,7 +227,7 @@
                 </div>
               </b-col>
             </b-row>
-            <div class="position-absolute" style="bottom: 2%;left: 2%">
+            <div class="position-absolute" style="bottom: 4%;left: 28%">
               <img src="../../../assets/img/no_active_stamp.png">
             </div>
           </b-col>
@@ -331,7 +331,7 @@
                 </div>
               </b-col>
             </b-row>
-            <div class="position-absolute" style="bottom: 2%;left: 2%">
+            <div class="position-absolute" style="bottom: 4%;left: 28%">
               <img v-if="siteForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
               <img v-else-if="siteForm.status === 'active'" src="../../../assets/img/active_stamp.png">
             </div>
