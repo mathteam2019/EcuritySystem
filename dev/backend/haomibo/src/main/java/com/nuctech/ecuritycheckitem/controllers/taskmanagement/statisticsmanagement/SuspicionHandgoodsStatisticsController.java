@@ -2,15 +2,13 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -264,22 +262,22 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
 
                 switch (statWidth) {
-                    case TaskManagementController.StatisticWidth.YEAR:
+                    case ProcessTaskController.StatisticWidth.YEAR:
                         predicateTime = (history.handStartTime.year().eq(byDate));
                         break;
-                    case TaskManagementController.StatisticWidth.MONTH:
+                    case ProcessTaskController.StatisticWidth.MONTH:
                         predicateTime = (history.handStartTime.month().eq(byDate));
                         break;
-                    case TaskManagementController.StatisticWidth.DAY:
+                    case ProcessTaskController.StatisticWidth.DAY:
                         predicateTime = (history.handStartTime.dayOfMonth().eq(byDate));
                         break;
-                    case TaskManagementController.StatisticWidth.HOUR:
+                    case ProcessTaskController.StatisticWidth.HOUR:
                         predicateTime = (history.handStartTime.hour().eq(byDate));
                         break;
-                    case TaskManagementController.StatisticWidth.WEEK:
+                    case ProcessTaskController.StatisticWidth.WEEK:
                         predicateTime = (history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
                         break;
-                    case TaskManagementController.StatisticWidth.QUARTER:
+                    case ProcessTaskController.StatisticWidth.QUARTER:
                         predicateTime = (history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));
                         break;
                 }
@@ -332,23 +330,23 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     keyValueMax = 31;
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     keyValueMax = 5;
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     keyValueMax = 12;
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     keyValueMax = 4;
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
                     keyValueMax = availableYearRage.get("max");
                     keyValueMin = availableYearRage.get("min");

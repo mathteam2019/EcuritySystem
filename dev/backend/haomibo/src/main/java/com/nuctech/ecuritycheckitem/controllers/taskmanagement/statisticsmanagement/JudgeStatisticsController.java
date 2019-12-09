@@ -2,7 +2,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
@@ -205,23 +205,23 @@ public class JudgeStatisticsController extends BaseController {
         Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     keyValueMax = 31;
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     keyValueMax = 5;
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     keyValueMax = 12;
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     keyValueMax = 4;
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
                     keyValueMax = availableYearRage.get("max");
                     keyValueMin = availableYearRage.get("min");
@@ -343,8 +343,15 @@ public class JudgeStatisticsController extends BaseController {
 
         SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
         try {
-            systemConstants = serPlatformCheckParamRepository.getOne(0);
-        } catch (Exception e) { }
+            List<SerPlatformCheckParams> list = serPlatformCheckParamRepository.findAll();
+            systemConstants = list.get(0);
+
+        } catch (Exception e) {
+
+        }
+        if (systemConstants.getJudgeProcessingTime() == null) {
+           systemConstants.setJudgeProcessingTime((long) 0);
+        }
 
         JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
         for (int i = 0; i < resultTotal.size(); i++) {
@@ -370,8 +377,15 @@ public class JudgeStatisticsController extends BaseController {
 
         SerPlatformCheckParams systemConstants = new SerPlatformCheckParams();
         try {
-            systemConstants = serPlatformCheckParamRepository.getOne(0);
-        } catch (Exception e) { }
+            List<SerPlatformCheckParams> list = serPlatformCheckParamRepository.findAll();
+            systemConstants = list.get(0);
+
+        } catch (Exception e) {
+
+        }
+        if (systemConstants.getJudgeProcessingTime() == null) {
+            systemConstants.setJudgeProcessingTime((long) 0);
+        }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             JudgeStatisticsResponseModel item = new JudgeStatisticsResponseModel();
