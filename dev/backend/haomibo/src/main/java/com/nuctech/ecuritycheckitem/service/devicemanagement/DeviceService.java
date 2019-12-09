@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service;
+package com.nuctech.ecuritycheckitem.service.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.devicemanagement.DeviceControlController;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;

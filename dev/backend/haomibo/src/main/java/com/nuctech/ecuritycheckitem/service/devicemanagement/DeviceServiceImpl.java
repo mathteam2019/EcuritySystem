@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service;
+package com.nuctech.ecuritycheckitem.service.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.devicemanagement.DeviceControlController;
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
@@ -39,8 +39,6 @@ public class DeviceServiceImpl implements DeviceService {
                 predicate.and(builder.fieldId.eq(filter.getFieldId()));
             }
 
-
-
             /*
             * Todo
             *  Strange Category is null
@@ -48,7 +46,6 @@ public class DeviceServiceImpl implements DeviceService {
                 predicate.and(builder.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
             }
             * */
-
         }
 
 
