@@ -91,7 +91,7 @@
             </div>
             <div>
               <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
-              <span v-else>None</span>
+              <span v-else>0</span>
             </div>
             <div><span>判图</span></div>
           </div>
@@ -108,7 +108,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>人工结论</span></div>
                 </div>
@@ -124,7 +124,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>分低超时结论</span></div>
                 </div>
@@ -140,7 +140,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>判图超时结论</span></div>
                 </div>
@@ -156,7 +156,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>ATR结论</span></div>
                 </div>
@@ -174,7 +174,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>无嫌疑</span></div>
                 </div>
@@ -191,7 +191,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSuspictionRate)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>无嫌疑率</span></div>
                 </div>
@@ -208,7 +208,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>嫌疑</span></div>
                 </div>
@@ -225,7 +225,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.suspictionRate)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>嫌疑率</span></div>
                 </div>
@@ -243,7 +243,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.limitedArtificialDuration}}s</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>人工判图时长阈值</span></div>
                 </div>
@@ -259,7 +259,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.avgArtificialJudgeDuration}}s</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>人工判图平均时长</span></div>
                 </div>
@@ -275,7 +275,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.maxArtificialJudgeDuration}}s</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>人工判图最高时长</span></div>
                 </div>
@@ -291,7 +291,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.minArtificialJudgeDuration}}s</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>人工判图最低时长</span></div>
                 </div>
@@ -340,23 +340,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">人工判图</div>
-                      <div class="value">{{preViewData.totalStatistics.artificialJudge}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">分派超时</div>
-                      <div class="value">{{preViewData.totalStatistics.assignTimeout}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.assignTimeout}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">判图超时</div>
-                      <div class="value">{{preViewData.totalStatistics.judgeTimeout}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeTimeout}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">ATR</div>
-                      <div class="value">{{preViewData.totalStatistics.atrResult}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.atrResult}}</div>
                     </div>
                   </div>
                 </div>
@@ -397,12 +397,12 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">嫌疑</div>
-                      <div class="value">{{preViewData.totalStatistics.suspiction}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.suspiction}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无嫌疑</div>
-                      <div class="value">{{preViewData.totalStatistics.noSuspiction}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSuspiction}}</div>
                     </div>
                   </div>
                 </div>
@@ -624,10 +624,10 @@
                 length2: -30
               },
               data: [
-                {value: 1500, name: '人工判图'},
-                {value: 500, name: '分派超时'},
-                {value: 500, name: '判图超时'},
-                {value: 500, name: 'ATR'},
+                {value: 0, name: '人工判图'},
+                {value: 0, name: '分派超时'},
+                {value: 0, name: '判图超时'},
+                {value: 0, name: 'ATR'},
               ]
             },
 
@@ -677,8 +677,8 @@
                 length2: -30
               },
               data: [
-                {value: 1500, name: '嫌疑'},
-                {value: 500, name: '无嫌疑'}
+                {value: 0, name: '嫌疑'},
+                {value: 0, name: '无嫌疑'}
               ]
             },
 
@@ -734,22 +734,22 @@
             {
               name: '人工',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: '分派超时',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: '判图超时',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: 'ATR',
               type: 'bar',
-              data: []
+              data: [0]
             }
           ]
         },
@@ -804,12 +804,12 @@
             {
               name: '嫌疑',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: '无嫌疑',
               type: 'bar',
-              data: []
+              data: [0]
             },
           ]
         },
@@ -864,18 +864,18 @@
             {
               name: '平均时长',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: '最高时长',
               type: 'bar',
 
-              data: []
+              data: [0]
             },
             {
               name: '最低时长',
               type: 'bar',
-              data: []
+              data: [0]
             }
           ]
         },
@@ -1225,14 +1225,15 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          if(this.preViewData.totalStatistics!=null) {
 
-          this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.artificialJudge;
-          this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.assignTimeout;
-          this.pieChart1Options.series[0].data[2].value = this.preViewData.totalStatistics.judgeTimeout;
-          this.pieChart1Options.series[0].data[3].value = this.preViewData.totalStatistics.atrResult;
-          this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
-          this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
-
+            this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.artificialJudge;
+            this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.assignTimeout;
+            this.pieChart1Options.series[0].data[2].value = this.preViewData.totalStatistics.judgeTimeout;
+            this.pieChart1Options.series[0].data[3].value = this.preViewData.totalStatistics.atrResult;
+            this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
+            this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
+          }
           if (this.filter.statWidth === 'year') {
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {

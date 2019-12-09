@@ -24,7 +24,7 @@
       height: 9vw;
       display: flex;
       align-items: center;
-      $padding-x: 40px;
+      $padding-x: 35px;
       $padding-y: 20px;
       padding: $padding-y $padding-x;
       justify-content: stretch;
@@ -236,7 +236,10 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.total}}</span></div>
+                <div>
+                  <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
+                  <span v-else>0</span>
+                </div>
                 <div><span>手检</span></div>
               </div>
             </div>
@@ -249,7 +252,8 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.missingReport}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.missingReport}}</span>
+                  <span v-else>0</span></div>
                 <div><span>误报</span></div>
               </div>
             </div>
@@ -263,7 +267,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>误报率</span></div>
@@ -278,7 +283,8 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.mistakeReport}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.mistakeReport}}</span>
+                  <span v-else>0</span></div>
                 <div><span>漏报</span></div>
               </div>
             </div>
@@ -292,7 +298,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>漏报率</span></div>
@@ -309,7 +316,8 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.artificialJudge}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                  <span v-else>0</span></div>
                 <div><span>手检（人工判图）</span></div>
               </div>
             </div>
@@ -322,7 +330,8 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.artificialJudgeMissing}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudgeMissing}}</span>
+                  <span v-else>0</span></div>
                 <div><span>人工判图误报</span></div>
               </div>
             </div>
@@ -336,7 +345,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图误报率</span></div>
@@ -351,7 +361,8 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.artificialJudgeMistake}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudgeMistake}}</span>
+                  <span v-else>0</span></div>
                 <div><span>人工判图漏报</span></div>
               </div>
             </div>
@@ -365,7 +376,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图漏报率</span></div>
@@ -382,7 +394,8 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.intelligenceJudge}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudge}}</span>
+                  <span v-else>0</span></div>
                 <div><span>手检（智能判图）</span></div>
               </div>
             </div>
@@ -395,7 +408,8 @@
                 <b-img src="/assets/img/circle_close.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.intelligenceJudgeMissing}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudgeMissing}}</span>
+                  <span v-else>0</span></div>
                 <div><span>智能判图误报</span></div>
               </div>
             </div>
@@ -409,7 +423,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图误报率</span></div>
@@ -424,7 +439,8 @@
                 <b-img src="/assets/img/export.svg"/>
               </div>
               <div>
-                <div><span>{{preViewData.totalStatistics.intelligenceJudgeMistake}}</span></div>
+                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudgeMistake}}</span>
+                  <span v-else>0</span></div>
                 <div><span>智能判图漏报</span></div>
               </div>
             </div>
@@ -438,7 +454,8 @@
               </div>
               <div>
                 <div>
-                  <span v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-if="preViewData.totalStatistics==null">0%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图漏报率</span></div>
@@ -473,16 +490,26 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
+                    误报
+                  </radial-progress-bar>
+                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
+                    漏报
+                  </radial-progress-bar>
+                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -510,16 +537,25 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
+                    误报
+                  </radial-progress-bar>
+                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
                     误报
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
+                    漏报
+                  </radial-progress-bar>
+                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
                 </b-col>
@@ -547,18 +583,30 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
+                  <radial-progress-bar v-else :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
+                    误报
+                  </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
-                    <span class="chart percent clearfix" v-else>0%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics==null" :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
+                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                    漏报
+                  </radial-progress-bar>
+                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge===0" :diameter="172" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                    <span class="chart percent clearfix">0%</span>
+                    漏报
+                  </radial-progress-bar>
+
                 </b-col>
               </b-row>
             </b-card>
@@ -715,7 +763,7 @@
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12']
+            data: []
           },
           yAxis: {
             type: 'value',
@@ -729,14 +777,14 @@
               type: 'line',
               stack: '总量',
               symbolSize: 12,
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+              data: [0]
             },
             {
               name: '漏报',
               type: 'line',
               symbolSize: 12,
               stack: '总量',
-              data: [220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+              data: [0]
             }
           ],
           color: ['#ff0000', '#ff6600']
@@ -760,7 +808,7 @@
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12']
+            data: []
           },
           yAxis: {
             type: 'value',
@@ -774,14 +822,14 @@
               type: 'line',
               stack: '总量',
               symbolSize: 12,
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+              data: [0]
             },
             {
               name: '漏报',
               type: 'line',
               symbolSize: 12,
               stack: '总量',
-              data: [220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+              data: [0]
             }
           ],
           color: ['#ff0000', '#ff6600']
@@ -805,7 +853,7 @@
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12']
+            data: []
           },
           yAxis: {
             type: 'value',
@@ -819,14 +867,14 @@
               type: 'line',
               stack: '总量',
               symbolSize: 12,
-              data: [120, 132, 101, 134, 90, 230, 210, 120, 132, 101, 134, 90]
+              data: [0]
             },
             {
               name: '漏报',
               type: 'line',
               symbolSize: 12,
               stack: '总量',
-              data: [220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+              data: [0]
             }
           ],
           color: ['#ff0000', '#ff6600']
@@ -1205,10 +1253,11 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            console.log(this.xDay);
+            //console.log(Math.floor(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
             this.lineChart1Options.xAxis.data = this.xDay;
             this.lineChart2Options.xAxis.data = this.xDay;
             this.lineChart3Options.xAxis.data = this.xDay;
+
             for (let i = 0; i < this.xDay.length; i++) {
 
               if (this.preViewData.detailedStatistics[i] != null) {
@@ -1218,6 +1267,7 @@
                 this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].artificialJudgeMistake;
                 this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMissing;
                 this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMistake;
+
               }
             }
           }

@@ -20,7 +20,13 @@ export default {
     }
   },
   mounted () {
-    let path = this.$route.path.substr(1)
+    var num
+    console.log(this.$route.path.substring(1, 2))
+    if(this.$route.path.substring(1, 2)==='u')
+      num = 6;
+    else num=7;
+
+    let path = this.$route.path.substr(num)
     let rawPaths = path.split('/')
 
     for (var pName in this.$route.params) {

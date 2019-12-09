@@ -90,12 +90,10 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div>
                 <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.totalScan}}</span>
-                <span v-else>None</span>
-              </div>
-              <div><span>扫描总量</span></div>
+                <span v-else>0</span>
             </div>
+            <div><span>扫描总量</span></div>
           </div>
         </b-card>
       </b-col>
@@ -110,7 +108,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>有效扫描</span></div>
                 </div>
@@ -126,7 +124,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.validScanRate)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>有效扫描率</span></div>
                 </div>
@@ -142,7 +140,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>无效扫描</span></div>
                 </div>
@@ -158,7 +156,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.invalidScanRate)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>无效扫描率</span></div>
                 </div>
@@ -176,7 +174,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>通过</span></div>
                 </div>
@@ -192,7 +190,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.passedScanRate)}}%</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>通过率</span></div>
                 </div>
@@ -208,7 +206,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>报警</span></div>
                 </div>
@@ -224,7 +222,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.alarmScanRate)}}%</span>
-                    <span v-else>None</span>
+                <span v-else>0</span>
                   </div>
                   <div><span>报警率</span></div>
                 </div>
@@ -273,23 +271,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无效扫描</div>
-                      <div class="value">{{preViewData.totalStatistics.invalidScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.invalidScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">有效扫描</div>
-                      <div class="value">{{preViewData.totalStatistics.validScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.validScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">报警</div>
-                      <div class="value">{{preViewData.totalStatistics.alarmScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.alarmScan}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">通过</div>
-                      <div class="value">{{preViewData.totalStatistics.passedScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.passedScan}}</div>
                     </div>
                   </div>
                 </div>
@@ -448,19 +446,19 @@
 
       let doublePieChartData = {
         '无效扫描': {
-          value: 200,
+          value: 0,
           color: '#cccccc'
         },
         '有效扫描': {
-          value: 1500,
+          value: 0,
           color: '#1989fa',
         },
         '报警': {
-          value: 200,
+          value: 0,
           color: '#ff6600',
         },
         '通过': {
-          value: 500,
+          value: 0,
           color: '#009900'
         },
       };
@@ -598,20 +596,20 @@
               name: '报警',
               type: 'bar',
               stack: '总量',
-              data: []
+              data: [0]
             },
             {
               name: '通过',
               type: 'bar',
               stack: '总量',
 
-              data: []
+              data: [0]
             },
             {
               name: '无效扫描',
               type: 'bar',
               stack: '总量',
-              data: []
+              data: [0]
             }
           ]
         },
@@ -916,6 +914,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
+          if(this.preViewData.totalStatistics!=null) {
           // doublePieChartData['无效扫描'].value = this.preViewData.totalStatistics.invalidScan;
           // doublePieChartData['有效扫描'].value = this.preViewData.totalStatistics.validScan;
           // doublePieChartData['报警'].value = this.preViewData.totalStatistics.alarmScan;
@@ -925,6 +924,13 @@
           this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
           this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
           this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.passedScan;
+}
+          else {
+            this.doublePieChartOptions.series[0].data[0].value = 0;
+            this.doublePieChartOptions.series[0].data[1].value = 0;
+            this.doublePieChartOptions.series[1].data[0].value = 0;
+            this.doublePieChartOptions.series[1].data[1].value = 0;
+          }
 
           if (this.filter.statWidth === 'year') {
             this.bar3ChartOptions.xAxis.data = this.xHour;
@@ -1241,7 +1247,7 @@
 
           flex-grow: 1;
 
-          & > .col:nth-child(1) {
+          & > *:nth-child(1) {
             flex: 2 1 0;
 
             .card-body {
@@ -1311,7 +1317,7 @@
 
           }
 
-          & > .col:nth-child(2) {
+          & > *:nth-child(2) {
             flex: 3 1 0;
 
             .card-body {

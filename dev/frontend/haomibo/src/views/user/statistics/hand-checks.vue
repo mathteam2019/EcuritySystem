@@ -91,7 +91,7 @@
             </div>
             <div>
               <span class="font-weight-bold" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
-              <span v-else>None</span>
+              <span v-else>0</span>
             </div>
             <div><span>手检</span></div>
           </div>
@@ -108,7 +108,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSeizure}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
 
                   <div><span>无查获</span></div>
@@ -125,7 +125,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>无查获率</span></div>
                 </div>
@@ -142,7 +142,7 @@
 
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.seizure}}</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>查获</span></div>
                 </div>
@@ -158,7 +158,7 @@
                 <div>
                   <div>
                     <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
-                    <span v-else>None</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>查获率</span></div>
                 </div>
@@ -175,7 +175,8 @@
                 </div>
                 <div>
                   <div>
-                    <span>{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{preViewData.totalStatistics.avgDuration%60}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.floor(preViewData.totalStatistics.avgDuration)%60}}s</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>手检平均时长</span></div>
                 </div>
@@ -190,7 +191,8 @@
                 </div>
                 <div>
                   <div>
-                    <span>{{(preViewData.totalStatistics.maxDuration-preViewData.totalStatistics.maxDuration%60)/60}}m{{preViewData.totalStatistics.maxDuration%60}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.maxDuration-preViewData.totalStatistics.maxDuration%60)/60}}m{{preViewData.totalStatistics.maxDuration%60}}s</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>手检最高时长</span></div>
                 </div>
@@ -205,14 +207,14 @@
                 </div>
                 <div>
                   <div>
-                    <span>{{(preViewData.totalStatistics.minDuration-preViewData.totalStatistics.minDuration%60)/60}}m{{preViewData.totalStatistics.minDuration%60}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.minDuration-preViewData.totalStatistics.minDuration%60)/60}}m{{preViewData.totalStatistics.minDuration%60}}s</span>
+                    <span v-else>0</span>
                   </div>
                   <div><span>手检最低时长</span></div>
                 </div>
               </div>
             </b-card>
           </b-col>
-          <b-col></b-col>
         </b-row>
       </b-col>
 
@@ -249,12 +251,12 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">查获</div>
-                      <div class="value">{{preViewData.totalStatistics.seizure}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.seizure}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无查获</div>
-                      <div class="value">{{preViewData.totalStatistics.noSeizure}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSeizure}}</div>
                     </div>
                   </div>
                 </div>
@@ -514,8 +516,8 @@
                 length2: -30
               },
               data: [
-                {value: 1500, name: '查获'},
-                {value: 500, name: '无查获'}
+                {value: 0, name: '查获'},
+                {value: 0, name: '无查获'}
               ]
             },
 
@@ -571,12 +573,12 @@
             {
               name: '无查获',
               type: 'bar',
-              data: []
+              data: [0]
             },
             {
               name: '查获',
               type: 'bar',
-              data: []
+              data: [0]
             },
           ]
         },
@@ -631,7 +633,7 @@
               name: '查获',
               type: 'bar',
               barWidth: '30%',
-              data: []
+              data: [0]
             }
           ]
         },
@@ -1083,10 +1085,10 @@
           let message = response.data.message;
           //this.preViewData = [];
           this.preViewData = response.data.data;
-
-          this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.seizure;
-          this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSeizure;
-
+          if(this.preViewData.totalStatistics!=null) {
+            this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.seizure;
+            this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSeizure;
+          }
           if (this.filter.statWidth === 'year') {
             this.barChart2Options.xAxis.data = this.xHour;
           } else {
@@ -1584,7 +1586,7 @@
       .statistics-item {
         display: flex;
         align-items: center;
-        $padding-x: 50px;
+        $padding-x: 40px;
         $padding-y: 20px;
         padding: $padding-y $padding-x;
         justify-content: stretch;

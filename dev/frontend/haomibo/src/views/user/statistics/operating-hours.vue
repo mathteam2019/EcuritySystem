@@ -65,7 +65,7 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{total.day}} {{total.hour}}h: {{total.minute}}m: {{total.second}}s</span></div>
+              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span></div>
               <div><span>累计运行时长</span></div>
             </div>
           </div>
@@ -78,7 +78,7 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{scan.day}} {{scan.hour}}h: {{scan.minute}}m: {{scan.second}}s</span></div>
+              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span></div>
               <div><span>安检仪累计运行时长</span></div>
             </div>
           </div>
@@ -91,7 +91,7 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{judge.day}} {{judge.hour}}h: {{judge.minute}}m: {{judge.second}}s</span></div>
+              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span></div>
               <div><span>判图站累计运行时长</span></div>
             </div>
           </div>
@@ -104,7 +104,8 @@
               <b-img src="/assets/img/hand_check_icon.svg"/>
             </div>
             <div>
-              <div><span>D{{hand.day}} {{hand.hour}}h: {{hand.minute}}m: {{hand.second}}s</span></div>
+              <div><span>D{{handData['day'].value}} {{handData['hour'].value}}h: {{handData['minute'].value}}m: {{handData['second'].value}}s</span>
+              </div>
               <div><span>手检站累计运行时长</span></div>
             </div>
           </div>
@@ -144,21 +145,21 @@
                 </div>
                 <b-row>
                   <b-col class="legend-item">
-                    <div class="value">{{scan.rate}}%</div>
+                    <div class="value">{{scanData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       安检仪累计运行时长
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{hand.rate}}%</div>
+                    <div class="value">{{handData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       手检站累计运行时长
                     </div>
                   </b-col>
                   <b-col class="legend-item">
-                    <div class="value">{{judge.rate}}%</div>
+                    <div class="value">{{judgeData['rate'].value}}%</div>
                     <div class="legend-name">
                       <div class="legend-icon"></div>
                       判图站累计运行时长
@@ -312,15 +313,15 @@
 
       let doublePieChartData = {
         '安检仪累计运行时长': {
-          value: 800,
+          value: 0,
           color: '#1989fa'
         },
         '判图站累计运行时长': {
-          value: 300,
+          value: 0,
           color: '#ff0000',
         },
         '手检站累计运行时长': {
-          value: 200,
+          value: 0,
           color: '#ffd835',
         }
       };
@@ -429,20 +430,20 @@
               name: '安检仪',
               type: 'bar',
               stack: '总量',
-              data: []
+              data: [0]
             },
             {
               name: '判图',
               type: 'bar',
               stack: '总量',
 
-              data: []
+              data: [0]
             },
             {
               name: '手检',
               type: 'bar',
               stack: '总量',
-              data: []
+              data: [0]
             }
           ]
         },
@@ -476,23 +477,72 @@
           {value: 'year', text: "年"},
         ],
 
+        totalData : {
+          'day': {
+            value: 0
+          },
+          'hour': {
+            value: 0
+          },
+          'minute': {
+            value: 0
+          },
+          'second': {
+            value: 0
+          },
+        },
 
-        // TODO: refactor temp table data to api mode
-        tempData: {
-          data: [1, 2, 3, 4, 5].map((e) => {
+        scanData : {
+          'day': {
+            value: 0
+          },
+          'hour': {
+            value: 0
+          },
+          'minute': {
+            value: 0
+          },
+          'second': {
+            value: 0
+          },
+          'rate' : {
+            value: 0
+          }
+        },
 
-            return {
-              id: e,
-              period: '201-1104 00:00:00-20191104 00:59:59',
-            }
-          }),
-          pagination: {
-            total: 5,
-            per_page: 5,
-            current_page: 1,
-            last_page: 1,
-            from: 1,
-            to: 5
+        judgeData : {
+          'day': {
+            value: 0
+          },
+          'hour': {
+            value: 0
+          },
+          'minute': {
+            value: 0
+          },
+          'second': {
+            value: 0
+          },
+          'rate' : {
+            value: 0
+          }
+        },
+
+        handData : {
+          'day': {
+            value: 0
+          },
+          'hour': {
+            value: 0
+          },
+          'minute': {
+            value: 0
+          },
+          'second': {
+            value: 0
+          },
+          'rate' : {
+            value: 0
           }
         },
 
@@ -821,48 +871,34 @@
           this.scan = [];
           this.judge = [];
           this.hand = [];
-          //this.total = [];
-          this.total.second = this.preViewData.totalSeconds % 60;
-          this.total.minute = ((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60;
-          this.total.hour = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.total.day = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.scan.second = this.preViewData.scanSeconds % 60;
-          this.scan.minute = ((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60;
-          this.scan.hour = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.scan.day = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.judge.second = this.preViewData.judgeSeconds % 60;
-          this.judge.minute = ((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60;
-          this.judge.hour = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.judge.day = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.hand.second = this.preViewData.handSeconds % 60;
-          this.hand.minute = ((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60;
-          this.hand.hour = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.hand.day = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.scan.rate = Math.floor(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
-          this.judge.rate = Math.floor(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
-          this.hand.rate = Math.floor(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
+          this.totalData['second'].value = this.preViewData.totalSeconds % 60;
+          this.totalData['minute'].value = ((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60;
+          this.totalData['hour'].value = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.totalData['day'].value = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.scanData['second'].value = this.preViewData.scanSeconds % 60;
+          this.scanData['minute'].value = ((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60;
+          this.scanData['hour'].value = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.scanData['day'].value = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.judgeData['second'].value = this.preViewData.judgeSeconds % 60;
+          this.judgeData['minute'].value = ((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60;
+          this.judgeData['hour'].value = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.judgeData['day'].value = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.handData['second'].value = this.preViewData.handSeconds % 60;
+          this.handData['minute'].value = ((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60;
+          this.handData['hour'].value = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.handData['day'].value = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.doublePieChartOptions.series[0].data[0].value = this.scan.rate;
-          this.doublePieChartOptions.series[0].data[1].value = this.judge.rate;
-          this.doublePieChartOptions.series[0].data[2].value = this.hand.rate;
-          // this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
-          //
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-          //   this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          //   console.log(this.xDay);
-          //   this.bar3ChartOptions.xAxis.data = this.xDay;
-          //   for (let i = 0; i < this.xDay.length; i++) {
-          //
-          //     if (this.preViewData.detailedStatistics[i] != null) {
-          //       this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
-          //       this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
-          //       this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
-          //     }
-          //   }
-          // }
+          this.scanData['rate'].value = Math.floor(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
+          this.judgeData['rate'].value = Math.floor(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
+          this.handData['rate'].value = Math.floor(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
+
+          this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
+          this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
+          this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
+
+
+          
 
         }).catch((error) => {
         });
@@ -961,7 +997,7 @@
     .statistics-item {
       display: flex;
       align-items: center;
-      $padding-x: 50px;
+      $padding-x: 25px;
       $padding-y: 20px;
       padding: $padding-y $padding-x;
       justify-content: stretch;
@@ -988,7 +1024,7 @@
           display: flex;
 
           span {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
           }
         }

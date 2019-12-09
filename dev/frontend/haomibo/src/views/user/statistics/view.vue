@@ -93,8 +93,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.totalScan}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>扫描</span></div>
             </div>
@@ -109,8 +109,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>有效扫描</span></div>
             </div>
@@ -125,8 +125,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>通过</span></div>
             </div>
@@ -141,8 +141,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>报警</span></div>
             </div>
@@ -157,8 +157,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.scanStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>无效扫描</span></div>
             </div>
@@ -176,8 +176,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.judgeStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.totalJudge}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>判图</span></div>
             </div>
@@ -192,8 +192,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.judgeStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.judgeStatistics.noSuspictionJudge}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>无嫌疑</span></div>
             </div>
@@ -208,8 +208,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.totalHandExamination}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>手检</span></div>
             </div>
@@ -224,8 +224,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.noSeizureHandExamination}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>无查获</span></div>
             </div>
@@ -240,8 +240,8 @@
             </div>
             <div>
               <div>
-                <span v-if="preViewData.totalStatistics.handExaminationStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span>
-                <span v-else>None</span>
+                <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.handExaminationStatistics.seizureHandExamination}}</span>
+                <span v-else>0</span>
               </div>
               <div><span>查获</span></div>
             </div>
@@ -287,23 +287,23 @@
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">无效扫描</div>
-                      <div class="value">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.invalidScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">有效扫描</div>
-                      <div class="value">{{preViewData.totalStatistics.scanStatistics.validScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.validScan}}</div>
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">报警</div>
-                      <div class="value">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.alarmScan}}</div>
 
                     </div>
                     <div class="legend-item">
                       <div class="legend-icon"></div>
                       <div class="legend-name">通过</div>
-                      <div class="value">{{preViewData.totalStatistics.scanStatistics.passedScan}}</div>
+                      <div class="value" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.scanStatistics.passedScan}}</div>
                     </div>
                   </div>
                 </div>
@@ -510,11 +510,11 @@
               },
               data: [
                 {
-                  value: 100,
+                  value: 0,
                   name: '无效扫描'
                 },
                 {
-                  value: 500,
+                  value: 0,
                   name: '有效扫描'
                 },
               ]
@@ -537,8 +537,8 @@
                 length2: -15
               },
               data: [
-                {value: 300, name: '报警'},
-                {value: 600, name: '通过'},
+                {value: 0, name: '报警'},
+                {value: 0, name: '通过'},
               ]
             }
           ]
@@ -594,14 +594,14 @@
               name: '报警',
               type: 'bar',
               stack: '总量',
-              data: []
+              data: [0]
             },
             {
               name: '通过',
               type: 'bar',
               stack: '总量',
 
-              data: []
+              data: [0]
             },
             {
               name: '无效扫描',
@@ -965,10 +965,19 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
-          this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
-          this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
-          this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+          if(this.preViewData.totalStatistics!=null && this.preViewData.totalStatistics.scanStatistics!=null) {
+
+            this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.scanStatistics.invalidScan;
+            this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
+            this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
+            this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+          }
+          else {
+            this.doublePieChartOptions.series[0].data[0].value = 0;
+            this.doublePieChartOptions.series[0].data[1].value = 0;
+            this.doublePieChartOptions.series[1].data[0].value = 0;
+            this.doublePieChartOptions.series[1].data[1].value = 0;
+          }
 
           if (this.filter.statWidth === 'year') {
             this.bar3ChartOptions.xAxis.data = this.xHour;
@@ -978,16 +987,20 @@
             this.bar3ChartOptions.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
 
-              if (this.preViewData.detailedStatistics[i] != null) {
+              if (this.preViewData.detailedStatistics[i] != null && this.preViewData.detailedStatistics[i].scanStatistics != null) {
                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
               }
+              else {
+                this.bar3ChartOptions.series[0].data[i] = 0;
+                this.bar3ChartOptions.series[1].data[i] = 0;
+                this.bar3ChartOptions.series[2].data[i] = 0;
+              }
             }
           }
 
-        })
-          .catch((error) => {
+        }).catch((error) => {
           });
       },
 
