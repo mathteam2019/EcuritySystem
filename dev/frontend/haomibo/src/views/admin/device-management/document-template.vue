@@ -112,6 +112,7 @@
                 <template slot="label">{{$t('device-management.template-number')}}<span class="text-danger">*</span>
                 </template>
                 <b-form-input type="text" v-model="basicForm.archivesTemplateNumber"
+                              :state="!$v.basicForm.archivesTemplateNumber.$dirty ? null : !$v.basicForm.archivesTemplateNumber.$invalid"
                               :placeholder="$t('device-management.template-number-placeholder')"/>
                 <div class="invalid-feedback d-block">
                   {{ (submitted && !$v.basicForm.archivesTemplateNumber.required) ?
@@ -121,7 +122,7 @@
               <b-form-group>
                 <template slot="label">{{$t('device-management.template')}}<span class="text-danger">*</span>
                 </template>
-                <b-form-input type="text" v-model="basicForm.templateName"
+                <b-form-input type="text" v-model="basicForm.templateName" :state="!$v.basicForm.templateName.$dirty ? null : !$v.basicForm.templateName.$invalid"
                               :placeholder="$t('device-management.template-name-placeholder')"/>
                 <div class="invalid-feedback d-block">
                   {{ (submitted && !$v.basicForm.templateName.required) ?
@@ -132,7 +133,7 @@
                 <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
                 </template>
                 <b-form-select v-model="basicForm.categoryId" :options="categorySelectOptions"
-                               :disabled="pageStatus === 'show'"
+                               :disabled="pageStatus === 'show'" :state="!$v.basicForm.categoryId.$dirty ? null : !$v.basicForm.categoryId.$invalid"
                                :placeholder="$t('device-management.device-classify-placeholder')" plain/>
                 <div class="invalid-feedback d-block">
                   {{ (submitted && !$v.basicForm.categoryId.required) ?
@@ -655,6 +656,10 @@
             this.basicForm.archiveIndicatorsList.push(item.indicatorsId)
         });
         if (this.basicForm.archiveIndicatorsList.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.not-have-indicators`), {
+            duration: 3000,
+            permanent: false
+          });
           return false;
         }
         let finalLink = this.basicForm.archivesTemplateId > 0 ? 'modify' : 'create';

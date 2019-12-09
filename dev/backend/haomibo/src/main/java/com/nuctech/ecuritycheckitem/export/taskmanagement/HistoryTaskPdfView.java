@@ -151,14 +151,16 @@ public class HistoryTaskPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if (task.getHandUser() != null) {
-                    addTableCell(table, task.getHandUser().getUserName());
+
+
+                if (task.getHandDevice() != null) {
+                    addTableCell(table, task.getHandDevice().getDeviceName());
                 } else {
                     addTableCell(table, "无");
                 }
 
-                if (task.getHandDevice() != null) {
-                    addTableCell(table, task.getHandDevice().getDeviceName());
+                if (task.getHandUser() != null) {
+                    addTableCell(table, task.getHandUser().getUserName());
                 } else {
                     addTableCell(table, "无");
                 }

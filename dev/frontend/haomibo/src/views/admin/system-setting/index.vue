@@ -239,10 +239,14 @@
 
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size')">
-                      <b-form-input v-model="platFormOtherData.storageAlarm"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.storageAlarm"></b-form-input>
                     </b-form-group>
                   </b-col>
-
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
+                      <b-form-input type="number" v-model="platFormOtherData.storageAlarmPercent"></b-form-input>
+                    </b-form-group>
+                  </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.history-save-period')">
                       <b-form-input v-model="platFormOtherData.historyDataCycle"></b-form-input>
@@ -732,10 +736,11 @@
           logMaxNumber: null,
           deviceTrafficSettings: 10,
           storageDetectionCycle: null,
-          storageAlarm: null,
+          storageAlarm: 400,
           historyDataCycle: null,
           deviceTrafficHigh: null,
           deviceTrafficMiddle: null,
+          storageAlarmPercent: 80,
         },
         dataStorageOptions: [
           {value: 'business', text: this.$t('system-setting.storage-business')},

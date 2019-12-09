@@ -204,14 +204,16 @@ public class ProcessTaskExcelView extends BaseExcelView {
                 }
 
                 if(task.getSerHandExamination() != null) {
-                    if (task.getSerHandExamination().getHandUser() != null) {
-                        row.createCell(13).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
+
+
+                    if (task.getSerHandExamination().getHandDevice() != null) {
+                        row.createCell(13).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
                     } else {
                         row.createCell(13).setCellValue("无");
                     }
 
-                    if (task.getSerHandExamination().getHandDevice() != null) {
-                        row.createCell(14).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
+                    if (task.getSerHandExamination().getHandUser() != null) {
+                        row.createCell(14).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
                     } else {
                         row.createCell(14).setCellValue("无");
                     }

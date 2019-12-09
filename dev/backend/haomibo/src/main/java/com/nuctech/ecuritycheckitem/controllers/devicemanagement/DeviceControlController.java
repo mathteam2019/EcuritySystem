@@ -9,7 +9,6 @@
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -25,10 +24,9 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.service.DeviceService;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,7 +42,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -692,6 +689,10 @@ public class DeviceControlController extends BaseController {
         deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDeviceConfigRepository.save(deviceConfig);
 
+        SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
+        scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamRepository.save(scanParam);
+
 
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -813,6 +814,22 @@ public class DeviceControlController extends BaseController {
             }
 
             sysDeviceConfigRepository.delete(sysDeviceConfig);
+        }
+
+
+        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check scan param exist or not
+        if(scanParam != null) {
+            //remove correspond from config.
+            SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
+                    scanParam.getFromParamsList().get(0): null;
+
+            //check from params exist or not
+            if(fromParams != null) {
+                serScanParamsFromRepository.delete(fromParams);
+            }
         }
 
 

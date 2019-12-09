@@ -65,7 +65,6 @@ const getApiManager = function () {
   }, (error) => {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
-    console.log(error);
     app.$notify('error', app.$t(`api-call-error-messages.error-title`), app.$t(`api-call-error-messages.network-error`), {
       duration: 3000,
       permanent: false
@@ -76,7 +75,7 @@ const getApiManager = function () {
   return apiManager;
 };
 
-const getDateTimeWithFormat = (datetime, formatType = 'zh') => {
+const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   if (datetime === "" || datetime == null)
     return "";
 
@@ -93,6 +92,12 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh') => {
     case 'monitor':
       format = 'YYYYMMDD HH:mm';
       break;
+    case 'monitor-diff':
+      let type = '天';
+      if(lang !== 'zh')
+        type = 'D';
+      let diff = moment.utc(moment().diff(moment(String(datetime)))).format(`D[${type}] HH:mm:ss`);
+      return diff;
   }
   return moment(String(datetime)).format(format)
 };
