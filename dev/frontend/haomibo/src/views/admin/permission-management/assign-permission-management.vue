@@ -381,19 +381,20 @@
               <b-col cols="5">
                 <b-row>
                   <b-col cols="6">
-                    <b-form-group class="mb-0">
+                    <b-form-group >
                       <template slot="label">
                         {{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
                         class="text-danger">*</span></template>
                       <b-form-select :disabled="groupPageStatus !== 'create'" v-model="groupForm.userGroup"
+                                     :state="!$v.groupForm.userGroup.$dirty ? null : !$v.groupForm.userGroup.$invalid"
                                      :options="groupUserGroupOptions" plain/>
                       <div class="invalid-feedback d-block">
-                        {{ (submitted &&!$v.groupForm.userGroup.required) ?
+                        {{ (!$v.groupForm.userGroup.required) ?
                         $t('permission-management.assign-permission-management.group.user-group-mandatory') : "&nbsp;"
                         }}
                       </div>
                     </b-form-group>
-                    <b-form-group class="mb-0">
+                    <b-form-group >
                       <template slot="label">{{$t('permission-management.assign-permission-management.group.member')}}&nbsp;<span
                         class="text-danger">*</span></template>
                       <label class="">{{selectedUserGroupMember?selectedUserGroupMember:" "}}</label>
@@ -407,13 +408,14 @@
                 </b-row>
                 <b-row>
                   <b-col cols="9">
-                    <b-form-group class="mw-100 mb-0">
+                    <b-form-group class="mw-100">
                       <template slot="label">
                         {{$t('permission-management.assign-permission-management.group.role')}}&nbsp;<span
                         class="text-danger">*</span></template>
 
                       <v-select :disabled="groupPageStatus === 'show'" class="v-select-custom-style"
                                 v-model="groupForm.role" multiple :options="roleSelectData"
+                                :state="!$v.groupForm.role.$dirty ? null : !$v.groupForm.role.$invalid"
                                 :dir="direction"/>
                       <div class="invalid-feedback d-block">
                         {{ (submitted &&!$v.groupForm.role.required) ?

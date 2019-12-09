@@ -477,6 +477,9 @@ $btn-orange-color: #ff5e00;
   .col-form-label {
     font-weight: bold;
   }
+  .invalid-feedback {
+    display: none!important;
+  }
 }
 
 .form-control {

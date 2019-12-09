@@ -396,10 +396,14 @@
               <div class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
-                  <img src="../../../assets/img/icon_user_graphic.png">
-                  <img src="../../../assets/img/icon_layout.png">
-                  <img src="../../../assets/img/icon_bell.png">
-                  <img src="../../../assets/img/icon_link.png">
+                  <img v-if="item.maxScanCount > item.deviceTrafficHigh" src="../../../assets/img/icon_user_graphic.png">
+                  <img v-else src="../../../assets/img/icon_user_graphic_disabled.png">
+                  <img v-if="false" src="../../../assets/img/icon_layout.png">
+                  <img v-else src="../../../assets/img/icon_layout_disabled.png">
+                  <img v-if="false" src="../../../assets/img/icon_bell.png">
+                  <img v-else src="../../../assets/img/icon_bell_disabled.png">
+                  <img v-if="false" src="../../../assets/img/icon_link.png">
+                  <img v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
               </div>
               <div class="item-body flex-grow-1">
@@ -417,7 +421,7 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
-                    <label class="text-top">远行时长 18天 14:00:21</label>
+                    <label class="text-top">{{$t('device-management.device-monitoring.running-time')}} {{item.runningTimeValue}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
                         <label>{{$t('device-management.site')}}:</label>
@@ -784,6 +788,8 @@
           temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
           temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
           temp.lineChartOptions = this.generateChartData(temp.record,temp.deviceTrafficHigh,temp.deviceTrafficMiddle);
+          temp.maxScanCount = Math.max.apply(Math,temp.record.countList);
+          temp.runningTimeValue = getDateTimeWithFormat(temp.registerTime,'monitor-diff',this.$i18n.locale);
           result.push(temp);
         }
         this.items = result;

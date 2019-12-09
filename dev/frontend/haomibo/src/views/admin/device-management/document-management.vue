@@ -139,7 +139,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="archivesForm.archivesNumber"></b-form-input>
+                  <b-form-input v-model="archivesForm.archivesNumber" :state="!$v.archivesForm.archivesNumber.$dirty ? null : !$v.archivesForm.archivesNumber.$invalid"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesNumber.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -150,7 +150,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.file-name')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="archivesForm.archivesName"></b-form-input>
+                  <b-form-input v-model="archivesForm.archivesName" :state="!$v.archivesForm.archivesName.$dirty ? null : !$v.archivesForm.archivesName.$invalid"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesName.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -161,7 +161,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions"
+                  <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions" :state="!$v.archivesForm.archivesTemplateId.$dirty ? null : !$v.archivesForm.archivesTemplateId.$invalid"
                                  :disabled="pageStatus === 'show'" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesTemplateId.required) ?
