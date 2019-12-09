@@ -503,7 +503,6 @@
           switch (message) {
             case responseMessages['ok']:
               this.categoryData = data;
-
               break;
           }
         });
@@ -622,6 +621,7 @@
                 });
                 this.pageStatus = 'list';
                 this.getCategoryData();
+                this.$refs.deviceClassifyTable.refresh();
                 break;
             }
           })
@@ -680,10 +680,11 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
-                if (this.classifyForm.categoryId > 0)
-                  initialize();
                 this.$refs.deviceClassifyTable.refresh();
                 this.getCategoryData();
+                if (this.classifyForm.categoryId > 0)
+                  initialize();
+
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-children`), {
