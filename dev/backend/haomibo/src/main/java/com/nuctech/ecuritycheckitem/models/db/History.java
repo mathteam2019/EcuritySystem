@@ -66,8 +66,8 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
     String scanPointsmanName;
 
-    @Column(name = "ASSIGNSCAN_ID", length = 20)
-    Long assignscanId;
+//    @Column(name = "ASSIGNSCAN_ID", length = 20)
+//    Long assignscanId;
 
     @Column(name = "ASSIGN_WORKFLOW_ID", length = 20)
     Long assignWorkflowId;

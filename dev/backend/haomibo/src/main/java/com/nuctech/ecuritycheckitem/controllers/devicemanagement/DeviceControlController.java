@@ -692,6 +692,10 @@ public class DeviceControlController extends BaseController {
         deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDeviceConfigRepository.save(deviceConfig);
 
+        SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
+        scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamRepository.save(scanParam);
+
 
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -813,6 +817,22 @@ public class DeviceControlController extends BaseController {
             }
 
             sysDeviceConfigRepository.delete(sysDeviceConfig);
+        }
+
+
+        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check scan param exist or not
+        if(scanParam != null) {
+            //remove correspond from config.
+            SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
+                    scanParam.getFromParamsList().get(0): null;
+
+            //check from params exist or not
+            if(fromParams != null) {
+                serScanParamsFromRepository.delete(fromParams);
+            }
         }
 
 

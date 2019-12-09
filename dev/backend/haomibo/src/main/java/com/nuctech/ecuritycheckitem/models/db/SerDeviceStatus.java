@@ -54,6 +54,14 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @Column(name = "DEVICE_ID", length = 20)
     Long deviceId;
 
+    @Column(name = "DEVICE_ONLINE", length = 20)
+    Integer deviceOnline;
+
+    @Column(name = "DEVICE_LOGIN_TIME")
+    Date deviceLoginTime;
+
+
+
     @Column(name = "FIELD_ID", length = 20)
     Long fieldId;
 
@@ -133,10 +141,7 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     Integer deviceTrafficMiddle;
 
     @javax.persistence.Transient
-    Integer storageAlarm;
-
-    @javax.persistence.Transient
-    Date registerTime;
+    Integer deviceStorageAlarm;
 
     @javax.persistence.Transient
     MonitorRecord record;

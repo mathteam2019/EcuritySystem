@@ -207,25 +207,32 @@ public class DeviceStatusController extends BaseController {
             deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
             deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
             deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
-            storageAlarm = paramList.get(0).getStorageAlarm();
         }
 
         for(int i = 0; i < data.size(); i ++) {
             SerDeviceStatus deviceStatus = data.get(i);
             deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
-            deviceStatus.setStorageAlarm(storageAlarm);
             deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
 
-            SerDeviceRegister serDeviceRegister = serDeviceRegisterRepository.findOne(QSerDeviceRegister.serDeviceRegister
-                    .deviceId.eq(deviceStatus.getDeviceId())).orElse(null);
+            List<SerScanParam> serScanParamList = StreamSupport
+                    .stream(serScanParamRepository.findAll(QSerScanParam.serScanParam
+                            .deviceId.eq(deviceStatus.getDeviceId())).spliterator(), false)
+                    .collect(Collectors.toList());
 
-            Date registyerDate = null;
-
-            if(serDeviceRegister != null) {
-                registyerDate = serDeviceRegister.getRegisterTime();
+            if(serScanParamList != null && serScanParamList.size() > 0) {
+                String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
+                int currentSpace = Integer.parseInt(splitDiskSpace[0]);
+                int totalSpace = Integer.parseInt(splitDiskSpace[1]);
+                int deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
+                int deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                if(currentSpace > deviceStorageAlarm) {
+                    storageAlarm = 1;
+                } else if(currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
+                    storageAlarm = 2;
+                }
+                deviceStatus.setDeviceStorageAlarm(storageAlarm);
             }
-            deviceStatus.setRegisterTime(registyerDate);
         }
 
 

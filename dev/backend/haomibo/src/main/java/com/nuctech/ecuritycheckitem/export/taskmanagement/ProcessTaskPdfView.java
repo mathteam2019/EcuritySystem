@@ -128,14 +128,16 @@ public class ProcessTaskPdfView extends BasePdfView {
 
                 if (task.getSerHandExamination() != null) {
 
-                    if (task.getSerHandExamination().getHandUser() != null) {
-                        addTableCell(table, task.getSerHandExamination().getHandUser().getUserName());
+
+
+                    if (task.getSerHandExamination().getHandDevice() != null) {
+                        addTableCell(table, task.getSerHandExamination().getHandDevice().getDeviceName());
                     } else {
                         addTableCell(table, "无");
                     }
 
-                    if (task.getSerHandExamination().getHandDevice() != null) {
-                        addTableCell(table, task.getSerHandExamination().getHandDevice().getDeviceName());
+                    if (task.getSerHandExamination().getHandUser() != null) {
+                        addTableCell(table, task.getSerHandExamination().getHandUser().getUserName());
                     } else {
                         addTableCell(table, "无");
                     }

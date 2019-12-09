@@ -199,14 +199,16 @@ public class HistoryTaskExcelView extends BaseExcelView {
                     row.createCell(12).setCellValue("无");
                 }
 
-                if (task.getHandUser() != null) {
-                    row.createCell(13).setCellValue(task.getHandUser().getUserName());
+
+
+                if (task.getHandDevice() != null) {
+                    row.createCell(13).setCellValue(task.getHandDevice().getDeviceName());
                 } else {
                     row.createCell(13).setCellValue("无");
                 }
 
-                if (task.getHandDevice() != null) {
-                    row.createCell(14).setCellValue(task.getHandDevice().getDeviceName());
+                if (task.getHandUser() != null) {
+                    row.createCell(14).setCellValue(task.getHandUser().getUserName());
                 } else {
                     row.createCell(14).setCellValue("无");
                 }

@@ -134,9 +134,9 @@ public class ScanParamManagementController extends BaseController {
 
         Long fromDeviceId;
 
-        Long storageAlarm;
+        Integer storageAlarm;
 
-        Long storageAlarmPercent;
+        Integer storageAlarmPercent;
 
     }
 
@@ -315,8 +315,8 @@ public class ScanParamManagementController extends BaseController {
         serScanParam.setChestBlurring(requestBody.getChestBlurring());
         serScanParam.setHipBlurring(requestBody.getHipBlurring());
         serScanParam.setGroinBlurring(requestBody.getGroinBlurring());
-        serScanParam.setStorageAlarm(requestBody.getStorageAlarm());
-        serScanParam.setStorageAlarmPercent(requestBody.getStorageAlarmPercent());
+        serScanParam.setDeviceStorageAlarm(requestBody.getStorageAlarm());
+        serScanParam.setDeviceStorageAlarmPercent(requestBody.getStorageAlarmPercent());
 
         // Add edited info.
         serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
