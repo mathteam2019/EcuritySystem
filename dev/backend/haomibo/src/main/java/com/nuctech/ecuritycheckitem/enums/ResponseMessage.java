@@ -29,6 +29,7 @@ public enum ResponseMessage {
     SERVER_ERROR("server_error"),
     HAS_CHILDREN("has_children"),
     USED_USER_ACCOUNT("used_user_account"),
+    USED_MOBILE("used_mobile"),
     FORBIDDEN("forbidden"),
     BAD_REQUEST("bad_request"),
     HAS_USERS("has_users"),

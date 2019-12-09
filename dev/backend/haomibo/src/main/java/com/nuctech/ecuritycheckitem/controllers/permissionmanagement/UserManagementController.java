@@ -434,6 +434,16 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        // Check if user email is duplicated.
+        if (sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()))) {
+            return new CommonResponseBody(ResponseMessage.USED_EMAIL);
+        }
+
+        // Check if user phone number is duplicated.
+        if (sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()))) {
+            return new CommonResponseBody(ResponseMessage.USED_MOBILE);
+        }
+
         SysUser sysUser = requestBody.convert2SysUser();
 
         // Process portrait file.
