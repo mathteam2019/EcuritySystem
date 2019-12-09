@@ -142,7 +142,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-no')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.deviceSerial"></b-form-input>
+                  <b-form-input v-model="mainForm.deviceSerial" :state="!$v.mainForm.deviceSerial.$dirty ? null : !$v.mainForm.deviceSerial.$invalid"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.deviceSerial.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -153,7 +153,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.deviceName"></b-form-input>
+                  <b-form-input v-model="mainForm.deviceName" :state="!$v.mainForm.deviceName.$dirty ? null : !$v.mainForm.deviceName.$invalid"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.deviceName.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -165,7 +165,7 @@
                   <template slot="label">{{$t('device-management.device-list.archive')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="mainForm.archiveId" :options="archivesSelectOptions" plain/>
+                  <b-form-select v-model="mainForm.archiveId" :state="!$v.mainForm.archiveId.$dirty ? null : !$v.mainForm.archiveId.$invalid" :options="archivesSelectOptions" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.archiveId.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}

@@ -487,7 +487,8 @@
       "added-successfully" : "模板创建成功",
       "delete-prompt": "是否失效该模板",
       "make-inactive-prompt": "是否失效该模板",
-      "has-archives": "已经有档案"
+      "has-archives": "已经有档案",
+      "not-have-indicators" : "没有指标"
     },
     "device-table": {
       "device-info": "设备信息",
@@ -571,7 +572,8 @@
       "emergency-stop":"急停",
       "footstep-alarm":"脚步报警",
       "data-monitor":"流量监控",
-      "landing-time":"登陆时间"
+      "landing-time":"登陆时间",
+      "running-time":"远行时长"
     }
   },
   "system-setting": {
@@ -675,6 +677,7 @@
       "platform-security-instrument": "平台、安检仪",
       "storage-check-period": "存储空间检测周期",
       "storage-warning-size": "存储空间预警",
+      "storage-warning-size-percentage": "存储空间预警百分比",
       "history-save-period": "历史数据保存周期",
       "configuration": "配置",
       "cover-correction-time": "罩板校正时间",
@@ -1006,6 +1009,7 @@
       "inspection": "查验",
       "updated-successful": "远行配置改变成功",
       "deleted-successful": "原型配置删除成功"
+
     },
     "field-config": {
       "updated-successful": "场地配置改变成功"
