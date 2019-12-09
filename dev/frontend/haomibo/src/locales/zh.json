@@ -342,7 +342,9 @@
       "user-group-delete-prompt":"是否删除该人员组",
       "inactive-prompt": "是否失效该",
       "block-prompt": "block-prompt",
-      "user-group-modified-successfully": "人员组修改成功"
+      "user-group-modified-successfully": "人员组修改成功",
+      "used-email":"邮箱已经使用",
+      "used-phone":"电话已经使用"
     },
 
     "permission-control": {
