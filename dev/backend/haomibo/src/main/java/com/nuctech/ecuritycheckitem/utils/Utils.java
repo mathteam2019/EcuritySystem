@@ -21,6 +21,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -156,6 +157,26 @@ public class Utils {
             // Hope there won't any exception for this.
             e.printStackTrace();
         }
+    }
+
+    public String saveImageFile(MultipartFile portraitFile) {
+        if (portraitFile != null && !portraitFile.isEmpty()) {
+            try {
+                byte[] bytes = portraitFile.getBytes();
+                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
+                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
+
+                boolean isSucceeded = saveFile(directoryPath, fileName, bytes);
+
+                if (isSucceeded) {
+                    // Save file name.
+                    return Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
     }
 
 }

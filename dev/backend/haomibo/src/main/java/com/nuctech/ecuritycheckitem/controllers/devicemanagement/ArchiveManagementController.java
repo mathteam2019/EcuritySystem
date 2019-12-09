@@ -8,11 +8,8 @@
  */
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.mysql.cj.xdevapi.JsonArray;
-import com.mysql.cj.xdevapi.JsonParser;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -22,7 +19,9 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.querydsl.core.BooleanBuilder;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,8 +39,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,18 +47,17 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/document-management")
 public class ArchiveManagementController extends BaseController {
+
+    @Autowired
+    ArchiveService archiveService;
+
     /**
      * Archive datatable request body.
      */
@@ -197,7 +193,7 @@ public class ArchiveManagementController extends BaseController {
 
         String json;
 
-        SerArchive convert2SerArchive(Long createdBy, Date createdTime) {
+        SerArchive convert2SerArchive() {
 
             return SerArchive
                     .builder()
@@ -209,11 +205,8 @@ public class ArchiveManagementController extends BaseController {
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SerArchive.Status.INACTIVE)
-                    .createdBy(createdBy)
-                    .createdTime(createdTime)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
 
     }
@@ -251,25 +244,7 @@ public class ArchiveManagementController extends BaseController {
         ArchiveGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(ArchiveGetByFilterAndPageRequestBody.Filter filter) {
-        QSerArchive builder = QSerArchive.serArchive;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getArchivesName())) {
-                predicate.and(builder.archivesName.contains(filter.getArchivesName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (filter.getCategoryId() != null) {
-                predicate.and(builder.archiveTemplate.deviceCategory.categoryId.eq(filter.getCategoryId()));
-            }
-        }
-
-        return predicate;
-    }
 
     /**
      * Archive datatable data.
@@ -284,16 +259,22 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String archiveName = "";
+        String status = "";
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName();
+            status = requestBody.getFilter().getStatus();
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
 
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
+        int currentPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = serArchiveRepository.count(predicate);
-        List<SerArchive> data = serArchiveRepository.findAll(predicate, pageRequest).getContent();
-
+        currentPage --;
+        PageResult<SerArchive> result = archiveService.getArchiveListByPage(archiveName, status, categoryId,
+                currentPage, perPage);
+        long total = result.getTotal();
+        List<SerArchive> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -333,21 +314,12 @@ public class ArchiveManagementController extends BaseController {
         }
 
         // Check if archive is existing.
-        Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
-                serArchive.archiveId.eq(requestBody.getArchiveId()));
-        if (!optionalSerArchive.isPresent()) {
+        if (!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SerArchive serArchive = optionalSerArchive.get();
+        archiveService.updateStatus(requestBody.getArchiveId(), requestBody.getStatus());
 
-        // Update status.
-        serArchive.setStatus(requestBody.getStatus());
-
-        // Add edited info.
-        serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        serArchiveRepository.save(serArchive);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -367,64 +339,14 @@ public class ArchiveManagementController extends BaseController {
 
 
         // Check if template is valid
-        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
-                .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
+        if (!archiveService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         SerArchive serArchive = requestBody.convert2SerArchive();
 
-        // Process portrait file.
-        MultipartFile portraitFile = requestBody.getImageUrl();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Save file name.
-                    serArchive.setImageUrl(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-        // Add created info.
-        serArchive.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        serArchiveRepository.save(serArchive);
-
-        //Object[] arrayReceipients = JSONArray.toArray (JSONArray.fromObject(requestBody.getJsonArchiveValueList()));
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            SerArchive jsonArchive = mapper.readValue(requestBody.getJson(), SerArchive.class);
-            List<SerArchiveValue> archiveValueList = jsonArchive.getArchiveValueList();
-            if(archiveValueList != null) {
-                for(int i = 0; i < archiveValueList.size(); i ++) {
-                    SerArchiveValue archiveValue = archiveValueList.get(i);
-                    archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                    archiveValue.setArchiveId(serArchive.getArchiveId());
-                    serArchiveValueRepository.save(archiveValue);
-                }
-            }
-        }catch(Exception ex) {
-            ex.printStackTrace();
-        }
-
-
-        //add indicators value
-
-
+        archiveService.createSerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -443,84 +365,22 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        //check archive is valid
+        if(!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
 
         // Check if template is valid
-        if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
-                .archivesTemplateId.eq(requestBody.getArchivesTemplateId()))) {
+        if (!archiveService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SerArchive serArchive = requestBody.convert2SerArchive();
 
-        SerArchive oldSerArchive = serArchiveRepository.findOne(QSerArchive.serArchive
-                .archiveId.eq(requestBody.getArchiveId())).orElse(null);
-
-        if(sysDeviceRepository.exists(QSysDevice.
-                sysDevice.archiveId.eq(oldSerArchive.getArchiveId()))) {
+        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
-
-        //check if archive exist
-        if(oldSerArchive == null) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-
-        SerArchive serArchive = requestBody.convert2SerArchive(oldSerArchive.getCreatedBy(), oldSerArchive.getCreatedTime());
-
-        // Process portrait file.
-        MultipartFile portraitFile = requestBody.getImageUrl();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Save file name.
-                    serArchive.setImageUrl(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        // Add edit info.
-        serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-
-
-        //remove original indicators value
-        if(oldSerArchive.getArchiveValueList() != null) {
-            for(int i = 0; i < oldSerArchive.getArchiveValueList().size(); i ++) {
-                SerArchiveValue archiveValue = oldSerArchive.getArchiveValueList().get(i);
-                serArchiveValueRepository.delete(archiveValue);
-            }
-        }
-
-        //add new indicators value
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            SerArchive jsonArchive = mapper.readValue(requestBody.getJson(), SerArchive.class);
-            List<SerArchiveValue> archiveValueList = jsonArchive.getArchiveValueList();
-            for(int i = 0; i < archiveValueList.size(); i ++) {
-                SerArchiveValue archiveValue = archiveValueList.get(i);
-                archiveValue.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                archiveValue.setArchiveId(serArchive.getArchiveId());
-                serArchiveValueRepository.save(archiveValue);
-            }
-        } catch(Exception ex) {
-
-        }
-
-
-        serArchiveRepository.save(serArchive);
-
+        archiveService.modifySerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -538,28 +398,17 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SerArchive serArchive = serArchiveRepository.findOne(QSerArchive.serArchive
-                .archiveId.eq(requestBody.getArchiveId())).orElse(null);
-
         //check archive exist or not
-        if(serArchive == null) {
+        if(!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(sysDeviceRepository.exists(QSysDevice.
-                sysDevice.archiveId.eq(serArchive.getArchiveId()))) {
+        //check used device
+        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
-
-        //remove it's indicators value
-        if(serArchive.getArchiveValueList() != null) {
-            for(int i = 0; i < serArchive.getArchiveValueList().size(); i ++) {
-                serArchiveValueRepository.delete(serArchive.getArchiveValueList().get(i));
-            }
-        }
-
-        serArchiveRepository.delete(serArchive);
+        archiveService.removeSerArchive(requestBody.getArchiveId());
 
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -574,10 +423,9 @@ public class ArchiveManagementController extends BaseController {
     public Object archiveGetAll() {
 
 
-        List<SerArchive> serArchiveList = serArchiveRepository.findAll();
+        List<SerArchive> serArchiveList = archiveService.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serArchiveList));
-
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
@@ -587,28 +435,6 @@ public class ArchiveManagementController extends BaseController {
         return value;
     }
 
-    private List<SerArchive> getExportList(List<SerArchive> archiveList, boolean isAll, String idList) {
-        List<SerArchive> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < archiveList.size(); i ++) {
-                SerArchive archive = archiveList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(archive.getArchiveId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(archive);
-                }
-            }
-        } else {
-            exportList = archiveList;
-        }
-        return exportList;
-    }
 
     /**
      * Archive generate file request.
@@ -622,14 +448,16 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String archiveName = "";
+        String status = "";
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName();
+            status = requestBody.getFilter().getStatus();
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
 
-        //get all archive list
-        List<SerArchive> archiveList = StreamSupport
-                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerArchive> exportList = getExportList(archiveList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
 
@@ -656,14 +484,16 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String archiveName = "";
+        String status = "";
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName();
+            status = requestBody.getFilter().getStatus();
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
 
-        //get all archive list
-        List<SerArchive> archiveList = StreamSupport
-                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerArchive> exportList = getExportList(archiveList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(res);
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
 

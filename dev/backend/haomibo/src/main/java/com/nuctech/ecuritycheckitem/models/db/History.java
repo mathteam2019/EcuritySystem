@@ -57,7 +57,7 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "SCAN_START_TIME", nullable = false)
     Date scanStartTime;
 
-    @Column(name = "SCAN_END_TIME", length = 30)
+    @Column(name = "SCAN_END_TIME", nullable = false)
     Date scanEndTime;
 
     @Column(name = "SCAN_POINTSMAN_ID", length = 20)
@@ -66,35 +66,59 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "SCAN_POINTSMAN_NAME", length = 50)
     String scanPointsmanName;
 
-//    @Column(name = "ASSIGNSCAN_ID", length = 20)
-//    Long assignscanId;
+    @Column(name = "ASSIGN_JUDGE_ID", length = 20)
+    Long assignJudgeId;
 
-    @Column(name = "ASSIGN_WORKFLOW_ID", length = 20)
-    Long assignWorkflowId;
+    @Column(name = "ASSIGN_HAND_ID", length = 20)
+    Long assignHandId;
 
-    @Column(name = "ASSIGN_USER_ID", length = 20)
-    Long assignUserId;
+    @Column(name = "ASSIGN_WORKFLOW_JUDGE_ID", length = 20)
+    Long assignWorkflowJudgeId;
 
-    @Column(name = "ASSIGN_USER_NAME", length = 50)
-    String assignUserName;
+    @Column(name = "ASSIGN_WORKFLOW_HAND_ID", length = 20)
+    Long assignWorkflowHandId;
 
-    @Column(name = "ASSIGN_JUDGE_DEVICE_ID", length = 10)
-    String assignJudgeDeviceId;
+    @Column(name = "ASSIGN_USER_JUDGE_ID", length = 20)
+    Long assignUserJudgeId;
 
-    @Column(name = "ASSIGN_HAND_DEVICE_ID", length = 10)
-    String assignHandDeviceId;
+    @Column(name = "ASSIGN_USER_JUDGE_NAME", length = 50)
+    String assignUserJudgeName;
 
-    @Column(name = "ASSIGN_START_TIME", nullable = false)
-    Date assignStartTime;
+    @Column(name = "ASSIGN_USER_HAND_ID", length = 20)
+    Long assignUserHandId;
 
-    @Column(name = "ASSIGN_END_TIME", nullable = false)
-    Date assignEndTime;
+    @Column(name = "ASSIGN_USER_HAND_NAME", length = 50)
+    String assignUserHandName;
 
-    @Column(name = "ASSIGN_TIMEOUT", length = 10)
-    String assignTimeout;
+    @Column(name = "ASSIGN_JUDGE_DEVICE_ID", length = 20)
+    Long assignJudgeDeviceId;
 
-    @Column(name = "ASSIGN_STATUS", length = 10)
-    String assignStatus;
+    @Column(name = "ASSIGN_HAND_DEVICE_ID", length = 20)
+    Long assignHandDeviceId;
+
+    @Column(name = "ASSIGN_JUDGE_START_TIME", nullable = false)
+    Date assignJudgeStartTime;
+
+    @Column(name = "ASSIGN_JUDGE_END_TIME", nullable = false)
+    Date assignJudgeEndTime;
+
+    @Column(name = "ASSIGN_HAND_START_TIME", nullable = false)
+    Date assignHandStartTime;
+
+    @Column(name = "ASSIGN_HAND_END_TIME", nullable = false)
+    Date assignHandEndTime;
+
+    @Column(name = "ASSIGN_JUDGE_TIMEOUT", length = 10)
+    String assignJudgeTimeout;
+
+    @Column(name = "ASSIGN_HAND_TIMEOUT", length = 10)
+    String assignHandTimeout;
+
+    @Column(name = "ASSIGN_JUDGE_STATUS", length = 10)
+    String assignJudgeStatus;
+
+    @Column(name = "ASSIGN_HAND_STATUS", length = 10)
+    String assignHandStatus;
 
     @Column(name = "JUDGE_ID", length = 20)
     Long judgeId;
@@ -144,8 +168,8 @@ public class History extends BaseEntity implements Serializable {
     @Column(name = "HAND_COLLECT_SIGN", length = 10)
     String handCollectSign;
 
-    @Column(name = "HAND_ATTACHED_ID", length = 20)
-    Long handAttachedId;
+    @Column(name = "HAND_ATTACHED", length = 50)
+    String handAttached;
 
     @Column(name = "HAND_COLLECT_LABEL", length = 10)
     String handCollectLabel;
@@ -167,6 +191,7 @@ public class History extends BaseEntity implements Serializable {
 
     @Column(name = "JUDGE_STATUS", length = 10)
     String judgeStatus;
+
 
     @OneToOne()
     @JoinColumn(name = "MODE", referencedColumnName = "MODE_ID", insertable = false, updatable = false)

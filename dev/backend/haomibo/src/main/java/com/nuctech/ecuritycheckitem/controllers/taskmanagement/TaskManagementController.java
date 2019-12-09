@@ -14,15 +14,12 @@ import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.TaskService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
-import io.swagger.models.auth.In;
 import lombok.*;
-import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -117,13 +114,13 @@ public class TaskManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class TaskGetByFilterAndPageRequestBody {
+    public static class TaskGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
         @NoArgsConstructor
         @AllArgsConstructor
-        static class Filter {
+        public static class Filter {
             String taskNumber;
             Long mode;
             String status;
@@ -234,16 +231,17 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
+        long total = 0;
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = serTaskRespository.count(predicate);
-        List<SerTask> data = serTaskRespository.findAll(predicate, pageRequest).getContent();
+        List<SerTask> data = new ArrayList<>();
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), currentPage, perPage);
+        try {
+            data = (List<SerTask>) result.get("data");
+            total = Integer.parseInt(result.get("total").toString());
+        }
+        catch (Exception e) { }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -347,16 +345,14 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all pending case deal list
-        List<SerTask> taskList = StreamSupport
-                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerTask> taskList = new ArrayList<>();
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), null, null);
+        try {
+            taskList = (List<SerTask>) result.get("data");
+        }
+        catch (Exception e) { }
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
 
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
 
@@ -382,13 +378,12 @@ public class TaskManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all pending case deal list
-        List<SerTask> taskList = StreamSupport
-                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerTask> taskList = new ArrayList<>();
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), null, null);
+        try {
+            taskList = (List<SerTask>) result.get("data");
+        }
+        catch (Exception e) { }
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         ProcessTaskPdfView.setResource(res);

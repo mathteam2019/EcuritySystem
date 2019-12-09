@@ -12,6 +12,7 @@ package com.nuctech.ecuritycheckitem.controllers;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.TaskService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -168,6 +169,9 @@ public class BaseController {
 
     @Autowired
     public SerDeviceRegisterRepository serDeviceRegisterRepository;
+
+    @Autowired
+    public TaskService taskService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
