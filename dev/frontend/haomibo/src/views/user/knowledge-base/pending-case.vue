@@ -1,10 +1,14 @@
 <style lang="scss">
-  .rounded-span{
+  .rounded-span {
     width: 20px;
     height: 20px;
     border-radius: 10px;
     cursor: pointer;
     background-color: #007bff;
+  }
+  .operation-icon {
+    width: 24px;
+    height: 24px;
   }
 </style>
 <template>
@@ -12,7 +16,7 @@
     <div class="breadcrumb-container">
       <b-row>
         <b-colxx xxs="12">
-          <piaf-breadcrumb />
+          <piaf-breadcrumb/>
         </b-colxx>
       </b-row>
     </div>
@@ -29,13 +33,13 @@
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.operating-mode')">
-                  <b-form-select v-model="filter.modeName"  :options="modeOptions" plain/>
+                  <b-form-select v-model="filter.modeName" :options="modeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-result')">
-                  <b-form-select v-model="filter.taskResult"  :options="resultTypeOptions" plain/>
+                  <b-form-select v-model="filter.taskResult" :options="resultTypeOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -44,7 +48,7 @@
                 </b-form-group>
               </b-col>
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded" >
+                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
                         <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
                       </span>
               </b-col>
@@ -86,52 +90,61 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="pendingListTable"
-                track-by = "caseDealId"
+                track-by="caseDealId"
                 :api-url="pendingListTableItems.apiUrl"
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
-                @vuetable:checkbox-toggled="toggledChbox(payload, dataItem)"
+                @vuetable:checkbox-toggled-all = "onCheckEvent"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
-                    <span class="cursor-p text-primary">
-                      {{ props.rowData.task.taskNumber}}
+                    <span class="cursor-p text-primary" v-if="props.rowData.task!=null">
+                      {{props.rowData.task.taskNumber}}
                     </span>
+                    <span v-else> </span>
                 </template>
                 <template slot="scanImage" slot-scope="props">
-                  <b-img :src="props.rowData.scanImage.imageUrl" class="operation-icon" />
+                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl" class="operation-icon" />
+                  <b-img v-else/>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="filter.modeName==null">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
-                  </div>
-                  <div v-if="filter.modeName==='security'">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                  </div>
-                  <div v-if="filter.modeName==='security+hand'">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                  <div v-if="props.rowData.workMode==null"> </div>
+                  <div v-else>
+                    <div v-if="props.rowData.workMode.modeName==='1000001304'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001301'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001302'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001303'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
                   </div>
                 </template>
                 <template slot="operating" slot-scope="props">
                   <div>
-                  <b-button
-                    size="sm"
-                    variant="success default btn-square"
-                    @click="onAction('success', props.rowData.caseId)">
-                    <i class="icofont-check-alt"></i>
-                  </b-button>
-                  <b-button
-                    size="sm"
-                    variant="danger default btn-square"
-                    @click="onAction('dismiss', props.rowData.caseId)">
-                    <i class="icofont-ban"></i>
-                  </b-button>
+                    <b-button
+                      size="sm"
+                      variant="success default btn-square"
+                      @click="onAction('success', props.rowData.caseId)">
+                      <i class="icofont-check-alt"></i>
+                    </b-button>
+                    <b-button
+                      size="sm"
+                      variant="danger default btn-square"
+                      @click="onAction('dismiss', props.rowData.caseId)">
+                      <i class="icofont-ban"></i>
+                    </b-button>
                   </div>
                 </template>
               </vuetable>
@@ -171,7 +184,9 @@
     },
     data() {
       return {
-        isExpanded:false,
+        isExpanded: false,
+        isCheckAll:false,
+        idList:[],
         filter: {
           fieldId : null,
           caseStatus: 'submit_approval',
@@ -187,20 +202,24 @@
         },
         siteData: [],
         modeOptions: [
-          {value: '1', text: this.$t('knowledge-base.security-instrument')},
-          {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test')},
-          {value: '2', text: this.$t('knowledge-base.security-instrument-and-hand-test-and-device')},
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: '1000001304', text: '安检仪+审图端+手检端'},
+          {value: '1000001301', text: '安检仪+(本地手检)'},
+          {value: '1000001302', text: '安检仪+手检端'},
+          {value: '1000001303', text: '安检仪+审图端'},
         ],
-        siteOptions:[
+        siteOptions: [
           {value: 'male', text: this.$t('knowledge-base.all')},
           {value: 'female', text: this.$t('knowledge-base.airport')},
           {value: 'unknown', text: this.$t('knowledge-base.port')},
           {value: 'unknown', text: this.$t('knowledge-base.land-border')},
         ],
-        resultTypeOptions:[
-          {value: 'male', text: this.$t('knowledge-base.no-suspect')},
-          {value: 'female', text: this.$t('knowledge-base.seized')},
-          {value: 'unknown', text: this.$t('knowledge-base.no-seized')},
+        resultTypeOptions: [
+	{value: null, text: this.$t('personal-inspection.all')},
+	{value: 'doubt', text: this.$t('knowledge-base.suspect')},
+          {value: 'nodoubt', text: this.$t('knowledge-base.no-suspect')},
+          {value: 'seized', text: this.$t('knowledge-base.seized')},
+          {value: 'noseizure', text: this.$t('knowledge-base.no-seized')},
         ],
         onSiteOption: [],
         pendingListTableItems: {
@@ -238,50 +257,65 @@
               dataClass: 'text-center',
             },
             {
-              name: 'handResult',
+              name: 'handTaskResult',
               title: this.$t('knowledge-base.task-result'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (handTaskResult) => {
+
+                const dictionary = {
+                  "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
+                  "seized": `<span style="color:#e8a23e;">有查获</span>`,
+                  "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
+                  "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
+                  "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
+                };
+
+                if(handTaskResult==null) return '';
+                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+                return dictionary[handTaskResult];
+              }
             },
             {
               name: 'scanDevice',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (scanDevice) => {
-                    if(scanDevice==null)  return '';
-                    return scanDevice.field.fieldDesignation;
-                }
+              callback: (scanDevice) => {
+                if (scanDevice == null) return '';
+                    if(scanDevice.field==null)  return '';
+                return scanDevice.field.fieldDesignation;
+              }
             },
             {
               name: 'scanDevice',
               title: this.$t('knowledge-base.security-instrument'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (scanDevice) => {
-                    if(scanDevice==null)  return '';
-                    return scanDevice.deviceName;
-                }
+              callback: (scanDevice) => {
+                if (scanDevice == null) return '';
+                return scanDevice.deviceName;
+              }
             },
             {
               name: 'judgeDevice',
               title: this.$t('knowledge-base.inspection-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (judgeDevice) => {
-                    if(judgeDevice==null)  return '';
-                    return judgeDevice.deviceName;
-                }
+              callback: (judgeDevice) => {
+                if (judgeDevice == null) return '';
+                return judgeDevice.deviceName;
+              }
             },
             {
               name: 'handDevice',
               title: this.$t('knowledge-base.hand-inspection-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (handDevice) => {
-                    if(handDevice==null)  return '';
-                    return handDevice.deviceName;
-                }
+              callback: (handDevice) => {
+                if (handDevice == null) return '';
+                return handDevice.deviceName;
+              }
             },
             {
               name: 'handGoods',
@@ -323,6 +357,34 @@
       }
     },
     methods: {
+      onCheckEvent(){
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.pendingListTable.selectedTo.length;
+        console.log(cnt);
+        if(cnt === 0){
+          this.isCheckAll = false;
+        }
+        else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+        // console.log(isCheck);
+        // if (isCheck === false) {
+        //   console.log(this.idList.length);
+        //   // for (let i =0; i<this.idList.length; i++){
+        //   //   this.$refs.pendingListTable.selectedTo.push(this.idList[i]);
+        //   // }
+        //   this.$refs.pendingListTable.selectedTo.push(12);
+        //   console.log(this.$refs.pendingListTable.selectedTo);
+        //   this.isCheckAll = true;
+        // }
+        // else {
+        //   this.$refs.pendingListTable.selectedTo = [];
+        //   this.isCheckAll = false;
+        // }
+      },
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -341,113 +403,144 @@
       onSearchButton() {
         this.$refs.pendingListTable.refresh();
       },
-      onGenerateExcelButton(){
-          getApiManager()
-              .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
-                  'isAll' : true,
-                  'idList' : '',
-                  'exportType' : 'excel',
-              }, {
-                  responseType: 'blob'
-              })
-              .then((response) => {
-                  let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-                  let fileLink = document.createElement('a');
-
-                  fileLink.href = fileURL;
-                  fileLink.setAttribute('download', 'knowledge-pending.xlsx');
-                  document.body.appendChild(fileLink);
-
-                  fileLink.click();
-              })
-              .catch(error => {
-                  throw new Error(error);
-              });
-      },
-
-        onGeneratePdfButton(){
-            getApiManager()
-                .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
-                    'isAll' : true,
-                    'idList' : '',
-                    'exportType' : 'pdf',
-                }, {
-                    responseType: 'blob'
-                })
-                .then((response) => {
-                    let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-                    let fileLink = document.createElement('a');
-
-                    fileLink.href = fileURL;
-                    fileLink.setAttribute('download', 'knowledge-pending.pdf');
-                    document.body.appendChild(fileLink);
-
-                    fileLink.click();
-                })
-                .catch(error => {
-                    throw new Error(error);
-                });
-
-
-        },
       onResetButton(){
         this.filter = {
             taskNumber: null,
             modeName: null,
             taskResult: null,
+	    fieldId:null,
             fieldDesignation:null,
-          fieldId : null,
             handGoods:null,
         };
-        
+        //this.$refs.pendingListTable.refresh();
       },
 
-        transform(response) {
+      onGenerateExcelButton(){
+        let str = "";
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.pendingListTable.selectedTo.length;
+          str = str + this.$refs.pendingListTable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.pendingListTable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
+            'isAll' : this.isCheckAll,
+            'filter' : {"caseStatus": 'submit_approval'},
+            'exportType' : 'excel',
+            'idList' : str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
 
-            let transformed = {};
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'knowledge-pending.xlsx');
+            document.body.appendChild(fileLink);
 
-            let data = response.data;
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
 
-            transformed.pagination = {
-                total: data.total,
-                per_page: data.per_page,
-                current_page: data.current_page,
-                last_page: data.last_page,
-                from: data.from,
-                to: data.to
-            };
+      onGeneratePdfButton(){
+        let str = "";
+
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.pendingListTable.selectedTo.length;
+          str = str + this.$refs.pendingListTable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.pendingListTable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/generate/pending/print`, {
+            'isAll' : this.isCheckAll,
+            'filter' : {"caseStatus": 'submit_approval'},
+            'exportType' : 'pdf',
+            'idList' : str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+      transform(response) {
+
+        let transformed = {};
+
+        let data = response.data;
+
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
 
             transformed.data = [];
+            //transformed.idList = [];
             let temp;
+            let idTemp;
             for (let i = 0; i < data.data.length; i++) {
                 temp = data.data[i];
-                transformed.data.push(temp)
+                idTemp = data.data[i].caseDealId;
+                temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
+                transformed.data.push(temp);
+                this.idList.push(idTemp);
+                if(this.isCheckAll === true){
+                  this.$refs.pendingListTable.selectedTo.push(idTemp);
+                }
             }
 
-            return transformed
+        return transformed
 
-        },
+      },
 
       pendingListTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-          console.log(this.filter.taskNumber);
-          console.log(this.filter.modeName);
-          console.log(this.filter.taskResult);
-          console.log(this.filter.fieldDesignation);
-          console.log(this.filter.handGoods);
-
-          return getApiManager().post(apiUrl, {
+        return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
+          perPage: this.pendingListTableItems.perPage,
 
           filter: {
-              caseStatus:this.filter.caseStatus,
-              taskNumber:this.filter.taskNumber,
-              modeName: this.filter.modeName,
-              taskResult: this.filter.taskResult,
-              fieldDesignation: this.filter.fieldDesignation,
-              handGoods: this.filter.handGoods,
+            caseStatus: this.filter.caseStatus,
+            taskNumber: this.filter.taskNumber,
+            modeName: this.filter.modeName,
+            taskResult: this.filter.taskResult,
+            fieldDesignation: this.filter.fieldDesignation,
+            handGoods: this.filter.handGoods,
           },
-          perPage: this.pendingListTableItems.perPage,
         });
       },
       onBlackListTablePaginationData(paginationData) {
@@ -459,61 +552,60 @@
 
       onAction(action, data) { // called when any action button is called from table
 
-            let successItem = () => {
+        let successItem = () => {
 
-                this.actionFilter = {
-                    caseId:data,
-                    status: "success_approval",
-                };
-            };
+          this.actionFilter = {
+            caseId: data,
+            status: "success_approval",
+          };
+        };
 
-            let dismissItem = () => {
-                this.actionFilter = {
-                    caseId:data,
-                    status: "dismiss",
-                };
-            };
+        let dismissItem = () => {
+          this.actionFilter = {
+            caseId: data,
+            status: "dismiss",
+          };
+        };
 
-            let activateItem = () => {
-                // call api
-                getApiManager()
-                    .post(`${apiBaseUrl}/knowledge-base/update-status`, {
-                        'caseId': this.actionFilter.caseId,
-                        'status': this.actionFilter.status,
-                    })
-                    .then((response) => {
-                        let message = response.data.message;
-                        let data = response.data.data;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                this.$refs.pendingListTable.refresh();
-                                break;
+        let activateItem = () => {
+          // call api
+          getApiManager()
+            .post(`${apiBaseUrl}/knowledge-base/update-status`, {
+              'caseId': this.actionFilter.caseId,
+              'status': this.actionFilter.status,
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  this.$refs.pendingListTable.refresh();
+                  break;
 
-                        }
-                    })
-                    .catch((error) => {
-                    });
-
-
-            };
+              }
+            })
+            .catch((error) => {
+            });
 
 
+        };
 
-            switch (action) {
-                case 'success':
-                    successItem();
-                    activateItem();
-                    break;
-                case 'dismiss':
-                    dismissItem();
-                    activateItem();
-                    break;
-            }
-        },
+
+        switch (action) {
+          case 'success':
+            successItem();
+            activateItem();
+            break;
+          case 'dismiss':
+            dismissItem();
+            activateItem();
+            break;
+        }
+      },
     }
   }
 </script>

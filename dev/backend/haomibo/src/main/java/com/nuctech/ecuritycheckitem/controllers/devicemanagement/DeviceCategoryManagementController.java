@@ -288,8 +288,8 @@ public class DeviceCategoryManagementController extends BaseController {
         //Check if archive template contain this category
 
 
-        if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
-                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
+        if(serArchiveTemplateRepository.exists(QSerArchiveTemplate.
+                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId()))) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
@@ -332,8 +332,8 @@ public class DeviceCategoryManagementController extends BaseController {
         //Check if archive template contain this category
 
 
-        if(serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
-                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId())).isPresent()) {
+        if(serArchiveTemplateRepository.exists(QSerArchiveTemplate.
+                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId()))) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 

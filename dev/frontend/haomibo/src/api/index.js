@@ -158,16 +158,4 @@ const printFileFromServer = (link,params) => {
     });
 };
 
-
-const getDateTimeWithFormat1 = (datetime) => {
-  //todo need to format datetime with its language value
-  let format = 'YYYYMMDD HH:mm:ss';
-  return moment(String(datetime)).format(format)
-};
-
-const getDateTimeWithFormat2 = (datetime) => {
-  //todo need to format datetime with its language value
-  let format = 'YYYY-MM-DD HH:mm:ss';
-  return moment(String(datetime)).format(format)
-};
-export {getApiManager, getDateTimeWithFormat, getDateTimeWithFormat1, getDateTimeWithFormat2, downLoadFileFromServer,printFileFromServer};
+export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer};

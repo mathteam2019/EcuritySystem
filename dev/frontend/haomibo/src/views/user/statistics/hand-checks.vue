@@ -48,7 +48,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
-              <date-picker v-model="filter.startTime" type="datetime" format="MM/DD/YYYY HH:mm"
+              <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""></date-picker>
             </b-form-group>
           </b-col>
@@ -89,7 +89,10 @@
             <div style="">
               <b-img src="/assets/img/scan.svg"/>
             </div>
-            <div><span class="font-weight-bold">{{preViewData.totalStatistics.total}}</span></div>
+            <div>
+              <span class="font-weight-bold" v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.total}}</span>
+              <span v-else>None</span>
+            </div>
             <div><span>手检</span></div>
           </div>
         </b-card>
@@ -103,7 +106,11 @@
                   <b-img src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.noSeizure}}</span></div>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.noSeizure}}</span>
+                    <span v-else>None</span>
+                  </div>
+
                   <div><span>无查获</span></div>
                 </div>
               </div>
@@ -116,7 +123,9 @@
                   <b-img src="/assets/img/glass_delete_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-else>None</span>
                   </div>
                   <div><span>无查获率</span></div>
                 </div>
@@ -130,7 +139,11 @@
                   <b-img src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{preViewData.totalStatistics.seizure}}</span></div>
+
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.seizure}}</span>
+                    <span v-else>None</span>
+                  </div>
                   <div><span>查获</span></div>
                 </div>
               </div>
@@ -143,7 +156,9 @@
                   <b-img src="/assets/img/glass_check_icon.svg"/>
                 </div>
                 <div>
-                  <div><span>{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                  <div>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-else>None</span>
                   </div>
                   <div><span>查获率</span></div>
                 </div>
@@ -208,10 +223,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -278,6 +293,7 @@
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
               track-by="time"
+              @vuetable:checkbox-toggled-all="onCheckEvent"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -301,10 +317,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
             <i class="icofont-exchange"></i>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onGenerateExcelButton2()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white">
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onGeneratePdfButton2()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -344,27 +360,44 @@
 
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>现场:</b></b-col>
-            <b-col cols="11"><span>通道01, 通道02, 通道03, 通道04</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.fieldId === null">{{this.allField}}</span>
+              <span v-else>{{filter.fieldId}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>安检仪:</b></b-col>
-            <b-col cols="11"><span>安检仪001, 安检仪002, 安检仪003</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.deviceId === null">安检仪001, 安检仪002, 安检仪003</span>
+              <span v-else>{{filter.deviceId}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员类型:</b></b-col>
-            <b-col cols="11"><span>引导员, 判图员, 手检员</span></b-col>
+            <b-col cols="11"><span>手检员</span></b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>操作员:</b></b-col>
-            <b-col cols="11"><span>张三, 李四, 王五</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.userName===null">张三, 李四, 王五</span>
+              <span v-else>{{filter.userName}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>时间:</b></b-col>
-            <b-col cols="11"><span>20191104 00:00:00-20191104 11:39:43</span></b-col>
+            <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+            </b-col>
           </b-row>
           <b-row class="no-gutters mb-2">
             <b-col cols="1"><b>统计步长:</b></b-col>
-            <b-col cols="11"><span>小时</span></b-col>
+            <b-col cols="11">
+              <span v-if="filter.statWidth==='hour'">时</span>
+              <span v-else-if="filter.statWidth==='day'">天</span>
+              <span v-else-if="filter.statWidth==='week'">周</span>
+              <span v-else-if="filter.statWidth==='month'">月</span>
+              <span v-else-if="filter.statWidth==='quarter'">季度</span>
+              <span v-else>年</span>
+            </b-col>
           </b-row>
 
           <div class="table-wrapper table-responsive">
@@ -375,6 +408,7 @@
               :http-fetch="taskVuetable2HttpFetch"
               :per-page="taskVuetable2Items.perPage"
               track-by="time"
+              @vuetable:checkbox-toggled-all="onCheckEvent2"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetable2PaginationData"
@@ -415,7 +449,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -459,8 +493,8 @@
             }
           },
           color: [
-            '#ff6600',
-            '#ff0000'
+            '#ff0000',
+            '#ff6600'
           ],
           series: [
             {
@@ -507,7 +541,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['0-1', '1-2', '2-3', '3-4', '4-5', '5-6', '6-7', '7-8', '8-9', '9-10', '10-11', '11-12'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -566,7 +600,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['张三', '李四', '王五', '曹静', '孙俪', '小明', '小张', '小白', '小红', '小李', '小兰'],
+            data: [],
             axisLine: {
               show: true
             },
@@ -614,9 +648,12 @@
           statWidth: 'hour',
         },
 
+        isCheckAll:false,
+        isCheckAll2:false,
         siteData: [],
+        allField: '',
         preViewData: [],
-        graphData:[],
+        graphData: [],
 
         xYear: [],
         xQuarter: ['1', '2', '3', '4'],
@@ -625,23 +662,6 @@
         xDay: [],
         xHour: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
 
-        preViewDataTemp: {
-          axisLabel: null,
-          invalidScan: null,
-          validScan: null,
-          passedScan: null,
-          alarmScan: null,
-          totalScan: null,
-          invalidScanRate: null,
-          totalJudge: null,
-          totalHandExamination: null,
-          noSuspictionJudge: null,
-          noSuspictionJudgeRate: null,
-          seizureHandExamination: null,
-          seizureHandExaminationRate: null,
-          noSeizureHandExamination: null,
-          noSeizureHandExaminationRate: null,
-        },
         onSiteOptions: [
           {value: null, text: "全部"},
           {value: 'way_1', text: "通道1"},
@@ -674,11 +694,19 @@
           apiUrl: `${apiBaseUrl}/task/statistics/get-handexamination-statistics`,
           fields: [
             {
-              name: '__sequence',
-              title: this.$t('personal-inspection.serial-number'),
-              sortField: 'id',
+              name: '__checkbox',
               titleClass: 'text-center',
               dataClass: 'text-center'
+            },
+            {
+              name: 'time',
+              title: this.$t('personal-inspection.serial-number'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time + 1;
+                else return time;
+              }
             },
             {
               name: 'time',
@@ -741,12 +769,22 @@
         taskVuetable2Items: {
           apiUrl: `${apiBaseUrl}/task/statistics/get-suspicionhandgoods-statistics`,
           fields: [
+
             {
-              name: '__sequence',
+              name: '__checkbox',
+              titleClass: 'text-center',
+              dataClass: 'text-center'
+            },
+            {
+              name: 'time',
               title: this.$t('personal-inspection.serial-number'),
               sortField: 'id',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (time) => {
+                if (this.filter.statWidth === 'hour') return time + 1;
+                else return time;
+              }
             },
             {
               name: 'time',
@@ -818,6 +856,199 @@
       }
     },
     methods: {
+      getDateTimeFormat(datatime) {
+        if (datatime == null) return '';
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
+
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
+
+      },
+
+      onCheckEvent2() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll2;
+        let cnt = this.$refs.taskVuetable2.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll2 = false;
+        } else {
+          this.isCheckAll2 = true;
+        }
+        console.log(this.isCheckAll2);
+
+      },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/handexamination/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Hand.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.pageStatus === 'charts')
+          this.isCheckAll = true;
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/handexamination/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+
+      onGenerateExcelButton2() {
+        let str = "";
+        if (this.pageStatus2 === 'charts')
+          this.isCheckAll2 = true;
+        if (this.isCheckAll2 === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable2.selectedTo.length;
+          str = str + this.$refs.taskVuetable2.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable2.selectedTo[i];
+            //console.log(str);
+          }
+        }
+
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/suspiciongoods/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'Statistics-Handgoods.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton2() {
+        let str = "";
+        if (this.pageStatus2 === 'charts')
+          this.isCheckAll2 = true;
+        if (this.isCheckAll2 === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable2.selectedTo.length;
+          str = str + this.$refs.taskVuetable2.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable2.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/statistics/suspiciongoods/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': {'filter': this.filter},
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -828,6 +1059,18 @@
               this.siteData = data;
               break;
           }
+          let allFieldStr = "";
+          let cnt = this.siteData.length;
+          console.log(this.siteData);
+          console.log(this.siteData[0].fieldDesignation);
+          allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
+            //console.log(str);
+          }
+          this.allField = allFieldStr;
         })
           .catch((error) => {
           });
@@ -896,11 +1139,12 @@
           deviceId: null,
           userCategory: null,
           userName: null,
-          statWidth: 'hour',
           startTime: null,
-          endTime: null
+          endTime: null,
+          statWidth: 'hour',
         };
-        
+        //this.getPreviewData();
+        //this.$refs.taskVuetable.refresh();
 
       },
       onTaskVuetablePaginationData(paginationData) {
@@ -935,8 +1179,6 @@
 
         let data = response.data;
 
-        console.log(data.per_page);
-
         transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
@@ -946,8 +1188,6 @@
           to: data.to
         };
 
-        //console.log(Object.keys(data.data.detailedStatistics).length);
-        console.log(Object.keys(data.detailedStatistics).length);
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;

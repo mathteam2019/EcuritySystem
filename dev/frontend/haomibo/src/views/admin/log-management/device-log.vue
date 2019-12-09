@@ -70,7 +70,7 @@
                   <b-col>
                     <b-form-group :label="$t('log-management.operating-log.start-time')">
                       <date-picker v-model="deviceFilter.operateStartTime" type="datetime" format="MM/DD/YYYY HH:mm"
-                                   valueTypet="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
+                                   valueType="YYYY-MM-DD HH:mm:ss" placeholder=""></date-picker>
                     </b-form-group>
                   </b-col>
                   <b-col>

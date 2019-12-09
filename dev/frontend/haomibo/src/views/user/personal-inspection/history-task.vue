@@ -56,13 +56,15 @@
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.start-time')">
-                  <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
+                  <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                               placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
 
               <b-col>
-                <b-form-group :label = "$t('log-management.operating-log.end-time')">
-                  <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm" placeholder=""></date-picker>
+                <b-form-group :label="$t('log-management.operating-log.end-time')">
+                  <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
+                               placeholder=""></date-picker>
                 </b-form-group>
               </b-col>
               <b-col></b-col>
@@ -79,10 +81,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
+                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -94,34 +96,64 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="taskVuetable"
+                track-by="historyId"
                 :api-url="taskVuetableItems.apiUrl"
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
+                @vuetable:checkbox-toggled-all="onCheckEvent"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="task" slot-scope="props">
-                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.historyId)">
+                    <span v-if="props.rowData.task!=null" class="cursor-p text-primary"
+                          @click="onRowClicked(props.rowData.historyId)">
                       {{props.rowData.task.taskNumber}}
                     </span>
+                  <span v-else> </span>
                 </template>
-                <template slot="scanImage" slot-scope="props">
-                  <b-img :src="props.rowData.scanImage.imageUrl" class="operation-icon" />
+                <template slot="scanImageUrl" slot-scope="props">
+                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl"
+                         class="operation-icon"/>
+                  <b-img v-else/>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="filter.mode==null">
-                  <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                  <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
-                  <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                  <div v-if="props.rowData.workMode==null">None</div>
+                  <div v-else>
+                    <div v-if="props.rowData.workMode.modeName==='1000001304'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001301'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001302'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="props.rowData.workMode.modeName==='1000001303'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                    </div>
                   </div>
-                  <div v-if="filter.mode==='security'">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                </template>
+                <template slot="taskStatus" slot-scope="props">
+                  <div v-if="props.rowData.taskStatus === 'pending_dispatch'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-dispatch')}}
                   </div>
-                  <div v-if="filter.mode==='security+hand'">
-                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                  <div v-if="props.rowData.taskStatus === 'pending_review'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-review')}}
+                  </div>
+                  <div v-if="props.rowData.taskStatus === 'while_review'" style="color:#ef6e69;">
+                    {{$t('personal-inspection.while-review')}}
+                  </div>
+                  <div v-if="props.rowData.taskStatus === 'pending_inspection'" style="color:#e8a23e;">
+                    {{$t('personal-inspection.pending-inspection')}}
+                  </div>
+                  <div v-if="props.rowData.taskStatus === 'while_inspection'" style="color:#ef6e69;">
+                    {{$t('personal-inspection.while-inspection')}}
                   </div>
                 </template>
               </vuetable>
@@ -145,9 +177,25 @@
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                <div v-if="showPage.workMode==null">None</div>
+                <div v-else>
+                  <div v-if="showPage.workMode.modeName==='1000001304'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001301'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001302'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workMode.modeName==='1000001303'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                </div>
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -260,40 +308,70 @@
                 <div class="part">
                   <div class="left">
                     <div>扫描</div>
-                    <div>张三</div>
+                    <div>
+                      <div v-if="showPage.scanPointsmanName != null">{{showPage.scanPointsmanName}}</div>
+                      <div v-else>None</div>
+                    </div>
                   </div>
                   <div class="right">
                     <div>Scanning</div>
                     <div>zhang san</div>
                   </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                  <div class="top-date">
+                    <label
+                      v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat2(showPage.scanStartTime)}}</label>
+                    <label v-else>None</label>
+                  </div>
+                  <div class="bottom-date">
+                    <label v-if="showPage.scanEndTime != null">{{this.getDateTimeFormat2(showPage.scanEndTime)}}</label>
+                    <label v-else>None</label>
+                  </div>
                 </div>
 
                 <div class="part">
                   <div class="left">
                     <div>判图</div>
-                    <div>李四</div>
+                    <div>
+                      <div v-if="showPage.judgeUser != null">{{showPage.judgeUser.userName}}</div>
+                      <div v-else>None</div>
+                    </div>
                   </div>
                   <div class="right">
                     <div>Decision diagram</div>
                     <div>Li si</div>
                   </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                  <div class="top-date">
+                    <label
+                      v-if="showPage.judgeStartTime != null">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
+                    <label v-else>None</label>
+                  </div>
+                  <div class="bottom-date">
+                    <label
+                      v-if="showPage.judgeEndTime != null">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
+                    <label v-else>None</label>
+                  </div>
                 </div>
 
                 <div class="part">
                   <div class="left">
                     <div>查验</div>
-                    <div>王五</div>
+                    <div>
+                      <div v-if="showPage.handUser == null">None</div>
+                      <div v-else>{{showPage.handUser.userName}}</div>
+                    </div>
                   </div>
                   <div class="right">
                     <div>Inspection</div>
                     <div>Wang wu</div>
                   </div>
-                  <div class="top-date">2019-09-21 11:43:55</div>
-                  <div class="bottom-date">2019-09-21 11:43:55</div>
+                  <div class="top-date">
+                    <label v-if="showPage.handStartTime == null">None</label>
+                    <label v-else>{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
+                  </div>
+                  <div class="bottom-date">
+                    <label v-if="showPage.handEndTime == null">None</label>
+                    <label v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
+                  </div>
                 </div>
 
                 <div class="part">
@@ -327,6 +405,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.task == null">None</label>
+                  <label v-else-if="showPage.task.field == null">None</label>
                   <label v-else>{{showPage.task.field.fieldDesignation}}</label>
                 </b-form-group>
               </b-col>
@@ -346,8 +425,10 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.scanImage == null">None</label>
-                  <label v-else>{{showPage.scanImage.imageLabel}}</label>
+                  <label v-if="showPage.task.serScan == null">None</label>
+                  <label v-else-if="showPage.task.serScan.scanImageGender === 'male'">男</label>
+                  <label v-else-if="showPage.task.serScan.scanImageGender === 'female'">女</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -356,9 +437,9 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-img :src="showPage.scanImage.imageUrl" class="operation-icon" />
-<!--                  <label v-if="showPage.serScan != null">{{showPage.scanImage.imageUrl}}</label>-->
-<!--                  <label v-else>None</label>-->
+                  <b-img v-if="showPage.scanImage != null" :src="this.apiBaseURL + showPage.scanImage.imageUrl" class="operation-icon"/>
+                  <!--                  <label v-if="showPage.serScan != null">{{showPage.scanImage.imageUrl}}</label>-->
+                  <!--                  <label v-else>None</label>-->
                 </b-form-group>
               </b-col>
             </b-row>
@@ -370,18 +451,23 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <div>
-                    <div v-if="filter.mode==null">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon" />
+                  <div v-if="showPage.workMode==null">None</div>
+                  <div v-else>
+                    <div v-if="showPage.workMode.modeName==='1000001304'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="filter.mode==='security'">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
+                    <div v-if="showPage.workMode.modeName==='1000001301'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="filter.mode==='security+hand'">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon" />
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon" />
+                    <div v-if="showPage.workMode.modeName==='1000001302'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    </div>
+                    <div v-if="showPage.workMode.modeName==='1000001303'">
+                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
                   </div>
                 </b-form-group>
@@ -401,7 +487,10 @@
                     {{$t('personal-inspection.atr-conclusion')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanAtrResult}}</label>
+                  <label v-if="showPage.scanAtrResult == null">None</label>
+                  <label v-else-if="showPage.scanAtrResult==='true'">无嫌疑</label>
+                  <label v-else-if="showPage.scanAtrResult==='false'">嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -409,7 +498,10 @@
                   <template slot="label">
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
-                  <label>{{showPage.scanFootAlarm}}</label>
+                  <label v-if="showPage.scanFootAlarm == null">None</label>
+                  <label v-else-if="showPage.scanFootAlarm==='true'">无</label>
+                  <label v-else-if="showPage.scanFootAlarm==='false'">有</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -418,7 +510,8 @@
                     {{$t('personal-inspection.scan-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanStartTime}}</label>
+                  <label v-if="showPage.serScan != null">{{this.getDateTimeFormat(showPage.scanStartTime)}}</label>
+                  <label v-else>None</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -430,7 +523,8 @@
                     {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.scanEndTime}}</label>
+                  <label v-if="showPage.serScan != null">{{this.getDateTimeFormat(showPage.scanEndTime)}}</label>
+                  <label v-else>None</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -438,7 +532,10 @@
                   <template slot="label">
                     {{$t('personal-inspection.dispatch-timeout')}}
                   </template>
-                  <label>{{showPage.judgeAssignTimeout}}</label>
+                  <label v-if="showPage.assignTimeout == null">None</label>
+                  <label v-else-if="showPage.assignTimeout==='true'">无</label>
+                  <label v-else-if="showPage.assignTimeout==='false'">有</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -457,28 +554,38 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeResult}}</label>
+                  <label v-if="showPage.judgeResult == null">None</label>
+                  <label v-else-if="showPage.judgeResult==='true'">无嫌疑</label>
+                  <label v-else-if="showPage.judgeResult==='false'">嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
-            </b-row>
-
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.judgement-conclusion')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeResult}}</label>
+                  <label v-if="showPage.judgeResult == null">None</label>
+                  <label v-else-if="showPage.judgeResult==='true'">无嫌疑</label>
+                  <label v-else-if="showPage.judgeResult==='false'">嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
+            </b-row>
+
+            <b-row>
+
               <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.judgement-timeout')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeTimeout}}</label>
+                  <label v-if="showPage.judgeTimeout == null">None</label>
+                  <label v-else-if="showPage.judgeTimeout==='true'">无</label>
+                  <label v-else-if="showPage.judgeTimeout==='false'">有</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -487,7 +594,9 @@
                     {{$t('personal-inspection.judgement-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeStartTime}}</label>
+                  <label
+                    v-if="showPage.judgeStartTime != null">{{this.getDateTimeFormat(showPage.judgeStartTime)}}</label>
+                  <label v-else>None</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -496,12 +605,10 @@
                     {{$t('personal-inspection.judgement-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeEndTime}}</label>
+                  <label v-if="showPage.judgeEndTime != null">{{this.getDateTimeFormat(showPage.judgeEndTime)}}</label>
+                  <label v-else>None</label>
                 </b-form-group>
               </b-col>
-            </b-row>
-
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -522,13 +629,18 @@
                   <label v-else>{{showPage.handDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
+            </b-row>
+
+            <b-row>
+
               <b-col>
                 <b-form-group>
                   <template slot="label">
                     {{$t('personal-inspection.hand-check-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.handStartTime}}</label>
+                  <label v-if="showPage.handStartTime == null">None</label>
+                  <label v-else>{{this.getDateTimeFormat(showPage.handStartTime)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -547,12 +659,14 @@
                     {{$t('personal-inspection.task-result')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.judgeResult}}</label>
+                  <label v-if="showPage.handTaskResult == null">None</label>
+                  <label v-else-if="showPage.handTaskResult==='noseizure'" style="color:#e8a23e;">无查获</label>
+                  <label v-else-if="showPage.handTaskResult==='seized'" style="color:#e8a23e;">有查获</label>
+                  <label v-else-if="showPage.handTaskResult==='doubt'" style="color:#ef6e69;">有嫌疑</label>
+                  <label v-else-if="showPage.handTaskResult==='nodoubt'" style="color:#e8a23e;">无嫌疑</label>
+                  <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
-            </b-row>
-
-            <b-row>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -571,6 +685,10 @@
                   <label>{{showPage.handAppraise}} </label>
                 </b-form-group>
               </b-col>
+
+            </b-row>
+
+            <b-row>
               <b-col></b-col>
               <b-col></b-col>
               <b-col></b-col>
@@ -580,11 +698,12 @@
               <b-col>
                 <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery">
-                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`" @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 75px; height: 60px;"  :alt="thumb.name"/>
+                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
+                         @click="onThumbClick(thumbIndex)">
+                    <img :src="thumb.src" style="width: 75px; height: 60px;" :alt="thumb.name"/>
                     <label class="d-block text-center mt-2">{{thumb.name}}</label>
                   </b-col>
-                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()" />
+                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
                 </b-row>
               </b-col>
 
@@ -593,28 +712,28 @@
                 <b-row class="d-flex justify-content-end">
                   <b-col cols="auto">
                     <div class="seized-item" style="background-color: #ff0000">
-                      <b-img src="/assets/img/pistol_icon.svg" class="contraband-icon" />
+                      <b-img src="/assets/img/pistol_icon.svg" class="contraband-icon"/>
                       <span class="contraband-count">2</span>
                       <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
                     </div>
                   </b-col>
                   <b-col cols="auto">
                     <div class="seized-item" style="background-color: #ff4e00">
-                      <b-img src="/assets/img/drug_icon.svg" class="contraband-icon" />
+                      <b-img src="/assets/img/drug_icon.svg" class="contraband-icon"/>
                       <span class="contraband-count">1</span>
                       <span class="contraband-category">{{$t('personal-inspection.drug')}}</span>
                     </div>
                   </b-col>
                   <b-col cols="auto">
                     <div class="seized-item" style="background-color: #ff7e00">
-                      <b-img src="/assets/img/knife_icon.svg" class="contraband-icon" />
+                      <b-img src="/assets/img/knife_icon.svg" class="contraband-icon"/>
                       <span class="contraband-count">0</span>
                       <span class="contraband-category">{{$t('personal-inspection.dagger')}}</span>
                     </div>
                   </b-col>
                   <b-col cols="auto">
                     <div class="seized-item" style="background-color: #ffae00">
-                      <b-img src="/assets/img/cigarette_icon.svg" class="contraband-icon" />
+                      <b-img src="/assets/img/cigarette_icon.svg" class="contraband-icon"/>
                       <span class="contraband-count">9</span>
                       <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
                     </div>
@@ -640,7 +759,6 @@
         </b-col>
       </b-row>
     </div>
-
 
 
   </div>
@@ -744,8 +862,9 @@
           }
         }
       }
-      .switch-wrapper{
+      .switch-wrapper {
         height: 28px;
+
         .separator {
           height: 28px;
         }
@@ -868,21 +987,21 @@
 
 <script>
 
-    import {apiBaseUrl} from "../../../constants/config";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getDirection} from "../../../utils";
-    import _ from "lodash";
-    import {getApiManager} from '../../../api';
-    import {responseMessages} from '../../../constants/response-messages';
-    import {validationMixin} from 'vuelidate';
-    import VTree from 'vue-tree-halower';
-    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-    import Switches from 'vue-switches';
-    import {LightGallery} from 'vue-light-gallery';
-    import DatePicker from 'vue2-datepicker';
-    import 'vue2-datepicker/index.css';
-    import 'vue2-datepicker/locale/zh-cn';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import {getDirection} from "../../../utils";
+  import _ from "lodash";
+  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
+  import {validationMixin} from 'vuelidate';
+  import VTree from 'vue-tree-halower';
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import Switches from 'vue-switches';
+  import {LightGallery} from 'vue-light-gallery';
+  import DatePicker from 'vue2-datepicker';
+  import 'vue2-datepicker/index.css';
+  import 'vue2-datepicker/locale/zh-cn';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -897,12 +1016,15 @@
     mounted() {
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
       this.getSiteOption();
+      //this.apiBaseURL = apiBaseUrl;
 
     },
     data: function () {
       return {
         isExpanded: false,
+        isCheckAll: false,
         pageStatus: 'table',
+        apiBaseURL : '',
         filter: {
           taskNumber: null,
           mode: null,
@@ -920,8 +1042,10 @@
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'security', text: this.$t('personal-inspection.security-instrument')},
-          {value: 'security+hand', text: this.$t('personal-inspection.security-instrument-and-hand-test')},
+          {value: 4, text: '安检仪+审图端+手检端'},
+          {value: 1, text: '安检仪+(本地手检)'},
+          {value: 2, text: '安检仪+手检端'},
+          {value: 3, text: '安检仪+审图端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -955,7 +1079,11 @@
               title: this.$t('personal-inspection.serial-number'),
               sortField: 'task_id',
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (historyId) => {
+                if (historyId == null) return '';
+                return historyId;
+              }
             },
             {
               name: '__slot:task',
@@ -965,7 +1093,7 @@
 
             },
             {
-              name: '__slot:scanImage',
+              name: '__slot:scanImageUrl',
               title: this.$t('personal-inspection.image'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -978,22 +1106,23 @@
               dataClass: 'text-center',
             },
             {
-              name: 'task',
+              name: 'handTaskResult',
               title: this.$t('personal-inspection.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (task) => {
+              callback: (handTaskResult) => {
 
                 const dictionary = {
-                  "pending_dispatch": `<span style="color:#e8a23e;">${this.$t('personal-inspection.pending-dispatch')}</span>`,
-                  "pending_review": `<span style="color:#e8a23e;">${this.$t('personal-inspection.pending-review')}</span>`,
-                  "while_review": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-review')}</span>`,
-                  "pending_inspection": `<span style="color:#e8a23e;">${this.$t('personal-inspection.pending-inspection')}</span>`,
+                  "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
+                  "seized": `<span style="color:#e8a23e;">有查获</span>`,
+                  "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
+                  "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
                   "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
                 };
 
-                if (!dictionary.hasOwnProperty(task.taskStatus)) return '';
-                return dictionary[task.taskStatus];
+                if (handTaskResult == null) return '';
+                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+                return dictionary[handTaskResult];
               }
             },
             {
@@ -1002,7 +1131,8 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (task) => {
-                  if(task==null)  return '';
+                if (task == null) return '';
+                if (task.field == null) return '';
                 return task.field.fieldDesignation;
               }
             },
@@ -1012,7 +1142,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanDevice) => {
-                  if(scanDevice==null)  return '';
+                if (scanDevice == null) return '';
                 return scanDevice.deviceName;
               }
             },
@@ -1022,7 +1152,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (scanPointsman) => {
-                  if(scanPointsman==null)  return '';
+                if (scanPointsman == null) return '';
                 return scanPointsman.userName;
               }
             },
@@ -1030,23 +1160,31 @@
               name: 'scanStartTime',
               title: this.$t('personal-inspection.scan-start-time'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (scanStartTime) => {
+                if (scanStartTime == null) return '';
+                return getDateTimeWithFormat(scanStartTime);
+              }
             },
             {
               name: 'scanEndTime',
               title: this.$t('personal-inspection.scan-end-time'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (scanEndTime) => {
+                if (scanEndTime == null) return '';
+                return getDateTimeWithFormat(scanEndTime);
+              }
             },
             {
               name: 'judgeDevice',
               title: this.$t('personal-inspection.judgement-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (judgeDevice) => {
-                    if(judgeDevice==null)  return '';
-                    return judgeDevice.deviceName;
-                }
+              callback: (judgeDevice) => {
+                if (judgeDevice == null) return '';
+                return judgeDevice.deviceName;
+              }
             },
             {
               name: 'judgeUser',
@@ -1054,7 +1192,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (judgeUser) => {
-                  if(judgeUser==null)  return '';
+                if (judgeUser == null) return '';
                 return judgeUser.userName;
               }
             },
@@ -1062,23 +1200,31 @@
               name: 'judgeStartTime',
               title: this.$t('personal-inspection.judgement-start-time'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (judgeStartTime) => {
+                if (judgeStartTime == null) return '';
+                return getDateTimeWithFormat(judgeStartTime);
+              }
             },
             {
               name: 'judgeEndTime',
               title: this.$t('personal-inspection.judgement-end-time'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (judgeEndTime) => {
+                if (judgeEndTime == null) return '';
+                return getDateTimeWithFormat(judgeEndTime);
+              }
             },
             {
               name: 'handDevice',
               title: this.$t('personal-inspection.hand-check-station'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (handDevice) => {
-                    if(handDevice==null)  return '';
-                    return handDevice.deviceName;
-                }
+              callback: (handDevice) => {
+                if (handDevice == null) return '';
+                return handDevice.deviceName;
+              }
             },
             {
               name: 'handUser',
@@ -1086,7 +1232,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (handUser) => {
-                  if(handUser==null)  return '';
+                if (handUser == null) return '';
                 return handUser.userName;
               }
             },
@@ -1094,28 +1240,32 @@
               name: 'handStartTime',
               title: this.$t('personal-inspection.hand-check-start-time'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (handStartTime) => {
+                if (handStartTime == null) return '';
+                return getDateTimeWithFormat(handStartTime);
+              }
             },
           ],
           perPage: 10,
         },
         power: true,
 
-                thumbs: [
-                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-                    {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-                    {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
-                ],
-                images: [
-                    '/assets/img/drug.jpg',
-                    '/assets/img/drug.jpg',
-                    '/assets/img/glock.jpg',
-                    '/assets/img/glock.jpg',
-                    '/assets/img/glock.jpg',
-                ],
-                photoIndex: null
+        thumbs: [
+          {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+          {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+        ],
+        images: [
+          '/assets/img/drug.jpg',
+          '/assets/img/drug.jpg',
+          '/assets/img/glock.jpg',
+          '/assets/img/glock.jpg',
+          '/assets/img/glock.jpg',
+        ],
+        photoIndex: null
 
 
       }
@@ -1127,7 +1277,7 @@
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
       },
-      siteData:function (newVal,oldVal) {
+      siteData: function (newVal, oldVal) {
         console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
@@ -1146,22 +1296,111 @@
       }
     },
     methods: {
+      onCheckEvent() {
+        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
+        let isCheck = this.isCheckAll;
+        let cnt = this.$refs.taskVuetable.selectedTo.length;
+        console.log(cnt);
+        if (cnt === 0) {
+          this.isCheckAll = false;
+        } else {
+          this.isCheckAll = true;
+        }
+        console.log(this.isCheckAll);
 
-        getSiteOption(){
-          getApiManager()
-            .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']:
-                this.siteData = data;
-                break;
-              }
-            })
-            .catch((error) => {
-            });
+      },
 
-        },
+      onGenerateExcelButton() {
+        let str = "";
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/history-task/generate/export`, {
+            'isAll': this.isCheckAll,
+            'filter': this.filter,
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+            let fileLink = document.createElement('a');
+
+            fileLink.href = fileURL;
+            fileLink.setAttribute('download', 'History-Task.xlsx');
+            document.body.appendChild(fileLink);
+
+            fileLink.click();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+      },
+
+      onGeneratePdfButton() {
+        let str = "";
+        if (this.isCheckAll === true) {
+          str = "";
+        } else {
+          let cnt = this.$refs.taskVuetable.selectedTo.length;
+          str = str + this.$refs.taskVuetable.selectedTo[0];
+          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+          for (let i = 1; i < cnt; i++) {
+            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+            //console.log(str);
+          }
+        }
+        getApiManager()
+          .post(`${apiBaseUrl}/task/history-task/generate/print`, {
+            'isAll': this.isCheckAll,
+            'filter': this.filter,
+            'idList': str
+          }, {
+            responseType: 'blob'
+          })
+          .then((response) => {
+            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+            var objFra = document.createElement('iframe');   // Create an IFrame.
+            objFra.style.visibility = "hidden";    // Hide the frame.
+            objFra.src = fileURL;                      // Set source.
+            document.body.appendChild(objFra);  // Add the frame to the web page.
+            objFra.contentWindow.focus();       // Set focus.
+            objFra.contentWindow.print();
+          })
+          .catch(error => {
+            throw new Error(error);
+          });
+
+
+      },
+
+      getSiteOption() {
+        getApiManager()
+          .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.siteData = data;
+              this.apiBaseURL = apiBaseUrl;
+              break;
+          }
+        })
+          .catch((error) => {
+          });
+
+      },
       onRowClicked(taskNumber) {
         // call api
         getApiManager()
@@ -1170,31 +1409,33 @@
           })
           .then((response) => {
             let message = response.data.message;
-            this.showPage = response.data.data;
+
             console.log(message);
 
             switch (message) {
               case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                this.showPage = response.data.data;
+                break;
 
             }
           })
           .catch((error) => {
           });
         this.pageStatus = 'show';
-
       },
-
+      getDateTimeFormat2(datatime) {
+        return getDateTimeWithFormat(datatime);
+      },
+      getDateTimeFormat(datatime) {
+        return getDateTimeWithFormat(datatime, 'monitor');
+      },
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
 
         this.filter = {
-          taskNumber:null,
+          taskNumber: null,
           mode: null,
           status: null,
           fieldId: null,
@@ -1202,49 +1443,49 @@
           startTime: null,
           endTime: null
         };
-        
+        //this.$refs.taskVuetable.refresh();
       },
 
       transform(response) {
 
-                let transformed = {};
+        let transformed = {};
 
-                let data = response.data;
+        let data = response.data;
 
-                transformed.pagination = {
-                    total: data.total,
-                    per_page: data.per_page,
-                    current_page: data.current_page,
-                    last_page: data.last_page,
-                    from: data.from,
-                    to: data.to
-                };
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
 
         transformed.data = [];
         let temp;
+        let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          transformed.data.push(temp)
+          temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
+          transformed.data.push(temp);
+
+          idTemp = temp.historyId;
+          if(this.isCheckAll === true){
+            this.$refs.taskVuetable.selectedTo.push(idTemp);
+          }
         }
 
-                return transformed
+        return transformed
 
-            },
+      },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
+        this.apiBaseURL = {apiBaseUrl};
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
 
-          filter: {
-            taskNumber:this.filter.taskNumber,
-            mode: this.filter.mode,
-            status: this.filter.status,
-            fieldId: this.filter.fieldId,
-            userName: this.filter.userName,
-            startTime: this.filter.startTime,
-            endTime: this.filter.endTime
-          },
+          filter: this.filter,
 
           perPage: this.taskVuetableItems.perPage,
         });

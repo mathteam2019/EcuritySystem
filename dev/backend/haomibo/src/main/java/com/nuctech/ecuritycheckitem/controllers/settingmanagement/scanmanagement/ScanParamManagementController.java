@@ -134,6 +134,10 @@ public class ScanParamManagementController extends BaseController {
 
         Long fromDeviceId;
 
+        Long storageAlarm;
+
+        Long storageAlarmPercent;
+
     }
 
     @RequestMapping(value = "/get-by-id", method = RequestMethod.POST)
@@ -311,6 +315,8 @@ public class ScanParamManagementController extends BaseController {
         serScanParam.setChestBlurring(requestBody.getChestBlurring());
         serScanParam.setHipBlurring(requestBody.getHipBlurring());
         serScanParam.setGroinBlurring(requestBody.getGroinBlurring());
+        serScanParam.setStorageAlarm(requestBody.getStorageAlarm());
+        serScanParam.setStorageAlarmPercent(requestBody.getStorageAlarmPercent());
 
         // Add edited info.
         serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

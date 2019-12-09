@@ -95,22 +95,6 @@ const data = [
     ]
   },
   {
-    id: "black-list",
-    icon: "icofont-thief",
-    label: "menu.black-list",
-    to: "/user/black-list",
-    newWindow: false,
-    subs: [
-      {
-        id: 'black-list-*-personal-black-list',
-        icon: "simple-icon-equalizer",
-        label: "menu.personal-black-list",
-        to: "/user/black-list/personal-black-list",
-        newWindow: false
-      },
-    ]
-  },
-  {
     id: "knowledge-base",
     icon: "icofont-notebook",
     label: "menu.knowledge-base",
@@ -133,50 +117,7 @@ const data = [
       },
     ]
   },
-  {
-    id: "maintenance-management",
-    icon: "icofont-tools",
-    label: "menu.maintenance-management",
-    to: "/user/maintenance-management",
-    newWindow: false,
-    subs: [
-      {
-        id: 'maintenance-management-*-time-task',
-        icon: "simple-icon-equalizer",
-        label: "menu.time-task",
-        to: "/user/maintenance-management/time-task",
-        newWindow: false
-      },
-      {
-        id: 'maintenance-management-*-routine-plan',
-        icon: "simple-icon-equalizer",
-        label: "menu.routine-plan",
-        to: "/user/maintenance-management/routine-plan",
-        newWindow: false
-      },
-      {
-        id: 'maintenance-management-*-maintenance-task',
-        icon: "simple-icon-equalizer",
-        label: "menu.maintenance-task",
-        to: "/user/maintenance-management/maintenance-task",
-        newWindow: false
-      },
-      {
-        id: 'maintenance-management-*-process-task',
-        icon: "simple-icon-equalizer",
-        label: "menu.process-task",
-        to: "/user/maintenance-management/process-task",
-        newWindow: false
-      },
-      {
-        id: 'maintenance-management-*-history-record',
-        icon: "simple-icon-equalizer",
-        label: "menu.history-record",
-        to: "/user/maintenance-management/history-record",
-        newWindow: false
-      },
-    ]
-  },
+
 ];
 
 export default data;
