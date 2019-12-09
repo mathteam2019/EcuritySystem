@@ -242,11 +242,7 @@
                       <b-form-input type="number" v-model="platFormOtherData.storageAlarm"></b-form-input>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="2" offset="1">
-                    <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
-                      <b-form-input type="number" v-model="platFormOtherData.storageAlarmPercent"></b-form-input>
-                    </b-form-group>
-                  </b-col>
+
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.history-save-period')">
                       <b-form-input v-model="platFormOtherData.historyDataCycle"></b-form-input>
@@ -516,12 +512,22 @@
                   <b-form-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" plain/>
                 </b-form-group>
               </b-col>
+              <b-col cols="3">
+                <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
+                  <b-form-input type="number" v-model="scanForm.storageAlarm"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
+                  <b-form-input type="number" v-model="scanForm.storageAlarmPercent"></b-form-input>
+                </b-form-group>
+              </b-col>
             </b-row>
 
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button v-if="scanForm.status === 'inactive'" @click="onAction('activate')" variant="success default"
+              <!--<b-button v-if="scanForm.status === 'inactive'" @click="onAction('activate')" variant="success default"
                         size="sm"><i
                 class="icofont-check-circled"></i> {{
                 $t('permission-management.action-make-active') }}
@@ -530,8 +536,8 @@
                         size="sm"><i
                 class="icofont-ban"></i> {{
                 $t('permission-management.action-make-inactive') }}
-              </b-button>
-              <b-button v-if="scanForm.status === 'inactive'" @click="onSaveScanFormData()" variant="success default"
+              </b-button>-->
+              <b-button  @click="onSaveScanFormData()" variant="success default"
                         size="sm"><i class="icofont-save"></i>
                 {{ $t('permission-management.save-button') }}
               </b-button>
@@ -740,7 +746,6 @@
           historyDataCycle: null,
           deviceTrafficHigh: null,
           deviceTrafficMiddle: null,
-          storageAlarmPercent: 80,
         },
         dataStorageOptions: [
           {value: 'business', text: this.$t('system-setting.storage-business')},
@@ -774,7 +779,8 @@
           groinBlurring: null,
           deviceId: null,
           fromDeviceId: null,
-          status: null,
+          storageAlarmPercent:80,
+          storageAlarm:400
         },
       }
     },

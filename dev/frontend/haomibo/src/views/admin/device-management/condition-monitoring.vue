@@ -398,11 +398,11 @@
                 <div class="action-list">
                   <img v-if="item.maxScanCount > item.deviceTrafficHigh" src="../../../assets/img/icon_user_graphic.png">
                   <img v-else src="../../../assets/img/icon_user_graphic_disabled.png">
-                  <img v-if="false" src="../../../assets/img/icon_layout.png">
+                  <img v-if="item.deviceStorageAlarm === 0" src="../../../assets/img/icon_layout.png">
                   <img v-else src="../../../assets/img/icon_layout_disabled.png">
-                  <img v-if="false" src="../../../assets/img/icon_bell.png">
+                  <img v-if="item.plcStatus == '0' && item.slaveCardStatus == '0' && item.masterCardStatus == '0' && item.footWarning == '0' && item.footWarning == '0'" src="../../../assets/img/icon_bell.png">
                   <img v-else src="../../../assets/img/icon_bell_disabled.png">
-                  <img v-if="false" src="../../../assets/img/icon_link.png">
+                  <img v-if="item.deviceOnline === 0" src="../../../assets/img/icon_link.png">
                   <img v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
               </div>
@@ -452,7 +452,7 @@
                         <label>{{item.originalModel}}</label></div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
-                        <label>{{item.diskSpace}}/120 (GB)</label>
+                        <label>{{item.diskSpace}}(GB)</label>
                       </div>
                     </div>
                   </b-col>
@@ -789,7 +789,7 @@
           temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
           temp.lineChartOptions = this.generateChartData(temp.record,temp.deviceTrafficHigh,temp.deviceTrafficMiddle);
           temp.maxScanCount = Math.max.apply(Math,temp.record.countList);
-          temp.runningTimeValue = getDateTimeWithFormat(temp.registerTime,'monitor-diff',this.$i18n.locale);
+          temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime,'monitor-diff',this.$i18n.locale);
           result.push(temp);
         }
         this.items = result;
