@@ -515,7 +515,9 @@
             for (let i = 0; i < data.data.length; i++) {
                 temp = data.data[i];
                 idTemp = data.data[i].caseDealId;
-                temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
+                if(temp.scanImage!=null) {
+                  temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+                }
                 transformed.data.push(temp);
                 this.idList.push(idTemp);
                 if(this.isCheckAll === true){

@@ -124,9 +124,26 @@
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>
-                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>
+                <div v-if="showPage.workFlow==null">None</div>
+                <div v-else-if="showPage.workFlow.workMode==null">None</div>
+                <div v-else>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001304'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001301'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001302'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
+                  </div>
+                  <div v-if="showPage.workFlow.workMode.modeName==='1000001303'">
+                    <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
+                    <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
+                  </div>
+                </div>
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -339,7 +356,7 @@
                   </template>
                   <b-img v-if="showPage.serScan == null"/>
                   <b-img v-else-if="showPage.serScan.scanImage == null"/>
-                  <b-img v-else :src="showPage.serScan.scanImage.imageUrl" class="operation-icon"/>
+                  <b-img v-else :src="this.apiBaseURL + showPage.serScan.scanImage.imageUrl" class="operation-icon"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -647,6 +664,7 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'table',
+        apiBaseURL: '',
         filter: {
           taskNumber: null,
           mode: null,
@@ -920,6 +938,7 @@
             switch (message) {
               case responseMessages['ok']:
                 this.showPage = response.data.data;
+                this.apiBaseURL =apiBaseUrl;
                 break;// okay
 
             }
