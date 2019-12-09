@@ -305,7 +305,8 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.phone')}}</template>
                   <b-form-input type="text" v-model="profileForm.mobile"
-                                :placeholder="$t('permission-management.please-enter-phone')"></b-form-input>
+                                :state="!$v.profileForm.mobile.$dirty ? null : !$v.profileForm.mobile.$invalid"
+                                :placeholder="'000-0000-0000'"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -755,6 +756,20 @@
   import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
 
+  export function isPhoneValid(value) {
+    if(value === "")
+      return true;
+    let phoneno = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
+    if(value.match(phoneno)){
+      return true;
+    }
+    else{
+      console.log('invalid phone');
+      return false;
+    }
+
+  }
+
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   /**
@@ -805,6 +820,9 @@
         userAccount: {
           required, maxLength: maxLength(50)
         },
+        mobile: {
+          isPhoneValid,
+        }
       },
       groupForm: {
         groupName: {
@@ -1254,7 +1272,19 @@
                 this.pageStatus = 'table';
                 break;
               case responseMessages['used-user-account']://duplicated user account
-                this.$notify('success', this.$t('permission-management.failed'), this.$t(`permission-management.user-account-already-used`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user-account-already-used`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-email']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.used-email`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-phone']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.used-phone`), {
                   duration: 3000,
                   permanent: false
                 });

@@ -395,10 +395,7 @@
 
   const {required} = require('vuelidate/lib/validators');
 
-  export function isPhoneValid(value) {
-    if (!value) return true;
-    return value === "Joe";
-  }
+
 
   let getParentSerialName = (siteData, fieldId) => {
     let parentSerialNumber = null;
