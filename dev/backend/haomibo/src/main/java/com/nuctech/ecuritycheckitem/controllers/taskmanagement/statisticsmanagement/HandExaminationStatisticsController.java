@@ -199,9 +199,9 @@ public class HandExaminationStatisticsController extends BaseController {
                 "\t\n" +
                 "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
                 "and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
-                "OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "')" +
+                "OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "')" +
                 " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + " ', 1, 0)) as intelligenceJudge,\n" +
+                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "', 1, 0)) as intelligenceJudge,\n" +
                 "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' " +
                 " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
                 " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
@@ -257,6 +257,7 @@ public class HandExaminationStatisticsController extends BaseController {
             whereCause.add("h.HAND_END_TIME <= '" + strDate + "'");
         }
 
+        whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.TRUE + "' ");
         return whereCause;
     }
 
@@ -356,6 +357,7 @@ public class HandExaminationStatisticsController extends BaseController {
         queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
 
         //................. get total statistics ....
+
         whereCause = getWhereCause(requestBody);
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
