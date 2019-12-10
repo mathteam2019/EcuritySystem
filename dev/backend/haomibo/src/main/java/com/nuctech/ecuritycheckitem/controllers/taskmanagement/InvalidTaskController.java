@@ -30,10 +30,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -49,13 +46,13 @@ public class InvalidTaskController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class TaskGetByFilterAndPageRequestBody {
+    public static class TaskGetByFilterAndPageRequestBody {
 
         @Getter
         @Setter
         @NoArgsConstructor
         @AllArgsConstructor
-        static class Filter {
+        public static class Filter {
             String taskNumber;
             Long mode;
             String status;
@@ -162,16 +159,17 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
+        long total = 0;
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = serTaskRespository.count(predicate);
-        List<SerTask> data = serTaskRespository.findAll(predicate, pageRequest).getContent();
+        List<SerTask> data = new ArrayList<>();
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterInvalidTask(requestBody.getFilter(), currentPage, perPage);
+        try {
+            data = (List<SerTask>) result.get("data");
+            total = Integer.parseInt(result.get("total").toString());
+        }
+        catch (Exception e) { }
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,

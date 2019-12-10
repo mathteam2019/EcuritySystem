@@ -4,24 +4,18 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.knowledgemanagement.KnowledgeDealManagementController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.PreviewStatisticsController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.service.TaskService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
 import lombok.*;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,20 +27,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/task")
-public class TaskManagementController extends BaseController {
+public class ProcessTaskController extends BaseController {
 
     /**
      * Table type
@@ -236,7 +225,7 @@ public class TaskManagementController extends BaseController {
         long total = 0;
 
         List<SerTask> data = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), currentPage, perPage);
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), currentPage, perPage);
         try {
             data = (List<SerTask>) result.get("data");
             total = Integer.parseInt(result.get("total").toString());
@@ -271,43 +260,6 @@ public class TaskManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
-    }
-
-    private BooleanBuilder getPredicate(TaskGetByFilterAndPageRequestBody.Filter filter) {
-
-        QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
-
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
-
-        return predicate;
     }
 
     private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
@@ -346,7 +298,7 @@ public class TaskManagementController extends BaseController {
         }
 
         List<SerTask> taskList = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), null, null);
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), null, null);
         try {
             taskList = (List<SerTask>) result.get("data");
         }
@@ -379,7 +331,7 @@ public class TaskManagementController extends BaseController {
         }
 
         List<SerTask> taskList = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterTaskList(requestBody.getFilter(), null, null);
+        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), null, null);
         try {
             taskList = (List<SerTask>) result.get("data");
         }

@@ -2,7 +2,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.TaskManagementController;
+import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
@@ -329,22 +329,22 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     predicateKeyDate = builder.scanStartTime.hour().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     predicateKeyDate = builder.scanStartTime.dayOfMonth().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     predicateKeyDate = builder.scanStartTime.week().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     predicateKeyDate = builder.scanStartTime.month().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     predicateKeyDate = builder.scanStartTime.month().eq(keyDate * 3);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     predicateKeyDate = builder.scanStartTime.year().eq(keyDate);
                     break;
                 default:
@@ -496,32 +496,32 @@ public class PreviewStatisticsController extends BaseController {
         int keyValueMin = 0, keyValueMax = -1;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     response.setTotal(24);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     keyValueMin = 1;
                     keyValueMax = 31;
                     response.setTotal(31);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     keyValueMin = 1;
                     keyValueMax = 5;
                     response.setTotal(5);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     keyValueMin = 1;
                     keyValueMax = 12;
                     response.setTotal(12);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     keyValueMin = 1;
                     keyValueMax = 4;
                     response.setTotal(4);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     Calendar calendar = Calendar.getInstance();
                     if (requestBody.getFilter().getStartTime() != null) {
                         calendar.setTime(requestBody.getFilter().getStartTime());
@@ -575,7 +575,7 @@ public class PreviewStatisticsController extends BaseController {
             }
 
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
                 response.setFrom(startIndex - keyValueMin + 1);
                 response.setTo(endIndex - keyValueMin + 1);
             } else {
@@ -622,32 +622,32 @@ public class PreviewStatisticsController extends BaseController {
         int keyValueMin = 0, keyValueMax = -1;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     response.setTotal(24);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     keyValueMin = 1;
                     keyValueMax = 31;
                     response.setTotal(31);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     keyValueMin = 1;
                     keyValueMax = 5;
                     response.setTotal(5);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     keyValueMin = 1;
                     keyValueMax = 12;
                     response.setTotal(12);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     keyValueMin = 1;
                     keyValueMax = 4;
                     response.setTotal(4);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     Calendar calendar = Calendar.getInstance();
                     if (requestBody.getFilter().getStartTime() != null) {
                         calendar.setTime(requestBody.getFilter().getStartTime());
@@ -703,7 +703,7 @@ public class PreviewStatisticsController extends BaseController {
                 endIndex = keyValueMax;
             }
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
                 response.setFrom(startIndex - keyValueMin + 1);
                 response.setTo(endIndex - keyValueMin + 1);
             } else {
@@ -756,22 +756,22 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     predicateKeyDate = builder.judgeStartTime.hour().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     predicateKeyDate = builder.judgeStartTime.dayOfMonth().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     predicateKeyDate = builder.judgeStartTime.week().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     predicateKeyDate = builder.judgeStartTime.month().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     predicateKeyDate = builder.judgeStartTime.month().eq(keyDate * 3);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     predicateKeyDate = builder.judgeStartTime.year().eq(keyDate);
                     break;
                 default:
@@ -897,28 +897,28 @@ public class PreviewStatisticsController extends BaseController {
         int keyValueMin = 0, keyValueMax = -1;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
 
                     keyValueMin = 0;
                     keyValueMax = 23;
                     response.setTotal(24);
                     break;
 
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
 
                     keyValueMin = 1;
                     keyValueMax = 31;
                     response.setTotal(31);
                     break;
 
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
 
                     keyValueMin = 1;
                     keyValueMax = 5;
                     response.setTotal(5);
                     break;
 
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
 
                     keyValueMin = 1;
                     keyValueMax = 12;
@@ -926,14 +926,14 @@ public class PreviewStatisticsController extends BaseController {
 
                     break;
 
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
 
                     keyValueMin = 1;
                     keyValueMax = 4;
                     response.setTotal(4);
                     break;
 
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
 
                     Calendar calendar = Calendar.getInstance();
                     if (requestBody.getFilter().getStartTime() != null) {
@@ -991,7 +991,7 @@ public class PreviewStatisticsController extends BaseController {
                 endIndex = keyValueMax;
             }
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
                 response.setFrom(startIndex - keyValueMin + 1);
                 response.setTo(endIndex - keyValueMin + 1);
             } else {
@@ -1044,22 +1044,22 @@ public class PreviewStatisticsController extends BaseController {
 
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     predicateKeyDate = builder.handStartTime.hour().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     predicateKeyDate = builder.handStartTime.dayOfMonth().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     predicateKeyDate = builder.handStartTime.week().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     predicateKeyDate = builder.handStartTime.month().eq(keyDate);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     predicateKeyDate = builder.handStartTime.month().eq(keyDate * 3);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     predicateKeyDate = builder.handStartTime.year().eq(keyDate);
                     break;
                 default:
@@ -1212,32 +1212,32 @@ public class PreviewStatisticsController extends BaseController {
         int keyValueMin = 0, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case TaskManagementController.StatisticWidth.HOUR:
+                case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     response.setTotal(24);
                     break;
-                case TaskManagementController.StatisticWidth.DAY:
+                case ProcessTaskController.StatisticWidth.DAY:
                     keyValueMin = 1;
                     keyValueMax = 31;
                     response.setTotal(31);
                     break;
-                case TaskManagementController.StatisticWidth.WEEK:
+                case ProcessTaskController.StatisticWidth.WEEK:
                     keyValueMin = 1;
                     keyValueMax = 5;
                     response.setTotal(5);
                     break;
-                case TaskManagementController.StatisticWidth.MONTH:
+                case ProcessTaskController.StatisticWidth.MONTH:
                     keyValueMin = 1;
                     keyValueMax = 12;
                     response.setTotal(12);
                     break;
-                case TaskManagementController.StatisticWidth.QUARTER:
+                case ProcessTaskController.StatisticWidth.QUARTER:
                     keyValueMin = 1;
                     keyValueMax = 4;
                     response.setTotal(4);
                     break;
-                case TaskManagementController.StatisticWidth.YEAR:
+                case ProcessTaskController.StatisticWidth.YEAR:
                     Calendar calendar = Calendar.getInstance();
                     if (requestBody.getFilter().getStartTime() != null) {
                         calendar.setTime(requestBody.getFilter().getStartTime());
@@ -1295,7 +1295,7 @@ public class PreviewStatisticsController extends BaseController {
                 endIndex = keyValueMax;
             }
 
-            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
+            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
                 response.setFrom(startIndex - keyValueMin + 1);
                 response.setTo(endIndex - keyValueMin + 1);
             } else {
