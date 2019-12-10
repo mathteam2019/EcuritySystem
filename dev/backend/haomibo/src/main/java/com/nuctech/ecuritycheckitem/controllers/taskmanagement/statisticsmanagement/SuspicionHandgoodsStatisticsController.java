@@ -236,6 +236,10 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 }
             } catch (Exception e) { }
         }
+        else {
+            startIndex = keyValueMin;
+            endIndex = keyValueMax;
+        }
 
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
         for (Integer i = startIndex; i <= endIndex; i++) {

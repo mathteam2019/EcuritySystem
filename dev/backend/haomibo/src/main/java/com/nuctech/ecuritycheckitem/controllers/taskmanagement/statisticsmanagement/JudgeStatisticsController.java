@@ -458,7 +458,9 @@ public class JudgeStatisticsController extends BaseController {
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
-
+        JudgeStatisticsResponseModel totalStatistics = getTotalStatistics(queryBuilder.toString());
+        response.setTotalStatistics(totalStatistics);
+        
         //.... Get Detailed Statistics
         queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
         TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), requestBody);
