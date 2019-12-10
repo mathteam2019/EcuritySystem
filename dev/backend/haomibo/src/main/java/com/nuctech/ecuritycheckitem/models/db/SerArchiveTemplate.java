@@ -46,34 +46,34 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ARCHIVES_TEMPLATE_ID", length = 20, nullable = false)
-    Long archivesTemplateId;
+    private Long archivesTemplateId;
 
 
     @Column(name = "S_TEMPLATE_NAME", length = 50)
-    String templateName;
+    private String templateName;
 
     @Column(name = "ARCHIVES_TEMPLATE_NUMBER", length = 50)
-    String archivesTemplateNumber;
+    private String archivesTemplateNumber;
 
 
     @Column(name = "CATEGORY_ID", length = 20)
-    Long categoryId;
+    private Long categoryId;
 
     @Column(name = "MANUFACTURER", length = 10)
-    String manufacturer;
+    private String manufacturer;
 
     @Column(name = "ORIGINAL_MODEL", length = 50)
-    String originalModel;
+    private String originalModel;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("category")
-    SysDeviceCategory deviceCategory; // Relation to SysDeviceCategory table.
+    private SysDeviceCategory deviceCategory; // Relation to SysDeviceCategory table.
 
 
     @ToString.Exclude
@@ -81,5 +81,5 @@ public class SerArchiveTemplate extends BaseEntity implements Serializable {
     @JoinColumn(name = "ARCHIVES_TEMPLATE_ID", referencedColumnName = "ARCHIVES_TEMPLATE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("indicators")
-    List<SerArchiveIndicators> archiveIndicatorsList; // Relation to SerArchiveIndicators table.
+    private List<SerArchiveIndicators> archiveIndicatorsList; // Relation to SerArchiveIndicators table.
 }

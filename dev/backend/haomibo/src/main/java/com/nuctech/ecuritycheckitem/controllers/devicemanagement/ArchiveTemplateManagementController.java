@@ -38,8 +38,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -522,10 +520,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         SerArchiveIndicators serArchiveIndicators = requestBody.convert2SerArchiveIndicator();
 
-        // Add createdInfo.
-        serArchiveIndicators.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        serArchiveIndicatorsRepository.save(serArchiveIndicators);
+        archiveTemplateService.createArchiveIndicator(serArchiveIndicators);
 
         return new CommonResponseBody(ResponseMessage.OK, serArchiveIndicators.getIndicatorsId());
     }

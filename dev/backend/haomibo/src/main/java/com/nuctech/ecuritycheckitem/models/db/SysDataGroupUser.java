@@ -28,13 +28,13 @@ public class SysDataGroupUser extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DATA_GROUP_USER_ID", length = 20, nullable = false)
-    Long dataGroupUserId;
+    private Long dataGroupUserId;
 
     @Column(name = "USER_ID", length = 20)
-    Long userId;
+    private Long userId;
 
     @Column(name = "DATA_GROUP_ID", length = 20)
-    Long dataGroupId;
+    private Long dataGroupId;
 
 }
 

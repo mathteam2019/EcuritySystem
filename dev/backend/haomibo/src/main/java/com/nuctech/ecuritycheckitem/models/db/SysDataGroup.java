@@ -32,22 +32,22 @@ public class SysDataGroup extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DATA_GROUP_ID", length = 20, nullable = false)
-    Long dataGroupId;
+    private Long dataGroupId;
 
     @Column(name = "ORG_ID", length = 20)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "DATA_GROUP_NUMBER", length = 50)
-    String dataGroupNumber;
+    private String dataGroupNumber;
 
     @Column(name = "DATA_GROUP_NAME", length = 50)
-    String dataGroupName;
+    private String dataGroupName;
 
     @Column(name = "DATA_GROUP_FLAG", length = 10)
-    String dataGroupFlag;
+    private String dataGroupFlag;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -55,7 +55,7 @@ public class SysDataGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
-    Set<SysUser> users;
+    private Set<SysUser> users;
 
 
 }

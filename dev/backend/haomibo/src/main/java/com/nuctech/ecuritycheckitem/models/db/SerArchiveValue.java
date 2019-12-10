@@ -36,16 +36,16 @@ public class SerArchiveValue extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "VALUE_ID", length = 20, nullable = false)
-    Long id;
+    private Long id;
 
     @Column(name = "INDICATORS_ID", length = 20)
-    Long indicatorsId;
+    private Long indicatorsId;
 
     @Column(name = "ARCHIVE_ID", length = 20)
-    Long archiveId;
+    private Long archiveId;
 
     @Column(name = "VALUE", length = 255)
-    String value;
+    private String value;
 
 
 }

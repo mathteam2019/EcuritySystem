@@ -36,14 +36,14 @@ public class SerDeviceRegister extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "REGISTER_ID", length = 20, nullable = false)
-    Long registerId;
+    private Long registerId;
 
 
     @Column(name = "REGISTER_TIME", nullable = false)
-    Date registerTime;
+    private Date registerTime;
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
 
 

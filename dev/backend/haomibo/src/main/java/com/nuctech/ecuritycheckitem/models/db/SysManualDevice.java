@@ -36,24 +36,24 @@ public class SysManualDevice extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MANUAL_DEVICE_ID", length = 20, nullable = false)
-    Long manualDeviceId;
+    private Long manualDeviceId;
 
 
     @Column(name = "DEVICE_STATUS", length = 10)
-    String deviceStatus;
+    private String deviceStatus;
 
 
     @Column(name = "DEVICE_STRATEGY", length = 10)
-    String deviceStrategy;
+    private String deviceStrategy;
 
     @Column(name = "DEVICE_CHECKER_GENDER", length = 10)
-    String deviceCheckGender;
+    private String deviceCheckGender;
 
     @ToString.Exclude
     @OneToOne()
     @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
-    SysDevice device;
+    private SysDevice device;
 
 }

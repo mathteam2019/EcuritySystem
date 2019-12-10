@@ -48,84 +48,84 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "STATUS_ID", length = 20, nullable = false)
-    Long statusId;
+    private Long statusId;
 
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
     @Column(name = "DEVICE_ONLINE", length = 20)
-    Integer deviceOnline;
+    private Integer deviceOnline;
 
     @Column(name = "DEVICE_LOGIN_TIME")
-    Date deviceLoginTime;
+    private Date deviceLoginTime;
 
 
 
     @Column(name = "FIELD_ID", length = 20)
-    Long fieldId;
+    private Long fieldId;
 
 
     @Column(name = "CURRENT_WORKFLOW", length = 50)
-    String currentWorkFlow;
+    private String currentWorkFlow;
 
     @Column(name = "CURRENT_STATUS", length = 50)
-    String currentStatus;
+    private String currentStatus;
 
     @Column(name = "CATEGORY_ID", length = 20)
-    String categoryId;
+    private String categoryId;
 
     @Column(name = "MANUFACTURER", length = 50)
-    String manufacturer;
+    private String manufacturer;
 
     @Column(name = "ORIGINAL_MODEL", length = 50)
-    String originalModel;
+    private String originalModel;
 
 
     @Column(name = "CHECK_COUNT", length = 11)
-    String checkCount;
+    private String checkCount;
 
     @Column(name = "PASS_COUNT", length = 11)
-    String passCount;
+    private String passCount;
 
     @Column(name = "WARNING_COUNT", length = 11)
-    String warningCount;
+    private String warningCount;
 
     @Column(name = "MANUAL_COUNT", length = 11)
-    String manualCount;
+    private String manualCount;
 
     @Column(name = "ACCOUNT", length = 50)
-    String account;
+    private String account;
 
     @Column(name = "LOGIN_TIME", nullable = false)
-    Date loginTime;
+    private Date loginTime;
 
     @Column(name = "IP_ADDRESS", length = 50)
-    String ipAddress;
+    private String ipAddress;
 
     @Column(name = "PLC_STATUS", length = 50)
-    String plcStatus;
+    private String plcStatus;
 
     @Column(name = "MASTER_CARD_STATUS", length = 50)
-    String masterCardStatus;
+    private String masterCardStatus;
 
     @Column(name = "SLAVE_CARD_STATUS", length = 50)
-    String slaveCardStatus;
+    private String slaveCardStatus;
 
     @Column(name = "SERVO", length = 50)
-    String servo;
+    private String servo;
 
     @Column(name = "SLIDE_POSITION", length = 50)
-    String slidePosition;
+    private String slidePosition;
 
     @Column(name = "EMERGENCY_STOP", length = 50)
-    String emergencyStop;
+    private String emergencyStop;
 
     @Column(name = "FOOT_WARNING", length = 50)
-    String footWarning;
+    private String footWarning;
 
     @Column(name = "DISK_SPACE", length = 50)
-    String diskSpace;
+    private String diskSpace;
 
     @ToString.Exclude
     @ManyToOne()
@@ -135,15 +135,15 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
     private SysDevice device; // Relation to SysDevice table.
 
     @javax.persistence.Transient
-    Integer deviceTrafficHigh;
+    private Integer deviceTrafficHigh;
 
     @javax.persistence.Transient
-    Integer deviceTrafficMiddle;
+    private Integer deviceTrafficMiddle;
 
     @javax.persistence.Transient
-    Integer deviceStorageAlarm;
+    private Integer deviceStorageAlarm;
 
     @javax.persistence.Transient
-    MonitorRecord record;
+    private MonitorRecord record;
 
 }

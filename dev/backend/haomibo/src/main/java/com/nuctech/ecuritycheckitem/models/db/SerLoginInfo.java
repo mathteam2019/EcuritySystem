@@ -33,16 +33,16 @@ public class SerLoginInfo extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LOGIN_INFO_ID", length = 20, nullable = false)
-    Long loginInfoId;
+    private Long loginInfoId;
 
     @Column(name = "USER_ID", length = 20)
-    String userId;
+    private String userId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    String deviceId;
+    private String deviceId;
 
     @Column(name = "LOGIN_CATEGORY", length = 10)
-    String loginCategory;
+    private String loginCategory;
 
 
 

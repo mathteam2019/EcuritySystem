@@ -35,17 +35,17 @@ public class SerScanParamsFrom extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FROM_CONFIG_ID", length = 20, nullable = false)
-    Long fromConfigId;
+    private Long fromConfigId;
 
 
     @Column(name = "SCAN_PARAMS_ID", length = 20)
-    Long scanParamsId;
+    private Long scanParamsId;
 
     @Column(name = "FROM_DEVICE_ID", length = 20)
-    Long fromDeviceId;
+    private Long fromDeviceId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
     @ToString.Exclude
     @ManyToOne()

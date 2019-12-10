@@ -47,22 +47,22 @@ public class SysUserGroup extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USERGROUP_ID", length = 20, nullable = false)
-    Long userGroupId;
+    private Long userGroupId;
 
     @Column(name = "ORG_ID", length = 20)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "DATA_RANGE_CATEGORY", length = 10)
-    String dataRangeCategory;
+    private String dataRangeCategory;
 
     @Column(name = "GROUP_NUMBER", length = 50)
-    String groupNumber;
+    private String groupNumber;
 
     @Column(name = "GROUP_NAME", length = 50)
-    String groupName;
+    private String groupName;
 
     @Column(name = "GROUP_FLAG", length = 10)
-    String groupFlag;
+    private String groupFlag;
 
     @OneToMany(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
@@ -71,7 +71,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")}
     )
-    Set<SysUser> users; // Relation to sysUser table.
+    private Set<SysUser> users; // Relation to sysUser table.
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -79,7 +79,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
-    Set<SysRole> roles; // Relation to SysRole table.
+    private Set<SysRole> roles; // Relation to SysRole table.
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -87,7 +87,7 @@ public class SysUserGroup extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USERGROUP_ID", referencedColumnName = "USERGROUP_ID")},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
-    Set<SysDataGroup> dataGroups;
+    private Set<SysDataGroup> dataGroups;
 
 }
 

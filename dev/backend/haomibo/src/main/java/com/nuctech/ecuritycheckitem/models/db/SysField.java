@@ -52,28 +52,28 @@ public class SysField extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FIELD_ID", length = 20, nullable = false)
-    Long fieldId;
+    private Long fieldId;
 
     @Column(name = "ORG_ID", length = 20)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "PARENT_FIELD_ID", length = 20)
-    Long parentFieldId;
+    private Long parentFieldId;
 
     @Column(name = "FIELD_SERIAL", length = 50)
-    String fieldSerial;
+    private String fieldSerial;
 
     @Column(name = "FIELD_DESIGNATION", length = 50)
-    String fieldDesignation;
+    private String fieldDesignation;
 
     @Column(name = "LEADER", length = 50)
-    String leader;
+    private String leader;
 
     @Column(name = "MOBILE", length = 50)
-    String mobile;
+    private String mobile;
 
     @Column(name = "FIELD_STATUS", length = 10)
-    String status;
+    private String status;
 
 
     @ToString.Exclude
@@ -81,9 +81,9 @@ public class SysField extends BaseEntity implements Serializable {
     @JoinColumn(name = "PARENT_FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
-    SysField parent;
+    private SysField parent;
 
     @javax.persistence.Transient
-    String parentDesignation;
+    private String parentDesignation;
 
 }

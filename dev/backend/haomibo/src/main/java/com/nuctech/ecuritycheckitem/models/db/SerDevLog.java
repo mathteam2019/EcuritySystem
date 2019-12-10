@@ -37,42 +37,42 @@ public class SerDevLog extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", length = 20, nullable = false)
-    Long id;
+    private Long id;
 
     @Column(name = "GUID", length = 255)
-    String guid;
+    private String guid;
 
     @Column(name = "DEV_TYPE", length = 10)
-    String devType;
+    private String devType;
 
     @Column(name = "LOGIN_NAME", length = 20)
-    String loginName;
+    private String loginName;
 
     @Column(name = "CATEGORY", length = 2)
-    Long category;
+    private Long category;
 
     @Column(name = "LEVEL", length = 11)
-    Long level;
+    private Long level;
 
     @Column(name = "CONTENT", length = 2000)
-    String content;
+    private String content;
 
     @Column(name = "TIME", nullable = false)
-    Date time;
+    private Date time;
 
     @ToString.Exclude
     @ManyToOne()
     @JoinColumn(name = "GUID", referencedColumnName = "GUID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
-    SysDevice device;
+    private SysDevice device;
 
     @ToString.Exclude
     @ManyToOne()
     @JoinColumn(name = "LOGIN_NAME", referencedColumnName = "USER_ACCOUNT", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("user")
-    SysUser user;
+    private SysUser user;
 
 
 

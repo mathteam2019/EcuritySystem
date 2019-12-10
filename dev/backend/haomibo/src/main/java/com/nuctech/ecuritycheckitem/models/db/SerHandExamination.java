@@ -39,28 +39,28 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HAND_EXAMINATION_ID", length = 20)
-    Long handExaminationId;
+    private Long handExaminationId;
 
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "WORKFLOW_ID", length = 20)
-    Long workflowId;
+    private Long workflowId;
 
     @Column(name = "HAND_DEVICE_ID", length = 20)
-    Long handDeviceId;
+    private Long handDeviceId;
 
     @Column(name = "HAND_RESULT", length = 10)
-    String handResult;
+    private String handResult;
 
     @Column(name = "HAND_START_TIME", nullable = false)
-    Date handStartTime;
+    private Date handStartTime;
 
     @Column(name = "HAND_END_TIME", nullable = false)
-    Date handEndTime;
+    private Date handEndTime;
 
     @Column(name = "HAND_USER_ID", length = 20)
-    Long handUserId;
+    private Long handUserId;
 
     @Column(name = "CREATEDBY", length = 20)
     private Long createdBy;
@@ -80,20 +80,20 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysWorkflow workFlow;
+    private SysWorkflow workFlow;
 
     @OneToOne()
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysDevice handDevice;
+    private SysDevice handDevice;
 
     @OneToOne()
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysUser handUser;
+    private SysUser handUser;
 
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SerTask task;
+    private SerTask task;
 }

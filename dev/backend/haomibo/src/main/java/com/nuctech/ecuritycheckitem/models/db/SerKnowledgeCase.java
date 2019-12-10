@@ -38,22 +38,22 @@ public class SerKnowledgeCase extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CASE_ID", length = 20)
-    Long caseId;
+    private Long caseId;
 
     @Column(name = "CASE_DETAL_ID", length = 20)
-    Long caseDealId;
+    private Long caseDealId;
 
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "CASE_STATUS", length = 20)
-    String caseStatus;
+    private String caseStatus;
 
     @Column(name = "CASE_COLLECT_USERID", length = 20)
-    Long caseCollectUserId;
+    private Long caseCollectUserId;
 
     @Column(name = "CASE_APPROVAL_USERID", length = 20)
-    Long caseApprovalUserId;
+    private Long caseApprovalUserId;
 
 
 

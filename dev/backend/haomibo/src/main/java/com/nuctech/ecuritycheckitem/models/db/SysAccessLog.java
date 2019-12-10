@@ -34,30 +34,30 @@ public class SysAccessLog extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", length = 20, nullable = false)
-    Long id;
+    private Long id;
 
     @Column(name = "OPERATE_TIME", nullable = false)
-    Date operateTime;
+    private Date operateTime;
 
     @Column(name = "CLIENT_IP", length = 255)
-    String clientIp;
+    private String clientIp;
 
     @Column(name = "OPERATE_ID", length = 20)
-    Long operateId;
+    private Long operateId;
 
     @Column(name = "OPERATE_ACCOUNT", length = 200)
-    String operateAccount;
+    private String operateAccount;
 
     @Column(name = "ACTION", length = 10)
-    String action;
+    private String action;
 
     @Column(name = "OPERATE_RESULT", length = 10)
-    String operateResult;
+    private String operateResult;
 
     @Column(name = "REASON_CODE", length = 255)
-    String womanManualGender;
+    private String womanManualGender;
 
     @Column(name = "ONLINE_TIME", length = 11)
-    Long onlineTime;
+    private Long onlineTime;
     
 }

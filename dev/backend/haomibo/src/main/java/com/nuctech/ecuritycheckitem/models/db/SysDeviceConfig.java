@@ -36,40 +36,40 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CONFIG_ID", length = 20, nullable = false)
-    Long configId;
+    private Long configId;
 
     @Column(name = "MODE_ID", length = 20)
-    Long modeId;
+    private Long modeId;
 
 //    @Column(name = "FIELD_ID", length = 20)
 //    Long fieldId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
     @Column(name = "MANUAL_SWITCH", length = 10)
-    String manualSwitch;
+    private String manualSwitch;
 
     @Column(name = "ATR_SWITCH", length = 10)
-    String atrSwitch;
+    private String atrSwitch;
 
     @Column(name = "MAN_REMOTE_GENDER", length = 10)
-    String manRemoteGender;
+    private String manRemoteGender;
 
     @Column(name = "WOMAN_REMOTE_GENDER", length = 10)
-    String womanRemoteGender;
+    private String womanRemoteGender;
 
     @Column(name = "MAN_MANUAL_GENDER", length = 10)
-    String manManualGender;
+    private String manManualGender;
 
     @Column(name = "WOMAN_MANUAL_GENDER", length = 10)
-    String womanManualGender;
+    private String womanManualGender;
 
     @Column(name = "MAN_DEVICE_GENDER", length = 10)
-    String manDeviceGender;
+    private String manDeviceGender;
 
     @Column(name = "WOMAN_DEVICE_GENDER", length = 10)
-    String womanDeviceGender;
+    private String womanDeviceGender;
 
 
     @ToString.Exclude
@@ -109,6 +109,6 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
     private List<FromConfigId> fromConfigIdList; // Relation to FromConfigId table.
 
     @javax.persistence.Transient
-    String fromConfigDeviceName;
+    private String fromConfigDeviceName;
 
 }

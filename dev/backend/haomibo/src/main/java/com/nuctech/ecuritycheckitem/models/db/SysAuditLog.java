@@ -36,36 +36,36 @@ public class SysAuditLog extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", length = 20, nullable = false)
-    Long id;
+    private Long id;
 
     @Column(name = "OPERATE_TIME", nullable = false)
-    Date operateTime;
+    private Date operateTime;
 
     @Column(name = "CLIENT_IP", length = 255)
-    String clientIp;
+    private String clientIp;
 
     @Column(name = "OPERATOR_ID", length = 20)
-    Long operatorId;
+    private Long operatorId;
 
     @Column(name = "OPERATE_ACCOUNT", length = 200)
-    String operateAccount;
+    private String operateAccount;
 
     @Column(name = "OPERATE_OBJECT", length = 255)
-    String operateObject;
+    private String operateObject;
 
     @Column(name = "ACTION", length = 10)
-    String action;
+    private String action;
 
     @Column(name = "OPERATE_RESULT", length = 10)
-    String operateResult;
+    private String operateResult;
 
     @Column(name = "OPERATE_CONTENT", length = 255)
-    String operateContent;
+    private String operateContent;
 
     @Column(name = "REASON_CODE", length = 255)
-    String reasonCode;
+    private String reasonCode;
 
     @Column(name = "ONLINE_TIME", length = 11)
-    Long onlineTime;
+    private Long onlineTime;
 
 }

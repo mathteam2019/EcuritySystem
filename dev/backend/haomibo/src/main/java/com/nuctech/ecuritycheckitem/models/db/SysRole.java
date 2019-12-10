@@ -32,22 +32,22 @@ public class SysRole extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROLE_ID", length = 20, nullable = false)
-    Long roleId;
+    private Long roleId;
 
     @Column(name = "ORG_ID", length = 20)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "ROLE_NUMBER", length = 50)
-    String roleNumber;
+    private String roleNumber;
 
     @Column(name = "ROLE_NAME", length = 50)
-    String roleName;
+    private String roleName;
 
     @Column(name = "ROLE_FLAG", length = 10)
-    String roleFlag;
+    private String roleFlag;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -55,7 +55,7 @@ public class SysRole extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")},
             inverseJoinColumns = {@JoinColumn(name = "RESOURCE_ID", referencedColumnName = "RESOURCE_ID")}
     )
-    Set<SysResource> resources;
+    private Set<SysResource> resources;
 
 
 }

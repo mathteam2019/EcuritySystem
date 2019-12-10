@@ -41,11 +41,11 @@ public class SysWorkMode extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MODE_ID", length = 20, nullable = false)
-    Long modeId;
+    private Long modeId;
 
 
     @Column(name = "MODE_NAME", length = 20)
-    String modeName;
+    private String modeName;
 
 
 }

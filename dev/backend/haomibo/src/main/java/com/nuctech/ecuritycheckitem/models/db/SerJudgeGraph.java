@@ -45,45 +45,45 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "JUDGE_ID", length = 20)
-    Long judgeId;
+    private Long judgeId;
 
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "WORKFLOW_ID", length = 20)
-    Long workflowId;
+    private Long workflowId;
 
     @Column(name = "JUDGE_DEVICE_ID", length = 20)
-    Long judgeDeviceId;
+    private Long judgeDeviceId;
 
     @Column(name = "JUDGE_RESULT", length = 10)
-    String judgeResult;
+    private String judgeResult;
 
     @Column(name = "JUDGE_TIMEOUT", length = 10)
-    String judgeTimeout;
+    private String judgeTimeout;
 
     @Column(name = "JUDGE_START_TIME", nullable = false)
-    Date judgeStartTime;
+    private Date judgeStartTime;
 
     @Column(name = "JUDGE_END_TIME", nullable = false)
-    Date judgeEndTime;
+    private Date judgeEndTime;
 
     @Column(name = "JUDGE_USER_ID", length = 20)
-    Long judgeUserId;
+    private Long judgeUserId;
 
     @OneToOne()
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysDevice judgeDevice;
+    private SysDevice judgeDevice;
 
     @OneToOne()
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysUser judgeUser;
+    private SysUser judgeUser;
 
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SerTask task;
+    private SerTask task;
 
 }

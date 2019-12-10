@@ -1,5 +1,6 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement;
 
+import com.nuctech.ecuritycheckitem.models.db.SerArchiveIndicators;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,8 @@ public interface ArchiveTemplateService {
     boolean checkCategoryExist(long categoryId);
 
     void updateStatus(long templateId, String status);
+
+    void createArchiveIndicator(SerArchiveIndicators archiveIndicators);
 
     int updateIndicatorStatus(long indicatorId, String isNull);
 

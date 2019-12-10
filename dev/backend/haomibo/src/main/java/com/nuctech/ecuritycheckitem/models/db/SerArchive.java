@@ -53,33 +53,33 @@ public class SerArchive extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ARCHIVE_ID", length = 20, nullable = false)
-    Long archiveId;
+    private Long archiveId;
 
 
     @Column(name = "ARCHIVES_TEMPLATE_ID", length = 20)
-    Long archivesTemplateId;
+    private Long archivesTemplateId;
 
 
     @Column(name = "ARCHIVES_NAME", length = 50)
-    String archivesName;
+    private String archivesName;
 
     @Column(name = "ARCHIVES_NUMBER", length = 50)
-    String archivesNumber;
+    private String archivesNumber;
 
 //    @Column(name = "CATEGORY_ID", length = 20)
-//    Long categoryId;
+//    private Long categoryId;
 //
 //    @Column(name = "MANUFACTURER", length = 10)
-//    String manufacturer;
+//    private String manufacturer;
 //
 //    @Column(name = "ORIGINAL_MODEL", length = 50)
-//    String originalModel;
+//    private String originalModel;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @Column(name = "IMAGE_URL", length = 200)
-    String imageUrl;
+    private String imageUrl;
 
 //    @ToString.Exclude
 //    @ManyToOne()

@@ -67,62 +67,62 @@ public class SysUser extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID", nullable = false)
-    Long userId;
+    private Long userId;
 
     @Column(name = "ORG_ID", length = 20)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "USER_NAME", length = 50)
-    String userName;
+    private String userName;
 
     @Column(name = "USER_ACCOUNT", length = 20)
-    String userAccount;
+    private String userAccount;
 
     @JsonIgnore
     @Column(name = "PASSWORD", length = 20)
-    String password;
+    private String password;
 
     @Column(name = "DATA_RANGE_CATEGORY", length = 10)
-    String dataRangeCategory;
+    private String dataRangeCategory;
 
     @Column(name = "USER_NUMBER", length = 50)
-    String userNumber;
+    private String userNumber;
 
     @Column(name = "GENDER", length = 10)
-    String gender;
+    private String gender;
 
     @Column(name = "IDENTITY_CARD", length = 50)
-    String identityCard;
+    private String identityCard;
 
     @Column(name = "POST", length = 50)
-    String post;
+    private String post;
 
     @Column(name = "EDUCATION", length = 10)
-    String education;
+    private String education;
 
     @Column(name = "DEGREE", length = 10)
-    String degree;
+    private String degree;
 
     @Column(name = "EMAIL", length = 50)
-    String email;
+    private String email;
 
     @Column(name = "MOBILE", length = 20)
-    String mobile;
+    private String mobile;
 
     @Column(name = "ADDRESS", length = 50)
-    String address;
+    private String address;
 
     @Column(name = "CATEGORY", length = 10)
-    String category;
+    private String category;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @Column(name = "PORTRAIT", length = 200)
-    String portrait;
+    private String portrait;
 
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @ToString.Exclude
     @OneToOne()
@@ -137,7 +137,7 @@ public class SysUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ROLE_ID")}
     )
-    Set<SysRole> roles; // Relation to SysRole table.
+    private Set<SysRole> roles; // Relation to SysRole table.
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -145,6 +145,6 @@ public class SysUser extends BaseEntity implements Serializable {
             joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")},
             inverseJoinColumns = {@JoinColumn(name = "DATA_GROUP_ID", referencedColumnName = "DATA_GROUP_ID")}
     )
-    Set<SysDataGroup> dataGroups;
+    private Set<SysDataGroup> dataGroups;
 
 }

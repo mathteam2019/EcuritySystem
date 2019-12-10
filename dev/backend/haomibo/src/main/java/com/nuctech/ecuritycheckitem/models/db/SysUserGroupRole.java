@@ -28,13 +28,13 @@ public class SysUserGroupRole extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_GROUP_ROLE_ID", length = 20, nullable = false)
-    Long userGroupRoleId;
+    private Long userGroupRoleId;
 
     @Column(name = "USERGROUP_ID", length = 20)
-    Long userGroupId;
+    private Long userGroupId;
 
     @Column(name = "ROLE_ID", length = 20)
-    Long roleId;
+    private Long roleId;
 
 }
 

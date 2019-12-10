@@ -26,28 +26,28 @@ public class SerImage extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "IMAGE_ID", length = 20)
-    Long imageId ;
+    private Long imageId ;
 
     @Column(name = "SCAN_ID", length = 20)
-    Long scanId;
+    private Long scanId;
 
     @Column(name = "TASK_ID", length = 20, nullable = false)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "IMAGE_FORMAT", length = 10)
-    String imageFormat;
+    private String imageFormat;
 
     @Column(name = "IMAGE_CATEGORY", length = 10)
-    String imageCategory;
+    private String imageCategory;
 
     @Column(name = "IMAGE_URL", length = 200)
-    String imageUrl;
+    private String imageUrl;
 
     @Column(name = "IMAGE_LABEL", length = 50)
-    String imageLabel;
+    private String imageLabel;
 
     @Column(name = "STATUS", length = 10)
-    String status ;
+    private String status ;
 
 
 }

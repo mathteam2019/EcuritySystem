@@ -51,20 +51,20 @@ public class SysDeviceCategory extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID", length = 20, nullable = false)
-    Long categoryId;
+    private Long categoryId;
 
 
     @Column(name = "PARENT_CATEGORY_ID", length = 20)
-    Long parentCategoryId;
+    private Long parentCategoryId;
 
     @Column(name = "CATEGORY_NUMBER", length = 50)
-    String categoryNumber;
+    private String categoryNumber;
 
     @Column(name = "CATEGORY_NAME", length = 50)
-    String categoryName;
+    private String categoryName;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
 
     @ToString.Exclude
@@ -72,6 +72,6 @@ public class SysDeviceCategory extends BaseEntity implements Serializable {
     @JoinColumn(name = "PARENT_CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
-    SysDeviceCategory parent;
+    private SysDeviceCategory parent;
 
 }

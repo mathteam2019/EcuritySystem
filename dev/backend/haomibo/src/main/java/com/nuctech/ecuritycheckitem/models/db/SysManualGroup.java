@@ -35,14 +35,14 @@ public class SysManualGroup extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MANUAL_GROUP_ID", length = 20, nullable = false)
-    Long manualGroupId;
+    private Long manualGroupId;
 
     @Column(name = "MANUAL_DEVICE_ID", length = 20)
-    Long manualDeviceId;
+    private Long manualDeviceId;
 
 
     @Column(name = "CONFIG_ID", length = 20)
-    Long configId;
+    private Long configId;
 
     @ToString.Exclude
     @ManyToOne()

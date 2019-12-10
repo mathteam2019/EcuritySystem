@@ -28,13 +28,13 @@ public class SysRoleResource extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROLE_RESOURCE_ID", length = 20, nullable = false)
-    Long roleResourceId;
+    private Long roleResourceId;
 
     @Column(name = "RESOURCE_ID", length = 20)
-    Long resourceId;
+    private Long resourceId;
 
     @Column(name = "ROLE_ID", length = 20)
-    Long roleId;
+    private Long roleId;
 
 
 }

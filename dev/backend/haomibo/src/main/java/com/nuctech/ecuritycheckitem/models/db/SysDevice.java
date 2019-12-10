@@ -53,21 +53,21 @@ public class SysDevice extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DEVICE_ID", length = 20, nullable = false)
-    Long deviceId;
+    private Long deviceId;
 
 
     @Column(name = "GUID", length = 255)
-    String guid;
+    private String guid;
 
     @Column(name = "DEVICE_NAME", length = 50)
-    String deviceName;
+    private String deviceName;
 
 
     @Column(name = "DEVICE_TYPE", length = 50)
-    String deviceType;
+    private String deviceType;
 
     @Column(name = "DEVICE_SERIAL", length = 50)
-    String deviceSerial;
+    private String deviceSerial;
 
 //    @Column(name = "CATEGORY_ID", length = 20)
 //    Long categoryId;
@@ -79,54 +79,54 @@ public class SysDevice extends BaseEntity implements Serializable {
 //    String originalModel;
 
     @Column(name = "ORIGINAL_FACTORY_NUMBER", length = 50)
-    String originalFactoryNumber;
+    private String originalFactoryNumber;
 
     @Column(name = "MANUFACTURE_DATE", nullable = false)
-    Date manufacturerDate;
+    private Date manufacturerDate;
 
     @Column(name = "PURCHASE_DATE", nullable = false)
-    Date purchaseDate;
+    private Date purchaseDate;
 
     @Column(name = "SUPPLIER", length = 50)
-    String supplier;
+    private String supplier;
 
     @Column(name = "CONTACTS", length = 50)
-    String contacts;
+    private String contacts;
 
     @Column(name = "MOBILE", length = 50)
-    String mobile;
+    private String mobile;
 
     @Column(name = "REGISTRATION_NUMBER", length = 50)
-    String registrationNumber;
+    private String registrationNumber;
 
     @Column(name = "IMAGE_URL", length = 200)
-    String imageUrl;
+    private String imageUrl;
 
     @Column(name = "FIELD_ID", length = 20)
-    Long fieldId;
+    private Long fieldId;
 
     @Column(name = "ARCHIVE_ID", length = 20)
-    Long archiveId;
+    private Long archiveId;
 
     @Column(name = "CATEGORY_ID", length = 20)
-    Long categoryId;
+    private Long categoryId;
 
     @Column(name = "REGISTER_ID", length = 20)
-    Long registerId;
+    private Long registerId;
 
     @Column(name = "DEVICE_DESC", length = 500)
-    String deviceDesc;
+    private String deviceDesc;
 
     @Column(name = "DEVICE_IP", length = 20)
-    String deviceIp;
+    private String deviceIp;
 
     @Column(name = "DEVICE_PASSAGEWAY", length = 50)
-    String devicePassageWay;
+    private String devicePassageWay;
 
 
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
     @ToString.Exclude
     @ManyToOne()

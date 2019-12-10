@@ -64,25 +64,25 @@ public class SysOrg extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ORG_ID", length = 20, nullable = false)
-    Long orgId;
+    private Long orgId;
 
     @Column(name = "PARENT_ORG_ID", length = 20)
-    Long parentOrgId;
+    private Long parentOrgId;
 
     @Column(name = "ORG_NAME", length = 50)
-    String orgName;
+    private String orgName;
 
     @Column(name = "ORG_NUMBER", length = 50)
-    String orgNumber;
+    private String orgNumber;
 
     @Column(name = "LEADER", length = 50)
-    String leader;
+    private String leader;
 
     @Column(name = "MOBILE", length = 20)
-    String mobile;
+    private String mobile;
 
     @Column(name = "STATUS", length = 10)
-    String status;
+    private String status;
 
 
     @ToString.Exclude
@@ -90,18 +90,18 @@ public class SysOrg extends BaseEntity implements Serializable {
     @JoinColumn(name = "PARENT_ORG_ID", referencedColumnName = "ORG_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("parent")
-    SysOrg parent;
+    private SysOrg parent;
 
 
     @ToString.Exclude
     @OneToMany(mappedBy = "parent")
-    Set<SysOrg> children;
+    private Set<SysOrg> children;
 
 
     @ToString.Exclude
     @OneToMany(mappedBy = "org")
     @NotFound(action = NotFoundAction.IGNORE)
-    Set<SysUser> users;
+    private Set<SysUser> users;
 
 
 }

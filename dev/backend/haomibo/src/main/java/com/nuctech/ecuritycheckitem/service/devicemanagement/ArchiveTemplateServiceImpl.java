@@ -1,20 +1,15 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nuctech.ecuritycheckitem.controllers.devicemanagement.ArchiveTemplateManagementController;
-import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +32,6 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
 
     @Autowired
     SerArchiveIndicatorsRepository serArchiveIndicatorsRepository;
-
-    @Autowired
-    Utils utils;
 
     @Autowired
     SysDeviceCategoryRepository sysDeviceCategoryRepository;
@@ -94,6 +86,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
 
 
     @Override
+    @Transactional
     public void updateStatus(long templateId, String status) {
         Optional<SerArchiveTemplate> optionalSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
                 serArchiveTemplate.archivesTemplateId.eq(templateId));
@@ -109,6 +102,14 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
     }
 
     @Override
+    @Transactional
+    public void createArchiveIndicator(SerArchiveIndicators archiveIndicators) {
+        archiveIndicators.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serArchiveIndicatorsRepository.save(archiveIndicators);
+    }
+
+    @Override
+    @Transactional
     public int updateIndicatorStatus(long indicatorId, String isNull) {
         Optional<SerArchiveIndicators> optionalSerArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.
                 serArchiveIndicators.indicatorsId.eq(indicatorId));
@@ -137,6 +138,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
 
 
     @Override
+    @Transactional
     public void createSerArchiveTemplate(SerArchiveTemplate serArchiveTemplate) {
 
         // Add createdInfo.
@@ -155,6 +157,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
     }
 
     @Override
+    @Transactional
     public void modifySerArchiveTemplate(SerArchiveTemplate serArchiveTemplate) {
 
         SerArchiveTemplate oldSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
@@ -186,6 +189,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
     }
 
     @Override
+    @Transactional
     public void removeSerArchiveTemplate(long archiveTemplateId) {
         SerArchiveTemplate serArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(archiveTemplateId)).orElse(null);
@@ -205,6 +209,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
     }
 
     @Override
+    @Transactional
     public int removeSerArchiveIndicator(long archiveIndicatorId) {
         SerArchiveIndicators serArchiveIndicators = serArchiveIndicatorsRepository.findOne(QSerArchiveIndicators.serArchiveIndicators
                 .indicatorsId.eq(archiveIndicatorId)).orElse(null);

@@ -35,14 +35,14 @@ public class SysJudgeGroup extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "JUDGE_GROUP_ID", length = 20, nullable = false)
-    Long judgeGroupId;
+    private Long judgeGroupId;
 
     @Column(name = "JUDGE_DEVICE_ID", length = 20)
-    Long judgeDeviceId;
+    private Long judgeDeviceId;
 
 
     @Column(name = "CONFIG_ID", length = 20)
-    Long configId;
+    private Long configId;
 
     @ToString.Exclude
     @ManyToOne()

@@ -42,72 +42,72 @@ public class SerScanParam extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_PARAMS_ID", length = 20, nullable = false)
-    Long scanParamsId;
+    private Long scanParamsId;
 
 
     @Column(name = "DEV_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
 
     @Column(name = "AIRCALIWARNTIME", length = 11)
-    Long airCaliWarnTime;
+    private Long airCaliWarnTime;
 
     @Column(name = "STANDBYTIME", length = 11)
-    Long standByTime;
+    private Long standByTime;
 
     @Column(name = "ALARMSOUND", length = 10)
-    String alarmSound;
+    private String alarmSound;
 
     @Column(name = "PASSSOUND", length = 10)
-    String passSound;
+    private String passSound;
 
     @Column(name = "POSERRORSOUND", length = 10)
-    String posErrorSound;
+    private String posErrorSound;
 
     @Column(name = "STANDSOUND", length = 10)
-    String standSound;
+    private String standSound;
 
     @Column(name = "SCANSOUND", length = 10)
-    String scanSound;
+    private String scanSound;
 
     @Column(name = "SCANOVERUSESOUND", length = 10)
-    String scanOverUseSound;
+    private String scanOverUseSound;
 
     @Column(name = "AUTORECOGNISE", length = 10)
-    String autoRecognise;
+    private String autoRecognise;
 
     @Column(name = "RECOGNITIONRATE", length = 11)
-    Long recognitionRate;
+    private Long recognitionRate;
 
     @Column(name = "SAVESCANDATA", length = 10)
-    String saveScanData;
+    private String saveScanData;
 
     @Column(name = "SAVESUSPECTDATA", length = 10)
-    String saveSuspectData;
+    private String saveSuspectData;
 
     @Column(name = "FACIALBLURRING", length = 10)
-    String facialBlurring;
+    private String facialBlurring;
 
     @Column(name = "CHESTBLURRING", length = 10)
-    String chestBlurring;
+    private String chestBlurring;
 
     @Column(name = "HIPBLURRING", length = 10)
-    String hipBlurring;
+    private String hipBlurring;
 
     @Column(name = "GROINBLURRING", length = 10)
-    String groinBlurring;
+    private String groinBlurring;
 
     @Column(name = "ATUOCONFIG", length = 10)
-    String autoConfig;
+    private String autoConfig;
 
     @Column(name = "DICTIONARY_NAME", length = 50)
-    String dictionaryName;
+    private String dictionaryName;
 
     @Column(name = "STORAGE_ALARM", length = 10)
-    Integer deviceStorageAlarm;
+    private Integer deviceStorageAlarm;
 
     @Column(name = "STORAGE_ALARM_PERCENT", length = 10)
-    Integer deviceStorageAlarmPercent;
+    private Integer deviceStorageAlarmPercent;
 
     @ToString.Exclude
     @ManyToOne()

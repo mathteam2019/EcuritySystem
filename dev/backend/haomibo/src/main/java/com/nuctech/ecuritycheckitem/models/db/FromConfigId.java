@@ -35,16 +35,16 @@ public class FromConfigId extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "FROM_CONFIG_ID", length = 20, nullable = false)
-    Long fromConfigId;
+    private Long fromConfigId;
 
     @Column(name = "CONFIG_ID", length = 20)
-    Long configId;
+    private Long configId;
 
     @Column(name = "FROM_DEVICE_ID", length = 20)
-    Long fromDeviceId;
+    private Long fromDeviceId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
 
 }

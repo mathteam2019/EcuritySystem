@@ -435,12 +435,12 @@ public class UserManagementController extends BaseController {
         }
 
         // Check if user email is duplicated.
-        if (sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()))) {
+        if (!requestBody.getEmail().equals("") && sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()))) {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
 
         // Check if user phone number is duplicated.
-        if (sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()))) {
+        if (!requestBody.getMobile().equals("") && sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()))) {
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
 
@@ -510,6 +510,16 @@ public class UserManagementController extends BaseController {
         if (sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(requestBody.userAccount).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
+
+        if (!requestBody.getMobile().equals("") && sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
+            return new CommonResponseBody(ResponseMessage.USED_MOBILE);
+        }
+
+
+        if (!requestBody.getEmail().equals("") && sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
+            return new CommonResponseBody(ResponseMessage.USED_EMAIL);
+        }
+
 
         SysUser sysUser = requestBody.convert2SysUser();
 

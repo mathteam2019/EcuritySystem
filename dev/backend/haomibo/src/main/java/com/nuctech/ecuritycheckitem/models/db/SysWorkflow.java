@@ -30,23 +30,23 @@ public class SysWorkflow extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "WORKFLOW_ID", length = 20)
-    Long workflowId;
+    private Long workflowId;
 
     @Column(name = "MODE_ID", length = 20)
-    Long modeId;
+    private Long modeId;
 
     @Column(name = "STEP_SEQUENCE", length = 11)
-    Integer stepSequence;
+    private Integer stepSequence;
 
     @Column(name = "STEP_NAME", length = 50)
-    String stepName;
+    private String stepName;
 
     @Column(name = "TASK_TYPE", length = 10)
-    String taskType;
+    private String taskType;
 
     @OneToOne()
     @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "MODE_ID", referencedColumnName = "MODE_ID", insertable = false, updatable = false)
-    SysWorkMode workMode;
+    private SysWorkMode workMode;
 
 }

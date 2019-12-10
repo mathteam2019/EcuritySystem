@@ -39,35 +39,35 @@ public class SerPlatformOtherParams implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", length = 20, nullable = false)
-    Long id;
+    private Long id;
 
 
     @Column(name = "INITIAL_PASSWORD", length = 255)
-    String initialPassword;
+    private String initialPassword;
 
     @Column(name = "LOGIN_NUMBER", length = 11)
-    Long loginNumber;
+    private Long loginNumber;
 
     @Column(name = "LOG_MAX_NUMBER", length = 11)
-    Long logMaxNumber;
+    private Long logMaxNumber;
 
     @Column(name = "DEVICE_TRAFFIC_SETTINGS", length = 11)
-    Integer deviceTrafficSettings;
+    private Integer deviceTrafficSettings;
 
     @Column(name = "DEVICE_TRAFFIC_HIGH", length = 11)
-    Integer deviceTrafficHigh;
+    private Integer deviceTrafficHigh;
 
     @Column(name = "DEVICE_TRAFFIC_MIDDLE", length = 11)
-    Integer deviceTrafficMiddle;
+    private Integer deviceTrafficMiddle;
 
     @Column(name = "STORAGE_DETECTION_CYCLE", length = 11)
-    Integer storageDetectionCycle;
+    private Integer storageDetectionCycle;
 
     @Column(name = "STORAGE_ALARM", length = 11)
-    Integer storageAlarm;
+    private Integer storageAlarm;
 
     @Column(name = "HISTORY_DATA_CYCLE", length = 11)
-    Integer historyDataCycle;
+    private Integer historyDataCycle;
 
 
 

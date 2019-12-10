@@ -29,19 +29,19 @@ import java.util.Date;
  */
 public class BaseEntity {
     @Column(name = "CREATEDBY", length = 20)
-    Long createdBy;
+    private Long createdBy;
 
     @Column(name = "CREATEDTIME", nullable = false)
-    Date createdTime;
+    private Date createdTime;
 
     @Column(name = "EDITEDBY", length = 20)
-    Long editedBy;
+    private Long editedBy;
 
     @Column(name = "EDITEDTIME", nullable = false)
-    Date editedTime;
+    private Date editedTime;
 
     @Column(name = "NOTE", length = 500, nullable = false)
-    String note;
+    private String note;
 
     /**
      * Adds created info.

@@ -28,16 +28,16 @@ public class SysUserGroupLookup extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LOOKUP_ID", length = 20, nullable = false)
-    Long lookupId;
+    private Long lookupId;
 
     @Column(name = "USER_ID", length = 20)
-    Long userId;
+    private Long userId;
 
     @Column(name = "DATA_GROUP_ID", length = 20)
-    Long dataGroupId;
+    private Long dataGroupId;
 
     @Column(name = "USERGROUP_ID", length = 20)
-    Long userGroupId;
+    private Long userGroupId;
 
 
 }

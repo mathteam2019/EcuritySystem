@@ -22,7 +22,10 @@ import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceCategoryService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -61,6 +64,8 @@ import java.util.stream.StreamSupport;
 public class DeviceCategoryManagementController extends BaseController {
 
 
+    @Autowired
+    DeviceCategoryService deviceCategoryService;
     /**
      * Device category create request body.
      */
@@ -186,7 +191,7 @@ public class DeviceCategoryManagementController extends BaseController {
 
         String note;
 
-        SysDeviceCategory convert2SysDeviceCategory(Long createdBy, Date createdTime) {
+        SysDeviceCategory convert2SysDeviceCategory() {
 
             return SysDeviceCategory
                     .builder()
@@ -195,8 +200,6 @@ public class DeviceCategoryManagementController extends BaseController {
                     .categoryNumber(this.getCategoryNumber())
                     .parentCategoryId(this.getParentCategoryId())
                     .status(SysDeviceCategory.Status.INACTIVE)
-                    .createdBy(createdBy)
-                    .createdTime(createdTime)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
@@ -238,21 +241,13 @@ public class DeviceCategoryManagementController extends BaseController {
         }
 
         // Check if parent category is existing.
-        if (requestBody.getParentCategoryId() != 0 && !sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryId
-                .eq(requestBody.getParentCategoryId()))) {
+        if (requestBody.getParentCategoryId() != 0 && !deviceCategoryService.checkCategoryExist(requestBody.getParentCategoryId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
 
-        if(requestBody.getParentCategoryId() == 0) {
-            sysDeviceCategory.setStatus(SysDeviceCategory.Status.ACTIVE);
-        }
-
-        // Add createdInfo.
-        sysDeviceCategory.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceCategoryRepository.save(sysDeviceCategory);
+        deviceCategoryService.createSysDeviceCategory(sysDeviceCategory);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -271,37 +266,27 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDeviceCategory oldSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.sysDeviceCategory
-                .categoryId.eq(requestBody.getCategoryId())).orElse(null);
+
 
         // Check if category is existing.
-        if (oldSysDeviceCategory == null) {
+        if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if parent category is existing.
-        if (!sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory
-                .categoryId.eq(requestBody.getParentCategoryId()))) {
+        if (!deviceCategoryService.checkCategoryExist(requestBody.getParentCategoryId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //Check if archive template contain this category
 
-
-        if(serArchiveTemplateRepository.exists(QSerArchiveTemplate.
-                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId()))) {
+        if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
-        //Don't modify created by and created time
-        SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory(oldSysDeviceCategory.getCreatedBy(),
-                oldSysDeviceCategory.getCreatedTime());
+        SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
 
-
-        // Add edited info.
-        sysDeviceCategory.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceCategoryRepository.save(sysDeviceCategory);
+        deviceCategoryService.modifySysDeviceCategory(sysDeviceCategory);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -321,24 +306,18 @@ public class DeviceCategoryManagementController extends BaseController {
         }
 
         // Check if category has children.
-        boolean isHavingChildren = sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory
-                .parentCategoryId.eq(requestBody.getCategoryId()));
-        if (isHavingChildren) {
-            // Can't delete if category has children.
+
+        if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
 
         //Check if archive template contain this category
-
-
-        if(serArchiveTemplateRepository.exists(QSerArchiveTemplate.
-                serArchiveTemplate.categoryId.eq(requestBody.getCategoryId()))) {
+        if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
-
-        sysDeviceCategoryRepository.delete(SysDeviceCategory.builder().categoryId(requestBody.getCategoryId()).build());
+        deviceCategoryService.removeSysDeviceCategory(requestBody.getCategoryId());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -374,24 +353,7 @@ public class DeviceCategoryManagementController extends BaseController {
         return value;
     }
 
-    private BooleanBuilder getPredicate(DeviceCategoryGetByFilterAndPageRequestBody.Filter filter) {
-        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getCategoryName())) {
-                predicate.and(builder.categoryName.contains(filter.getCategoryName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentCategoryName())) {
-                predicate.and(builder.parent.categoryName.contains(filter.getParentCategoryName()));
-            }
-        }
-        return predicate;
-    }
 
     /**
      * Device Category datatable data.
@@ -406,23 +368,21 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysDeviceCategoryRepository.count(predicate);
-        List<SysDeviceCategory> data = sysDeviceCategoryRepository.findAll(predicate, pageRequest).getContent();
-
-        //set parent's  parent to null so prevent recursion
-        for(int i = 0; i < data.size(); i ++) {
-            SysDeviceCategory deviceCategory = data.get(i);
-            if(deviceCategory.getParent() != null) {
-                deviceCategory.getParent().setParent(null);
-            }
+        String categoryName = "";
+        String status = "";
+        String parentCategoryName = "";
+        if(requestBody.getFilter() != null) {
+            categoryName = requestBody.getFilter().getCategoryName();
+            status = requestBody.getFilter().getStatus();
+            parentCategoryName = requestBody.getFilter().getParentCategoryName();
         }
+        int currentPage = requestBody.getCurrentPage();
+        int perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SysDeviceCategory> result = deviceCategoryService.getDeviceCategoryListByPage(categoryName, status, parentCategoryName,
+                currentPage, perPage);
+        long total = result.getTotal();
+        List<SysDeviceCategory> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -447,28 +407,6 @@ public class DeviceCategoryManagementController extends BaseController {
         return value;
     }
 
-    private List<SysDeviceCategory> getExportList(List<SysDeviceCategory> categoryList, boolean isAll, String idList) {
-        List<SysDeviceCategory> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < categoryList.size(); i ++) {
-                SysDeviceCategory category = categoryList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(category.getCategoryId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(category);
-                }
-            }
-        } else {
-            exportList = categoryList;
-        }
-        return exportList;
-    }
 
 
     /**
@@ -483,14 +421,18 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String categoryName = "";
+        String status = "";
+        String parentCategoryName = "";
+        if(requestBody.getFilter() != null) {
+            categoryName = requestBody.getFilter().getCategoryName();
+            status = requestBody.getFilter().getStatus();
+            parentCategoryName = requestBody.getFilter().getParentCategoryName();
+        }
 
-        //get all device category list
-        List<SysDeviceCategory> categoryList = StreamSupport
-                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+                requestBody.getIsAll(), requestBody.getIdList());
 
-        List<SysDeviceCategory> exportList = getExportList(categoryList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList);
 
@@ -519,14 +461,18 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String categoryName = "";
+        String status = "";
+        String parentCategoryName = "";
+        if(requestBody.getFilter() != null) {
+            categoryName = requestBody.getFilter().getCategoryName();
+            status = requestBody.getFilter().getStatus();
+            parentCategoryName = requestBody.getFilter().getParentCategoryName();
+        }
 
-        //get all device category list
-        List<SysDeviceCategory> categoryList = StreamSupport
-                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+                requestBody.getIsAll(), requestBody.getIdList());
 
-        List<SysDeviceCategory> exportList = getExportList(categoryList, requestBody.getIsAll(), requestBody.getIdList());
         DeviceCategoryPdfView.setResource(res);
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
 
@@ -555,21 +501,12 @@ public class DeviceCategoryManagementController extends BaseController {
         }
 
         // Check if category is existing.
-        Optional<SysDeviceCategory> optionalSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.sysDeviceCategory
-                .categoryId.eq(requestBody.getCategoryId()));
-        if (!optionalSysDeviceCategory.isPresent()) {
+
+        if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDeviceCategory sysDeviceCategory = optionalSysDeviceCategory.get();
-
-        // Update status.
-        sysDeviceCategory.setStatus(requestBody.getStatus());
-
-        // Add edited info.
-        sysDeviceCategory.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceCategoryRepository.save(sysDeviceCategory);
+        deviceCategoryService.updateStatus(requestBody.getCategoryId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

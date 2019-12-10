@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -95,6 +96,7 @@ public class ArchiveServiceImpl implements ArchiveService{
     }
 
     @Override
+    @Transactional
     public void updateStatus(long archiveId, String status) {
         Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
                 serArchive.archiveId.eq(archiveId));
@@ -131,6 +133,7 @@ public class ArchiveServiceImpl implements ArchiveService{
     }
 
     @Override
+    @Transactional
     public void createSerArchive(MultipartFile portraitFile, SerArchive serArchive, String json) {
 
         serArchive.setImageUrl(utils.saveImageFile(portraitFile));
@@ -144,6 +147,7 @@ public class ArchiveServiceImpl implements ArchiveService{
     }
 
     @Override
+    @Transactional
     public void modifySerArchive(MultipartFile portraitFile, SerArchive serArchive, String json) {
 
         serArchive.setImageUrl(utils.saveImageFile(portraitFile));
@@ -171,6 +175,7 @@ public class ArchiveServiceImpl implements ArchiveService{
     }
 
     @Override
+    @Transactional
     public void removeSerArchive(long archiveId) {
         SerArchive serArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(archiveId)).orElse(null);

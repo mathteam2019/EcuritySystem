@@ -45,43 +45,43 @@ public class SerScan extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_ID", length = 20)
-    Long scanId;
+    private Long scanId;
 
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "WORKFLOW_ID", length = 20)
-    Long workflowId;
+    private Long workflowId;
 
     @Column(name = "SCAN_DEVICE_ID", length = 20)
-    Long scanDeviceId;
+    private Long scanDeviceId;
 
     @Column(name = "SCAN_IMAGE_ID", length = 20)
-    Long scanImageId;
+    private Long scanImageId;
 
     @Column(name = "SCAN_ATR_RESULT", length = 10)
-    String scanAtrResult;
+    private String scanAtrResult;
 
     @Column(name = "SCAN_INVALID", length = 10)
-    String scanInvalid;
+    private String scanInvalid;
 
     @Column(name = "SCAN_FOOT_ALARM", length = 10)
-    String scanFootAlarm;
+    private String scanFootAlarm;
 
     @Column(name = "SCAN_START_TIME", nullable = false)
-    Date scanStartTime;
+    private Date scanStartTime;
 
     @Column(name = "SCAN_END_TIME", nullable = false)
-    Date scanEndTime;
+    private Date scanEndTime;
 
     @Column(name = "SCAN_POINTSMAN_ID", length = 20)
-    Long scanPointsmanId;
+    private Long scanPointsmanId;
 
     @Column(name = "SCAN_ASSIGN_TIMEOUT", length = 10)
-    String scanAssignTimeout;
+    private String scanAssignTimeout;
 
     @Column(name = "SCAN_IMAGEGENDER", length = 10)
-    String scanImageGender;
+    private String scanImageGender;
 
 
     @OneToOne()

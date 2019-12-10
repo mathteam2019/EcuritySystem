@@ -40,44 +40,44 @@ public class SerPlatformCheckParams extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SCAN_ID", length = 20, nullable = false)
-    Long scanId;
+    private Long scanId;
 
 
     @Column(name = "SCAN_RECOGNISE_COLOUR", length = 255)
-    String scanRecogniseColour;
+    private String scanRecogniseColour;
 
     @Column(name = "SCAN_OVERTIME", length = 11)
-    Long scanOverTime;
+    private Long scanOverTime;
 
     @Column(name = "JUDGE_ASSIGN_TIME", length = 11)
-    Long judgeAssignTime;
+    private Long judgeAssignTime;
 
     @Column(name = "JUDGE_PROCESSING_TIME", length = 11)
-    Long judgeProcessingTime;
+    private Long judgeProcessingTime;
 
     @Column(name = "JUDGE_SCAN_OVERTIME", length = 11)
-    Long judgeScanOvertime;
+    private Long judgeScanOvertime;
 
     @Column(name = "JUDGE_RECOGNISE_COLOUR", length = 255)
-    String judgeRecogniseColour;
+    private String judgeRecogniseColour;
 
     @Column(name = "HAND_OVERTIME", length = 11)
-    Long handOverTime;
+    private Long handOverTime;
 
     @Column(name = "HAND_RECOGNISE_COLOUR", length = 255)
-    String handRecogniseColour;
+    private String handRecogniseColour;
 
     @Column(name = "HISTORY_DATA_STORAGE", length = 255)
-    String historyDataStorage;
+    private String historyDataStorage;
 
     @Column(name = "HISTORY_DATA_EXPORT", length = 255)
-    String historyDataExport;
+    private String historyDataExport;
 
     @Column(name = "DISPLAY_DELETE_SUSPICION", length = 10)
-    Long displayDeleteSuspicion;
+    private Long displayDeleteSuspicion;
 
     @Column(name = "DISPLAY_DELETE_SUSPICION_COLOUR", length = 255)
-    String displayDeleteSuspicionColour;
+    private String displayDeleteSuspicionColour;
 
 
 }

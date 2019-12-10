@@ -28,45 +28,45 @@ public class SerTask extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TASK_ID", length = 20)
-    Long taskId;
+    private Long taskId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    Long deviceId;
+    private Long deviceId;
 
     @Column(name = "TASK_NUMBER", length = 50)
-    String taskNumber;
+    private String taskNumber;
 
     @Column(name = "SCENE", length = 20)
-    Long fieldId;
+    private Long fieldId;
 
     @Column(name = "TASK_STATUS", length = 10)
-    String taskStatus;
+    private String taskStatus;
 
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysField field;
+    private SysField field;
 
     @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SerScan serScan;
+    private SerScan serScan;
 
     @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SerJudgeGraph serJudgeGraph;
+    private SerJudgeGraph serJudgeGraph;
 
     @ManyToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SerHandExamination serHandExamination;
+    private SerHandExamination serHandExamination;
 
 
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    SysWorkflow workFlow;
+    private SysWorkflow workFlow;
 
 
 }
