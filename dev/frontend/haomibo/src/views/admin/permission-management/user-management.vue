@@ -1283,7 +1283,7 @@
                   permanent: false
                 });
                 break;
-              case responseMessages['used-phone']://duplicated user email
+              case responseMessages['used-mobile']://duplicated user email
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.used-phone`), {
                   duration: 3000,
                   permanent: false

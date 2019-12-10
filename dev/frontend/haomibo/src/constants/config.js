@@ -16,7 +16,7 @@ export const localeOptions = [
 
 // export const apiBaseUrl = 'http://192.168.5.7:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
 export const apiBaseUrl = 'http://localhost:4546';
-//export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
+//export const apiBaseUrl = 'http://47.95.246.188:4546';
 
 export const refreshTokenTimeDiff = 30;
 
