@@ -223,11 +223,11 @@ public class HandExaminationStatisticsController extends BaseController {
         return "\tser_hand_examination h\n" +
                 "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
                 "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
-                "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
+                "\tINNER JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
                 "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
-                "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
-                "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
-                "\tleft join ser_assign a on t.task_id = a.task_id\n" +
+                "\tLEFT join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
+                "\tLEFT join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
+                "\tLEFT join ser_assign a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
                 "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
     }

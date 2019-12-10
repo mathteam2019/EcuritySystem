@@ -303,7 +303,7 @@ public class JudgeStatisticsController extends BaseController {
         return "\tser_judge_graph g\n" +
                 "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
                 "\tLEFT JOIN ser_login_info l ON g.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
-                "\tLEFT JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
+                "\tINNER JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
                 "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
                 "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
                 "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n";
@@ -460,7 +460,7 @@ public class JudgeStatisticsController extends BaseController {
         }
         JudgeStatisticsResponseModel totalStatistics = getTotalStatistics(queryBuilder.toString());
         response.setTotalStatistics(totalStatistics);
-        
+
         //.... Get Detailed Statistics
         queryBuilder.append(" GROUP BY  " + groupBy + "(g.JUDGE_START_TIME)");
         TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), requestBody);
