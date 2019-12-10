@@ -15,7 +15,7 @@ public class HandExaminationStatisticsForPreview {
     String axisLabel;
     long id;
     long time;
-    long workingSeconds;
+    double workingSeconds;
     long totalHandExamination;
     long seizureHandExamination;
     double seizureHandExaminationRate;

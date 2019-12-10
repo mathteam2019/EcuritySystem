@@ -203,7 +203,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         return predicateHand;
     }
 
-    private TotalStatisticsResponse getStatisticsByUser (StatisticsByUserRequestBody requestBody) {
+    private TotalStatisticsResponse getStatisticsByUser(StatisticsByUserRequestBody requestBody) {
 
         BooleanBuilder predicateScan = getScanPredicateByUser(requestBody);
         BooleanBuilder predicateJudge = getJudgePredicateByUser(requestBody);
@@ -222,9 +222,9 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             TotalStatistics totalStat = new TotalStatistics();
             ScanStatistics scanStat = new ScanStatistics();
 
-            long totalScan = 0;
             long validScan = 0;
             long invalidScan = 0;
+            double workingSeconds = 0;
 
             String strName = "";
 
@@ -232,10 +232,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             for (int i = 0; i < listScans.size(); i++) {
 
-                if(listScans.get(i).getScanPointsman() == null) {
+                if (listScans.get(i).getScanPointsman() == null) {
                     userNullFlag = true;
                     break;
                 }
+
+                workingSeconds += (listScans.get(i).getScanEndTime().getTime() - listScans.get(i).getScanStartTime().getTime()) / 1000.0;
 
                 try {
 
@@ -264,6 +266,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             scanStat.setValidScan(validScan);
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
+            scanStat.setWorkingSeconds(workingSeconds);
 
             if (listScans.size() > 0) {
                 scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
@@ -272,6 +275,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             totalStat.setName(strName);
             totalStat.setScanStatistics(scanStat);
+
             listTotalStatistics.put(userId, totalStat);
 
         }
@@ -286,6 +290,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             long suspiction = 0;
             long noSuspiction = 0;
+            double workingSeconds = 0;
             String strName = "";
 
             boolean userNullFlag = false;
@@ -293,10 +298,11 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             for (int i = 0; i < listJudge.size(); i++) {
 
                 if (listJudge.get(i).getJudgeUser() == null) {
-                        userNullFlag = true;
-                        break;
+                    userNullFlag = true;
+                    break;
                 }
 
+                workingSeconds += (listJudge.get(i).getJudgeEndTime().getTime() - listJudge.get(i).getJudgeStartTime().getTime()) / 1000.0;
                 try {
                     strName = listJudge.get(i).getJudgeUser().getUserName();
                 } catch (Exception e) {
@@ -323,10 +329,11 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             judgeStat.setSuspictionJudge(suspiction);
             judgeStat.setNoSuspictionJudge(noSuspiction);
             judgeStat.setTotalJudge(listJudge.size());
+            judgeStat.setWorkingSeconds(workingSeconds);
 
             if (listJudge.size() > 0) {
-                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
-                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
             }
 
             if (listTotalStatistics.containsKey(userId)) {
@@ -353,6 +360,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             long seizure = 0;
             long noSeizure = 0;
+            double workingSeconds = 0;
             String strName = "";
 
             boolean userNullFlag = false;
@@ -363,6 +371,9 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                     userNullFlag = true;
                     break;
                 }
+
+                workingSeconds += (listHand.get(i).getHandEndTime().getTime() - listHand.get(i).getHandStartTime().getTime()) / 1000.0;
+
                 try {
                     strName = listHand.get(i).getHandUser().getUserName();
                 } catch (Exception e) {
@@ -388,11 +399,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             handStat.setSeizureHandExamination(seizure);
             handStat.setNoSeizureHandExamination(noSeizure);
+            handStat.setWorkingSeconds(workingSeconds);
             handStat.setTotalHandExamination(listHand.size());
 
             if (listHand.size() > 0) {
-                handStat.setSeizureHandExaminationRate(seizure * 100 / (double)handStat.getTotalHandExamination());
-                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setSeizureHandExaminationRate(seizure * 100 / (double) handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double) handStat.getTotalHandExamination());
             }
 
             if (listTotalStatistics.containsKey(userId)) {
@@ -414,8 +426,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> subList = null;
         try {
             subList = (TreeMap<Long, TotalStatistics>) paginatedList.get("list");
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -423,8 +434,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         if (subList == null) {
             response.setDetailedStatistics(listTotalStatistics);
-        }
-        else {
+        } else {
             response.setDetailedStatistics(subList);
             response.setTotal(listTotalStatistics.keySet().size());
             response.setFrom(Long.parseLong(paginatedList.get("from").toString()));
@@ -439,7 +449,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
     }
 
-    private TotalStatisticsResponse getStatisticsByDevice (StatisticsByDeviceRequestBody requestBody) {
+    private TotalStatisticsResponse getStatisticsByDevice(StatisticsByDeviceRequestBody requestBody) {
 
         QSerScan scanbuilder = QSerScan.serScan;
         QSerJudgeGraph judgeBuilder = QSerJudgeGraph.serJudgeGraph;
@@ -496,9 +506,9 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             TotalStatistics totalStat = new TotalStatistics();
             ScanStatistics scanStat = new ScanStatistics();
 
-            long totalScan = 0;
             long validScan = 0;
             long invalidScan = 0;
+            double workingSeconds = 0;
             String strName = "";
 
             boolean deviceNullFlag = false;
@@ -509,6 +519,9 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                     deviceNullFlag = true;
                     break;
                 }
+
+                workingSeconds += (listScans.get(i).getScanEndTime().getTime() - listScans.get(i).getScanStartTime().getTime()) / 1000.0;
+
                 try {
                     strName = listScans.get(i).getScanDevice().getDeviceName();
                 } catch (Exception e) {
@@ -535,6 +548,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             scanStat.setValidScan(validScan);
             scanStat.setInvalidScan(invalidScan);
             scanStat.setTotalScan(listScans.size());
+            scanStat.setWorkingSeconds(workingSeconds);
 
             if (listScans.size() > 0) {
                 scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
@@ -556,16 +570,20 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             long suspiction = 0;
             long noSuspiction = 0;
+            long workingSeconds = 0;
+
             String strName = "";
 
             boolean deviceNullFlag = false;
 
             for (int i = 0; i < listJudge.size(); i++) {
 
-                if(listJudge.get(i).getJudgeDevice() == null) {
+                if (listJudge.get(i).getJudgeDevice() == null) {
                     deviceNullFlag = true;
                     break;
                 }
+
+                workingSeconds += (listJudge.get(i).getJudgeEndTime().getTime() - listJudge.get(i).getJudgeStartTime().getTime()) / 1000.0;
                 try {
                     strName = listJudge.get(i).getJudgeDevice().getDeviceName();
                 } catch (Exception e) {
@@ -593,10 +611,11 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             judgeStat.setSuspictionJudge(suspiction);
             judgeStat.setNoSuspictionJudge(noSuspiction);
             judgeStat.setTotalJudge(listJudge.size());
+            judgeStat.setWorkingSeconds(workingSeconds);
 
             if (listJudge.size() > 0) {
-                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
-                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
             }
 
             if (listTotalStatistics.containsKey(deviceId)) {
@@ -623,6 +642,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
             long seizure = 0;
             long noSeizure = 0;
+            long workingSeconds = 0;
             String strName = "";
 
             boolean deviceNullFlag = false;
@@ -634,6 +654,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                     break;
                 }
 
+                workingSeconds += (listHand.get(i).getHandEndTime().getTime() - listHand.get(i).getHandStartTime().getTime()) / 1000.0;
                 try {
                     strName = listHand.get(i).getHandDevice().getDeviceName();
                 } catch (Exception e) {
@@ -661,10 +682,11 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             handStat.setSeizureHandExamination(seizure);
             handStat.setNoSeizureHandExamination(noSeizure);
             handStat.setTotalHandExamination(listHand.size());
+            handStat.setWorkingSeconds(workingSeconds);
 
             if (listHand.size() > 0) {
-                handStat.setSeizureHandExaminationRate(seizure * 100 / (double)handStat.getTotalHandExamination());
-                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setSeizureHandExaminationRate(seizure * 100 / (double) handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(noSeizure * 100 / (double) handStat.getTotalHandExamination());
             }
 
             if (listTotalStatistics.containsKey(deviceId)) {
@@ -685,8 +707,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> subList = null;
         try {
             subList = (TreeMap<Long, TotalStatistics>) paginatedList.get("list");
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
 
         }
 
@@ -694,8 +715,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         if (subList == null) {
             response.setDetailedStatistics(listTotalStatistics);
-        }
-        else {
+        } else {
             response.setDetailedStatistics(subList);
             response.setTotal(listTotalStatistics.keySet().size());
             response.setFrom(Long.parseLong(paginatedList.get("from").toString()));
@@ -719,16 +739,15 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
 
         if (currentPage < 0 || perPage < 0) {
-            return  null;
+            return null;
         }
 
         Integer from = (currentPage - 1) * perPage + 1;
-        Integer to  = (currentPage) * perPage;
+        Integer to = (currentPage) * perPage;
 
         if (from > list.size()) {
             return null;
-        }
-        else if (to > list.size()) {
+        } else if (to > list.size()) {
             to = list.size();
         }
 
@@ -738,8 +757,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         if (list.size() % perPage == 0) {
             paginationResult.put("lastpage", list.size() / perPage);
-        }
-        else {
+        } else {
             paginationResult.put("lastpage", list.size() / perPage + 1);
         }
 
@@ -748,7 +766,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             if (index >= from - 1 && index <= to - 1) {
                 subList.put(entry.getKey(), entry.getValue());
             }
-            index ++;
+            index++;
         }
 
         paginationResult.put("list", subList);
@@ -852,7 +870,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      */
     @RequestMapping(value = "/userstatistics/generate/print", method = RequestMethod.POST)
     public Object userStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
-                                                         BindingResult bindingResult) {
+                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -879,7 +897,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      */
     @RequestMapping(value = "/userstatistics/generate/export", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
-                                                 BindingResult bindingResult) {
+                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -906,7 +924,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      */
     @RequestMapping(value = "/devicestatistics/generate/print", method = RequestMethod.POST)
     public Object deviceStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
-                                                BindingResult bindingResult) {
+                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -960,7 +978,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
 
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
 
             for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
@@ -968,13 +986,13 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 TotalStatistics record = entry.getValue();
 
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(Long.toString(record.getTime()))) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.put(entry.getKey(), record);
                 }
 
@@ -1032,6 +1050,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         Iterable<SerTask> listTasks = serTaskRespository.findAll(predicate);
 
         long workingSeconds = 0;
+
 
         for (SerTask item : listTasks) {
 

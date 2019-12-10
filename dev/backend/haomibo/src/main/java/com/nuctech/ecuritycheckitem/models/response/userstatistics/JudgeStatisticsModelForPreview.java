@@ -15,7 +15,7 @@ public class JudgeStatisticsModelForPreview {
     String axisLabel;
     long id;
     long time;
-    long workingSeconds;
+    double workingSeconds;
     long totalJudge;
     long noSuspictionJudge;
     double noSuspictionJudgeRate;

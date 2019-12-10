@@ -42,7 +42,7 @@ public interface SerHandExaminationRepository extends
             "\tser_hand_examination h\n" +
             "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
             "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
-            "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
+            "\tLEFT JOIN ser_check_result c ON t.TASK_ID = c.task_id\n" +
             "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
             "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
             "\tleft join ser_assign a on t.task_id = a.task_id\n" +
@@ -79,7 +79,7 @@ public interface SerHandExaminationRepository extends
             "\tser_hand_examination h\n" +
             "\tLEFT join ser_login_info l on h.HAND_DEVICE_ID = l.DEVICE_ID\n" +
             "\tLEFT JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
-            "\tLEFT JOIN ser_check_result2 c ON t.TASK_ID = c.task_id\n" +
+            "\tLEFT JOIN ser_check_result c ON t.TASK_ID = c.task_id\n" +
             "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
             "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
             "\tleft join ser_assign a on t.task_id = a.task_id\n" +

@@ -6,16 +6,14 @@ import com.nuctech.ecuritycheckitem.models.db.QSerTask;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -24,6 +22,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     SerTaskRepository serTaskRepository;
+
+    @Override
+    public PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long mode, String status, Long fieldId, String userName, Date startTime, Date endTime, int currentPage, int perPage) {
+
+        return null;
+
+    }
 
     @Override
     public Map<String, Object> getFilterProcessTask(ProcessTaskController.TaskGetByFilterAndPageRequestBody.Filter filter, Integer currentPage, Integer perPage) {
