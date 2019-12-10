@@ -62,7 +62,7 @@ public class ScanStatisticsExcelView extends BaseExcelView {
     }
 
 
-    public static InputStream buildExcelDocument(TreeMap<Long, ScanStatistics> detailedStatistics) {
+    public static InputStream buildExcelDocument(TreeMap<Integer, ScanStatistics> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -88,7 +88,7 @@ public class ScanStatisticsExcelView extends BaseExcelView {
 
             long index = 1;
 
-            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Integer, ScanStatistics> entry : detailedStatistics.entrySet()) {
 
                 ScanStatistics record = entry.getValue();
 

@@ -15,7 +15,7 @@ public
 class ScanStatisticsResponse {
 
     ScanStatistics totalStatistics;
-    TreeMap<Long, ScanStatistics> detailedStatistics;
+    TreeMap<Integer, ScanStatistics> detailedStatistics;
 
     long total;
     long per_page;

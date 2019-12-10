@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 
 public class ScanStatisticsPdfView extends BasePdfView {
 
-    public static InputStream buildPDFDocument(TreeMap<Long, ScanStatistics> detailedStatistics) {
+    public static InputStream buildPDFDocument(TreeMap<Integer, ScanStatistics> detailedStatistics) {
 
         Document document = new Document();
 
@@ -58,7 +58,7 @@ public class ScanStatisticsPdfView extends BasePdfView {
 
             long index = 1;
 
-            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Integer, ScanStatistics> entry : detailedStatistics.entrySet()) {
 
                 ScanStatistics record = entry.getValue();
 

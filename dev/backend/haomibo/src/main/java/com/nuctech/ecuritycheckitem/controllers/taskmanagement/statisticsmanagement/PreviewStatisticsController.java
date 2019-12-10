@@ -113,23 +113,7 @@ public class PreviewStatisticsController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/scan", method = RequestMethod.POST)
-    public Object scanStatisticsGet(
-            @RequestBody @Valid StatisticsRequestBody requestBody,
-            BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        //get Scan statistics
-        ScanStatisticsResponse scanStatistics = getScanStatisticsForPreview(requestBody);
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
-
-        return value;
-
-    }
 
     /**
      * Preview Statistics generate pdf file request.
@@ -188,72 +172,16 @@ public class PreviewStatisticsController extends BaseController {
     }
 
 
-    /**
-     * Scan Statistics generate pdf file request.
-     */
-    @RequestMapping(value = "/scan/generate/export", method = RequestMethod.POST)
-    public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                  BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        TreeMap<Long, ScanStatistics> scanStatistics = getScanStatisticsForPreview(requestBody.getFilter()).getDetailedStatistics();
-
-        TreeMap<Long, ScanStatistics> exportList = getScanExportList(scanStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
-        InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=scanStatistics.xlsx");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.valueOf("application/x-msexcel"))
-                .body(new InputStreamResource(inputStream));
-    }
-
-    /**
-     * Scan Statistics generate pdf file request.
-     */
-    @RequestMapping(value = "/scan/generate/print", method = RequestMethod.POST)
-    public Object scanStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
-                                                BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        StatisticsRequestBody body = requestBody.getFilter();
-
-        TreeMap<Long, ScanStatistics> scanStatistics = getScanStatisticsForPreview(requestBody.getFilter()).getDetailedStatistics();
-
-        TreeMap<Long, ScanStatistics> exportList = getScanExportList(scanStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
-        ScanStatisticsPdfView.setResource(res);
-        InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=scanStatistics.pdf");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(inputStream));
-    }
 
 
-    private TreeMap<Long, ScanStatistics> getScanExportList(TreeMap<Long, ScanStatistics> detailedStatistics, boolean isAll, String idList) {
+    private TreeMap<Integer, ScanStatistics> getScanExportList(TreeMap<Integer, ScanStatistics> detailedStatistics, boolean isAll, String idList) {
 
-        TreeMap<Long, ScanStatistics> exportList = new TreeMap<>();
+        TreeMap<Integer, ScanStatistics> exportList = new TreeMap<>();
 
         if (isAll == false) {
             String[] splits = idList.split(",");
 
-            for (Map.Entry<Long, ScanStatistics> entry : detailedStatistics.entrySet()) {
+            for (Map.Entry<Integer, ScanStatistics> entry : detailedStatistics.entrySet()) {
 
                 ScanStatistics record = entry.getValue();
 
@@ -593,10 +521,6 @@ public class PreviewStatisticsController extends BaseController {
             detailedStatistics.put((long) i, scanStat);
 
         }
-
-
-        response.setTotalStatistics(totalStatistics);
-        response.setDetailedStatistics(detailedStatistics);
 
         if (curPage != 0 && perPage != 0) {
 
