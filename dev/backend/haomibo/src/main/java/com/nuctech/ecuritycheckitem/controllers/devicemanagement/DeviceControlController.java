@@ -25,6 +25,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,7 +36,6 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.querydsl.core.BooleanBuilder;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -48,14 +48,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/device-table")
@@ -267,7 +263,7 @@ public class DeviceControlController extends BaseController {
         private MultipartFile imageUrl;
 
 
-        SysDevice convert2SysDevice(Long createdBy, Date createdTime) {
+        SysDevice convert2SysDevice() {
 
             return SysDevice
                     .builder()
@@ -287,8 +283,6 @@ public class DeviceControlController extends BaseController {
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
-                    .createdBy(createdBy)
-                    .createdTime(createdTime)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
@@ -390,16 +384,21 @@ public class DeviceControlController extends BaseController {
         int startIndex = perPage * currentPage;
         int endIndex = perPage * (currentPage + 1);
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
-        List<SysDevice> data;
-        long total = 0;
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
         Long categoryId = null;
         if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
             categoryId = filter.getCategoryId();
         }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
-        data = result.getData();
-        total = result.getTotal();
+        PageResult<SysDevice> result = deviceService.getFilterDeviceList(archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex);
+        List<SysDevice> data = result.getDataList();
+        long total = result.getTotal();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -427,28 +426,7 @@ public class DeviceControlController extends BaseController {
         return value;
     }
 
-    private List<SysDevice> getExportList(List<SysDevice> deviceList, boolean isAll, String idList) {
-        List<SysDevice> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < deviceList.size(); i ++) {
-                SysDevice device = deviceList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(device.getDeviceId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(device);
-                }
-            }
-        } else {
-            exportList = deviceList;
-        }
-        return exportList;
-    }
+
 
     /**
      * Device generate excel file request.
@@ -462,17 +440,22 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
-
-        List<SysDevice> deviceList;
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            categoryId = requestBody.getFilter().getCategoryId();
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
         }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
-        deviceList = result.getData();
 
-        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
 
 
@@ -500,17 +483,23 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
-
-        List<SysDevice> deviceList;
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            categoryId = requestBody.getFilter().getCategoryId();
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
         }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
-        deviceList = result.getData();
 
-        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
+
         DevicePdfView.setResource(res);
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
 
@@ -538,23 +527,29 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
-
-        List<SysDevice> deviceList;
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            categoryId = requestBody.getFilter().getCategoryId();
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
         }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
-        deviceList = result.getData();
 
-        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
+
         InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList);
 
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx");
 
         return ResponseEntity
                 .ok()
@@ -576,22 +571,28 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> allData = deviceService.getFilterDeviceList(requestBody.getFilter());
-
-        List<SysDevice> deviceList;
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            categoryId = requestBody.getFilter().getCategoryId();
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
         }
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(allData, categoryId, 0, allData.size());
-        deviceList = result.getData();
 
-        List<SysDevice> exportList = getExportList(deviceList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
+
         DeviceFieldPdfView.setResource(res);
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device.pdf");
+        headers.add("Content-Disposition", "attachment; filename=device-field.pdf");
 
         return ResponseEntity
                 .ok()
@@ -615,21 +616,12 @@ public class DeviceControlController extends BaseController {
         }
 
         // Check if device is existing.
-        Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
-                sysDevice.deviceId.eq(requestBody.getDeviceId()));
-        if (!optionalSysDevice.isPresent()) {
+
+        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDevice sysDevice = optionalSysDevice.get();
-
-        // Update status.
-        sysDevice.setStatus(requestBody.getStatus());
-
-        // Add edited info.
-        sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceRepository.save(sysDevice);
+        deviceService.updateStatus(requestBody.getDeviceId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -648,53 +640,12 @@ public class DeviceControlController extends BaseController {
         }
 
         // Check if archive is valid.
-        if (!serArchiveRepository.exists(QSerArchive.serArchive
-                .archiveId.eq(requestBody.getArchiveId()))) {
+        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-
         SysDevice sysDevice = requestBody.convert2SysDevice();
-
-        // Process portrait file.
-        MultipartFile portraitFile = requestBody.getImageUrl();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Save file name.
-                    sysDevice.setImageUrl(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-        // Add created info.
-        sysDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceRepository.save(sysDevice);
-        SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
-        deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        sysDeviceConfigRepository.save(deviceConfig);
-
-        SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
-        scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        serScanParamRepository.save(scanParam);
-
-
-
+        deviceService.createDevice(sysDevice, requestBody.getImageUrl());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -713,52 +664,18 @@ public class DeviceControlController extends BaseController {
         }
 
         // Check if archive is valid.
-        if (!serArchiveRepository.exists(QSerArchive.serArchive
-                .archiveId.eq(requestBody.getArchiveId()))) {
+        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        SysDevice oldSysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
-                .deviceId.eq(requestBody.getDeviceId())).orElse(null);
-
-        //check if device is valid.
-        if(oldSysDevice == null) {
+        // Check if device is valid.
+        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SysDevice sysDevice = requestBody.convert2SysDevice();
 
-        SysDevice sysDevice = requestBody.convert2SysDevice(oldSysDevice.getCreatedBy(), oldSysDevice.getCreatedTime());
-        sysDevice.setFieldId(oldSysDevice.getFieldId());
-
-        // Process portrait file.
-        MultipartFile portraitFile = requestBody.getImageUrl();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Save file name.
-                    sysDevice.setImageUrl(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-        // Add edited info.
-        sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysDeviceRepository.save(sysDevice);
+        deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -776,65 +693,12 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
-                .deviceId.eq(requestBody.getDeviceId())).orElse(null);
-
         //check device exist or not
-        if(sysDevice == null) {
+        if(deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        sysDeviceRepository.delete(sysDevice);
-
-
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check device config exist or not
-        if(sysDeviceConfig != null) {
-            //remove correspond manual group
-            SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                    sysDeviceConfig.getManualGroupList().get(0): null;
-            if(manualGroup != null) {
-                sysManualGroupRepository.delete(manualGroup);
-            }
-
-            //remove correspond judge group
-            SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                    sysDeviceConfig.getJudgeGroupList().get(0): null;
-            if(judgeGroup != null) {
-                sysJudgeGroupRepository.delete(judgeGroup);
-            }
-
-            //remove correspond from config.
-            FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                    sysDeviceConfig.getFromConfigIdList().get(0): null;
-            if(fromConfigId != null) {
-                fromConfigIdRepository.delete(fromConfigId);
-            }
-
-            sysDeviceConfigRepository.delete(sysDeviceConfig);
-        }
-
-
-        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check scan param exist or not
-        if(scanParam != null) {
-            //remove correspond from config.
-            SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
-                    scanParam.getFromParamsList().get(0): null;
-
-            //check from params exist or not
-            if(fromParams != null) {
-                serScanParamsFromRepository.delete(fromParams);
-            }
-        }
-
-
-
-
+        deviceService.removeDevice(requestBody.getDeviceId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -852,18 +716,7 @@ public class DeviceControlController extends BaseController {
         }
 
         List<SysDevice> deviceList = requestBody.getDeviceList();
-        for(int i = 0; i < deviceList.size(); i ++) {
-            SysDevice device = deviceList.get(i);
-            // Add edited info.
-            SysDevice realDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
-                    .deviceId.eq(device.getDeviceId())).orElse(null);
-            if(realDevice != null) {
-                realDevice.setFieldId(device.getFieldId());
-                realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                sysDeviceRepository.save(realDevice);
-            }
-        }
-
+        deviceService.modifyDeviceField(deviceList);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -880,7 +733,7 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> sysDeviceList = sysDeviceRepository.findAll();
+        List<SysDevice> sysDeviceList = deviceService.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 
@@ -928,23 +781,8 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSysDevice builder = QSysDevice.sysDevice;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        predicate.and(builder.fieldId.isNull());
-
-
-
-
-        List<SysDevice> preSysDeviceList = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysDevice> sysDeviceList;
-
-        Long categoryId = requestBody.getCategoryId();
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size());
-        sysDeviceList = result.getData();
+        List<SysDevice> sysDeviceList = deviceService.getEmptyFieldDevice(requestBody.getCategoryId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 
@@ -971,26 +809,7 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSysDevice builder = QSysDevice.sysDevice;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-
-        if(requestBody.getFieldId() != null) {
-            predicate.and(builder.fieldId.eq(requestBody.getFieldId()));
-        }
-
-
-        List<SysDevice> preSysDeviceList = StreamSupport
-                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysDevice> sysDeviceList;
-
-        Long categoryId = requestBody.getCategoryId();
-        FilterDataByCategory<SysDevice> result = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size());
-        sysDeviceList = result.getData();
+        List<SysDevice> sysDeviceList = deviceService.getDeviceByField(requestBody.getFieldId(), requestBody.getCategoryId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 
@@ -999,8 +818,6 @@ public class DeviceControlController extends BaseController {
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-
-
 
         value.setFilters(filters);
 

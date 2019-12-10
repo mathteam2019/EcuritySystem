@@ -176,46 +176,8 @@ public class BaseController {
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
 
-    @Getter
-    @Setter
-    public static class FilterDataByCategory<T> {
-        List<T> data;
-        long total;
-    }
 
-    public FilterDataByCategory<SysDevice> getFilterDeviceByCategory(List<SysDevice> preDeviceList, Long categoryId, int startIndex, int endIndex) {
-        long total = 0;
-        List<SysDevice> data = new ArrayList<>();
-        if(categoryId != null) {
 
-            for(int i = 0; i < preDeviceList.size(); i ++) {
-                SysDevice deviceData = preDeviceList.get(i);
-                try {
-                    if(deviceData.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
-                        if(total >= startIndex && total < endIndex) {
-                            data.add(deviceData);
-                        }
-                        total ++;
-
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            for(int i = 0; i < preDeviceList.size(); i ++) {
-                SysDevice deviceData = preDeviceList.get(i);
-                if(i >= startIndex && i < endIndex) {
-                    data.add(deviceData);
-                }
-            }
-            total = preDeviceList.size();
-        }
-        FilterDataByCategory<SysDevice> result = new FilterDataByCategory<>();
-        result.setTotal(total);
-        result.setData(data);
-        return result;
-    }
 
 
 }

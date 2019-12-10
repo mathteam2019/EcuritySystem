@@ -18,10 +18,10 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.querydsl.core.BooleanBuilder;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -30,16 +30,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/device-management/device-config")
 public class DeviceConfigManagementController extends BaseController {
 
+    @Autowired
+    DeviceConfigService deviceConfigService;
     /**
      * Device datatable request body.
      */
@@ -160,13 +158,12 @@ public class DeviceConfigManagementController extends BaseController {
         }
         Long configId = requestBody.getConfigId();
 
-        Optional<SysDeviceConfig> optionalSysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.
-                sysDeviceConfig.configId.eq(configId));
-        if (!optionalSysDeviceConfig.isPresent()) {
+        SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(configId);
+
+        if (sysDeviceConfig == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDeviceConfig sysDeviceConfig = optionalSysDeviceConfig.get();
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfig));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
@@ -188,94 +185,30 @@ public class DeviceConfigManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        DeviceConfigGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.device.field.fieldId.eq(filter.getFieldId()));
-            }
-
-            /*
-            * Todo
-            *  strange category
-            *
-            * if (filter.getCategoryId() != null) {
-                predicate.and(builder.device.archive.archiveTemplate.category.categoryId.eq(filter.getCategoryId()));
-            }
-            * */
-
-        }
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
+        int currentPage = requestBody.getCurrentPage();
+        currentPage = currentPage - 1;
         int perPage = requestBody.getPerPage();
-
-        int startIndex = perPage * currentPage;
-        int endIndex = perPage * (currentPage + 1);
-
-        long total = 0;
-        List<SysDeviceConfig> allData = StreamSupport
-                .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-        List<SysDeviceConfig> data = new ArrayList<>();
-
-
-        for(int i = 0; i < allData.size(); i ++) {
-            SysDeviceConfig config = allData.get(i);
-            if(config.getFromConfigIdList() != null && config.getFromConfigIdList().size() > 0) {
-                Long fromDeviceId = config.getFromConfigIdList().get(0).getFromDeviceId();
-                SysDevice device = sysDeviceRepository.findOne(QSysDevice.sysDevice
-                        .deviceId.eq(fromDeviceId)).orElse(null);
-                if(device != null) {
-                    config.setFromConfigDeviceName(device.getDeviceName());
-                }
-            }
+        String deviceName  = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            deviceName = requestBody.getFilter().getDeviceName();
+            fieldId = requestBody.getFilter().getFieldId();
+            categoryId = requestBody.getFilter().getCategoryId();
         }
-
-        if(filter != null && filter.getCategoryId() != null) {
-
-            for(int i = 0; i < allData.size(); i ++) {
-                SysDeviceConfig deviceConfigData = allData.get(i);
-                try {
-                    if(deviceConfigData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
-                        if(total >= startIndex && total < endIndex) {
-                            data.add(deviceConfigData);
-                        }
-                        total ++;
-
-                    }
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        } else {
-            for(int i = 0; i < allData.size(); i ++) {
-                SysDeviceConfig deviceConfigData = allData.get(i);
-                if(i >= startIndex && i < endIndex) {
-                    data.add(deviceConfigData);
-                }
-            }
-            total = allData.size();
-        }
-
+        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(deviceName, fieldId, categoryId, currentPage, perPage);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
+                        .total(result.getTotal())
                         .perPage(perPage)
                         .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
+                        .lastPage((int) Math.ceil(((double) result.getTotal()) / perPage))
                         .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .to(perPage * currentPage + result.getDataList().size())
+                        .data(result.getDataList())
                         .build()));
 
         // Set filters.
@@ -307,89 +240,15 @@ public class DeviceConfigManagementController extends BaseController {
         }
 
 
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
-                .configId.eq(requestBody.getConfigId())).orElse(null);
+        SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(requestBody.getConfigId());
 
         //check if device config is valid.
         if(sysDeviceConfig == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         Long manualDeviceId = requestBody.getManualDeviceId();
         Long judgeDeviceId = requestBody.getJudgeDeviceId();
         Long configDeviceId = requestBody.getFromDeviceId();
-
-
-        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                sysDeviceConfig.getManualGroupList().get(0): null;
-        //check manual Group exist or not
-        if(manualGroup != null) {
-            if(manualDeviceId != null) {
-                manualGroup.setManualDeviceId(manualDeviceId);
-                manualGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                sysManualGroupRepository.save(manualGroup);
-            } else {
-                sysManualGroupRepository.delete(manualGroup);
-            }
-
-        } else if(manualDeviceId != null) {//create manual group
-            manualGroup = SysManualGroup.
-                    builder()
-                    .manualDeviceId(manualDeviceId)
-                    .configId(requestBody.getConfigId())
-                    .build();
-            manualGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysManualGroupRepository.save(manualGroup);
-        }
-
-        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                sysDeviceConfig.getJudgeGroupList().get(0): null;
-        //check judge Group exist or not
-        if(judgeGroup != null) {
-            if(judgeDeviceId != null) {
-                judgeGroup.setJudgeDeviceId(judgeDeviceId);
-                judgeGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                sysJudgeGroupRepository.save(judgeGroup);
-            } else {
-                sysJudgeGroupRepository.delete(judgeGroup);
-            }
-
-        } else if(judgeDeviceId != null) {//create judge group
-            judgeGroup = SysJudgeGroup.
-                    builder()
-                    .judgeDeviceId(judgeDeviceId)
-                    .configId(requestBody.getConfigId())
-                    .build();
-            judgeGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysJudgeGroupRepository.save(judgeGroup);
-        }
-
-        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                sysDeviceConfig.getFromConfigIdList().get(0): null;
-        //check from config exist or not
-        if(fromConfigId != null) {
-            if(configDeviceId != null) {
-                fromConfigId.setFromDeviceId(configDeviceId);
-                fromConfigId.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                fromConfigIdRepository.save(fromConfigId);
-            } else {
-                fromConfigIdRepository.delete(fromConfigId);
-            }
-
-        } else if(configDeviceId != null) {//create judge group
-            fromConfigId = FromConfigId.
-                    builder()
-                    .fromDeviceId(configDeviceId)
-                    .deviceId(sysDeviceConfig.getDeviceId())
-                    .configId(requestBody.getConfigId())
-                    .build();
-            fromConfigId.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            fromConfigIdRepository.save(fromConfigId);
-        }
-
-
-
-
 
         sysDeviceConfig.setModeId(requestBody.getModeId());
         sysDeviceConfig.setAtrSwitch(requestBody.getAtrSwitch());
@@ -401,10 +260,9 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setManDeviceGender(requestBody.getManDeviceGender());
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
-        // Add edited info.
-        sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceId, judgeDeviceId, configDeviceId);
 
-        sysDeviceConfigRepository.save(sysDeviceConfig);
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -421,8 +279,7 @@ public class DeviceConfigManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
-                .configId.eq(requestBody.getConfigId())).orElse(null);
+        SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(requestBody.getConfigId());
 
         //check device config exist or not
         if(sysDeviceConfig == null) {
@@ -430,27 +287,7 @@ public class DeviceConfigManagementController extends BaseController {
         }
 
         //remove correspond manual group
-        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                sysDeviceConfig.getManualGroupList().get(0): null;
-        if(manualGroup != null) {
-            sysManualGroupRepository.delete(manualGroup);
-        }
-
-        //remove correspond judge group
-        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                sysDeviceConfig.getJudgeGroupList().get(0): null;
-        if(judgeGroup != null) {
-            sysJudgeGroupRepository.delete(judgeGroup);
-        }
-
-        //remove correspond from config.
-        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                sysDeviceConfig.getFromConfigIdList().get(0): null;
-        if(fromConfigId != null) {
-            fromConfigIdRepository.delete(fromConfigId);
-        }
-
-        sysDeviceConfigRepository.delete(sysDeviceConfig);
+        deviceConfigService.removeDeviceConfig(sysDeviceConfig);
 
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -469,17 +306,9 @@ public class DeviceConfigManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDeviceConfig> preSysDeviceConfigList = sysDeviceConfigRepository.findAll();
-        List<SysDeviceConfig> sysDeviceConfigList = new ArrayList<>();
-
-        for(int i = 0; i < preSysDeviceConfigList.size(); i ++) {
-            if(preSysDeviceConfigList.get(i).getDeviceId() != requestBody.getDeviceId()) {
-                sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
-            }
-        }
+        List<SysDeviceConfig> sysDeviceConfigList = deviceConfigService.findAllDeviceConfigExceptId(requestBody.getDeviceId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceConfigList));
-
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
@@ -498,7 +327,7 @@ public class DeviceConfigManagementController extends BaseController {
     public Object workModeGetAll() {
 
 
-        List<SysWorkMode> sysWorkModeList = sysWorkModeRepository.findAll();
+        List<SysWorkMode> sysWorkModeList = deviceConfigService.findAllWorkMode();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysWorkModeList));
 
@@ -518,7 +347,7 @@ public class DeviceConfigManagementController extends BaseController {
     public Object manualDeviceGetAll() {
 
 
-        List<SysManualDevice> sysManualDeviceList = sysManualDeviceRepository.findAll();
+        List<SysManualDevice> sysManualDeviceList = deviceConfigService.findAllManualDevice();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysManualDeviceList));
 
@@ -538,7 +367,7 @@ public class DeviceConfigManagementController extends BaseController {
     public Object judgeDeviceGetAll() {
 
 
-        List<SysJudgeDevice> sysJudgeDeviceList = sysJudgeDeviceRepository.findAll();
+        List<SysJudgeDevice> sysJudgeDeviceList = deviceConfigService.findAllJudgeDevice();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysJudgeDeviceList));
 

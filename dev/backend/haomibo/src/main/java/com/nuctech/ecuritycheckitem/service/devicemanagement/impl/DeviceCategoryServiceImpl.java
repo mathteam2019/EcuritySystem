@@ -1,16 +1,18 @@
-package com.nuctech.ecuritycheckitem.service.devicemanagement;
+package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.devicemanagement.DeviceCategoryManagementController;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveTemplateRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceCategoryRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceCategoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +83,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
 
 
     @Override
+    @Transactional
     public void updateStatus(long categoryId, String status) {
         Optional<SysDeviceCategory> optionalSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.
                 sysDeviceCategory.categoryId.eq(categoryId));
@@ -96,6 +99,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
     }
 
     @Override
+    @Transactional
     public void createSysDeviceCategory(SysDeviceCategory deviceCategory) {
 
         if(deviceCategory.getParentCategoryId() == 0) {
@@ -109,6 +113,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
     }
 
     @Override
+    @Transactional
     public void modifySysDeviceCategory(SysDeviceCategory deviceCategory) {
 
         SysDeviceCategory oldSysDeviceCategory = sysDeviceCategoryRepository.findOne(QSysDeviceCategory.sysDeviceCategory
@@ -122,6 +127,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
     }
 
     @Override
+    @Transactional
     public void removeSysDeviceCategory(long categoryId) {
         sysDeviceCategoryRepository.delete(SysDeviceCategory.builder().categoryId(categoryId).build());
     }

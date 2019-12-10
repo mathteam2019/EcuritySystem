@@ -19,9 +19,12 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceStatusService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
@@ -42,6 +45,8 @@ import java.util.stream.StreamSupport;
 @RequestMapping("/device-management/condition-monitoring")
 public class DeviceStatusController extends BaseController {
 
+    @Autowired
+    DeviceStatusService deviceStatusService;
     /**
      * Device status datatable request body.
      */
@@ -72,61 +77,7 @@ public class DeviceStatusController extends BaseController {
         Filter filter;
     }
 
-    private SerDeviceStatus.MonitorRecord getRecordList(long deviceId, int deviceTrafficSetting) {
-        Date curDate = new Date();
-        long times = curDate.getTime();
-        long unitMiliSecond = deviceTrafficSetting * 60 * 1000;
-        long lastDateTime = (times / unitMiliSecond + 1) * unitMiliSecond;
-        long startDateTime = lastDateTime - unitMiliSecond * 10;
-        Date[] rangeDate = new Date[20];
-        int[] countArray = new int[20];
-        for(int i = 0; i <= 10; i ++) {
-            rangeDate[i] = new Date(startDateTime + unitMiliSecond * i);
-            countArray[i] = 0;
-        }
-        QSerScan builder = QSerScan.serScan;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        //predicate.and(builder.scanStartTime.after(rangeDate[0]));
-        predicate.and(builder.scanDeviceId.eq(deviceId));
-        List<SerScan> scanDataList = StreamSupport
-                .stream(serScanRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
 
-
-
-        if(scanDataList != null) {
-            for(int i = 0; i < scanDataList.size(); i ++) {
-                SerScan scan = scanDataList.get(i);
-                Date scanStartTime = scan.getScanStartTime();
-                for(int j = 0; j < 10; j ++) {
-                    if((scanStartTime.after(rangeDate[j]) || scanStartTime.equals(rangeDate[j])) && scanStartTime.before(rangeDate[j + 1])) {
-                        countArray[j] ++;
-                    }
-                }
-            }
-        }
-
-        SerDeviceStatus.MonitorRecord result = new SerDeviceStatus.MonitorRecord();
-        List<String> timeList = new ArrayList<>();
-        List<Integer> countList = new ArrayList<>();
-
-        for(int i = 0; i < 10; i ++) {
-            SerDeviceStatus.MonitorRecord record = new SerDeviceStatus.MonitorRecord();
-            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-            String strTime = formatter.format(rangeDate[i + 1]);
-            timeList.add(strTime);
-            countList.add(countArray[i]);
-        }
-        result.setTimeList(timeList);
-        result.setCountList(countList);
-
-
-
-
-
-
-        return result;
-    }
 
 
 
@@ -143,113 +94,31 @@ public class DeviceStatusController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Long fieldId = null;
+        Long categoryId = null;
+        String deviceName = "";
 
-        QSerDeviceStatus builder = QSerDeviceStatus.serDeviceStatus;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        DeviceStatusGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.device.fieldId.eq(filter.getFieldId()));
-            }
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
-            }
+        if(requestBody.getFilter() != null) {
+            fieldId = requestBody.getFilter().getFieldId();
+            categoryId = requestBody.getFilter().getCategoryId();
+            deviceName = requestBody.getFilter().getDeviceName();
         }
-
-
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
+        int currentPage = requestBody.getCurrentPage() - 1;
         int perPage = requestBody.getPerPage();
-
-        int startIndex = perPage * currentPage;
-        int endIndex = perPage * (currentPage + 1);
-
-        long total = 0;
-        List<SerDeviceStatus> allData = StreamSupport
-                .stream(serDeviceStatusRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-        List<SerDeviceStatus> data = new ArrayList<>();
-
-
-        if(filter != null && filter.getCategoryId() != null) {
-
-            for(int i = 0; i < allData.size(); i ++) {
-                SerDeviceStatus deviceStatusData = allData.get(i);
-                try {
-                    if(deviceStatusData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == filter.getCategoryId()) {
-                        if(total >= startIndex && total < endIndex) {
-                            data.add(deviceStatusData);
-                        }
-                        total ++;
-
-                    }
-                } catch(Exception ex) {
-                }
-            }
-        } else {
-            for(int i = 0; i < allData.size(); i ++) {
-                SerDeviceStatus deviceStatusData = allData.get(i);
-                if(i >= startIndex && i < endIndex) {
-                    data.add(deviceStatusData);
-                }
-            }
-            total = allData.size();
-        }
-
-        int deviceTrafficSetting = 10;
-        int deviceTrafficMiddle = 30;
-        int deviceTrafficHigh = 80;
-        int storageAlarm = 0;
-        List<SerPlatformOtherParams> paramList = serPlatformOtherParamRepository.findAll();
-        if(paramList != null && paramList.size() > 0) {
-            deviceTrafficSetting = paramList.get(0).getDeviceTrafficSettings();
-            deviceTrafficMiddle = paramList.get(0).getDeviceTrafficMiddle();
-            deviceTrafficHigh = paramList.get(0).getDeviceTrafficHigh();
-        }
-
-        for(int i = 0; i < data.size(); i ++) {
-            SerDeviceStatus deviceStatus = data.get(i);
-            deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
-            deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
-            deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
-
-            List<SerScanParam> serScanParamList = StreamSupport
-                    .stream(serScanParamRepository.findAll(QSerScanParam.serScanParam
-                            .deviceId.eq(deviceStatus.getDeviceId())).spliterator(), false)
-                    .collect(Collectors.toList());
-
-            if(serScanParamList != null && serScanParamList.size() > 0) {
-                String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
-                int currentSpace = Integer.parseInt(splitDiskSpace[0]);
-                int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-                Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-                Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
-                if(deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
-                    storageAlarm = 1;
-                } else if(deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
-                    storageAlarm = 2;
-                }
-                deviceStatus.setDeviceStorageAlarm(storageAlarm);
-            }
-        }
-
-
+        PageResult<SerDeviceStatus> result = deviceStatusService.getFDeviceStatusByFilter(fieldId, deviceName, categoryId, currentPage, perPage);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
+                        .total(result.getTotal())
                         .perPage(perPage)
                         .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
+                        .lastPage((int) Math.ceil(((double) result.getTotal()) / perPage))
                         .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .to(perPage * currentPage + result.getDataList().size())
+                        .data(result.getDataList())
                         .build()));
-
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters

@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.devicemanagement;
+package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -10,6 +10,7 @@ import com.nuctech.ecuritycheckitem.repositories.SerArchiveTemplateRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveValueRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class ArchiveServiceImpl implements ArchiveService{
+public class ArchiveServiceImpl implements ArchiveService {
 
     @Autowired
     SerArchiveRepository serArchiveRepository;
@@ -150,7 +151,11 @@ public class ArchiveServiceImpl implements ArchiveService{
     @Transactional
     public void modifySerArchive(MultipartFile portraitFile, SerArchive serArchive, String json) {
 
-        serArchive.setImageUrl(utils.saveImageFile(portraitFile));
+        String fileName = utils.saveImageFile(portraitFile);
+        if(!fileName.equals("")) {
+            serArchive.setImageUrl(fileName);
+        }
+
 
         // Add edit info.
         serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

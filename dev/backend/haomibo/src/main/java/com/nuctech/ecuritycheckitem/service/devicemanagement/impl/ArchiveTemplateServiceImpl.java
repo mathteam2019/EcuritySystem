@@ -1,8 +1,9 @@
-package com.nuctech.ecuritycheckitem.service.devicemanagement;
+package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveTemplateService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class ArchiveTemplateServiceImpl implements ArchiveTemplateService{
+public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
 
 
     @Autowired
