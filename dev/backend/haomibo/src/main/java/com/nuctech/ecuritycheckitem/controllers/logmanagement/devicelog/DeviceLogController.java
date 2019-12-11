@@ -22,9 +22,12 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.logmanagement.DeviceLogService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -49,6 +52,8 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/log-management/device-log")
 public class DeviceLogController extends BaseController {
+    @Autowired
+    DeviceLogService deviceLogService;
     /**
      * Device log datatable request body.
      */
@@ -104,41 +109,53 @@ public class DeviceLogController extends BaseController {
         DeviceLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(DeviceLogGetByFilterAndPageRequestBody.Filter filter) {
-        QSerDevLog builder = QSerDevLog.serDevLog;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+    private PageResult<SerDevLog> getPageResult(DeviceLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+        String deviceType = "";
+        String deviceName = "";
+        String userName = "";
+        Long category = null;
+        Long level = null;
+        Date operateStartTime = null;
+        Date operateEndTime = null;
 
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getDeviceType())) {
-                predicate.and(builder.device.deviceType.eq(filter.getDeviceType()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.user.userAccount.contains(filter.getUserName()));
-            }
-
-            if (filter.getCategory() != null) {
-                predicate.and(builder.category.eq(filter.getCategory()));
-            }
-
-            if (filter.getLevel() != null) {
-                predicate.and(builder.level.eq(filter.getLevel()));
-            }
-
-            if(filter.getOperateStartTime() != null) {
-                predicate.and(builder.time.after(filter.getOperateStartTime()));
-
-            }
-            if(filter.getOperateEndTime() != null){
-                predicate.and(builder.time.before(filter.getOperateEndTime()));
-            }
+        if(filter != null) {
+            deviceType = filter.getDeviceType();
+            deviceName = filter.getDeviceName();
+            userName = filter.getUserName();
+            category = filter.getCategory();
+            level = filter.getLevel();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
         }
-        return predicate;
+
+        PageResult<SerDevLog> result = deviceLogService.getDeviceLogListByFilter(deviceType, deviceName, userName, category, level,
+                operateStartTime, operateEndTime, currentPage, perPage);
+        return result;
+    }
+
+    private List<SerDevLog> getExportResult(DeviceLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+        String deviceType = "";
+        String deviceName = "";
+        String userName = "";
+        Long category = null;
+        Long level = null;
+        Date operateStartTime = null;
+        Date operateEndTime = null;
+
+        if(filter != null) {
+            deviceType = filter.getDeviceType();
+            deviceName = filter.getDeviceName();
+            userName = filter.getUserName();
+            category = filter.getCategory();
+            level = filter.getLevel();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
+        }
+
+        List<SerDevLog> result = deviceLogService.getExportList(deviceType, deviceName, userName, category, level,
+                operateStartTime, operateEndTime, isAll, idList);
+        return result;
     }
 
     /**
@@ -154,16 +171,12 @@ public class DeviceLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
+        PageResult<SerDevLog> result = getPageResult(requestBody.getFilter(), currentPage, perPage);
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = serDevLogRepository.count(predicate);
-        List<SerDevLog> data = serDevLogRepository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<SerDevLog> data = result.getDataList();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -192,28 +205,7 @@ public class DeviceLogController extends BaseController {
         return value;
     }
 
-    private List<SerDevLog> getExportList(List<SerDevLog> logList, boolean isAll, String idList) {
-        List<SerDevLog> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < logList.size(); i ++) {
-                SerDevLog log = logList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(log.getId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(log);
-                }
-            }
-        } else {
-            exportList = logList;
-        }
-        return exportList;
-    }
+
 
     /**
      * Device Log generate excel file request.
@@ -227,14 +219,7 @@ public class DeviceLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-        //get all device log list
-        List<SerDevLog> logList = StreamSupport
-                .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerDevLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList);
 
@@ -263,14 +248,7 @@ public class DeviceLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-        //get all device log list
-        List<SerDevLog> logList = StreamSupport
-                .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerDevLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
         DeviceLogPdfView.setResource(res);
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList);
 

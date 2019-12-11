@@ -15,8 +15,11 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.sun.istack.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +36,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/system-setting/platform-check")
 public class PlatformCheckManagementController extends BaseController {
+
+    @Autowired
+    PlatformCheckService platformCheckService;
     /**
      * Platform check modify request body.
      */
@@ -103,7 +109,7 @@ public class PlatformCheckManagementController extends BaseController {
     public Object platformCheckGet() {
 
 
-        List<SerPlatformCheckParams> serPlatformCheckParamsList = serPlatformCheckParamRepository.findAll();
+        List<SerPlatformCheckParams> serPlatformCheckParamsList = platformCheckService.findAll();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformCheckParamsList));
@@ -127,18 +133,14 @@ public class PlatformCheckManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-
-
         SerPlatformCheckParams serPlatformCheckParams = requestBody.convert2SerPlatformCheckParams();
-        List<SerPlatformCheckParams> serPlatformCheckParamsList = serPlatformCheckParamRepository.findAll();
+        List<SerPlatformCheckParams> serPlatformCheckParamsList = platformCheckService.findAll();
 
         if(serPlatformCheckParamsList != null && serPlatformCheckParamsList.size() > 0) {
             serPlatformCheckParams.setScanId(serPlatformCheckParamsList.get(0).getScanId());
         }
 
-
-        serPlatformCheckParamRepository.save(serPlatformCheckParams);
+        platformCheckService.modifyPlatform(serPlatformCheckParams);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

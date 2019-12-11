@@ -25,6 +25,8 @@ import com.nuctech.ecuritycheckitem.models.db.SysField;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -62,6 +65,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/site-management")
 public class FieldManagementController extends BaseController {
+
+    @Autowired
+    FieldService fieldService;
     /**
      * Field create request body.
      */
@@ -258,20 +264,12 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if parent field is existing.
-        if (requestBody.getParentFieldId() != 0 && !sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
+        if (requestBody.getParentFieldId() != 0 && fieldService.checkFieldExist(requestBody.getParentFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         SysField sysField = requestBody.convert2SysField();
-
-        if(requestBody.getParentFieldId() == 0) {
-            sysField.setStatus(SysField.Status.ACTIVE);
-        }
-
-        // Add createdInfo.
-        sysField.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysFieldRepository.save(sysField);
+        fieldService.createField(sysField);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -290,38 +288,32 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(requestBody.getFieldId())).orElse(null);
+
 
         // Check if field is existing.
-        if (oldSysField == null) {
+        if (!fieldService.checkFieldExist(requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if parent field is existing.
-        if (!sysFieldRepository.exists(QSysField.sysField.fieldId.eq(requestBody.getParentFieldId()))) {
+        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        //check if device contain this field
+        // Check if field has children.
+        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+            // Can't delete if field has children.
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
 
-        //Check if archive template contain this category
 
-
-        if(sysDeviceRepository.exists(QSysDevice.
-                sysDevice.fieldId.eq(requestBody.getFieldId()))) {
+        //check if device use this field
+        if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
         SysField sysField = requestBody.convert2SysField();
-
-        //Don't modify created by and created time
-        sysField.setCreatedBy(oldSysField.getCreatedBy());
-        sysField.setCreatedTime(oldSysField.getCreatedTime());
-
-        // Add edited info.
-        sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysFieldRepository.save(sysField);
+        fieldService.modifyField(sysField);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -341,22 +333,19 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if field has children.
-        boolean isHavingChildren = sysFieldRepository.exists(QSysField.sysField.parentFieldId.eq(requestBody.getFieldId()));
-        if (isHavingChildren) {
-            // Can't delete if org has children.
+        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+            // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
-        if(sysDeviceRepository.exists(QSysDevice.
-                sysDevice.fieldId.eq(requestBody.getFieldId()))) {
+        if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
-        sysFieldRepository.delete(SysField.builder().fieldId(requestBody.getFieldId()).build());
+        fieldService.removeField(requestBody.getFieldId());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
-
 
     /**
      * Field update status request.
@@ -372,20 +361,12 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if field is existing.
-        Optional<SysField> optionalSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(requestBody.getFieldId()));
-        if (!optionalSysField.isPresent()) {
+
+        if (!fieldService.checkFieldExist(requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysField sysField = optionalSysField.get();
-
-        // Update status.
-        sysField.setStatus(requestBody.getStatus());
-
-        // Add edited info.
-        sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysFieldRepository.save(sysField);
+        fieldService.updateStatus(requestBody.getFieldId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -397,19 +378,7 @@ public class FieldManagementController extends BaseController {
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
     public Object fieldGetAll() {
 
-
-
-        List<SysField> sysFieldList = sysFieldRepository.findAll();
-
-
-        //set parent's  parent to null so prevent recursion
-        for(int i = 0; i < sysFieldList.size(); i ++) {
-            SysField field = sysFieldList.get(i);
-            field.setParentDesignation("");
-            if(field.getParent() != null) {
-                field.setParentDesignation(field.getParent().getFieldDesignation());
-            }
-        }
+        List<SysField> sysFieldList = fieldService.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
@@ -421,24 +390,7 @@ public class FieldManagementController extends BaseController {
         return value;
     }
 
-    private BooleanBuilder getPredicate(FieldGetByFilterAndPageRequestBody.Filter filter) {
-        QSysField builder = QSysField.sysField;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.fieldDesignation.contains(filter.getFieldDesignation()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentFieldDesignation())) {
-                predicate.and(builder.parent.fieldDesignation.contains(filter.getParentFieldDesignation()));
-            }
-        }
-        return predicate;
-    }
 
 
     /**
@@ -454,28 +406,20 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
+        String designation = "";
+        String status = "";
+        String parentDesignation = "";
+        if(requestBody.getFilter() != null) {
+            designation = requestBody.getFilter().getFieldDesignation();
+            status = requestBody.getFilter().getStatus();
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+        }
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysFieldRepository.count(predicate);
-        List<SysField> data = sysFieldRepository.findAll(predicate, pageRequest).getContent();
-
-        //set parent's  parent to null so prevent recursion
-        for(int i = 0; i < data.size(); i ++) {
-            SysField field = data.get(i);
-            field.setParentDesignation("");
-            if(field.getParent() != null) {
-                field.setParentDesignation(field.getParent().getFieldDesignation());
-            }
-        }
-
-
-
+        PageResult<SysField> result = fieldService.getDeviceListByFilter(designation, status, parentDesignation, currentPage, perPage);
+        long total = result.getTotal();
+        List<SysField> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -501,28 +445,7 @@ public class FieldManagementController extends BaseController {
         return value;
     }
 
-    private List<SysField> getExportList(List<SysField> fieldList, boolean isAll, String idList) {
-        List<SysField> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < fieldList.size(); i ++) {
-                SysField field = fieldList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(field.getFieldId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(field);
-                }
-            }
-        } else {
-            exportList = fieldList;
-        }
-        return exportList;
-    }
+
 
     /**
      * Field generate excel file request.
@@ -536,14 +459,15 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-        //get all field list
-        List<SysField> fieldList = StreamSupport
-                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysField> exportList = getExportList(fieldList, requestBody.getIsAll(), requestBody.getIdList());
+        String designation = "";
+        String status = "";
+        String parentDesignation = "";
+        if(requestBody.getFilter() != null) {
+            designation = requestBody.getFilter().getFieldDesignation();
+            status = requestBody.getFilter().getStatus();
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+        }
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
 
 
@@ -571,14 +495,16 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        String designation = "";
+        String status = "";
+        String parentDesignation = "";
+        if(requestBody.getFilter() != null) {
+            designation = requestBody.getFilter().getFieldDesignation();
+            status = requestBody.getFilter().getStatus();
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+        }
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
 
-        //get all field list
-        List<SysField> fieldList = StreamSupport
-                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysField> exportList = getExportList(fieldList, requestBody.getIsAll(), requestBody.getIdList());
         FieldManagementPdfView.setResource(res);
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
 

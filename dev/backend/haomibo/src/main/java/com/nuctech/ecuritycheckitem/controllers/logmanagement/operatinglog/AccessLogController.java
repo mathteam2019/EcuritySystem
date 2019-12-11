@@ -20,9 +20,13 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
+import org.apache.catalina.AccessLog;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,6 +51,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/log-management/operating-log/access")
 public class AccessLogController extends BaseController {
+
+    @Autowired
+    AccessLogService accessLogService;
     /**
      * Access log datatable request body.
      */
@@ -98,30 +105,38 @@ public class AccessLogController extends BaseController {
         AccessLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(AccessLogGetByFilterAndPageRequestBody.Filter filter) {
-        QSysAccessLog builder = QSysAccessLog.sysAccessLog;
+    private PageResult<SysAccessLog> getPageResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+        String clientIp = "";
+        String operateAccount = "";
+        Date operateStartTime = null;
+        Date operateEndTime = null;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getClientIp())) {
-                predicate.and(builder.clientIp.contains(filter.getClientIp()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateAccount())) {
-                predicate.and(builder.operateAccount.contains(filter.getOperateAccount()));
-            }
-
-            if(filter.getOperateStartTime() != null) {
-                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
-
-            }
-            if(filter.getOperateEndTime() != null){
-                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
-            }
-
+        if(filter != null) {
+            clientIp = filter.getClientIp();
+            operateAccount = filter.getOperateAccount();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
         }
-        return predicate;
+
+        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
+        return result;
+    }
+
+    private List<SysAccessLog> getExportResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+        String clientIp = "";
+        String operateAccount = "";
+        Date operateStartTime = null;
+        Date operateEndTime = null;
+
+        if(filter != null) {
+            clientIp = filter.getClientIp();
+            operateAccount = filter.getOperateAccount();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
+        }
+
+        List<SysAccessLog> result = accessLogService.getExportList(clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
+        return result;
     }
 
 
@@ -139,17 +154,12 @@ public class AccessLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
+        PageResult<SysAccessLog> result = getPageResult(requestBody.getFilter(), requestBody.getCurrentPage(), requestBody.getPerPage());
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysAccessLogRepository.count(predicate);
-        List<SysAccessLog> data = sysAccessLogRepository.findAll(predicate, pageRequest).getContent();
-
+        long total = result.getTotal();
+        List<SysAccessLog> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -174,28 +184,7 @@ public class AccessLogController extends BaseController {
         return value;
     }
 
-    private List<SysAccessLog> getExportList(List<SysAccessLog> logList, boolean isAll, String idList) {
-        List<SysAccessLog> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < logList.size(); i ++) {
-                SysAccessLog log = logList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(log.getId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(log);
-                }
-            }
-        } else {
-            exportList = logList;
-        }
-        return exportList;
-    }
+
 
     /**
      * Access Log generate file request.
@@ -209,14 +198,8 @@ public class AccessLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
-        //get all access log list
-        List<SysAccessLog> logList = StreamSupport
-                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysAccessLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
 
@@ -245,14 +228,8 @@ public class AccessLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
 
-        //get all access log list
-        List<SysAccessLog> logList = StreamSupport
-                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysAccessLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
         AccessLogPdfView.setResource(res);
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
 

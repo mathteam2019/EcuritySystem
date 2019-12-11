@@ -20,9 +20,12 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -47,6 +50,8 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/log-management/operating-log/audit")
 public class AuditLogController extends BaseController {
+    @Autowired
+    AuditLogService auditLogService;
     /**
      * Audit log datatable request body.
      */
@@ -99,34 +104,43 @@ public class AuditLogController extends BaseController {
         AuditLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(AuditLogGetByFilterAndPageRequestBody.Filter filter) {
-        QSysAuditLog builder = QSysAuditLog.sysAuditLog;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+    private PageResult<SysAuditLog> getPageResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+        String clientIp = "";
+        String operateResult = "";
+        String operateObject = "";
+        Date operateStartTime = null;
+        Date operateEndTime = null;
 
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getClientIp())) {
-                predicate.and(builder.clientIp.contains(filter.getClientIp()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateResult())) {
-                predicate.and(builder.operateResult.eq(filter.getOperateResult()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getOperateObject())) {
-                predicate.and(builder.operateObject.contains(filter.getOperateObject()));
-            }
-
-
-            if(filter.getOperateStartTime() != null) {
-                predicate.and(builder.operateTime.after(filter.getOperateStartTime()));
-
-            }
-            if(filter.getOperateEndTime() != null){
-                predicate.and(builder.operateTime.before(filter.getOperateEndTime()));
-            }
+        if(filter != null) {
+            clientIp = filter.getClientIp();
+            operateResult = filter.getOperateResult();
+            operateObject = filter.getOperateObject();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
         }
-        return predicate;
+
+        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(clientIp, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
+        return result;
+    }
+
+    private List<SysAuditLog> getExportResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+        String clientIp = "";
+        String operateResult = "";
+        String operateObject = "";
+        Date operateStartTime = null;
+        Date operateEndTime = null;
+
+        if(filter != null) {
+            clientIp = filter.getClientIp();
+            operateResult = filter.getOperateResult();
+            operateObject = filter.getOperateObject();
+            operateStartTime = filter.getOperateStartTime();
+            operateEndTime = filter.getOperateEndTime();
+        }
+
+        List<SysAuditLog> result = auditLogService.getExportList(clientIp, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
+        return result;
     }
 
     /**
@@ -142,15 +156,14 @@ public class AuditLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        PageResult<SysAuditLog> result = getPageResult(requestBody.getFilter(), requestBody.getCurrentPage(), requestBody.getPerPage());
 
-        long total = sysAuditLogRepository.count(predicate);
-        List<SysAuditLog> data = sysAuditLogRepository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<SysAuditLog> data = result.getDataList();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -176,28 +189,7 @@ public class AuditLogController extends BaseController {
         return value;
     }
 
-    private List<SysAuditLog> getExportList(List<SysAuditLog> logList, boolean isAll, String idList) {
-        List<SysAuditLog> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < logList.size(); i ++) {
-                SysAuditLog log = logList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(log.getId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(log);
-                }
-            }
-        } else {
-            exportList = logList;
-        }
-        return exportList;
-    }
+
 
     /**
      * Audit Log generate file request.
@@ -211,15 +203,7 @@ public class AuditLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all audit log list
-        List<SysAuditLog> logList = StreamSupport
-                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysAuditLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
 
@@ -248,15 +232,7 @@ public class AuditLogController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all audit log list
-        List<SysAuditLog> logList = StreamSupport
-                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysAuditLog> exportList = getExportList(logList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
         AuditLogPdfView.setResource(res);
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
 

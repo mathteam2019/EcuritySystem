@@ -16,7 +16,9 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.sun.istack.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
@@ -34,6 +36,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/system-setting/platform-other")
 public class PlatformOtherManagementController extends BaseController {
+
+    @Autowired
+    PlatformOtherService platformOtherService;
 
     /**
      * Platform other modify request body.
@@ -98,7 +103,7 @@ public class PlatformOtherManagementController extends BaseController {
     public Object platformOtherGet() {
 
 
-        List<SerPlatformOtherParams> serPlatformOtherParamsList = serPlatformOtherParamRepository.findAll();
+        List<SerPlatformOtherParams> serPlatformOtherParamsList = platformOtherService.findAll();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformOtherParamsList));
 
@@ -125,15 +130,13 @@ public class PlatformOtherManagementController extends BaseController {
 
 
         SerPlatformOtherParams serPlatformOtherParams = requestBody.convert2SerPlatformOtherParam();
-        List<SerPlatformOtherParams> serPlatformOtherParamsList = serPlatformOtherParamRepository.findAll();
+        List<SerPlatformOtherParams> serPlatformOtherParamsList = platformOtherService.findAll();
 
         if(serPlatformOtherParamsList != null && serPlatformOtherParamsList.size() > 0) {
             serPlatformOtherParams.setId(serPlatformOtherParamsList.get(0).getId());
         }
 
-
-        serPlatformOtherParamRepository.save(serPlatformOtherParams);
-
+        platformOtherService.modifyPlatform(serPlatformOtherParams);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

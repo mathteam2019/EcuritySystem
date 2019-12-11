@@ -20,6 +20,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
@@ -52,6 +55,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/knowledge-base")
 public class KnowledgeDealManagementController extends BaseController {
+
+    @Autowired
+    KnowledgeService knowledgeService;
     /**
      * Knowledge datatable request body.
      */
@@ -124,58 +130,9 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter) {
-        QSerKnowledgeCaseDeal builder = QSerKnowledgeCaseDeal.serKnowledgeCaseDeal;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
 
-        if (filter != null) {
-
-            predicate.and(builder.knowledgeCase.caseStatus.eq(filter.getCaseStatus()));
-            if (!StringUtils.isEmpty(filter.getTaskNumber())) {
-                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (!StringUtils.isEmpty(filter.getModeName())) {
-                predicate.and(builder.workMode.modeName.eq(filter.getModeName()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getTaskResult())) {
-                predicate.and(builder.handTaskResult.eq(filter.getTaskResult()));
-            }
-            if (!StringUtils.isEmpty(filter.getFieldDesignation())) {
-                predicate.and(builder.scanDevice.field.fieldDesignation.contains(filter.getFieldDesignation()));
-            }
-
-            if (!StringUtils.isEmpty(filter.getHandGoods())) {
-                predicate.and(builder.handGoods.contains(filter.getHandGoods()));
-            }
-        }
-        return predicate;
-    }
-
-    private List<SerKnowledgeCaseDeal> getExportList(List<SerKnowledgeCaseDeal> dealList, boolean isAll, String idList) {
-        List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < dealList.size(); i ++) {
-                SerKnowledgeCaseDeal deal = dealList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(deal.getCaseDealId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(deal);
-                }
-            }
-        } else {
-            exportList = dealList;
-        }
-        return exportList;
-    }
 
     /**
      * Knowledge Case Deal datatable data.
@@ -190,18 +147,29 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        BooleanBuilder predicate = getPredicate(filter);
-
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
-        long total = serKnowledgeCaseDealRepository.count(predicate);
-        List<SerKnowledgeCaseDeal> data = serKnowledgeCaseDealRepository.findAll(predicate, pageRequest).getContent();
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        String caseStatus = "";
+        String modeName = "";
+        String taskNumber = "";
+        String taskResult = "";
+        String fieldDesignation = "";
+        String handGoods = "";
+        if(filter != null) {
+            caseStatus = filter.getCaseStatus();
+            modeName = filter.getModeName();
+            taskNumber = filter.getTaskNumber();
+            taskResult = filter.getTaskResult();
+            fieldDesignation = filter.getFieldDesignation();
+            handGoods = filter.getHandGoods();
+        }
+        PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(caseStatus, taskNumber, modeName, taskResult,
+                fieldDesignation, handGoods, currentPage, perPage);
+        long total = result.getTotal();
+        List<SerKnowledgeCaseDeal> data = result.getDataList();
 
 
 
@@ -247,23 +215,36 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         // Check if knowledge case is existing.
-        Optional<SerKnowledgeCase> optionalSerKnowledgeCase = serKnowledgeCaseRepository.findOne(QSerKnowledgeCase.serKnowledgeCase
-                .caseId.eq(requestBody.getCaseId()));
-        if (!optionalSerKnowledgeCase.isPresent()) {
+
+
+        if (!knowledgeService.checkKnowledgeExist(requestBody.getCaseId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SerKnowledgeCase serKnowledgeCase = optionalSerKnowledgeCase.get();
+        knowledgeService.updateStatus(requestBody.getCaseId(), requestBody.getStatus());
 
-        // Update status.
-        serKnowledgeCase.setCaseStatus(requestBody.getStatus());
-
-        // Add edited info.
-        serKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        serKnowledgeCaseRepository.save(serKnowledgeCase);
 
         return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    private List<SerKnowledgeCaseDeal> getExportList(KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+        String caseStatus = "";
+        String modeName = "";
+        String taskNumber = "";
+        String taskResult = "";
+        String fieldDesignation = "";
+        String handGoods = "";
+        if(filter != null) {
+            caseStatus = filter.getCaseStatus();
+            modeName = filter.getModeName();
+            taskNumber = filter.getTaskNumber();
+            taskResult = filter.getTaskResult();
+            fieldDesignation = filter.getFieldDesignation();
+            handGoods = filter.getHandGoods();
+        }
+        List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(caseStatus, modeName, taskNumber, taskResult,
+                fieldDesignation, handGoods, isAll, idList);
+        return exportList;
     }
 
     /**
@@ -277,16 +258,9 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-
-        //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList);
 
@@ -312,16 +286,9 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-
-        //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
-        new KnowledgeDealPendingPdfView();
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
 
         KnowledgeDealPendingPdfView.setResource(res);
 
@@ -348,16 +315,9 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-
-        //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
 
@@ -383,15 +343,9 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-
-        //get all pending case deal list
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
         KnowledgeDealPersonalPdfView.setResource(res);
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
 
