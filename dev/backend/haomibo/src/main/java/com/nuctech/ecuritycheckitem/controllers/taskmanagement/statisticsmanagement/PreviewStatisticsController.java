@@ -6,13 +6,9 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
