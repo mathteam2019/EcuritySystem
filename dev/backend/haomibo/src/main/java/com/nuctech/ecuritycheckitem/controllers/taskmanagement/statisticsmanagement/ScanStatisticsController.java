@@ -449,8 +449,7 @@ public class ScanStatisticsController extends BaseController {
             calendar.setTime(requestBody.getFilter().getStartTime());
             keyValueMin = calendar.get(Calendar.YEAR);
         } else {
-            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10
-                    + 1;
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
         }
         if (requestBody.getFilter().getEndTime() != null) {
             calendar.setTime(requestBody.getFilter().getEndTime());

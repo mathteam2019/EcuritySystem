@@ -14,6 +14,7 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +27,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.Math.round;
@@ -101,10 +105,6 @@ public class PreviewStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Date dateFrom, dateTo;
-        dateFrom = requestBody.getFilter().getStartTime();
-        dateTo = requestBody.getFilter().getEndTime();
-
         TotalStatisticsResponse response = getPreviewStatistics(requestBody);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
@@ -171,41 +171,6 @@ public class PreviewStatisticsController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
-
-
-
-    private TreeMap<Integer, ScanStatistics> getScanExportList(TreeMap<Integer, ScanStatistics> detailedStatistics, boolean isAll, String idList) {
-
-        TreeMap<Integer, ScanStatistics> exportList = new TreeMap<>();
-
-        if (isAll == false) {
-            String[] splits = idList.split(",");
-
-            for (Map.Entry<Integer, ScanStatistics> entry : detailedStatistics.entrySet()) {
-
-                ScanStatistics record = entry.getValue();
-
-                boolean isExist = false;
-                for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if (isExist == true) {
-                    exportList.put(entry.getKey(), record);
-                }
-
-            }
-
-        } else {
-            exportList = detailedStatistics;
-        }
-
-        return exportList;
-    }
-
-
     private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
@@ -237,234 +202,256 @@ public class PreviewStatisticsController extends BaseController {
         return exportList;
     }
 
-    private ScanStatistics getScanStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
 
-        ScanStatistics scanStatistics = new ScanStatistics();
+    private String  getSelectQuery() {
+        
+        return "SELECT\n" +
+                "\tq,\n" +
+                "\tIFNULL(totalScan, 0),\n" + "\tIFNULL(validScan, 0),\n" + "\tIFNULL(invalidScan, 0),\n" + "\tIFNULL(passedScan, 0),\n" + "\tIFNULL(alarmScan, 0),\n" +
+                "\tIFNULL(totalJudge, 0),\n" + "\tIFNULL(suspictionJudge, 0),\n" + "\tIFNULL(noSuspictionJudge, 0),\n" +
+                "\tIFNULL(totalHand, 0),\n" + "\tIFNULL(seizureHand, 0),\n" + "\tIFNULL(noSeizureHand, 0) \n" +
+                "\tFROM\n" + "\t(\n" +
+                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" +
+                "\t\t(\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:scanGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\tser_scan s UNION\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:judgeGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\tser_judge_graph j UNION\n" +
+                "\t\tSELECT DISTINCT \n" +
+                "\t\t:handGroupBy AS q \n" +
+                "\t\tFROM\n" +
+                "\t\t\tser_hand_examination h \n" +
+                "\t\t) AS t00 \n" +
+                "\t) AS t0 ";
+    }
+    
+    private String getJoinQuery() {
 
-        QSerScan builder = QSerScan.serScan;
-
-        Date dateFrom = requestBody.getFilter().getStartTime();
-        Date dateTo = requestBody.getFilter().getEndTime();
-
-        Predicate predicateDate;
-        Predicate predicateField = null;
-        Predicate predicateDevice = null;
-        Predicate predicateUsername = null;
-        Predicate predicateUserCategory = null;
-        Predicate predicateStatisticWidth = null;
-        Predicate predicateKeyDate = null;
-
-
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-                    predicateKeyDate = builder.scanStartTime.hour().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.DAY:
-                    predicateKeyDate = builder.scanStartTime.dayOfMonth().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.WEEK:
-                    predicateKeyDate = builder.scanStartTime.week().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.MONTH:
-                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
-                    predicateKeyDate = builder.scanStartTime.month().eq(keyDate * 3);
-                    break;
-                case ProcessTaskController.StatisticWidth.YEAR:
-                    predicateKeyDate = builder.scanStartTime.year().eq(keyDate);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (dateFrom == null && dateTo == null) {
-            predicateDate = null;
-        } else if (dateFrom != null && dateTo == null) {
-            predicateDate = builder.scanStartTime.after(dateFrom);
-        } else if (dateFrom == null && dateTo != null) {
-            predicateDate = builder.scanEndTime.before(dateTo);
-        } else {
-            predicateDate = builder.scanStartTime.between(dateFrom, dateTo).and(builder.scanEndTime.between(dateFrom, dateTo));
-        }
-
-
-        if (requestBody.getFilter().getFieldId() != null) {
-
-            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
-
-        }
-
-
-        if (requestBody.getFilter().getDeviceId() != null) {
-            predicateDevice = builder.scanDeviceId.eq(requestBody.getFilter().getDeviceId());
-        }
-
-
-        if (requestBody.getFilter().getUserCategory() != null) {
-
-        }
-
-
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-            predicateUsername = builder.scanPointsman.userName.contains(requestBody.getFilter().getUserName());
-        }
-
-        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
-        predicateTotal.and(predicateDate);
-        predicateTotal.and(predicateField);
-        predicateTotal.and(predicateDevice);
-        predicateTotal.and(predicateUsername);
-        predicateTotal.and(predicateUserCategory);
-        predicateTotal.and(predicateKeyDate);
-
-        BooleanBuilder predicateValid = new BooleanBuilder(builder.isNotNull());
-        predicateValid.and(builder.scanInvalid.eq(SerScan.Invalid.TRUE));
-        predicateValid.and(predicateDate);
-        predicateValid.and(predicateField);
-        predicateValid.and(predicateDevice);
-        predicateValid.and(predicateUsername);
-        predicateValid.and(predicateUserCategory);
-        predicateValid.and(predicateKeyDate);
-
-
-        BooleanBuilder predicateInvalid = new BooleanBuilder(builder.isNotNull());
-        predicateInvalid.and(builder.scanInvalid.eq(SerScan.Invalid.FALSE));
-        predicateInvalid.and(predicateDate);
-        predicateInvalid.and(predicateField);
-        predicateInvalid.and(predicateDevice);
-        predicateInvalid.and(predicateUsername);
-        predicateInvalid.and(predicateUserCategory);
-        predicateInvalid.and(predicateKeyDate);
-
-
-        BooleanBuilder predicatePassed = new BooleanBuilder(builder.isNotNull());
-        predicatePassed.and(builder.scanAtrResult.eq(SerScan.ATRResult.TRUE));
-        predicatePassed.and(predicateDate);
-        predicatePassed.and(predicateField);
-        predicatePassed.and(predicateDevice);
-        predicatePassed.and(predicateUsername);
-        predicatePassed.and(predicateUserCategory);
-        predicatePassed.and(predicateKeyDate);
-
-        BooleanBuilder predicateAlarm = new BooleanBuilder(builder.isNotNull());
-        predicateAlarm.and(builder.scanAtrResult.eq(SerScan.FootAlarm.TRUE));
-        predicateAlarm.and(predicateDate);
-        predicateAlarm.and(predicateField);
-        predicateAlarm.and(predicateDevice);
-        predicateAlarm.and(predicateUsername);
-        predicateAlarm.and(predicateUserCategory);
-        predicateAlarm.and(predicateKeyDate);
-
-        long totalScan = serScanRepository.count(predicateTotal);
-        long validScan = serScanRepository.count(predicateValid);
-        long invalidScan = serScanRepository.count(predicateInvalid);
-        long passedScan = serScanRepository.count(predicatePassed);
-        long alarmScan = serScanRepository.count(predicateAlarm);
-
-        Iterable<SerScan> listScans = serScanRepository.findAll(predicateTotal);
-
-        long workingSecs = 0;
-
-        for (SerScan item : listScans) {
-
-            try {
-                workingSecs += (item.getScanEndTime().getTime() - item.getScanStartTime().getTime()) / 1000;
-            }
-            catch(Exception e) {
-
-            }
-
-        }
-
-        scanStatistics.setWorkingSeconds(workingSecs);
-
-        try {
-            scanStatistics.setId(keyDate);
-            scanStatistics.setTime(keyDate);
-        }
-        catch (Exception e ) {
-
-        }
-
-        scanStatistics.setTotalScan(totalScan);
-        scanStatistics.setValidScan(validScan);
-        scanStatistics.setInvalidScan(invalidScan);
-        scanStatistics.setPassedScan(passedScan);
-        scanStatistics.setAlarmScan(alarmScan);
-
-        if (totalScan > 0) {
-            scanStatistics.setValidScanRate(validScan * 100 / (double) totalScan);
-            scanStatistics.setInvalidScanRate(invalidScan * 100 / (double) totalScan);
-            scanStatistics.setPassedScanRate(passedScan * 100 / (double) totalScan);
-            scanStatistics.setAlarmScanRate(alarmScan * 100 / (double) totalScan);
-        } else {
-            scanStatistics.setValidScanRate(0);
-            scanStatistics.setInvalidScanRate(0);
-            scanStatistics.setPassedScanRate(0);
-            scanStatistics.setAlarmScanRate(0);
-        }
-
-        return scanStatistics;
+        return getScanJoinQuery() + getJudgeJoinQuery() + getHandJoinQuery();
 
     }
 
-    private ScanStatisticsResponse getScanStatisticsForPreview(StatisticsRequestBody requestBody) {
+    private String getScanJoinQuery() {
 
-        ScanStatistics totalStatistics = new ScanStatistics();
+        return "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( SCAN_ID ) AS totalScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS validScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS invalidScan,\n" +
+                "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
+                "\t\tsum( IF ( SCAN_FOOT_ALARM LIKE '" + SerScan.FootAlarm.TRUE + "', 1, 0 ) ) AS alarmScan,\n" +
+                "\t\t:scanGroupBy AS q1 \n" +
+                "\tFROM\n" +
+                "\t\tser_scan \n" +
+                "\t:where\t" +
+                "\tGROUP BY\n" +
+                "\t\tq1 \n" +
+                "\t) AS t1 ON t0.q = t1.q1\t";
+    }
 
-        TreeMap<Long, ScanStatistics> detailedStatistics = new TreeMap<Long, ScanStatistics>();
+    private String getJudgeJoinQuery() {
 
-        totalStatistics = getScanStatisticsByDateForPreview(requestBody, null);
+        return "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( judge_id ) AS totalJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
+                "\t\t:judgeGroupBy AS q2 \n" +
+                "\tFROM\n" +
+                "\t\tser_judge_graph \n" +
+                "\t:where\t" +
+                "\tGROUP BY\n" +
+                "\t\tq2 \n" +
+                "\t) AS t2 ON t0.q = t2.q2\t";
+    }
 
-        ScanStatisticsResponse response = new ScanStatisticsResponse();
+    private String getHandJoinQuery() {
 
-        int keyValueMin = 0, keyValueMax = -1;
+        return "LEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tcount( HAND_EXAMINATION_ID ) AS totalHand,\n" +
+                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
+                "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
+                "\t\t:handGroupBy AS q3 \n" +
+                "\tFROM\n" +
+                "\t\tser_hand_examination \n" +
+                "\t:where\t" +
+                "\tGROUP BY\n" +
+                "\t\tq3 \n" +
+                "\t) AS t3 ON t0.q = t3.q3\t";
+    }
+
+
+    private List<String> getWhereCause(StatisticsRequestBody requestBody) {
+        List<String> whereCause = new ArrayList<String>();
+
+        if (requestBody.getFilter().getFieldId() != null) {
+            whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
+        }
+        if (requestBody.getFilter().getDeviceId() != null) {
+            whereCause.add("s.SCAN_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+        }
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%' ");
+        }
+        if (requestBody.getFilter().getStartTime() != null) {
+            Date date = requestBody.getFilter().getStartTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+            whereCause.add("s.SCAN_START_TIME >= '" + strDate + "'");
+        }
+        if (requestBody.getFilter().getEndTime() != null) {
+            Date date = requestBody.getFilter().getEndTime();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(date);
+            whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
+        }
+        return whereCause;
+    }
+
+    private TotalStatistics getTotalStatistics(String query) {
+
+        String temp = query.replace(":scanGroupBy", "1");
+        temp = temp.replace(":handGroupBy", "1");
+        temp = temp.replace(":judgeGroupBy", "1");
+
+        Query jpaQuery = entityManager.createNativeQuery(temp);
+        List<Object> resultTotal = jpaQuery.getResultList();
+
+        TotalStatistics record = new TotalStatistics();
+        for (int i = 0; i < resultTotal.size(); i++) {
+            Object[] item = (Object[]) resultTotal.get(i);
+            record = initModelFromObject(item);
+        }
+
+        return record;
+    }
+
+    private TotalStatistics initModelFromObject(Object[] item) {
+
+        TotalStatistics record = new TotalStatistics();
+
+        try {
+            record.setTime(Integer.parseInt(item[0].toString()));
+            ScanStatistics scanStat = new ScanStatistics();
+            JudgeStatisticsModelForPreview judgeStat = new JudgeStatisticsModelForPreview();
+            HandExaminationStatisticsForPreview handStat = new HandExaminationStatisticsForPreview();
+
+            scanStat.setTotalScan(Long.parseLong(item[1].toString()));
+            scanStat.setValidScan(Long.parseLong(item[2].toString()));
+            scanStat.setInvalidScan(Long.parseLong(item[3].toString()));
+            scanStat.setPassedScan(Long.parseLong(item[4].toString()));
+            scanStat.setAlarmScan(Long.parseLong(item[5].toString()));
+            judgeStat.setTotalJudge(Long.parseLong(item[6].toString()));
+            judgeStat.setSuspictionJudge(Long.parseLong(item[7].toString()));
+            judgeStat.setNoSuspictionJudge(Long.parseLong(item[8].toString()));
+            handStat.setTotalHandExamination(Long.parseLong(item[9].toString()));
+            handStat.setSeizureHandExamination(Long.parseLong(item[10].toString()));
+            handStat.setNoSeizureHandExamination(Long.parseLong(item[11].toString()));
+            scanStat.setValidScanRate(0);
+            scanStat.setInvalidScanRate(0);
+            scanStat.setPassedScanRate(0);
+            scanStat.setAlarmScanRate(0);
+            judgeStat.setSuspictionJudgeRate(0);
+            judgeStat.setNoSuspictionJudgeRate(0);
+            handStat.setSeizureHandExaminationRate(0);
+            handStat.setNoSeizureHandExaminationRate(0);
+            if (scanStat.getTotalScan() > 0) {
+                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double)scanStat.getTotalScan());
+                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double)scanStat.getTotalScan());
+                scanStat.setPassedScanRate(scanStat.getPassedScan() * 100 / (double)scanStat.getTotalScan());
+                scanStat.setAlarmScanRate(scanStat.getAlarmScan() * 100 / (double)scanStat.getTotalScan());
+            }
+            if (judgeStat.getTotalJudge() > 0 ) {
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+            }
+            if (handStat.getTotalHandExamination() > 0) {
+                handStat.setSeizureHandExaminationRate(handStat.getSeizureHandExamination() * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(handStat.getNoSeizureHandExamination() * 100 / (double)handStat.getTotalHandExamination());
+            }
+            record.setScanStatistics(scanStat);
+            record.setJudgeStatistics(judgeStat);
+            record.setHandExaminationStatistics(handStat);
+
+        } catch (Exception e) {
+        }
+
+        return record;
+    }
+
+    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, StatisticsRequestBody requestBody) {
+
+        String groupBy = "hour";
+        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
+            groupBy = requestBody.getFilter().getStatWidth();
+        }
+
+        String temp = query;
+        temp = temp.replace(":scanGroupBy", groupBy + "(SCAN_START_TIME)");
+        temp = temp.replace(":judgeGroupBy", groupBy + "(JUDGE_START_TIME)");
+        temp = temp.replace(":handGroupBy", groupBy + "(HAND_START_TIME)");
+
+        Query jpaQuery = entityManager.createNativeQuery(temp);
+        List<Object> result = jpaQuery.getResultList();
+        TreeMap<Long, TotalStatistics> data = new TreeMap<>();
+
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
+        try {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) { }
+
+
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
+            TotalStatistics item = new TotalStatistics();
+            item.setScanStatistics(new ScanStatistics());
+            item.setJudgeStatistics(new JudgeStatisticsModelForPreview());
+            item.setHandExaminationStatistics(new HandExaminationStatisticsForPreview());
+            item.setTime(i);
+            data.put((long)i, item);
+        }
+
+        for (int i = 0; i < result.size(); i++) {
+
+            Object[] item = (Object[]) result.get(i);
+            TotalStatistics record = initModelFromObject(item);
+            data.put(record.getTime(), record);
+        }
+
+        return  data;
+    }
+
+    public List<Integer> getKeyValuesforStatistics(StatisticsRequestBody requestBody) {
+
+        Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
                 case ProcessTaskController.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
-                    response.setTotal(24);
                     break;
                 case ProcessTaskController.StatisticWidth.DAY:
-                    keyValueMin = 1;
                     keyValueMax = 31;
-                    response.setTotal(31);
                     break;
                 case ProcessTaskController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
                     keyValueMax = 5;
-                    response.setTotal(5);
                     break;
                 case ProcessTaskController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
                     keyValueMax = 12;
-                    response.setTotal(12);
                     break;
                 case ProcessTaskController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
                     keyValueMax = 4;
-                    response.setTotal(4);
                     break;
                 case ProcessTaskController.StatisticWidth.YEAR:
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-                    response.setTotal(keyValueMax - keyValueMin + 1);
+                    Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
+                    keyValueMax = availableYearRage.get("max");
+                    keyValueMin = availableYearRage.get("min");
                     break;
                 default:
                     keyValueMin = 0;
@@ -473,777 +460,135 @@ public class PreviewStatisticsController extends BaseController {
             }
         }
 
-        int curPage = 0;
-        int perPage = 0;
+        List<Integer> result = new ArrayList<>();
+        result.add(keyValueMin);
+        result.add(keyValueMax);
 
-        try {
-            curPage = requestBody.getCurrentPage();
-            perPage = requestBody.getPerPage();
-        } catch (Exception e) {
-
-        }
-
-        int startIndex = keyValueMin;
-        int endIndex = keyValueMax;
-
-        if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage + keyValueMin;
-            endIndex = (curPage) * perPage + keyValueMin - 1;
-
-//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-//                startIndex = keyValueMin + startIndex - 1;
-//                endIndex = startIndex + perPage - 1;
-//            }
-
-            if (startIndex < keyValueMin) {
-                startIndex = keyValueMin;
-            }
-            if (endIndex > keyValueMax) {
-                endIndex = keyValueMax;
-            }
-
-
-            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
-            }
-        }
-
-        int i = 0;
-        for (i = startIndex; i <= endIndex; i++) {
-            ScanStatistics scanStat = getScanStatisticsByDateForPreview(requestBody, i);
-
-            scanStat.setId(i - startIndex + 1);
-
-            detailedStatistics.put((long) i, scanStat);
-
-        }
-
-        if (curPage != 0 && perPage != 0) {
-
-            response.setCurrent_page(requestBody.getCurrentPage());
-            response.setPer_page(requestBody.getPerPage());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-        }
-        return response;
-
+        return result;
     }
 
+    private Map<String, Integer> getAvailableYearRange(StatisticsRequestBody requestBody) {
 
-    private JudgeStatisticsResponse getJudgeStatisticsForPreview(StatisticsRequestBody requestBody) {
+        Integer keyValueMin = 0, keyValueMax = 0;
 
-        JudgeStatisticsModelForPreview totalStatistics = new JudgeStatisticsModelForPreview();
-
-        TreeMap<Integer, JudgeStatisticsModelForPreview> detailedStatistics = new TreeMap<Integer, JudgeStatisticsModelForPreview>();
-
-        totalStatistics = getJudgeStatisticsByDateForPreview(requestBody, null);
-
-        JudgeStatisticsResponse response = new JudgeStatisticsResponse();
-
-        int keyValueMin = 0, keyValueMax = -1;
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-                    keyValueMin = 0;
-                    keyValueMax = 23;
-                    response.setTotal(24);
-                    break;
-                case ProcessTaskController.StatisticWidth.DAY:
-                    keyValueMin = 1;
-                    keyValueMax = 31;
-                    response.setTotal(31);
-                    break;
-                case ProcessTaskController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
-                    keyValueMax = 5;
-                    response.setTotal(5);
-                    break;
-                case ProcessTaskController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
-                    keyValueMax = 12;
-                    response.setTotal(12);
-                    break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
-                    keyValueMax = 4;
-                    response.setTotal(4);
-                    break;
-                case ProcessTaskController.StatisticWidth.YEAR:
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-                    response.setTotal(keyValueMax - keyValueMin + 1);
-
-                    break;
-                default:
-                    keyValueMin = 0;
-                    keyValueMax = -1;
-                    break;
-            }
-        }
-
-
-        int curPage = 0;
-        int perPage = 0;
-
-        try {
-            curPage = requestBody.getCurrentPage();
-            perPage = requestBody.getPerPage();
-        } catch (Exception e) {
-
-        }
-
-        int startIndex = keyValueMin;
-        int endIndex = keyValueMax;
-
-        if (curPage != 0 && perPage != 0) {
-
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
-
-//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-//                startIndex = keyValueMin + startIndex - 1;
-//                endIndex = startIndex + perPage - 1;
-//            }
-
-            if (startIndex < keyValueMin) {
-                startIndex = keyValueMin;
-            }
-            if (endIndex > keyValueMax) {
-                endIndex = keyValueMax;
-            }
-
-            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
-            }
-        }
-
-        int i = 0;
-        for (i = startIndex; i <= endIndex; i++) {
-            JudgeStatisticsModelForPreview judgeStat = getJudgeStatisticsByDateForPreview(requestBody, i);
-
-            judgeStat.setId(i - startIndex + 1);
-
-            detailedStatistics.put(i, judgeStat);
-        }
-
-        response.setTotalStatistics(totalStatistics);
-        response.setDetailedStatistics(detailedStatistics);
-
-        if (curPage != 0 && perPage != 0) {
-
-            response.setCurrent_page(requestBody.getCurrentPage());
-            response.setPer_page(requestBody.getPerPage());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-
-        }
-
-        return response;
-
-    }
-
-    private JudgeStatisticsModelForPreview getJudgeStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
-
-        JudgeStatisticsModelForPreview judgeStatistics = new JudgeStatisticsModelForPreview();
-
-        QSerJudgeGraph builder = QSerJudgeGraph.serJudgeGraph;
-
-        Date dateFrom = requestBody.getFilter().getStartTime();
-        Date dateTo = requestBody.getFilter().getEndTime();
-
-        Predicate predicateDate;
-        Predicate predicateField = null;
-        Predicate predicateDevice = null;
-        Predicate predicateUsername = null;
-        Predicate predicateUserCategory = null;
-        Predicate predicateStatisticWidth = null;
-        Predicate predicateKeyDate = null;
-
-
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-                    predicateKeyDate = builder.judgeStartTime.hour().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.DAY:
-                    predicateKeyDate = builder.judgeStartTime.dayOfMonth().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.WEEK:
-                    predicateKeyDate = builder.judgeStartTime.week().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.MONTH:
-                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
-                    predicateKeyDate = builder.judgeStartTime.month().eq(keyDate * 3);
-                    break;
-                case ProcessTaskController.StatisticWidth.YEAR:
-                    predicateKeyDate = builder.judgeStartTime.year().eq(keyDate);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (dateFrom == null && dateTo == null) {
-            predicateDate = null;
-        } else if (dateFrom != null && dateTo == null) {
-            predicateDate = builder.judgeStartTime.after(dateFrom);
-        } else if (dateFrom == null && dateTo != null) {
-            predicateDate = builder.judgeEndTime.before(dateTo);
+        Integer yearMax = serScanRepository.findMaxYear();
+        Integer yearMin = 1970;
+        Calendar calendar = Calendar.getInstance();
+        if (requestBody.getFilter().getStartTime() != null) {
+            calendar.setTime(requestBody.getFilter().getStartTime());
+            keyValueMin = calendar.get(Calendar.YEAR);
         } else {
-            predicateDate = builder.judgeStartTime.between(dateFrom, dateTo).and(builder.judgeEndTime.between(dateFrom, dateTo));
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
         }
-
-
-        if (requestBody.getFilter().getFieldId() != null) {
-            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
-        }
-
-
-        if (requestBody.getFilter().getDeviceId() != null) {
-            predicateDevice = builder.judgeDeviceId.eq(requestBody.getFilter().getDeviceId());
-        }
-
-
-        if (requestBody.getFilter().getUserCategory() != null) {
-
-        }
-
-
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-            predicateUsername = builder.judgeUser.userName.contains(requestBody.getFilter().getUserName());
-        }
-
-
-        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
-        predicateTotal.and(predicateDate);
-        predicateTotal.and(predicateField);
-        predicateTotal.and(predicateDevice);
-        predicateTotal.and(predicateUsername);
-        predicateTotal.and(predicateUserCategory);
-        predicateTotal.and(predicateKeyDate);
-
-        BooleanBuilder predicateNoSuspiction = new BooleanBuilder(builder.isNotNull());
-        predicateNoSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.TRUE));
-        predicateNoSuspiction.and(predicateDate);
-        predicateNoSuspiction.and(predicateField);
-        predicateNoSuspiction.and(predicateDevice);
-        predicateNoSuspiction.and(predicateUsername);
-        predicateNoSuspiction.and(predicateUserCategory);
-        predicateNoSuspiction.and(predicateKeyDate);
-
-        BooleanBuilder predicateSuspiction = new BooleanBuilder(builder.isNotNull());
-        predicateSuspiction.and(builder.judgeResult.eq(SerJudgeGraph.Result.FALSE));
-        predicateSuspiction.and(predicateDate);
-        predicateSuspiction.and(predicateField);
-        predicateSuspiction.and(predicateDevice);
-        predicateSuspiction.and(predicateUsername);
-        predicateSuspiction.and(predicateUserCategory);
-        predicateSuspiction.and(predicateKeyDate);
-
-        long totalJudge = serJudgeGraphRepository.count(predicateTotal);
-        long noSuspictionJudge = serJudgeGraphRepository.count(predicateNoSuspiction);
-        long suspictionJudge = serJudgeGraphRepository.count(predicateSuspiction);
-
-        Iterable<SerJudgeGraph> listScans = serJudgeGraphRepository.findAll(predicateTotal);
-
-        long workingSecs = 0;
-
-        for (SerJudgeGraph item : listScans) {
-
-            try {
-                workingSecs += (item.getJudgeEndTime().getTime() - item.getJudgeStartTime().getTime()) / 1000;
-            }
-            catch (Exception e) {
-
-            }
-
-        }
-
-        judgeStatistics.setWorkingSeconds(workingSecs);
-
-        try {
-            judgeStatistics.setId(keyDate);
-            judgeStatistics.setTime(keyDate);
-        }
-        catch (Exception e) {
-
-        }
-
-        judgeStatistics.setTotalJudge(totalJudge);
-        judgeStatistics.setNoSuspictionJudge(noSuspictionJudge);
-        judgeStatistics.setSuspictionJudge(suspictionJudge);
-
-        if (totalJudge > 0) {
-            judgeStatistics.setNoSuspictionJudgeRate(noSuspictionJudge * 100 / (double) totalJudge);
-            judgeStatistics.setNoSuspictionJudgeRate(suspictionJudge * 100 / (double) totalJudge);
+        if (requestBody.getFilter().getEndTime() != null) {
+            calendar.setTime(requestBody.getFilter().getEndTime());
+            keyValueMax = calendar.get(Calendar.YEAR);
         } else {
-            judgeStatistics.setNoSuspictionJudgeRate(0);
-            judgeStatistics.setNoSuspictionJudgeRate(0);
+            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+        }
+        if (keyValueMin < yearMin) {
+            keyValueMin = yearMin;
+        }
+        if (keyValueMax > yearMax) {
+            keyValueMax = yearMax;
         }
 
+        Map<String, Integer> result = new HashMap<String, Integer>();
 
-        return judgeStatistics;
+        result.put("min", keyValueMin);
+        result.put("max", keyValueMax);
 
+        return result;
     }
 
+    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> sorted, StatisticsRequestBody requestBody) {
+        Map<String, Object> result = new HashMap<>();
+        TreeMap<Long, TotalStatistics> detailedStatistics = new TreeMap<>();
 
-    private HandExaminationStatisticsResponse getHandExaminationStatisticsForPreview(StatisticsRequestBody requestBody) {
-
-        HandExaminationStatisticsForPreview totalStatistics = new HandExaminationStatisticsForPreview();
-
-        TreeMap<Integer, HandExaminationStatisticsForPreview> detailedStatistics = new TreeMap<Integer, HandExaminationStatisticsForPreview>();
-
-        totalStatistics = getHandExaminationStatisticsByDateForPreview(requestBody, null);
-
-        HandExaminationStatisticsResponse response = new HandExaminationStatisticsResponse();
-
-
-        int keyValueMin = 0, keyValueMax = -1;
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-
-                    keyValueMin = 0;
-                    keyValueMax = 23;
-                    response.setTotal(24);
-                    break;
-
-                case ProcessTaskController.StatisticWidth.DAY:
-
-                    keyValueMin = 1;
-                    keyValueMax = 31;
-                    response.setTotal(31);
-                    break;
-
-                case ProcessTaskController.StatisticWidth.WEEK:
-
-                    keyValueMin = 1;
-                    keyValueMax = 5;
-                    response.setTotal(5);
-                    break;
-
-                case ProcessTaskController.StatisticWidth.MONTH:
-
-                    keyValueMin = 1;
-                    keyValueMax = 12;
-                    response.setTotal(12);
-
-                    break;
-
-                case ProcessTaskController.StatisticWidth.QUARTER:
-
-                    keyValueMin = 1;
-                    keyValueMax = 4;
-                    response.setTotal(4);
-                    break;
-
-                case ProcessTaskController.StatisticWidth.YEAR:
-
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-                    response.setTotal(keyValueMax - keyValueMin + 1);
-                    break;
-
-                default:
-                    keyValueMin = 0;
-                    keyValueMax = -1;
-                    break;
-
-            }
-        }
-
-
-        int curPage = 0;
-        int perPage = 0;
-
+        Integer keyValueMin = 0, keyValueMax = -1;
+        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
         try {
-            curPage = requestBody.getCurrentPage();
-            perPage = requestBody.getPerPage();
-        } catch (Exception e) {
+            keyValueMin = keyValues.get(0);
+            keyValueMax = keyValues.get(1);
+        } catch (Exception e) { }
 
-        }
+        if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
+            Integer from, to;
+            from = (requestBody.getCurrentPage() - 1) * requestBody.getPerPage() + keyValueMin;
+            to = requestBody.getCurrentPage() * requestBody.getPerPage() - 1 + keyValueMin;
 
-        int startIndex = keyValueMin;
-        int endIndex = keyValueMax;
-
-        if (curPage != 0 && perPage != 0) {
-
-            startIndex = (curPage - 1) * perPage + 1;
-            endIndex = (curPage) * perPage;
-
-//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-//                startIndex = keyValueMin + startIndex - 1;
-//                endIndex = startIndex + perPage - 1;
-//            }
-
-            if (startIndex < keyValueMin) {
-                startIndex = keyValueMin;
-            }
-            if (endIndex > keyValueMax) {
-                endIndex = keyValueMax;
+            if (from < keyValueMin) {
+                from = keyValueMin;
             }
 
-            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
+            if (to > keyValueMax) {
+                to = keyValueMax;
+            }
+
+            result.put("from", from - keyValueMin + 1);
+            result.put("to", to - keyValueMin + 1);
+
+            for (Integer i = from; i <= to; i++) {
+                detailedStatistics.put((long)i, sorted.get(i));
             }
         }
 
-        int i = 0;
-        for (i = startIndex; i <= endIndex; i++) {
-            HandExaminationStatisticsForPreview handExaminationStat = getHandExaminationStatisticsByDateForPreview(requestBody, i);
-
-            handExaminationStat.setId(i - startIndex + 1);
-
-            detailedStatistics.put(i, handExaminationStat);
-        }
-
-        response.setTotalStatistics(totalStatistics);
-        response.setDetailedStatistics(detailedStatistics);
-
-        if (curPage != 0 && perPage != 0) {
-
-            response.setCurrent_page(requestBody.getCurrentPage());
-            response.setPer_page(requestBody.getPerPage());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-
-        }
-
-
-        return response;
-
+        result.put("list", detailedStatistics);
+        return result;
     }
 
-    private HandExaminationStatisticsForPreview getHandExaminationStatisticsByDateForPreview(StatisticsRequestBody requestBody, Integer keyDate) {
+    private String makeQuery() {
 
-        HandExaminationStatisticsForPreview handExaminationStatistics = new HandExaminationStatisticsForPreview();
+        return getSelectQuery() + getJoinQuery();
 
-        QSerHandExamination builder = QSerHandExamination.serHandExamination;
-
-        Date dateFrom = requestBody.getFilter().getStartTime();
-        Date dateTo = requestBody.getFilter().getEndTime();
-
-        Predicate predicateDate;
-        Predicate predicateField = null;
-        Predicate predicateDevice = null;
-        Predicate predicateUsername = null;
-        Predicate predicateUserCategory = null;
-        Predicate predicateKeyDate = null;
-
-
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty() && keyDate != null) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-                    predicateKeyDate = builder.handStartTime.hour().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.DAY:
-                    predicateKeyDate = builder.handStartTime.dayOfMonth().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.WEEK:
-                    predicateKeyDate = builder.handStartTime.week().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.MONTH:
-                    predicateKeyDate = builder.handStartTime.month().eq(keyDate);
-                    break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
-                    predicateKeyDate = builder.handStartTime.month().eq(keyDate * 3);
-                    break;
-                case ProcessTaskController.StatisticWidth.YEAR:
-                    predicateKeyDate = builder.handStartTime.year().eq(keyDate);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (dateFrom == null && dateTo == null) {
-            predicateDate = null;
-        } else if (dateFrom != null && dateTo == null) {
-            predicateDate = builder.handStartTime.after(dateFrom);
-        } else if (dateFrom == null && dateTo != null) {
-            predicateDate = builder.handEndTime.before(dateTo);
-        } else {
-            predicateDate = builder.handStartTime.between(dateFrom, dateTo).and(builder.handEndTime.between(dateFrom, dateTo));
-        }
-
-
-        if (requestBody.getFilter().getFieldId() != null) {
-
-            predicateField = builder.task.fieldId.eq(requestBody.getFilter().getFieldId());
-
-        }
-
-
-        if (requestBody.getFilter().getDeviceId() != null) {
-            predicateDevice = builder.handDeviceId.eq(requestBody.getFilter().getDeviceId());
-        }
-
-
-        if (requestBody.getFilter().getUserCategory() != null) {
-
-        }
-
-
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-            predicateUsername = builder.handUser.userName.contains(requestBody.getFilter().getUserName());
-        }
-
-        BooleanBuilder predicateTotal = new BooleanBuilder(builder.isNotNull());
-        predicateTotal.and(predicateDate);
-        predicateTotal.and(predicateField);
-        predicateTotal.and(predicateDevice);
-        predicateTotal.and(predicateUsername);
-        predicateTotal.and(predicateUserCategory);
-        predicateTotal.and(predicateKeyDate);
-
-        BooleanBuilder predicteSeizure = new BooleanBuilder(builder.isNotNull());
-        predicteSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.TRUE));
-        predicteSeizure.and(predicateDate);
-        predicteSeizure.and(predicateField);
-        predicteSeizure.and(predicateDevice);
-        predicteSeizure.and(predicateUsername);
-        predicteSeizure.and(predicateUserCategory);
-        predicteSeizure.and(predicateKeyDate);
-
-        BooleanBuilder predicteNoSeizure = new BooleanBuilder(builder.isNotNull());
-        predicteNoSeizure.and(builder.handResult.eq(SerJudgeGraph.Result.FALSE));
-        predicteNoSeizure.and(predicateDate);
-        predicteNoSeizure.and(predicateField);
-        predicteNoSeizure.and(predicateDevice);
-        predicteNoSeizure.and(predicateUsername);
-        predicteNoSeizure.and(predicateUserCategory);
-        predicteNoSeizure.and(predicateKeyDate);
-
-        long totalHandExam = serHandExaminationRepository.count(predicateTotal);
-        long seizureHandExam = serHandExaminationRepository.count(predicteSeizure);
-        long noSeizureHandExam = serHandExaminationRepository.count(predicteNoSeizure);
-
-        //List<SerHandExamination> listHandExamination = serHandExaminationRepository.findAll();
-
-        Iterable<SerHandExamination> listScans = serHandExaminationRepository.findAll(predicateTotal);
-
-        long workingSecs = 0;
-
-        for (SerHandExamination item : listScans) {
-
-            try {
-                workingSecs += (item.getHandEndTime().getTime() - item.getHandStartTime().getTime()) / 1000;
-            }
-            catch (Exception e) {
-
-            }
-
-        }
-
-        handExaminationStatistics.setWorkingSeconds(workingSecs);
-        try {
-            handExaminationStatistics.setId(keyDate);
-            handExaminationStatistics.setTime(keyDate);
-        }
-        catch(Exception e) {
-            handExaminationStatistics.setId(0);
-            handExaminationStatistics.setTime(0);
-        }
-
-        handExaminationStatistics.setTotalHandExamination(totalHandExam);
-        handExaminationStatistics.setSeizureHandExamination(seizureHandExam);
-        handExaminationStatistics.setNoSeizureHandExamination(noSeizureHandExam);
-
-        if (totalHandExam != 0) {
-            handExaminationStatistics.setSeizureHandExaminationRate(round(seizureHandExam * 100 / (double) totalHandExam));
-            handExaminationStatistics.setNoSeizureHandExaminationRate(noSeizureHandExam * 100 / (double) totalHandExam);
-        } else {
-            handExaminationStatistics.setSeizureHandExaminationRate(0.0);
-            handExaminationStatistics.setNoSeizureHandExaminationRate(0.0);
-
-        }
-
-
-        return handExaminationStatistics;
-
-    }
-
-
-    private TotalStatistics getPreviewStatisticsByDate(StatisticsRequestBody requestBody, Integer keyDate) {
-
-        ScanStatistics scanStatistics = getScanStatisticsByDateForPreview(requestBody, keyDate);
-        JudgeStatisticsModelForPreview judgeStatistics = getJudgeStatisticsByDateForPreview(requestBody, keyDate);
-        HandExaminationStatisticsForPreview handExaminationStatistics = getHandExaminationStatisticsByDateForPreview(requestBody, keyDate);
-
-        TotalStatistics totalStatistics = new TotalStatistics();
-
-        try {
-            totalStatistics.setId(keyDate);
-            totalStatistics.setTime(keyDate);
-
-        } catch (Exception e) {
-
-
-        }
-        totalStatistics.setScanStatistics(scanStatistics);
-        totalStatistics.setJudgeStatistics(judgeStatistics);
-        totalStatistics.setHandExaminationStatistics(handExaminationStatistics);
-
-
-        return totalStatistics;
     }
 
     private TotalStatisticsResponse getPreviewStatistics(StatisticsRequestBody requestBody) {
 
-        TotalStatistics totalStatistics = new TotalStatistics();
+        StringBuilder whereBuilder = new StringBuilder();
 
-        TreeMap<Long, TotalStatistics> detailedStatistics = new TreeMap<Long, TotalStatistics>();
 
-        totalStatistics = getPreviewStatisticsByDate(requestBody, null);
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-
-        int keyValueMin = 0, keyValueMax = 0;
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
-                    keyValueMin = 0;
-                    keyValueMax = 23;
-                    response.setTotal(24);
-                    break;
-                case ProcessTaskController.StatisticWidth.DAY:
-                    keyValueMin = 1;
-                    keyValueMax = 31;
-                    response.setTotal(31);
-                    break;
-                case ProcessTaskController.StatisticWidth.WEEK:
-                    keyValueMin = 1;
-                    keyValueMax = 5;
-                    response.setTotal(5);
-                    break;
-                case ProcessTaskController.StatisticWidth.MONTH:
-                    keyValueMin = 1;
-                    keyValueMax = 12;
-                    response.setTotal(12);
-                    break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
-                    keyValueMin = 1;
-                    keyValueMax = 4;
-                    response.setTotal(4);
-                    break;
-                case ProcessTaskController.StatisticWidth.YEAR:
-                    Calendar calendar = Calendar.getInstance();
-                    if (requestBody.getFilter().getStartTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getStartTime());
-                        keyValueMin = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-                    }
-                    if (requestBody.getFilter().getEndTime() != null) {
-                        calendar.setTime(requestBody.getFilter().getEndTime());
-                        keyValueMax = calendar.get(Calendar.YEAR);
-                    } else {
-                        keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-
-                    }
-                    response.setTotal(keyValueMax - keyValueMin + 1);
-                    break;
-
-                default:
-                    keyValueMin = 0;
-                    keyValueMax = -1;
-                    break;
-            }
+        List<String> whereCause = getWhereCause(requestBody);
+        if (!whereCause.isEmpty()) {
+            whereBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
-        int curPage = 0;
-        int perPage = 0;
+        StringBuilder queryBuilder = new StringBuilder();
+        //.... Get Total Statistics
+        queryBuilder.append(makeQuery().replace(":where", whereBuilder.toString()));
+        String strOriginalQuery = queryBuilder.toString();
+
+
+
+        TotalStatistics totalStatistics = getTotalStatistics(strOriginalQuery);
+        response.setTotalStatistics(totalStatistics);
+
+        //.... Get Detailed Statistics
+        TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strOriginalQuery, requestBody);
 
         try {
-
-            curPage = requestBody.getCurrentPage();
-            perPage = requestBody.getPerPage();
-
-        } catch (Exception e) {
-
+            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, requestBody);
+            response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
+            response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
+            response.setDetailedStatistics((TreeMap<Long, TotalStatistics>)getPaginatedList(detailedStatistics, requestBody).get("list"));
+        }
+        catch (Exception e) {
+            response.setDetailedStatistics(detailedStatistics);
         }
 
-
-        int startIndex = keyValueMin;
-        int endIndex = keyValueMax;
-
-        if (curPage != 0 && perPage != 0) {
-
-            startIndex = (curPage - 1) * perPage + keyValueMin;
-            endIndex = (curPage) * perPage + keyValueMin - 1;
-
-//            if (requestBody.getFilter().getStatWidth().equals(TaskManagementController.StatisticWidth.YEAR)) {
-//                startIndex = keyValueMin + startIndex - 1;
-//                endIndex = startIndex + perPage - 1;
-//            }
-
-            if (startIndex < keyValueMin) {
-                startIndex = keyValueMin;
-            }
-            if (endIndex > keyValueMax) {
-                endIndex = keyValueMax;
-            }
-
-            if (requestBody.getFilter().getStatWidth().equals(ProcessTaskController.StatisticWidth.YEAR)) {
-                response.setFrom(startIndex - keyValueMin + 1);
-                response.setTo(endIndex - keyValueMin + 1);
-            } else {
-                response.setFrom(startIndex);
-                response.setTo(endIndex);
-            }
-        }
-
-        int i = 0;
-        for (i = startIndex; i <= endIndex; i++) {
-            TotalStatistics totalStat = getPreviewStatisticsByDate(requestBody, i);
-            totalStat.setId(i - startIndex + 1);
-            detailedStatistics.put((long) i, totalStat);
-        }
-
-        response.setTotalStatistics(totalStatistics);
-        response.setDetailedStatistics(detailedStatistics);
-
-        if (curPage != 0 && perPage != 0) {
-
-            response.setCurrent_page(requestBody.getCurrentPage());
+        if (requestBody.getPerPage() != null && requestBody.getCurrentPage() != null) {
             response.setPer_page(requestBody.getPerPage());
-            response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-
+            response.setCurrent_page(requestBody.getCurrentPage());
+            try {
+                response.setTotal(detailedStatistics.size());
+                if (response.getTotal() % response.getPer_page() == 0) {
+                    response.setLast_page(response.getTotal() / response.getPer_page());
+                } else {
+                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
+                }
+            } catch (Exception e) { }
         }
 
         return response;
