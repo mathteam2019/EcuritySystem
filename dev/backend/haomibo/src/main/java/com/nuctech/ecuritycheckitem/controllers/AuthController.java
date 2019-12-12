@@ -11,6 +11,7 @@ package com.nuctech.ecuritycheckitem.controllers;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.models.db.ForbiddenToken;
+import com.nuctech.ecuritycheckitem.models.db.QSysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 /**
  * Controller for user authentication.
@@ -72,6 +74,26 @@ public class AuthController extends BaseController {
 
     }
 
+    /**
+     * Change Password request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class ChangePasswordRequestBody {
+        @NotNull
+        @Email
+        String email;
+
+        @NotNull
+        String password;
+
+        @NotNull
+        String newPassword;
+
+    }
 
     /**
      * Login response body.
@@ -146,6 +168,36 @@ public class AuthController extends BaseController {
         forbiddenTokenRepository.flush();
 
         return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    @RequestMapping(value = "/change-password", method = RequestMethod.POST)
+    public Object changePassword(
+            @RequestBody @Valid ChangePasswordRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Optional<SysUser> optionUser = sysUserRepository.findOne(QSysUser.sysUser.email.eq(requestBody.getEmail()));
+        if (!optionUser.isPresent()) {
+            // If user is not found, this is invalid request.
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        SysUser sysUser = optionUser.get();
+
+        if (!sysUser.getPassword().equals(requestBody.getPassword())) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
+        }
+
+        sysUser.setPassword(requestBody.getNewPassword());
+
+        sysUserRepository.save(sysUser);
+
+
+        return new CommonResponseBody(ResponseMessage.OK);
+
     }
 
 
