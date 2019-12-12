@@ -14,5 +14,5 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
  * Service interface for user authentication.
  */
 public interface AuthService {
-    SysUser getSysUserByEmail(String email);
+    SysUser getSysUserByUserAccount(String userAccount);
 }

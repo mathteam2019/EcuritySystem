@@ -26,10 +26,10 @@ public class AuthServiceImpl implements AuthService {
     SysUserRepository sysUserRepository;
 
     @Override
-    public SysUser getSysUserByEmail(String email) {
-        // Find user by his email address.
+    public SysUser getSysUserByUserAccount(String userAccount) {
+        // Find user by his user account
         QSysUser qSysUser = QSysUser.sysUser;
-        Predicate predicate = qSysUser.email.eq(email);
+        Predicate predicate = qSysUser.userAccount.eq(userAccount);
 
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(predicate);
 
@@ -38,4 +38,5 @@ public class AuthServiceImpl implements AuthService {
         }
         return optionalSysUser.get();
     }
+
 }

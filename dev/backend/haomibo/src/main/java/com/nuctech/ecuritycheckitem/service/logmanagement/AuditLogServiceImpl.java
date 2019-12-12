@@ -1,13 +1,10 @@
 package com.nuctech.ecuritycheckitem.service.logmanagement;
 
-import com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog.AuditLogController;
 import com.nuctech.ecuritycheckitem.models.db.QSysAuditLog;
-import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

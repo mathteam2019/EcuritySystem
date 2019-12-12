@@ -11,13 +11,11 @@ package com.nuctech.ecuritycheckitem.controllers;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.models.db.ForbiddenToken;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
 import com.nuctech.ecuritycheckitem.service.AuthService;
-import com.querydsl.core.types.Predicate;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 /**
  * Controller for user authentication.
@@ -49,8 +46,7 @@ public class AuthController extends BaseController {
     @ToString
     public static class LoginRequestBody {
         @NotNull
-        @Email
-        String email;
+        String userAccount;
 
         @NotNull
         String password;
@@ -103,7 +99,7 @@ public class AuthController extends BaseController {
         }
 
         // Find user by his email address.
-        SysUser sysUser = authService.getSysUserByEmail(requestBody.getEmail());
+        SysUser sysUser = authService.getSysUserByUserAccount(requestBody.getUserAccount());
 
         if (sysUser == null) {
             // This is when no user is found.
@@ -132,7 +128,6 @@ public class AuthController extends BaseController {
                 )
         );
     }
-
 
     /**
      * User logout.
