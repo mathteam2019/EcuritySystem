@@ -27,6 +27,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get Statistics to show on Preview Page
+     *
      * @param fieldId
      * @param deviceId
      * @param userCategory
@@ -44,32 +45,12 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         StringBuilder whereBuilderHand = new StringBuilder();
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        List<String> whereCauseForScan = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth, ProcessTaskController.TableType.SER_SCAN);
-        List<String> whereCauseForJudge = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth, ProcessTaskController.TableType.SER_JUDGE_GRAPH);
-        List<String> whereCauseForHand = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth,ProcessTaskController.TableType.SER_HAND_EXAMINATION);
-
-        if (!whereCauseForScan.isEmpty()) {
-            whereBuilderScan.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id");
-            whereBuilderScan.append(" where " + StringUtils.join(whereCauseForScan, " and "));
-        }
-        if (!whereCauseForJudge.isEmpty()) {
-            whereBuilderJudge.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
-            whereBuilderJudge.append(" where " + StringUtils.join(whereCauseForJudge, " and "));
-        }
-        if (!whereCauseForHand.isEmpty()) {
-            whereBuilderHand.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
-            whereBuilderHand.append(" where " + StringUtils.join(whereCauseForHand, " and "));
-        }
-
 
         StringBuilder queryBuilder = new StringBuilder();
         //.... Get Total Statistics
-        String strQuery = makeQuery().replace(":whereScan", whereBuilderScan.toString());
-        strQuery = strQuery.replace(":whereJudge", whereBuilderJudge.toString());
-        strQuery = strQuery.replace(":whereHand", whereBuilderHand.toString());
+        String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
+        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
 
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
@@ -81,9 +62,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
             response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Long, TotalStatistics>)paginatedResult.get("list"));
-        }
-        catch (Exception e) {
+            response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
+        } catch (Exception e) {
             response.setDetailedStatistics(detailedStatistics);
         }
 
@@ -97,7 +77,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
 
         return response;
@@ -129,7 +110,6 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             groupBy = statisticsWidth;
         }
 
-
         String temp = query;
         temp = temp.replace(":scanGroupBy", groupBy + "(SCAN_START_TIME)");
         temp = temp.replace(":judgeGroupBy", groupBy + "(JUDGE_START_TIME)");
@@ -144,7 +124,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
@@ -153,7 +134,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             item.setJudgeStatistics(new JudgeStatisticsModelForPreview());
             item.setHandExaminationStatistics(new HandExaminationStatisticsForPreview());
             item.setTime(i);
-            data.put((long)i, item);
+            data.put((long) i, item);
         }
 
         for (int i = 0; i < result.size(); i++) {
@@ -163,7 +144,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             data.put(record.getTime(), record);
         }
 
-        return  data;
+        return data;
     }
 
     private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> sorted, String statWidth, Date starTime, Date endTime, Integer currentPage, Integer perPage) {
@@ -175,7 +156,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         if (currentPage != null && currentPage != null && currentPage > 0 && perPage > 0) {
             Integer from, to;
@@ -194,7 +176,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             result.put("to", to - keyValueMin + 1);
 
             for (Integer i = from; i <= to; i++) {
-                detailedStatistics.put((long)i, sorted.get((long)i));
+                detailedStatistics.put((long) i, sorted.get((long) i));
             }
         }
 
@@ -203,54 +185,106 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     }
 
 
+    private String getWhereCauseScan(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
-    private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, ProcessTaskController.TableType tableType) {
-        List<String> whereCause = new ArrayList<String>();
+        List<String> whereCause = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
 
         if (fieldId != null) {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
-                whereCause.add("SCAN_DEVICE_ID = " + deviceId);
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                whereCause.add("JUDGE_DEVICE_ID = " + deviceId);
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-                whereCause.add("HAND_DEVICE_ID = " + deviceId);
-            }
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(startTime);
-            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
-                whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-                whereCause.add("HAND_START_TIME >= '" + strDate + "'");
-            }
+            whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(endTime);
-            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
-                whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
-            }
-            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-                whereCause.add("HAND_END_TIME <= '" + strDate + "'");
-            }
+            whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
-        return whereCause;
+
+        if (!whereCause.isEmpty()) {
+            stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id ");
+            stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private String getWhereCauseJudge(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+
+        List<String> whereCause = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (fieldId != null) {
+            whereCause.add("t.SCENE = " + fieldId);
+        }
+        if (deviceId != null) {
+            whereCause.add("JUDGE_DEVICE_ID = " + deviceId);
+        }
+        if (startTime != null) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(startTime);
+            whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
+        }
+        if (endTime != null) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(endTime);
+            whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
+        }
+        if (userName != null && !userName.isEmpty()) {
+            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+        }
+
+        if (!whereCause.isEmpty()) {
+            stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
+            stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private String getWhereCauseHand(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+
+        List<String> whereCause = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (fieldId != null) {
+            whereCause.add("t.SCENE = " + fieldId);
+        }
+        if (deviceId != null) {
+            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
+        }
+        if (startTime != null) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(startTime);
+            whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
+        }
+        if (endTime != null) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            String strDate = dateFormat.format(endTime);
+            whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
+        }
+        if (userName != null && !userName.isEmpty()) {
+            whereCause.add("u.USER_NAME like '%" + userName + "%' ");
+        }
+
+        if (!whereCause.isEmpty()) {
+            stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
+            stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        }
+
+        return stringBuilder.toString();
     }
 
     private String makeQuery() {
@@ -259,7 +293,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     }
 
-    private String  getSelectQuery() {
+    private String getSelectQuery() {
 
         return "SELECT\n" +
                 "\tq,\n" +
@@ -344,7 +378,6 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
     private TotalStatistics initModelFromObject(Object[] item) {
 
         TotalStatistics record = new TotalStatistics();
-
         try {
             record.setTime(Integer.parseInt(item[0].toString()));
             ScanStatistics scanStat = new ScanStatistics();
@@ -362,34 +395,26 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             handStat.setTotalHandExamination(Long.parseLong(item[9].toString()));
             handStat.setSeizureHandExamination(Long.parseLong(item[10].toString()));
             handStat.setNoSeizureHandExamination(Long.parseLong(item[11].toString()));
-            scanStat.setValidScanRate(0);
-            scanStat.setInvalidScanRate(0);
-            scanStat.setPassedScanRate(0);
-            scanStat.setAlarmScanRate(0);
-            judgeStat.setSuspictionJudgeRate(0);
-            judgeStat.setNoSuspictionJudgeRate(0);
-            handStat.setSeizureHandExaminationRate(0);
-            handStat.setNoSeizureHandExaminationRate(0);
+
             if (scanStat.getTotalScan() > 0) {
-                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double)scanStat.getTotalScan());
-                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double)scanStat.getTotalScan());
-                scanStat.setPassedScanRate(scanStat.getPassedScan() * 100 / (double)scanStat.getTotalScan());
-                scanStat.setAlarmScanRate(scanStat.getAlarmScan() * 100 / (double)scanStat.getTotalScan());
+                scanStat.setValidScanRate(scanStat.getValidScan() * 100 / (double) scanStat.getTotalScan());
+                scanStat.setInvalidScanRate(scanStat.getInvalidScan() * 100 / (double) scanStat.getTotalScan());
+                scanStat.setPassedScanRate(scanStat.getPassedScan() * 100 / (double) scanStat.getTotalScan());
+                scanStat.setAlarmScanRate(scanStat.getAlarmScan() * 100 / (double) scanStat.getTotalScan());
             }
-            if (judgeStat.getTotalJudge() > 0 ) {
-                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
-                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double)judgeStat.getTotalJudge());
+            if (judgeStat.getTotalJudge() > 0) {
+                judgeStat.setSuspictionJudgeRate(judgeStat.getSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
+                judgeStat.setNoSuspictionJudgeRate(judgeStat.getNoSuspictionJudge() * 100 / (double) judgeStat.getTotalJudge());
             }
             if (handStat.getTotalHandExamination() > 0) {
-                handStat.setSeizureHandExaminationRate(handStat.getSeizureHandExamination() * 100 / (double)handStat.getTotalHandExamination());
-                handStat.setNoSeizureHandExaminationRate(handStat.getNoSeizureHandExamination() * 100 / (double)handStat.getTotalHandExamination());
+                handStat.setSeizureHandExaminationRate(handStat.getSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());
+                handStat.setNoSeizureHandExaminationRate(handStat.getNoSeizureHandExamination() * 100 / (double) handStat.getTotalHandExamination());
             }
             record.setScanStatistics(scanStat);
             record.setJudgeStatistics(judgeStat);
             record.setHandExaminationStatistics(handStat);
 
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
 
         return record;
     }
