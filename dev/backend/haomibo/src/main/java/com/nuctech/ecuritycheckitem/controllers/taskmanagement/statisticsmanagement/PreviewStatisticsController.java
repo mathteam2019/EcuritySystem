@@ -242,8 +242,8 @@ public class PreviewStatisticsController extends BaseController {
                 "\t\tsum( IF ( SCAN_FOOT_ALARM LIKE '" + SerScan.FootAlarm.TRUE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\t:scanGroupBy AS q1 \n" +
                 "\tFROM\n" +
-                "\t\tser_scan \n" +
-                "\t:where\t" +
+                "\t\tser_scan s \n" +
+                "\t:whereScan\t" +
                 "\tGROUP BY\n" +
                 "\t\tq1 \n" +
                 "\t) AS t1 ON t0.q = t1.q1\t";
@@ -258,8 +258,8 @@ public class PreviewStatisticsController extends BaseController {
                 "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
                 "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" +
-                "\t\tser_judge_graph \n" +
-                "\t:where\t" +
+                "\t\tser_judge_graph j \n" +
+                "\t:whereJudge\t" +
                 "\tGROUP BY\n" +
                 "\t\tq2 \n" +
                 "\t) AS t2 ON t0.q = t2.q2\t";
@@ -274,37 +274,61 @@ public class PreviewStatisticsController extends BaseController {
                 "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
-                "\t\tser_hand_examination \n" +
-                "\t:where\t" +
+                "\t\tser_hand_examination h \n" +
+                "\t:whereHand\t" +
                 "\tGROUP BY\n" +
                 "\t\tq3 \n" +
                 "\t) AS t3 ON t0.q = t3.q3\t";
     }
 
 
-    private List<String> getWhereCause(StatisticsRequestBody requestBody) {
+    private List<String> getWhereCause(StatisticsRequestBody requestBody, ProcessTaskController.TableType tableType) {
         List<String> whereCause = new ArrayList<String>();
 
         if (requestBody.getFilter().getFieldId() != null) {
             whereCause.add("t.SCENE = " + requestBody.getFilter().getFieldId());
         }
         if (requestBody.getFilter().getDeviceId() != null) {
-            whereCause.add("s.SCAN_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
-        }
-        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%' ");
+            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
+                whereCause.add("SCAN_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
+                whereCause.add("JUDGE_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
+                whereCause.add("HAND_DEVICE_ID = " + requestBody.getFilter().getDeviceId());
+            }
         }
         if (requestBody.getFilter().getStartTime() != null) {
             Date date = requestBody.getFilter().getStartTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("s.SCAN_START_TIME >= '" + strDate + "'");
+            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
+                whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
+                whereCause.add("JUDGE_START_TIME >= '" + strDate + "'");
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
+                whereCause.add("HAND_START_TIME >= '" + strDate + "'");
+            }
         }
         if (requestBody.getFilter().getEndTime() != null) {
             Date date = requestBody.getFilter().getEndTime();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(date);
-            whereCause.add("s.SCAN_END_TIME <= '" + strDate + "'");
+            if (tableType == ProcessTaskController.TableType.SER_SCAN) {
+                whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
+                whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
+            }
+            else if (tableType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
+                whereCause.add("HAND_END_TIME <= '" + strDate + "'");
+            }
+        }
+        if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
+            whereCause.add("u.USER_NAME like '%" + requestBody.getFilter().getUserName() + "%' ");
         }
         return whereCause;
     }
@@ -470,6 +494,7 @@ public class PreviewStatisticsController extends BaseController {
         Integer yearMax = serScanRepository.findMaxYear();
         Integer yearMin = 1970;
         Calendar calendar = Calendar.getInstance();
+
         if (requestBody.getFilter().getStartTime() != null) {
             calendar.setTime(requestBody.getFilter().getStartTime());
             keyValueMin = calendar.get(Calendar.YEAR);
@@ -541,28 +566,43 @@ public class PreviewStatisticsController extends BaseController {
 
     private TotalStatisticsResponse getPreviewStatistics(StatisticsRequestBody requestBody) {
 
-        StringBuilder whereBuilder = new StringBuilder();
-
-
+        StringBuilder whereBuilderScan = new StringBuilder();
+        StringBuilder whereBuilderJudge = new StringBuilder();
+        StringBuilder whereBuilderHand = new StringBuilder();
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        List<String> whereCause = getWhereCause(requestBody);
-        if (!whereCause.isEmpty()) {
-            whereBuilder.append(" where " + StringUtils.join(whereCause, " and "));
+        List<String> whereCauseForScan = getWhereCause(requestBody, ProcessTaskController.TableType.SER_SCAN);
+        List<String> whereCauseForJudge = getWhereCause(requestBody, ProcessTaskController.TableType.SER_JUDGE_GRAPH);
+        List<String> whereCauseForHand = getWhereCause(requestBody,ProcessTaskController.TableType.SER_HAND_EXAMINATION);
+
+        if (!whereCauseForScan.isEmpty()) {
+            whereBuilderScan.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id");
+            whereBuilderScan.append(" where " + StringUtils.join(whereCauseForScan, " and "));
         }
+        if (!whereCauseForJudge.isEmpty()) {
+            whereBuilderJudge.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
+            whereBuilderJudge.append(" where " + StringUtils.join(whereCauseForJudge, " and "));
+        }
+        if (!whereCauseForHand.isEmpty()) {
+            whereBuilderHand.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
+                    "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
+            whereBuilderHand.append(" where " + StringUtils.join(whereCauseForHand, " and "));
+        }
+
 
         StringBuilder queryBuilder = new StringBuilder();
         //.... Get Total Statistics
-        queryBuilder.append(makeQuery().replace(":where", whereBuilder.toString()));
-        String strOriginalQuery = queryBuilder.toString();
+        String strQuery = makeQuery().replace(":whereScan", whereBuilderScan.toString());
+        strQuery = strQuery.replace(":whereJudge", whereBuilderJudge.toString());
+        strQuery = strQuery.replace(":whereHand", whereBuilderHand.toString());
 
-
-
-        TotalStatistics totalStatistics = getTotalStatistics(strOriginalQuery);
+        TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
 
         //.... Get Detailed Statistics
-        TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strOriginalQuery, requestBody);
+        TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strQuery, requestBody);
 
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, requestBody);

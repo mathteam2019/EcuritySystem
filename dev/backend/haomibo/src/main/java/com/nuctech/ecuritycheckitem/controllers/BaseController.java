@@ -13,6 +13,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.TaskService;
+import com.nuctech.ecuritycheckitem.service.statistics.StatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -172,6 +173,9 @@ public class BaseController {
 
     @Autowired
     public TaskService taskService;
+
+    @Autowired
+    public StatisticsService statisticsService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
