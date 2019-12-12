@@ -48,4 +48,14 @@ public class Constants {
     public static final String LOG_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
+    //add by tiny 2019/12/12
+    public static class StatisticWidth {
+        public static final String HOUR = "hour";
+        public static final String DAY = "day";
+        public static final String WEEK = "week";
+        public static final String MONTH = "month";
+        public static final String QUARTER = "quarter";
+        public static final String YEAR = "year";
+    }
+
 }

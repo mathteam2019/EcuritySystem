@@ -784,13 +784,14 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TotalStatisticsResponse response = statisticsService.getStatisticsByUser(
-                requestBody.getFilter().getModeId(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime(),
-                requestBody.getCurrentPage(),
-                requestBody.getPerPage());
+        TotalStatisticsResponse response = new TotalStatisticsResponse();
+//        statisticsService.getStatisticsByUser(
+//                requestBody.getFilter().getModeId(),
+//                requestBody.getFilter().getUserName(),
+//                requestBody.getFilter().getStartTime(),
+//                requestBody.getFilter().getEndTime(),
+//                requestBody.getCurrentPage(),
+//                requestBody.getPerPage());
 
         return new CommonResponseBody(ResponseMessage.OK, response);
 
@@ -805,7 +806,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TotalStatisticsResponse response = statisticsService.getStatisticsByDevice(
+        TotalStatisticsResponse response = statisticsService.getStatistics(
                 requestBody.getFilter().getDeviceCategoryId(),
                 requestBody.getFilter().getDeviceId(),
                 requestBody.getFilter().getStartTime(),

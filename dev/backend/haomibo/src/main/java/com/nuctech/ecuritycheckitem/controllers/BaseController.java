@@ -9,21 +9,17 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
-import com.nuctech.ecuritycheckitem.models.db.SysDevice;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
-import com.nuctech.ecuritycheckitem.service.TaskService;
-import com.nuctech.ecuritycheckitem.service.statistics.StatisticsService;
+import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
+import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The base controller for all controllers. This class defines common fields and methods.
@@ -175,7 +171,10 @@ public class BaseController {
     public TaskService taskService;
 
     @Autowired
-    public StatisticsService statisticsService;
+    public StatisticsByDeviceService statisticsService;
+
+    @Autowired
+    public PreviewStatisticsService previewStatisticsService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;

@@ -101,7 +101,19 @@ public class PreviewStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TotalStatisticsResponse response = getPreviewStatistics(requestBody);
+//        TotalStatisticsResponse response = getPreviewStatistics(requestBody);
+
+        TotalStatisticsResponse response = previewStatisticsService.getStatistics(
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getDeviceId(),
+                requestBody.getFilter().getUserCategory(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getStatWidth(),
+                requestBody.getCurrentPage(),
+                requestBody.getPerPage());
+
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
 

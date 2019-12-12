@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service;
+package com.nuctech.ecuritycheckitem.service.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.InvalidTaskController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;

@@ -29,10 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class contains some useful utility methods.
@@ -181,5 +178,94 @@ public class Utils {
         }
         return "";
     }
+
+    /**
+     * Get key value for statistics (eg: statisticsWidth - hour, return [0, 23])
+     * @param statisticsWidth
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public static List<Integer> getKeyValuesforStatistics(String statisticsWidth, Date startTime, Date endTime) {
+
+        Integer keyValueMin = 1, keyValueMax = 0;
+        if (statisticsWidth != null && !statisticsWidth.isEmpty()) {
+            switch (statisticsWidth) {
+                case Constants.StatisticWidth.HOUR:
+                    keyValueMin = 0;
+                    keyValueMax = 23;
+                    break;
+                case Constants.StatisticWidth.DAY:
+                    keyValueMax = 31;
+                    break;
+                case Constants.StatisticWidth.WEEK:
+                    keyValueMax = 5;
+                    break;
+                case Constants.StatisticWidth.MONTH:
+                    keyValueMax = 12;
+                    break;
+                case Constants.StatisticWidth.QUARTER:
+                    keyValueMax = 4;
+                    break;
+                case Constants.StatisticWidth.YEAR:
+                    Map<String, Integer> availableYearRage = getAvailableYearRange(startTime, endTime);
+                    keyValueMax = availableYearRage.get("max");
+                    keyValueMin = availableYearRage.get("min");
+                    break;
+                default:
+                    keyValueMin = 0;
+                    keyValueMax = -1;
+                    break;
+            }
+        }
+
+        List<Integer> result = new ArrayList<>();
+        result.add(keyValueMin);
+        result.add(keyValueMax);
+
+        return result;
+    }
+
+    /**
+     * return available Year range
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public static Map<String, Integer> getAvailableYearRange(Date startTime, Date endTime) {
+
+        Integer keyValueMin = 0, keyValueMax = 0;
+
+        Integer yearMax = Calendar.getInstance().get(Calendar.YEAR);
+        Integer yearMin = 1970;
+        Calendar calendar = Calendar.getInstance();
+
+        if (startTime != null) {
+            calendar.setTime(startTime);
+            keyValueMin = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
+        }
+        if (endTime != null) {
+            calendar.setTime(endTime);
+            keyValueMax = calendar.get(Calendar.YEAR);
+        } else {
+            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
+        }
+        if (keyValueMin < yearMin) {
+            keyValueMin = yearMin;
+        }
+        if (keyValueMax > yearMax) {
+            keyValueMax = yearMax;
+        }
+
+        Map<String, Integer> result = new HashMap<String, Integer>();
+
+        result.put("min", keyValueMin);
+        result.put("max", keyValueMax);
+
+        return result;
+    }
+
 
 }

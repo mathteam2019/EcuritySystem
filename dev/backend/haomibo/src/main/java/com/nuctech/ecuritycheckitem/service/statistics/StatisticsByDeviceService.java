@@ -9,9 +9,8 @@ import com.nuctech.ecuritycheckitem.utils.PageResult;
 import java.util.Date;
 import java.util.Map;
 
-public interface StatisticsService {
+public interface StatisticsByDeviceService {
 
-    TotalStatisticsResponse getStatisticsByUser(Long modeId, String userName, Date startDate, Date endDate, Integer currentPage, Integer perPage);
-    TotalStatisticsResponse getStatisticsByDevice(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate, Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate, Integer currentPage, Integer perPage);
 
 }

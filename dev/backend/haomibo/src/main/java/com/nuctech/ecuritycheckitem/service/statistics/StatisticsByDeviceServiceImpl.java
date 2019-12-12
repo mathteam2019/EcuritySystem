@@ -5,7 +5,6 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.internal.compiler.ProcessTaskManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
@@ -13,31 +12,13 @@ import javax.persistence.Query;
 import java.util.*;
 
 @Service
-public class StatisticsServiceImpl implements StatisticsService {
+public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService {
 
     @Autowired
     public EntityManager entityManager;
 
-    private List<String> getWhereCauseForUserStatistics(Long modeId, String userName, Date startDate, Date endDate) {
 
-        List<String> whereCause = new ArrayList<String>();
-
-
-        if (userName != null) {
-
-        }
-        if (startDate != null) {
-
-        }
-        if (endDate != null) {
-
-        }
-
-        return whereCause;
-
-    }
-
-    private List<String> getWhereCauseForDeviceStatistics(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate) {
+    private List<String> getWhereCause(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate) {
 
         List<String> whereCause = new ArrayList<String>();
 
@@ -226,13 +207,6 @@ public class StatisticsServiceImpl implements StatisticsService {
         return record;
     }
 
-     public TotalStatisticsResponse getStatisticsByUser(Long modeId, String userName, Date startDate, Date endDate, Integer currentPage, Integer perPage) {
-
-         TotalStatisticsResponse response = new TotalStatisticsResponse();
-
-         return response;
-
-     }
 
     private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, String statisticsWidth, Date startDate, Date endDate) {
 
@@ -320,12 +294,12 @@ public class StatisticsServiceImpl implements StatisticsService {
         return paginationResult;
     }
 
-    public TotalStatisticsResponse getStatisticsByDevice(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate, Integer currentPage, Integer perPage) {
 
         StringBuilder whereBuilder = new StringBuilder();
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
-        List<String> whereCause = getWhereCauseForDeviceStatistics(deviceCategoryId, deviceId, startDate, endDate);
+        List<String> whereCause = getWhereCause(deviceCategoryId, deviceId, startDate, endDate);
 
         if (!whereCause.isEmpty()) {
             whereBuilder.append(" where " + StringUtils.join(whereCause, " and "));
