@@ -17,7 +17,10 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.ScanParamService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -40,6 +43,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/system-setting/scan-param")
 public class ScanParamManagementController extends BaseController {
+
+    @Autowired
+    ScanParamService scanParamService;
 
     /**
      * Scan Param datatable request body.
@@ -138,6 +144,33 @@ public class ScanParamManagementController extends BaseController {
 
         Integer storageAlarmPercent;
 
+        SerScanParam convert2SerScanParam() {
+
+            return SerScanParam
+                    .builder()
+                    .scanParamsId(this.getScanParamsId())
+                    .airCaliWarnTime(this.getAirCaliWarnTime())
+                    .standByTime(this.getStandByTime())
+                    .alarmSound(this.getAlarmSound())
+                    .passSound(this.getPassSound())
+                    .posErrorSound(this.getPosErrorSound())
+                    .standSound(this.getStandSound())
+                    .scanSound(this.getScanSound())
+                    .scanOverUseSound(this.getScanOverUseSound())
+                    .autoRecognise(this.getAutoRecognise())
+                    .recognitionRate(this.getRecognitionRate())
+                    .saveScanData(this.getSaveScanData())
+                    .saveSuspectData(this.getSaveSuspectData())
+                    .facialBlurring(this.getFacialBlurring())
+                    .chestBlurring(this.getChestBlurring())
+                    .hipBlurring(this.getHipBlurring())
+                    .groinBlurring(this.getGroinBlurring())
+                    .deviceStorageAlarm(this.getStorageAlarm())
+                    .deviceStorageAlarmPercent(this.getStorageAlarmPercent())
+                    .build();
+
+        }
+
     }
 
     @RequestMapping(value = "/get-by-id", method = RequestMethod.POST)
@@ -149,15 +182,14 @@ public class ScanParamManagementController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
         Long paramId = requestBody.getParamId();
 
-        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
-                serScanParam.scanParamsId.eq(paramId));
-        if (!optionalSerScanParam.isPresent()) {
+        SerScanParam serScanParam = scanParamService.getById(paramId);
+        if (serScanParam == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SerScanParam serScanParam = optionalSerScanParam.get();
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serScanParam));
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName", "field", "deviceSerial", "guid"))
@@ -179,29 +211,17 @@ public class ScanParamManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage--;
+        PageResult<SerScanParam> result = scanParamService.getScanParamListByFilter(
+                requestBody.getFilter().getDeviceName(),
+                requestBody.getFilter().getStatus(),
+                currentPage,
+                perPage);
 
-        QSerScanParam builder = QSerScanParam.serScanParam;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        ScanParamGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getDeviceName())) {
-                predicate.and(builder.device.deviceName.contains(filter.getDeviceName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.device.status.eq(filter.getStatus()));
-            }
-        }
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = serScanParamRepository.count(predicate);
-        List<SerScanParam> data = serScanParamRepository.findAll(predicate, pageRequest).getContent();
-
+        long total = result.getTotal();
+        List<SerScanParam> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -234,14 +254,9 @@ public class ScanParamManagementController extends BaseController {
     @RequestMapping(value = "/get-all", method = RequestMethod.POST)
     public Object scanParamGetAll() {
 
-        QSerScanParam builder = QSerScanParam.serScanParam;
-
-
-        List<SerScanParam> data = serScanParamRepository.findAll();
-
+        List<SerScanParam> data = scanParamService.getAllWithoutFilter();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, data));
-
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters()
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceId", "deviceName"));
@@ -265,64 +280,21 @@ public class ScanParamManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        SerScanParam serScanParamNew  = requestBody.convert2SerScanParam();
 
-        SerScanParam serScanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
-                .scanParamsId.eq(requestBody.getScanParamsId())).orElse(null);
 
-        //check if ser scan param is valid.
-        if(serScanParam == null) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
+
 
         Long paramDeviceId = requestBody.getFromDeviceId();
 
-        SerScanParamsFrom fromParams = (serScanParam.getFromParamsList() != null && serScanParam.getFromParamsList().size() > 0)?
-                serScanParam.getFromParamsList().get(0): null;
-        //check from params exist or not
-        if(fromParams != null) {
-            if(paramDeviceId != null) {
-                fromParams.setFromDeviceId(paramDeviceId);
-                fromParams.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                serScanParamsFromRepository.save(fromParams);
-            } else {
-                serScanParamsFromRepository.delete(fromParams);
-            }
-
-        } else if(paramDeviceId != null) {//create judge group
-            fromParams = SerScanParamsFrom.
-                    builder()
-                    .fromDeviceId(paramDeviceId)
-                    .deviceId(serScanParam.getDeviceId())
-                    .scanParamsId(requestBody.getScanParamsId())
-                    .build();
-            fromParams.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            serScanParamsFromRepository.save(fromParams);
+        if (scanParamService.modifyScanParam(paramDeviceId, serScanParamNew)) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        else {
+            return new CommonResponseBody(ResponseMessage.OK);
         }
 
-        serScanParam.setAirCaliWarnTime(requestBody.getAirCaliWarnTime());
-        serScanParam.setStandByTime(requestBody.getStandByTime());
-        serScanParam.setAlarmSound(requestBody.getAlarmSound());
-        serScanParam.setPassSound(requestBody.getPassSound());
-        serScanParam.setPosErrorSound(requestBody.getPosErrorSound());
-        serScanParam.setStandSound(requestBody.getStandSound());
-        serScanParam.setScanSound(requestBody.getScanSound());
-        serScanParam.setScanOverUseSound(requestBody.getScanOverUseSound());
-        serScanParam.setAutoRecognise(requestBody.getAutoRecognise());
-        serScanParam.setRecognitionRate(requestBody.getRecognitionRate());
-        serScanParam.setSaveScanData(requestBody.getSaveScanData());
-        serScanParam.setSaveSuspectData(requestBody.getSaveSuspectData());
-        serScanParam.setFacialBlurring(requestBody.getFacialBlurring());
-        serScanParam.setChestBlurring(requestBody.getChestBlurring());
-        serScanParam.setHipBlurring(requestBody.getHipBlurring());
-        serScanParam.setGroinBlurring(requestBody.getGroinBlurring());
-        serScanParam.setDeviceStorageAlarm(requestBody.getStorageAlarm());
-        serScanParam.setDeviceStorageAlarmPercent(requestBody.getStorageAlarmPercent());
 
-        // Add edited info.
-        serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
-        serScanParamRepository.save(serScanParam);
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
 }

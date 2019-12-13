@@ -220,8 +220,6 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
         //get all pending case deal list
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
