@@ -13,6 +13,7 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -179,6 +180,9 @@ public class BaseController {
 
     @Autowired
     public PreviewStatisticsService previewStatisticsService;
+
+    @Autowired
+    public HistoryService historyService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;

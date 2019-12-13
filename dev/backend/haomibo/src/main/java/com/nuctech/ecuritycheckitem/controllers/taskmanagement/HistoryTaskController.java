@@ -11,6 +11,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
@@ -162,20 +163,23 @@ public class HistoryTaskController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        QHistory builder = QHistory.history;
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<History> result = historyService.getHistoryTaskByFilter(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                currentPage,
+                perPage);
 
-        HistoryGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = historyRespository.count(predicate);
-        List<History> data = historyRespository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<History> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -219,9 +223,15 @@ public class HistoryTaskController extends BaseController {
         BooleanBuilder predicate = getPredicate(requestBody.getFilter());
 
         //get all pending case deal list
-        List<History> taskList = StreamSupport
-                .stream(historyRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<History> taskList = new ArrayList<>();
+        taskList = historyService.getHistoryTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -250,15 +260,18 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all pending case deal list
-        List<History> taskList = StreamSupport
-                .stream(historyRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<History> taskList = new ArrayList<>();
+        taskList = historyService.getHistoryTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+
         HistoryTaskPdfView.setResource(res);
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
 
@@ -272,42 +285,6 @@ public class HistoryTaskController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
-    private BooleanBuilder getPredicate(HistoryGetByFilterAndPageRequestBody.Filter filter) {
-
-        QHistory builder = QHistory.history;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.task.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.mode.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.task.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.task.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-
-                Predicate scanUserName = builder.scanPointsman.userName.contains(filter.getUserName());
-                builder.scanPointsman.userName.contains(filter.getUserName()).or(
-                        builder.judgeUser.userName.contains(filter.getUserName())
-                ).or(builder.handUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
-
-        return predicate;
-    }
 
     private List<History> getExportList(List<History> taskList, boolean isAll, String idList) {
 

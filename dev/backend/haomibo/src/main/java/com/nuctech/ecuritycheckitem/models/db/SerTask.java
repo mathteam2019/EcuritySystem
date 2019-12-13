@@ -42,6 +42,9 @@ public class SerTask extends BaseEntity implements Serializable {
     @Column(name = "TASK_STATUS", length = 10)
     private String taskStatus;
 
+    @Column(name = "WORKFLOW_ID", length = 20)
+    private Long workflowId;
+
     @OneToOne()
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
