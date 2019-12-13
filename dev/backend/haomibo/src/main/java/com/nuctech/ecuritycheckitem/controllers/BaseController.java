@@ -188,6 +188,12 @@ public class BaseController {
     @Autowired
     public HandExaminationStatisticsService handExaminationStatisticsService;
 
+    @Autowired
+    public JudgeStatisticsService judgeStatisticsService;
+
+    @Autowired
+    public ScanStatisticsService scanStatisticsService;
+
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
 

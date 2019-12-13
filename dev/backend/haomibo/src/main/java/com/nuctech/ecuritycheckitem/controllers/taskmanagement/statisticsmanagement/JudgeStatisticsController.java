@@ -101,7 +101,18 @@ public class JudgeStatisticsController extends BaseController {
         TreeMap<Integer, String> temp = new TreeMap<Integer, String>();
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
-        response = getJudgeStatistics(requestBody);
+        //response = getJudgeStatistics(requestBody);
+
+        response = judgeStatisticsService.getStatistics(
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getDeviceId(),
+                requestBody.getFilter().getUserCategory(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getStatWidth(),
+                requestBody.getCurrentPage(),
+                requestBody.getPerPage());
 
         return new CommonResponseBody(ResponseMessage.OK, response);
 
@@ -118,7 +129,16 @@ public class JudgeStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = getJudgeStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         JudgeStatisticsPdfView.setResource(res);
@@ -145,8 +165,18 @@ public class JudgeStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, JudgeStatisticsResponseModel> judgeStatistics = getJudgeStatistics(requestBody.getFilter()).getDetailedStatistics();
-        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

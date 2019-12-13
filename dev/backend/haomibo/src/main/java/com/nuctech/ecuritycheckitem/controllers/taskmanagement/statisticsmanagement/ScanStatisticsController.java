@@ -99,7 +99,18 @@ public class ScanStatisticsController extends BaseController {
         }
 
         //get Scan statistics
-        ScanStatisticsResponse scanStatistics = getScanStatistics(requestBody);
+        ScanStatisticsResponse scanStatistics = new ScanStatisticsResponse();
+
+        scanStatistics = scanStatisticsService.getStatistics(
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getDeviceId(),
+                requestBody.getFilter().getUserCategory(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getStatWidth(),
+                requestBody.getCurrentPage(),
+                requestBody.getPerPage());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, scanStatistics));
 
@@ -118,7 +129,16 @@ public class ScanStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, ScanStatistics> totalStatistics = getScanStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -146,9 +166,19 @@ public class ScanStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, ScanStatistics> totalStatistics = getScanStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        
+
         ScanStatisticsPdfView.setResource(res);
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
 
@@ -271,10 +301,10 @@ public class ScanStatisticsController extends BaseController {
             record.setPassedScanRate(0);
             record.setAlarmScanRate(0);
             if (record.getTotalScan() > 0) {
-                record.setValidScanRate(record.getValidScan() * 100 / (double)record.getTotalScan());
-                record.setInvalidScanRate(record.getInvalidScan() * 100 / (double)record.getTotalScan());
-                record.setPassedScanRate(record.getPassedScan() * 100 / (double)record.getTotalScan());
-                record.setAlarmScanRate(record.getAlarmScan() * 100 / (double)record.getTotalScan());
+                record.setValidScanRate(record.getValidScan() * 100 / (double) record.getTotalScan());
+                record.setInvalidScanRate(record.getInvalidScan() * 100 / (double) record.getTotalScan());
+                record.setPassedScanRate(record.getPassedScan() * 100 / (double) record.getTotalScan());
+                record.setAlarmScanRate(record.getAlarmScan() * 100 / (double) record.getTotalScan());
             }
         } catch (Exception e) {
         }
@@ -292,7 +322,8 @@ public class ScanStatisticsController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
@@ -305,10 +336,10 @@ public class ScanStatisticsController extends BaseController {
 
             Object[] item = (Object[]) result.get(i);
             ScanStatistics record = initModelFromObject(item);
-            data.put((int)record.getTime(), record);
+            data.put((int) record.getTime(), record);
         }
 
-        return  data;
+        return data;
     }
 
     private ScanStatisticsResponse getScanStatistics(StatisticsRequestBody requestBody) {
@@ -339,9 +370,8 @@ public class ScanStatisticsController extends BaseController {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, requestBody);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
             response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, ScanStatistics>)getPaginatedList(detailedStatistics, requestBody).get("list"));
-        }
-        catch (Exception e) {
+            response.setDetailedStatistics((TreeMap<Integer, ScanStatistics>) getPaginatedList(detailedStatistics, requestBody).get("list"));
+        } catch (Exception e) {
             response.setDetailedStatistics(detailedStatistics);
         }
 
@@ -355,7 +385,8 @@ public class ScanStatisticsController extends BaseController {
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
 
         return response;
@@ -371,7 +402,8 @@ public class ScanStatisticsController extends BaseController {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         if (requestBody.getCurrentPage() != null && requestBody.getCurrentPage() != null && requestBody.getCurrentPage() > 0 && requestBody.getPerPage() > 0) {
             Integer from, to;

@@ -7,6 +7,6 @@ import java.util.Date;
 
 public interface HandExaminationStatisticsService {
 
-    HandExaminationStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perpage);
+    HandExaminationStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
 
 }
