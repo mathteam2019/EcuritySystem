@@ -6,6 +6,6 @@ import java.util.Date;
 
 public interface StatisticsByUserService {
 
-    TotalStatisticsResponse getStatistics(Long modeId, String userName, Date startDate, Date endDate, Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(Long modeId, String userName, Date startTime, Date endTime,  Integer currentPage, Integer perPage);
 
 }

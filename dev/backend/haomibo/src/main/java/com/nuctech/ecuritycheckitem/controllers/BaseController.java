@@ -12,6 +12,7 @@ package com.nuctech.ecuritycheckitem.controllers;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
+import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -171,7 +172,7 @@ public class BaseController {
     public TaskService taskService;
 
     @Autowired
-    public StatisticsByDeviceService statisticsService;
+    public StatisticsByUserService userStatisticsService;
 
     @Autowired
     public PreviewStatisticsService previewStatisticsService;

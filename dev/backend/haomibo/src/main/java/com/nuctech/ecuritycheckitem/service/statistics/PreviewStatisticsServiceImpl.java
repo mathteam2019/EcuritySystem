@@ -262,17 +262,17 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("t.SCENE = " + fieldId);
         }
         if (deviceId != null) {
-            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
+            whereCause.add("HAND_DEVICE_ID = " + deviceId);
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(startTime);
-            whereCause.add("SCAN_START_TIME >= '" + strDate + "'");
+            whereCause.add("HAND_START_TIME >= '" + strDate + "'");
         }
         if (endTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String strDate = dateFormat.format(endTime);
-            whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
+            whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");

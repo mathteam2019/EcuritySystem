@@ -1,8 +1,6 @@
 package com.nuctech.ecuritycheckitem.service.statistics;
 
-
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
-
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,18 +72,18 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
         Integer keyValueMin = 1, keyValueMax = 0;
         if (statisticsWidth != null) {
-            if (ProcessTaskController.StatisticWidth.HOUR.equals(statisticsWidth)) {
+            if (Constants.StatisticWidth.HOUR.equals(statisticsWidth)) {
                 keyValueMin = 0;
                 keyValueMax = 23;
-            } else if (ProcessTaskController.StatisticWidth.DAY.equals(statisticsWidth)) {
+            } else if (Constants.StatisticWidth.DAY.equals(statisticsWidth)) {
                 keyValueMax = 31;
-            } else if (ProcessTaskController.StatisticWidth.WEEK.equals(statisticsWidth)) {
+            } else if (Constants.StatisticWidth.WEEK.equals(statisticsWidth)) {
                 keyValueMax = 5;
-            } else if (ProcessTaskController.StatisticWidth.MONTH.equals(statisticsWidth)) {
+            } else if (Constants.StatisticWidth.MONTH.equals(statisticsWidth)) {
                 keyValueMax = 12;
-            } else if (ProcessTaskController.StatisticWidth.QUARTER.equals(statisticsWidth)) {
+            } else if (Constants.StatisticWidth.QUARTER.equals(statisticsWidth)) {
                 keyValueMax = 4;
-            } else if (ProcessTaskController.StatisticWidth.YEAR.equals(statisticsWidth)) {
+            } else if (Constants.StatisticWidth.YEAR.equals(statisticsWidth)) {
                 Map<String, Integer> availableYearRage = getAvailableYearRange(startTime, endTime);
                 keyValueMax = availableYearRage.get("max");
                 keyValueMin = availableYearRage.get("min");
@@ -210,7 +208,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, String statisticsWidth, Date startDate, Date endDate) {
 
-        String groupBy = ProcessTaskController.StatisticWidth.HOUR;
+        String groupBy = Constants.StatisticWidth.HOUR;
         groupBy = statisticsWidth;
 
         String temp = query;

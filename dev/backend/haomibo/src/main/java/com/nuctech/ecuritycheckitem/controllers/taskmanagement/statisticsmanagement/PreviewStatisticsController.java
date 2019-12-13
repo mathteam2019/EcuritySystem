@@ -101,8 +101,6 @@ public class PreviewStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-//        TotalStatisticsResponse response = getPreviewStatistics(requestBody);
-
         TotalStatisticsResponse response = previewStatisticsService.getStatistics(
                 requestBody.getFilter().getFieldId(),
                 requestBody.getFilter().getDeviceId(),
@@ -113,7 +111,6 @@ public class PreviewStatisticsController extends BaseController {
                 requestBody.getFilter().getStatWidth(),
                 requestBody.getCurrentPage(),
                 requestBody.getPerPage());
-
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, response));
 
@@ -136,7 +133,16 @@ public class PreviewStatisticsController extends BaseController {
 
         StatisticsRequestBody body = requestBody.getFilter();
 
-        TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         PreviewStatisticsPdfView.setResource(res);
@@ -163,7 +169,16 @@ public class PreviewStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Long, TotalStatistics> totalStatistics = getPreviewStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
