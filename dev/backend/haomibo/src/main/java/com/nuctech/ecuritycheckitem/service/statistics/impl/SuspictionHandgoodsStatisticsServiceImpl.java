@@ -92,6 +92,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
             }
+
         }
 
         return record;
@@ -123,6 +124,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 item.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), (long) 0);
             }
+            item.put("time", (long)i);
             data.put(i, item);
         }
 

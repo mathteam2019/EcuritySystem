@@ -180,10 +180,10 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
-        InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList);
+        InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.docx");
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.xlsx");
 
         return ResponseEntity
                 .ok()
@@ -216,7 +216,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
-        InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
+        InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.docx");
