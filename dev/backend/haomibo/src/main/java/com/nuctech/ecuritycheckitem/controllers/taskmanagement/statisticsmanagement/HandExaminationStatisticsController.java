@@ -100,7 +100,19 @@ public class HandExaminationStatisticsController extends BaseController {
         }
 
         HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
-        response = getHandStatistics(requestBody);
+        //response = getHandStatistics(requestBody);
+
+        response = handExaminationStatisticsService.getStatistics(
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getDeviceId(),
+                requestBody.getFilter().getUserCategory(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getStatWidth(),
+                requestBody.getCurrentPage(),
+                requestBody.getPerPage());
+
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
@@ -116,7 +128,18 @@ public class HandExaminationStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(res);
         InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);
@@ -142,8 +165,18 @@ public class HandExaminationStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, HandExaminationResponseModel> judgeStatistics = getHandStatistics(requestBody.getFilter()).getDetailedStatistics();
-        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

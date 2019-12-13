@@ -11,12 +11,9 @@ package com.nuctech.ecuritycheckitem.controllers;
 
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
-import com.nuctech.ecuritycheckitem.service.statistics.EvaluateJudgeStatisticsService;
-import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
-import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
+import com.nuctech.ecuritycheckitem.service.statistics.*;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
-import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -188,6 +185,8 @@ public class BaseController {
     @Autowired
     public EvaluateJudgeStatisticsService evaluateJudgeStatisticsService;
 
+    @Autowired
+    public HandExaminationStatisticsService handExaminationStatisticsService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
