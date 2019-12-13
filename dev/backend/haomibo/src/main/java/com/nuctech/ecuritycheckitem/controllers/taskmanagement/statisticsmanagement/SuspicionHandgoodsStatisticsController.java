@@ -102,7 +102,19 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         }
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
-        response = getSuspicionHandGoodsStastistics(requestBody);
+        //response = getSuspicionHandGoodsStastistics(requestBody);
+
+        response = suspictionHandgoodsStatisticsService.getStatistics(
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getDeviceId(),
+                requestBody.getFilter().getUserCategory(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getStatWidth(),
+                requestBody.getCurrentPage(),
+                requestBody.getPerPage());
+
         return new CommonResponseBody(ResponseMessage.OK, response);
 
     }
@@ -118,7 +130,16 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(res);
@@ -145,9 +166,18 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        TreeMap<Integer, TreeMap<String, Long>> judgeStatistics = getSuspicionHandGoodsStastistics(requestBody.getFilter()).getDetailedStatistics();
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
 
-        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(judgeStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
 

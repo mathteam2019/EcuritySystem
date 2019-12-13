@@ -194,6 +194,10 @@ public class BaseController {
     @Autowired
     public ScanStatisticsService scanStatisticsService;
 
+    @Autowired
+    public SuspictionHandgoodsStatisticsService suspictionHandgoodsStatisticsService;
+
+
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
 
