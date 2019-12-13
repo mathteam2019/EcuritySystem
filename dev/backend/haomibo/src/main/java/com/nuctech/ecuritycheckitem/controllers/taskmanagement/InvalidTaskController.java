@@ -267,7 +267,7 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * Task table generate excel file request.
+     * Task table generate word file request.
      */
     @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
     public Object invalidTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,

@@ -7,6 +7,7 @@ import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskPdfView;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -239,6 +240,44 @@ public class HistoryTaskController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=history-task.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Task table generate excel file request.
+     */
+    @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
+    public Object historyTaskGenerateWordFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
+                                               BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //get all pending case deal list
+        List<History> taskList = new ArrayList<>();
+        taskList = historyService.getHistoryTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
+
+        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+
+
+        InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=history-task.docx");
 
         return ResponseEntity
                 .ok()

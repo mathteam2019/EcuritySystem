@@ -311,7 +311,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Task table generate excel file request.
+     * Task table generate word file request.
      */
     @RequestMapping(value = "/process-task/generate/word", method = RequestMethod.POST)
     public Object processTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
