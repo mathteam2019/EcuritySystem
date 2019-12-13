@@ -11,6 +11,6 @@ import java.util.Map;
 
 public interface StatisticsByDeviceService {
 
-    TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startDate, Date endDate, Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage);
 
 }

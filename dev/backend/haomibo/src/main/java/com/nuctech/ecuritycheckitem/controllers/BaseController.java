@@ -175,6 +175,9 @@ public class BaseController {
     public StatisticsByUserService userStatisticsService;
 
     @Autowired
+    public StatisticsByDeviceService deviceStatisticsService;
+
+    @Autowired
     public PreviewStatisticsService previewStatisticsService;
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
