@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -155,7 +156,7 @@ public class HandExaminationStatisticsController extends BaseController {
     }
 
     /**
-     * HandExamination Statistics generate pdf file request.
+     * HandExamination Statistics generate excel file request.
      */
     @RequestMapping(value = "/handexamination/generate/export", method = RequestMethod.POST)
     public Object handExaminationsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -181,6 +182,41 @@ public class HandExaminationStatisticsController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=handStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * HandExamination Statistics generate word file request.
+     */
+    @RequestMapping(value = "/handexamination/generate/word", method = RequestMethod.POST)
+    public Object handExaminationsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                    BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = HandExaminationStatisticsWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=handStatistics.docx");
 
         return ResponseEntity
                 .ok()

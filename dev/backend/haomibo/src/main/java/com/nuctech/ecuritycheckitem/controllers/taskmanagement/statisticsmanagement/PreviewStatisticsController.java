@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
@@ -159,7 +160,7 @@ public class PreviewStatisticsController extends BaseController {
     }
 
     /**
-     * Preview Statistics generate pdf file request.
+     * Preview Statistics generate excel file request.
      */
     @RequestMapping(value = "/preview/generate/export", method = RequestMethod.POST)
     public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -186,6 +187,42 @@ public class PreviewStatisticsController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=previewStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Preview Statistics generate Word file request.
+     */
+    @RequestMapping(value = "/preview/generate/word", method = RequestMethod.POST)
+    public Object previewStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Long, TotalStatistics> totalStatistics = previewStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = PreviewStatisticsWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=previewStatistics.docx");
 
         return ResponseEntity
                 .ok()

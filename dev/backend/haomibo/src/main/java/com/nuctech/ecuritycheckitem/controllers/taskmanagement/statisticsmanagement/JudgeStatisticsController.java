@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -155,7 +156,7 @@ public class JudgeStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate pdf file request.
+     * Scan Statistics generate excel file request.
      */
     @RequestMapping(value = "/judge/generate/export", method = RequestMethod.POST)
     public Object judgeStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -181,6 +182,41 @@ public class JudgeStatisticsController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=judgeStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate word file request.
+     */
+    @RequestMapping(value = "/judge/generate/word", method = RequestMethod.POST)
+    public Object judgeStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.docx");
 
         return ResponseEntity
                 .ok()

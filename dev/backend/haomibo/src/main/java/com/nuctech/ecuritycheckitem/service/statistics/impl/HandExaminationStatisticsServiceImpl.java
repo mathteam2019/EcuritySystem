@@ -282,6 +282,8 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
             record.setIntelligenceJudgeMissingRate(0);
             record.setIntelligenceJudgeMistakeRate(0);
             if (record.getTotal() > 0) {
+                record.setSeizureRate(record.getSeizure() * 100 / (double) record.getTotal());
+                record.setNoSeizureRate(record.getNoSeizure() * 100 / (double) record.getTotal());
                 record.setMissingReportRate(record.getMissingReport() * 100 / (double) record.getTotal());
                 record.setMistakeReportRate(record.getMistakeReport() * 100 / (double) record.getTotal());
             }

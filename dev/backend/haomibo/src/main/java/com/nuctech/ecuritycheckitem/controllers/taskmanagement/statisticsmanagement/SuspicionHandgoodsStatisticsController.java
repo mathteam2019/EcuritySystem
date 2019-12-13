@@ -7,6 +7,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
@@ -156,9 +157,45 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate pdf file request.
+     * Scan Statistics generate excel file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
+    public Object suspicioGoodsStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate word file request.
+     */
+    @RequestMapping(value = "/suspiciongoods/generate/word", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 
@@ -182,7 +219,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=suspicionGoodsStatistics.docx");
 
         return ResponseEntity
                 .ok()

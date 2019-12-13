@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
@@ -275,7 +276,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
     /**
-     * EvaluateJudge Statistics generate pdf file request.
+     * User Statistics generate excel file request.
      */
     @RequestMapping(value = "/userstatistics/generate/export", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
@@ -301,6 +302,41 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=statisticsByUser.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * User Statistics generate word file request.
+     */
+    @RequestMapping(value = "/userstatistics/generate/word", method = RequestMethod.POST)
+    public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TotalStatisticsResponse response = userStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getModeId(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                null,
+                null);
+
+        TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, true);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsByUser.docx");
 
         return ResponseEntity
                 .ok()
@@ -343,7 +379,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
     /**
-     * EvaluateJudge Statistics generate pdf file request.
+     * EvaluateJudge Statistics generate excel file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/export", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
@@ -375,6 +411,39 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+
+    /**
+     * EvaluateJudge Statistics generate word file request.
+     */
+    @RequestMapping(value = "/devicestatistics/generate/word", method = RequestMethod.POST)
+    public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TotalStatisticsResponse response = deviceStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getDeviceCategoryId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                null,
+                null);
+
+        TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, false);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=statisticsByDevice.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
 
     private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
 

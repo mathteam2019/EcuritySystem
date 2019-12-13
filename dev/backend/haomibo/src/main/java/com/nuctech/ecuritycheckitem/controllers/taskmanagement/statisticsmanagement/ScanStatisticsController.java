@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskContro
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsPdfView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
@@ -119,7 +120,7 @@ public class ScanStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate pdf file request.
+     * Scan Statistics generate excel file request.
      */
     @RequestMapping(value = "/scan/generate/export", method = RequestMethod.POST)
     public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -147,6 +148,43 @@ public class ScanStatisticsController extends BaseController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=scanStatistics.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Scan Statistics generate word file request.
+     */
+    @RequestMapping(value = "/scan/generate/word", method = RequestMethod.POST)
+    public Object scanStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+                requestBody.getFilter().getFilter().getFieldId(),
+                requestBody.getFilter().getFilter().getDeviceId(),
+                requestBody.getFilter().getFilter().getUserCategory(),
+                requestBody.getFilter().getFilter().getUserName(),
+                requestBody.getFilter().getFilter().getStartTime(),
+                requestBody.getFilter().getFilter().getEndTime(),
+                requestBody.getFilter().getFilter().getStatWidth(),
+                null,
+                null).getDetailedStatistics();
+
+        TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = ScanStatisticsWordView.buildWordDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=scanStatistics.docx");
 
         return ResponseEntity
                 .ok()
