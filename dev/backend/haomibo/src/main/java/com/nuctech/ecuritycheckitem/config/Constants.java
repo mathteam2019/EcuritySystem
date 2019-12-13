@@ -36,6 +36,9 @@ public class Constants {
     public static final short EXCEL_HEAD_FONT_SIZE = 14;
     public static final String EXCEL_HEAD_FONT_NAME = "Arial";
 
+    public static final short WORD_HEAD_FONT_SIZE = 24;
+    public static final String WORD_HEAD_FONT_NAME = "Arial";
+
     public static final short PDF_TITLE_FONT_SIZE = 24;
     public static final String PDF_TITLE_FONT_NAME = "Arial";
     public static final short PDF_HEAD_FONT_SIZE = 14;
