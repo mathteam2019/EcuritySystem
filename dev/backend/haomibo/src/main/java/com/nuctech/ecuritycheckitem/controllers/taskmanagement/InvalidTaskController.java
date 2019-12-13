@@ -267,6 +267,44 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
+     * Task table generate excel file request.
+     */
+    @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
+    public Object invalidTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
+                                               BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //get all pending case deal list
+        List<SerTask> taskList = new ArrayList<>();
+        taskList = taskService.getInvalidTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
+
+        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+
+
+        InputStream inputStream = InvalidTaskWordView.buildWordDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=invalid-task.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
      * Invalid-task generate pdf file request.
      */
     @RequestMapping(value = "/generate/print", method = RequestMethod.POST)
