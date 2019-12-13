@@ -10,6 +10,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import lombok.*;
@@ -119,19 +120,15 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        QSerTask builder = QSerTask.serTask;
         Long id = requestBody.getTaskId();
 
-        Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
-        if (!optionalTask.isPresent()) {
+        SerTask optionalTask = taskService.getOne(id);
+
+        if (optionalTask == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.FALSE)) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask.get()));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow"))
@@ -159,17 +156,22 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-        long total = 0;
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SerTask> result = taskService.getInvalidTaskByFilter(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                currentPage,
+                perPage);
 
-        List<SerTask> data = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterInvalidTask(requestBody.getFilter(), currentPage, perPage);
-        try {
-            data = (List<SerTask>) result.get("data");
-            total = Integer.parseInt(result.get("total").toString());
-        }
-        catch (Exception e) { }
+        long total = result.getTotal();
+        List<SerTask> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -201,42 +203,6 @@ public class InvalidTaskController extends BaseController {
         return value;
     }
 
-    private BooleanBuilder getPredicate(TaskGetByFilterAndPageRequestBody.Filter filter) {
-
-        QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
-
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
-        }
-
-        return predicate;
-    }
 
     private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
 
@@ -273,13 +239,16 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
         //get all pending case deal list
-        List<SerTask> taskList = StreamSupport
-                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerTask> taskList = new ArrayList<>();
+        taskList = taskService.getInvalidTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -308,13 +277,16 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
         //get all pending case deal list
-        List<SerTask> taskList = StreamSupport
-                .stream(serTaskRespository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerTask> taskList = new ArrayList<>();
+        taskList = taskService.getInvalidTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         InvalidTaskPdfView.setResource(res);

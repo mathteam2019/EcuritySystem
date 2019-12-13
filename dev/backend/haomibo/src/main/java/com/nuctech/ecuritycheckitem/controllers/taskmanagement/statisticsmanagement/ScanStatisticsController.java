@@ -193,7 +193,7 @@ public class ScanStatisticsController extends BaseController {
         return exportList;
     }
 
-    
+
     private String getSelectQuery(String groupBy) {
         return "SELECT " +
                 groupBy +
@@ -359,7 +359,7 @@ public class ScanStatisticsController extends BaseController {
         }
 
         return response;
-        
+
     }
 
     private Map<String, Object> getPaginatedList(TreeMap<Integer, ScanStatistics> sorted, StatisticsRequestBody requestBody) {
@@ -403,23 +403,23 @@ public class ScanStatisticsController extends BaseController {
         Integer keyValueMin = 1, keyValueMax = 0;
         if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
             switch (requestBody.getFilter().getStatWidth()) {
-                case ProcessTaskController.StatisticWidth.HOUR:
+                case Constants.StatisticWidth.HOUR:
                     keyValueMin = 0;
                     keyValueMax = 23;
                     break;
-                case ProcessTaskController.StatisticWidth.DAY:
+                case Constants.StatisticWidth.DAY:
                     keyValueMax = 31;
                     break;
-                case ProcessTaskController.StatisticWidth.WEEK:
+                case Constants.StatisticWidth.WEEK:
                     keyValueMax = 5;
                     break;
-                case ProcessTaskController.StatisticWidth.MONTH:
+                case Constants.StatisticWidth.MONTH:
                     keyValueMax = 12;
                     break;
-                case ProcessTaskController.StatisticWidth.QUARTER:
+                case Constants.StatisticWidth.QUARTER:
                     keyValueMax = 4;
                     break;
-                case ProcessTaskController.StatisticWidth.YEAR:
+                case Constants.StatisticWidth.YEAR:
                     Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
                     keyValueMax = availableYearRage.get("max");
                     keyValueMin = availableYearRage.get("min");

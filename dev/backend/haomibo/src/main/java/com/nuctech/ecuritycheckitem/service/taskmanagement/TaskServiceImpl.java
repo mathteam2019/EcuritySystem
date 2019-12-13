@@ -9,6 +9,7 @@ import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,123 +24,110 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     SerTaskRepository serTaskRepository;
 
-    @Override
-    public PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long mode, String status, Long fieldId, String userName, Date startTime, Date endTime, int currentPage, int perPage) {
-
-        return null;
-
-    }
-
-    @Override
-    public Map<String, Object> getFilterProcessTask(ProcessTaskController.TaskGetByFilterAndPageRequestBody.Filter filter, Integer currentPage, Integer perPage) {
-
-        Map<String, Object> result = new HashMap<>();
+    private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
         QSerTask builder = QSerTask.serTask;
+
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
+        if (taskNumber != null) {
+            predicate.and(builder.taskNumber.contains(taskNumber));
+        }
+        if (modeId != null) {
+            predicate.and(builder.workFlow.workMode.modeId.eq(modeId));
+        }
+        if (taskStatus != null && !taskStatus.isEmpty()) {
+            predicate.and(builder.taskStatus.eq(taskStatus));
+        }
+        if (fieldId != null) {
+            predicate.and(builder.fieldId.eq(fieldId));
+        }
+        if (userName != null && !userName.isEmpty()) {
+            Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(userName)
+                    .or(builder.serJudgeGraph.judgeUser.userName.contains(userName))
+                    .or(builder.serJudgeGraph.judgeUser.userName.contains(userName));
+            predicate.and(scanUserName);
+        }
+        if (startTime != null) {
+            predicate.and(builder.createdTime.after(startTime));
+        }
+        if (endTime != null) {
+            predicate.and(builder.createdTime.before(endTime));
         }
 
+        return predicate;
+    }
 
-        List<SerTask> data = new ArrayList<>();
+    @Override
+    public PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+
+        QSerTask builder = QSerTask.serTask;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
         long total = serTaskRepository.count(predicate);
+        List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
 
-        if (currentPage != null && perPage != null) {
-            PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-            data = serTaskRepository.findAll(predicate, pageRequest).getContent();
-        }
-        else {
-            data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-
-        result.put("total", total);
-        result.put("data", data);
-
-        return result;
+        return new PageResult<SerTask>(total, data);
 
     }
 
     @Override
-    public Map<String, Object> getFilterInvalidTask(InvalidTaskController.TaskGetByFilterAndPageRequestBody.Filter filter, Integer currentPage, Integer perPage) {
+    public List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
-        Map<String, Object> result = new HashMap<>();
         QSerTask builder = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
-        if (filter != null) {
-            predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        List<SerTask> data = StreamSupport
+                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
 
-            if (filter.getTaskNumber() != null && !filter.getTaskNumber().isEmpty()) {
-                predicate.and(builder.taskNumber.contains(filter.getTaskNumber()));
-            }
-            if (filter.getMode() != null) {
-                predicate.and(builder.serScan.workFlow.workMode.modeId.eq(filter.getMode()));
-            }
-            if (filter.getStatus() != null && !filter.getStatus().isEmpty()) {
-                predicate.and(builder.taskStatus.eq(filter.getStatus()));
-            }
-            if (filter.getFieldId() != null) {
-                predicate.and(builder.fieldId.eq(filter.getFieldId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                Predicate scanUserName = builder.serScan.scanPointsman.userName.contains(filter.getUserName())
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()))
-                        .or(builder.serJudgeGraph.judgeUser.userName.contains(filter.getUserName()));
-                predicate.and(scanUserName);
-            }
-            if (filter.getStartTime() != null) {
-                predicate.and(builder.createdTime.after(filter.getStartTime()));
-            }
-            if (filter.getEndTime() != null) {
-                predicate.and(builder.createdTime.before(filter.getEndTime()));
-            }
+        return data;
+    }
+
+    @Override
+    public SerTask getOne(Long taskId) {
+
+        QSerTask builder = QSerTask.serTask;
+        Optional<SerTask> data = serTaskRepository.findOne(builder.taskId.eq(taskId));
+        if (!data.isPresent()) {
+            return null;
         }
 
-        List<SerTask> data = new ArrayList<>();
+        return data.get();
+    }
+
+    @Override
+    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+
+        QSerTask builder = QSerTask.serTask;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
         long total = serTaskRepository.count(predicate);
+        List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
 
-        if (currentPage != null && perPage != null) {
-            PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-            data = serTaskRepository.findAll(predicate, pageRequest).getContent();
-        }
-        else {
-            data = StreamSupport
-                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-
-        result.put("total", total);
-        result.put("data", data);
-
-        return result;
+        return new PageResult<SerTask>(total, data);
 
     }
+
+    @Override
+    public List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+
+        QSerTask builder = QSerTask.serTask;
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+
+        List<SerTask> data = StreamSupport
+                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        return data;
+    }
+
 }

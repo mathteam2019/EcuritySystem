@@ -11,11 +11,13 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 
 import lombok.*;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,18 +50,6 @@ public class ProcessTaskController extends BaseController {
         SER_HAND_EXAMINATION(3);
 
         private final Integer value;
-    }
-
-    /**
-     * Statistics period width
-     */
-    public static class StatisticWidth {
-        public static final String HOUR = "hour";
-        public static final String DAY = "day";
-        public static final String WEEK = "week";
-        public static final String MONTH = "month";
-        public static final String QUARTER = "quarter";
-        public static final String YEAR = "year";
     }
 
     /**
@@ -175,22 +165,15 @@ public class ProcessTaskController extends BaseController {
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        QSerTask builder = QSerTask.serTask;
-
         Long id = requestBody.getTaskId();
 
-        Optional<SerTask> optionalTask = serTaskRespository.findOne(QSerTask.serTask.taskId.eq(id));
+        SerTask optionalTask = taskService.getOne(id);
 
-        if (!optionalTask.isPresent()) {
+        if (optionalTask == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (!optionalTask.get().getSerScan().getScanInvalid().equals(SerScan.Invalid.TRUE)) {
-            return new CommonResponseBody(ResponseMessage.INVALID_SCANID);
-        }
-
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask.get()));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination", "workFlow"))
@@ -220,17 +203,22 @@ public class ProcessTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-        long total = 0;
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SerTask> result = taskService.getProcessTaskByFilter(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime(),
+                currentPage,
+                perPage);
 
-        List<SerTask> data = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), currentPage, perPage);
-        try {
-            data = (List<SerTask>) result.get("data");
-            total = Integer.parseInt(result.get("total").toString());
-        }
-        catch (Exception e) { }
+        long total = result.getTotal();
+        List<SerTask> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -298,16 +286,18 @@ public class ProcessTaskController extends BaseController {
         }
 
         List<SerTask> taskList = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), null, null);
-        try {
-            taskList = (List<SerTask>) result.get("data");
-        }
-        catch (Exception e) { }
+        taskList = taskService.getProcessTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=process-task.xlsx");
@@ -331,11 +321,14 @@ public class ProcessTaskController extends BaseController {
         }
 
         List<SerTask> taskList = new ArrayList<>();
-        Map<String, Object> result = (Map<String, Object>)taskService.getFilterProcessTask(requestBody.getFilter(), null, null);
-        try {
-            taskList = (List<SerTask>) result.get("data");
-        }
-        catch (Exception e) { }
+        taskList = taskService.getProcessTaskAll(
+                requestBody.getFilter().getTaskNumber(),
+                requestBody.getFilter().getMode(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getFieldId(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getStartTime(),
+                requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         ProcessTaskPdfView.setResource(res);
