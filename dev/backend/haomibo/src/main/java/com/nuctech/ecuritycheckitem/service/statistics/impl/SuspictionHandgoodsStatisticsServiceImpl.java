@@ -100,11 +100,9 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     private TreeMap<Integer, TreeMap<String, Long>> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
 
         String strQuery = "";
-        if (statWidth == Constants.StatisticWidth.WEEK) {
-            strQuery = query.replace(":groupBy", "day(h.HAND_START_TIME) / 7 + 1");
-        } else {
-            strQuery = query.replace(":groupBy", statWidth + "(h.HAND_START_TIME)");
-        }
+
+        strQuery = query.replace(":groupBy", statWidth + "(h.HAND_START_TIME)");
+
 
         Query jpaQuery = entityManager.createNativeQuery(strQuery);
 
@@ -122,7 +120,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             TreeMap<String, Long> item = new TreeMap<String, Long>();
-            for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j ++) {
+            for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 item.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), (long) 0);
             }
             data.put(i, item);
@@ -131,8 +129,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         for (int i = 0; i < result.size(); i++) {
 
             Object[] item = (Object[]) result.get(i);
-            TreeMap<String, Long>  record = new TreeMap<>();
-            for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j ++) {
+            TreeMap<String, Long> record = new TreeMap<>();
+            for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
             }
             record.put("time", Long.parseLong(item[0].toString()));
@@ -142,7 +140,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         return data;
     }
 
-    private Map<String, Object> getPaginatedList(TreeMap<Integer, TreeMap<String, Long>> sorted,  String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    private Map<String, Object> getPaginatedList(TreeMap<Integer, TreeMap<String, Long>> sorted, String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
 
@@ -151,7 +149,8 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         if (currentPage != null && currentPage != null && currentPage > 0 && perPage > 0) {
             Integer from, to;
@@ -177,7 +176,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         result.put("list", detailedStatistics);
         return result;
     }
-    
+
     private String getSelectQuery() {
 
         return "SELECT\n" +

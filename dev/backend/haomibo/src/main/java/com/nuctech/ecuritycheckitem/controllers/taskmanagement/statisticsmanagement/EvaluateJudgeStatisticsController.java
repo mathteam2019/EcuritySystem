@@ -2,14 +2,9 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
-import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
-import com.nuctech.ecuritycheckitem.models.db.SerScan;
-import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;

@@ -199,7 +199,7 @@ public class Utils {
                     keyValueMax = 31;
                     break;
                 case Constants.StatisticWidth.WEEK:
-                    keyValueMax = 5;
+                    keyValueMax = 53;
                     break;
                 case Constants.StatisticWidth.MONTH:
                     keyValueMax = 12;
