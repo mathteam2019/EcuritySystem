@@ -1,10 +1,11 @@
-package com.nuctech.ecuritycheckitem.service.statistics;
+package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
+import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class StatisticsByUserServiceImpl implements  StatisticsByUserService{
+public class StatisticsByUserServiceImpl implements StatisticsByUserService {
 
     @Autowired
     public EntityManager entityManager;
