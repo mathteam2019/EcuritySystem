@@ -15,6 +15,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplatePdfView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -391,6 +392,41 @@ public class ArchiveTemplateManagementController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Archive Template generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_TOWORD)
+    @RequestMapping(value = "/archive-template/word", method = RequestMethod.POST)
+    public Object archiveTemplateGenerateWordFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
+                                                   BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String templateName = "";
+        String status = "";
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            templateName = requestBody.getFilter().getTemplateName();
+            status = requestBody.getFilter().getStatus();
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+
+        List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DeviceArchiveTemplateWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive-template.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

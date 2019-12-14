@@ -16,10 +16,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
-import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceFieldExcelView;
-import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceFieldPdfView;
-import com.nuctech.ecuritycheckitem.export.devicemanagement.DevicePdfView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -467,6 +464,49 @@ public class DeviceControlController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_TOWORD)
+    @RequestMapping(value = "/device/word", method = RequestMethod.POST)
+    public Object deviceGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                          BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DeviceWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

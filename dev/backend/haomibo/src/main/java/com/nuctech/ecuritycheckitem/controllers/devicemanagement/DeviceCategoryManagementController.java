@@ -15,6 +15,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryPdfView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
@@ -445,6 +446,46 @@ public class DeviceCategoryManagementController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device Category generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_TOWORD)
+    @RequestMapping(value = "/category/word", method = RequestMethod.POST)
+    public Object deviceCategoryGenerateWordFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
+                                                  BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String categoryName = "";
+        String status = "";
+        String parentCategoryName = "";
+        if(requestBody.getFilter() != null) {
+            categoryName = requestBody.getFilter().getCategoryName();
+            status = requestBody.getFilter().getStatus();
+            parentCategoryName = requestBody.getFilter().getParentCategoryName();
+        }
+
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+                requestBody.getIsAll(), requestBody.getIdList());
+
+
+        InputStream inputStream = DeviceCategoryWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-category.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

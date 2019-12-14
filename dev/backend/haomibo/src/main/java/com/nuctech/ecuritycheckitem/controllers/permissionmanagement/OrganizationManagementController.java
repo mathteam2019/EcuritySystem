@@ -16,6 +16,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationPdfView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
@@ -566,6 +567,43 @@ public class OrganizationManagementController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Organization generate word request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ORG_TOWORD)
+    @RequestMapping(value = "/organization/word", method = RequestMethod.POST)
+    public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
+                                                BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPreciate(requestBody.getFilter());
+
+
+        //get all org list
+        List<SysOrg> orgList = StreamSupport
+                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=organization.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

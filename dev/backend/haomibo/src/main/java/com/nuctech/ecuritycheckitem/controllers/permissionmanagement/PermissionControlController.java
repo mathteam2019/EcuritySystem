@@ -15,10 +15,7 @@ import com.google.common.collect.Lists;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.DataGroupExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.DataGroupPdfView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.RoleExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.RolePdfView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -502,6 +499,43 @@ public class PermissionControlController extends BaseController {
     }
 
     /**
+     * Role generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ROLE_TOWORD)
+    @RequestMapping(value = "/role/word", method = RequestMethod.POST)
+    public Object roleGenerateWordFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
+                                       BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getRolePredicate(requestBody.getFilter());
+
+
+        //get all role list
+        List<SysRole> roleList = StreamSupport
+                .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
+        List<SysRole> exportList = getRoleExportList(roleList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = RoleWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=role.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+
+    /**
      * Role generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
@@ -831,6 +865,42 @@ public class PermissionControlController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Data Group generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_TOWORD)
+    @RequestMapping(value = "/data-group/word", method = RequestMethod.POST)
+    public Object dataGroupGenerateWordFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getDataGroupPredicate(requestBody.getFilter());
+
+
+        //get all data group list
+        List<SysDataGroup> dataGroupList = StreamSupport
+                .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=data-group.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

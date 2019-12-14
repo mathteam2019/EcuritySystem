@@ -16,10 +16,7 @@ import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupPdfView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserPdfView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -713,6 +710,44 @@ public class UserManagementController extends BaseController {
     }
 
     /**
+     * User generate word request.
+     */
+    @PreAuthorize(Role.Authority.HAS_USER_TOWORD)
+    @RequestMapping(value = "/user/word", method = RequestMethod.POST)
+    public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all user list
+        List<SysUser> userList = StreamSupport
+                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+
+        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = UserWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=user.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
      * User generate pdf request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_PRINT)
@@ -1002,6 +1037,43 @@ public class UserManagementController extends BaseController {
 
 
     }
+
+    /**
+     * User Group generate excel request.
+     */
+    @PreAuthorize(Role.Authority.HAS_USER_GROUP_TOWORD)
+    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+
+        //get all user group list
+        List<SysUserGroup> userGroupList = StreamSupport
+                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, requestBody.getIsAll(),requestBody.getIdList());
+        InputStream inputStream = UserGroupWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=user-group.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+
+
+    }
+
 
     /**
      * User Group generate pdf request.

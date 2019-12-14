@@ -12,10 +12,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingExcelView;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPendingPdfView;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
-import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalPdfView;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -276,6 +273,34 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
+     * Knowledge Case pending generate word file request.
+     */
+    @RequestMapping(value = "/generate/pending/word", method = RequestMethod.POST)
+    public Object knowledgeCasePendingGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+                                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
      * Knowledge Case pending generate pdf file request.
      */
     @RequestMapping(value = "/generate/pending/print", method = RequestMethod.POST)
@@ -329,6 +354,34 @@ public class KnowledgeDealManagementController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Knowledge Case personal generate word file request.
+     */
+    @RequestMapping(value = "/generate/personal/word", method = RequestMethod.POST)
+    public Object knowledgeCasePersonalGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
+                                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
     }
 

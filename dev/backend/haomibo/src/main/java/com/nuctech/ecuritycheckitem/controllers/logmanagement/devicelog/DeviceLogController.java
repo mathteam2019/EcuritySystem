@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogPdfView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -232,6 +233,35 @@ public class DeviceLogController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * Device Log generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_LOG_TOWORD)
+    @RequestMapping(value = "/word", method = RequestMethod.POST)
+    public Object deviceLogGenerateWordFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-log.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

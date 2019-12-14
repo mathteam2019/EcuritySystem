@@ -15,6 +15,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchivePdfView;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -471,6 +472,43 @@ public class ArchiveManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
 
     }
+
+    /**
+     * Archive generate file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_TOWORD)
+    @RequestMapping(value = "/archive/word", method = RequestMethod.POST)
+    public Object archiveGenerateWordFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
+                                           BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String status = "";
+        Long categoryId = null;
+        if(requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName();
+            status = requestBody.getFilter().getStatus();
+            categoryId = requestBody.getFilter().getCategoryId();
+        }
+
+        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=archive.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
 
     /**
      * Archive generate file request.

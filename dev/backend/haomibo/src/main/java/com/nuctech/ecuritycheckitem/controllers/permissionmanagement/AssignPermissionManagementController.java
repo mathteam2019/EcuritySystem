@@ -14,10 +14,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserGroupExcelView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserGroupPdfView;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserPdfView;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -548,6 +545,41 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User generate file request.
      */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_TOWORD)
+    @RequestMapping(value = "/user/word", method = RequestMethod.POST)
+    public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
+                                        BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
+
+
+        //get all user list
+        List<SysUser> userList = StreamSupport
+                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+
+        InputStream inputStream = AssignUserWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=assign-user.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * User generate file request.
+     */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_PRINT)
     @RequestMapping(value = "/user/print", method = RequestMethod.POST)
     public Object userGeneratePDFFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
@@ -712,6 +744,42 @@ public class AssignPermissionManagementController extends BaseController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
+    /**
+     * User Group generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_TOWORD)
+    @RequestMapping(value = "/user-group/word", method = RequestMethod.POST)
+    public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
+                                             BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+
+
+        //get all user group list
+        List<SysUserGroup> userGroupList = StreamSupport
+                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+
+        List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = AssignUserGroupWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=assign-user-group.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
 
     }

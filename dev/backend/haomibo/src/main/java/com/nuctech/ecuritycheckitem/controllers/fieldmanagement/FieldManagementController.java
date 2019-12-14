@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
+import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
@@ -482,6 +483,43 @@ public class FieldManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
 
     }
+
+    /**
+     * Field generate word file request.
+     */
+    @PreAuthorize(Role.Authority.HAS_FIELD_TOWORD)
+    @RequestMapping(value = "/field/word", method = RequestMethod.POST)
+    public Object fieldGenerateWordFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
+                                         BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String designation = "";
+        String status = "";
+        String parentDesignation = "";
+        if(requestBody.getFilter() != null) {
+            designation = requestBody.getFilter().getFieldDesignation();
+            status = requestBody.getFilter().getStatus();
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+        }
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
+        InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=field.docx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
 
     /**
      * Field generate pdf file request.

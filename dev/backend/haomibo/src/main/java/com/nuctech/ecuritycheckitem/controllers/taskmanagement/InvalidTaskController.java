@@ -300,7 +300,7 @@ public class InvalidTaskController extends BaseController {
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
     }
 
