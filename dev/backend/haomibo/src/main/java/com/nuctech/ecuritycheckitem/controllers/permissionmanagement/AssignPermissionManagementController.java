@@ -19,12 +19,15 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.validation.annotations.RoleId;
 import com.nuctech.ecuritycheckitem.validation.annotations.UserDataRangeCategory;
 import com.nuctech.ecuritycheckitem.validation.annotations.UserId;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -53,6 +56,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/permission-management/assign-permission-management")
 public class AssignPermissionManagementController extends BaseController {
+
+    @Autowired
+    AssignPermissionService assignPermissionService;
 
     /**
      * Request body for assigning role and data range to user.
@@ -203,36 +209,6 @@ public class AssignPermissionManagementController extends BaseController {
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
     }
 
-    private BooleanBuilder getPredicate(UserGetByFilterAndPageRequestBody.Filter filter) {
-        QSysUser builder = QSysUser.sysUser;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.userName.contains(filter.getUserName()));
-            }
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
-            }
-
-            if (filter.getOrgId() != null) {
-
-                // Build query if the user's org is under the org.
-                sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
-
-                    List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
-                    List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
-
-                    predicate.and(builder.orgId.in(parentOrgIdList));
-
-                });
-            }
-        }
-        return predicate;
-    }
-
     private List<SysUser> getExportList(List<SysUser> userList, boolean isAll, String idList) {
         List<SysUser> exportList = new ArrayList<>();
         if(isAll == false) {
@@ -256,7 +232,6 @@ public class AssignPermissionManagementController extends BaseController {
         return exportList;
     }
 
-
     /**
      * User assign role and data range request.
      */
@@ -270,62 +245,12 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Get user.
-        SysUser sysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(requestBody.getUserId())).orElse(null);
-        if (sysUser == null) {
+        if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // If data range category is SPECIFIED and data group id is invalid, this is invalid request.
-        if (SysUser.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
-            long selectedDataGroupId = requestBody.getSelectedDataGroupId();
-            SysDataGroup sysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(selectedDataGroupId)).orElse(null);
-            if (sysDataGroup == null) {
-                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-            }
-        }
-
-        // Delete assigned roles for user first.
-        sysRoleUserRepository.deleteAll(sysRoleUserRepository.findAll(QSysRoleUser.sysRoleUser.userId.eq(sysUser.getUserId())));
-
-        // Generate role relation list.
-        List<SysRoleUser> sysRoleUserList = requestBody
-                .getRoleIdList()
-                .stream()
-                .map(
-                        roleId -> (SysRoleUser) SysRoleUser
-                                .builder()
-                                .roleId(roleId)
-                                .userId(sysUser.getUserId())
-                                .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
-
-        // Save role relations for user.
-        sysRoleUserRepository.saveAll(sysRoleUserList);
-
-        // Set and save data range category for user.
-        sysUser.setDataRangeCategory(requestBody.getDataRangeCategory());
-
-        sysUserRepository.save(sysUser);
-
-        // Delete all specifically assigned data group from user-dataGroup relation table.
-        sysUserLookupRepository.deleteAll(sysUserLookupRepository.findAll(QSysUserLookup.sysUserLookup.userId.eq(sysUser.getUserId())));
-
-        if (SysUser.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
-            // If data range category is SPECIFIED, need to save data group id too.
-            sysUserLookupRepository.save(
-                    (SysUserLookup) SysUserLookup
-                            .builder()
-                            .userId(sysUser.getUserId())
-                            .dataGroupId(requestBody.getSelectedDataGroupId())
-                            .build()
-                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-            );
-        }
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
@@ -342,62 +267,13 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Get user group.
-        SysUserGroup sysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId())).orElse(null);
-        if (sysUserGroup == null) {
+        if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // If data range category is SPECIFIED and data group id is invalid, this is invalid request.
-        if (SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
-            long selectedDataGroupId = requestBody.getSelectedDataGroupId();
-            SysDataGroup sysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(selectedDataGroupId)).orElse(null);
-            if (sysDataGroup == null) {
-                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-            }
-        }
-
-        // Delete assigned roles for user group first.
-        sysUserGroupRoleRepository.deleteAll(sysUserGroupRoleRepository.findAll(QSysUserGroupRole.sysUserGroupRole.userGroupId.eq(sysUserGroup.getUserGroupId())));
-
-        // Generate role relation list.
-        List<SysUserGroupRole> sysUserGroupRoleList = requestBody
-                .getRoleIdList()
-                .stream()
-                .map(roleId ->
-                        (SysUserGroupRole) SysUserGroupRole
-                                .builder()
-                                .roleId(roleId)
-                                .userGroupId(sysUserGroup.getUserGroupId())
-                                .build()
-                                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
-
-        // Save role relations for user group.
-        sysUserGroupRoleRepository.saveAll(sysUserGroupRoleList);
-
-        // Set and save data range category for user.
-        sysUserGroup.setDataRangeCategory(requestBody.getDataRangeCategory());
-
-        sysUserGroupRepository.save(sysUserGroup);
-
-        // Delete all specifically assigned data group from userGroup-dataGroup relation table.
-        sysUserGroupLookupRepository.deleteAll(sysUserGroupLookupRepository.findAll(QSysUserGroupLookup.sysUserGroupLookup.userGroupId.eq(sysUserGroup.getUserGroupId())));
-
-        if (SysUserGroup.DataRangeCategory.SPECIFIED.getValue().equals(requestBody.getDataRangeCategory())) {
-            // If data range category is SPECIFIED, need to save data group id too.
-            sysUserGroupLookupRepository.save(
-                    (SysUserGroupLookup) SysUserGroupLookup
-                            .builder()
-                            .userGroupId(sysUserGroup.getUserGroupId())
-                            .dataGroupId(requestBody.getSelectedDataGroupId())
-                            .build()
-                            .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-            );
-        }
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
@@ -408,7 +284,7 @@ public class AssignPermissionManagementController extends BaseController {
     public Object roleGetAll() {
 
         // Get all role list from DB.
-        List<SysRole> sysRoleList = sysRoleRepository.findAll();
+        List<SysRole> sysRoleList = assignPermissionService.roleGetAll();
 
         // Set filter for response json.
 
@@ -431,7 +307,7 @@ public class AssignPermissionManagementController extends BaseController {
     public Object userGroupGetAll() {
 
         // Get all sys user group list from DB.
-        List<SysUserGroup> sysUserGroupList = sysUserGroupRepository.findAll();
+        List<SysUserGroup> sysUserGroupList = assignPermissionService.userGroupGetAll();
 
         // Set filter for response json.
 
@@ -461,18 +337,18 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Build query.
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SysUser> result = assignPermissionService.userGetByFilterAndPage(
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getOrgId(),
+                requestBody.getFilter().getRoleName(),
+                currentPage,
+                perPage);
 
-
-        // Pagination.
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysUserRepository.count(predicate);
-        List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<SysUser> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -518,18 +394,16 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
 
         //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUser> userList = assignPermissionService.userGetByFilter(
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getOrgId(),
+                requestBody.getFilter().getRoleName());
+
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = AssignUserExcelView.buildExcelDocument(exportList);
-
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=assign-user.xlsx");
@@ -554,13 +428,12 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
         //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUser> userList = assignPermissionService.userGetByFilter(
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getOrgId(),
+                requestBody.getFilter().getRoleName());
+
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = AssignUserWordView.buildWordDocument(exportList);
@@ -589,13 +462,12 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
         //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUser> userList = assignPermissionService.userGetByFilter(
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getOrgId(),
+                requestBody.getFilter().getRoleName());
+
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(res);
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList);
@@ -610,29 +482,6 @@ public class AssignPermissionManagementController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
-    private BooleanBuilder getUserGroupPredicate(UserGroupGetByFilterAndPageRequestBody.Filter filter) {
-        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getGroupName())) {
-                predicate.and(builder.groupName.contains(filter.getGroupName()));
-            }
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.users.any().userName.contains(filter.getUserName()));
-            }
-            if (!StringUtils.isEmpty(filter.getRoleName())) {
-                predicate.and(builder.roles.any().roleName.contains(filter.getRoleName()));
-            }
-
-        }
-        return predicate;
-    }
-
-
-
     /**
      * User group with role datatable request.
      */
@@ -646,17 +495,18 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Build query.
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SysUserGroup> result = assignPermissionService.userGroupGetByFilterAndPage(
+                requestBody.getFilter().getGroupName(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getRoleName(),
+                currentPage,
+                perPage);
 
-        // Pagination.
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysUserGroupRepository.count(predicate);
-        List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<SysUserGroup> data = result.getDataList();
 
         // Set filters.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -724,13 +574,12 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
-
-
         //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+                requestBody.getFilter().getGroupName(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getRoleName()
+        );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList);
@@ -760,13 +609,13 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
-
-
         //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+                requestBody.getFilter().getGroupName(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getRoleName()
+        );
+
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = AssignUserGroupWordView.buildWordDocument(exportList);
@@ -796,13 +645,12 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
-
-
         //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+                requestBody.getFilter().getGroupName(),
+                requestBody.getFilter().getUserName(),
+                requestBody.getFilter().getRoleName()
+        );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserGroupPdfView.setResource(res);
