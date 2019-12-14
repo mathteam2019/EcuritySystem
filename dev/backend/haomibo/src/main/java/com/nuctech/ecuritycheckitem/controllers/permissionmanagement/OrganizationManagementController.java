@@ -24,9 +24,12 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -57,6 +60,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/permission-management/organization-management")
 public class OrganizationManagementController extends BaseController {
+
+    @Autowired
+    OrganizationService organizationService;
 
     /**
      * Organization create request body.
@@ -271,19 +277,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if parent org is existing.
-        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
+        SysOrg sysOrg = requestBody.convert2SysOrg();
+        if (organizationService.createOrganization(requestBody.getParentOrgId(), sysOrg)) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        SysOrg sysOrg = requestBody.convert2SysOrg();
-
-        // Add createdInfo.
-        sysOrg.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysOrgRepository.save(sysOrg);
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
@@ -300,32 +300,15 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysOrg oldSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId())).orElse(null);
-
-        // Check if org is existing.
-        if (oldSysOrg == null) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        // Check if parent org is existing.
-        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getParentOrgId()))) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
         SysOrg sysOrg = requestBody.convert2SysOrg();
 
-        //Don't modify created by and created time
-        sysOrg.setCreatedBy(oldSysOrg.getCreatedBy());
-        sysOrg.setCreatedTime(oldSysOrg.getCreatedTime());
-
-        // Add edited info.
-        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysOrgRepository.save(sysOrg);
-
-        return new CommonResponseBody(ResponseMessage.OK);
+        if (organizationService.modifyOrganization(requestBody.getOrgId(), requestBody.getParentOrgId(), sysOrg)) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
     }
-
 
     /**
      * Organization delete request.
@@ -340,16 +323,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if org has children.
-        boolean isHavingChildren = sysOrgRepository.exists(QSysOrg.sysOrg.parentOrgId.eq(requestBody.getOrgId()));
-        if (isHavingChildren) {
-            // Can't delete if org has children.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        if (organizationService.deleteOrganization(requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        sysOrgRepository.delete(SysOrg.builder().orgId(requestBody.getOrgId()).build());
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
 
 
@@ -366,25 +346,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if org is existing.
-        Optional<SysOrg> optionalSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()));
-        if (!optionalSysOrg.isPresent()) {
+        if (organizationService.updateOrganizationStatus(requestBody.getOrgId(), requestBody.getStatus())) {
+            return new CommonResponseBody(ResponseMessage.OK);
+        }
+        else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        SysOrg sysOrg = optionalSysOrg.get();
-
-        // Update status.
-        sysOrg.setStatus(requestBody.getStatus());
-
-        // Add edited info.
-        sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysOrgRepository.save(sysOrg);
-
-        return new CommonResponseBody(ResponseMessage.OK);
     }
-
 
     /**
      * Organization get all request.
@@ -399,7 +367,7 @@ public class OrganizationManagementController extends BaseController {
         }
 
 
-        List<SysOrg> sysOrgList = sysOrgRepository.findAll();
+        List<SysOrg> sysOrgList = organizationService.getAllOrganization();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysOrgList));
 
@@ -474,16 +442,18 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Integer currentPage = requestBody.getCurrentPage();
+        Integer perPage = requestBody.getPerPage();
+        currentPage --;
+        PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(
+                requestBody.getFilter().getOrgName(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getParentOrgName(),
+                currentPage,
+                perPage);
 
-        BooleanBuilder predicate = getPreciate(requestBody.getFilter());
-
-        int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
-        int perPage = requestBody.getPerPage();
-
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysOrgRepository.count(predicate);
-        List<SysOrg> data = sysOrgRepository.findAll(predicate, pageRequest).getContent();
+        long total = result.getTotal();
+        List<SysOrg> data = result.getDataList();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -546,13 +516,12 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPreciate(requestBody.getFilter());
-
-
         //get all org list
-        List<SysOrg> orgList = StreamSupport
-                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+                requestBody.getFilter().getOrgName(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getParentOrgName()
+        );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -587,9 +556,11 @@ public class OrganizationManagementController extends BaseController {
 
 
         //get all org list
-        List<SysOrg> orgList = StreamSupport
-                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+                requestBody.getFilter().getOrgName(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getParentOrgName()
+        );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -620,13 +591,12 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getPreciate(requestBody.getFilter());
-
-
         //get all org list
-        List<SysOrg> orgList = StreamSupport
-                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+                requestBody.getFilter().getOrgName(),
+                requestBody.getFilter().getStatus(),
+                requestBody.getFilter().getParentOrgName()
+        );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 

@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl.AssignPermissionServiceImpl;
+package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.AssignPermissionManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
