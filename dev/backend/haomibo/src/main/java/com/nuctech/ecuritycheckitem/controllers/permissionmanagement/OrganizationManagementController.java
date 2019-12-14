@@ -280,8 +280,7 @@ public class OrganizationManagementController extends BaseController {
         SysOrg sysOrg = requestBody.convert2SysOrg();
         if (organizationService.createOrganization(requestBody.getParentOrgId(), sysOrg)) {
             return new CommonResponseBody(ResponseMessage.OK);
-        }
-        else {
+        } else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -304,8 +303,7 @@ public class OrganizationManagementController extends BaseController {
 
         if (organizationService.modifyOrganization(requestBody.getOrgId(), requestBody.getParentOrgId(), sysOrg)) {
             return new CommonResponseBody(ResponseMessage.OK);
-        }
-        else {
+        } else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -325,8 +323,7 @@ public class OrganizationManagementController extends BaseController {
 
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.OK);
-        }
-        else {
+        } else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -348,8 +345,7 @@ public class OrganizationManagementController extends BaseController {
 
         if (organizationService.updateOrganizationStatus(requestBody.getOrgId(), requestBody.getStatus())) {
             return new CommonResponseBody(ResponseMessage.OK);
-        }
-        else {
+        } else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -409,26 +405,6 @@ public class OrganizationManagementController extends BaseController {
         return value;
     }
 
-    private BooleanBuilder getPreciate(OrganizationGetByFilterAndPageRequestBody.Filter filter) {
-        QSysOrg builder = QSysOrg.sysOrg;
-
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getOrgName())) {
-                predicate.and(builder.orgName.contains(filter.getOrgName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getParentOrgName())) {
-                predicate.and(builder.parent.orgName.contains(filter.getParentOrgName()));
-            }
-        }
-        return predicate;
-    }
-
-
     /**
      * Organization datatable data.
      */
@@ -444,7 +420,7 @@ public class OrganizationManagementController extends BaseController {
 
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
-        currentPage --;
+        currentPage--;
         PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(
                 requestBody.getFilter().getOrgName(),
                 requestBody.getFilter().getStatus(),
@@ -484,18 +460,18 @@ public class OrganizationManagementController extends BaseController {
 
     private List<SysOrg> getExportList(List<SysOrg> orgList, boolean isAll, String idList) {
         List<SysOrg> exportList = new ArrayList<>();
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
-            for(int i = 0; i < orgList.size(); i ++) {
+            for (int i = 0; i < orgList.size(); i++) {
                 SysOrg org = orgList.get(i);
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(org.getOrgId().toString())) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(org.getOrgId().toString())) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.add(org);
                 }
             }
@@ -504,13 +480,14 @@ public class OrganizationManagementController extends BaseController {
         }
         return exportList;
     }
+
     /**
      * Organization generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
     @RequestMapping(value = "/organization/export", method = RequestMethod.POST)
     public Object organizationGenerateExcelFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
-                                       BindingResult bindingResult) {
+                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -526,7 +503,6 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);
-
 
 
         HttpHeaders headers = new HttpHeaders();
@@ -546,14 +522,11 @@ public class OrganizationManagementController extends BaseController {
     @PreAuthorize(Role.Authority.HAS_ORG_TOWORD)
     @RequestMapping(value = "/organization/word", method = RequestMethod.POST)
     public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
-                                                BindingResult bindingResult) {
+                                               BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        BooleanBuilder predicate = getPreciate(requestBody.getFilter());
-
 
         //get all org list
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(
@@ -565,8 +538,6 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
         InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);
-
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=organization.docx");
@@ -585,7 +556,7 @@ public class OrganizationManagementController extends BaseController {
     @PreAuthorize(Role.Authority.HAS_ORG_PRINT)
     @RequestMapping(value = "/organization/print", method = RequestMethod.POST)
     public Object organizationGeneratePdfFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
-                                           BindingResult bindingResult) {
+                                              BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
