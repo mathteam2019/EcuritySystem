@@ -199,8 +199,6 @@ public class HistoryTaskExcelView extends BaseExcelView {
                     row.createCell(12).setCellValue("无");
                 }
 
-
-
                 if (task.getHandDevice() != null) {
                     row.createCell(13).setCellValue(task.getHandDevice().getDeviceName());
                 } else {

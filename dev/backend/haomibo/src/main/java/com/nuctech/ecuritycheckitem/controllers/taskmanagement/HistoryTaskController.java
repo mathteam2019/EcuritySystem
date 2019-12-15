@@ -134,12 +134,13 @@ public class HistoryTaskController extends BaseController {
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
         Long id = requestBody.getHistoryId();
 
-        Optional<History> optionalHistory = historyRespository.findOne(QHistory.history.historyId.eq(id));
-        if (!optionalHistory.isPresent()) {
+        History optionalHistory = historyService.getOne(requestBody.getHistoryId());
+
+        if (optionalHistory == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory.get()));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory));
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
