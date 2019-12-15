@@ -1,5 +1,6 @@
 package com.nuctech.ecuritycheckitem.service.permissionmanagement;
 
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -44,4 +45,6 @@ public interface UserService {
     boolean modifyUserGroup(long userGroupId, List<Long> userIdList);
 
     boolean removeUserGroup(long userGroupId);
+
+    List<SysResource> getResourceList(long userId);
 }

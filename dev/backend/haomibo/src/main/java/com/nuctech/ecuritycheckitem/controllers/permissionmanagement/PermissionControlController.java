@@ -21,6 +21,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.PermissionService;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.validation.annotations.ResourceId;
 import com.nuctech.ecuritycheckitem.validation.annotations.RoleId;
@@ -61,6 +62,9 @@ public class PermissionControlController extends BaseController {
 
     @Autowired
     PermissionService permissionService;
+
+    @Autowired
+    UserService userService;
 
 
     /**
@@ -511,7 +515,16 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        return new CommonResponseBody(ResponseMessage.OK);
+        List<SysResource> permission = userService.getResourceList(utils.userId);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
+
+        return value;
     }
 
 
@@ -554,8 +567,16 @@ public class PermissionControlController extends BaseController {
 
         permissionService.removeRole(requestBody.getRoleId());
 
-        return new CommonResponseBody(ResponseMessage.OK);
+        List<SysResource> permission = userService.getResourceList(utils.userId);
 
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
+
+        return value;
 
     }
 

@@ -112,7 +112,7 @@ public class AuthController extends BaseController {
         Token token;
         List<SysDictionaryData> dictionaryDataList;
         List<SysDeviceDictionaryData> deviceDictionaryDataList;
-        List<SysResource> resourceList;
+        List<SysResource> permission;
     }
 
 

@@ -359,4 +359,22 @@ public class UserServiceImpl implements UserService {
         );
         return true;
     }
+
+    @Override
+    public List<SysResource> getResourceList(long userId) {
+        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
+
+        if (!optionalSysUser.isPresent()) {
+            return null;
+        }
+
+        SysUser sysUser = optionalSysUser.get();
+
+        // Get all available resources for user.
+        List<SysResource> availableSysResourceList = new ArrayList<>();
+        sysUser.getRoles().forEach(sysRole -> {
+            availableSysResourceList.addAll(sysRole.getResources());
+        });
+        return availableSysResourceList;
+    }
 }

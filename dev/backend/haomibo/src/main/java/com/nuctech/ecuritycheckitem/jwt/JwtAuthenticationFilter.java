@@ -127,6 +127,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Find user from the database.
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
+        utils.userId = userId;
 
         if (!optionalSysUser.isPresent()) {
             // If we can't get user from the token, this token is invalid.
