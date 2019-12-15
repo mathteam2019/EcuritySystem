@@ -8,11 +8,19 @@
  */
 package com.nuctech.ecuritycheckitem.service;
 
+import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
+import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+
+import java.util.List;
 
 /**
  * Service interface for user authentication.
  */
 public interface AuthService {
     SysUser getSysUserByUserAccount(String userAccount);
+
+    List<SysDictionaryData> findAllDictionary();
+
+    List<SysDeviceDictionaryData> findAllDeviceDictionary();
 }

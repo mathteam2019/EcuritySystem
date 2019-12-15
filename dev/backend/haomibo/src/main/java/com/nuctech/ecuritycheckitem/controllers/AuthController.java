@@ -8,23 +8,26 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.ForbiddenToken;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
 import com.nuctech.ecuritycheckitem.service.AuthService;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -95,6 +98,7 @@ public class AuthController extends BaseController {
 
     }
 
+
     /**
      * Login response body.
      */
@@ -106,6 +110,9 @@ public class AuthController extends BaseController {
     public static class LoginResponseBody {
         User user;
         Token token;
+        List<SysDictionaryData> dictionaryDataList;
+        List<SysDeviceDictionaryData> deviceDictionaryDataList;
+        List<SysResource> resourceList;
     }
 
 
@@ -136,7 +143,15 @@ public class AuthController extends BaseController {
         // Generate token for user.
         Token token = utils.generateTokenForSysUser(sysUser);
 
-        return new CommonResponseBody(
+        List<SysResource> availableSysResourceList = new ArrayList<>();
+        sysUser.getRoles().forEach(sysRole -> {
+            availableSysResourceList.addAll(sysRole.getResources());
+        });
+
+        List<SysDeviceDictionaryData> sysDeviceDictionaryDataList = authService.findAllDeviceDictionary();
+        List<SysDictionaryData> sysDictionaryDataList = authService.findAllDictionary();
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
                 new LoginResponseBody(
                         User
@@ -146,9 +161,19 @@ public class AuthController extends BaseController {
                                 .portrait(sysUser.getPortrait())
                                 .category(sysUser.getCategory())
                                 .build(),
-                        token
+                        token,
+                        sysDictionaryDataList,
+                        sysDeviceDictionaryDataList,
+                        availableSysResourceList
                 )
-        );
+        ));
+
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
+
+        return value;
     }
 
     /**
