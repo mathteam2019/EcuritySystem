@@ -9,8 +9,12 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
+import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
+import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.AuthService;
 import com.nuctech.ecuritycheckitem.service.statistics.*;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
@@ -20,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The base controller for all controllers. This class defines common fields and methods.
@@ -200,6 +206,30 @@ public class BaseController {
 
     @Value("classpath:font/NotoSansCJKsc-Regular.otf")
     public Resource res;
+
+
+    @Autowired
+    AuthService authService;
+
+    public void setDictionary() {
+        List<SysDictionaryData> dictionaryDataList = authService.findAllDictionary();
+        List<SysDeviceDictionaryData> deviceDictionaryDataList = authService.findAllDeviceDictionary();
+        ConstantDictionary.Dictionary[] dictionaryList = new ConstantDictionary.Dictionary[dictionaryDataList.size() +
+                deviceDictionaryDataList.size()];
+        int index = 0;
+        for(int i = 0; i < dictionaryDataList.size(); i ++) {
+            ConstantDictionary.Dictionary dictioinary = new ConstantDictionary.Dictionary(dictionaryDataList.get(i).getDataCode(),
+                    dictionaryDataList.get(i).getDataValue());
+            dictionaryList[index ++] = dictioinary;
+        }
+
+        for(int i = 0; i < deviceDictionaryDataList.size(); i ++) {
+            ConstantDictionary.Dictionary dictioinary = new ConstantDictionary.Dictionary(deviceDictionaryDataList.get(i).getDataCode(),
+                    deviceDictionaryDataList.get(i).getDataValue(), deviceDictionaryDataList.get(i).getDictionaryName());
+            dictionaryList[index ++] = dictioinary;
+        }
+        ConstantDictionary.setDictionaryList(dictionaryList);
+    }
 
 
 

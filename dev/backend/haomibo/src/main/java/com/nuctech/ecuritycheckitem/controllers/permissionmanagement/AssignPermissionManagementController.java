@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.validation.annotations.RoleId;
 import com.nuctech.ecuritycheckitem.validation.annotations.UserDataRangeCategory;
@@ -59,6 +60,9 @@ public class AssignPermissionManagementController extends BaseController {
 
     @Autowired
     AssignPermissionService assignPermissionService;
+
+    @Autowired
+    UserService userService;
 
     /**
      * Request body for assigning role and data range to user.
@@ -246,7 +250,16 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            return new CommonResponseBody(ResponseMessage.OK);
+            List<SysResource> permission = userService.getResourceList(utils.userId);
+
+            MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+
+
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+            value.setFilters(filters);
+
+            return value;
         }
         else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -268,7 +281,16 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            return new CommonResponseBody(ResponseMessage.OK);
+            List<SysResource> permission = userService.getResourceList(utils.userId);
+
+            MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+
+
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+            value.setFilters(filters);
+
+            return value;
         }
         else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);

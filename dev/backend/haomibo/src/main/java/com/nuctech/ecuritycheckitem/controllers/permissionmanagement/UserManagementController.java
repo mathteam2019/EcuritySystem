@@ -21,9 +21,12 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
+import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -55,6 +58,9 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/permission-management/user-management")
 public class UserManagementController extends BaseController {
+
+    @Autowired
+    UserService userService;
 
 
     /**
@@ -416,13 +422,13 @@ public class UserManagementController extends BaseController {
         }
 
         // Check if org is valid.
-        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
+        if (!userService.checkOrgExist(requestBody.getOrgId())) {
             // If organization is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if user account is duplicated.
-        if (sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(requestBody.userAccount))) {
+        if (userService.checkAccountExist(requestBody.getUserAccount(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
@@ -432,45 +438,18 @@ public class UserManagementController extends BaseController {
         }
 
         // Check if user email is duplicated.
-        if (!requestBody.getEmail().equals("") && sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()))) {
+        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
 
         // Check if user phone number is duplicated.
-        if (!requestBody.getMobile().equals("") && sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()))) {
+        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
+        userService.createUser(sysUser, requestBody.getPortrait());
 
-        // Process portrait file.
-        MultipartFile portraitFile = requestBody.getPortrait();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Save file name.
-                    sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-        // Add created info.
-        sysUser.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysUserRepository.save(sysUser);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -490,107 +469,44 @@ public class UserManagementController extends BaseController {
         }
 
         // Check if user is existing.
-        Optional<SysUser> optionalOldSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(requestBody.getUserId()));
-        if (!optionalOldSysUser.isPresent()) {
+
+        if (!userService.checkUserExist(requestBody.getUserId())) {
             // If user is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUser oldSysUser = optionalOldSysUser.get();
+
 
         // Check if org is valid.
-        if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(requestBody.getOrgId()))) {
+        if (!userService.checkOrgExist(requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if user account is duplicated.
-        if (sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(requestBody.userAccount).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
+        if (userService.checkAccountExist(requestBody.getUserAccount(), requestBody.getUserId())) {
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
 
-        if (!requestBody.getMobile().equals("") && sysUserRepository.exists(QSysUser.sysUser.mobile.eq(requestBody.getMobile()).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
+        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), requestBody.getUserId())) {
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
 
 
-        if (!requestBody.getEmail().equals("") && sysUserRepository.exists(QSysUser.sysUser.email.eq(requestBody.getEmail()).and(QSysUser.sysUser.userId.ne(requestBody.getUserId())))) {
+        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), requestBody.getUserId())) {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
 
 
         SysUser sysUser = requestBody.convert2SysUser();
 
-        // Don't modify password.
-        sysUser.setPassword(oldSysUser.getPassword());
+        userService.modifyUser(sysUser, requestBody.getPortrait());
 
-        // Don't modify portrait if uploaded file is not found.
-        sysUser.setPortrait(oldSysUser.getPortrait());
 
-        //Don't modify created by and created time
-        sysUser.setCreatedBy(oldSysUser.getCreatedBy());
-        sysUser.setCreatedTime(oldSysUser.getCreatedTime());
-
-        // Process user portrait file.
-        MultipartFile portraitFile = requestBody.getPortrait();
-
-        if (portraitFile != null && !portraitFile.isEmpty()) {
-            try {
-                byte[] bytes = portraitFile.getBytes();
-
-                String directoryPath = Constants.PORTRAIT_FILE_UPLOAD_DIRECTORY;
-                String fileName = new Date().getTime() + "_" + portraitFile.getOriginalFilename();
-
-                boolean isSucceeded = utils.saveFile(directoryPath, fileName, bytes);
-
-                if (isSucceeded) {
-                    // Update portrait.
-                    sysUser.setPortrait(Constants.PORTRAIT_FILE_SERVING_BASE_URL + fileName);
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        // Add edited info.
-        sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysUserRepository.save(sysUser);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    private BooleanBuilder getPredicate(UserGetByFilterAndPageRequestBody.Filter filter) {
-        QSysUser builder = QSysUser.sysUser;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getUserName())) {
-                predicate.and(builder.userName.contains(filter.getUserName()));
-            }
-            if (!StringUtils.isEmpty(filter.getStatus())) {
-                predicate.and(builder.status.eq(filter.getStatus()));
-            }
-            if (!StringUtils.isEmpty(filter.getGender())) {
-                predicate.and(builder.gender.eq(filter.getGender()));
-            }
-            if (filter.getOrgId() != null) {
-
-                // Build query if the user's org is under the org.
-                sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(filter.getOrgId())).ifPresent(parentSysOrg -> {
-
-                    List<SysOrg> parentOrgList = parentSysOrg.generateChildrenList();
-                    List<Long> parentOrgIdList = parentOrgList.stream().map(SysOrg::getOrgId).collect(Collectors.toList());
-
-                    predicate.and(builder.orgId.in(parentOrgIdList));
-
-                });
-            }
-        }
-        return predicate;
-    }
 
 
     /**
@@ -606,18 +522,25 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Build query.
+        String userName = "";
+        String status = "";
+        String gender = "";
+        Long orgId = null;
+        if(requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName();
+            status = requestBody.getFilter().getStatus();
+            gender = requestBody.getFilter().getGender();
+            orgId = requestBody.getFilter().getOrgId();
+        }
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
         // Pagination.
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysUserRepository.count(predicate);
-        List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
+        PageResult<SysUser> result = userService.getUserListByPage(userName, status, gender, orgId, currentPage, perPage);
+        long total = result.getTotal();
+        List<SysUser> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
@@ -648,28 +571,7 @@ public class UserManagementController extends BaseController {
         return value;
     }
 
-    private List<SysUser> getExportList(List<SysUser> userList, boolean isAll, String idList) {
-        List<SysUser> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < userList.size(); i ++) {
-                SysUser user = userList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(user.getUserId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(user);
-                }
-            }
-        } else {
-            exportList = userList;
-        }
-        return exportList;
-    }
+
 
     /**
      * User generate excel request.
@@ -683,17 +585,17 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        String userName = "";
+        String status = "";
+        String gender = "";
+        Long orgId = null;
+        if(requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName();
+            status = requestBody.getFilter().getStatus();
+            gender = requestBody.getFilter().getGender();
+            orgId = requestBody.getFilter().getOrgId();
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = UserExcelView.buildExcelDocument(exportList);
 
 
@@ -722,16 +624,17 @@ public class UserManagementController extends BaseController {
         }
 
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        String userName = "";
+        String status = "";
+        String gender = "";
+        Long orgId = null;
+        if(requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName();
+            status = requestBody.getFilter().getStatus();
+            gender = requestBody.getFilter().getGender();
+            orgId = requestBody.getFilter().getOrgId();
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = UserWordView.buildWordDocument(exportList);
 
 
@@ -760,16 +663,17 @@ public class UserManagementController extends BaseController {
         }
 
 
-        BooleanBuilder predicate = getPredicate(requestBody.getFilter());
-
-
-        //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-
-        List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
+        String userName = "";
+        String status = "";
+        String gender = "";
+        Long orgId = null;
+        if(requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName();
+            status = requestBody.getFilter().getStatus();
+            gender = requestBody.getFilter().getGender();
+            orgId = requestBody.getFilter().getOrgId();
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         UserPdfView.setResource(res);
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
 
@@ -799,20 +703,13 @@ public class UserManagementController extends BaseController {
         }
 
         // Check if org is existing.
-        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(requestBody.getUserId()));
-        if (!optionalSysUser.isPresent()) {
+
+        if (!userService.checkUserExist(requestBody.getUserId())) {
             // If org is not found ,this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUser sysUser = optionalSysUser.get();
-
-        sysUser.setStatus(requestBody.getStatus());
-
-        // Add created info.
-        sysUser.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
-        sysUserRepository.save(sysUser);
+        userService.updateStatus(requestBody.getUserId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -831,7 +728,7 @@ public class UserManagementController extends BaseController {
         }
 
 
-        List<SysUser> sysUserList = sysUserRepository.findAll();
+        List<SysUser> sysUserList = userService.findAllUser();
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserList));
@@ -875,53 +772,24 @@ public class UserManagementController extends BaseController {
 
         // Create user group with created info.
 
-
-        SysUserGroup sysUserGroup = sysUserGroupRepository.save(
-                (SysUserGroup) SysUserGroup
-                        .builder()
-                        .groupName(requestBody.getGroupName())
-                        .groupNumber(requestBody.getGroupNumber())
-                        .note(requestBody.getNote())
-                        .build()
-                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-        );
-
-
+        SysUserGroup userGroup = (SysUserGroup) SysUserGroup
+                .builder()
+                .groupName(requestBody.getGroupName())
+                .groupNumber(requestBody.getGroupNumber())
+                .note(requestBody.getNote())
+                .build()
+                .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         List<Long> userIdList = requestBody.getUserIdList();
 
-        // Build relation array which are valid only.
-        List<SysUserGroupUser> relationList = StreamSupport.stream(
-                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> (SysUserGroupUser) SysUserGroupUser
-                        .builder()
-                        .userGroupId(sysUserGroup.getUserGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()
-                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
+        userService.createUserGroup(userGroup, userIdList);
 
-        // Save.
-        sysUserGroupUserRepository.saveAll(relationList);
+        // Build relation array which are valid only.
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    private BooleanBuilder getUserGroupPredicate(UserGroupGetByFilterAndPageRequestBody.Filter filter) {
-        // Build query.
-        QSysUserGroup builder = QSysUserGroup.sysUserGroup;
 
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
-        if (filter != null) {
-            if (!StringUtils.isEmpty(filter.getGroupName())) {
-                predicate.and(builder.groupName.contains(filter.getGroupName()));
-            }
-        }
-        return predicate;
-    }
 
 
     /**
@@ -937,16 +805,19 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+
 
         // Pagination.
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
-        long total = sysUserGroupRepository.count(predicate);
-        List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
+        String groupName = "";
+        if(requestBody.getFilter() != null) {
+            groupName = requestBody.getFilter().getGroupName();
+        }
+        PageResult<SysUserGroup> result = userService.getUserGroupListByPage(groupName, currentPage, perPage);
+        long total = result.getTotal();
+        List<SysUserGroup> data = result.getDataList();
 
         // Set filters.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
@@ -979,28 +850,7 @@ public class UserManagementController extends BaseController {
         return value;
     }
 
-    private List<SysUserGroup> getExportUserGroupList(List<SysUserGroup> userGroupList, boolean isAll, String idList) {
-        List<SysUserGroup> exportList = new ArrayList<>();
-        if(isAll == false) {
-            String[] splits = idList.split(",");
-            for(int i = 0; i < userGroupList.size(); i ++) {
-                SysUserGroup userGroup = userGroupList.get(i);
-                boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(userGroup.getUserGroupId().toString())) {
-                        isExist = true;
-                        break;
-                    }
-                }
-                if(isExist == true) {
-                    exportList.add(userGroup);
-                }
-            }
-        } else {
-            exportList = userGroupList;
-        }
-        return exportList;
-    }
+
 
     /**
      * User Group generate excel request.
@@ -1014,14 +864,12 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+        String groupName = "";
+        if(requestBody.getFilter() != null) {
+            groupName = requestBody.getFilter().getGroupName();
+        }
 
-        //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, requestBody.getIsAll(),requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList);
 
 
@@ -1042,7 +890,7 @@ public class UserManagementController extends BaseController {
      * User Group generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_TOWORD)
-    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/user-group/word", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -1050,14 +898,12 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+        String groupName = "";
+        if(requestBody.getFilter() != null) {
+            groupName = requestBody.getFilter().getGroupName();
+        }
 
-        //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, requestBody.getIsAll(),requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList);
 
 
@@ -1087,14 +933,12 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        BooleanBuilder predicate = getUserGroupPredicate(requestBody.getFilter());
+        String groupName = "";
+        if(requestBody.getFilter() != null) {
+            groupName = requestBody.getFilter().getGroupName();
+        }
 
-        //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
-
-        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, requestBody.getIsAll(),requestBody.getIdList());
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         UserGroupPdfView.setResource(res);
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
 
@@ -1124,38 +968,14 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
 
-        if (!optionalSysUserGroup.isPresent()) {
+
+        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) {
             // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUserGroup sysUserGroup = optionalSysUserGroup.get();
-        List<Long> userIdList = requestBody.getUserIdList();
-
-        // Delete all existing relation.
-        sysUserGroupUserRepository.deleteAll(sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId())));
-
-        // Build relation array which are valid only.
-        List<SysUserGroupUser> relationList = StreamSupport.stream(
-                sysUserRepository.findAll(QSysUser.sysUser.userId.in(userIdList)).spliterator(),
-                false)
-                .map(sysUser -> (SysUserGroupUser) SysUserGroupUser
-                        .builder()
-                        .userGroupId(sysUserGroup.getUserGroupId())
-                        .userId(sysUser.getUserId())
-                        .build()
-                        .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal())
-                )
-                .collect(Collectors.toList());
-
-        // Save.
-        sysUserGroupUserRepository.saveAll(relationList);
-
-        // Add edited info.
-        sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        sysUserGroupRepository.save(sysUserGroup);
+        userService.modifyUserGroup(requestBody.getUserGroupId(), requestBody.getUserIdList());
 
         return new CommonResponseBody(ResponseMessage.OK);
 
@@ -1176,25 +996,20 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(requestBody.getUserGroupId()));
-        if (!optionalSysUserGroup.isPresent()) {
+
+        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) {
             // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        SysUserGroup sysUserGroup = optionalSysUserGroup.get();
-        if (!sysUserGroup.getUsers().isEmpty()) {
+
+        if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) {
             // If user group has users, it can't be delete.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         // Delete.
-        sysUserGroupRepository.delete(
-                SysUserGroup
-                        .builder()
-                        .userGroupId(sysUserGroup.getUserGroupId())
-                        .build()
-        );
+        userService.removeUserGroup(requestBody.getUserGroupId());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

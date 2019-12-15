@@ -450,6 +450,7 @@ public class DeviceControlController extends BaseController {
             fieldId = filter.getFieldId();
             categoryId = filter.getCategoryId();
         }
+        setDictionary();
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());

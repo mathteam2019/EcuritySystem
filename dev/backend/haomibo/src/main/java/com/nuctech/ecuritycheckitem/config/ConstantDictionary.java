@@ -14,15 +14,23 @@ import java.util.Map;
  * Defines constants for this project.
  */
 
-class Dictionary {
-    String dataCode;
-    String dataValue;
-    Dictionary(String dataCode, String dataValue) {
-        this.dataCode = dataCode;
-        this.dataValue = dataValue;
-    }
-}
+
 public class ConstantDictionary {
+    public static class Dictionary {
+        String dataCode;
+        String dataValue;
+        String dictionaryName;
+        public Dictionary(String dataCode, String dataValue) {
+            this.dataCode = dataCode;
+            this.dataValue = dataValue;
+        }
+
+        public Dictionary(String dataCode, String dataValue, String dictionaryName) {
+            this.dataCode = dataCode;
+            this.dataValue = dataValue;
+            this.dictionaryName = dictionaryName;
+        }
+    }
 
     private static Dictionary[] dictionaryList = {
         new Dictionary("active", "生效"),
@@ -45,11 +53,26 @@ public class ConstantDictionary {
 
     };
 
+    public static void setDictionaryList(Dictionary[] newDictionaryList) {
+        dictionaryList = newDictionaryList;
+    }
+
     public static String getDataValue(String dataCode) {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {
             Dictionary dicationary = dictionaryList[i];
             if(dicationary.dataCode.equals(dataCode)) {
+                answer = dicationary.dataValue;
+            }
+        }
+        return answer;
+    }
+
+    public static String getDataValue(String dataCode, String dictionaryName) {
+        String answer = "";
+        for(int i = 0; i < dictionaryList.length; i ++) {
+            Dictionary dicationary = dictionaryList[i];
+            if(dicationary.dataCode.equals(dataCode) && dicationary.dictionaryName.equals(dictionaryName)) {
                 answer = dicationary.dataValue;
             }
         }

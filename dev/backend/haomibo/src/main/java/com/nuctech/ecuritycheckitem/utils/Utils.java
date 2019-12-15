@@ -42,6 +42,9 @@ public class Utils {
     public String jwtSecret; // This is loaded from application.properties file.
 
 
+    public Long userId;
+
+
     /**
      * Convert object to json string.
      *
