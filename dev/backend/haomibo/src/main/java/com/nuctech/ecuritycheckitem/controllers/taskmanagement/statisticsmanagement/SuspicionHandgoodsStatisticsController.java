@@ -2,18 +2,18 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsWordView;
-import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +34,9 @@ import java.util.*;
 @RequestMapping("/task/statistics/")
 public class SuspicionHandgoodsStatisticsController extends BaseController {
 
+    /**
+     * Suspiction hand goods Statistics RequestBody
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -67,6 +70,9 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
     }
 
+    /**
+     * Hand goods list
+     */
     public static final List<String> handGoodsIDList = Arrays.asList(new String[]{
             "1000001601",
             "1000001602",
@@ -75,9 +81,8 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             "1000001605"
     });
 
-
     /**
-     * preview statistics generate request body.
+     * Suspiction hand goods statistics generate request body.
      */
     @Getter
     @Setter
@@ -93,6 +98,12 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         StatisticsRequestBody filter;
     }
 
+    /**
+     * Get suspiction hand goods statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/get-suspicionhandgoods-statistics", method = RequestMethod.POST)
     public Object getSuspicionHandGoodsSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -103,7 +114,6 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         }
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
-        //response = getSuspicionHandGoodsStastistics(requestBody);
 
         response = suspictionHandgoodsStatisticsService.getStatistics(
                 requestBody.getFilter().getFieldId(),
@@ -121,7 +131,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     }
 
     /**
-     * Preview Statistics generate pdf file request.
+     * Suspiction handgoods  generate pdf file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/print", method = RequestMethod.POST)
     public Object suspicionGoodsStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -157,7 +167,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate excel file request.
+     * Suspiction handgoods Statistics generate excel file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -193,7 +203,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     }
 
     /**
-     * Scan Statistics generate word file request.
+     * Suspiction handgoods Statistics generate word file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/word", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -228,6 +238,13 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param detailedStatistics : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private TreeMap<Integer, TreeMap<String, Long>> getExportList(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = new TreeMap<>();
@@ -257,217 +274,6 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         }
 
         return exportList;
-    }
-
-
-    public SuspicionHandGoodsPaginationResponse getSuspicionHandGoodsStastistics(StatisticsRequestBody requestBody) {
-        SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
-
-        TreeMap<String, Long> totalStatistics = new TreeMap<>();
-        totalStatistics = getSuspicionHandGoodsByDate(requestBody, null);
-        List<Integer> keyValues = getKeyValuesforStatistics(requestBody);
-        Integer startIndex = 0, endIndex = 0, keyValueMin = 0, keyValueMax = 0;
-        try {
-            keyValueMin = keyValues.get(0);
-            keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
-
-        int curPage = 0;
-        int perPage = 0;
-        try {
-            curPage = requestBody.getCurrentPage();
-            perPage = requestBody.getPerPage();
-        } catch (Exception e) { }
-
-        if (curPage != 0 && perPage != 0) {
-            startIndex = (curPage - 1) * perPage + keyValueMin;
-            endIndex = (curPage) * perPage - 1 + keyValueMin;
-
-            if (startIndex < keyValueMin) {
-                startIndex = keyValueMin;
-            }
-            if (endIndex > keyValueMax) {
-                endIndex = keyValueMax;
-            }
-            response.setFrom((curPage - 1) * perPage + 1);
-            response.setTo((curPage) * perPage);
-            try {
-                response.setTotal(keyValueMax - keyValueMin + 1);
-                response.setPer_page(requestBody.getPerPage());
-                response.setCurrent_page(requestBody.getCurrentPage());
-
-                if (response.getTotal() % response.getPer_page() == 0) {
-                    response.setLast_page(response.getTotal() / response.getPer_page());
-                } else {
-                    response.setLast_page(response.getTotal() / response.getPer_page() + 1);
-                }
-            } catch (Exception e) { }
-        }
-        else {
-            startIndex = keyValueMin;
-            endIndex = keyValueMax;
-        }
-
-        TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
-        for (Integer i = startIndex; i <= endIndex; i++) {
-            TreeMap<String, Long> suspictionStat = getSuspicionHandGoodsByDate(requestBody, i);
-            suspictionStat.put("time", (long) i);
-            detailedStatistics.put(i, suspictionStat);
-        }
-
-        response.setTotalStatistics(totalStatistics);
-        response.setDetailedStatistics(detailedStatistics);
-        return response;
-    }
-
-    private Predicate getTimePredicate(StatisticsRequestBody requestBody, Integer byDate) {
-        Predicate predicateTime = null;
-        QHistory history = QHistory.history;
-
-        if (byDate != null) {
-            String statWidth = "";
-            try {
-                statWidth = requestBody.getFilter().getStatWidth();
-            } catch (Exception e) { }
-
-            if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-
-                switch (statWidth) {
-                    case Constants.StatisticWidth.YEAR:
-                        predicateTime = (history.handStartTime.year().eq(byDate));
-                        break;
-                    case Constants.StatisticWidth.MONTH:
-                        predicateTime = (history.handStartTime.month().eq(byDate));
-                        break;
-                    case Constants.StatisticWidth.DAY:
-                        predicateTime = (history.handStartTime.dayOfMonth().eq(byDate));
-                        break;
-                    case Constants.StatisticWidth.HOUR:
-                        predicateTime = (history.handStartTime.hour().eq(byDate));
-                        break;
-                    case Constants.StatisticWidth.WEEK:
-                        predicateTime = (history.handStartTime.dayOfMonth().between((byDate - 1) * 7, byDate * 7));
-                        break;
-                    case Constants.StatisticWidth.QUARTER:
-                        predicateTime = (history.handStartTime.month().between((byDate - 1) * 3, (byDate) * 3));
-                        break;
-                }
-            }
-        }
-        return predicateTime;
-    }
-
-    private TreeMap<String, Long> getSuspicionHandGoodsByDate(StatisticsRequestBody requestBody, Integer byDate) {
-
-        TreeMap<String, Long> suspicionResult = new TreeMap<>();
-        QHistory history = QHistory.history;
-        StatisticsRequestBody.Filter filter = requestBody.getFilter();
-
-        for (int i = 0; i < handGoodsIDList.size(); i++) {
-            BooleanBuilder predicate = new BooleanBuilder(history.isNotNull());
-            predicate.and(getTimePredicate(requestBody, byDate));
-            if (requestBody.getFilter().getFieldId() != null) {
-                predicate.and(history.task.fieldId.eq(requestBody.getFilter().getFieldId()));
-            }
-            if (requestBody.getFilter().getDeviceId() != null) {
-                predicate.and(history.handDeviceId.eq(requestBody.getFilter().getDeviceId()));
-            }
-            if (requestBody.getFilter().getUserName() != null && !requestBody.getFilter().getUserName().isEmpty()) {
-                predicate.and(history.handUser.userName.contains(requestBody.getFilter().getUserName()));
-            }
-            if (requestBody.getFilter().getStartTime() != null) {
-                predicate.and(history.handStartTime.after(requestBody.getFilter().getStartTime()));
-            }
-            if (requestBody.getFilter().getEndTime() != null) {
-                predicate.and(history.handEndTime.before(requestBody.getFilter().getEndTime()));
-            }
-            predicate.and(history.handGoods.eq(handGoodsIDList.get(i)));
-            suspicionResult.put(handGoodsIDList.get(i), historyRespository.count(predicate));
-        }
-        return suspicionResult;
-    }
-
-    /**
-     * Private purpose Only
-     * Get Start KeyDate and End Key Date for statistics
-     * <p>
-     * Ex: In case of Hour - it returns [1, 24], In case of Month it returns [1, 12]
-     *
-     * @param requestBody
-     * @return [startKeyDate, endKeyDate]
-     */
-    public List<Integer> getKeyValuesforStatistics(StatisticsRequestBody requestBody) {
-
-        Integer keyValueMin = 1, keyValueMax = 0;
-        if (requestBody.getFilter().getStatWidth() != null && !requestBody.getFilter().getStatWidth().isEmpty()) {
-            switch (requestBody.getFilter().getStatWidth()) {
-                case Constants.StatisticWidth.HOUR:
-                    keyValueMin = 0;
-                    keyValueMax = 23;
-                    break;
-                case Constants.StatisticWidth.DAY:
-                    keyValueMax = 31;
-                    break;
-                case Constants.StatisticWidth.WEEK:
-                    keyValueMax = 5;
-                    break;
-                case Constants.StatisticWidth.MONTH:
-                    keyValueMax = 12;
-                    break;
-                case Constants.StatisticWidth.QUARTER:
-                    keyValueMax = 4;
-                    break;
-                case Constants.StatisticWidth.YEAR:
-                    Map<String, Integer> availableYearRage = getAvailableYearRange(requestBody);
-                    keyValueMax = availableYearRage.get("max");
-                    keyValueMin = availableYearRage.get("min");
-                    break;
-                default:
-                    keyValueMin = 0;
-                    keyValueMax = -1;
-                    break;
-            }
-        }
-
-        List<Integer> result = new ArrayList<>();
-        result.add(keyValueMin);
-        result.add(keyValueMax);
-
-        return result;
-    }
-
-    private Map<String, Integer> getAvailableYearRange(StatisticsRequestBody requestBody) {
-
-        Integer keyValueMin = 0, keyValueMax = 0;
-
-        Integer yearMax = serJudgeGraphRepository.findMaxYear();
-        Integer yearMin = 1970;
-        Calendar calendar = Calendar.getInstance();
-        if (requestBody.getFilter().getStartTime() != null) {
-            calendar.setTime(requestBody.getFilter().getStartTime());
-            keyValueMin = calendar.get(Calendar.YEAR);
-        } else {
-            keyValueMin = Calendar.getInstance().get(Calendar.YEAR) - 10 + 1;
-        }
-        if (requestBody.getFilter().getEndTime() != null) {
-            calendar.setTime(requestBody.getFilter().getEndTime());
-            keyValueMax = calendar.get(Calendar.YEAR);
-        } else {
-            keyValueMax = Calendar.getInstance().get(Calendar.YEAR);
-        }
-        if (keyValueMin < yearMin) {
-            keyValueMin = yearMin;
-        }
-        if (keyValueMax > yearMax) {
-            keyValueMax = yearMax;
-        }
-
-        Map<String, Integer> result = new HashMap<String, Integer>();
-
-        result.put("min", keyValueMin);
-        result.put("max", keyValueMax);
-
-        return result;
     }
 
 }

@@ -1,13 +1,9 @@
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.JudgeStatisticsController;
 import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsPaginationResponse;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
-import com.nuctech.ecuritycheckitem.service.statistics.HandExaminationStatisticsService;
 import com.nuctech.ecuritycheckitem.service.statistics.JudgeStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,15 +26,14 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
     SerPlatformCheckParamRepository serPlatformCheckParamRepository;
 
     /**
-     * Get Statistics to show on Preview Page
-     *
-     * @param fieldId
-     * @param deviceId
-     * @param userCategory
-     * @param userName
-     * @param startTime
-     * @param endTime
-     * @param statWidth
+     * get judge statistcs
+     * @param fieldId : scene id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
@@ -93,6 +88,14 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Integer, JudgeStatisticsResponseModel> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
@@ -134,7 +137,11 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         return  data;
     }
 
-
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private JudgeStatisticsResponseModel getTotalStatistics(String query) {
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> resultTotal = jpaQuery.getResultList();
@@ -161,6 +168,16 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         return record;
     }
 
+    /**
+     * Get paginated list using current pang and per page
+     * @param sorted
+     * @param statWidth
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private Map<String, Object> getPaginatedList(TreeMap<Integer, JudgeStatisticsResponseModel> sorted,  String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics = new TreeMap<>();
@@ -197,7 +214,11 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         return result;
     }
 
-
+    /**
+     * query of select part
+     * @param groupBy : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getSelectQuery(String groupBy) {
         return "SELECT\n" +
                 "\n" +
@@ -223,6 +244,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
 
     }
 
+    /**
+     * Get query for join
+     * @return
+     */
     private String getJoinQuery() {
         return "\tser_judge_graph g\n" +
                 "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
@@ -233,6 +258,17 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n";
     }
 
+    /**
+     * Get where condition list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         List<String> whereCause = new ArrayList<String>();
         whereCause.add("s.SCAN_INVALID like 'true'");
@@ -261,6 +297,11 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
         return whereCause;
     }
 
+    /**
+     * return a judge statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private JudgeStatisticsResponseModel initModelFromObject(Object[] item) {
 
         JudgeStatisticsResponseModel record = new JudgeStatisticsResponseModel();
@@ -294,8 +335,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 record.setNoSuspictionRate(record.getNoSuspiction() * 100 / (double) record.getTotal());
                 record.setScanResultRate(record.getAtrResult() * 100 / (double) record.getTotal());
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
 
         return record;
     }

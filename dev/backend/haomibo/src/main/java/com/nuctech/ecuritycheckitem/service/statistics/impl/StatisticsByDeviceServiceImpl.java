@@ -20,23 +20,30 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
     @Autowired
     public EntityManager entityManager;
 
-
+    /**
+     * get total statistics by device
+     * @param deviceCategoryId : device category id
+     * @param deviceId : device id
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page
+     * @param perPage : per page
+     * @return
+     */
     @Override
     public TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
         //.... Get Total Statistics
-
         String strQuery = makeQuery(deviceCategoryId, deviceId, startTime, endTime);
-
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
 
         //.... Get Detailed Statistics
         TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strQuery, startTime, endTime);
-
         try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, startTime, endTime, currentPage, perPage);
+            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
             response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
@@ -54,13 +61,17 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) {
-            }
+            } catch (Exception e) { }
         }
 
         return response;
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private TotalStatistics getTotalStatistics(String query) {
 
         String temp = query.replace(":scanGroupBy", "1");
@@ -79,6 +90,13 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return record;
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query,  Date startTime, Date endTime) {
 
         String temp = query;
@@ -91,7 +109,6 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         TreeMap<Long, TotalStatistics> data = new TreeMap<>();
 
         for (int i = 0; i < result.size(); i++) {
-
             Object[] item = (Object[]) result.get(i);
             TotalStatistics record = initModelFromObject(item);
             data.put(record.getId(), record);
@@ -100,7 +117,14 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return data;
     }
 
-    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Date starTime, Date endTime, Integer currentPage, Integer perPage) {
+    /**
+     * Get paginated list using current pang and per page
+     * @param list
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
+    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Integer currentPage, Integer perPage) {
 
         HashMap<String, Object> paginationResult = new HashMap<String, Object>();
         TreeMap<Long, TotalStatistics> subList = new TreeMap<>();
@@ -145,33 +169,50 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return paginationResult;
     }
 
+    /**
+     * join query to get available scan device list
+     * @param deviceId
+     * @return
+     */
     private String getJoinWhereQueryForAvailableScanDeviceId(Long deviceId) {
 
         String strResult = "\t\t\twhere SCAN_DEVICE_ID = :deviceId\n";
         strResult = strResult.replace(":deviceId", deviceId.toString());
 
         return strResult;
-
     }
 
+    /**
+     * join query to get available judge device list
+     * @param deviceId
+     * @return
+     */
     private String getJoinWhereQueryForAvailableJudgeDeviceId(Long deviceId) {
 
         String strResult = "\t\t\twhere JUDGE_DEVICE_ID = :deviceId\n";
         strResult = strResult.replace(":deviceId", deviceId.toString());
 
         return strResult;
-
     }
 
+    /**
+     * join query to get available handexamination device list
+     * @param deviceId
+     * @return
+     */
     private String getJoinWhereQueryForAvailableHandDeviceId(Long deviceId) {
 
         String strResult = "\t\t\twhere HAND_DEVICE_ID = :deviceId\n";
         strResult = strResult.replace(":deviceId", deviceId.toString());
 
         return strResult;
-
     }
 
+    /**
+     * build entire query
+     * @param deviceId
+     * @return
+     */
     private String makeQuery(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime) {
 
         String strQuery =  getSelectQuery() + getJoinQuery();
@@ -192,9 +233,16 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         }
 
         return strQuery;
-
     }
 
+    /**
+     * Get where query for scan statistics
+     * @param deviceCategoryId
+     * @param deviceId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private String getWhereCauseScan(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
@@ -221,11 +269,18 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return stringBuilder.toString();
     }
 
+    /**
+     * Get where query for judge statistics
+     * @param deviceCategoryId
+     * @param deviceId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private String getWhereCauseJudge(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime)  {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-
 
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -247,6 +302,14 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return stringBuilder.toString();
     }
 
+    /**
+     * get where query for hand examination statistics
+     * @param deviceCategoryId
+     * @param deviceId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private String getWhereCauseHand(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime)  {
 
         List<String> whereCause = new ArrayList<>();
@@ -273,6 +336,10 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return stringBuilder.toString();
     }
 
+    /**
+     * Get select query part
+     * @return
+     */
     private String getSelectQuery() {
 
         return "SELECT\n" +
@@ -282,37 +349,39 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\tIFNULL(totalHand, 0),\n" + "\tIFNULL(seizureHand, 0),\n" + "\tIFNULL(noSeizureHand, 0), \n" +
                 "\tIFNULL(d.device_name, ''),\n" + "\t\tIFNULL(scanWorkingSeconds, 0),\n" + "\tIFNULL(judgeWorkingSeconds, 0),\n" + "\tIFNULL(handWorkingSeconds, 0)\n" +
                 "\tFROM\n" + "\t(\n" +
-                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" +
-                "\t\t(\n" +
+                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" + "\t\t(\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:scanGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_scan s \n"+
+                "\t\tFROM\n" + "\t\t\tser_scan s \n"+
                 "\t:selectScanDeviceIds\n" +
                 "\t\tUNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:judgeGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_judge_graph j " +
+                "\t\tFROM\n" + "\t\t\tser_judge_graph j " +
                 "\t\t:selectJudgeDeviceIds\n" +
                 "\tUNION\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:handGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_hand_examination h \n" +
+                "\t\tFROM\n" + "\t\t\tser_hand_examination h \n" +
                 "\t\t:selectHandDeviceIds\n" +
                 "\t\t) AS t00 \n" +
                 "\t) AS t0 \n" +
                 "\tLEFT JOIN sys_device d ON t0.q = d.device_id\n";
-
     }
 
+    /**
+     * build entire join query
+     * @return
+     */
     private String getJoinQuery() {
 
         return getScanJoinQuery() + getJudgeJoinQuery() + getHandJoinQuery();
-
     }
 
+    /**
+     * get scan join query
+     * @return
+     */
     private String getScanJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -332,6 +401,10 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t) AS t1 ON t0.q = t1.q1\t";
     }
 
+    /**
+     * get judge join query
+     * @return
+     */
     private String getJudgeJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -349,6 +422,10 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t) AS t2 ON t0.q = t2.q2\t";
     }
 
+    /**
+     * get hand join query
+     * @return
+     */
     private String getHandJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -366,6 +443,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t) AS t3 ON t0.q = t3.q3\t";
     }
 
+    /**
+     * return a total statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private TotalStatistics initModelFromObject(Object[] item) {
 
         TotalStatistics record = new TotalStatistics();

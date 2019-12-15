@@ -15,7 +15,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -115,7 +119,7 @@ public class HistoryTaskController extends BaseController {
     }
 
     /**
-     * History Task datatable data.
+     *  detailed info of a history task.
      */
     @RequestMapping(value = "/get-one", method = RequestMethod.POST)
     public Object historyTaskGetById(
@@ -322,7 +326,13 @@ public class HistoryTaskController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
-
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param taskList : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private List<History> getExportList(List<History> taskList, boolean isAll, String idList) {
 
         List<History> exportList = new ArrayList<>();

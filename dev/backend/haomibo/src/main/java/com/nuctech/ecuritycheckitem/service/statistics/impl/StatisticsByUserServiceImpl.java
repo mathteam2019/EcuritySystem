@@ -1,15 +1,14 @@
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByUserService;
-import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.text.DateFormat;
@@ -22,23 +21,30 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
     @Autowired
     public EntityManager entityManager;
 
+    /**
+     * get total statistics by device
+     * @param modeId : workmode id
+     * @param userName         : user name
+     * @param startTime        : start time
+     * @param endTime          : end time
+     * @param currentPage      : current page
+     * @param perPage          : per page
+     * @return
+     */
     @Override
     public TotalStatisticsResponse getStatistics(Long modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
         //.... Get Total Statistics
-
         String strQuery = makeQuery(modeId, userName, startTime, endTime);
-
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
 
         //.... Get Detailed Statistics
         TreeMap<Long, TotalStatistics> detailedStatistics = getDetailedStatistics(strQuery, startTime, endTime);
-
         try {
-            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, startTime, endTime, currentPage, perPage);
+            Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
             response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
             response.setDetailedStatistics((TreeMap<Long, TotalStatistics>) paginatedResult.get("list"));
@@ -56,13 +62,17 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) {
-            }
+            } catch (Exception e) { }
         }
 
         return response;
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private TotalStatistics getTotalStatistics(String query) {
 
         String temp = query.replace(":scanGroupBy", "1");
@@ -81,7 +91,14 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return record;
     }
 
-    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query,  Date startTime, Date endTime) {
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param startTime : start time
+     * @param endTime   : endtime
+     * @return
+     */
+    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, Date startTime, Date endTime) {
 
         String temp = query;
         temp = temp.replace(":scanGroupBy", "(SCAN_POINTSMAN_ID)");
@@ -93,7 +110,6 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         TreeMap<Long, TotalStatistics> data = new TreeMap<>();
 
         for (int i = 0; i < result.size(); i++) {
-
             Object[] item = (Object[]) result.get(i);
             TotalStatistics record = initModelFromObject(item);
             data.put(record.getId(), record);
@@ -102,7 +118,14 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return data;
     }
 
-    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Date starTime, Date endTime, Integer currentPage, Integer perPage) {
+    /**
+     * Get paginated list using current pang and per page
+     * @param list
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
+    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> list, Integer currentPage, Integer perPage) {
 
         HashMap<String, Object> paginationResult = new HashMap<String, Object>();
         TreeMap<Long, TotalStatistics> subList = new TreeMap<>();
@@ -147,6 +170,11 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return paginationResult;
     }
 
+    /**
+     * join query to get available scan user list
+     * @param userName
+     * @return
+     */
     private String getJoinWhereQueryForAvailableScanUserId(String userName) {
 
         String strResult = "\t\t\tLEFT JOIN sys_user u ON s.scan_pointsman_id = u.user_id \n" +
@@ -154,9 +182,13 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         strResult = strResult.replace(":userName", userName);
 
         return strResult;
-
     }
 
+    /**
+     * join query to get available judge user list
+     * @param userName
+     * @return
+     */
     private String getJoinWhereQueryForAvailableJudgeUserId(String userName) {
 
         String strResult = "\t\t\tLEFT JOIN sys_user u ON j.judge_user_id = u.user_id \n" +
@@ -164,9 +196,13 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         strResult = strResult.replace(":userName", userName);
 
         return strResult;
-
     }
 
+    /**
+     * join query to get available handexamination user list
+     * @param userName
+     * @return
+     */
     private String getJoinWhereQueryForAvailableHandUserId(String userName) {
 
         String strResult = "\t\t\tLEFT JOIN sys_user u ON h.hand_user_id = u.user_id \n" +
@@ -174,12 +210,19 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         strResult = strResult.replace(":userName", userName);
 
         return strResult;
-
     }
 
+    /**
+     * build entire query
+     * @param modeId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private String makeQuery(Long modeId, String userName, Date startTime, Date endTime) {
 
-        String strQuery =  getSelectQuery() + getJoinQuery();
+        String strQuery = getSelectQuery() + getJoinQuery();
 
         strQuery = strQuery.replace(":whereScan", getWhereCauseScan(modeId, userName, startTime, endTime));
         strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(modeId, userName, startTime, endTime));
@@ -189,17 +232,19 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             strQuery = strQuery.replace(":selectScanUserIds", getJoinWhereQueryForAvailableScanUserId(userName));
             strQuery = strQuery.replace(":selectJudgeUserIds", getJoinWhereQueryForAvailableJudgeUserId(userName));
             strQuery = strQuery.replace(":selectHandUserIds", getJoinWhereQueryForAvailableHandUserId(userName));
-        }
-        else {
+        } else {
             strQuery = strQuery.replace(":selectScanUserIds", "");
             strQuery = strQuery.replace(":selectJudgeUserIds", "");
             strQuery = strQuery.replace(":selectHandUserIds", "");
         }
 
         return strQuery;
-
     }
 
+    /**
+     * get select query part
+     * @return
+     */
     private String getSelectQuery() {
 
         return "SELECT\n" +
@@ -209,37 +254,33 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
                 "\tIFNULL(totalHand, 0),\n" + "\tIFNULL(seizureHand, 0),\n" + "\tIFNULL(noSeizureHand, 0), \n" +
                 "\tIFNULL(u.user_name, ''),\n" + "\t\tIFNULL(scanWorkingSeconds, 0),\n" + "\tIFNULL(judgeWorkingSeconds, 0),\n" + "\tIFNULL(handWorkingSeconds, 0)\n" +
                 "\tFROM\n" + "\t(\n" +
-                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" +
-                "\t\t(\n" +
+                "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" + "\t\t(\n" +
                 "\t\tSELECT DISTINCT \n" +
-                "\t\t:scanGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_scan s \n"+
-                "\t:selectScanUserIds\n" +
+                "\t\t:scanGroupBy AS q \n" + "\t\tFROM\n" + "\t\t\tser_scan s \n" + "\t:selectScanUserIds\n" +
                 "\t\tUNION\n" +
                 "\t\tSELECT DISTINCT \n" +
-                "\t\t:judgeGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_judge_graph j " +
-                "\t\t:selectJudgeUserIds\n" +
+                "\t\t:judgeGroupBy AS q \n" + "\t\tFROM\n" + "\t\t\tser_judge_graph j " + "\t\t:selectJudgeUserIds\n" +
                 "\tUNION\n" +
                 "\t\tSELECT DISTINCT \n" +
-                "\t\t:handGroupBy AS q \n" +
-                "\t\tFROM\n" +
-                "\t\t\tser_hand_examination h \n" +
-                "\t\t:selectHandUserIds\n" +
+                "\t\t:handGroupBy AS q \n" + "\t\tFROM\n" + "\t\t\tser_hand_examination h \n" + "\t\t:selectHandUserIds\n" +
                 "\t\t) AS t00 \n" +
                 "\t) AS t0 \n" +
                 "\tLEFT JOIN sys_user u ON t0.q = u.user_id\n";
-
     }
 
+    /**
+     * get join query part
+     * @return
+     */
     private String getJoinQuery() {
 
         return getScanJoinQuery() + getJudgeJoinQuery() + getHandJoinQuery();
-
     }
 
+    /**
+     * get scan join query part
+     * @return
+     */
     private String getScanJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -251,14 +292,14 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
                 "\t\tsum( IF ( SCAN_FOOT_ALARM LIKE '" + SerScan.FootAlarm.TRUE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\tsum(TIMESTAMPDIFF(SECOND,SCAN_START_TIME,SCAN_END_TIME)) as scanWorkingSeconds,\n" +
                 "\t\t:scanGroupBy AS q1 \n" +
-                "\tFROM\n" +
-                "\t\tser_scan s \n" +
-                "\t:whereScan\t" +
-                "\tGROUP BY\n" +
-                "\t\tq1 \n" +
+                "\tFROM\n" + "\t\tser_scan s \n" + "\t:whereScan\t" + "\tGROUP BY\n" + "\t\tq1 \n" +
                 "\t) AS t1 ON t0.q = t1.q1\t";
     }
 
+    /**
+     * get judge join query part
+     * @return
+     */
     private String getJudgeJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -266,16 +307,15 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
                 "\t\tcount( judge_id ) AS totalJudge,\n" +
                 "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
                 "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
-                "\t\tsum(TIMESTAMPDIFF(SECOND,JUDGE_START_TIME,JUDGE_END_TIME)) as judgeWorkingSeconds,\t" +
-                "\t\t:judgeGroupBy AS q2 \n" +
-                "\tFROM\n" +
-                "\t\tser_judge_graph j \n" +
-                "\t:whereJudge\t" +
-                "\tGROUP BY\n" +
-                "\t\tq2 \n" +
+                "\t\tsum(TIMESTAMPDIFF(SECOND,JUDGE_START_TIME,JUDGE_END_TIME)) as judgeWorkingSeconds,\t" + "\t\t:judgeGroupBy AS q2 \n" +
+                "\tFROM\n" + "\t\tser_judge_graph j \n" + "\t:whereJudge\t" + "\tGROUP BY\n" + "\t\tq2 \n" +
                 "\t) AS t2 ON t0.q = t2.q2\t";
     }
 
+    /**
+     * get hand join query part
+     * @return
+     */
     private String getHandJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -284,15 +324,18 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
                 "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.TRUE + "', 1, 0 ) ) AS seizureHand,\n" +
                 "\t\tsum( IF ( HAND_RESULT LIKE '" + SerHandExamination.Result.FALSE + "', 1, 0 ) ) AS noSeizureHand,\n" +
                 "\t\tsum(TIMESTAMPDIFF(SECOND,HAND_START_TIME,HAND_END_TIME)) as handWorkingSeconds,\n" +
-                "\t\t:handGroupBy AS q3 \n" +
-                "\tFROM\n" +
-                "\t\tser_hand_examination h \n" +
-                "\t:whereHand\t" +
-                "\tGROUP BY\n" +
-                "\t\tq3 \n" +
-                "\t) AS t3 ON t0.q = t3.q3\t";
+                "\t\t:handGroupBy AS q3 \n" + "\tFROM\n" + "\t\tser_hand_examination h \n" +
+                "\t:whereHand\t" + "\tGROUP BY\n" + "\t\tq3 \n" + "\t) AS t3 ON t0.q = t3.q3\t";
     }
 
+    /**
+     * get where cause for scan statistics
+     * @param modeId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private String getWhereCauseScan(Long modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
@@ -324,7 +367,15 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return stringBuilder.toString();
     }
 
-    private String getWhereCauseJudge(Long modeId, String userName, Date startTime, Date endTime)  {
+    /**
+     * get where cause for judge statistics
+     * @param modeId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private String getWhereCauseJudge(Long modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -355,7 +406,15 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return stringBuilder.toString();
     }
 
-    private String getWhereCauseHand(Long modeId, String userName, Date startTime, Date endTime)  {
+    /**
+     * get where cause for hand statistics
+     * @param modeId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    private String getWhereCauseHand(Long modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -385,6 +444,11 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return stringBuilder.toString();
     }
 
+    /**
+     * return a total statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private TotalStatistics initModelFromObject(Object[] item) {
 
         TotalStatistics record = new TotalStatistics();

@@ -2,22 +2,17 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsWordView;
-import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.collections4.IterableUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +28,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -104,7 +98,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
 
     /**
-     * preview statistics generate request body.
+     * statistics by device generate file request
      */
     @Getter
     @Setter
@@ -121,7 +115,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
     /**
-     * preview statistics generate request body.
+     * statistics by user generate file request
      */
     @Getter
     @Setter
@@ -137,7 +131,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         StatisticsByUserRequestBody filter;
     }
 
-
+    /**
+     * get statistics by user request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/get-statistics-filter-by-user", method = RequestMethod.POST)
     public Object getStatisticsByUserSummary(
             @RequestBody @Valid StatisticsByUserRequestBody requestBody,
@@ -159,6 +158,12 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
     }
 
+    /**
+     * get statistics by device request body
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/get-statistics-filter-by-device", method = RequestMethod.POST)
     public Object getStatisticsByDeviceSummary(
             @RequestBody @Valid StatisticsByDeviceRequestBody requestBody,
@@ -180,68 +185,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/get-by-user-sum", method = RequestMethod.POST)
-    public Object statisticsByUserGet(
-            @RequestBody @Valid StatisticsByUserRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        long totalSecs = 0;
-        long scanSecs = 0;
-        long judgeSecs = 0;
-        long handSecs = 0;
-
-        scanSecs = getWorkingSecondsByUser(requestBody, ProcessTaskController.TableType.SER_SCAN);
-        judgeSecs = getWorkingSecondsByUser(requestBody, ProcessTaskController.TableType.SER_JUDGE_GRAPH);
-        handSecs = getWorkingSecondsByUser(requestBody, ProcessTaskController.TableType.SER_HAND_EXAMINATION);
-
-        totalSecs = scanSecs + judgeSecs + handSecs;
-
-        StatisticsByUserResponse response = new StatisticsByUserResponse();
-        response.setTotalSeconds(totalSecs);
-        response.setScanSeconds(scanSecs);
-        response.setJudgeSeconds(judgeSecs);
-        response.setHandSeconds(handSecs);
-
-        return new CommonResponseBody(ResponseMessage.OK, response);
-
-    }
-
-    @RequestMapping(value = "/get-by-device-sum", method = RequestMethod.POST)
-    public Object statisticsByDeviceGet(
-            @RequestBody @Valid StatisticsByDeviceRequestBody requestBody,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        long totalSecs = 0;
-        long scanSecs = 0;
-        long judgeSecs = 0;
-        long handSecs = 0;
-
-        scanSecs = getWorkingSecondsByDevice(requestBody, ProcessTaskController.TableType.SER_SCAN);
-        judgeSecs = getWorkingSecondsByDevice(requestBody, ProcessTaskController.TableType.SER_JUDGE_GRAPH);
-        handSecs = getWorkingSecondsByDevice(requestBody, ProcessTaskController.TableType.SER_HAND_EXAMINATION);
-
-        totalSecs = scanSecs + judgeSecs + handSecs;
-
-        StatisticsByUserResponse response = new StatisticsByUserResponse();
-        response.setTotalSeconds(totalSecs);
-        response.setScanSeconds(scanSecs);
-        response.setJudgeSeconds(judgeSecs);
-        response.setHandSeconds(handSecs);
-
-        return new CommonResponseBody(ResponseMessage.OK, response);
-
-    }
-
     /**
-     * Evaluate Statistics generate pdf file request.
+     * User Statistics generate pdf file request.
      */
     @RequestMapping(value = "/userstatistics/generate/print", method = RequestMethod.POST)
     public Object userStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
@@ -346,7 +291,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
     /**
-     * Evaluate Statistics generate pdf file request.
+     * Device Statistics generate pdf file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/print", method = RequestMethod.POST)
     public Object deviceStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
@@ -379,7 +324,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     }
 
     /**
-     * EvaluateJudge Statistics generate excel file request.
+     * Device Statistics generate excel file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/export", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
@@ -413,7 +358,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
 
     /**
-     * EvaluateJudge Statistics generate word file request.
+     * Device Statistics generate word file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/word", method = RequestMethod.POST)
     public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
@@ -445,6 +390,13 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param detailedStatistics : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();
@@ -474,212 +426,6 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
 
         return exportList;
-    }
-
-    public long getWorkingSecondsByUser(StatisticsByUserRequestBody requestBody, ProcessTaskController.TableType tbType) {
-
-        QSerTask serTask = QSerTask.serTask;
-        BooleanBuilder predicate = new BooleanBuilder(serTask.isNotNull());
-        StatisticsByUserRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-            if (filter.getModeId() != null) {
-                predicate.and(serTask.workFlow.workMode.modeId.eq(filter.getModeId()));
-            }
-            if (filter.getUserName() != null && !filter.getUserName().isEmpty()) {
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-                    Predicate scanUserName = serTask.serScan.scanPointsman.userName.contains(filter.getUserName());
-                    predicate.and(scanUserName);
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                    Predicate judgeUserName = serTask.serJudgeGraph.judgeUser.userName.contains(filter.getUserName());
-                    predicate.and(judgeUserName);
-                } else if (tbType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-                    Predicate handUserName = serTask.serHandExamination.handUser.userName.contains(filter.getUserName());
-                    predicate.and(handUserName);
-                }
-            }
-            if (filter.getStartTime() != null) {
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-                    predicate.and(serTask.serScan.scanStartTime.after(filter.getStartTime()));
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                    predicate.and(serTask.serJudgeGraph.judgeStartTime.after(filter.getStartTime()));
-                } else {
-                    predicate.and(serTask.serHandExamination.handStartTime.after(filter.getStartTime()));
-                }
-            }
-            if (filter.getEndTime() != null) {
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-                    predicate.and(serTask.serScan.scanEndTime.before(filter.getEndTime()));
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-                    predicate.and(serTask.serJudgeGraph.judgeEndTime.before(filter.getEndTime()));
-                } else {
-                    predicate.and(serTask.serHandExamination.handEndTime.before(filter.getEndTime()));
-                }
-            }
-        }
-
-        Iterable<SerTask> listTasks = serTaskRespository.findAll(predicate);
-
-        long workingSeconds = 0;
-
-
-        for (SerTask item : listTasks) {
-
-            if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                try {
-                    workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                try {
-                    workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            } else {
-                try {
-                    workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            }
-
-
-        }
-
-        return workingSeconds;
-
-    }
-
-    public long getWorkingSecondsByDevice(StatisticsByDeviceRequestBody requestBody, ProcessTaskController.TableType tbType) {
-
-        QSerTask serTask = QSerTask.serTask;
-
-        BooleanBuilder predicate = new BooleanBuilder(serTask.isNotNull());
-
-        StatisticsByDeviceRequestBody.Filter filter = requestBody.getFilter();
-
-        if (filter != null) {
-
-            if (filter.getDeviceCategoryId() != null) {
-
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                    Predicate scanDeviceCategory = serTask.serScan.scanDevice.categoryId.eq(filter.getDeviceCategoryId());
-                    predicate.and(scanDeviceCategory);
-
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                    Predicate judgeDeviceCategory = serTask.serJudgeGraph.judgeDevice.categoryId.eq(filter.getDeviceCategoryId());
-                    predicate.and(judgeDeviceCategory);
-
-                } else if (tbType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-
-                    Predicate handDeviceCategory = serTask.serHandExamination.handDevice.categoryId.eq(filter.getDeviceCategoryId());
-                    predicate.and(handDeviceCategory);
-
-                }
-            }
-            if (filter.getDeviceId() != null) {
-
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                    Predicate scanDeviceId = serTask.serScan.scanDevice.deviceId.eq(filter.getDeviceId());
-                    predicate.and(scanDeviceId);
-
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                    Predicate judgeDeviceId = serTask.serJudgeGraph.judgeDevice.deviceId.eq(filter.getDeviceId());
-                    predicate.and(judgeDeviceId);
-
-                } else if (tbType == ProcessTaskController.TableType.SER_HAND_EXAMINATION) {
-
-                    Predicate handDeviceId = serTask.serHandExamination.handDevice.deviceId.eq(filter.getDeviceId());
-                    predicate.and(handDeviceId);
-
-                }
-
-            }
-
-            if (filter.getStartTime() != null) {
-
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                    predicate.and(serTask.serScan.scanStartTime.after(filter.getStartTime()));
-
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                    predicate.and(serTask.serJudgeGraph.judgeStartTime.after(filter.getStartTime()));
-
-                } else {
-
-                    predicate.and(serTask.serHandExamination.handStartTime.after(filter.getStartTime()));
-
-                }
-
-            }
-
-            if (filter.getEndTime() != null) {
-
-                if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                    predicate.and(serTask.serScan.scanEndTime.before(filter.getEndTime()));
-
-                } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                    predicate.and(serTask.serJudgeGraph.judgeEndTime.before(filter.getEndTime()));
-
-                } else {
-
-                    predicate.and(serTask.serHandExamination.handEndTime.before(filter.getEndTime()));
-
-                }
-
-            }
-        }
-
-        Iterable<SerTask> listTasks = serTaskRespository.findAll(predicate);
-
-        long workingSeconds = 0;
-
-        for (SerTask item : listTasks) {
-
-            if (tbType == ProcessTaskController.TableType.SER_SCAN) {
-
-                try {
-                    workingSeconds += (item.getSerScan().getScanEndTime().getTime() - item.getSerScan().getScanStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            } else if (tbType == ProcessTaskController.TableType.SER_JUDGE_GRAPH) {
-
-                try {
-                    workingSeconds += (item.getSerJudgeGraph().getJudgeEndTime().getTime() - item.getSerJudgeGraph().getJudgeStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            } else {
-
-                try {
-                    workingSeconds += (item.getSerHandExamination().getHandEndTime().getTime() - item.getSerHandExamination().getHandStartTime().getTime()) / 1000;
-                } catch (Exception e) {
-
-                }
-
-            }
-
-        }
-
-        return workingSeconds;
-
     }
 
 }

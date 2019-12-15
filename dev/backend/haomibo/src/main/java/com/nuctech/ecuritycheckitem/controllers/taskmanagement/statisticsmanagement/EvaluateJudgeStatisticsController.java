@@ -14,7 +14,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -26,18 +25,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
 public class EvaluateJudgeStatisticsController extends BaseController {
 
+    /**
+     * get statistics request body
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -86,6 +85,12 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
 
+    /**
+     * request body to get Evaluate Judge Statistics
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/get-evaluatejudge-statistics", method = RequestMethod.POST)
     public Object getEvaluateJudgeSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -149,7 +154,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     }
 
     /**
-     * EvaluateJudge Statistics generate pdf file request.
+     * EvaluateJudge Statistics generate excel file request.
      */
     @RequestMapping(value = "/evaluatejudge/generate/export", method = RequestMethod.POST)
     public Object evaluateJudgeGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
@@ -220,6 +225,13 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param detailedStatistics : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private TreeMap<Integer, EvaluateJudgeResponseModel> getExportList(TreeMap<Integer, EvaluateJudgeResponseModel> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Integer, EvaluateJudgeResponseModel> exportList = new TreeMap<>();

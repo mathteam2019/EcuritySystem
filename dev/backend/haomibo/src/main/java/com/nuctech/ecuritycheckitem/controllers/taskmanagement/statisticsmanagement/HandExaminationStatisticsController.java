@@ -2,15 +2,10 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsWordView;
-import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
-import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
-import com.nuctech.ecuritycheckitem.models.db.SerScan;
-import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
@@ -19,7 +14,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -30,19 +24,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
 public class HandExaminationStatisticsController extends BaseController {
 
+    /**
+     *Request body to get HandExaminationStatistics
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -75,7 +68,7 @@ public class HandExaminationStatisticsController extends BaseController {
     }
 
     /**
-     * preview statistics generate request body.
+     * HandExamination statistics generate request body.
      */
     @Getter
     @Setter
@@ -91,6 +84,12 @@ public class HandExaminationStatisticsController extends BaseController {
         StatisticsRequestBody filter;
     }
 
+    /**
+     * get hand-examination-statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/get-handexamination-statistics", method = RequestMethod.POST)
     public Object getHandExaminationSummary(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -225,6 +224,13 @@ public class HandExaminationStatisticsController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param detailedStatistics : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private TreeMap<Integer, HandExaminationResponseModel> getExportList(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = new TreeMap<>();

@@ -1,7 +1,5 @@
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.PreviewStatisticsController;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -9,7 +7,6 @@ import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
 import com.nuctech.ecuritycheckitem.service.statistics.PreviewStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.internal.compiler.ProcessTaskManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,27 +24,21 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
 
     /**
-     * Get Statistics to show on Preview Page
-     *
-     * @param fieldId
-     * @param deviceId
-     * @param userCategory
-     * @param userName
-     * @param startTime
-     * @param endTime
-     * @param statWidth
+     * get judge statistcs
+     * @param fieldId : scene id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
     public TotalStatisticsResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
-        StringBuilder whereBuilderScan = new StringBuilder();
-        StringBuilder whereBuilderJudge = new StringBuilder();
-        StringBuilder whereBuilderHand = new StringBuilder();
-
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
-        StringBuilder queryBuilder = new StringBuilder();
         //.... Get Total Statistics
         String strQuery = makeQuery().replace(":whereScan", getWhereCauseScan(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
         strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth));
@@ -86,6 +77,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private TotalStatistics getTotalStatistics(String query) {
 
         String temp = query.replace(":scanGroupBy", "1");
@@ -104,6 +100,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return record;
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, String statisticsWidth, Date startTime, Date endTime) {
 
         String groupBy = "hour";
@@ -125,9 +129,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
-        }
-
+        } catch (Exception e) { }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             TotalStatistics item = new TotalStatistics();
@@ -148,12 +150,22 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return data;
     }
 
-    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> sorted, String statWidth, Date starTime, Date endTime, Integer currentPage, Integer perPage) {
+    /**
+     * Get paginated list using current pang and per page
+     * @param sorted
+     * @param statWidth
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
+    private Map<String, Object> getPaginatedList(TreeMap<Long, TotalStatistics> sorted, String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Long, TotalStatistics> detailedStatistics = new TreeMap<>();
 
         Integer keyValueMin = 0, keyValueMax = -1;
-        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, starTime, endTime);
+        List<Integer> keyValues = Utils.getKeyValuesforStatistics(statWidth, startTime, endTime);
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
@@ -185,7 +197,17 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return result;
     }
 
-
+    /**
+     * Get scan statistics where condition  list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getWhereCauseScan(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
@@ -220,6 +242,17 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return stringBuilder.toString();
     }
 
+    /**
+     * Get judge statistics where condition  list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getWhereCauseJudge(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
@@ -254,6 +287,17 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return stringBuilder.toString();
     }
 
+    /**
+     * Get hand statistics where condition  list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getWhereCauseHand(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
@@ -288,12 +332,20 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return stringBuilder.toString();
     }
 
+    /**
+     * build whole query with select query and join query
+     * @return
+     */
     private String makeQuery() {
 
         return getSelectQuery() + getJoinQuery();
 
     }
 
+    /**
+     * query of select part
+     * @return
+     */
     private String getSelectQuery() {
 
         return "SELECT\n" +
@@ -320,12 +372,20 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t) AS t0 ";
     }
 
+    /**
+     * Get query for whole join
+     * @return
+     */
     private String getJoinQuery() {
 
         return getScanJoinQuery() + getJudgeJoinQuery() + getHandJoinQuery();
 
     }
 
+    /**
+     * get query for scan join query
+     * @return
+     */
     private String getScanJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -344,6 +404,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t) AS t1 ON t0.q = t1.q1\t";
     }
 
+    /**
+     * get query for judge join query
+     * @return
+     */
     private String getJudgeJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -360,6 +424,10 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t) AS t2 ON t0.q = t2.q2\t";
     }
 
+    /**
+     * get query for hand join query
+     * @return
+     */
     private String getHandJoinQuery() {
 
         return "LEFT JOIN (\n" +
@@ -376,6 +444,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
                 "\t) AS t3 ON t0.q = t3.q3\t";
     }
 
+    /**
+     * return a Total statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private TotalStatistics initModelFromObject(Object[] item) {
 
         TotalStatistics record = new TotalStatistics();

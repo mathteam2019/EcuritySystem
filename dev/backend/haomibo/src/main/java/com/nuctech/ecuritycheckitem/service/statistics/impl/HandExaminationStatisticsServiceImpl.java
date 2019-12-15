@@ -30,21 +30,19 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
 
 
     /**
-     * Get Statistics to show on Preview Page
-     *
-     * @param fieldId
-     * @param deviceId
-     * @param userCategory
-     * @param userName
-     * @param startTime
-     * @param endTime
-     * @param statWidth
+     * get hand examination statistics
+     * @param fieldId : scene id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
     public HandExaminationStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
-        Map<String, Object> paramaterMap = new TreeMap<String, Object>();
         List<String> whereCause = new ArrayList<String>();
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -58,9 +56,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         queryBuilder.append(getSelectQuery(groupBy) + "\tFROM\n" + getJoinQuery());
 
         //................. get total statistics ....
-
         whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
-
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
@@ -96,6 +92,11 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return response;
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private HandExaminationResponseModel getTotalStatistics(String query) {
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         Query jpaQueryTotal = entityManager.createNativeQuery(query);
@@ -108,6 +109,14 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return record;
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Integer, HandExaminationResponseModel> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
 
         Query jpaQuery = entityManager.createNativeQuery(query);
@@ -139,6 +148,16 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return data;
     }
 
+    /**
+     * Get paginated list using current pang and per page
+     * @param sorted
+     * @param statWidth
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private Map<String, Object> getPaginatedList(TreeMap<Integer, HandExaminationResponseModel> sorted,  String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, HandExaminationResponseModel> detailedStatistics = new TreeMap<>();
@@ -175,7 +194,11 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return result;
     }
 
-
+    /**
+     * query of select part
+     * @param groupBy : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getSelectQuery(String groupBy) {
         return "SELECT\n" +
                 "\n" +
@@ -214,6 +237,10 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
                 "\tAVG( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS avgDuration \n";
     }
 
+    /**
+     * Get query for join
+     * @return
+     */
     private String getJoinQuery() {
         return "\tser_hand_examination h\n" +
                 "\tLEFT join sys_user u on h.HAND_USER_ID = u.USER_ID\n" +
@@ -227,6 +254,17 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
                 "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
     }
 
+    /**
+     * Get where condition list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         List<String> whereCause = new ArrayList<>();
 
@@ -256,6 +294,11 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
         return whereCause;
     }
 
+    /**
+     * return a handexamination statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private HandExaminationResponseModel initModelFromObject(Object[] item) {
         HandExaminationResponseModel record = new HandExaminationResponseModel();
         try {

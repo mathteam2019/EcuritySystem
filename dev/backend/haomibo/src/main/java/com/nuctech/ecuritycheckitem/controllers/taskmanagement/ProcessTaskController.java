@@ -15,8 +15,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,39 +54,6 @@ public class ProcessTaskController extends BaseController {
         SER_HAND_EXAMINATION(3);
 
         private final Integer value;
-    }
-
-    /**
-     * Normal Statistics RequestBody
-     */
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    private static class StatisticsRequestBody {
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        static class Filter {
-
-            Long fieldId;
-            Long deviceId;
-            Long userCategory;
-            String userName;
-            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date startTime;
-            @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date endTime;
-            String statWidth;
-
-        }
-
-        Integer currentPage;
-        Integer perPage;
-        StatisticsRequestBody.Filter filter;
     }
 
     /**
@@ -122,7 +92,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Get detailed info of task request body
+     * Get detailed info of a process task request body
      */
     @Getter
     @Setter
@@ -156,7 +126,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Task datatable data.
+     * process task datatable data.
      */
     @RequestMapping(value = "/process-task/get-one", method = RequestMethod.POST)
     public Object processTaskGetById(
@@ -193,7 +163,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Task datatable data.
+     * process task datatable data.
      */
     @RequestMapping(value = "/process-task/get-by-filter-and-page", method = RequestMethod.POST)
     public Object processTaskGetByFilterAndPage(
@@ -251,6 +221,13 @@ public class ProcessTaskController extends BaseController {
         return value;
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param taskList : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
 
         List<SerTask> exportList = new ArrayList<>();
@@ -276,7 +253,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Task table generate excel file request.
+     * Process Task table generate excel file request.
      */
     @RequestMapping(value = "/process-task/generate/export", method = RequestMethod.POST)
     public Object processTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
@@ -311,7 +288,7 @@ public class ProcessTaskController extends BaseController {
     }
 
     /**
-     * Task table generate word file request.
+     * Process Task table generate word file request.
      */
     @RequestMapping(value = "/process-task/generate/word", method = RequestMethod.POST)
     public Object processTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,

@@ -1,7 +1,5 @@
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import com.nuctech.ecuritycheckitem.service.statistics.SuspictionHandgoodsStatisticsService;
@@ -22,16 +20,28 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
     @Autowired
     public EntityManager entityManager;
 
+    /**
+     * get statistics
+     * @param fieldId
+     * @param deviceId
+     * @param userCategory
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @param statWidth
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     public SuspicionHandGoodsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
-        StringBuilder queryBuilder = new StringBuilder();
+        SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
 
+        StringBuilder queryBuilder = new StringBuilder();
         String groupBy = "hour";
         if (statWidth != null && !statWidth.isEmpty()) {
             groupBy = statWidth;
         }
-
-        SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
 
         //.... Get Total Statistics
         String strQuery = getSelectQuery();
@@ -41,7 +51,6 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             whereBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
         strQuery = strQuery.replace(":where", whereBuilder.toString());
-
         queryBuilder.append(strQuery);
 
         TreeMap<String, Long> totalStatistics = getTotalStatistics(queryBuilder.toString());
@@ -49,7 +58,6 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
         //.... Get Detailed Statistics
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = getDetailedStatistics(queryBuilder.toString(), statWidth, startTime, endTime);
-
         try {
             Map<String, Object> paginatedResult = getPaginatedList(detailedStatistics, statWidth, startTime, endTime, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
@@ -69,17 +77,18 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) {
-            }
+            } catch (Exception e) { }
         }
 
         return response;
-
-
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private TreeMap<String, Long> getTotalStatistics(String query) {
-
 
         String strQuery = query.replace(":groupBy", "1");
 
@@ -92,18 +101,22 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
                 record.put(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(j), Long.parseLong(item[j + 1].toString()));
             }
-
         }
 
         return record;
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Integer, TreeMap<String, Long>> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
 
-        String strQuery = "";
-
-        strQuery = query.replace(":groupBy", statWidth + "(h.HAND_START_TIME)");
-
+        String strQuery = query.replace(":groupBy", statWidth + "(h.HAND_START_TIME)");
 
         Query jpaQuery = entityManager.createNativeQuery(strQuery);
 
@@ -115,9 +128,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) {
-        }
-
+        } catch (Exception e) { }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             TreeMap<String, Long> item = new TreeMap<String, Long>();
@@ -129,7 +140,6 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         }
 
         for (int i = 0; i < result.size(); i++) {
-
             Object[] item = (Object[]) result.get(i);
             TreeMap<String, Long> record = new TreeMap<>();
             for (int j = 0; j < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); j++) {
@@ -142,6 +152,16 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         return data;
     }
 
+    /**
+     * Get paginated list using current pang and per page
+     * @param sorted
+     * @param statWidth
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private Map<String, Object> getPaginatedList(TreeMap<Integer, TreeMap<String, Long>> sorted, String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, TreeMap<String, Long>> detailedStatistics = new TreeMap<>();
@@ -179,6 +199,10 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
         return result;
     }
 
+    /**
+     * query of select part
+     * @return
+     */
     private String getSelectQuery() {
 
         return "SELECT\n" +
@@ -199,6 +223,17 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
 
     }
 
+    /**
+     * Get where condition list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<String>();

@@ -22,15 +22,14 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
     public EntityManager entityManager;
 
     /**
-     * Get Statistics to show on Preview Page
-     *
-     * @param fieldId
-     * @param deviceId
-     * @param userCategory
-     * @param userName
-     * @param startTime
-     * @param endTime
-     * @param statWidth
+     * get hand statistcs
+     * @param fieldId : scene id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
@@ -85,6 +84,11 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
     }
 
+    /**
+     * Get total statistics amount
+     * @param query
+     * @return
+     */
     private ScanStatistics getTotalStatistics(String query) {
 
         Query jpaQuery = entityManager.createNativeQuery(query);
@@ -99,6 +103,14 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return record;
     }
 
+    /**
+     * Get statistics by statistics width
+     * @param query
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param startTime : start time
+     * @param endTime : endtime
+     * @return
+     */
     private TreeMap<Integer, ScanStatistics> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
         Query jpaQuery = entityManager.createNativeQuery(query);
         List<Object> result = jpaQuery.getResultList();
@@ -128,6 +140,16 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return  data;
     }
 
+    /**
+     * Get paginated list using current pang and per page
+     * @param sorted
+     * @param statWidth
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private Map<String, Object> getPaginatedList(TreeMap<Integer, ScanStatistics> sorted,  String statWidth, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
         Map<String, Object> result = new HashMap<>();
         TreeMap<Integer, ScanStatistics> detailedStatistics = new TreeMap<>();
@@ -164,7 +186,11 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return result;
     }
 
-
+    /**
+     * query of select part
+     * @param groupBy : statistics width (hour, day, week, month, quarter, year)
+     * @return
+     */
     private String getSelectQuery(String groupBy) {
         return "SELECT " +
                 groupBy +
@@ -177,6 +203,10 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
     }
 
+    /**
+     * Get query for join
+     * @return
+     */
     private String getJoinQuery() {
 
         return "\tser_scan s\n" +
@@ -185,6 +215,17 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
 
     }
 
+    /**
+     * Get where condition list
+     * @param fieldId : field id
+     * @param deviceId : device id
+     * @param userCategory : user category
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @return
+     */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         
         List<String> whereCause = new ArrayList<String>();
@@ -213,7 +254,11 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
         return whereCause;
     }
 
-
+    /**
+     * return a scan statistics record from a record of a query
+     * @param item
+     * @return
+     */
     private ScanStatistics initModelFromObject(Object[] item) {
 
         ScanStatistics record = new ScanStatistics();

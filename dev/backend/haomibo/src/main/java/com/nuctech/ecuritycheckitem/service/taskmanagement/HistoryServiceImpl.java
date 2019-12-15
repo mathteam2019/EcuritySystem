@@ -3,7 +3,6 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
@@ -23,6 +22,17 @@ public class HistoryServiceImpl implements HistoryService {
     @Autowired
     HistoryRepository historyRepository;
 
+    /**
+     * Get filter condition
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
         QHistory builder = QHistory.history;
@@ -57,6 +67,19 @@ public class HistoryServiceImpl implements HistoryService {
         return predicate;
     }
 
+    /**
+     * Get paginated and filtered records of history task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page no
+     * @param perPage : record count per page
+     * @return
+     */
     @Override
     public PageResult<History> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
@@ -72,6 +95,17 @@ public class HistoryServiceImpl implements HistoryService {
 
     }
 
+    /**
+     * get all filtered records of history task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @return
+     */
     @Override
     public List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
@@ -85,6 +119,11 @@ public class HistoryServiceImpl implements HistoryService {
         return data;
     }
 
+    /**
+     * Get one history info
+     * @param taskId : id of a task
+     * @return
+     */
     @Override
     public History getOne(Long taskId) {
 

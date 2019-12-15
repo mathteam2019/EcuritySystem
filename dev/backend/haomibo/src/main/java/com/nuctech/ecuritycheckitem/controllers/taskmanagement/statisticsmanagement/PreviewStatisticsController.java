@@ -2,16 +2,17 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsWordView;
-import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -23,16 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.persistence.Query;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static java.lang.Math.round;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -92,7 +87,12 @@ public class PreviewStatisticsController extends BaseController {
         StatisticsRequestBody filter;
     }
 
-
+    /**
+     * get preview statistics request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     @RequestMapping(value = "/preview", method = RequestMethod.POST)
     public Object previewStatisticsGet(
             @RequestBody @Valid StatisticsRequestBody requestBody,
@@ -118,7 +118,6 @@ public class PreviewStatisticsController extends BaseController {
         return value;
 
     }
-
 
 
     /**
@@ -231,6 +230,13 @@ public class PreviewStatisticsController extends BaseController {
                 .body(new InputStreamResource(inputStream));
     }
 
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param detailedStatistics : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private TreeMap<Long, TotalStatistics> getExportList(TreeMap<Long, TotalStatistics> detailedStatistics, boolean isAll, String idList) {
 
         TreeMap<Long, TotalStatistics> exportList = new TreeMap<>();

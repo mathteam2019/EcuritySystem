@@ -24,6 +24,17 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     SerTaskRepository serTaskRepository;
 
+    /**
+     * Get filter condition
+     * @param taskNumber
+     * @param modeId
+     * @param taskStatus
+     * @param fieldId
+     * @param userName
+     * @param startTime
+     * @param endTime
+     * @return
+     */
     private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
         QSerTask builder = QSerTask.serTask;
 
@@ -58,6 +69,19 @@ public class TaskServiceImpl implements TaskService {
         return predicate;
     }
 
+    /**
+     * Get paginated and filtered records of process task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page no
+     * @param perPage : record count per page
+     * @return
+     */
     @Override
     public PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
@@ -74,6 +98,17 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
+    /**
+     * get all filtered records of process task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @return
+     */
     @Override
     public List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
@@ -88,6 +123,11 @@ public class TaskServiceImpl implements TaskService {
         return data;
     }
 
+    /**
+     * get detailed info of an invalid task
+     * @param taskId
+     * @return
+     */
     @Override
     public SerTask getOne(Long taskId) {
 
@@ -100,6 +140,19 @@ public class TaskServiceImpl implements TaskService {
         return data.get();
     }
 
+    /**
+     * Get paginated and filtered records of invalid task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @param currentPage : current page no
+     * @param perPage : record count per page
+     * @return
+     */
     @Override
     public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
@@ -116,6 +169,17 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
+    /**
+     * get all filtered records of invalid task
+     * @param taskNumber : task number
+     * @param modeId : workmode id
+     * @param taskStatus : task status
+     * @param fieldId : scene id
+     * @param userName : user name
+     * @param startTime : start time
+     * @param endTime : end time
+     * @return
+     */
     @Override
     public List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 

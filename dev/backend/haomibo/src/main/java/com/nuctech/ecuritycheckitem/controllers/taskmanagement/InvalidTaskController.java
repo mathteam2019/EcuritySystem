@@ -13,7 +13,11 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -75,7 +79,7 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * Get detailed info of task request body
+     * Get detailed info of an invalid task request body
      */
     @Getter
     @Setter
@@ -109,7 +113,7 @@ public class InvalidTaskController extends BaseController {
 
 
     /**
-     * Task datatable data.
+     * get detailed info of an invalid task request
      */
     @RequestMapping(value = "/get-one", method = RequestMethod.POST)
     public Object invalidTaskGetById(
@@ -145,7 +149,7 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * Task datatable data.
+     * Invalid task datatable data.
      */
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
     public Object invalidTaskGetByFilterAndPage(
@@ -203,7 +207,13 @@ public class InvalidTaskController extends BaseController {
         return value;
     }
 
-
+    /**
+     * Extract records to export documents(word/excel/pdf)
+     * @param taskList : total records
+     * @param isAll : true - print all, false - print records in idList
+     * @param idList : idList to be extracted
+     * @return
+     */
     private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
 
         List<SerTask> exportList = new ArrayList<>();
@@ -267,7 +277,7 @@ public class InvalidTaskController extends BaseController {
     }
 
     /**
-     * Task table generate word file request.
+     * Invalid task table generate word file request.
      */
     @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
     public Object invalidTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
