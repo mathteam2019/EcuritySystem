@@ -535,9 +535,6 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Optional<SysRole> optionalSysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(requestBody.getRoleId()));
-
-        SysRole sysRole = optionalSysRole.get();
         if (permissionService.checkResourceExist(requestBody.getRoleId())) {
             // If the role has relation with resource, it can't be deleted.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
