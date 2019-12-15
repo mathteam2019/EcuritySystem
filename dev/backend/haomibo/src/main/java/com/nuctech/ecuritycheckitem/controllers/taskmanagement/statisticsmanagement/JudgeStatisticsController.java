@@ -143,6 +143,7 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         JudgeStatisticsPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -178,6 +179,7 @@ public class JudgeStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -213,6 +215,7 @@ public class JudgeStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

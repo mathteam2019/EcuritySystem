@@ -596,6 +596,7 @@ public class UserManagementController extends BaseController {
             orgId = requestBody.getFilter().getOrgId();
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = UserExcelView.buildExcelDocument(exportList);
 
 
@@ -635,6 +636,7 @@ public class UserManagementController extends BaseController {
             orgId = requestBody.getFilter().getOrgId();
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = UserWordView.buildWordDocument(exportList);
 
 
@@ -675,6 +677,7 @@ public class UserManagementController extends BaseController {
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         UserPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -870,6 +873,7 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList);
 
 
@@ -904,6 +908,7 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList);
 
 
@@ -940,6 +945,7 @@ public class UserManagementController extends BaseController {
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         UserGroupPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

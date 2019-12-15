@@ -408,7 +408,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -440,7 +440,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -475,6 +475,7 @@ public class PermissionControlController extends BaseController {
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
         RolePdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -678,6 +679,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -709,6 +711,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);
 
 
@@ -744,6 +747,7 @@ public class PermissionControlController extends BaseController {
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         DataGroupPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

@@ -33,8 +33,8 @@ public class SysOrg extends BaseEntity implements Serializable {
 
 
     public static class Status {
-        public static final String ACTIVE = "active";
-        public static final String INACTIVE = "inactive";
+        public static final String ACTIVE = "1000000701";
+        public static final String INACTIVE = "1000000702";
     }
 
     /**

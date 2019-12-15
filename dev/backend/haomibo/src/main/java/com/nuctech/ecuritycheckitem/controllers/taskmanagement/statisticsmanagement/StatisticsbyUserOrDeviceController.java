@@ -263,6 +263,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, true);
 
         HttpHeaders headers = new HttpHeaders();
@@ -297,7 +298,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, true);
 
         HttpHeaders headers = new HttpHeaders();
@@ -332,7 +333,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> userStatistics = response.getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, true);
 
         HttpHeaders headers = new HttpHeaders();
@@ -366,6 +367,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, false);
 
         HttpHeaders headers = new HttpHeaders();
@@ -398,7 +400,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 null);
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, false);
 
         HttpHeaders headers = new HttpHeaders();
@@ -432,7 +434,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 null);
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, false);
 
         HttpHeaders headers = new HttpHeaders();

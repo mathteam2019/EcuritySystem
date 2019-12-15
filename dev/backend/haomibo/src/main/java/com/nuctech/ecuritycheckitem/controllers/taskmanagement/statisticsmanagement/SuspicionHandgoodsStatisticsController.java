@@ -144,6 +144,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -179,7 +180,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -215,7 +216,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

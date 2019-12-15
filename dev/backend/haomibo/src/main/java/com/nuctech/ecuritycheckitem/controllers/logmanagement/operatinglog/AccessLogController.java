@@ -201,7 +201,7 @@ public class AccessLogController extends BaseController {
 
 
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
 
 
@@ -231,7 +231,7 @@ public class AccessLogController extends BaseController {
 
 
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList);
 
 
@@ -260,7 +260,7 @@ public class AccessLogController extends BaseController {
         }
 
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         AccessLogPdfView.setResource(res);
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
 

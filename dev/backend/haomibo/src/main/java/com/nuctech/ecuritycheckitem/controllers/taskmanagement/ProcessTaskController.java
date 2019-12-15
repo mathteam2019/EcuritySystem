@@ -297,7 +297,7 @@ public class ProcessTaskController extends BaseController {
                 requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -332,7 +332,7 @@ public class ProcessTaskController extends BaseController {
                 requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = ProcessTaskWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -368,6 +368,7 @@ public class ProcessTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         ProcessTaskPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

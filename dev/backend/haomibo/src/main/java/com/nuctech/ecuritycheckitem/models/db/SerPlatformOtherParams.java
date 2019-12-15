@@ -29,11 +29,7 @@ import java.io.Serializable;
 @Table(name = "ser_platform_other_params")
 public class SerPlatformOtherParams implements Serializable {
 
-    public static class Setting {
-        public static final String HIGH = "high";
-        public static final String MIDDLE = "middle";
-        public static final String LOW = "low";
-    }
+
 
 
     @Id
