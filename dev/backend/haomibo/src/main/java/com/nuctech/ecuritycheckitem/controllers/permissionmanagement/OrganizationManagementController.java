@@ -501,7 +501,7 @@ public class OrganizationManagementController extends BaseController {
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);
 
 
@@ -536,7 +536,7 @@ public class OrganizationManagementController extends BaseController {
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -572,6 +572,7 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
         OrganizationPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

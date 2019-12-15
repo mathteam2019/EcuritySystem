@@ -205,7 +205,7 @@ public class AuditLogController extends BaseController {
         }
 
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
 
 
@@ -234,7 +234,7 @@ public class AuditLogController extends BaseController {
         }
 
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AuditLogWordView.buildWordDocument(exportList);
 
 
@@ -264,6 +264,7 @@ public class AuditLogController extends BaseController {
 
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
         AuditLogPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

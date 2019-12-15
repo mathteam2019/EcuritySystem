@@ -262,7 +262,7 @@ public class InvalidTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(exportList);
 
 
@@ -300,7 +300,7 @@ public class InvalidTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = InvalidTaskWordView.buildWordDocument(exportList);
 
 
@@ -338,6 +338,7 @@ public class InvalidTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         InvalidTaskPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

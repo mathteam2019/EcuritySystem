@@ -146,6 +146,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         PreviewStatisticsPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -181,7 +182,7 @@ public class PreviewStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = PreviewStatisticsExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -217,7 +218,7 @@ public class PreviewStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = PreviewStatisticsWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

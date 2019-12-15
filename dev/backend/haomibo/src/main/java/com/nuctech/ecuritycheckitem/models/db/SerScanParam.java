@@ -33,10 +33,8 @@ import java.util.List;
 public class SerScanParam extends BaseEntity implements Serializable {
 
     public static class Status {
-        public static final String YES = "yes";
-        public static final String NO = "no";
-        public static final String ACTIVE = "active";
-        public static final String INACTIVE = "inactive";
+        public static final String ACTIVE = "1000000701";
+        public static final String INACTIVE = "1000000702";
     }
 
     @Id

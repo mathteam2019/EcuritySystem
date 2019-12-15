@@ -258,7 +258,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList);
 
 
@@ -286,7 +286,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList);
 
 
@@ -316,7 +316,7 @@ public class KnowledgeDealManagementController extends BaseController {
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
 
         KnowledgeDealPendingPdfView.setResource(res);
-
+        setDictionary();
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -343,7 +343,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
 
 
@@ -371,7 +371,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList);
 
 
@@ -400,6 +400,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
         KnowledgeDealPersonalPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

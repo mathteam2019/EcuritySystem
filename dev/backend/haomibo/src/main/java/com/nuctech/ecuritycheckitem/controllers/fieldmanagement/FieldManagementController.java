@@ -470,6 +470,7 @@ public class FieldManagementController extends BaseController {
             parentDesignation = requestBody.getFilter().getParentFieldDesignation();
         }
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
 
 
@@ -506,6 +507,7 @@ public class FieldManagementController extends BaseController {
             parentDesignation = requestBody.getFilter().getParentFieldDesignation();
         }
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList);
 
 
@@ -545,6 +547,7 @@ public class FieldManagementController extends BaseController {
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
 
         FieldManagementPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

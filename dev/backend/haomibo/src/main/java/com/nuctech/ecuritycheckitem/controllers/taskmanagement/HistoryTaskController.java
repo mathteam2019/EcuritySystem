@@ -238,7 +238,7 @@ public class HistoryTaskController extends BaseController {
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList);
 
 
@@ -276,7 +276,7 @@ public class HistoryTaskController extends BaseController {
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList);
 
 
@@ -312,7 +312,7 @@ public class HistoryTaskController extends BaseController {
                 requestBody.getFilter().getEndTime());
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         HistoryTaskPdfView.setResource(res);
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
 

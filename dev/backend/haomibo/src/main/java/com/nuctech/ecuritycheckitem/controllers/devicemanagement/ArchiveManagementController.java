@@ -459,6 +459,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
 
         InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
 
@@ -495,7 +496,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -533,6 +534,7 @@ public class ArchiveManagementController extends BaseController {
 
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

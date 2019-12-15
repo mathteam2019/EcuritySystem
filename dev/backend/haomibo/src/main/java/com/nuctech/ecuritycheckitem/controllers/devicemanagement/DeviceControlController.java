@@ -450,10 +450,10 @@ public class DeviceControlController extends BaseController {
             fieldId = filter.getFieldId();
             categoryId = filter.getCategoryId();
         }
-        setDictionary();
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
 
 
@@ -497,6 +497,7 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DeviceWordView.buildWordDocument(exportList);
 
 
@@ -542,6 +543,7 @@ public class DeviceControlController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList());
 
         DevicePdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -584,7 +586,7 @@ public class DeviceControlController extends BaseController {
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList);
 
 
@@ -630,6 +632,7 @@ public class DeviceControlController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList());
 
         DeviceFieldPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

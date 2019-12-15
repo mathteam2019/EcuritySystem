@@ -221,7 +221,7 @@ public class DeviceLogController extends BaseController {
         }
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList);
 
 
@@ -250,7 +250,7 @@ public class DeviceLogController extends BaseController {
         }
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList);
 
 
@@ -280,6 +280,7 @@ public class DeviceLogController extends BaseController {
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
         DeviceLogPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

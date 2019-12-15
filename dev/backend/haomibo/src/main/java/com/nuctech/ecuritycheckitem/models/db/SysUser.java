@@ -34,16 +34,16 @@ public class SysUser extends BaseEntity implements Serializable {
 
 
     public static class Gender {
-        public static final String MALE = "male";
-        public static final String FEMALE = "female";
-        public static final String OTHER = "other";
+        public static final String MALE = "1000000001";
+        public static final String FEMALE = "1000000002";
+        public static final String OTHER = "1000000003";
     }
 
     public static class Status {
-        public static final String ACTIVE = "active";
-        public static final String INACTIVE = "inactive";
-        public static final String PENDING = "pending";
-        public static final String BLOCKED = "blocked";
+        public static final String ACTIVE = "1000000301";
+        public static final String INACTIVE = "1000000302";
+        public static final String PENDING = "1000000303";
+        public static final String BLOCKED = "1000000304";
     }
 
     public static class Category {

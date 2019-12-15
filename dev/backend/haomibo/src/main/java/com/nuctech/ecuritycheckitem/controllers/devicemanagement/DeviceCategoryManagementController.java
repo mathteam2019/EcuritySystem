@@ -434,7 +434,7 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList);
 
 
@@ -474,7 +474,7 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList());
 
-
+        setDictionary();
         InputStream inputStream = DeviceCategoryWordView.buildWordDocument(exportList);
 
 
@@ -515,6 +515,7 @@ public class DeviceCategoryManagementController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList());
 
         DeviceCategoryPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

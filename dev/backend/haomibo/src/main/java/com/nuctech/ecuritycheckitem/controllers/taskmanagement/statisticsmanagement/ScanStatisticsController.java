@@ -146,7 +146,7 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);
 
 
@@ -183,7 +183,7 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = ScanStatisticsWordView.buildWordDocument(exportList);
 
 
@@ -220,7 +220,7 @@ public class ScanStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         ScanStatisticsPdfView.setResource(res);
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
 

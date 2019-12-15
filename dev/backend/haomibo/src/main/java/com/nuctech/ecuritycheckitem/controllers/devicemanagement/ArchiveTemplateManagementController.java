@@ -383,6 +383,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -418,6 +419,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = DeviceArchiveTemplateWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -454,6 +456,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchiveTemplatePdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

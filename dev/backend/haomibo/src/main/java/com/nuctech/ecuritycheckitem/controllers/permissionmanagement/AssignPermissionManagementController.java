@@ -424,7 +424,7 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getRoleName());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AssignUserExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -457,7 +457,7 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getRoleName());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-
+        setDictionary();
         InputStream inputStream = AssignUserWordView.buildWordDocument(exportList);
 
 
@@ -492,6 +492,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -604,6 +605,7 @@ public class AssignPermissionManagementController extends BaseController {
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList);
 
 
@@ -640,6 +642,7 @@ public class AssignPermissionManagementController extends BaseController {
 
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
         InputStream inputStream = AssignUserGroupWordView.buildWordDocument(exportList);
 
 
@@ -676,6 +679,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserGroupPdfView.setResource(res);
+        setDictionary();
         InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
