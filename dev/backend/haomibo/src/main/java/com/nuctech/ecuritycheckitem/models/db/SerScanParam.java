@@ -108,7 +108,7 @@ public class SerScanParam extends BaseEntity implements Serializable {
     private Integer deviceStorageAlarmPercent;
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEV_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")

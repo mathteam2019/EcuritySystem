@@ -48,7 +48,7 @@ public class SerScanParamsFrom extends BaseEntity implements Serializable {
     private Long deviceId;
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")

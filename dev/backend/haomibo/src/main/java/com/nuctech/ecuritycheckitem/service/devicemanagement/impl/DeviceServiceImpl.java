@@ -209,7 +209,9 @@ public class DeviceServiceImpl implements DeviceService {
 
         sysDevice.setCreatedBy(oldSysDevice.getCreatedBy());
         sysDevice.setCreatedTime(oldSysDevice.getCreatedTime());
-        sysDevice.setFieldId(oldSysDevice.getFieldId());
+        sysDevice.setStatus(oldSysDevice.getStatus());
+        sysDevice.setCurrentStatus(oldSysDevice.getCurrentStatus());
+        sysDevice.setWorkStatus(oldSysDevice.getWorkStatus());
 
         String fileName = utils.saveImageFile(portraitFile);
         if(!fileName.equals("")) {

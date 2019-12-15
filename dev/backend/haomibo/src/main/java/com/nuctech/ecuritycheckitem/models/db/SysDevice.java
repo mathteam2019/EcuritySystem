@@ -21,16 +21,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -48,6 +39,20 @@ public class SysDevice extends BaseEntity implements Serializable {
     public static class Status {
         public static final String ACTIVE = "1000000701";
         public static final String INACTIVE = "1000000702";
+    }
+
+    public static class DeviceStatus {
+        public static final String REGISTER = "1000002001";
+        public static final String UNREGISTER = "1000002002";
+        public static final String LOGIN = "1000002003";
+        public static final String LOGOUT = "1000002004";
+        public static final String START = "1000002005";
+        public static final String STOP = "1000002006";
+    }
+
+    public static class DeviceWorkStatus {
+        public static final String BUSY = "1000002101";
+        public static final String FREE = "1000002102";
     }
 
     @Id
@@ -128,8 +133,14 @@ public class SysDevice extends BaseEntity implements Serializable {
     @Column(name = "STATUS", length = 10)
     private String status;
 
+    @Column(name = "CURRENT_STATUS", length = 30)
+    private String currentStatus;
+
+    @Column(name = "WORK_STATUS", length = 30)
+    private String workStatus;
+
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FIELD_ID", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("field")
@@ -139,21 +150,21 @@ public class SysDevice extends BaseEntity implements Serializable {
 
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ARCHIVE_ID", referencedColumnName = "ARCHIVE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("archive")
     private SerArchive archive; // Relation to SerArchives table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("config")
     private SysDeviceConfig deviceConfig; // Relation to SysDeviceConfig table.
 
     @ToString.Exclude
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEV_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("scan")

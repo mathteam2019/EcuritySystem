@@ -45,7 +45,7 @@ public class SysManualGroup extends BaseEntity implements Serializable {
     private Long configId;
 
     @ToString.Exclude
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "MANUAL_DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")

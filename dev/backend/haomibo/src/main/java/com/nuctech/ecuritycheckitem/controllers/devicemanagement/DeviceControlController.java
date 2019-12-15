@@ -198,6 +198,8 @@ public class DeviceControlController extends BaseController {
                     //.manufacturer(Optional.of(this.getManufacturer()).orElse(""))
                     //.originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
+                    .currentStatus(SysDevice.DeviceStatus.UNREGISTER)
+                    .workStatus(SysDevice.DeviceWorkStatus.FREE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
@@ -279,7 +281,6 @@ public class DeviceControlController extends BaseController {
                     .guid(this.getGuid())
 //                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
 //                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
-                    .status(SysDevice.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
 
