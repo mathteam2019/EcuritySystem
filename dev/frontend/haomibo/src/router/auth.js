@@ -1,24 +1,13 @@
 export const authRoutes = [
   {
-    path: '/admin/auth',
-    component: () => import('../views/admin/auth/index'),
-    redirect: '/admin/auth/login',
+    path: '/auth',
+    component: () => import('../views/auth/index'),
+    redirect: '/auth/login',
     children: [
       {
         path: 'login',
-        component: () => import( '../views/admin/auth/login')
+        component: () => import( '../views/auth/login')
       },
     ]
   },
-  {
-    path: '/user/auth',
-    component: () => import('../views/user/auth/index'),
-    redirect: '/user/auth/login',
-    children: [
-      {
-        path: 'login',
-        component: () => import( '../views/user/auth/login')
-      },
-    ]
-  }
 ];

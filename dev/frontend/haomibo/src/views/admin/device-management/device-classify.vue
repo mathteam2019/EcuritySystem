@@ -27,7 +27,7 @@
 
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
 
@@ -74,14 +74,17 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.categoryNumber }}</span>
                 </div>
+                <template slot="status" slot-scope="props">
+                  <span>{{getDictDataValue(props.rowData.status)}}</span>
+                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === 'active'"
+                            size="sm" :disabled="props.rowData.status === '1000000701'"
                             variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
+                    v-if="props.rowData.status=='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
                     variant="success default btn-square"
                   >
@@ -89,7 +92,7 @@
                   </b-button>
                   <b-button
                     @click="onAction('inactivate',props.rowData)"
-                    v-if="props.rowData.status=='active'"
+                    v-if="props.rowData.status=='1000000701'"
                     size="sm"
                     :disabled="props.rowData.parentCategoryId === 0"
                     variant="warning default btn-square" >
@@ -99,7 +102,7 @@
                     size="sm"
                     @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === 'active'">
+                    :disabled="props.rowData.status === '1000000701'">
                     <i class="icofont-bin"></i>
                   </b-button>
                 </div>
@@ -200,8 +203,8 @@
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
       </div>
@@ -257,14 +260,14 @@
             </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3 " class="align-self-end">
-            <b-button v-if="classifyForm.status === 'active' && classifyForm.parentCategoryId !== 0" @click="onAction('inactivate',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000701' && classifyForm.parentCategoryId !== 0" @click="onAction('inactivate',classifyForm)" size="sm"
                       variant="warning default">
               <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
             </b-button>
-            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('activate',classifyForm)" size="sm" variant="success default">
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('activate',classifyForm)" size="sm" variant="success default">
               <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
             </b-button>
-            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('delete',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('delete',classifyForm)" size="sm"
                       variant="danger default">
               <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
             </b-button>
@@ -273,8 +276,8 @@
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
       </div>
@@ -282,7 +285,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -312,6 +315,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -347,6 +351,7 @@
       }
     },
     mounted() {
+      this.getStatusOptions();
       this.getCategoryData();
       this.$refs.deviceClassifyTable.$parent.transform = this.transformCategoryTable.bind(this);
     },
@@ -370,6 +375,8 @@
           categoryId: 0,
           note: null
         },
+
+        statusData:[],
         deviceClassifyTableItems: {
           apiUrl: `${apiBaseUrl}/device-management/device-classify/category/get-by-filter-and-page`,
           perPage: 10,
@@ -401,19 +408,12 @@
               dataClass: 'text-center'
             },
             {
-              name: 'status',
+              name: '__slot:status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-                const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
+
             },
             {
               name: 'parentCategoryNumber',
@@ -459,6 +459,8 @@
             }
           ]
         },
+
+        statusOptions:[],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
           {value: 'active', text: this.$t('permission-management.active')},
@@ -467,6 +469,16 @@
       }
     },
     methods: {
+
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
 
       onExportButton(){
         let checkedAll = this.$refs.deviceClassifyTable.checkedAllStatus;
@@ -709,6 +721,24 @@
         this.classifyForm.parentCategoryNumber = getParentSerialName(this.categoryData, newVal);
         if (this.classifyForm.parentCategoryNumber === null)
           this.classifyForm.parentCategoryNumber = this.$t('system-setting.none');
+      },
+
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 

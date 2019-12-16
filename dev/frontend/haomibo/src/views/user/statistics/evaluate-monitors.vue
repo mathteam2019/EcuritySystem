@@ -268,7 +268,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>误报率</span></div>
@@ -299,7 +299,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>漏报率</span></div>
@@ -346,7 +346,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图误报率</span></div>
@@ -377,7 +377,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图漏报率</span></div>
@@ -424,7 +424,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图误报率</span></div>
@@ -455,7 +455,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图漏报率</span></div>
@@ -490,9 +490,9 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -502,9 +502,9 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
@@ -537,9 +537,9 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -549,8 +549,8 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
@@ -583,8 +583,8 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -598,8 +598,8 @@
                     <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172" :strokeWidth="8" :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
+                    <span class="chart percent clearfix">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     漏报
                   </radial-progress-bar>
                   <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge===0" :diameter="172" :strokeWidth="8" :completed-steps="0" :total-steps=100>
@@ -1253,7 +1253,7 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            //console.log(Math.floor(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
+            //console.log(Math.round(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
             this.lineChart1Options.xAxis.data = this.xDay;
             this.lineChart2Options.xAxis.data = this.xDay;
             this.lineChart3Options.xAxis.data = this.xDay;

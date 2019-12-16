@@ -122,7 +122,7 @@
                 removeLoginInfo();
 
 
-                this.$router.push('/user/auth/login');
+                this.$router.push('/auth/login');
 
                 break;
 

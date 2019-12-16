@@ -50,7 +50,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
-                      <b-form-select v-model="userFilter.dataRange" :options="userDataRangeOptions" plain/>
+                      <b-form-select v-model="userFilter.dataRange" :options="userDataRangeOption" plain/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -97,7 +97,12 @@
                         {{props.rowData.userName}}
                       </span>
                     </template>
-
+                    <template slot="gender" slot-scope="props">
+                      <span>{{getDictDataValue(props.rowData.gender)}}</span>
+                    </template>
+                    <template slot="dataRange" slot-scope="props">
+                      <span>{{getDictDataValue(props.rowData.dataRangeCategory)}}</span>
+                    </template>
                     <template slot="actions" slot-scope="props">
                       <div>
                         <b-button
@@ -300,7 +305,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.assign-permission-management.group.data-range')">
-                      <b-form-select v-model="groupFilter.dataRange" :options="userGroupDataRangeOptions" plain/>
+                      <b-form-select v-model="groupFilter.dataRange" :options="userGroupDataRangeOption" plain/>
 
                     </b-form-group>
                   </b-col>
@@ -343,6 +348,9 @@
                     <template slot="groupName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
                     </template>
+                    <template slot="dataRange" slot-scope="props">
+                      <span>{{getDictDataValue(props.rowData.dataRangeCategory)}}</span>
+                    </template>
                     <template slot="operating" slot-scope="props">
                       <div>
 
@@ -381,7 +389,7 @@
               <b-col cols="5">
                 <b-row>
                   <b-col cols="6">
-                    <b-form-group >
+                    <b-form-group>
                       <template slot="label">
                         {{$t('permission-management.assign-permission-management.group.user-group')}}&nbsp;<span
                         class="text-danger">*</span></template>
@@ -394,7 +402,7 @@
                         }}
                       </div>
                     </b-form-group>
-                    <b-form-group >
+                    <b-form-group>
                       <template slot="label">{{$t('permission-management.assign-permission-management.group.member')}}&nbsp;<span
                         class="text-danger">*</span></template>
                       <label class="">{{selectedUserGroupMember?selectedUserGroupMember:" "}}</label>
@@ -515,6 +523,7 @@
   import {validationMixin} from 'vuelidate';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -554,6 +563,9 @@
       },
     },
     mounted() {
+
+      this.getGenderData();
+      this.getDataRangeData();
 
       /////////////////////////////////////////////////
       /////////// Load org data from server ///////////
@@ -715,20 +727,20 @@
               width: '9%'
             },
             {
-              name: 'gender',
+              name: '__slot:gender',
               title: this.$t('permission-management.gender'),
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '5%',
-              callback: (value) => {
-                const dictionary = {
-                  "male": `<span>${this.$t('permission-management.male')}</span>`,
-                  "female": `<span>${this.$t('permission-management.female')}</span>`,
-                  "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
+              // callback: (value) => {
+              //   const dictionary = {
+              //     "male": `<span>${this.$t('permission-management.male')}</span>`,
+              //     "female": `<span>${this.$t('permission-management.female')}</span>`,
+              //     "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+              //   };
+              //   if (!dictionary.hasOwnProperty(value)) return '';
+              //   return dictionary[value];
+              // }
             },
             {
               name: 'userAccount',
@@ -758,27 +770,27 @@
               }
             },
             {
-              name: 'dataRangeCategory',
+              name: 'dataRange',
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
               sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '13%',
-              callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person' || dataRangeCategory === null) {
-                  return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'org') {
-                  return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
-                } else if (dataRangeCategory === 'org_desc') {
-                  return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
-                } else if (dataRangeCategory === 'all') {
-                  return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
-                  return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
-                } else {
-                  return '';
-                }
-              }
+              // callback: (dataRangeCategory) => {
+              //   if (dataRangeCategory === 'person' || dataRangeCategory === null) {
+              //     return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+              //   } else if (dataRangeCategory === 'org') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
+              //   } else if (dataRangeCategory === 'org_desc') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
+              //   } else if (dataRangeCategory === 'all') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+              //   } else if (dataRangeCategory === 'specified') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
+              //   } else {
+              //     return '';
+              //   }
+              //}
             },
             {
               name: '__slot:actions',
@@ -799,10 +811,15 @@
         userSelectData: [],
         roleSelectData: [],
         dataGroupSelectData: [],
+
+        genderData: [],
+        dataRangeData: [],
+
         userForm: {
           orgId: null,
           userId: null,
           nextUserId: null, // when edit or show user's role, userId should be stored here.
+          gender:null,
           roles: [],
           dataRangeCategory: "person",
           selectedDataGroupId: null,
@@ -841,6 +858,10 @@
             text: this.$t('permission-management.assign-permission-management.group.select-data-group')
           }
         ],
+
+        userGroupDataRangeOption: [],
+        userDataRangeOption: [],
+
         groupForm: {
           userGroup: null,
           role: null,
@@ -904,25 +925,25 @@
               width: '18%'
             },
             {
-              name: 'dataRangeCategory',
+              name: '__slot:dataRange',
               title: this.$t('permission-management.assign-permission-management.group.data-range'),
               sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '15%',
-              callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person') {
-                  return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'group') {
-                  return this.$t('permission-management.assign-permission-management.group.group-user-data');
-                } else if (dataRangeCategory === 'all') {
-                  return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
-                  return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
-                } else {
-                  return '';
-                }
-              }
+              // callback: (dataRangeCategory) => {
+              //   if (dataRangeCategory === 'person') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
+              //   } else if (dataRangeCategory === 'group') {
+              //     return this.$t('permission-management.assign-permission-management.group.group-user-data');
+              //   } else if (dataRangeCategory === 'all') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
+              //   } else if (dataRangeCategory === 'specified') {
+              //     return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
+              //   } else {
+              //     return '';
+              //   }
+              // }
             },
             {
               name: '__slot:operating',
@@ -941,6 +962,25 @@
       'userGroupTableItems.perPage': function (newVal) {
         this.$refs.userGroupTable.refresh();
       },
+
+      dataRangeData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.userDataRangeOption = [];
+        this.userDataRangeOption = newVal.map(range => ({
+          text: range.dataValue,
+          value: range.dataCode
+        }));
+        this.userDataRangeOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.userDataRangeOption.length === 0)
+          this.userDataRangeOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
       'userForm.orgId': function (newVal) {
         this.userSelectData = this.userList.filter(user => user.orgId === newVal)
           .map(user => ({
@@ -958,11 +998,11 @@
           }
         });
 
-        if (this.selectedUser.gender === 'male') {
+        if (this.selectedUser.gender === '1000000001') {
           this.selectedUserGender = this.$t('permission-management.male');
-        } else if (this.selectedUser.gender === 'female') {
+        } else if (this.selectedUser.gender === '1000000002') {
           this.selectedUserGender = this.$t('permission-management.female');
-        } else if (this.selectedUser.gender === 'other') {
+        } else if (this.selectedUser.gender === '1000000003') {
           this.selectedUserGender = this.$t('permission-management.unknown');
         } else {
           this.selectedUserGender = '';
@@ -994,6 +1034,22 @@
       }
     },
     methods: {
+
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getGenderData() {
+        let data = checkBoxListDic(1);
+        this.genderData = data;
+        //console.log(this.statusData);
+      },
+      getDataRangeData() {
+        let data = checkBoxListDic(6);
+        this.dataRangeData = data;
+        //console.log(this.statusData);
+      },
+
 
       onExportUserButton() {
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
@@ -1113,6 +1169,7 @@
       onUserNameClicked(userWithRole) {
         this.userForm.orgId = userWithRole.org.orgId;
         this.userForm.nextUserId = userWithRole.userId;
+        this.userForm.gender = userWithRole.gender;
         this.userForm.roles = userWithRole.roles.map(role => ({
           label: role.roleName,
           value: role.roleId

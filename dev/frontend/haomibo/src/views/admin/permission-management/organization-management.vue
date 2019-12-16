@@ -43,7 +43,7 @@
 
                     <b-col>
                       <b-form-group :label="$t('permission-management.active-state')">
-                        <b-form-select :options="statusSelectOptions" v-model="filter.status" plain/>
+                        <b-form-select :options="statusOptions" v-model="filter.status" plain/>
                       </b-form-group>
                     </b-col>
 
@@ -98,9 +98,15 @@
                     track-by="orgId"
                     @vuetable:pagination-data="onPaginationData"
                   >
+                    <template slot="orgNumber" slot-scope="props">
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.orgNumber }}</span>
+                    </template>
+                    <template slot="status" slot-scope="props">
+                      <span>{{getDictDataValue(props.rowData.status)}}</span>
+                    </template>
                     <template slot="actions" slot-scope="props">
                       <div>
-                        <template v-if="props.rowData.status=='inactive'">
+                        <template v-if="props.rowData.status=='1000000702'">
                           <b-button
                             size="sm"
                             variant="info default btn-square"
@@ -120,7 +126,7 @@
                             <i class="icofont-bin"></i>
                           </b-button>
                         </template>
-                        <template v-if="props.rowData.status=='active'">
+                        <template v-if="props.rowData.status=='1000000701'">
                           <b-button
                             size="sm"
                             variant="info default btn-square"
@@ -355,11 +361,11 @@
               class="icofont-save"></i> {{
               $t('permission-management.save-button') }}
             </b-button>
-            <b-button v-if="modifyPage.selectedOrg.status==='inactive'" size="sm" variant="warning default mr-1"
+            <b-button v-if="modifyPage.selectedOrg.status==='1000000702'" size="sm" variant="warning default mr-1"
                       @click="onAction('activate')"><i class="icofont-check-circled"></i> {{
               $t('permission-management.active')}}
             </b-button>
-            <b-button v-else-if="modifyPage.selectedOrg.status==='active'" size="sm" variant="warning default mr-1"
+            <b-button v-else-if="modifyPage.selectedOrg.status==='1000000701'" size="sm" variant="warning default mr-1"
                       @click="onAction('deactivate')"><i class="icofont-ban"></i> {{
               $t('permission-management.action-make-inactive')}}
             </b-button>
@@ -372,8 +378,103 @@
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 28%;bottom: 12%">
-            <img v-if="modifyPage.selectedOrg.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="modifyPage.selectedOrg.status==='active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="modifyPage.selectedOrg.status==='1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="modifyPage.selectedOrg.status==='1000000701'" src="../../../assets/img/active_stamp.png">
+          </div>
+        </b-row>
+        <b-row v-if="pageStatus==='show'" class="h-100 form-section">
+          <b-col cols="6">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.orgNumber"
+                                :state="!$v.modifyPage.orgNumber.$dirty ? null : !$v.modifyPage.orgNumber.$invalid"
+                                :placeholder="$t('permission-management.please-enter-organization-number')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-number') }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.orgName"
+                                :state="!$v.modifyPage.orgName.$dirty ? null : !$v.modifyPage.orgName.$invalid"
+                                :placeholder="$t('permission-management.please-enter-organization-name')"></b-form-input>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-enter-organization-name') }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.parent-organization-number')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-input type="text" disabled v-model="modifyPageSelectedParentOrganizationNumber"
+                                :placeholder="$t('permission-management.please-select-parent-organization')"/>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.parent-organization-name')}}&nbsp;<span
+                    class="text-danger">*</span></template>
+                  <b-form-select :options="parentOrganizationNameSelectOptions"
+                                 :state="!$v.modifyPage.parentOrgId.$dirty ? null : !$v.modifyPage.parentOrgId.$invalid"
+                                 v-model="modifyPage.parentOrgId" plain/>
+                  <b-form-invalid-feedback>
+                    {{ $t('permission-management.organization-management.please-select-parent-organization') }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.organization-leader')}}</template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.leader"
+                                :placeholder="$t('permission-management.please-enter-organization-leader')"></b-form-input>
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
+                  <b-form-input type="text"
+                                v-model="modifyPage.mobile"
+                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col cols="6">
+                <b-form-group>
+                  <template slot="label">{{$t('permission-management.organization-note')}}</template>
+
+                  <b-form-textarea
+                    v-model="modifyPage.note"
+                    :placeholder="$t('permission-management.please-enter-organization-note')"
+                  />
+
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-col>
+          <b-col cols="12" class="d-flex justify-content-end align-self-end">
+            <b-button size="sm" variant="primary default" @click="onModifyPageBackButton()"><i
+              class="icofont-long-arrow-left"></i> {{
+              $t('permission-management.back-button') }}
+            </b-button>
+          </b-col>
+          <div class="position-absolute" style="left: 28%;bottom: 12%">
+            <img v-if="modifyPage.selectedOrg.status==='1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="modifyPage.selectedOrg.status==='1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
 
@@ -438,6 +539,7 @@
   import Vue2OrgTree from '../../../components/vue2-org-tree'
   import {getApiManager,downLoadFileFromServer,printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -494,6 +596,8 @@
     },
     mounted() {
 
+      this.getStatusOptions();
+
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
 
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
@@ -535,6 +639,9 @@
           note: ''
         },
         orgData: [], // loaded from server when the page is mounted
+
+        statusData:[],
+
         pageStatus: 'table', // table, create, modify -> it will change the page
 
         statusSelectOptions: [ // on the filtering
@@ -542,6 +649,8 @@
           {value: 'active', text: this.$t('permission-management.active')},
           {value: 'inactive', text: this.$t('permission-management.inactive')}
         ],
+
+        statusOptions:[],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
           apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
@@ -561,7 +670,7 @@
               width: '4%'
             },
             {
-              name: 'orgNumber',
+              name: '__slot:orgNumber',
               title: this.$t('permission-management.th-org-number'),
               sortField: 'orgNumber',
               titleClass: 'text-center',
@@ -576,22 +685,22 @@
               width: '8%'
             },
             {
-              name: 'status',
+              name: '__slot:status',
               title: this.$t('permission-management.th-org-status'),
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '7%',
-              callback: (value) => {
-
-                const dictionary = {
-                  'active': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
-                  'inactive': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-
-              }
+              // callback: (value) => {
+              //
+              //   const dictionary = {
+              //     'active': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
+              //     'inactive': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
+              //   };
+              //   if (!dictionary.hasOwnProperty(value)) return '';
+              //   return dictionary[value];
+              //
+              // }
             },
             {
               name: 'parent',
@@ -672,6 +781,25 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let id = 0;
@@ -736,6 +864,17 @@
       }
     },
     methods: {
+
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -833,6 +972,39 @@
 
         };
 
+        let showItem = () => {
+
+          if(data.parent==null){
+            this.modifyPage = {
+              selectedOrg: data,
+              orgName: data.orgName,
+              orgNumber: data.orgNumber,
+              parentOrgId: 'None',
+              leader: data.leader,
+              mobile: data.mobile,
+              note: data.note
+            };
+          }
+          else {
+            // rest models
+            this.modifyPage = {
+              selectedOrg: data,
+              orgName: data.orgName,
+              orgNumber: data.orgNumber,
+              parentOrgId: data.parent.orgId,
+              leader: data.leader,
+              mobile: data.mobile,
+              note: data.note
+            };
+          }
+
+          // change page to modify
+          this.pageStatus = 'show';
+
+          this.$v.modifyPage.$reset();
+
+        };
+
         let deleteItem = () => {
           this.selectedOrg = data;
           if (data == null)
@@ -850,7 +1022,7 @@
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
               'orgId': selectedOrgId,
-              'status': 'active',
+              'status': '1000000701',
             })
             .then((response) => {
               let message = response.data.message;
@@ -862,7 +1034,7 @@
                     permanent: false
                   });
                   if (this.modifyPage != null)
-                    this.modifyPage.selectedOrg.status = 'active';
+                    this.modifyPage.selectedOrg.status = '1000000701';
                   this.$refs.vuetable.refresh();
                   break;
 
@@ -882,6 +1054,9 @@
         };
 
         switch (action) {
+          case 'show':
+            showItem();
+            break;
           case 'modify':
             modifyItem();
             break;
@@ -1070,7 +1245,7 @@
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/organization-management/organization/update-status`, {
             'orgId': org.orgId,
-            'status': 'inactive',
+            'status': '1000000702',
           })
           .then((response) => {
             let message = response.data.message;
@@ -1082,7 +1257,7 @@
                   permanent: false
                 });
                 if (this.modifyPage != null)
-                  this.modifyPage.selectedOrg.status = 'inactive';
+                  this.modifyPage.selectedOrg.status = '1000000702';
                 this.$refs.vuetable.refresh();
 
                 break;

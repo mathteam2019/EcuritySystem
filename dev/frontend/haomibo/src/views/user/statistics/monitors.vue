@@ -190,7 +190,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSuspictionRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSuspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>无嫌疑率</span></div>
@@ -224,7 +224,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.suspictionRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.suspictionRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>嫌疑率</span></div>

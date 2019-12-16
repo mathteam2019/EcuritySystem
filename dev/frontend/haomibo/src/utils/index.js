@@ -3,6 +3,10 @@ import {getApiManager} from "../api";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 
+var dictionaryDataList;
+var deviceDictionaryDataList;
+
+
 export const addCommas = nStr => {
   nStr += '';
   var x = nStr.split('.');
@@ -173,6 +177,72 @@ export const setDirection = localValue => {
 
 export const saveLoginInfo = (loginInfo) => {
   localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
+};
+
+export const saveDictionaryData = (loginInfo) => {
+  dictionaryDataList = loginInfo.dictionaryDataList;
+  deviceDictionaryDataList = loginInfo.deviceDictionaryDataList;
+};
+
+export const checkBoxListDic = (dicId) => {
+  let listBox = [];
+  let dictKey = Object.keys(dictionaryDataList);
+  //console.log(dictKey);
+  let temp;
+  for (let i=0; i<dictKey.length; i++) {
+    let key = dictKey[i];
+    if(dictionaryDataList[key].dictionaryId == dicId) {
+      temp = dictionaryDataList[key];
+      //console.log(temp);
+      listBox.push(temp);
+    }
+  }
+  //console.log(listBox);
+  return listBox;
+};
+
+export const checkBoxListDeviceDic = (dicId) => {
+  let listBox = [];
+  let dictKey = Object.keys(deviceDictionaryDataList);
+  //console.log(dictKey);
+  let temp;
+  for (let i=0; i<dictKey.length; i++) {
+    let key = dictKey[i];
+    if(deviceDictionaryDataList[key].dictionaryId == dicId) {
+      temp = deviceDictionaryDataList[key];
+      //console.log(temp);
+      listBox.push(temp);
+    }
+  }
+  //console.log(listBox);
+  return listBox;
+};
+
+export const getDictData = (key1, key2) => {
+  if(key2 == null) {
+    let dictKey = Object.keys(dictionaryDataList);
+    for (let i=0; i<dictKey.length; i++){
+      let key = dictKey[i];
+      if(dictionaryDataList[key].dataCode == key1) {
+        return dictionaryDataList[key].dataValue;
+      }
+    }
+  }
+  else {
+    let deviceDicKey = Object.keys(deviceDictionaryDataList);
+    for (let i=0; i<deviceDicKey.length; i++){
+      let key = deviceDicKey[i];
+
+      //console.log(key1.toUpperCase());
+      if(deviceDictionaryDataList[key].dictionaryId==key2 && deviceDictionaryDataList[key].dataCode == key1.toUpperCase()) {
+        //console.log(deviceDictionaryDataList[key].dataValue);
+        return deviceDictionaryDataList[key].dataValue;
+      }
+    }
+  }
+
+  return null;
+
 };
 
 export const removeLoginInfo = () => {

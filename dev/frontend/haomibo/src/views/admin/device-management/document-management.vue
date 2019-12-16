@@ -45,7 +45,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -90,21 +90,24 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.archivesNumber }}</span>
                 </div>
+                <template slot="status" slot-scope="props">
+                  <span>{{getDictDataValue(props.rowData.status)}}</span>
+                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
-                            :disabled="props.rowData.status === 'active'">
+                            :disabled="props.rowData.status === '1000000701'">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
+                    v-if="props.rowData.status=='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
                     variant="success default btn-square">
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='active'"
+                    v-if="props.rowData.status=='1000000701'"
                     size="sm" @click="onAction('inactivate',props.rowData)"
                     variant="warning default btn-square"
                   >
@@ -113,7 +116,7 @@
                   <b-button
                     size="sm" @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === 'active'">
+                    :disabled="props.rowData.status === '1000000701'">
                     <i class="icofont-bin"></i>
                   </b-button>
 
@@ -220,8 +223,8 @@
               <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
                    src="../../../assets/img/device.png">
               <div class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="archivesForm.status === 'active'" src="../../../assets/img/active_stamp.png">
-                <img v-if="archivesForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -235,15 +238,15 @@
                 class="icofont-save"></i>
                 {{$t('device-management.save')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === 'inactive'"
+              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000702'"
                         @click="onAction('activate',archivesForm)" variant="success default">
                 <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === 'active'"
+              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000701'"
                         @click="onAction('inactivate',archivesForm)" variant="warning default">
                 <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === 'inactive'"
+              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === '1000000702'"
                         @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"></i>
                 {{$t('device-management.delete')}}
               </b-button>
@@ -260,7 +263,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -288,6 +291,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -308,6 +312,7 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
+    this.getStatusOptions();
       this.getCategoryData();
       this.getTemplateData();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
@@ -340,6 +345,8 @@
           {value: 'active', text: this.$t('permission-management.active')},
           {value: 'inactive', text: this.$t('permission-management.inactive')}
         ],
+	
+	statusOptions:[],
         manufacturerOptions: [
           {text: "同方威视", value: "0"},
           {text: "海康威视", value: '1'},
@@ -370,6 +377,7 @@
           status: 'inactive',
           archiveValueList:[]
         },
+        statusData:[],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-management/archive/get-by-filter-and-page`,
           perPage: 10,
@@ -401,19 +409,12 @@
               dataClass: 'text-center'
             },
             {
-              name: 'status',
+              name: '__slot:status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-                const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
+
             },
             {
               name: 'categoryName',
@@ -452,6 +453,17 @@
       }
     },
     methods: {
+    
+    getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+
 
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -787,6 +799,24 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+      },
+      
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 

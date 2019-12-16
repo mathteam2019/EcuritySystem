@@ -128,9 +128,9 @@
                         <b-form-radio value="admin">
                           {{$t('permission-management.permission-control.system-management')}}
                         </b-form-radio>
-                        <b-form-radio value="user">
-                          {{$t('permission-management.permission-control.business-operating')}}
-                        </b-form-radio>
+<!--                        <b-form-radio value="user">-->
+<!--                          {{$t('permission-management.permission-control.business-operating')}}-->
+<!--                        </b-form-radio>-->
                       </b-form-radio-group>
                     </b-form-group>
                   </div>
@@ -199,8 +199,6 @@
                   <b-form-group>
                     <b-form-radio-group v-model="roleCategory">
                       <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}
-                      </b-form-radio>
-                      <b-form-radio value="user">{{$t('permission-management.permission-control.business-operating')}}
                       </b-form-radio>
                     </b-form-radio-group>
                   </b-form-group>
