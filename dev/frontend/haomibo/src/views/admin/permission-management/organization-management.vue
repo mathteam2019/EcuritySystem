@@ -8,7 +8,6 @@
       background: transparent !important;
     }
 
-
   }
 </style>
 
@@ -43,7 +42,7 @@
 
                     <b-col>
                       <b-form-group :label="$t('permission-management.active-state')">
-                        <b-form-select :options="statusOptions" v-model="filter.status" plain/>
+                        <b-form-select :options="statusSelectOptions" v-model="filter.status" plain/>
                       </b-form-group>
                     </b-col>
 
@@ -72,13 +71,16 @@
                     @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
                     {{ $t('permission-management.reset') }}
                   </b-button>
-                  <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('org_export')">
+                  <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default"
+                            :disabled="checkPermItem('org_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('org_print')"><i class="icofont-printer"></i>&nbsp;
+                  <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default"
+                            :disabled="checkPermItem('org_print')"><i class="icofont-printer"></i>&nbsp;
                     {{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()" :disabled="checkPermItem('org_create')">
+                  <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()"
+                            :disabled="checkPermItem('org_create')">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -100,9 +102,6 @@
                   >
                     <template slot="orgNumber" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.orgNumber }}</span>
-                    </template>
-                    <template slot="status" slot-scope="props">
-                      <span>{{getDictDataValue(props.rowData.status)}}</span>
                     </template>
                     <template slot="actions" slot-scope="props">
                       <div>
@@ -541,9 +540,9 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import {validationMixin} from 'vuelidate';
   import Vue2OrgTree from '../../../components/vue2-org-tree'
-  import {getApiManager,downLoadFileFromServer,printFileFromServer} from '../../../api';
+  import {getApiManager, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import {getDictData, checkBoxListDic,checkPermissionItem} from '../../../utils';
+  import {checkPermissionItem} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -599,9 +598,6 @@
       }
     },
     mounted() {
-
-      this.getStatusOptions();
-
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
@@ -642,18 +638,12 @@
           note: ''
         },
         orgData: [], // loaded from server when the page is mounted
-
-        statusData:[],
-
         pageStatus: 'table', // table, create, modify -> it will change the page
-
-        statusSelectOptions: [ // on the filtering
+        statusSelectOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
-
-        statusOptions:[],
         parentOrganizationNameSelectOptions: {}, // this is used for both create and modify pages, parent org select box options
         vuetableItems: { // main table options
           apiUrl: `${apiBaseUrl}/permission-management/organization-management/organization/get-by-filter-and-page`,
@@ -662,7 +652,7 @@
               name: '__checkbox',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width:'60px'
+              width: '60px'
             },
             {
               name: 'orgId',
@@ -688,22 +678,20 @@
               width: '8%'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               title: this.$t('permission-management.th-org-status'),
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '7%',
-              // callback: (value) => {
-              //
-              //   const dictionary = {
-              //     'active': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
-              //     'inactive': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
-              //   };
-              //   if (!dictionary.hasOwnProperty(value)) return '';
-              //   return dictionary[value];
-              //
-              // }
+              callback: (value) => {
+                const dictionary = {
+                  '1000000701': `<span class="text-success">${this.$t('permission-management.org-status-active')}</span>`,
+                  '1000000702': `<span class="text-muted">${this.$t('permission-management.org-status-inactive')}</span>`,
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'parent',
@@ -785,24 +773,6 @@
         this.$refs.vuetable.refresh();
       },
 
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let id = 0;
@@ -858,7 +828,7 @@
         });
 
         this.parentOrganizationNameSelectOptions = selectOptions;
-        if(selectOptions.length==0)
+        if (selectOptions.length === 0)
           this.parentOrganizationNameSelectOptions.push({
             text: this.$t('system-setting.none'),
             value: 0
@@ -871,17 +841,7 @@
         return checkPermissionItem(value);
       },
 
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
-      onExportButton(){
+      onExportButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -889,10 +849,10 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/organization-management/organization/export`;
-        downLoadFileFromServer(link,params,'organization');
+        let link = `permission-management/organization-management/organization`;
+        downLoadFileFromServer(link, params, 'organization');
       },
-      onPrintButton(){
+      onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -901,7 +861,7 @@
           'idList': checkedIds.join()
         };
         let link = `permission-management/organization-management/organization/print`;
-        printFileFromServer(link,params);
+        printFileFromServer(link, params);
       },
       onSearchButton() {
         this.$refs.vuetable.refresh();
@@ -980,7 +940,7 @@
 
         let showItem = () => {
 
-          if(data.parent==null){
+          if (data.parent == null) {
             this.modifyPage = {
               selectedOrg: data,
               orgName: data.orgName,
@@ -1090,7 +1050,7 @@
       },
       treeLabelClass: function (data) {
         let level = fnGetOrgLevel(data);
-        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3','bg-level-4','bg-level-5'];
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3', 'bg-level-4', 'bg-level-5'];
         return `${labelClasses[level % 5]} text-white`;
       },
 
@@ -1111,7 +1071,7 @@
       onCreatePageSaveButton() { // save button is clicked from create page
 
         this.$v.createPage.$touch();
-        if(this.$v.createPage.$invalid) {
+        if (this.$v.createPage.$invalid) {
           return;
         }
 
@@ -1154,7 +1114,7 @@
       onModifyPageSaveButton() { // save button is clicked from modify page
 
         this.$v.modifyPage.$touch();
-        if(this.$v.modifyPage.$invalid) {
+        if (this.$v.modifyPage.$invalid) {
           return;
         }
 

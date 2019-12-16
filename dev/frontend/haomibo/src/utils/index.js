@@ -186,7 +186,7 @@ export const savePermissionInfo = (info) => {
 
 export const checkPermissionItem = (item) => {
   let data = localStorage.getItem('permInfo');
-  if(data === null)
+  if (data === null)
     return true;
   data = JSON.parse(data);
   return data.indexOf(item) === -1;
@@ -195,6 +195,38 @@ export const checkPermissionItem = (item) => {
 export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
   localStorage.removeItem('permInfo'); //remove permission Info too
+};
+
+export const saveDicDataGroupByDicId = (data) => {
+  let dicData = data.dictionaryDataList;
+  let deviceDicData = data.deviceDictionaryDataList;
+  let ids = [...new Set(dicData.map(item => item.dictionaryId))];
+  let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
+  localStorage.setItem('dicDataGroupByDicId', JSON.stringify(filterData));
+  saveDeviceDicDataGroupByDicId(deviceDicData);
+};
+
+export const saveDeviceDicDataGroupByDicId = (dicData) => {
+  let ids = [...new Set(dicData.map(item => item.dictionaryId))];
+  let filterData = Object.assign(...ids.map(id => ({[id]: dicData.filter(item => item.dictionaryId === id)})));
+  localStorage.setItem('deviceDicDataGroupByDicId', JSON.stringify(filterData));
+};
+
+export const getDicDataByDicIdForOptions = (dicId) => {
+  let data = localStorage.getItem('dicDataGroupByDicId');
+  if (data == null)
+    return [];
+  data = JSON.parse(data);
+  let options = [];
+  if (Object.keys(data).indexOf(dicId + "") !== -1) {
+    data[dicId].forEach(item => {
+      options.push({
+        value: item.dataCode, text: item.dataValue
+      })
+    });
+    return options;
+  }
+  return [];
 };
 
 export const getLoginInfo = () => {
