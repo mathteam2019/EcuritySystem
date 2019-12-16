@@ -87,7 +87,6 @@
                       </b-button>
 
                       <b-button
-                        v-if="props.rowData.status === 'inactive'"
                         :disabled="checkPermItem('field_update_status')"
                         v-if="props.rowData.status === '1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
@@ -105,8 +104,7 @@
                       </b-button>
 
                       <b-button
-                        :disabled="props.rowData.status==='1000000701'"
-                        :disabled="props.rowData.status==='active' || checkPermItem('field_delete')"
+                        :disabled="props.rowData.status==='1000000701' || checkPermItem('field_delete')"
                         size="sm" @click="onAction('delete',props.rowData)"
                         variant="danger default btn-square"
                       >
