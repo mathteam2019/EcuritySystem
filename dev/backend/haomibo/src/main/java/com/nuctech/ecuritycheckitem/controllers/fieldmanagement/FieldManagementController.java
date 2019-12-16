@@ -265,7 +265,7 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if parent field is existing.
-        if (requestBody.getParentFieldId() != 0 && fieldService.checkFieldExist(requestBody.getParentFieldId())) {
+        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
