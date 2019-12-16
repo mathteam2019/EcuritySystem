@@ -240,7 +240,7 @@ public class DeviceLogController extends BaseController {
     /**
      * Device Log generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_LOG_TOWORD)
+
     @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object deviceLogGenerateWordFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {

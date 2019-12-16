@@ -224,7 +224,7 @@ public class AuditLogController extends BaseController {
     /**
      * Audit Log generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_TOWORD)
+
     @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object auditLogGenerateWordFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                             BindingResult bindingResult) {

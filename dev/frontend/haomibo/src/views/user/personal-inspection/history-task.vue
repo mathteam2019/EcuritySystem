@@ -22,13 +22,13 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.mode" :options="modeOption" plain/>
+                  <b-form-select v-model="filter.mode" :options="operationModeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOption" plain/>
+                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
 
@@ -81,10 +81,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -101,7 +101,6 @@
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
-                @vuetable:checkbox-toggled-all="onCheckEvent"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -113,10 +112,8 @@
                     </span>
                   <span v-else> </span>
                 </template>
-                <template slot="scanImageUrl" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl"
-                         class="operation-icon"/>
-                  <b-img v-else/>
+		<template slot="scanImageUrl" slot-scope="props">
+                  <b-img :src="props.rowData.scanImageUrl" class="operation-icon"/>
                 </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null">None</div>
@@ -138,9 +135,6 @@
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
                   </div>
-                </template>
-                <template slot="handTaskResult" slot-scope="props">
-                  <div>{{getDictDataValue(props.rowData.handTaskResult, 6)}}</div>
                 </template>
               </vuetable>
             </div>
@@ -412,7 +406,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.task.serScan == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.task.serScan.scanImageGender)}}</label>
+                  <label v-else>{{getOptionValue(showPage.task.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -421,9 +415,9 @@
                     {{$t('personal-inspection.scanned-image')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-img v-if="showPage.scanImage != null" :src="this.apiBaseURL + showPage.scanImage.imageUrl" class="operation-icon"/>
-                  <!--                  <label v-if="showPage.serScan != null">{{showPage.scanImage.imageUrl}}</label>-->
-                  <!--                  <label v-else>None</label>-->
+                  <b-img v-if="showPage.scanImage != null" :src="this.apiBaseURL + showPage.scanImage.imageUrl"
+                         class="operation-icon"/>
+
                 </b-form-group>
               </b-col>
             </b-row>
@@ -472,7 +466,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.scanAtrResult == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.scanAtrResult)}}</label>
+                  <label v-else>{{getOptionValue(showPage.scanAtrResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -481,7 +475,7 @@
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label v-if="showPage.scanFootAlarm == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.scanFootAlarm)}}</label>
+                  <label v-else>{{getOptionValue(showPage.scanFootAlarm)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -513,7 +507,7 @@
                     {{$t('personal-inspection.dispatch-timeout')}}
                   </template>
                   <label v-if="showPage.assignJudgeTimeout == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.assignJudgeTimeout)}}</label>
+                  <label v-else>{{getOptionValue(showPage.assignJudgeTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -545,7 +539,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.judgeResult, 5)}}</label>
+                  <label v-else>{{getOptionValue(showPage.judgeResult, 5)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -559,7 +553,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeTimeout == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.judgeTimeout)}}</label>
+                  <label v-else>{{getOptionValue(showPage.judgeTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -634,7 +628,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.handTaskResult == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.handTaskResult, 6)}}</label>
+                  <label v-else>{{getOptionValue(showPage.handTaskResult, 6)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -960,13 +954,8 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getDirection} from "../../../utils";
-  import _ from "lodash";
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
-  import {getDictData, checkBoxListDic} from '../../../utils'
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import {validationMixin} from 'vuelidate';
-  import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
   import {LightGallery} from 'vue-light-gallery';
@@ -985,11 +974,8 @@
       'date-picker': DatePicker
     },
     mounted() {
-      //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
-      this.getModeOption();
-      this.getStatusOption();
+
       this.getSiteOption();
-      //this.apiBaseURL = apiBaseUrl;
 
     },
     data: function () {
@@ -997,7 +983,7 @@
         isExpanded: false,
         isCheckAll: false,
         pageStatus: 'table',
-        apiBaseURL : '',
+        apiBaseURL: '',
         filter: {
           taskNumber: null,
           mode: null,
@@ -1009,39 +995,25 @@
           // TODO: search filter
         },
 
-        siteData: [],
-        statusData: [],
-        modeData: [],
-
         showPage: [],
+	siteData: [],
 
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 4, text: '安检仪+审图端+手检端'},
-          {value: 1, text: '安检仪+(本地手检)'},
-          {value: 2, text: '安检仪+手检端'},
-          {value: 3, text: '安检仪+审图端'},
+          {value: '1000001304', text: '安检仪+审图端+手检端'},
+          {value: '1000001301', text: '安检仪+(本地手检)'},
+          {value: '1000001302', text: '安检仪+手检端'},
+          {value: '1000001303', text: '安检仪+审图端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
-        ],
-        onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: '1000001102', text: this.$t('maintenance-management.process-task.dispatch')},
+          {value: '1000001103', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000001104', text: this.$t('maintenance-management.process-task.hand')},
+          {value: '1000001106', text: this.$t('maintenance-management.process-task.scan')}
         ],
 
-        modeOption: [],
-        statusOption: [],
         onSiteOption: [],
 
         taskVuetableItems: {
@@ -1084,24 +1056,23 @@
               dataClass: 'text-center',
             },
             {
-              name: '__slot:handTaskResult',
+              name: 'handTaskResult',
               title: this.$t('personal-inspection.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              // callback: (handTaskResult) => {
-              //
-              //   const dictionary = {
-              //     "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
-              //     "seized": `<span style="color:#e8a23e;">有查获</span>`,
-              //     "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
-              //     "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
-              //     "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
-              //   };
-              //
-              //   if (handTaskResult == null) return '';
-              //   if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
-              //   return dictionary[handTaskResult];
-              // }
+              callback: (handTaskResult) => {
+
+                const dictionary = {
+
+                  "true": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
+                  "false": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
+
+                };
+
+                if (handTaskResult == null) return '';
+                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+                return dictionary[handTaskResult];
+              }
             },
             {
               name: 'task',
@@ -1272,142 +1243,63 @@
           });
       },
 
-      modeData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.modeOption = [];
-        this.modeOption = newVal.map(mode => ({
-          text: mode.dataValue,
-          value: mode.dataCode
-        }));
-        this.modeOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.modeOption.length === 0)
-          this.modeOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOption = [];
-        this.statusOption = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOption.length === 0)
-          this.statusOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      }
     },
     methods: {
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
 
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
+      getOptionValue(dataCode) {
+        const dictionary = {
+          "1000000001": `${this.$t('permission-management.male')}`,
+          "1000000002": `${this.$t('permission-management.female')}`,
+          "1000000601": `${this.$t('system-setting.parameter-setting.yes')}`,
+          "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
+          "1000001701": `${this.$t('permission-management.timeout')}`,
+          "1000001702": `${this.$t('permission-management.timein')}`,
+          "true": `${this.$t('knowledge-base.suspect')}`,
+          "false": `${this.$t('knowledge-base.no-suspect')}`,
+          "1000001301": `${this.$t('permission-management.female')}`,
+          "1000001302": `${this.$t('permission-management.female')}`,
+          "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001304": `${this.$t('maintenance-management.process-task.scan')}`,
+          "1000001102": `${this.$t('maintenance-management.process-task.dispatch')}`,
+          "1000001103": `${this.$t('maintenance-management.process-task.judge')}}`,
+          "1000001104": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
+
+        };
+
+        if (!dictionary.hasOwnProperty(dataCode)) return '';
+        return dictionary[dataCode];
 
       },
 
-      onGenerateExcelButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/history-task/generate/export`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
-
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'History-Task.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-      },
-
-      onGeneratePdfButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/history-task/generate/print`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/history-task/generate`;
+        downLoadFileFromServer(link, params, 'History-Task');
 
 
       },
 
-      getModeOption() {
-        let data = checkBoxListDic(13);
-        this.modeData = data;
-        //console.log(this.modeData);
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/history-task/generate`;
+        printFileFromServer(link, params);
+
+
       },
 
-      getStatusOption() {
-        let data = checkBoxListDic(11);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
 
       getSiteOption() {
         getApiManager()
@@ -1451,9 +1343,7 @@
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
       },
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
+
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
@@ -1468,7 +1358,7 @@
           startTime: null,
           endTime: null
         };
-        //this.$refs.taskVuetable.refresh();
+
       },
 
       transform(response) {
@@ -1495,7 +1385,7 @@
           transformed.data.push(temp);
 
           idTemp = temp.historyId;
-          if(this.isCheckAll === true){
+          if (this.isCheckAll === true) {
             this.$refs.taskVuetable.selectedTo.push(idTemp);
           }
         }
@@ -1506,7 +1396,6 @@
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-        //this.apiBaseURL = {apiBaseUrl};
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
 

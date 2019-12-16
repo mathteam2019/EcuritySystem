@@ -222,6 +222,10 @@
     "action-reset-password": "重置密码",
     "male": "男",
     "female": "女",
+    "no" : "否",
+    "yes" : "是",
+    "timeout" : "超时",
+    "timein" :"不超时",
     "unknown": "其他",
     "belowcollege": "大专及以下",
     "student":"本科",
@@ -898,7 +902,11 @@
       "estimated-start-time": "预计开发时间",
       "real-start-time": "预计开发时间",
       "plan-works": "计划工作",
-      "real-works": "实际工作"
+      "real-works": "实际工作",
+      "dispatch" : "分派",
+      "judge" : "判图",
+      "hand" : "手检",
+      "scan" : "扫描"
     },
     "routine-plan": {
       "plan": "计划",

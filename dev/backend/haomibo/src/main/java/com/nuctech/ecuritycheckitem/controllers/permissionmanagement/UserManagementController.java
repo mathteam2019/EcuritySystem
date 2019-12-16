@@ -615,7 +615,7 @@ public class UserManagementController extends BaseController {
     /**
      * User generate word request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_TOWORD)
+
     @RequestMapping(value = "/user/docx", method = RequestMethod.POST)
     public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -893,7 +893,7 @@ public class UserManagementController extends BaseController {
     /**
      * User Group generate excel request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_TOWORD)
+
     @RequestMapping(value = "/user-group/docx", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {

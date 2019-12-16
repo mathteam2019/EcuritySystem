@@ -489,7 +489,7 @@ public class FieldManagementController extends BaseController {
     /**
      * Field generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_TOWORD)
+
     @RequestMapping(value = "/field/docx", method = RequestMethod.POST)
     public Object fieldGenerateWordFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
