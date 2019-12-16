@@ -485,7 +485,7 @@ public class OrganizationManagementController extends BaseController {
      * Organization generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
-    @RequestMapping(value = "/organization/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/organization/xlsx", method = RequestMethod.POST)
     public Object organizationGenerateExcelFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
 
@@ -520,7 +520,7 @@ public class OrganizationManagementController extends BaseController {
      * Organization generate word request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_TOWORD)
-    @RequestMapping(value = "/organization/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/organization/docx", method = RequestMethod.POST)
     public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -554,7 +554,7 @@ public class OrganizationManagementController extends BaseController {
      * Organization generate pdf request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_PRINT)
-    @RequestMapping(value = "/organization/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/organization/pdf", method = RequestMethod.POST)
     public Object organizationGeneratePdfFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 

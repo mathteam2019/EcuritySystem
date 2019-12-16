@@ -133,7 +133,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     /**
      * Suspiction handgoods  generate pdf file request.
      */
-    @RequestMapping(value = "/suspiciongoods/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/suspiciongoods/generate/pdf", method = RequestMethod.POST)
     public Object suspicionGoodsStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                           BindingResult bindingResult) {
 
@@ -170,7 +170,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     /**
      * Suspiction handgoods Statistics generate excel file request.
      */
-    @RequestMapping(value = "/suspiciongoods/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/suspiciongoods/generate/xlsx", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 
@@ -206,7 +206,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
     /**
      * Suspiction handgoods Statistics generate word file request.
      */
-    @RequestMapping(value = "/suspiciongoods/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/suspiciongoods/generate/docx", method = RequestMethod.POST)
     public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 

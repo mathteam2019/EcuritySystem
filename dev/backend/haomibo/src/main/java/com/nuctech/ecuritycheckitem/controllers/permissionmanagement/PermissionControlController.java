@@ -394,7 +394,7 @@ public class PermissionControlController extends BaseController {
      * Role generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_EXPORT)
-    @RequestMapping(value = "/role/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/role/xlsx", method = RequestMethod.POST)
     public Object roleGenerateExelFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -426,7 +426,7 @@ public class PermissionControlController extends BaseController {
      * Role generate word file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_TOWORD)
-    @RequestMapping(value = "/role/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/role/docx", method = RequestMethod.POST)
     public Object roleGenerateWordFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 
@@ -459,7 +459,7 @@ public class PermissionControlController extends BaseController {
      * Role generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
-    @RequestMapping(value = "/role/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/role/pdf", method = RequestMethod.POST)
     public Object roleGeneratePDFFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 
@@ -670,7 +670,7 @@ public class PermissionControlController extends BaseController {
      * Data Group generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DATA_GROUP_EXPORT)
-    @RequestMapping(value = "/data-group/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/xlsx", method = RequestMethod.POST)
     public Object dataGroupGenerateExcelFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -702,7 +702,7 @@ public class PermissionControlController extends BaseController {
      * Data Group generate word file request.
      */
     @PreAuthorize(Role.Authority.HAS_DATA_GROUP_TOWORD)
-    @RequestMapping(value = "/data-group/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/docx", method = RequestMethod.POST)
     public Object dataGroupGenerateWordFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -736,7 +736,7 @@ public class PermissionControlController extends BaseController {
      * Data Group generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_DATA_GROUP_PRINT)
-    @RequestMapping(value = "/data-group/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/pdf", method = RequestMethod.POST)
     public Object dataGroupGeneratePDFFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

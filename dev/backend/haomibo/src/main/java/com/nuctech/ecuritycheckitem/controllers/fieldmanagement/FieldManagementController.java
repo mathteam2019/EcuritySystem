@@ -453,7 +453,7 @@ public class FieldManagementController extends BaseController {
      * Field generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
-    @RequestMapping(value = "/field/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/field/xlsx", method = RequestMethod.POST)
     public Object fieldGenerateExcelFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
 
@@ -490,7 +490,7 @@ public class FieldManagementController extends BaseController {
      * Field generate word file request.
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_TOWORD)
-    @RequestMapping(value = "/field/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/field/docx", method = RequestMethod.POST)
     public Object fieldGenerateWordFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 
@@ -528,7 +528,7 @@ public class FieldManagementController extends BaseController {
      * Field generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
-    @RequestMapping(value = "/field/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/field/pdf", method = RequestMethod.POST)
     public Object fieldGeneratePDFFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 

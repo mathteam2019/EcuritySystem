@@ -365,7 +365,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_EXPORT)
-    @RequestMapping(value = "/archive-template/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive-template/xlsx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateExcelFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                       BindingResult bindingResult) {
 
@@ -401,7 +401,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template generate word file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_TOWORD)
-    @RequestMapping(value = "/archive-template/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive-template/docx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateWordFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
@@ -437,7 +437,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_PRINT)
-    @RequestMapping(value = "/archive-template/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive-template/pdf", method = RequestMethod.POST)
     public Object archiveTemplateGeneratePDFFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 

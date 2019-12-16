@@ -218,7 +218,7 @@ public class HistoryTaskController extends BaseController {
     /**
      * Task table generate excel file request.
      */
-    @RequestMapping(value = "/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/xlsx", method = RequestMethod.POST)
     public Object historyTaskGenerateExcelFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -256,7 +256,7 @@ public class HistoryTaskController extends BaseController {
     /**
      * Task table generate excel file request.
      */
-    @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/docx", method = RequestMethod.POST)
     public Object historyTaskGenerateWordFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -294,7 +294,7 @@ public class HistoryTaskController extends BaseController {
     /**
      * history-task generate pdf file request.
      */
-    @RequestMapping(value = "/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/pdf", method = RequestMethod.POST)
     public Object historyTaskPDFGenerateFile(@RequestBody @Valid HistoryGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

@@ -441,7 +441,7 @@ public class ArchiveManagementController extends BaseController {
      * Archive generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_EXPORT)
-    @RequestMapping(value = "/archive/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive/xlsx", method = RequestMethod.POST)
     public Object archiveGenerateExcelFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
@@ -478,7 +478,7 @@ public class ArchiveManagementController extends BaseController {
      * Archive generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_TOWORD)
-    @RequestMapping(value = "/archive/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive/docx", method = RequestMethod.POST)
     public Object archiveGenerateWordFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
 
@@ -515,7 +515,7 @@ public class ArchiveManagementController extends BaseController {
      * Archive generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_PRINT)
-    @RequestMapping(value = "/archive/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive/pdf", method = RequestMethod.POST)
     public Object archiveGeneratePDFFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
 

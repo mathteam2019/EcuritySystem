@@ -126,7 +126,7 @@ public class ScanStatisticsController extends BaseController {
     /**
      * Scan Statistics generate excel file request.
      */
-    @RequestMapping(value = "/scan/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/scan/generate/xlsx", method = RequestMethod.POST)
     public Object scanStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -163,7 +163,7 @@ public class ScanStatisticsController extends BaseController {
     /**
      * Scan Statistics generate word file request.
      */
-    @RequestMapping(value = "/scan/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/scan/generate/docx", method = RequestMethod.POST)
     public Object scanStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -200,7 +200,7 @@ public class ScanStatisticsController extends BaseController {
     /**
      * Scan Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/scan/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/scan/generate/pdf", method = RequestMethod.POST)
     public Object scanStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
 

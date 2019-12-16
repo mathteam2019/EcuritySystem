@@ -196,7 +196,7 @@ public class AuditLogController extends BaseController {
      * Audit Log generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_EXPORT)
-    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object auditLogGenerateExcelFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -225,7 +225,7 @@ public class AuditLogController extends BaseController {
      * Audit Log generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_TOWORD)
-    @RequestMapping(value = "/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object auditLogGenerateWordFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                             BindingResult bindingResult) {
 
@@ -254,7 +254,7 @@ public class AuditLogController extends BaseController {
      * Audit Log generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_PRINT)
-    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object auditLogGeneratePDFFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 

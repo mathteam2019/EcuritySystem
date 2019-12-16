@@ -241,7 +241,7 @@ public class InvalidTaskController extends BaseController {
     /**
      * Task table generate excel file request.
      */
-    @RequestMapping(value = "/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/xlsx", method = RequestMethod.POST)
     public Object invalidTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -279,7 +279,7 @@ public class InvalidTaskController extends BaseController {
     /**
      * Invalid task table generate word file request.
      */
-    @RequestMapping(value = "/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/docx", method = RequestMethod.POST)
     public Object invalidTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -317,7 +317,7 @@ public class InvalidTaskController extends BaseController {
     /**
      * Invalid-task generate pdf file request.
      */
-    @RequestMapping(value = "/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/pdf", method = RequestMethod.POST)
     public Object invalidTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

@@ -123,7 +123,7 @@ public class PreviewStatisticsController extends BaseController {
     /**
      * Preview Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/preview/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/preview/generate/pdf", method = RequestMethod.POST)
     public Object previewStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
@@ -162,7 +162,7 @@ public class PreviewStatisticsController extends BaseController {
     /**
      * Preview Statistics generate excel file request.
      */
-    @RequestMapping(value = "/preview/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/preview/generate/xlsx", method = RequestMethod.POST)
     public Object previewStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                      BindingResult bindingResult) {
 
@@ -198,7 +198,7 @@ public class PreviewStatisticsController extends BaseController {
     /**
      * Preview Statistics generate Word file request.
      */
-    @RequestMapping(value = "/preview/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/preview/generate/docx", method = RequestMethod.POST)
     public Object previewStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                      BindingResult bindingResult) {
 

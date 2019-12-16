@@ -247,7 +247,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case pending generate excel file request.
      */
-    @RequestMapping(value = "/generate/pending/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/pending/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
@@ -275,7 +275,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case pending generate word file request.
      */
-    @RequestMapping(value = "/generate/pending/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/pending/docx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                         BindingResult bindingResult) {
 
@@ -303,7 +303,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case pending generate pdf file request.
      */
-    @RequestMapping(value = "/generate/pending/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/pending/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePendingGeneratePDFFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
@@ -332,7 +332,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case personal generate excel file request.
      */
-    @RequestMapping(value = "/generate/personal/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/personal/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                         BindingResult bindingResult) {
 
@@ -360,7 +360,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case personal generate word file request.
      */
-    @RequestMapping(value = "/generate/personal/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/personal/docx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
@@ -388,7 +388,7 @@ public class KnowledgeDealManagementController extends BaseController {
     /**
      * Knowledge Case personal generate pdf file request.
      */
-    @RequestMapping(value = "/generate/personal/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/generate/personal/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 

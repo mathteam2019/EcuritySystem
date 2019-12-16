@@ -188,7 +188,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * User Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/userstatistics/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/userstatistics/generate/pdf", method = RequestMethod.POST)
     public Object userStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
 
@@ -224,7 +224,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * User Statistics generate excel file request.
      */
-    @RequestMapping(value = "/userstatistics/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/userstatistics/generate/xlsx", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -259,7 +259,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * User Statistics generate word file request.
      */
-    @RequestMapping(value = "/userstatistics/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/userstatistics/generate/docx", method = RequestMethod.POST)
     public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByUserGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -294,7 +294,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * Device Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/devicestatistics/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/devicestatistics/generate/pdf", method = RequestMethod.POST)
     public Object deviceStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -328,7 +328,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * Device Statistics generate excel file request.
      */
-    @RequestMapping(value = "/devicestatistics/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/devicestatistics/generate/xlsx", method = RequestMethod.POST)
     public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -362,7 +362,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
     /**
      * Device Statistics generate word file request.
      */
-    @RequestMapping(value = "/devicestatistics/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/devicestatistics/generate/docx", method = RequestMethod.POST)
     public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
