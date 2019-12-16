@@ -477,7 +477,6 @@ public class ArchiveManagementController extends BaseController {
     /**
      * Archive generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_TOWORD)
     @RequestMapping(value = "/archive/docx", method = RequestMethod.POST)
     public Object archiveGenerateWordFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {

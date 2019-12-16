@@ -425,7 +425,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Role generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_TOWORD)
+
     @RequestMapping(value = "/role/docx", method = RequestMethod.POST)
     public Object roleGenerateWordFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
@@ -701,7 +701,7 @@ public class PermissionControlController extends BaseController {
     /**
      * Data Group generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_TOWORD)
+
     @RequestMapping(value = "/data-group/docx", method = RequestMethod.POST)
     public Object dataGroupGenerateWordFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {

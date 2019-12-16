@@ -445,7 +445,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_TOWORD)
+
     @RequestMapping(value = "/user/docx", method = RequestMethod.POST)
     public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
@@ -628,7 +628,7 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User Group generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_TOWORD)
+
     @RequestMapping(value = "/user-group/docx", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {

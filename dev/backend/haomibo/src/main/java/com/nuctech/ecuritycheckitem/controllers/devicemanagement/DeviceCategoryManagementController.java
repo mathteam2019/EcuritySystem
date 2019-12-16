@@ -453,7 +453,7 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_TOWORD)
+
     @RequestMapping(value = "/category/docx", method = RequestMethod.POST)
     public Object deviceCategoryGenerateWordFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {

@@ -519,7 +519,7 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization generate word request.
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_TOWORD)
+
     @RequestMapping(value = "/organization/docx", method = RequestMethod.POST)
     public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {

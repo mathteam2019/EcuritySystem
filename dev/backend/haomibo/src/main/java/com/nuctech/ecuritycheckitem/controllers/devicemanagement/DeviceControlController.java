@@ -473,7 +473,7 @@ public class DeviceControlController extends BaseController {
     /**
      * Device generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TOWORD)
+
     @RequestMapping(value = "/device/docx", method = RequestMethod.POST)
     public Object deviceGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                           BindingResult bindingResult) {

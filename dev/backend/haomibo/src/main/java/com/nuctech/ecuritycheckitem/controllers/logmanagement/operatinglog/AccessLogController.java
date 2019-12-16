@@ -220,7 +220,7 @@ public class AccessLogController extends BaseController {
     /**
      * Access Log generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_TOWORD)
+
     @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object accessLogGenerateWordFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {

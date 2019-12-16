@@ -400,7 +400,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_TOWORD)
+
     @RequestMapping(value = "/archive-template/docx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateWordFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
