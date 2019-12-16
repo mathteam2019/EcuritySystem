@@ -860,7 +860,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/organization-management/organization/print`;
+        let link = `permission-management/organization-management/organization/pdf`;
         printFileFromServer(link, params);
       },
       onSearchButton() {
