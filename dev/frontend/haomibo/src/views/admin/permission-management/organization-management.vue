@@ -72,13 +72,13 @@
                     @click="onResetButton()"><i class="icofont-ui-reply"></i>&nbsp;
                     {{ $t('permission-management.reset') }}
                   </b-button>
-                  <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default">
+                  <b-button @click="onExportButton()" size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('org_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default"><i class="icofont-printer"></i>&nbsp;
+                  <b-button @click="onPrintButton()" size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('org_print')"><i class="icofont-printer"></i>&nbsp;
                     {{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()">
+                  <b-button size="sm" class="ml-2" variant="success default" @click="showCreatePage()" :disabled="checkPermItem('org_create')">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -104,18 +104,21 @@
                           <b-button
                             size="sm"
                             variant="info default btn-square"
+                            :disabled="checkPermItem('org_modify')"
                             @click="onAction('modify', props.rowData, props.rowIndex)">
                             <i class="icofont-edit"></i>
                           </b-button>
                           <b-button
                             size="sm"
                             variant="success default btn-square"
+                            :disabled="checkPermItem('org_update_status')"
                             @click="onAction('activate', props.rowData, props.rowIndex)">
                             <i class="icofont-check-circled"></i>
                           </b-button>
                           <b-button
                             size="sm"
                             variant="danger default btn-square"
+                            :disabled="checkPermItem('org_delete')"
                             @click="onAction('delete', props.rowData, props.rowIndex)">
                             <i class="icofont-bin"></i>
                           </b-button>
@@ -140,6 +143,7 @@
                             <b-button
                               size="sm"
                               variant="warning default btn-square"
+                              :disabled="checkPermItem('org_update_status')"
                               @click="onAction('deactivate', props.rowData, props.rowIndex)">
                               <i class="icofont-ban"></i>
                             </b-button>
@@ -438,6 +442,7 @@
   import Vue2OrgTree from '../../../components/vue2-org-tree'
   import {getApiManager,downLoadFileFromServer,printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -495,7 +500,7 @@
     mounted() {
 
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-
+      checkPermissionItem('org_create');
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
         type: 'with_parent'
       }).then((response) => {
@@ -736,6 +741,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;

@@ -175,8 +175,26 @@ export const saveLoginInfo = (loginInfo) => {
   localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
 };
 
+export const savePermissionInfo = (info) => {
+  let data = [];
+  info.forEach(item => {
+    if (item.resourceName != null)
+      data.push(item.resourceName);
+  });
+  localStorage.setItem('permInfo', JSON.stringify(data));
+};
+
+export const checkPermissionItem = (item) => {
+  let data = localStorage.getItem('permInfo');
+  if(data === null)
+    return true;
+  data = JSON.parse(data);
+  return data.indexOf(item) === -1;
+};
+
 export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
+  localStorage.removeItem('permInfo'); //remove permission Info too
 };
 
 export const getLoginInfo = () => {

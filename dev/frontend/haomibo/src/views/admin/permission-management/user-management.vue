@@ -64,13 +64,13 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_export')" @click="onExportUserButton()">
                   <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_print')" @click="onPrintUserButton()">
                   <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                <b-button size="sm" class="ml-2" @click="onCreatePage()" :disabled="checkPermItem('user_create')" variant="success default">
                   <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                 </b-button>
               </b-col>
@@ -99,6 +99,7 @@
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
                           variant="primary default btn-square"
+                          :disabled="checkPermItem('user_modify')"
                           @click="onAction('modify', props.rowData, props.rowIndex)">
                           <i class="icofont-edit"></i>
                         </b-button>
@@ -115,6 +116,7 @@
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
                           variant="success default btn-square"
+                          :disabled="checkPermItem('user_update_status')"
                           @click="onAction('active', props.rowData, props.rowIndex)">
                           <i class="icofont-check-circled"></i>
                         </b-button>
@@ -122,6 +124,7 @@
                         <b-button
                           v-if="props.rowData.status=='active'"
                           size="sm"
+                          :disabled="checkPermItem('user_update_status')"
                           variant="warning default btn-square"
                           @click="onAction('inactive', props.rowData, props.rowIndex)">
                           <i class="icofont-ban"></i>
@@ -139,6 +142,7 @@
                           v-if="props.rowData.status=='inactive'"
                           size="sm"
                           variant="danger default btn-square"
+                          :disabled="checkPermItem('user_update_status')"
                           @click="onAction('blocked', props.rowData, props.rowIndex)">
                           <i class="icofont-minus-circle"></i>
                         </b-button>
@@ -147,6 +151,7 @@
                           v-if="props.rowData.status=='blocked'"
                           size="sm"
                           variant="success default btn-square"
+                          :disabled="checkPermItem('user_update_status')"
                           @click="onAction('unblock', props.rowData, props.rowIndex)">
                           <i class="icofont-power"></i>
                         </b-button>
@@ -163,6 +168,7 @@
                           v-if="props.rowData.status=='pending'"
                           size="sm"
                           variant="purple default btn-square"
+                          :disabled="checkPermItem('user_modify')"
                           @click="onAction('reset-password', props.rowData, props.rowIndex)">
                           <i class="icofont-ui-password"></i>
                         </b-button>
@@ -576,13 +582,13 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupResetButton()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_export')" @click="onExportGroupButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_print')" @click="onPrintGroupButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" :disabled="checkPermItem('user_group_create')" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -606,7 +612,7 @@
                         <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0"
+                        <b-button variant="danger default btn-square" class="m-0" :disabled="checkPermItem('user_group_delete')"
                                   @click="onAction('group-remove', props.rowData, props.rowIndex)"><i
                           class="icofont-bin"></i></b-button>
                       </template>
@@ -715,10 +721,10 @@
               </div>
               <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status!='create'">
                 <div>
-                  <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i
+                  <b-button @click="onClickModifyUserGroup" variant="info default" :disabled="checkPermItem('user_group_modify')" size="sm"><i
                     class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteUserGroup" variant="danger default" size="sm"><i
+                  <b-button @click="onClickDeleteUserGroup"  :disabled="checkPermItem('user_group_delete')" variant="danger default" size="sm"><i
                     class="icofont-bin"></i> {{$t('permission-management.delete')}}
                   </b-button>
 
@@ -749,7 +755,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -1184,6 +1190,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportUserButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;

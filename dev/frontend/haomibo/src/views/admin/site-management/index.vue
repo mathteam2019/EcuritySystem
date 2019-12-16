@@ -44,13 +44,13 @@
                   <b-button size="sm" class="ml-2" @click="onResetButton()" variant="info default">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_export')" @click="onExportButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_print')" @click="onPrintButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAction('create')" :disabled="checkPermItem('field_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -79,12 +79,13 @@
                       <b-button
                         size="sm" @click="onAction('edit',props.rowData)"
                         variant="primary default btn-square"
-                        :disabled="props.rowData.status === 'active'">
+                        :disabled="props.rowData.status === 'active' || checkPermItem('field_modify')">
                         <i class="icofont-edit"></i>
                       </b-button>
 
                       <b-button
                         v-if="props.rowData.status === 'inactive'"
+                        :disabled="checkPermItem('field_update_status')"
                         size="sm" @click="onAction('activate',props.rowData)"
                         variant="success default btn-square">
                         <i class="icofont-check-circled"></i>
@@ -94,13 +95,13 @@
                         v-if="props.rowData.status === 'active'"
                         size="sm" @click="onAction('inactivate',props.rowData)"
                         variant="warning default btn-square"
-                        :disabled="props.rowData.parentFieldId === 0"
+                        :disabled="props.rowData.parentFieldId === 0 || checkPermItem('field_update_status')"
                       >
                         <i class="icofont-ban"></i>
                       </b-button>
 
                       <b-button
-                        :disabled="props.rowData.status==='active'"
+                        :disabled="props.rowData.status==='active' || checkPermItem('field_delete')"
                         size="sm" @click="onAction('delete',props.rowData)"
                         variant="danger default btn-square"
                       >
@@ -218,7 +219,7 @@
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>-->
                   <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
-                            v-if="pageStatus !== 'create'">
+                            v-if="pageStatus !== 'create' || checkPermItem('field_delete')">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
                   <b-button @click="onAction('list')" size="sm" variant="info default">
@@ -315,13 +316,13 @@
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
                   <b-button v-if="siteForm.status === 'active' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
-                            variant="warning default">
+                            variant="warning default" :disabled="checkPermItem('field_update_status')">
                     <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                  <b-button v-if="siteForm.status === 'inactive'" :disabled="checkPermItem('field_update_status')" @click="onAction('activate',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('delete',siteForm)" size="sm"
+                  <b-button v-if="siteForm.status === 'inactive'" :disabled="checkPermItem('field_delete')" @click="onAction('delete',siteForm)" size="sm"
                             variant="danger default">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
@@ -392,6 +393,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -637,6 +639,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;

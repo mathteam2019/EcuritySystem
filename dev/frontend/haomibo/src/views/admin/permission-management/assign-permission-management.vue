@@ -64,13 +64,13 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_export')" @click="onExportUserButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_print')" @click="onPrintUserButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" :disabled="checkPermItem('assign_user_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -102,6 +102,7 @@
                       <div>
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_modify')"
                           variant="primary default btn-square"
                           @click="editUserRoles(props.rowData)">
                           <i class="icofont-edit"></i>
@@ -109,6 +110,7 @@
 
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_delete')"
                           variant="danger default btn-square"
                           @click="promptDeleteUserRoles(props.rowData.userId)">
                           <i class="icofont-bin"></i>
@@ -259,7 +261,7 @@
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"
                           v-if="pageStatus !== 'show'"><i class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" :disabled="checkPermItem('assign_user_delete')"
                           v-if="pageStatus !== 'create'"><i class="icofont-bin"></i>
                   {{$t('permission-management.delete')}}
                 </b-button>
@@ -314,13 +316,13 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_group_export')" @click="onExportGroupButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_group_print')" @click="onPrintGroupButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" :disabled="checkPermItem('assign_user_group_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -347,13 +349,14 @@
                       <div>
 
                         <b-button
-                          size="sm"
+                          size="sm" :disabled="checkPermItem('assign_user_group_modify')"
                           variant="primary default btn-square" @click="onActionGroup('edit-item',props.rowData)">
                           <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_group_delete')"
                           variant="danger default btn-square" @click="onActionGroup('delete-item',props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
@@ -464,7 +467,7 @@
                           @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button v-if="groupPageStatus !== 'create'" variant="danger default" size="sm"
+                <b-button v-if="groupPageStatus !== 'create'" variant="danger default" size="sm" :disabled="checkPermItem('assign_user_group_delete')"
                           @click="onActionGroup('delete-item',selectedUserGroupItem)"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
@@ -511,7 +514,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
@@ -994,7 +997,9 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportUserButton() {
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;

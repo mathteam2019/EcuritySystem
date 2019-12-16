@@ -29,13 +29,13 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetRoleSearchForm()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportRoleButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('role_export')" @click="onExportRoleButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintRoleButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('role_print')" @click="onPrintRoleButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onClickCreateRole()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onClickCreateRole()" :disabled="checkPermItem('role_create')" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -63,7 +63,7 @@
                       </span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button size="sm" variant="danger default btn-square" class="m-0"
+                        <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('role_delete')"
                                   @click="onClickDeleteRole(props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
@@ -222,12 +222,12 @@
 
                 <div class="text-right pt-3">
                   <div>
-                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)"
+                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" :disabled="checkPermItem('role_modify')"
                               @click="onClickSaveRole" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"></i>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
-                    <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default">
+                    <b-button @click="onClickDeleteRole(selectedRole)" size="sm" variant="danger default" :disabled="checkPermItem('role_delete')">
                       <i class="icofont-bin"></i>
                       {{$t('permission-management.permission-control.delete')}}
                     </b-button>
@@ -266,13 +266,13 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetDataGroupSearchForm()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('data_group_export')" @click="onExportGroupButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('data_group_print')" @click="onPrintGroupButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onClickCreateDataGroup()" :disabled="checkPermItem('data_group_create')" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -303,7 +303,7 @@
                       </template>
 
                       <template slot="operating" slot-scope="props">
-                        <b-button size="sm" variant="danger default btn-square" class="m-0"
+                        <b-button size="sm" variant="danger default btn-square" class="m-0"  :disabled="checkPermItem('data_group_delete')"
                                   @click="onClickDeleteDataGroup(props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
@@ -404,10 +404,10 @@
 
               <div class="text-right pt-3" v-if="dataGroupDetailStatus!=='create'">
                 <div>
-                  <b-button @click="onClickSaveDataGroup()" size="sm" variant="info default"><i
+                  <b-button @click="onClickSaveDataGroup()" size="sm" variant="info default" :disabled="checkPermItem('data_group_modify')"><i
                     class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteDataGroup" size="sm" variant="danger default"><i
+                  <b-button @click="onClickDeleteDataGroup" size="sm" variant="danger default" :disabled="checkPermItem('data_group_delete')"><i
                     class="icofont-bin"></i> {{$t('permission-management.permission-control.delete')}}
                   </b-button>
                 </div>
@@ -506,7 +506,7 @@
   import 'vue-select/dist/vue-select.css'
   import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection, savePermissionInfo} from "../../../utils";
   import _ from "lodash";
   import {validationMixin} from 'vuelidate';
 
@@ -801,6 +801,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportRoleButton() {
         let checkedAll = this.$refs.roleVuetable.checkedAllStatus;
         let checkedIds = this.$refs.roleVuetable.selectedTo;
@@ -920,6 +923,7 @@
                     permanent: false
                   });
                   this.$refs.roleVuetable.reload();
+                  savePermissionInfo(response.data.data.permission);
                   break;
                 default:
 
@@ -953,6 +957,7 @@
                   });
                   this.deletingRole = null;
                   this.$refs.roleVuetable.refresh();
+                  savePermissionInfo(response.data.data.permission);
                   break;
                 case responseMessages['has-resources']: // okay
                   this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
