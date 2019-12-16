@@ -61,10 +61,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAccessResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportAccessButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportAccessButton()" :disabled="checkPermItem('access_log_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintAccessButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintAccessButton()" :disabled="checkPermItem('access_log_print')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -153,10 +153,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onOperatingResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportOperatingButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportOperatingButton()" :disabled="checkPermItem('audit_log_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintOperatingButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintOperatingButton()" :disabled="checkPermItem('audit_log_print')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -204,6 +204,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
+  import {checkPermissionItem} from "../../../utils";
 
 
   export default {
@@ -364,7 +365,9 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportAccessButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -373,7 +376,7 @@
           'filter': this.accessFilter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/operating-log/access/export`;
+        let link = `log-management/operating-log/access`;
         downLoadFileFromServer(link, params, 'access-log');
       },
       onPrintAccessButton() {
@@ -384,7 +387,7 @@
           'filter': this.accessFilter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/operating-log/access/print`;
+        let link = `log-management/operating-log/access/pdf`;
         printFileFromServer(link, params);
       },
       onExportOperatingButton() {

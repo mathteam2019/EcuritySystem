@@ -256,7 +256,11 @@
         </div>
 
         <div class="text-right mr-3 mt-3">
-          <b-button size="sm" variant="info default" class="mr-3" @click="savePlatFormData()">
+          <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()" :disabled="checkPermItem('platform_check_modify')">
+            <i class="icofont-save"></i>
+            {{$t('permission-management.permission-control.save')}}
+          </b-button>
+          <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()" :disabled="checkPermItem('platform_other_modify')">
             <i class="icofont-save"></i>
             {{$t('permission-management.permission-control.save')}}
           </b-button>
@@ -316,7 +320,7 @@
                       <div>
 
                         <b-button
-                          size="sm"
+                          size="sm" :disabled="checkPermItem('scan_param_modify')"
                           variant="info default btn-square"
                           @click="onAction('modify', props.rowData)">
                           <i class="icofont-edit"></i>
@@ -527,21 +531,11 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <!--<b-button v-if="scanForm.status === 'inactive'" @click="onAction('activate')" variant="success default"
-                        size="sm"><i
-                class="icofont-check-circled"></i> {{
-                $t('permission-management.action-make-active') }}
-              </b-button>
-              <b-button v-if="scanForm.status === 'active'" @click="onAction('inactivate')" variant="warning default"
-                        size="sm"><i
-                class="icofont-ban"></i> {{
-                $t('permission-management.action-make-inactive') }}
-              </b-button>-->
-              <b-button  @click="onSaveScanFormData()" variant="success default"
+              <b-button  @click="onSaveScanFormData()" variant="success default" :disabled="checkPermItem('scan_param_modify')"
                         size="sm"><i class="icofont-save"></i>
                 {{ $t('permission-management.save-button') }}
               </b-button>
-              <b-button @click="onAction('back')" variant="info default" size="sm"><i
+              <b-button @click="onAction('back')" variant="info default" size="sm" ><i
                 class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
@@ -595,6 +589,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required, minValue, maxValue} = require('vuelidate/lib/validators');
 
@@ -748,10 +743,10 @@
           deviceTrafficMiddle: null,
         },
         dataStorageOptions: [
-          {value: 'business', text: this.$t('system-setting.storage-business')},
-          {value: 'cartoon', text: this.$t('system-setting.storage-cartoon')},
-          {value: 'conversion', text: this.$t('system-setting.storage-conversion')},
-          {value: 'original', text: this.$t('system-setting.storage-original')},
+          {value: '1000002201', text: this.$t('system-setting.storage-business')},
+          {value: '1000002202', text: this.$t('system-setting.storage-cartoon')},
+          {value: '1000002203', text: this.$t('system-setting.storage-conversion')},
+          {value: '1000002204', text: this.$t('system-setting.storage-original')},
         ],
         levelOptions: [
           {value: 10, text: '10'},
@@ -785,6 +780,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       hideModal(modal) {
         this.$refs[modal].hide();
       },

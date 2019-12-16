@@ -79,7 +79,6 @@
                         size="sm" @click="onAction('edit',props.rowData)"
                         variant="primary default btn-square"
                         :disabled="props.rowData.status === '1000000701' || checkPermItem('field_modify')">
-                        >
                         <i class="icofont-edit"></i>
                       </b-button>
 
@@ -215,9 +214,6 @@
                   <b-button @click="onAction('save')" size="sm" variant="success default" v-if="pageStatus !== 'show'">
                     <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <!--<b-button v-if="siteForm.status === '1000000702' && pageStatus !== 'create'" @click="onAction('1000000701',siteForm)" size="sm" variant="success default">
-                    <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
-                  </b-button>-->
                   <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
                             v-if="pageStatus !== 'create' || checkPermItem('field_delete')">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
@@ -382,17 +378,17 @@
 
 
 <script>
-  import _ from 'lodash';
+
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import Vue2OrgTree from '../../../components/vue2-org-tree'
-  import 'vue-select/dist/vue-select.css'
   import {validationMixin} from 'vuelidate';
 
   import {apiBaseUrl} from "../../../constants/config";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -447,11 +443,35 @@
       },
 
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+        let getLevel = (org) => {
+
+          let getParent = (org) => {
+            for (let i = 0; i < newVal.length; i++) {
+              if (newVal[i].fieldId == org.parentFieldId) {
+                return newVal[i];
+              }
+            }
+            return null;
+          };
+          let stepValue = org;
+          let level = 0;
+          while (getParent(stepValue) !== null) {
+            stepValue = getParent(stepValue);
+            level++;
+          }
+          return level;
+        };
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
         this.superSiteOptions = [];
         this.superSiteOptions = newVal.map(site => ({
-          text: site.fieldDesignation,
-          value: site.fieldId
+          value: site.fieldId,
+          html: `${generateSpace(getLevel(site))}${site.fieldDesignation}`
         }));
         if (this.superSiteOptions.length === 0)
           this.superSiteOptions.push({
@@ -645,12 +665,6 @@
         return getDictData(dataCode, dicId);
       },
 
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
@@ -673,7 +687,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `site-management/field/print`;
+        let link = `site-management/field/pdf`;
         printFileFromServer(link, params);
       },
 

@@ -36,13 +36,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_template_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_template_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_template_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -66,26 +66,26 @@
                 </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === '1000000701'"
+                            size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_template_modify')"
                             variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status=='1000000702'"
-                    size="sm" @click="onAction('activate',props.rowData)"
+                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_template_update_status')"
                     variant="success default btn-square"
                   >
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='1000000701'"
+                    v-if="props.rowData.status=='1000000701'" :disabled="checkPermItem('device_template_update_status')"
                     size="sm" @click="onAction('inactivate',props.rowData)"
                     variant="warning default btn-square"
                   >
                     <i class="icofont-ban"></i>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === '1000000701'"
+                            size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_template_delete')"
                             variant="danger default btn-square">
                     <i class="icofont-bin"></i>
                   </b-button>
@@ -175,7 +175,7 @@
                       </b-form-group>
                     </b-col>
                     <b-col class="d-flex">
-                      <b-button size="sm" variant="success default" class="align-self-center" @click="onSaveIndicator()">
+                      <b-button size="sm" variant="success default" class="align-self-center" @click="onSaveIndicator()" :disabled="checkPermItem('device_indicator_create')">
                         <i class="icofont-save"></i> {{$t('permission-management.save')}}
                       </b-button>
                     </b-col>
@@ -197,12 +197,12 @@
                       <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
                     </div>
                     <div slot="required" slot-scope="props">
-                      <b-button v-if="props.rowData.isNull === 'yes'"
+                      <b-button v-if="props.rowData.isNull === 'yes'" :disabled="checkPermItem('device_indicator_update_is_null')"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="success default">
                         <i class="icofont-check-alt"></i>&nbsp;{{$t('device-management.document-template.yes')}}
                       </b-button>
-                      <b-button v-if="props.rowData.isNull === 'no'"
+                      <b-button v-if="props.rowData.isNull === 'no'" :disabled="checkPermItem('device_indicator_update_is_null')"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="light default">
                         <i class="icofont-close-line"></i>&nbsp;{{$t('device-management.document-template.no')}}
@@ -210,7 +210,7 @@
                     </div>
                     <div slot="action" slot-scope="props">
                       <b-button
-                        size="sm" @click="onRemoveIndicator(props.rowData,props.rowIndex)"
+                        size="sm" @click="onRemoveIndicator(props.rowData,props.rowIndex)" :disabled="checkPermItem('device_indicator_delete')"
                         variant="danger default btn-square">
                         <i class="icofont-bin"></i>
                       </b-button>
@@ -231,16 +231,16 @@
                 {{$t('device-management.save')}}
               </b-button>
               <b-button v-if="basicForm.status === '1000000701'" @click="onAction('inactivate',basicForm)" size="sm"
-                        variant="warning default">
+                        variant="warning default" :disabled="checkPermItem('device_template_update_status')">
                 <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
               </b-button>
               <b-button v-if="basicForm.status === '1000000702' && pageStatus !=='create'"
-                        @click="onAction('activate',basicForm)" size="sm"
+                        @click="onAction('activate',basicForm)" size="sm" :disabled="checkPermItem('device_template_update_status')"
                         variant="success default">
                 <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
               </b-button>
               <b-button v-if="basicForm.status === '1000000702'&& pageStatus !=='create'"
-                        @click="onAction('delete',basicForm)" size="sm"
+                        @click="onAction('delete',basicForm)" size="sm" :disabled="checkPermItem('device_template_delete')"
                         variant="danger default">
                 <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
               </b-button>
@@ -282,13 +282,13 @@
   </div>
 </template>
 <script>
-  import _ from 'lodash';
   import {apiBaseUrl} from '../../../constants/config'
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem, getDicDataByDicIdForOptions} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -349,12 +349,7 @@
         },
         categoryFilterData: [],
         categorySelectOptions: [],
-        manufacturerOptions: [
-          {text: "同方威视", value: "0"},
-          {text: "海康威视", value: '1'},
-          {text: "大华股份", value: '2'},
-          {text: "华为", value: '3'}
-        ],
+        manufacturerOptions: [],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-template/archive-template/get-by-filter-and-page`,
           perPage: 10,
@@ -488,10 +483,16 @@
     },
     mounted() {
       this.getCategoryData();
+      this.getManufacturerOptions();
       this.$refs.vuetable.$parent.transform = this.transformTemplateTable.bind(this);
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+      getManufacturerOptions(){
+        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -511,7 +512,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-template/archive-template/print`;
+        let link = `device-management/document-template/archive-template/pdf`;
         printFileFromServer(link,params);
       },
 
