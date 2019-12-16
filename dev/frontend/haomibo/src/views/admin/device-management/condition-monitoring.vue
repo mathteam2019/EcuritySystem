@@ -411,9 +411,9 @@
                   <b-col cols="4" class="left-side d-flex flex-column align-items-center justify-content-between">
                     <div class="action d-flex flex-column">
                       <b-button variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
-                      <b-button class="default" size="xs" :variant="['WaitToStart','Preparing'].includes(item.currentStatus)?'info skyblue':
-                      ['Executing','OkFinished','OkReady'].includes(item.currentStatus)?'success':
-                      ['WarnContinuing','WarnFinished'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
+                      <b-button class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
+                      ['2','3','4'].includes(item.currentStatus)?'success':
+                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
                     <div class="img">
                       <img v-if="item.imageUrl" :src="item.imageUrl">
@@ -560,7 +560,12 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {getDirection} from "../../../utils";
+  import {
+    checkPermissionItem,
+    getDeviceDicDataByDicIdForOptions,
+    getDicDataByDicIdForOptions,
+    getDirection
+  } from "../../../utils";
   import Vue from 'vue'
   import ECharts from 'vue-echarts'
   import 'echarts/lib/chart/line';
@@ -598,25 +603,13 @@
       this.getCategoryData();
       this.getSiteData();
       this.getDataFetch();
+      this.getDeviceDicData();
     },
     data() {
       return {
-        manufacturerDicData: {
-          '0': "同方威视",
-          '1': "海康威视",
-          '2': "大华股份",
-          '3': "华为"
-        },
-        currentFlowDicData: [
-          {text: "扫描", value: "Rescan"},
-          {text: "空气校准", value: 'AirCalibrate'},
-        ],
-        currentStatusDicData: [
-          {text: "未执行", value: "Preparing"},
-          {text: "执行中", value: "WarnContinuing"},
-          {text: "正常待机", value: "OkFinished"},
-          {text: "停止执行", value: "ErrorStopped"},
-        ],
+        manufacturerDicData: [],
+        currentFlowDicData: [],
+        currentStatusDicData: [],
         deviceStatusDicData: [
           {text: "急停按下", value: "0"},
           {text: "急停弹起", value: "1"},
@@ -711,6 +704,14 @@
       }
     },
     methods: {
+      getDeviceDicData(){
+        this.manufacturerDicData =  getDicDataByDicIdForOptions(9);
+        this.currentFlowDicData = getDeviceDicDataByDicIdForOptions(10);
+        this.currentStatusDicData = getDeviceDicDataByDicIdForOptions(11);
+      },
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       generateChartData(data,hValue,mValue) {
         let xValues = data.timeList;
         let yValues = data.countList;
@@ -776,7 +777,7 @@
           temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
           temp.category = temp.device ? temp.device.archive.archiveTemplate.deviceCategory.categoryName : '';
-          temp.manufacturerName = temp.manufacturer ? this.manufacturerDicData[temp.manufacturer] : '';
+          temp.manufacturerName = findDicTextData(this.manufacturerDicData,temp.manufacturer);
           temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
           temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
           temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;

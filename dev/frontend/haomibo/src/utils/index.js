@@ -229,6 +229,23 @@ export const getDicDataByDicIdForOptions = (dicId) => {
   return [];
 };
 
+export const getDeviceDicDataByDicIdForOptions = (dicId) => {
+  let data = localStorage.getItem('deviceDicDataGroupByDicId');
+  if (data == null)
+    return [];
+  data = JSON.parse(data);
+  let options = [];
+  if (Object.keys(data).indexOf(dicId + "") !== -1) {
+    data[dicId].forEach(item => {
+      options.push({
+        value: item.dataCode, text: item.dataValue
+      })
+    });
+    return options;
+  }
+  return [];
+};
+
 export const getLoginInfo = () => {
   let loginInfo = localStorage.getItem('loginInfo');
   try {
