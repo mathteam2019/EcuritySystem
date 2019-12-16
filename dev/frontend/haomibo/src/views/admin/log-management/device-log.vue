@@ -92,10 +92,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onDeviceResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_log_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_log_print')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -199,10 +199,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onJudgeResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('judge')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('judge')" :disabled="checkPermItem('device_log_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('judge')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('judge')" :disabled="checkPermItem('device_log_print')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -306,10 +306,10 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onManualResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('manual')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton('manual')" :disabled="checkPermItem('device_log_export')">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('manual')">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton('manual')" :disabled="checkPermItem('device_log_print')">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
                   </b-button>
                 </div>
@@ -364,6 +364,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
+  import {checkPermissionItem} from "../../../utils";
 
   export default {
     components: {
@@ -616,6 +617,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(page = 'device') {
         let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
@@ -626,7 +630,7 @@
           'filter': filter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/device-log/export`;
+        let link = `log-management/device-log`;
         downLoadFileFromServer(link, params, 'device-log');
       },
       onPrintButton(page = 'device') {
@@ -639,7 +643,7 @@
           'filter': filter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/device-log/print`;
+        let link = `log-management/device-log/pdf`;
         printFileFromServer(link, params);
       },
 
