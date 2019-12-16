@@ -40,12 +40,12 @@
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('permission-management.status')">
-                      <b-form-select v-model="filter.status" :options="statusOption" plain/>
+                      <b-form-select v-model="filter.status" :options="statusSelectData" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
                     <b-form-group :label="$t('permission-management.gender')">
-                      <b-form-select v-model="filter.gender" :options="genderFilterOption" plain/>
+                      <b-form-select v-model="filter.gender" :options="genderFilterOptions" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col>
@@ -92,12 +92,6 @@
                     <template slot="userNumber" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show', props.rowData, props.rowIndex)">{{ props.rowData.userNumber }}</span>
                     </template>
-                    <template slot="gender" slot-scope="props">
-                      <span>{{getDictDataValue(props.rowData.gender)}}</span>
-                    </template>
-                    <template slot="status" slot-scope="props">
-                      <span>{{getDictDataValue(props.rowData.status)}}</span>
-                    </template>
                     <template slot="actions" slot-scope="props">
                       <div>
 
@@ -122,8 +116,8 @@
                           v-if="props.rowData.status=='1000000302'"
                           size="sm"
                           variant="success default btn-square"
-                          @click="onAction('activate', props.rowData, props.rowIndex)">
-                          :disabled="checkPermItem('user_update_status')"
+                          @click="onAction('activate', props.rowData, props.rowIndex)"
+                          :disabled="checkPermItem('user_update_status')">
                           <i class="icofont-check-circled"></i>
                         </b-button>
 
@@ -244,7 +238,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.gender" :options="genderOption" plain
+                  <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
                                  :state="!$v.profileForm.gender.$dirty ? null : !$v.profileForm.gender.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.profileForm.gender.required) ?
@@ -289,13 +283,13 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.education')}}</template>
-                  <b-form-select v-model="profileForm.education" :options="educationOption" plain/>
+                  <b-form-select v-model="profileForm.education" :options="educationOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.degree')}}</template>
-                  <b-form-select v-model="profileForm.degree" :options="degreeOption" plain/>
+                  <b-form-select v-model="profileForm.degree" :options="degreeOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -430,7 +424,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.gender" :options="genderOption" plain
+                  <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
                   />
                 </b-form-group>
               </b-col>
@@ -463,13 +457,13 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.education')}}</template>
-                  <b-form-select v-model="profileForm.education" :options="educationOption" plain/>
+                  <b-form-select v-model="profileForm.education" :options="educationOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.degree')}}</template>
-                  <b-form-select v-model="profileForm.degree" :options="degreeOption" plain/>
+                  <b-form-select v-model="profileForm.degree" :options="degreeOptions" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -761,7 +755,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {checkPermissionItem,getDictData, checkBoxListDic, getDirection} from "../../../utils";
+  import {checkPermissionItem,getDirection} from "../../../utils";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -847,11 +841,6 @@
     },
     mounted() {
 
-      this.getStatusOption();
-      this.getGenderOption();
-      this.getEducationOption();
-      this.getDegreeOption();
-
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
@@ -896,62 +885,42 @@
         },
         orgData: [],
         userData: [],
-
-        statusData:[],
-        genderData:[],
-        genderFilterData:[],
-        educationData:[],
-        degreeData:[],
-
         orgUserTreeData: [],
         direction: getDirection().direction,
         genderOptions: [
-          {value: 'male', text: this.$t('permission-management.male')},
-          {value: 'female', text: this.$t('permission-management.female')},
-          {value: 'other', text: this.$t('permission-management.unknown')},
+          {value: '1000000001', text: this.$t('permission-management.male')},
+          {value: '1000000002', text: this.$t('permission-management.female')},
         ],
         genderFilterOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'male', text: this.$t('permission-management.male')},
-          {value: 'female', text: this.$t('permission-management.female')},
-          {value: 'other', text: this.$t('permission-management.unknown')},
+          {value: '1000000001', text: this.$t('permission-management.male')},
+          {value: '1000000002', text: this.$t('permission-management.female')},
         ],
         statusSelectData: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')},
-          {value: 'pending', text: this.$t('permission-management.pending')},
-          {value: 'blocked', text: this.$t('permission-management.blocked')},
+          {value: '1000000301', text: this.$t('permission-management.active')},
+          {value: '1000000302', text: this.$t('permission-management.inactive')},
+          {value: '1000000304', text: this.$t('permission-management.pending')},
+          {value: '1000000303', text: this.$t('permission-management.blocked')},
         ],
         orgNameSelectData: {},
-        categorySelectData: [
-          {value: null, text: this.$t('permission-management.all')},
-          {value: 'admin', text: this.$t('permission-management.admin')},
-          {value: 'normal', text: this.$t('permission-management.normal-staff')}
-        ],
         educationOptions: [
-          {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
-          {value: 'student', text: this.$t('permission-management.student')},
-          {value: 'master_student', text: this.$t('permission-management.master_student')},
-          {value: 'doctor_student', text: this.$t('permission-management.doctor_student')},
-          {value: 'other', text: this.$t('permission-management.other')},
+          {value: '1000000101', text: this.$t('permission-management.belowcollege')},
+          {value: '1000000102', text: this.$t('permission-management.student')},
+          {value: '1000000103', text: this.$t('permission-management.master_student')},
+          {value: '1000000104', text: this.$t('permission-management.doctor_student')},
+          {value: '1000000105', text: this.$t('permission-management.other')},
         ],
         degreeOptions: [
-          {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
-          {value: 'bachelor', text: this.$t('permission-management.bachelor')},
-          {value: 'master', text: this.$t('permission-management.master')},
-          {value: 'doctor', text: this.$t('permission-management.doctor')},
-          {value: 'other', text: this.$t('permission-management.other')},
+          {value: '1000000201', text: this.$t('permission-management.belowcollege')},
+          {value: '1000000202', text: this.$t('permission-management.bachelor')},
+          {value: '1000000203', text: this.$t('permission-management.master')},
+          {value: '1000000204', text: this.$t('permission-management.doctor')},
+          {value: '1000000205', text: this.$t('permission-management.other')},
         ],
 
-        statusOption:[],
-        genderOption:[],
-        genderFilterOption:[],
-        educationOption:[],
-        degreeOption:[],
-
         profileForm: {
-          status: 'inactive',
+          status: '1000000102',
           userId: 0,
           avatar: '',
           userName: '',
@@ -971,11 +940,6 @@
           note: '',
           portrait: null
         },
-        items: [
-          {id: 1, first_name: 'Mark', last_name: 'Otto', username: '@mdo'},
-          {id: 2, first_name: 'Jacob', last_name: 'Thornton', username: '@fat'},
-          {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
-        ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
           fields: [
@@ -1010,39 +974,37 @@
               width: '12%'
             },
             {
-              name: '__slot:gender',
+              name: 'gender',
               title: this.$t('permission-management.gender'),
               sortField: 'gender',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              // callback: (value) => {
-              //   const dictionary = {
-              //     "male": `<span>${this.$t('permission-management.male')}</span>`,
-              //     "female": `<span>${this.$t('permission-management.female')}</span>`,
-              //     "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
-              //   };
-              //   if (!dictionary.hasOwnProperty(value)) return '';
-              //   return dictionary[value];
-              // },
+              callback: (value) => {
+                const dictionary = {
+                  "1000000001": `<span>${this.$t('permission-management.male')}</span>`,
+                  "1000000002": `<span>${this.$t('permission-management.female')}</span>`,
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              },
               width: '11%'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               title: this.$t('permission-management.th-status'),
               sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              // callback: (value) => {
-              //
-              //   const dictionary = {
-              //     "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
-              //     "inactive": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
-              //     "blocked": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
-              //     "pending": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
-              //   };
-              //   if (!dictionary.hasOwnProperty(value)) return '';
-              //   return dictionary[value];
-              // },
+              callback: (value) => {
+                const dictionary = {
+                  "1000000301": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
+                  "1000000302": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
+                  "1000000303": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
+                  "1000000304": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              },
               width: '11%',
             },
             {
@@ -1132,88 +1094,6 @@
       'userGroupTableItems.perPage': function (newVal) {
         this.$refs.userGroupTable.refresh();
       },
-
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOption = [];
-        this.statusOption = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOption.length === 0)
-          this.statusOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      genderFilterData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.genderFilterOption = [];
-        this.genderFilterOption = newVal.map(gender => ({
-          text: gender.dataValue,
-          value: gender.dataCode
-        }));
-        this.genderFilterOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.genderFilterOption.length === 0)
-          this.genderFilterOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      genderData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.genderOption = [];
-        this.genderOption = newVal.map(gender => ({
-          text: gender.dataValue,
-          value: gender.dataCode
-        }));
-
-        if (this.genderOption.length === 0)
-          this.genderOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-
-      },
-
-      educationData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.educationOption = [];
-        this.educationOption = newVal.map(education => ({
-          text: education.dataValue,
-          value: education.dataCode
-        }));
-
-        if (this.educationOption.length === 0)
-          this.educationOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      degreeData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.degreeOption = [];
-        this.degreeOption = newVal.map(degree => ({
-          text: degree.dataValue,
-          value: degree.dataCode
-        }));
-        if (this.degreeOption.length === 0)
-          this.degreeOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
       orgData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let nest = (items, id = 0) =>
@@ -1298,35 +1178,6 @@
       }
     },
     methods: {
-
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOption() {
-        let data = checkBoxListDic(4);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
-      getGenderOption() {
-        let data = checkBoxListDic(1);
-        this.genderData = data;
-        this.genderFilterData = data;
-        //console.log(this.statusData);
-      },
-      getEducationOption() {
-        let data = checkBoxListDic(2);
-        this.educationData = data;
-        //console.log(this.statusData);
-      },
-      getDegreeOption() {
-        let data = checkBoxListDic(3);
-        this.degreeData = data;
-        //console.log(this.statusData);
-      },
-
-
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
@@ -1338,7 +1189,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user/export`;
+        let link = `permission-management/user-management/user`;
         downLoadFileFromServer(link, params, 'user');
       },
       onPrintUserButton() {
@@ -1450,11 +1301,11 @@
             this.fnShowItem(data);
             break;
           case 'reset-password':
-          case 'active':
+          case 'activate':
           case 'unblock':
             this.fnChangeItemStatus(userId, action);
             break;
-          case 'inactive':
+          case 'inactivate':
           case 'blocked':
             this.fnShowConfDiaglog(userId, action);
             break;
@@ -1509,8 +1360,12 @@
         if (action === '')
           action = this.promptTemp.action;
         let status = action;
-        if (status === 'unblock' || status === 'reset-password')
+        if (status === 'unblock' || status === 'reset-password' || status === 'inactivate')
           status = '1000000302';
+        else if(status === 'activate')
+          status = '1000000301';
+        else if(status === 'blocked')
+          status = '1000000303';
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
             'userId': userId,
@@ -1568,7 +1423,7 @@
       },
       onInitialUserData() {
         this.profileForm = {
-          status: 'inactive',
+          status: '1000000102',
           userId: 0,
           avatar: '',
           userName: '',
