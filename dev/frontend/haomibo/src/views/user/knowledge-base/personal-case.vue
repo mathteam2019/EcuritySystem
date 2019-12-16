@@ -146,7 +146,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
-  import {getDictData, checkBoxListDic, checkBoxListDeviceDic} from '../../../utils'
+  
 
   export default {
     components: {
