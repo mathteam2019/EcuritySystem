@@ -27,7 +27,7 @@
 
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
 
@@ -74,9 +74,6 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.categoryNumber }}</span>
                 </div>
-                <template slot="status" slot-scope="props">
-                  <span>{{getDictDataValue(props.rowData.status)}}</span>
-                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm" :disabled="props.rowData.status === '1000000701'"
@@ -315,7 +312,6 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -351,7 +347,6 @@
       }
     },
     mounted() {
-      this.getStatusOptions();
       this.getCategoryData();
       this.$refs.deviceClassifyTable.$parent.transform = this.transformCategoryTable.bind(this);
     },
@@ -376,7 +371,6 @@
           note: null
         },
 
-        statusData:[],
         deviceClassifyTableItems: {
           apiUrl: `${apiBaseUrl}/device-management/device-classify/category/get-by-filter-and-page`,
           perPage: 10,
@@ -408,11 +402,19 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
 
             },
             {
@@ -460,25 +462,14 @@
           ]
         },
 
-        statusOptions:[],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
       }
     },
     methods: {
-
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
 
       onExportButton(){
         let checkedAll = this.$refs.deviceClassifyTable.checkedAllStatus;
@@ -488,7 +479,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-classify/category/export`;
+        let link = `device-management/device-classify/category`;
         downLoadFileFromServer(link,params,'category');
       },
       onPrintButton(){
@@ -544,7 +535,7 @@
             break;
           case 'activate':
             this.initialize(data);
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);
@@ -723,23 +714,6 @@
           this.classifyForm.parentCategoryNumber = this.$t('system-setting.none');
       },
 
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.parentClassifyOptions = [];
