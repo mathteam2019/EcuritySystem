@@ -258,6 +258,7 @@ public class AssignPermissionManagementController extends BaseController {
 
 
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
             value.setFilters(filters);
 
@@ -291,6 +292,7 @@ public class AssignPermissionManagementController extends BaseController {
 
 
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
             value.setFilters(filters);
 
