@@ -11,7 +11,7 @@ export default (to, from, next) => {
 
     localStorage.removeItem('loginInfo');
 
-    next('/user/auth/login');
+    next('/auth/login');
 
   }
 };

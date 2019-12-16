@@ -123,7 +123,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.validScanRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.validScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>有效扫描率</span></div>
@@ -155,7 +155,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.invalidScanRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.invalidScanRate)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>无效扫描率</span></div>
@@ -189,7 +189,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.passedScanRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.passedScanRate)}}%</span>
                 <span v-else>0</span>
                   </div>
                   <div><span>通过率</span></div>
@@ -221,7 +221,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.alarmScanRate)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.alarmScanRate)}}%</span>
                 <span v-else>0</span>
                   </div>
                   <div><span>报警率</span></div>

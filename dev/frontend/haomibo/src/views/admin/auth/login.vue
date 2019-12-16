@@ -189,7 +189,7 @@
   <b-row class="h-100 auth-login-page">
     <img class="position-absolute logo" src="../../../assets/img/logo.png"/>
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
-      <h2 class="mb-5 text-white header-title">{{$t('login.admin-title')}}</h2>
+      <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
         <b-col cols="9">
           <div class="form-side line-form">

@@ -124,7 +124,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>无查获率</span></div>
@@ -157,7 +157,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>查获率</span></div>
@@ -175,7 +175,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.floor(preViewData.totalStatistics.avgDuration)%60}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.round(preViewData.totalStatistics.avgDuration)%60}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>手检平均时长</span></div>

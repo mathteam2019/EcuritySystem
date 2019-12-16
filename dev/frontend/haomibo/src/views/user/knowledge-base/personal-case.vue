@@ -6,6 +6,7 @@
     cursor: pointer;
     background-color: #007bff;
   }
+
   .operation-icon {
     width: 24px;
     height: 24px;
@@ -33,13 +34,13 @@
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.operating-mode')">
-                  <b-form-select v-model="filter.modeName"  :options="modeOptions" plain/>
+                  <b-form-select v-model="filter.modeName" :options="modeOption" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-result')">
-                  <b-form-select v-model="filter.taskResult"  :options="resultTypeOptions" plain/>
+                  <b-form-select v-model="filter.taskResult" :options="handResultOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -78,7 +79,7 @@
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default"  @click="onGeneratePdfButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -95,7 +96,7 @@
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
-                @vuetable:checkbox-toggled-all = "onCheckEvent"
+                @vuetable:checkbox-toggled-all="onCheckEvent"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
@@ -104,11 +105,15 @@
                     <span class="cursor-p text-primary" v-if="props.rowData.task!=null">
                       {{props.rowData.task.taskNumber}}
                     </span>
-                    <span v-else> </span>
+                  <span v-else> </span>
                 </template>
                 <template slot="scanImage" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImage != null" :src="props.rowData.scanImageUrl" class="operation-icon" />
+                  <b-img v-if="props.rowData.scanImage != null" :src="props.rowData.scanImageUrl"
+                         class="operation-icon"/>
                   <b-img v-else/>
+                </template>
+                <template slot="handTaskResult" slot-scope="props">
+                  <div>{{getDictDataValue(props.rowData.handTaskResult, 6)}}</div>
                 </template>
                 <div slot="operating" slot-scope="props">
                   <b-button
@@ -136,23 +141,24 @@
   </div>
 </template>
 <script>
-    import {apiBaseUrl} from "../../../constants/config";
-    import Vuetable from '../../../components/Vuetable2/Vuetable'
-    import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-    import {getApiManager} from '../../../api';
-    import {responseMessages} from '../../../constants/response-messages';
-    import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-    import Switches from 'vue-switches';
+  import {apiBaseUrl} from "../../../constants/config";
+  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
+  import {getApiManager} from '../../../api';
+  import {responseMessages} from '../../../constants/response-messages';
+  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import Switches from 'vue-switches';
+  import {getDictData, checkBoxListDic, checkBoxListDeviceDic} from '../../../utils'
 
-
-    export default {
+  export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
 
     mounted() {
-      //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+      this.getModeOption();
+      this.gethandResultOption();
       this.getSiteOption();
 
     },
@@ -160,20 +166,22 @@
     data() {
       return {
         pageStatus: 'list',
-        isExpanded:false,
-        isCheckAll:false,
-        idList:[],
+        isExpanded: false,
+        isCheckAll: false,
+        idList: [],
         filter: {
-          fieldId : null,
-              caseStatus:"success_approval",
-              taskNumber: null,
-              modeName: null,
-              taskResult: null,
-              fieldDesignation:null,
-              handGoods:null,
-          },
+          fieldId: null,
+          caseStatus: "success_approval",
+          taskNumber: null,
+          modeName: null,
+          taskResult: null,
+          fieldDesignation: null,
+          handGoods: null,
+        },
 
         siteData: [],
+        modeData: [],
+        handResultData: [],
         modeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: '1000001304', text: '安检仪+审图端+手检端'},
@@ -188,12 +196,14 @@
           {value: 'unknown', text: this.$t('knowledge-base.land-border')},
         ],
         resultTypeOptions: [
-	{value: null, text: this.$t('personal-inspection.all')},
-	{value: 'doubt', text: this.$t('knowledge-base.suspect')},
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 'doubt', text: this.$t('knowledge-base.suspect')},
           {value: 'nodoubt', text: this.$t('knowledge-base.no-suspect')},
           {value: 'seized', text: this.$t('knowledge-base.seized')},
           {value: 'noseizure', text: this.$t('knowledge-base.no-seized')},
         ],
+        modeOption: [],
+        handResultOption: [],
         onSiteOption: [],
         pendingListTableItems: {
           apiUrl: `${apiBaseUrl}/knowledge-base/get-by-filter-and-page`,
@@ -225,45 +235,32 @@
             },
 
             {
-              name: 'handTaskResult',
+              name: '__slot:handTaskResult',
               title: this.$t('knowledge-base.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handTaskResult) => {
 
-                const dictionary = {
-                  "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
-                  "seized": `<span style="color:#e8a23e;">有查获</span>`,
-                  "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
-                  "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
-                  "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
-                };
-
-                if(handTaskResult==null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
-                return dictionary[handTaskResult];
-              }
             },
             {
               name: 'scanDevice',
               title: this.$t('knowledge-base.site'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (scanDevice) => {
-                    if(scanDevice==null)  return '';
-                    if(scanDevice.field==null)  return '';
-                    return scanDevice.field.fieldDesignation;
-                }
+              callback: (scanDevice) => {
+                if (scanDevice == null) return '';
+                if (scanDevice.field == null) return '';
+                return scanDevice.field.fieldDesignation;
+              }
             },
             {
               name: 'scanDevice',
               title: this.$t('knowledge-base.channel'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-                callback: (scanDevice) => {
-                    if(scanDevice==null)  return '';
-                    return scanDevice.devicePassageWay;
-                }
+              callback: (scanDevice) => {
+                if (scanDevice == null) return '';
+                return scanDevice.devicePassageWay;
+              }
             },
 
             {
@@ -288,7 +285,6 @@
         this.$refs.pendingListTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -303,18 +299,53 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
+      },
+
+      modeData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.modeOption = [];
+        this.modeOption = newVal.map(mode => ({
+          text: mode.dataValue,
+          value: mode.dataCode
+        }));
+        this.modeOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.modeOption.length === 0)
+          this.modeOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
+      handResultData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.handResultOption = [];
+        this.handResultOption = newVal.map(mode => ({
+          text: mode.dataValue,
+          value: mode.dataCode
+        }));
+        this.handResultOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.handResultOption.length === 0)
+          this.handResultOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
-      onCheckEvent(){
+      onCheckEvent() {
         //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
         let isCheck = this.isCheckAll;
         let cnt = this.$refs.pendingListTable.selectedTo.length;
-        console.log(cnt);
-        if(cnt === 0){
+
+        if (cnt === 0) {
           this.isCheckAll = false;
-        }
-        else {
+        } else {
           this.isCheckAll = true;
         }
         console.log(this.isCheckAll);
@@ -351,27 +382,24 @@
       },
       onSearchButton() {
         this.$refs.pendingListTable.refresh();
-
-        //this.$refs.pendingListTable.selectedTo.push(12);
       },
-      onResetButton(){
+      onResetButton() {
         this.filter = {
-            taskNumber: null,
-            modeName: null,
-            taskResult: null,
-	    fieldId:null,
-            fieldDesignation:null,
-            handGoods:null,
+          taskNumber: null,
+          modeName: null,
+          taskResult: null,
+          fieldId: null,
+          fieldDesignation: null,
+          handGoods: null,
         };
         //this.$refs.pendingListTable.refresh();
       },
 
-      onGenerateExcelButton(){
+      onGenerateExcelButton() {
         let str = "";
         if (this.isCheckAll === true) {
           str = "";
-        }
-        else {
+        } else {
           let cnt = this.$refs.pendingListTable.selectedTo.length;
           str = str + this.$refs.pendingListTable.selectedTo[0];
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
@@ -383,10 +411,10 @@
         }
         getApiManager()
           .post(`${apiBaseUrl}/knowledge-base/generate/personal/export`, {
-            'isAll' : this.isCheckAll,
-            'filter' : {"caseStatus": 'success_approval'},
-            'exportType' : 'excel',
-            'idList' : str
+            'isAll': this.isCheckAll,
+            'filter': {"caseStatus": 'success_approval'},
+            'exportType': 'excel',
+            'idList': str
           }, {
             responseType: 'blob'
           })
@@ -405,7 +433,7 @@
           });
       },
 
-      onGeneratePdfButton(){
+      onGeneratePdfButton() {
         let str = "";
         if (this.isCheckAll === true) {
           str = "";
@@ -421,10 +449,10 @@
         }
         getApiManager()
           .post(`${apiBaseUrl}/knowledge-base/generate/personal/print`, {
-            'isAll' : this.isCheckAll,
-            'filter' : {"caseStatus": 'success_approval'},
-            'exportType' : 'pdf',
-            'idList' : str
+            'isAll': this.isCheckAll,
+            'filter': {"caseStatus": 'success_approval'},
+            'exportType': 'pdf',
+            'idList': str
           }, {
             responseType: 'blob'
           })
@@ -444,41 +472,55 @@
 
       },
 
-        transform(response) {
+      getModeOption() {
+        let data = checkBoxListDic(13);
+        this.modeData = data;
+        //console.log(this.modeData);
+      },
 
-            let transformed = {};
+      gethandResultOption() {
+        let data = checkBoxListDeviceDic(6);
+        this.handResultData = data;
+      },
 
-            let data = response.data;
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+      transform(response) {
 
-            transformed.pagination = {
-                total: data.total,
-                per_page: data.per_page,
-                current_page: data.current_page,
-                last_page: data.last_page,
-                from: data.from,
-                to: data.to
-            };
+        let transformed = {};
 
-            transformed.data = [];
-            //transformed.idList = [];
-            let temp;
-            let idTemp;
-            for (let i = 0; i < data.data.length; i++) {
-                temp = data.data[i];
-                idTemp = data.data[i].caseDealId;
-                if(temp.scanImage!=null) {
-                  temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
-                }
-                transformed.data.push(temp);
-                this.idList.push(idTemp);
-                if(this.isCheckAll === true){
-                  this.$refs.pendingListTable.selectedTo.push(idTemp);
-                }
-            }
+        let data = response.data;
 
-            return transformed
+        transformed.pagination = {
+          total: data.total,
+          per_page: data.per_page,
+          current_page: data.current_page,
+          last_page: data.last_page,
+          from: data.from,
+          to: data.to
+        };
 
-        },
+        transformed.data = [];
+        //transformed.idList = [];
+        let temp;
+        let idTemp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          idTemp = data.data[i].caseDealId;
+          if (temp.scanImage != null) {
+            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          }
+          transformed.data.push(temp);
+          this.idList.push(idTemp);
+          if (this.isCheckAll === true) {
+            this.$refs.pendingListTable.selectedTo.push(idTemp);
+          }
+        }
+
+        return transformed
+
+      },
 
       pendingListTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
@@ -487,12 +529,12 @@
           perPage: this.pendingListTableItems.perPage,
 
           filter: {
-              caseStatus:this.filter.caseStatus,
-              taskNumber:this.filter.taskNumber,
-              modeName: this.filter.modeName,
-              taskResult: this.filter.taskResult,
-              fieldDesignation: this.filter.fieldDesignation,
-              handGoods: this.filter.handGoods,
+            caseStatus: this.filter.caseStatus,
+            taskNumber: this.filter.taskNumber,
+            modeName: this.filter.modeName,
+            taskResult: this.filter.taskResult,
+            fieldDesignation: this.filter.fieldDesignation,
+            handGoods: this.filter.handGoods,
           },
         });
       },
@@ -504,29 +546,29 @@
       },
 
       onAction(data) { // called when any action button is called from table
-                // call api
-                getApiManager()
-                    .post(`${apiBaseUrl}/knowledge-base/update-status`, {
-                        'caseId': data,
-                        'status': "submit_approval",
-                    })
-                    .then((response) => {
-                        let message = response.data.message;
-                        switch (message) {
-                            case responseMessages['ok']: // okay
-                                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
-                                    duration: 3000,
-                                    permanent: false
-                                });
-                                this.$refs.pendingListTable.refresh();
-                                break;
+        // call api
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/update-status`, {
+            'caseId': data,
+            'status': "submit_approval",
+          })
+          .then((response) => {
+            let message = response.data.message;
+            switch (message) {
+              case responseMessages['ok']: // okay
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.organization-activated-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                this.$refs.pendingListTable.refresh();
+                break;
 
-                        }
-                    })
-                    .catch((error) => {
-                    });
+            }
+          })
+          .catch((error) => {
+          });
 
-        },
+      },
     }
   }
 </script>

@@ -279,7 +279,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.active')">
-                      <b-form-select v-model="filter.status" :options="stateOptions" plain/>
+                      <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -595,6 +595,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required, minValue, maxValue} = require('vuelidate/lib/validators');
 
@@ -620,6 +621,7 @@
       }
     },
     mounted() {
+      this.getStatusOptions();
       this.getPlatFormData();
       this.getPlatFormOtherData();
       this.getScanParamsData();
@@ -629,6 +631,24 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
       scanParams: function (newVal) {
         let selectOptions = [];
         newVal.forEach((scan) => {
@@ -654,6 +674,9 @@
           deviceName: '',
           status: null
         },
+
+        statusData:[],
+        statusOptions:[],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
           {value: 'active', text: this.$t('permission-management.active')},
@@ -785,6 +808,12 @@
       }
     },
     methods: {
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+
       hideModal(modal) {
         this.$refs[modal].hide();
       },
