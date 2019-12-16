@@ -302,7 +302,7 @@ public class UserManagementController extends BaseController {
         Long userId;
 
         @NotNull
-        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED)
+        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED + "|" + SysUser.Status.PENDING)
         String status;
 
     }
