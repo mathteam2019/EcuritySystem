@@ -238,7 +238,13 @@
 <script>
   import {mapActions, mapGetters} from 'vuex';
   import {apiBaseUrl, localeOptions} from '../../constants/config'
-  import {getDirection, saveLoginInfo, scheduleRefreshToken, setDirection, saveDictionaryData, getDictData, checkBoxListDic} from '../../utils'
+  import {
+    getDirection,
+    saveLoginInfo,
+    scheduleRefreshToken,
+    setDirection,
+    saveDicDataGroupByDicId, savePermissionInfo
+  } from '../../utils'
   import {getApiManager} from "../../api";
   import {responseMessages} from "../../constants/response-messages";
 
@@ -323,12 +329,9 @@
                 }
 
                 saveLoginInfo(data);
+                savePermissionInfo(data.permission);
                 scheduleRefreshToken();
-                saveDictionaryData(data);
-                //getDictData('true',5);
-                // checkBoxListDic(13);
-
-
+                saveDicDataGroupByDicId(data);
                 this.$notify('success', this.$t('user.success'), this.$t(`user.login-success`), {
                   duration: 3000,
                   permanent: false

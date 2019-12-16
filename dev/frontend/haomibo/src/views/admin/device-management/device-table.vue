@@ -43,7 +43,7 @@
               </b-col>
               <b-col>
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -94,9 +94,6 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerial }}</span>
                 </div>
-                <template slot="status" slot-scope="props">
-                  <span>{{getDictDataValue(props.rowData.status)}}</span>
-                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button :disabled="props.rowData.status === '1000000701'" @click="onAction('edit',props.rowData)"
                             size="sm"
@@ -563,7 +560,6 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
   //todo need to remove after applying dictionaly
@@ -583,7 +579,6 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
-    this.getStatusOptions();
       this.getArchivesData();
       this.getCategoryData();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
@@ -617,8 +612,8 @@
         categorySelectOptions: [],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
         deviceTypeSelectOptions: [
           {value: 'device', text: this.$t('device-management.device-table.device')},
@@ -637,7 +632,6 @@
         ],
         selectedStatus: 'all',
         archivesSelectOptions: [],
-	 statusData:[],
         archivesData: [],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/device-table/device/get-by-filter-and-page`,
@@ -669,11 +663,19 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
 
             },
             {
@@ -713,8 +715,7 @@
             }
           ]
         },
-	
-	 statusOptions:[],
+
         filterOption: {
           deviceName: null,
           status: null,
@@ -737,7 +738,7 @@
           guid: '',
           image: null,
           imageUrl: null,
-          status: 'inactive'
+          status: '1000000702'
         },
         archiveForm: {
           name: '',
@@ -752,17 +753,6 @@
       }
     },
     methods: {
-    
-    getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
 
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -772,7 +762,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/export`;
+        let link = `device-management/device-table/device`;
         downLoadFileFromServer(link,params,'device');
       },
       onPrintButton(){
@@ -870,7 +860,7 @@
             guid: '',
             image: null,
             imageUrl: null,
-            status: 'inactive'
+            status: '1000000702'
           };
         else {
           if (Object.keys(data).includes('createdBy')) { //if getting data from table , needful to processing
@@ -919,7 +909,7 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.$refs['modal-inactive'].show();
@@ -1087,24 +1077,7 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
-      
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.categorySelectOptions = [];

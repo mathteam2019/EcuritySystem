@@ -24,7 +24,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('system-setting.status-active')">
-                      <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
+                      <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -72,9 +72,6 @@
                   >
                     <template slot="fieldSerial" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.fieldSerial }}</span>
-                    </template>
-                    <template slot="status" slot-scope="props">
-                      <span>{{getDictDataValue(props.rowData.status)}}</span>
                     </template>
                     <div slot="operating" slot-scope="props">
 
@@ -396,7 +393,6 @@
   import {apiBaseUrl} from "../../../constants/config";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import {getDictData, checkBoxListDic,checkPermissionItem} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -433,7 +429,6 @@
     mixins: [validationMixin],
     mounted() {
 
-      this.getStatusOptions();
       ///////////////////////////////////////////////////////////
       ////////////// Load site list from server /////////////////
       ///////////////////////////////////////////////////////////
@@ -449,24 +444,6 @@
         this.selectedParentSerial = getParentSerialName(this.siteData, newVal);
         if (this.selectedParentSerial === null)
           this.selectedParentSerial = this.$t('system-setting.none');
-      },
-
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
       },
 
       siteData: function (newVal, oldVal) {
@@ -493,10 +470,6 @@
           status: null,
           parentFieldDesignation: ''
         },
-
-        statusData: [],
-
-        statusOptions: [],
 
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/site-management/field/get-by-filter-and-page`,
@@ -529,11 +502,19 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               sortField: 'status',
               title: this.$t('system-setting.status-active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'parentFieldSerial',
@@ -593,8 +574,8 @@
         },
         stateOptions: [
           {value: null, text: this.$t('system-setting.status-all')},
-          {value: "active", text: this.$t('system-setting.status-active')},
-          {value: "inactive", text: this.$t('system-setting.status-inactive')},
+          {value: "1000000701", text: this.$t('system-setting.status-active')},
+          {value: "1000000702", text: this.$t('system-setting.status-inactive')},
         ],
         pageStatus: 'table', // table, create, edit, show
         selectedSite: '0000',
@@ -681,7 +662,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `site-management/field/export`;
+        let link = `site-management/field`;
         downLoadFileFromServer(link, params, 'site');
       },
       onPrintButton() {
@@ -722,7 +703,7 @@
             break;
           case 'activate':
             this.siteForm = data;
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);

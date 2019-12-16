@@ -279,7 +279,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('permission-management.active')">
-                      <b-form-select v-model="filter.status" :options="statusOptions" plain/>
+                      <b-form-select v-model="filter.status" :options="stateOptions" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -548,8 +548,8 @@
             </div>
           </b-col>
           <div class="position-absolute" style="left: 8%;bottom: 3%">
-            <img v-if="scanForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="scanForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="scanForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="scanForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
 
         </b-row>
@@ -558,7 +558,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.device-list.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -595,7 +595,6 @@
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
-  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required, minValue, maxValue} = require('vuelidate/lib/validators');
 
@@ -621,7 +620,6 @@
       }
     },
     mounted() {
-      this.getStatusOptions();
       this.getPlatFormData();
       this.getPlatFormOtherData();
       this.getScanParamsData();
@@ -631,24 +629,6 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
       scanParams: function (newVal) {
         let selectOptions = [];
         newVal.forEach((scan) => {
@@ -674,13 +654,10 @@
           deviceName: '',
           status: null
         },
-
-        statusData:[],
-        statusOptions:[],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/system-setting/scan-param/get-by-filter-and-page`,
@@ -735,8 +712,8 @@
         deviceSelectOptions: [],
         selectedDeviceId: 0,
         yesNoOptions: [
-          {value: 'yes', text: this.$t('system-setting.parameter-setting.yes')},
-          {value: 'no', text: this.$t('system-setting.parameter-setting.no')},
+          {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
+          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
         ],
         bitOptions: [
           {value: 1, text: 1},
@@ -808,12 +785,6 @@
       }
     },
     methods: {
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
       hideModal(modal) {
         this.$refs[modal].hide();
       },
@@ -837,7 +808,7 @@
             this.initializeSpanFormData(data);
             break;
           case 'activate':
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.$refs['modal-inactive'].show();

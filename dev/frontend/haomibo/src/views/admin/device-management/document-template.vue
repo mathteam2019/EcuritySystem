@@ -19,7 +19,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -64,9 +64,6 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.archivesTemplateNumber }}</span>
                 </div>
-                <template slot="status" slot-scope="props">
-                  <span>{{getDictDataValue(props.rowData.status)}}</span>
-                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm" :disabled="props.rowData.status === '1000000701'"
@@ -174,7 +171,7 @@
                     </b-col>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.isNull')">
-                        <b-form-select v-model="indicatorForm.isNull" :options="yesNoOption" plain/>
+                        <b-form-select v-model="indicatorForm.isNull" :options="yesNoOptions" plain/>
                       </b-form-group>
                     </b-col>
                     <b-col class="d-flex">
@@ -292,7 +289,6 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -333,8 +329,8 @@
         pageStatus: 'list',
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
         filterOption: {
           templateName: '',
@@ -359,8 +355,6 @@
           {text: "大华股份", value: '2'},
           {text: "华为", value: '3'}
         ],
-	 statusData:[],
-        yesNoData:[],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-template/archive-template/get-by-filter-and-page`,
           perPage: 10,
@@ -392,11 +386,19 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
 
             },
             {
@@ -429,17 +431,15 @@
           ]
         },
 
- statusOptions:[],
-        yesNoOption:[],
         yesNoOptions: [
-          {value: 'yes', text: this.$t('system-setting.parameter-setting.yes')},
-          {value: 'no', text: this.$t('system-setting.parameter-setting.no')},
+          {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
+          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
         ],
         indicatorForm: {
           indicatorsId: 0,
           indicatorsName: null,
           indicatorsUnit: null,
-          isNull: "yes"
+          isNull: "1000000601"
         },
 
         indicatorTableItems: {
@@ -487,26 +487,10 @@
       }
     },
     mounted() {
-    this.getStatusOptions();
-    this.getYesNoOption();
       this.getCategoryData();
       this.$refs.vuetable.$parent.transform = this.transformTemplateTable.bind(this);
     },
     methods: {
-
-    getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-      getYesNoOption() {
-        let data = checkBoxListDic(7);
-        this.yesNoData = data;
-      },
 
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -516,7 +500,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-template/archive-template/export`;
+        let link = `device-management/document-template/archive-template`;
         downLoadFileFromServer(link,params,'document-template');
       },
       onPrintButton(){
@@ -578,7 +562,7 @@
             break;
           case 'activate':
             this.initialize(data,false);
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.initialize(data,false);
@@ -629,7 +613,7 @@
           indicatorsId: 0,
           indicatorsName: null,
           indicatorsUnit: null,
-          isNull: "no"
+          isNull: "1000000602"
         };
         if (data == null) {
           this.basicForm = {
@@ -830,7 +814,7 @@
                   indicatorsId: 0,
                   indicatorsName: null,
                   indicatorsUnit: null,
-                  isNull: "yes"
+                  isNull: "1000000601"
                 };
                 break;
             }
@@ -839,7 +823,7 @@
           });
       },
       onSwitchIsNull(item, index) {
-        let value = item.isNull==='yes'?'no':'yes';
+        let value = item.isNull==='1000000601'?'1000000602':'1000000601';
         getApiManager()
           .post(`${apiBaseUrl}/device-management/document-template/archive-indicator/update-isnull`, {
             indicatorsId: item.indicatorsId,
@@ -892,37 +876,6 @@
         this.$refs.vuetable.refresh();
       },
 
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      yesNoData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.yesNoOption = [];
-        this.yesNoOption = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        if (this.yesNoOption.length === 0)
-          this.yesNoOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.categorySelectOptions = [];
