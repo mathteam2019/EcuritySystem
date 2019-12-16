@@ -45,7 +45,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -90,9 +90,6 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.archivesNumber }}</span>
                 </div>
-                <template slot="status" slot-scope="props">
-                  <span>{{getDictDataValue(props.rowData.status)}}</span>
-                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm"
@@ -203,7 +200,7 @@
                 <b-col cols="4" v-for="(item,index) in indicatorsData">
                   <b-form-group>
                     <template slot="label">{{item.indicatorsName}}
-                      <span v-if="item.isNull ==='yes'" class="text-danger">*</span>
+                      <span v-if="item.isNull ==='1000000601'" class="text-danger">*</span>
                       <span class="font-weight-normal text-dark" v-if="item.indicatorsUnit!==null">( {{item.indicatorsUnit}} )</span>
                     </template>
                     <b-form-input v-model="indicatorsForm[index]" ></b-form-input>
@@ -291,7 +288,6 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
-  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -312,7 +308,6 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
-    this.getStatusOptions();
       this.getCategoryData();
       this.getTemplateData();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
@@ -342,11 +337,10 @@
         pageStatus: 'list',
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
-	
-	statusOptions:[],
+
         manufacturerOptions: [
           {text: "同方威视", value: "0"},
           {text: "海康威视", value: '1'},
@@ -374,10 +368,10 @@
           imageUrl: null,
           image: null,
           note: '',
-          status: 'inactive',
+          status: '1000000702',
           archiveValueList:[]
         },
-        statusData:[],
+
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-management/archive/get-by-filter-and-page`,
           perPage: 10,
@@ -409,11 +403,19 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:status',
+              name: 'status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
 
             },
             {
@@ -453,17 +455,6 @@
       }
     },
     methods: {
-    
-    getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
-      getStatusOptions() {
-        let data = checkBoxListDic(8);
-        this.statusData = data;
-        //console.log(this.statusData);
-      },
-
 
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -473,7 +464,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-management/archive/export`;
+        let link = `device-management/document-management/archive`;
         downLoadFileFromServer(link,params,'document');
       },
       onPrintButton(){
@@ -546,7 +537,7 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.$refs['modal-inactive'].show();
@@ -566,7 +557,7 @@
             image: null,
             imageUrl: null,
             note: '',
-            status: 'inactive',
+            status: '1000000702',
             archiveValueList:[]
           };
         else {
@@ -653,7 +644,7 @@
               "indicatorsId": item.indicatorsId,
               "value": this.indicatorsForm[index]
             })
-          } else if (item.isNull === 'yes') {
+          } else if (item.isNull === '1000000601') {
             this.invalidIndicators.push(index);
             isRequired = true;
           }
@@ -800,24 +791,7 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
-      
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.categorySelectOptions = [];
