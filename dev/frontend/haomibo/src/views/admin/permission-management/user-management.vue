@@ -289,13 +289,13 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.education')}}</template>
-                  <b-form-select v-model="profileForm.education" :options="educationOptions" plain/>
+                  <b-form-select v-model="profileForm.education" :options="educationOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.degree')}}</template>
-                  <b-form-select v-model="profileForm.degree" :options="degreeOptions" plain/>
+                  <b-form-select v-model="profileForm.degree" :options="degreeOption" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -430,7 +430,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.gender')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-select v-model="profileForm.gender" :options="genderOptions" plain
+                  <b-form-select v-model="profileForm.gender" :options="genderOption" plain
                   />
                 </b-form-group>
               </b-col>
@@ -463,13 +463,13 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.education')}}</template>
-                  <b-form-select v-model="profileForm.education" :options="educationOptions" plain/>
+                  <b-form-select v-model="profileForm.education" :options="educationOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.degree')}}</template>
-                  <b-form-select v-model="profileForm.degree" :options="degreeOptions" plain/>
+                  <b-form-select v-model="profileForm.degree" :options="degreeOption" plain/>
                 </b-form-group>
               </b-col>
             </b-row>
