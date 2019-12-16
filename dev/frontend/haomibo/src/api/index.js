@@ -136,7 +136,7 @@ const downLoadFileFromServer = (link,params, name = 'statics') => {
 
 const printFileFromServer = (link,params) => {
   getApiManager()
-    .post(`${apiBaseUrl}/` + link,params,{
+    .post(`${apiBaseUrl}/` + link + '/' + 'pdf',params,{
       responseType: 'blob'
     })
     .then((response) => {

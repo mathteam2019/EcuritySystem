@@ -853,12 +853,6 @@
 
       },
 
-      getModeOption() {
-        let data = checkBoxListDic(13);
-        this.modeData = data;
-        //console.log(this.modeData);
-      },
-
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
