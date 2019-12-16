@@ -22,13 +22,13 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.mode" :options="operationModeOptions" plain/>
+                  <b-form-select v-model="filter.mode" :options="modeOption" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
+                  <b-form-select v-model="filter.status" :options="statusOption" plain/>
                 </b-form-group>
               </b-col>
 
@@ -139,22 +139,8 @@
                     </div>
                   </div>
                 </template>
-                <template slot="taskStatus" slot-scope="props">
-                  <div v-if="props.rowData.taskStatus === 'pending_dispatch'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-dispatch')}}
-                  </div>
-                  <div v-if="props.rowData.taskStatus === 'pending_review'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-review')}}
-                  </div>
-                  <div v-if="props.rowData.taskStatus === 'while_review'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-review')}}
-                  </div>
-                  <div v-if="props.rowData.taskStatus === 'pending_inspection'" style="color:#e8a23e;">
-                    {{$t('personal-inspection.pending-inspection')}}
-                  </div>
-                  <div v-if="props.rowData.taskStatus === 'while_inspection'" style="color:#ef6e69;">
-                    {{$t('personal-inspection.while-inspection')}}
-                  </div>
+                <template slot="handTaskResult" slot-scope="props">
+                  <div>{{getDictDataValue(props.rowData.handTaskResult, 6)}}</div>
                 </template>
               </vuetable>
             </div>
@@ -426,9 +412,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.task.serScan == null">None</label>
-                  <label v-else-if="showPage.task.serScan.scanImageGender === 'male'">男</label>
-                  <label v-else-if="showPage.task.serScan.scanImageGender === 'female'">女</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.task.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -488,9 +472,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.scanAtrResult == null">None</label>
-                  <label v-else-if="showPage.scanAtrResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.scanAtrResult==='false'">嫌疑</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.scanAtrResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -499,9 +481,7 @@
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label v-if="showPage.scanFootAlarm == null">None</label>
-                  <label v-else-if="showPage.scanFootAlarm==='true'">无</label>
-                  <label v-else-if="showPage.scanFootAlarm==='false'">有</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.scanFootAlarm)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -532,10 +512,8 @@
                   <template slot="label">
                     {{$t('personal-inspection.dispatch-timeout')}}
                   </template>
-                  <label v-if="showPage.assignTimeout == null">None</label>
-                  <label v-else-if="showPage.assignTimeout==='true'">无</label>
-                  <label v-else-if="showPage.assignTimeout==='false'">有</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-if="showPage.assignJudgeTimeout == null">None</label>
+                  <label v-else>{{getDictDataValue(showPage.assignJudgeTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -567,9 +545,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else-if="showPage.judgeResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.judgeResult==='false'">嫌疑</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.judgeResult, 5)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -583,9 +559,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeTimeout == null">None</label>
-                  <label v-else-if="showPage.judgeTimeout==='true'">无</label>
-                  <label v-else-if="showPage.judgeTimeout==='false'">有</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.judgeTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -660,11 +634,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.handTaskResult == null">None</label>
-                  <label v-else-if="showPage.handTaskResult==='noseizure'" style="color:#e8a23e;">无查获</label>
-                  <label v-else-if="showPage.handTaskResult==='seized'" style="color:#e8a23e;">有查获</label>
-                  <label v-else-if="showPage.handTaskResult==='doubt'" style="color:#ef6e69;">有嫌疑</label>
-                  <label v-else-if="showPage.handTaskResult==='nodoubt'" style="color:#e8a23e;">无嫌疑</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.handTaskResult, 6)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -993,6 +963,7 @@
   import {getDirection} from "../../../utils";
   import _ from "lodash";
   import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getDictData, checkBoxListDic} from '../../../utils'
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
   import VTree from 'vue-tree-halower';
@@ -1015,6 +986,8 @@
     },
     mounted() {
       //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+      this.getModeOption();
+      this.getStatusOption();
       this.getSiteOption();
       //this.apiBaseURL = apiBaseUrl;
 
@@ -1037,6 +1010,9 @@
         },
 
         siteData: [],
+        statusData: [],
+        modeData: [],
+
         showPage: [],
 
         // TODO: select options
@@ -1064,6 +1040,8 @@
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
         ],
 
+        modeOption: [],
+        statusOption: [],
         onSiteOption: [],
 
         taskVuetableItems: {
@@ -1106,24 +1084,24 @@
               dataClass: 'text-center',
             },
             {
-              name: 'handTaskResult',
+              name: '__slot:handTaskResult',
               title: this.$t('personal-inspection.task-result'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (handTaskResult) => {
-
-                const dictionary = {
-                  "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
-                  "seized": `<span style="color:#e8a23e;">有查获</span>`,
-                  "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
-                  "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
-                  "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
-                };
-
-                if (handTaskResult == null) return '';
-                if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
-                return dictionary[handTaskResult];
-              }
+              // callback: (handTaskResult) => {
+              //
+              //   const dictionary = {
+              //     "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
+              //     "seized": `<span style="color:#e8a23e;">有查获</span>`,
+              //     "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
+              //     "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
+              //     "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
+              //   };
+              //
+              //   if (handTaskResult == null) return '';
+              //   if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
+              //   return dictionary[handTaskResult];
+              // }
             },
             {
               name: 'task',
@@ -1278,7 +1256,6 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -1293,6 +1270,42 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
+      },
+
+      modeData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.modeOption = [];
+        this.modeOption = newVal.map(mode => ({
+          text: mode.dataValue,
+          value: mode.dataCode
+        }));
+        this.modeOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.modeOption.length === 0)
+          this.modeOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOption = [];
+        this.statusOption = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOption.length === 0)
+          this.statusOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
@@ -1300,13 +1313,12 @@
         //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
         let isCheck = this.isCheckAll;
         let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
+
         if (cnt === 0) {
           this.isCheckAll = false;
         } else {
           this.isCheckAll = true;
         }
-        console.log(this.isCheckAll);
 
       },
 
@@ -1385,6 +1397,18 @@
 
       },
 
+      getModeOption() {
+        let data = checkBoxListDic(13);
+        this.modeData = data;
+        //console.log(this.modeData);
+      },
+
+      getStatusOption() {
+        let data = checkBoxListDic(11);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -1410,8 +1434,6 @@
           .then((response) => {
             let message = response.data.message;
 
-            console.log(message);
-
             switch (message) {
               case responseMessages['ok']: // okay
                 this.showPage = response.data.data;
@@ -1428,6 +1450,9 @@
       },
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
+      },
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
       },
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
@@ -1466,7 +1491,7 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.scanImageUrl = apiBaseUrl+ temp.scanImage.imageUrl;
+          temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
           transformed.data.push(temp);
 
           idTemp = temp.historyId;
@@ -1481,7 +1506,7 @@
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
-        this.apiBaseURL = {apiBaseUrl};
+        //this.apiBaseURL = {apiBaseUrl};
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
 

@@ -22,7 +22,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.mode" :options="operationModeOptions" plain/>
+                  <b-form-select v-model="filter.mode" :options="modeOption" plain/>
                 </b-form-group>
               </b-col>
 
@@ -343,9 +343,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-if="showPage.serScan.scanImageGender === 'male'">男</label>
-                  <label v-else-if="showPage.serScan.scanImageGender === 'female'">女</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -419,9 +417,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else-if="showPage.serScan.scanAtrResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.serScan.scanAtrResult==='false'">嫌疑</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.serScan.scanAtrResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -430,9 +426,7 @@
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else-if="showPage.serScan.scanFootAlarm==='true'">无</label>
-                  <label v-else-if="showPage.serScan.scanFootAlarm==='false'">有</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getDictDataValue(showPage.serScan.scanFootAlarm)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -643,6 +637,7 @@
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   //import {getApiManager} from '../../../api';
   import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getDictData, checkBoxListDic} from '../../../utils'
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
@@ -656,6 +651,7 @@
       'switches': Switches
     },
     mounted() {
+      this.getModeOption();
       this.getSiteOption();
 
     },
@@ -674,6 +670,7 @@
         },
 
         siteData: [],
+        modeData: [],
         showPage: [],
         timeData: [],
 
@@ -702,6 +699,7 @@
           {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
         ],
 
+        modeOption: [],
         onSiteOption: [],
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/invalid-task/get-by-filter-and-page`,
@@ -803,7 +801,6 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -818,6 +815,24 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
+      },
+
+      modeData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.modeOption = [];
+        this.modeOption = newVal.map(mode => ({
+          text: mode.dataValue,
+          value: mode.dataCode
+        }));
+        this.modeOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.modeOption.length === 0)
+          this.modeOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
@@ -825,13 +840,12 @@
         //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
         let isCheck = this.isCheckAll;
         let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
+
         if (cnt === 0) {
           this.isCheckAll = false;
         } else {
           this.isCheckAll = true;
         }
-        console.log(this.isCheckAll);
 
       },
       onGenerateExcelButton() {
@@ -909,6 +923,12 @@
 
       },
 
+      getModeOption() {
+        let data = checkBoxListDic(13);
+        this.modeData = data;
+        //console.log(this.modeData);
+      },
+
       getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
@@ -955,6 +975,9 @@
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
       },
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
@@ -989,7 +1012,12 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.scanImageUrl = apiBaseUrl+ temp.serScan.scanImage.imageUrl;
+          if(temp.serScan.scanImage!=null) {
+            temp.scanImageUrl = apiBaseUrl + temp.serScan.scanImage.imageUrl;
+          }
+          else {
+            temp.scanImageUrl = '';
+          }
           transformed.data.push(temp);
 
           idTemp = temp.taskId;

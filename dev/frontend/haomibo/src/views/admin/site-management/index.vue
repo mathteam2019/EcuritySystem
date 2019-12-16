@@ -24,7 +24,7 @@
 
                   <b-col>
                     <b-form-group :label="$t('system-setting.status-active')">
-                      <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
+                      <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
                     </b-form-group>
                   </b-col>
 
@@ -44,13 +44,13 @@
                   <b-button size="sm" class="ml-2" @click="onResetButton()" variant="info default">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_export')" @click="onExportButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_print')" @click="onPrintButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAction('create')" :disabled="checkPermItem('field_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -73,34 +73,38 @@
                     <template slot="fieldSerial" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.fieldSerial }}</span>
                     </template>
-
+                    <template slot="status" slot-scope="props">
+                      <span>{{getDictDataValue(props.rowData.status)}}</span>
+                    </template>
                     <div slot="operating" slot-scope="props">
 
                       <b-button
                         size="sm" @click="onAction('edit',props.rowData)"
                         variant="primary default btn-square"
-                        :disabled="props.rowData.status === 'active'">
+                        :disabled="props.rowData.status === '1000000701' || checkPermItem('field_modify')">
+                        >
                         <i class="icofont-edit"></i>
                       </b-button>
 
                       <b-button
-                        v-if="props.rowData.status === 'inactive'"
+                        :disabled="checkPermItem('field_update_status')"
+                        v-if="props.rowData.status === '1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
                         variant="success default btn-square">
                         <i class="icofont-check-circled"></i>
                       </b-button>
 
                       <b-button
-                        v-if="props.rowData.status === 'active'"
+                        v-if="props.rowData.status === '1000000701'"
                         size="sm" @click="onAction('inactivate',props.rowData)"
                         variant="warning default btn-square"
-                        :disabled="props.rowData.parentFieldId === 0"
+                        :disabled="props.rowData.parentFieldId === 0 || checkPermItem('field_update_status')"
                       >
                         <i class="icofont-ban"></i>
                       </b-button>
 
                       <b-button
-                        :disabled="props.rowData.status==='active'"
+                        :disabled="props.rowData.status==='1000000701' || checkPermItem('field_delete')"
                         size="sm" @click="onAction('delete',props.rowData)"
                         variant="danger default btn-square"
                       >
@@ -214,11 +218,11 @@
                   <b-button @click="onAction('save')" size="sm" variant="success default" v-if="pageStatus !== 'show'">
                     <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <!--<b-button v-if="siteForm.status === 'inactive' && pageStatus !== 'create'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                  <!--<b-button v-if="siteForm.status === '1000000702' && pageStatus !== 'create'" @click="onAction('1000000701',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>-->
                   <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
-                            v-if="pageStatus !== 'create'">
+                            v-if="pageStatus !== 'create' || checkPermItem('field_delete')">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
                   <b-button @click="onAction('list')" size="sm" variant="info default">
@@ -314,14 +318,14 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button v-if="siteForm.status === 'active' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
-                            variant="warning default">
+                  <b-button v-if="siteForm.status === '1000000701' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
+                            variant="warning default" :disabled="checkPermItem('field_update_status')">
                     <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_update_status')" @click="onAction('activate',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('delete',siteForm)" size="sm"
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')" @click="onAction('delete',siteForm)" size="sm"
                             variant="danger default">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
@@ -332,8 +336,8 @@
               </b-col>
             </b-row>
             <div class="position-absolute" style="bottom: 4%;left: 28%">
-              <img v-if="siteForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-              <img v-else-if="siteForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+              <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
             </div>
           </b-col>
         </b-row>
@@ -358,7 +362,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('site-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -392,9 +396,9 @@
   import {apiBaseUrl} from "../../../constants/config";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {getDictData, checkBoxListDic,checkPermissionItem} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
-
 
 
   let getParentSerialName = (siteData, fieldId) => {
@@ -409,14 +413,14 @@
   };
 
   let fnGetOrgLevel = orgData => {
-      let level = 0;
-      if (orgData == null)
-          return level;
-      while (orgData.parent != null) {
-          level++;
-          orgData = orgData.parent;
-      }
+    let level = 0;
+    if (orgData == null)
       return level;
+    while (orgData.parent != null) {
+      level++;
+      orgData = orgData.parent;
+    }
+    return level;
   };
 
   export default {
@@ -428,6 +432,8 @@
     },
     mixins: [validationMixin],
     mounted() {
+
+      this.getStatusOptions();
       ///////////////////////////////////////////////////////////
       ////////////// Load site list from server /////////////////
       ///////////////////////////////////////////////////////////
@@ -444,7 +450,26 @@
         if (this.selectedParentSerial === null)
           this.selectedParentSerial = this.$t('system-setting.none');
       },
-      siteData:function (newVal,oldVal) {
+
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
+      siteData: function (newVal, oldVal) {
         console.log(newVal);
         this.superSiteOptions = [];
         this.superSiteOptions = newVal.map(site => ({
@@ -468,6 +493,11 @@
           status: null,
           parentFieldDesignation: ''
         },
+
+        statusData: [],
+
+        statusOptions: [],
+
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/site-management/field/get-by-filter-and-page`,
           perPage: 10,
@@ -499,19 +529,11 @@
               dataClass: 'text-center'
             },
             {
-              name: 'status',
+              name: '__slot:status',
               sortField: 'status',
               title: this.$t('system-setting.status-active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-                const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
             },
             {
               name: 'parentFieldSerial',
@@ -637,6 +659,20 @@
       }
     },
     methods: {
+
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -646,9 +682,9 @@
           'idList': checkedIds.join()
         };
         let link = `site-management/field/export`;
-        downLoadFileFromServer(link,params,'site');
+        downLoadFileFromServer(link, params, 'site');
       },
-      onPrintButton(){
+      onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -657,10 +693,10 @@
           'idList': checkedIds.join()
         };
         let link = `site-management/field/print`;
-        printFileFromServer(link,params);
+        printFileFromServer(link, params);
       },
 
-      getSiteData(){
+      getSiteData() {
         getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
@@ -889,19 +925,19 @@
         this.$refs[modal].hide();
       },
       renderTreeContent: function (h, data) {
-          return h('div', {
-                  domProps: {
-                      innerHTML: data.label
-                  }
-              }
-          );
+        return h('div', {
+            domProps: {
+              innerHTML: data.label
+            }
+          }
+        );
       },
       treeLabelClass: function (data) {
-          let level = fnGetOrgLevel(data);
-          console.log(data);
-          console.log(level);
-          const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3','bg-level-4','bg-level-5'];
-          return `${labelClasses[level % 5]} text-white`;
+        let level = fnGetOrgLevel(data);
+        console.log(data);
+        console.log(level);
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3', 'bg-level-4', 'bg-level-5'];
+        return `${labelClasses[level % 5]} text-white`;
       }
     }
   }

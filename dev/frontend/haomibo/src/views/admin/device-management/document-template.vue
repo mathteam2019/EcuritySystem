@@ -19,7 +19,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.active')">
-                  <b-form-select v-model="filterOption.status" :options="stateOptions" plain/>
+                  <b-form-select v-model="filterOption.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -64,28 +64,31 @@
                 <div slot="number" slot-scope="props">
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.archivesTemplateNumber }}</span>
                 </div>
+                <template slot="status" slot-scope="props">
+                  <span>{{getDictDataValue(props.rowData.status)}}</span>
+                </template>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === 'active'"
+                            size="sm" :disabled="props.rowData.status === '1000000701'"
                             variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
+                    v-if="props.rowData.status=='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
                     variant="success default btn-square"
                   >
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='active'"
+                    v-if="props.rowData.status=='1000000701'"
                     size="sm" @click="onAction('inactivate',props.rowData)"
                     variant="warning default btn-square"
                   >
                     <i class="icofont-ban"></i>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === 'active'"
+                            size="sm" :disabled="props.rowData.status === '1000000701'"
                             variant="danger default btn-square">
                     <i class="icofont-bin"></i>
                   </b-button>
@@ -171,7 +174,7 @@
                     </b-col>
                     <b-col>
                       <b-form-group :label="$t('device-management.indicator.isNull')">
-                        <b-form-select v-model="indicatorForm.isNull" :options="yesNoOptions" plain/>
+                        <b-form-select v-model="indicatorForm.isNull" :options="yesNoOption" plain/>
                       </b-form-group>
                     </b-col>
                     <b-col class="d-flex">
@@ -230,16 +233,16 @@
                 class="icofont-save"></i>
                 {{$t('device-management.save')}}
               </b-button>
-              <b-button v-if="basicForm.status === 'active'" @click="onAction('inactivate',basicForm)" size="sm"
+              <b-button v-if="basicForm.status === '1000000701'" @click="onAction('inactivate',basicForm)" size="sm"
                         variant="warning default">
                 <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button v-if="basicForm.status === 'inactive' && pageStatus !=='create'"
+              <b-button v-if="basicForm.status === '1000000702' && pageStatus !=='create'"
                         @click="onAction('activate',basicForm)" size="sm"
                         variant="success default">
                 <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
               </b-button>
-              <b-button v-if="basicForm.status === 'inactive'&& pageStatus !=='create'"
+              <b-button v-if="basicForm.status === '1000000702'&& pageStatus !=='create'"
                         @click="onAction('delete',basicForm)" size="sm"
                         variant="danger default">
                 <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
@@ -250,8 +253,8 @@
             </b-col>
           </b-row>
           <div class="position-absolute" style="left: 3%;bottom: 10%">
-            <img v-if="basicForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="basicForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="basicForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="basicForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </div>
       </div>
@@ -261,7 +264,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-template.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -289,6 +292,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {getDictData, checkBoxListDic} from '../../../utils';
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -355,6 +359,8 @@
           {text: "大华股份", value: '2'},
           {text: "华为", value: '3'}
         ],
+	 statusData:[],
+        yesNoData:[],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-template/archive-template/get-by-filter-and-page`,
           perPage: 10,
@@ -386,19 +392,12 @@
               dataClass: 'text-center'
             },
             {
-              name: 'status',
+              name: '__slot:status',
               sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              callback: (value) => {
-                const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
-              }
+
             },
             {
               name: 'category',
@@ -430,6 +429,8 @@
           ]
         },
 
+ statusOptions:[],
+        yesNoOption:[],
         yesNoOptions: [
           {value: 'yes', text: this.$t('system-setting.parameter-setting.yes')},
           {value: 'no', text: this.$t('system-setting.parameter-setting.no')},
@@ -486,10 +487,26 @@
       }
     },
     mounted() {
+    this.getStatusOptions();
+    this.getYesNoOption();
       this.getCategoryData();
       this.$refs.vuetable.$parent.transform = this.transformTemplateTable.bind(this);
     },
     methods: {
+
+    getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      getStatusOptions() {
+        let data = checkBoxListDic(8);
+        this.statusData = data;
+        //console.log(this.statusData);
+      },
+      getYesNoOption() {
+        let data = checkBoxListDic(7);
+        this.yesNoData = data;
+      },
 
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
@@ -873,6 +890,38 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+      },
+
+      statusData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.statusOptions = [];
+        this.statusOptions = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        this.statusOptions.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.statusOptions.length === 0)
+          this.statusOptions.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
+      },
+
+      yesNoData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.yesNoOption = [];
+        this.yesNoOption = newVal.map(status => ({
+          text: status.dataValue,
+          value: status.dataCode
+        }));
+        if (this.yesNoOption.length === 0)
+          this.yesNoOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 

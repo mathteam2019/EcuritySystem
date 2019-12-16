@@ -832,26 +832,25 @@
           let xAxisChart = [];
           console.log(this.graphData.detailedStatistics.length);
           console.log(keyData);
-          for (let i = 1; i <= keyData.length; i++) {
-            // console.log(keyData[i]);
-            // let key = keyData[i];
-            console.log(this.graphData.detailedStatistics[i].name);
-            xAxisChart[i-1] = this.graphData.detailedStatistics[i].name;
-            //this.bar3ChartOptions.xAxis.data[i].value = this.graphData.detailedStatistics[i].name;
-            if(this.graphData.detailedStatistics[i].scanStatistics!=null) {
-              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
+          for (let i = 1; i < keyData.length; i++) {
+            console.log(keyData[i]);
+            let key = keyData[i];
+            console.log(this.graphData.detailedStatistics[key].name);
+            xAxisChart[i-1] = this.graphData.detailedStatistics[key].name;
+            if(this.graphData.detailedStatistics[key].scanStatistics!=null) {
+              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
             }
             else {
               this.bar3ChartOptions.series[0].data[i] = 0;
             }
-            if(this.graphData.detailedStatistics[i].judgeStatistics!=null) {
-              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
+            if(this.graphData.detailedStatistics[key].judgeStatistics!=null) {
+              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[key].judgeStatistics.workingSeconds;
             }
             else {
               this.bar3ChartOptions.series[1].data[i]=0;
             }
-            if(this.graphData.detailedStatistics[i].handExaminationStatistics!=null) {
-              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
+            if(this.graphData.detailedStatistics[key].handExaminationStatistics!=null) {
+              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[key].handExaminationStatistics.workingSeconds;
             }
             else {
               this.bar3ChartOptions.series[2].data[i]=0;

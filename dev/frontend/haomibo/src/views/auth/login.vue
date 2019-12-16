@@ -187,7 +187,7 @@
 
 <template>
   <b-row class="h-100 auth-login-page">
-    <img class="position-absolute logo" src="../../../assets/img/logo.png"/>
+    <img class="position-absolute logo" src="../../assets/img/logo.png"/>
     <b-col md=10 class="mx-auto my-auto auth-content-only-ie">
       <h2 class="mb-5 text-white header-title">{{$t('login.title')}}</h2>
       <b-row class="auth-card ">
@@ -198,7 +198,7 @@
                 <div class="input-group ">
                   <span class="front-input-icon position-absolute "><i style="font-size: 18px"
                                                                        class="icofont-ui-user"></i> </span>
-                  <input type="email" class="form-control" :placeholder="$t('login.enter-user-email')" v-model="email"
+                  <input type="text" class="form-control" :placeholder="$t('login.enter-user-email')" v-model="email"
                          autocomplete="off">
                 </div>
               </div>
@@ -237,10 +237,10 @@
 </template>
 <script>
   import {mapActions, mapGetters} from 'vuex';
-  import {apiBaseUrl, localeOptions} from '../../../constants/config'
-  import {getDirection, saveLoginInfo, scheduleRefreshToken, setDirection} from '../../../utils'
-  import {getApiManager} from "../../../api";
-  import {responseMessages} from "../../../constants/response-messages";
+  import {apiBaseUrl, localeOptions} from '../../constants/config'
+  import {getDirection, saveLoginInfo, scheduleRefreshToken, setDirection, saveDictionaryData, getDictData, checkBoxListDic} from '../../utils'
+  import {getApiManager} from "../../api";
+  import {responseMessages} from "../../constants/response-messages";
 
 
   export default {
@@ -303,17 +303,18 @@
 
         getApiManager()
           .post(`${apiBaseUrl}/auth/login`, {
-            email: this.email,
+            userAccount: this.email,
             password: this.password
           })
           .then(response => {
             this.processing = false;
             let message = response.data.message;
             let data = response.data.data;
+            //let codeData = response.data.data.
             switch (message) {
               case responseMessages['ok']:
 
-                if (data.user.category !== 'normal') {
+                if (data.user.category !== 'normal' && data.user.category !== 'admin') {
                   this.$notify('success', this.$t('user.login-fail'), this.$t(`login.not-normal-role`), {
                     duration: 3000,
                     permanent: false
@@ -323,6 +324,10 @@
 
                 saveLoginInfo(data);
                 scheduleRefreshToken();
+                saveDictionaryData(data);
+                //getDictData('true',5);
+                // checkBoxListDic(13);
+
 
                 this.$notify('success', this.$t('user.success'), this.$t(`user.login-success`), {
                   duration: 3000,
@@ -334,7 +339,15 @@
                   ...data.user
                 });
 
-                this.$router.push('/user/dashboard');
+                if(data.user.category === 'normal') {
+                  this.$router.push('/user/dashboard');
+                  break;
+                }
+
+                if(data.user.category === 'admin'){
+                  this.$router.push('/admin/dashboard');
+                  break;
+                }
 
                 break;
               case responseMessages['invalid-parameter']:
