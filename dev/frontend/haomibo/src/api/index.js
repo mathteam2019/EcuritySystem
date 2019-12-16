@@ -103,8 +103,10 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
 };
 
 const downLoadFileFromServer = (link,params, name = 'statics') => {
+  let ext1 =  ['docx','pdf','xlsx'];
+  for(let i=0; i<3; i++) {
   getApiManager()
-    .post(`${apiBaseUrl}/` + link,params,{
+      .post(`${apiBaseUrl}/` + link + '/' + ext1[i], params, {
       responseType: 'blob'
     })
     .then((response) => {
@@ -113,7 +115,7 @@ const downLoadFileFromServer = (link,params, name = 'statics') => {
         let fileURL = window.URL.createObjectURL(new Blob([response.data]));
         let fileLink = document.createElement('a');
         fileLink.href = fileURL;
-        fileLink.setAttribute('download', name + '.xlsx');
+          fileLink.setAttribute('download', name + '.' + ext1[i]);
         document.body.appendChild(fileLink);
         fileLink.click();
         fileLink.parentNode.removeChild(fileLink);
@@ -128,6 +130,7 @@ const downLoadFileFromServer = (link,params, name = 'statics') => {
     .catch(error => {
       throw new Error(error);
     });
+  }
 
 };
 

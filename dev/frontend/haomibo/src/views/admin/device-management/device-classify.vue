@@ -464,8 +464,8 @@
 
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
       }
     },
@@ -535,7 +535,7 @@
             break;
           case 'activate':
             this.initialize(data);
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);
@@ -714,23 +714,6 @@
           this.classifyForm.parentCategoryNumber = this.$t('system-setting.none');
       },
 
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOptions = [];
-        this.statusOptions = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOptions.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOptions.length === 0)
-          this.statusOptions.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.parentClassifyOptions = [];
