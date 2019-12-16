@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.controllers;
 
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
@@ -87,14 +88,7 @@ public class AuthController extends BaseController {
     @ToString
     public static class ChangePasswordRequestBody {
         @NotNull
-        @Email
-        String email;
-
-        @NotNull
         String password;
-
-        @NotNull
-        String newPassword;
 
     }
 
@@ -114,6 +108,7 @@ public class AuthController extends BaseController {
         List<SysDeviceDictionaryData> deviceDictionaryDataList;
         List<SysResource> permission;
     }
+
 
 
     /**
@@ -170,6 +165,9 @@ public class AuthController extends BaseController {
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DICTONARY_DATA, SimpleBeanPropertyFilter.filterOutAllExcept("dictionaryId", "dataCode", "dataValue"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_DICTIONARY_DATA, SimpleBeanPropertyFilter.filterOutAllExcept("dictionaryName", "dictionaryId", "dataCode", "dataValue"))
+                .addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
         value.setFilters(filters);
 
@@ -204,22 +202,12 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Optional<SysUser> optionUser = sysUserRepository.findOne(QSysUser.sysUser.email.eq(requestBody.getEmail()));
-        if (!optionUser.isPresent()) {
-            // If user is not found, this is invalid request.
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        boolean result = authService.modifyPassword(sysUser.getUserId(), requestBody.getPassword());
+        if(result == false) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        SysUser sysUser = optionUser.get();
-
-        if (!sysUser.getPassword().equals(requestBody.getPassword())) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
-        }
-
-        sysUser.setPassword(requestBody.getNewPassword());
-
-        sysUserRepository.save(sysUser);
-
 
         return new CommonResponseBody(ResponseMessage.OK);
 

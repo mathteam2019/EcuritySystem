@@ -250,7 +250,9 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            List<SysResource> permission = userService.getResourceList(utils.userId);
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
@@ -281,7 +283,9 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            List<SysResource> permission = userService.getResourceList(utils.userId);
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 

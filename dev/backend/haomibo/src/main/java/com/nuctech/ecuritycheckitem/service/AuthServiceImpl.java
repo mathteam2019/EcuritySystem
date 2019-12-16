@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,23 @@ public class AuthServiceImpl implements AuthService {
             return null;
         }
         return optionalSysUser.get();
+    }
+
+    @Override
+    @Transactional
+    public boolean modifyPassword(Long userId, String password) {
+        QSysUser qSysUser = QSysUser.sysUser;
+        Predicate predicate = qSysUser.userId.eq(userId);
+
+        Optional<SysUser> optionalSysUser = sysUserRepository.findOne(predicate);
+
+        if (!optionalSysUser.isPresent()) {
+            return false;
+        }
+        SysUser user = optionalSysUser.get();
+        user.setPassword(password);
+        sysUserRepository.save(user);
+        return true;
     }
 
     @Override

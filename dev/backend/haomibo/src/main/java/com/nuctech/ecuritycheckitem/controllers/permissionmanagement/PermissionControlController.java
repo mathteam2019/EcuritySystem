@@ -516,7 +516,9 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysResource> permission = userService.getResourceList(utils.userId);
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
@@ -568,7 +570,10 @@ public class PermissionControlController extends BaseController {
 
         permissionService.removeRole(requestBody.getRoleId());
 
-        List<SysResource> permission = userService.getResourceList(utils.userId);
+
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 

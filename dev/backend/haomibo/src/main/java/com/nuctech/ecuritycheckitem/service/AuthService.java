@@ -20,6 +20,8 @@ import java.util.List;
 public interface AuthService {
     SysUser getSysUserByUserAccount(String userAccount);
 
+    boolean modifyPassword(Long userId, String password);
+
     List<SysDictionaryData> findAllDictionary();
 
     List<SysDeviceDictionaryData> findAllDeviceDictionary();
