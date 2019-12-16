@@ -1200,7 +1200,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user/print`;
+        let link = `permission-management/user-management/user/pdf`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1211,7 +1211,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user-group/print`;
+        let link = `permission-management/user-management/user-group`;
         downLoadFileFromServer(link, params, 'userGroup');
       },
       onPrintGroupButton() {
@@ -1222,7 +1222,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user-group/print`;
+        let link = `permission-management/user-management/user-group/pdf`;
         printFileFromServer(link, params);
       },
 
