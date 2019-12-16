@@ -311,6 +311,7 @@
     mounted() {
       this.getCategoryData();
       this.getTemplateData();
+      this.getManufacturerOptions();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
     },
     mixins: [validationMixin],
