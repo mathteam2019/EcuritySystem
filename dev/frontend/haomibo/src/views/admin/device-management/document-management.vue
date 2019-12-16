@@ -62,13 +62,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_archive_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_archive_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_archive_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -94,18 +94,18 @@
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
-                            :disabled="props.rowData.status === '1000000701'">
+                            :disabled="props.rowData.status === '1000000701' || checkPermItem('device_archive_modify')">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status=='1000000702'"
-                    size="sm" @click="onAction('activate',props.rowData)"
+                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
                     variant="success default btn-square">
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status=='1000000701'"
-                    size="sm" @click="onAction('inactivate',props.rowData)"
+                    size="sm" @click="onAction('inactivate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
                     variant="warning default btn-square"
                   >
                     <i class="icofont-ban"></i>
@@ -113,7 +113,7 @@
                   <b-button
                     size="sm" @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === '1000000701'">
+                    :disabled="props.rowData.status === '1000000701' || checkPermItem('device_archive_delete')">
                     <i class="icofont-bin"></i>
                   </b-button>
 
@@ -236,14 +236,14 @@
                 {{$t('device-management.save')}}
               </b-button>
               <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000702'"
-                        @click="onAction('activate',archivesForm)" variant="success default">
+                        @click="onAction('activate',archivesForm)" variant="success default" :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
               </b-button>
               <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000701'"
-                        @click="onAction('inactivate',archivesForm)" variant="warning default">
+                        @click="onAction('inactivate',archivesForm)" variant="warning default" :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === '1000000702'"
+              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === '1000000702'" :disabled="checkPermItem('device_archive_delete')"
                         @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"></i>
                 {{$t('device-management.delete')}}
               </b-button>
@@ -288,6 +288,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem, getDicDataByDicIdForOptions} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -341,12 +342,7 @@
           {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
 
-        manufacturerOptions: [
-          {text: "同方威视", value: "0"},
-          {text: "海康威视", value: '1'},
-          {text: "大华股份", value: '2'},
-          {text: "华为", value: '3'}
-        ],
+        manufacturerOptions: [],
         indicatorsData: [],
         filterOption: {
           archivesName: '',
@@ -455,7 +451,12 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+      getManufacturerOptions(){
+        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -475,7 +476,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-management/archive/print`;
+        let link = `device-management/document-management/archive/pdf`;
         printFileFromServer(link,params);
       },
       hideModal(modal) {

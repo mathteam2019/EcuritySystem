@@ -45,13 +45,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_category_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_category_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_category_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -76,13 +76,13 @@
                 </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === '1000000701'"
+                            size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_modify')"
                             variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
                     v-if="props.rowData.status=='1000000702'"
-                    size="sm" @click="onAction('activate',props.rowData)"
+                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_category_update_status')"
                     variant="success default btn-square"
                   >
                     <i class="icofont-check-circled"></i>
@@ -91,7 +91,7 @@
                     @click="onAction('inactivate',props.rowData)"
                     v-if="props.rowData.status=='1000000701'"
                     size="sm"
-                    :disabled="props.rowData.parentCategoryId === 0"
+                    :disabled="props.rowData.parentCategoryId === 0 || checkPermItem('device_category_update_status')"
                     variant="warning default btn-square" >
                     <i class="icofont-ban"></i>
                   </b-button>
@@ -99,7 +99,7 @@
                     size="sm"
                     @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === '1000000701'">
+                    :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_delete')">
                     <i class="icofont-bin"></i>
                   </b-button>
                 </div>
@@ -191,7 +191,7 @@
             <b-button size="sm" @click="saveCategoryItem()" variant="info default"><i class="icofont-save"></i>
               {{$t('device-management.save')}}
             </b-button>
-            <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default"
+            <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default" :disabled="checkPermItem('device_category_delete')"
                       v-if="pageStatus !== 'create'">
               <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
             </b-button>
@@ -257,14 +257,14 @@
             </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3 " class="align-self-end">
-            <b-button v-if="classifyForm.status === '1000000701' && classifyForm.parentCategoryId !== 0" @click="onAction('inactivate',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000701' && classifyForm.parentCategoryId !== 0" :disabled="checkPermItem('device_category_update_status')" @click="onAction('inactivate',classifyForm)" size="sm"
                       variant="warning default">
               <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
             </b-button>
-            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('activate',classifyForm)" size="sm" variant="success default">
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('activate',classifyForm)" :disabled="checkPermItem('device_category_update_status')" size="sm" variant="success default">
               <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
             </b-button>
-            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('delete',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('delete',classifyForm)" size="sm" :disabled="checkPermItem('device_category_delete')"
                       variant="danger default">
               <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
             </b-button>
@@ -312,6 +312,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -470,7 +471,9 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.deviceClassifyTable.checkedAllStatus;
         let checkedIds = this.$refs.deviceClassifyTable.selectedTo;
@@ -490,7 +493,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-classify/category/print`;
+        let link = `device-management/device-classify/category/pdf`;
         printFileFromServer(link,params);
       },
 
