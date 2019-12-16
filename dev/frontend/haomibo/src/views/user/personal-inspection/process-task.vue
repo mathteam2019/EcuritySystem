@@ -21,13 +21,13 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.operation-mode')">
-                  <b-form-select v-model="filter.mode" :options="modeOption" plain/>
+                  <b-form-select v-model="filter.mode" :options="operationModeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.status')">
-                  <b-form-select v-model="filter.status" :options="statusOption" plain/>
+                  <b-form-select v-model="filter.status" :options="statusOptions" plain/>
                 </b-form-group>
               </b-col>
 
@@ -80,10 +80,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -100,7 +100,6 @@
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
-                @vuetable:checkbox-toggled-all="onCheckEvent"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -131,24 +130,6 @@
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
                   </div>
-                </template>
-                <template slot="taskStatus" slot-scope="props">
-                  <div>{{getDictDataValue(props.rowData.taskStatus)}}</div>
-<!--                  <div v-if="props.rowData.taskStatus === 'pending_dispatch'" style="color:#e8a23e;">-->
-<!--                    {{$t('personal-inspection.pending-dispatch')}}-->
-<!--                  </div>-->
-<!--                  <div v-if="props.rowData.taskStatus === 'pending_review'" style="color:#e8a23e;">-->
-<!--                    {{$t('personal-inspection.pending-review')}}-->
-<!--                  </div>-->
-<!--                  <div v-if="props.rowData.taskStatus === 'while_review'" style="color:#ef6e69;">-->
-<!--                    {{$t('personal-inspection.while-review')}}-->
-<!--                  </div>-->
-<!--                  <div v-if="props.rowData.taskStatus === 'pending_inspection'" style="color:#e8a23e;">-->
-<!--                    {{$t('personal-inspection.pending-inspection')}}-->
-<!--                  </div>-->
-<!--                  <div v-if="props.rowData.taskStatus === 'while_inspection'" style="color:#ef6e69;">-->
-<!--                    {{$t('personal-inspection.while-inspection')}}-->
-<!--                  </div>-->
                 </template>
               </vuetable>
             </div>
@@ -191,9 +172,6 @@
                     <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
                 </div>
-<!--                <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>-->
-<!--                <b-img src="/assets/img/monitors_icon.svg" class="operation-icon ml-2"/>-->
-<!--                <b-img src="/assets/img/mobile_icon.svg" class="operation-icon ml-2"/>-->
               </b-col>
               <b-col class="text-right icon-container">
                 <span><i class="icofont-star"></i></span>
@@ -425,7 +403,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serScan.scanImageGender)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -476,7 +454,7 @@
                     {{$t('personal-inspection.status')}}
                   </template>
                   <div v-if="showPage.taskStatus == null">None</div>
-                  <div v-else>{{getDictDataValue(showPage.taskStatus)}}</div>
+                  <div v-else>{{getOptionValue(showPage.taskStatus)}}</div>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -497,7 +475,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serScan.scanAtrResult)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanAtrResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -506,7 +484,7 @@
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serScan.scanFootAlarm)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanFootAlarm)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -540,7 +518,7 @@
                     {{$t('personal-inspection.dispatch-timeout')}}
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serScan.scanAssignTimeout)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanAssignTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -576,7 +554,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serJudgeGraph == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serJudgeGraph.judgeResult, 5)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serJudgeGraph.judgeResult, 5)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -586,7 +564,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serJudgeGraph == null">None</label>
-                  <label v-else>{{getDictDataValue(showPage.serJudgeGraph.judgeTimeout)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serJudgeGraph.judgeTimeout)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -854,9 +832,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  //import {getApiManager} from '../../../api';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
-  import {getDictData, checkBoxListDic} from '../../../utils'
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
@@ -872,13 +848,12 @@
       'date-picker': DatePicker
     },
     mounted() {
-      //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
-      this.getModeOption();
-      this.getStatusOption();
+
       this.getSiteOption();
 
     },
     data() {
+
       return {
         isExpanded: false,
         isCheckAll: false,
@@ -896,40 +871,25 @@
         },
 
         siteData: [],
-        statusData: [],
-        modeData: [],
-
         showPage: [],
         timeData: [],
 
 
-        // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 4, text: '安检仪+审图端+手检端'},
-          {value: 1, text: '安检仪+(本地手检)'},
-          {value: 2, text: '安检仪+手检端'},
-          {value: 3, text: '安检仪+审图端'},
+          {value: '1000001304', text: '安检仪+审图端+手检端'},
+          {value: '1000001301', text: '安检仪+(本地手检)'},
+          {value: '1000001302', text: '安检仪+手检端'},
+          {value: '1000001303', text: '安检仪+审图端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
-        ],
-        onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: '1000001102', text: this.$t('maintenance-management.process-task.dispatch')},
+          {value: '1000001103', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000001104', text: this.$t('maintenance-management.process-task.hand')},
+          {value: '1000001106', text: this.$t('maintenance-management.process-task.scan')}
         ],
 
-        modeOption: [],
-        statusOption: [],
         onSiteOption: [],
 
         taskVuetableItems: {
@@ -960,10 +920,21 @@
               dataClass: 'text-center'
             },
             {
-              name: '__slot:taskStatus',
+              name: 'taskStatus',
               title: this.$t('personal-inspection.status'),
               titleClass: 'text-center',
-              dataClass: 'text-center'
+              dataClass: 'text-center',
+              callback: (value) => {
+                const dictionary = {
+                  "1000001102": `<span>${this.$t('maintenance-management.process-task.dispatch')}</span>`,
+                  "1000001103": `<span>${this.$t('maintenance-management.process-task.judge')}</span>`,
+                  "1000001104": `<span>${this.$t('maintenance-management.process-task.hand')}</span>`,
+                  "1000001106": `<span>${this.$t('maintenance-management.process-task.scan')}</span>`
+
+                };
+                if (!dictionary.hasOwnProperty(value)) return '';
+                return dictionary[value];
+              }
             },
             {
               name: 'field',
@@ -1123,142 +1094,130 @@
           });
       },
 
-      modeData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.modeOption = [];
-        this.modeOption = newVal.map(mode => ({
-          text: mode.dataValue,
-          value: mode.dataCode
-        }));
-        this.modeOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.modeOption.length === 0)
-          this.modeOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      },
-
-      statusData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.statusOption = [];
-        this.statusOption = newVal.map(status => ({
-          text: status.dataValue,
-          value: status.dataCode
-        }));
-        this.statusOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.statusOption.length === 0)
-          this.statusOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
-      }
     },
     methods: {
 
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
+      getOptionValue(dataCode) {
+        const dictionary = {
+          "1000000001": `${this.$t('permission-management.male')}`,
+          "1000000002": `${this.$t('permission-management.female')}`,
+          "1000000601": `${this.$t('system-setting.parameter-setting.yes')}`,
+          "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
+          "1000001701": `${this.$t('permission-management.timeout')}`,
+          "1000001702": `${this.$t('permission-management.timein')}`,
+          "true": `${this.$t('knowledge-base.suspect')}`,
+          "false": `${this.$t('knowledge-base.no-suspect')}`,
+          "1000001301": `${this.$t('permission-management.female')}`,
+          "1000001302": `${this.$t('permission-management.female')}`,
+          "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001304": `${this.$t('maintenance-management.process-task.scan')}`,
+          "1000001102": `${this.$t('maintenance-management.process-task.dispatch')}`,
+          "1000001103": `${this.$t('maintenance-management.process-task.judge')}}`,
+          "1000001104": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
 
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
+        };
 
-      },
-      onGenerateExcelButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/process-task/generate/export`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
-
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Process-Task.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-      },
-
-      onGeneratePdfButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-
-        getApiManager()
-          .post(`${apiBaseUrl}/task/process-task/generate/print`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-
+        if (!dictionary.hasOwnProperty(dataCode)) return '';
+        return dictionary[dataCode];
 
       },
 
-      getModeOption() {
-        let data = checkBoxListDic(13);
-        this.modeData = data;
-        //console.log(this.modeData);
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/process-task/generate`;
+        downLoadFileFromServer(link, params, 'Process-Task');
+
+
+        // let str = "";
+        // if (this.isCheckAll === true) {
+        //   str = "";
+        // } else {
+        //   let cnt = this.$refs.taskVuetable.selectedTo.length;
+        //   str = str + this.$refs.taskVuetable.selectedTo[0];
+        //   //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+        //   for (let i = 1; i < cnt; i++) {
+        //     //console.log(this.$refs.taskVuetable.selectedTo[i]);
+        //     str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+        //     //console.log(str);
+        //   }
+        // }
+        // getApiManager()
+        //   .post(`${apiBaseUrl}/task/process-task/generate/export`, {
+        //     'isAll': this.isCheckAll,
+        //     'filter': this.filter,
+        //     'idList': str
+        //   }, {
+        //     responseType: 'blob'
+        //   })
+        //   .then((response) => {
+        //     let fileURL = window.URL.createObjectURL(new Blob([response.data]));
+        //     let fileLink = document.createElement('a');
+        //
+        //     fileLink.href = fileURL;
+        //     fileLink.setAttribute('download', 'Process-Task.xlsx');
+        //     document.body.appendChild(fileLink);
+        //
+        //     fileLink.click();
+        //   })
+        //   .catch(error => {
+        //     throw new Error(error);
+        //   });
       },
 
-      getStatusOption() {
-        let data = checkBoxListDic(11);
-        this.statusData = data;
-        //console.log(this.statusData);
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/process-task/generate`;
+        printFileFromServer(link,params);
+
+        // let str = "";
+        // if (this.isCheckAll === true) {
+        //   str = "";
+        // } else {
+        //   let cnt = this.$refs.taskVuetable.selectedTo.length;
+        //   str = str + this.$refs.taskVuetable.selectedTo[0];
+        //   //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+        //   for (let i = 1; i < cnt; i++) {
+        //     //console.log(this.$refs.taskVuetable.selectedTo[i]);
+        //     str = str + "," + this.$refs.taskVuetable.selectedTo[i];
+        //     //console.log(str);
+        //   }
+        // }
+        //
+        // getApiManager()
+        //   .post(`${apiBaseUrl}/task/process-task/generate`, {
+        //     'isAll': this.isCheckAll,
+        //     'filter': this.filter,
+        //     'idList': str
+        //   }, {
+        //     responseType: 'blob'
+        //   })
+        //   .then((response) => {
+        //     let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
+        //     var objFra = document.createElement('iframe');   // Create an IFrame.
+        //     objFra.style.visibility = "hidden";    // Hide the frame.
+        //     objFra.src = fileURL;                      // Set source.
+        //     document.body.appendChild(objFra);  // Add the frame to the web page.
+        //     objFra.contentWindow.focus();       // Set focus.
+        //     objFra.contentWindow.print();
+        //   })
+        //   .catch(error => {
+        //     throw new Error(error);
+        //   });
+
+
       },
 
       getSiteOption() {
@@ -1286,7 +1245,6 @@
           .then((response) => {
             let message = response.data.message;
 
-            //console.log(this.showPage);
             switch (message) {
               case responseMessages['ok']: // okay
                 this.showPage = response.data.data;
@@ -1298,18 +1256,6 @@
           .catch((error) => {
           });
 
-
-        // if(this.showPage.serScan != null) {
-        //   this.showPage.scanStartTime = getDateTimeWithFormat1(this.showPage.serScan.scanStartTime);
-        //   this.showPage.scanEndTime = getDateTimeWithFormat1(this.showPage.serScan.scanEndTime);
-        // }
-        // if (this.showPage.serJudgeGraph != null) {
-        //   this.showPage.judgeStartTime = getDateTimeWithFormat1(this.showPage.serJudgeGraph.judgeStartTime);
-        //   this.showPage.judgeEndTime = getDateTimeWithFormat1(this.showPage.serJudgeGraph.judgeEndTime);
-        // }
-        // if(this.showPage.serHandExamination != null)
-        //   this.showPage.handStartTime = getDateTimeWithFormat1(this.showPage.serHandExamination.handStartTime);
-        //
         this.pageStatus = 'show';
       },
       getDateTimeFormat2(datatime) {
@@ -1318,9 +1264,7 @@
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
       },
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
+
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
@@ -1335,7 +1279,7 @@
           startTime: null,
           endTime: null
         };
-        //this.$refs.taskVuetable.refresh();
+
       },
 
       transform(response) {
