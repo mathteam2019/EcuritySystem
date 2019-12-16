@@ -707,8 +707,8 @@
         deviceSelectOptions: [],
         selectedDeviceId: 0,
         yesNoOptions: [
-          {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
-          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
+          {value: 'TRUE', text: this.$t('system-setting.parameter-setting.yes')},
+          {value: 'FALSE', text: this.$t('system-setting.parameter-setting.no')},
         ],
         bitOptions: [
           {value: 1, text: 1},
