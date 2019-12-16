@@ -725,9 +725,9 @@
               width: '5%',
               callback: (value) => {
                 const dictionary = {
-                  "male": `<span>${this.$t('permission-management.male')}</span>`,
-                  "female": `<span>${this.$t('permission-management.female')}</span>`,
-                  "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+                  "1000000001": `<span>${this.$t('permission-management.male')}</span>`,
+                  "1000000002": `<span>${this.$t('permission-management.female')}</span>`,
+                  "1000000003": `<span>${this.$t('permission-management.unknown')}</span>`,
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
@@ -768,15 +768,15 @@
               dataClass: 'text-center',
               width: '13%',
               callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person' || dataRangeCategory === null) {
+                if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'org') {
+                } else if (dataRangeCategory === '1000000502') {
                   return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
-                } else if (dataRangeCategory === 'org_desc') {
+                } else if (dataRangeCategory === '1000000503') {
                   return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
-                } else if (dataRangeCategory === 'all') {
+                } else if (dataRangeCategory === '1000000504') {
                   return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
+                } else if (dataRangeCategory === '1000000505') {
                   return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
                 } else {
                   return '';
@@ -816,38 +816,38 @@
         userDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
           {
-            value: 'person',
+            value: '1000000501',
             text: this.$t('permission-management.assign-permission-management.user-form.one-user-data')
           },
           {
-            value: 'org',
+            value: '1000000502',
             text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')
           },
           {
-            value: 'org_desc',
+            value: '1000000503',
             text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')
           },
-          {value: 'all', text: this.$t('permission-management.assign-permission-management.user-form.all-user-data')},
+          {value: '1000000504', text: this.$t('permission-management.assign-permission-management.user-form.all-user-data')},
           {
-            value: 'specified',
+            value: '1000000505',
             text: this.$t('permission-management.assign-permission-management.user-form.select-data-group')
           }
         ],
         //TODO assign permission management for user group part
         userGroupDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'person', text: this.$t('permission-management.assign-permission-management.group.one-user-data')},
-          {value: 'group', text: this.$t('permission-management.assign-permission-management.group.group-user-data')},
-          {value: 'all', text: this.$t('permission-management.assign-permission-management.group.all-user-data')},
+          {value: '1000000501', text: this.$t('permission-management.assign-permission-management.group.one-user-data')},
+          {value: '1000000503', text: this.$t('permission-management.assign-permission-management.group.group-user-data')},
+          {value: '1000000504', text: this.$t('permission-management.assign-permission-management.group.all-user-data')},
           {
-            value: 'specified',
+            value: '1000000505',
             text: this.$t('permission-management.assign-permission-management.group.select-data-group')
           }
         ],
         groupForm: {
           userGroup: null,
           role: null,
-          dataRange: "person",
+          dataRange: "1000000501",
           filterGroup: null,
           selectedUserGroupMembers: [],
         },
@@ -914,13 +914,13 @@
               dataClass: 'text-center',
               width: '15%',
               callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person') {
+                if (dataRangeCategory === '1000000501') {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'group') {
+                } else if (dataRangeCategory === '1000000503') {
                   return this.$t('permission-management.assign-permission-management.group.group-user-data');
-                } else if (dataRangeCategory === 'all') {
+                } else if (dataRangeCategory === '1000000504') {
                   return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
+                } else if (dataRangeCategory === '1000000505') {
                   return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
                 } else {
                   return '';
@@ -961,11 +961,11 @@
           }
         });
 
-        if (this.selectedUser.gender === 'male') {
+        if (this.selectedUser.gender === '1000000001') {
           this.selectedUserGender = this.$t('permission-management.male');
-        } else if (this.selectedUser.gender === 'female') {
+        } else if (this.selectedUser.gender === '1000000002') {
           this.selectedUserGender = this.$t('permission-management.female');
-        } else if (this.selectedUser.gender === 'other') {
+        } else if (this.selectedUser.gender === '1000000003') {
           this.selectedUserGender = this.$t('permission-management.unknown');
         } else {
           this.selectedUserGender = '';
@@ -1019,7 +1019,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user/print`;
+        let link = `permission-management/assign-permission-management/user`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1041,7 +1041,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group/print`;
+        let link = `permission-management/assign-permission-management/user-group`;
         printFileFromServer(link, params);
       },
 
@@ -1122,9 +1122,9 @@
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
           this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
         }
         this.pageStatus = 'show';
@@ -1143,7 +1143,7 @@
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
               userId: this.selectedUserId,
               roleIdList: [],
-              dataRangeCategory: 'person',
+              dataRangeCategory: '1000000501',
               selectedDataGroupId: null
             }).then((response) => {
             let message = response.data.message;
@@ -1172,9 +1172,9 @@
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
           this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
         }
         this.pageStatus = 'modify';
@@ -1226,7 +1226,7 @@
         this.groupForm = {
           userGroup: null,
           role: null,
-          dataRange: "person",
+          dataRange: "1000000501",
           filterGroup: null,
           selectedUserGroupMembers: [],
         };
@@ -1279,7 +1279,7 @@
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/assign-role-and-data-range`, {
               userGroupId: this.selectedUserGroupItem.userGroupId,
-              dataRangeCategory: "person",
+              dataRangeCategory: "1000000501",
               selectedDataGroupId: 0,
               roleIdList: []
             })
@@ -1317,7 +1317,7 @@
           return;
         }
         let dataRangeGroupID = 0;
-        if (this.groupForm.dataRange === 'specified')
+        if (this.groupForm.dataRange === '1000000505')
           dataRangeGroupID = this.groupForm.filterGroup;
         let groupSelectedRoles = [];
         this.groupForm.role.forEach(role => {
@@ -1407,7 +1407,7 @@
           userId: null,
           nextUserId: null, // when edit or show user's role, userId should be stored here.
           roles: [],
-          dataRangeCategory: "person",
+          dataRangeCategory: "1000000501",
           selectedDataGroupId: null,
           nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         };
