@@ -199,7 +199,7 @@
               </b-row>
               <b-row class="mx-4">
                 <b-col cols="12" class="d-flex justify-content-end align-self-end">
-                  <b-button :disabled="selectedFieldId === 0" size="sm" variant="info default mr-1"
+                  <b-button :disabled="selectedFieldId === 0|| checkPermItem('device_field_modify')" size="sm" variant="info default mr-1"
                             @click="onSaveDeviceToField()">
                     <i class="icofont-save"></i>
                     {{ $t('permission-management.save-button') }}
@@ -240,11 +240,11 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onConfigResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton" :disabled="checkPermItem('device_field_export')">
                   <i class="icofont-share-alt"></i>&nbsp;
                   {{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton" :disabled="checkPermItem('device_field_print')">
                   <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
               </b-col>
@@ -329,7 +329,7 @@
                             @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerialNumber}}</span>
                     </div>
                     <div slot="operating" slot-scope="props">
-                      <b-button size="sm" variant="info default btn-square"
+                      <b-button size="sm" variant="info default btn-square" :disabled="checkPermItem('device_config_modify')"
                                 @click="onAction('show',props.rowData)">
                         <i class="icofont-edit"></i>
                       </b-button>
@@ -501,10 +501,10 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button variant="info default" size="sm" @click="onSaveDeviceConfig()">
+              <b-button variant="info default" size="sm" @click="onSaveDeviceConfig()" v-if="!checkPermItem('device_config_modify')">
                 <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
               </b-button>
-              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()">
+              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()" v-if="!checkPermItem('device_config_modify')">
                 <i class="icofont-bin"></i> {{$t('permission-management.delete')}}
               </b-button>
               <b-button @click="onAction('list')" variant="info default" size="sm"><i
@@ -526,7 +526,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem, getDicDataByDicIdForOptions, getDirection} from "../../../utils";
   import Vue from 'vue'
   import VueDualList from '../../../components/Duallist/VueDualList'
   import LiquorTree from 'liquor-tree'
@@ -558,6 +558,7 @@
       this.getModeData();
       this.getManualDeviceData();
       this.getJudgeDeviceData();
+      this.getManufacturerOptions();
       this.$refs.configListTable.$parent.transform = this.transformConfigTable.bind(this);
       this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
     },
@@ -595,23 +596,18 @@
           fieldId: null
         },
         yesNoOptions: [
-          {value: 'yes', text: this.$t('system-setting.parameter-setting.yes')},
-          {value: 'no', text: this.$t('system-setting.parameter-setting.no')},
+          {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
+          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
         ],
         atrOptions: [
-          {value: 'release', text: this.$t('device-config.maintenance-config.release')},
-          {value: 'inspection', text: this.$t('device-config.maintenance-config.inspection')},
+          {value: 'TRUE', text: this.$t('device-config.maintenance-config.release')},
+          {value: 'FALSE', text: this.$t('device-config.maintenance-config.inspection')},
         ],
-        manufacturerOptions: [
-          {text: "同方威视", value: "0"},
-          {text: "海康威视", value: '1'},
-          {text: "大华股份", value: '2'},
-          {text: "华为", value: '3'}
-        ],
+        manufacturerOptions: [],
         genderFilterOptions: [
-          {value: 'all', text: this.$t('permission-management.all')},
-          {value: 'male', text: this.$t('permission-management.male')},
-          {value: 'female', text: this.$t('permission-management.female')}
+          {value: '1000000003', text: this.$t('permission-management.all')},
+          {value: '1000000001', text: this.$t('permission-management.male')},
+          {value: '1000000002', text: this.$t('permission-management.female')}
         ],
         selectedDeviceData: {
           fieldName: '',
@@ -745,6 +741,12 @@
       ///////////////////////////////////////////
       ////////   loading      Options ///////////
       ///////////////////////////////////////////
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+      getManufacturerOptions(){
+        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      },
       //getting all device category options
       getCategoryData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
@@ -862,7 +864,7 @@
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/field/print`;
+        let link = `device-management/device-table/device/field/pdf`;
         printFileFromServer(link,params);
       },
       changeSwitchStatus(status) {
