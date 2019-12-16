@@ -634,11 +634,6 @@
         groupKeyword: '',
         dataRangeKeyword: '',
         groupFlag: null,
-        groupFlagData: [
-          {value: null, text: this.$t('permission-management.permission-control.all')},
-          {value: 'set', text: this.$t('permission-management.permission-control.grouped')},
-          {value: 'unset', text: this.$t('permission-management.permission-control.ungrouped')},
-        ],
         orgList: [],
         userList: [],
         orgUserTreeData: [],
