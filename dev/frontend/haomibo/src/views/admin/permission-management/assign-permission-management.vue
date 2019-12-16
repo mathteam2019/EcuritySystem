@@ -1008,7 +1008,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user/export`;
+        let link = `permission-management/assign-permission-management/user`;
         downLoadFileFromServer(link, params, 'assign-user');
       },
       onPrintUserButton() {
@@ -1019,7 +1019,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user`;
+        let link = `permission-management/assign-permission-management/user/pdf`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1030,7 +1030,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group/export`;
+        let link = `permission-management/assign-permission-management/user-group`;
         downLoadFileFromServer(link, params, 'assign-userGroup');
       },
       onPrintGroupButton() {
@@ -1041,7 +1041,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group`;
+        let link = `permission-management/assign-permission-management/user-group/pdf`;
         printFileFromServer(link, params);
       },
 

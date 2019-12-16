@@ -805,7 +805,7 @@
           'filter': {roleName : this.roleKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/role/export`;
+        let link = `permission-management/permission-control/role`;
         downLoadFileFromServer(link, params, 'permission-role');
       },
       onPrintRoleButton() {
@@ -816,7 +816,7 @@
           'filter': {roleName : this.roleKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/role/print`;
+        let link = `permission-management/permission-control/role/pdf`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -827,7 +827,7 @@
           'filter': {dataGroupName : this.dataRangeKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/data-group/export`;
+        let link = `permission-management/permission-control/data-group`;
         downLoadFileFromServer(link, params, 'permission-dataGroup');
       },
       onPrintGroupButton() {
@@ -838,7 +838,7 @@
           'filter': {dataGroupName : this.dataRangeKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/data-group/print`;
+        let link = `permission-management/permission-control/data-group/pdf`;
         printFileFromServer(link, params);
       },
 
