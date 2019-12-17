@@ -43,7 +43,10 @@ public enum ResponseMessage {
     USED_TEMPLATE_NAME("used_template_name"),
     USED_TEMPLATE_NUMBER("used_template_number"),
     USED_ARCHIVE_NAME("used_archive_name"),
-    USED_ARCHIVE_NUMBER("used_archive_number"),;
+    USED_ARCHIVE_NUMBER("used_archive_number"),
+    USED_DEVICE_NAME("used_device_name"),
+    USED_DEVICE_SERIAL("used_device_serial"),
+    USED_DEVICE_GUID("used_device_guid"),;
 
     private final String value;
 

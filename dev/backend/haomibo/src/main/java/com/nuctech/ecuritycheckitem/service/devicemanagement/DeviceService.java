@@ -13,6 +13,12 @@ public interface DeviceService {
 
     boolean checkArchiveExist(Long archiveId);
 
+    boolean checkDeviceNameExist(String deviceName, Long deviceId);
+
+    boolean checkDeviceSerialExist(String deviceSerial, Long deviceId);
+
+    boolean checkDeviceGuidExist(String guid, Long deviceId);
+
     PageResult<SysDevice> getFilterDeviceList(String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                               int startIndex, int endIndex);
 

@@ -730,6 +730,18 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
+        }
+
+        if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
+        }
+
+        if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
+        }
+
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
         return new CommonResponseBody(ResponseMessage.OK);
@@ -757,6 +769,18 @@ public class DeviceControlController extends BaseController {
         // Check if device is valid.
         if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
+        }
+
+        if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
+        }
+
+        if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
 
         SysDevice sysDevice = requestBody.convert2SysDevice();

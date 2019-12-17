@@ -67,6 +67,33 @@ public class DeviceServiceImpl implements DeviceService {
                 .archiveId.eq(archiveId));
     }
 
+    @Override
+    public boolean checkDeviceNameExist(String deviceName, Long deviceId) {
+        if(deviceId == null) {
+            return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceName.eq(deviceName));
+        }
+        return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceName.eq(deviceName)
+                .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
+    @Override
+    public boolean checkDeviceSerialExist(String deviceSerial, Long deviceId) {
+        if(deviceId == null) {
+            return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceSerial.eq(deviceSerial));
+        }
+        return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceSerial.eq(deviceSerial)
+                .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
+    @Override
+    public boolean checkDeviceGuidExist(String guid, Long deviceId) {
+        if(deviceId == null) {
+            return sysDeviceRepository.exists(QSysDevice.sysDevice.guid.eq(guid));
+        }
+        return sysDeviceRepository.exists(QSysDevice.sysDevice.guid.eq(guid)
+                .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
     private PageResult<SysDevice> getFilterDeviceByCategory(List<SysDevice> preDeviceList, Long categoryId, int startIndex, int endIndex) {
         if(endIndex == -1) {
             endIndex = preDeviceList.size();
