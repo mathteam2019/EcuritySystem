@@ -44,7 +44,7 @@
             </span>
             <span class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
-          <b-dropdown-item>{{this.$t('menu.account')}}</b-dropdown-item>
+          <b-dropdown-item @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="d-inline-block">
