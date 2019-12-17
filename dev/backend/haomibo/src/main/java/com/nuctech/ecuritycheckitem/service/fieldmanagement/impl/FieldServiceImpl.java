@@ -53,6 +53,26 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
+    public boolean checkFieldSerial(String fieldSerial, Long fieldId) {
+        if(fieldId == null) {
+            return sysFieldRepository.exists(QSysField.sysField.fieldSerial.eq(fieldSerial));
+        }
+        return sysFieldRepository.exists(QSysField.sysField.fieldSerial.eq(fieldSerial)
+                .and(QSysField.sysField.fieldId.ne(fieldId)));
+    }
+
+    @Override
+    public boolean checkFieldDesignation(String fieldDesignation, Long fieldId) {
+        if(fieldId == null) {
+            return sysFieldRepository.exists(QSysField.sysField.fieldDesignation.eq(fieldDesignation));
+        }
+        return sysFieldRepository.exists(QSysField.sysField.fieldDesignation.eq(fieldDesignation)
+                .and(QSysField.sysField.fieldId.ne(fieldId)));
+    }
+
+
+
+    @Override
     public boolean checkDeviceExist(Long fieldId) {
         return sysDeviceRepository.exists(QSysDevice.sysDevice.fieldId.eq(fieldId));
     }

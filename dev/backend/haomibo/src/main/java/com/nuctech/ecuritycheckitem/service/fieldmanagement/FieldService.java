@@ -12,6 +12,10 @@ public interface FieldService {
 
     boolean checkDeviceExist(Long fieldId);
 
+    boolean checkFieldSerial(String fieldSerial, Long fieldId);
+
+    boolean checkFieldDesignation(String fieldDesignation, Long fieldId);
+
     boolean checkHasChild(Long fieldId);
 
     void modifyField(SysField sysField);

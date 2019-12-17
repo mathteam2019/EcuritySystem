@@ -269,6 +269,14 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
+        }
+
+        if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
+        }
+
         SysField sysField = requestBody.convert2SysField();
         fieldService.createField(sysField);
 
@@ -301,11 +309,21 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), requestBody.getFieldId())) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
+        }
+
+        if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), requestBody.getFieldId())) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
+        }
+
         // Check if field has children.
         if (fieldService.checkHasChild(requestBody.getFieldId())) {
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
+
+
 
 
         //check if device use this field

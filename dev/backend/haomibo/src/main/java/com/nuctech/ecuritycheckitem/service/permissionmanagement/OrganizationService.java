@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface OrganizationService {
 
+    boolean checkOrgNameExist(String orgName, Long orgId);
+
+    boolean checkOrgNumberExist(String orgNumber, Long orgId);
+
     boolean createOrganization(Long parentOrgId, SysOrg sysOrg);
 
     boolean modifyOrganization(Long orgId, Long parentOrgId, SysOrg sysOrg);

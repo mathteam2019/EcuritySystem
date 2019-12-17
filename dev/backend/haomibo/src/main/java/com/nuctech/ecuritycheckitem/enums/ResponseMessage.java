@@ -46,7 +46,11 @@ public enum ResponseMessage {
     USED_ARCHIVE_NUMBER("used_archive_number"),
     USED_DEVICE_NAME("used_device_name"),
     USED_DEVICE_SERIAL("used_device_serial"),
-    USED_DEVICE_GUID("used_device_guid"),;
+    USED_DEVICE_GUID("used_device_guid"),
+    USED_FIELD_SERIAL("used_field_serial"),
+    USED_FIELD_DESIGNATION("used_field_designation"),
+    USED_ORG_NAME("used_org_name"),
+    USED_ORG_NUMBER("used_org_number"),;
 
     private final String value;
 

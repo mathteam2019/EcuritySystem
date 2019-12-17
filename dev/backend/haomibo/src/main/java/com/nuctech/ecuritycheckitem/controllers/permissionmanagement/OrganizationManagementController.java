@@ -277,6 +277,14 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
+        }
+
+        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
+        }
+
         SysOrg sysOrg = requestBody.convert2SysOrg();
         if (organizationService.createOrganization(requestBody.getParentOrgId(), sysOrg)) {
             return new CommonResponseBody(ResponseMessage.OK);
@@ -297,6 +305,14 @@ public class OrganizationManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
+        }
+
+        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
