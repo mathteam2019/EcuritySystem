@@ -14,6 +14,10 @@ public interface ArchiveTemplateService {
 
     boolean checkArchiveTemplateExist(long archiveTemplateId);
 
+    boolean checkTemplateNameExist(String templateName, Long templateId);
+
+    boolean checkTemplateNumberExist(String templateNumber, Long templateId);
+
     boolean checkCategoryExist(long categoryId);
 
     void updateStatus(long templateId, String status);

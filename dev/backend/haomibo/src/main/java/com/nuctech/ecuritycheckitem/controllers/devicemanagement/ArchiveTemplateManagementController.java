@@ -537,6 +537,14 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
+        }
+
+        if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
+        }
+
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();
         archiveTemplateService.createSerArchiveTemplate(serArchiveTemplate);
 
@@ -591,6 +599,14 @@ public class ArchiveTemplateManagementController extends BaseController {
         //check this template used
         if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
+
+        if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), requestBody.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
+        }
+
+        if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), requestBody.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
         }
 
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();
