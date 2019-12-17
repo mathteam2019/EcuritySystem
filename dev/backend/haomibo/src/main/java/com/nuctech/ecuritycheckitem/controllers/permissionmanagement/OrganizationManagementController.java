@@ -277,6 +277,14 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
+        }
+
+        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
+        }
+
         SysOrg sysOrg = requestBody.convert2SysOrg();
         if (organizationService.createOrganization(requestBody.getParentOrgId(), sysOrg)) {
             return new CommonResponseBody(ResponseMessage.OK);
@@ -297,6 +305,14 @@ public class OrganizationManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
+        }
+
+        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
@@ -485,7 +501,7 @@ public class OrganizationManagementController extends BaseController {
      * Organization generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
-    @RequestMapping(value = "/organization/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/organization/xlsx", method = RequestMethod.POST)
     public Object organizationGenerateExcelFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
 
@@ -519,8 +535,8 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization generate word request.
      */
-    @PreAuthorize(Role.Authority.HAS_ORG_TOWORD)
-    @RequestMapping(value = "/organization/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/organization/docx", method = RequestMethod.POST)
     public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -554,7 +570,7 @@ public class OrganizationManagementController extends BaseController {
      * Organization generate pdf request.
      */
     @PreAuthorize(Role.Authority.HAS_ORG_PRINT)
-    @RequestMapping(value = "/organization/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/organization/pdf", method = RequestMethod.POST)
     public Object organizationGeneratePdfFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 

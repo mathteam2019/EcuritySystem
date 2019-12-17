@@ -193,17 +193,17 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @OneToOne()
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysDevice scanDevice;
+    private SysDeviceSimple scanDevice;
 
     @OneToOne()
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysDevice handDevice;
+    private SysDeviceSimple handDevice;
 
     @OneToOne()
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysDevice judgeDevice;
+    private SysDeviceSimple judgeDevice;
 
 
 
@@ -215,7 +215,7 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SerTask task;
+    private SerTaskSimple task;
 
 
 

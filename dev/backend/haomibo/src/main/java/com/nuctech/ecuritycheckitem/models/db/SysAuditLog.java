@@ -14,9 +14,6 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -31,7 +28,7 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SYS_AUDIT_LOG)
 @Table(name = "sys_audit_log")
-@Document(indexName = "mesindex", type = "SYS_AUDIT_LOG")
+//@Document(indexName = "mesindex", type = "SYS_AUDIT_LOG")
 public class SysAuditLog extends BaseEntity implements Serializable {
 
 

@@ -246,6 +246,14 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
+        }
+
+        if(deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
+        }
+
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
 
         deviceCategoryService.createSysDeviceCategory(sysDeviceCategory);
@@ -283,6 +291,14 @@ public class DeviceCategoryManagementController extends BaseController {
 
         if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
+        }
+
+        if(deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
+        }
+
+        if(deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
@@ -414,7 +430,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * Device Category generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_EXPORT)
-    @RequestMapping(value = "/category/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/category/xlsx", method = RequestMethod.POST)
     public Object deviceCategoryGenerateExcelFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 
@@ -453,8 +469,8 @@ public class DeviceCategoryManagementController extends BaseController {
     /**
      * Device Category generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_TOWORD)
-    @RequestMapping(value = "/category/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/category/docx", method = RequestMethod.POST)
     public Object deviceCategoryGenerateWordFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
@@ -494,7 +510,7 @@ public class DeviceCategoryManagementController extends BaseController {
      * Device Category generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_CATEGORY_PRINT)
-    @RequestMapping(value = "/category/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/category/pdf", method = RequestMethod.POST)
     public Object deviceCategoryGeneratePDFFile(@RequestBody @Valid DeviceCategoryGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

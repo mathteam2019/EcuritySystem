@@ -14,7 +14,7 @@
 
           <b-col>
             <b-form-group :label="'业务类型'">
-              <b-form-select v-model="filter.modeId" plain/>
+              <b-form-select v-model="filter.modeId" :options="categoryFilterData" plain/>
             </b-form-group>
           </b-col>
 
@@ -66,7 +66,8 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span></div>
+              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
+              </div>
               <div><span>累计工时</span></div>
             </div>
           </div>
@@ -79,7 +80,8 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span></div>
+              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
+              </div>
               <div><span>扫描累计工时</span></div>
             </div>
           </div>
@@ -92,7 +94,8 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span></div>
+              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
+              </div>
               <div><span>判图累计工时</span></div>
             </div>
           </div>
@@ -119,10 +122,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -244,7 +247,6 @@
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
               track-by="time"
-              @vuetable:checkbox-toggled-all="onCheckEvent"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -287,11 +289,11 @@
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
   import 'echarts/lib/component/legend';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from "../../../constants/response-messages";
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -452,6 +454,12 @@
         judge: [],
         hand: [],
 
+        categoryFilterData: [
+          {value: '1000002602', text: "扫描"},
+          {value: '1000002603', text: "判图"},
+          {value: '1000002604', text: "手检"},
+          {value: null, text: "全部"}
+        ],
 
         statisticalStepSizeOptions: [
           {value: 'hour', text: "时"},
@@ -462,7 +470,7 @@
           {value: 'year', text: "年"},
         ],
 
-        totalData : {
+        totalData: {
           'day': {
             value: 0
           },
@@ -477,7 +485,7 @@
           },
         },
 
-        scanData : {
+        scanData: {
           'day': {
             value: 0
           },
@@ -490,12 +498,12 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
 
-        judgeData : {
+        judgeData: {
           'day': {
             value: 0
           },
@@ -508,12 +516,12 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
 
-        handData : {
+        handData: {
           'day': {
             value: 0
           },
@@ -526,7 +534,7 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
@@ -685,97 +693,33 @@
         return getDateTimeWithFormat(datatime, 'monitor');
       },
 
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
-        console.log(this.isCheckAll);
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        if (this.pageStatus === 'charts')
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {'filter': this.filter},
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/userstatistics/generate`;
+        downLoadFileFromServer(link, params, 'Statistics-WorkingHour');
 
       },
-      onGenerateExcelButton() {
-        let str = "";
+
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/userstatistics/generate/export`, {
-            'isAll': this.isCheckAll,
-            'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
-
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Statistics-Workinghour.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-      },
-
-      onGeneratePdfButton() {
-        let str = "";
-        if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/userstatistics/generate/print`, {
-            'isAll': this.isCheckAll,
-            'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-
-
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': {'filter': this.filter},
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/userstatistics/generate`;
+        printFileFromServer(link, params);
       },
 
 
@@ -817,28 +761,25 @@
           let xAxisChart = [];
           console.log(this.graphData.detailedStatistics.length);
           console.log(keyData);
-          for (let i = 1; i <= keyData.length; i++) {
-            // console.log(keyData[i]);
-            // let key = keyData[i];
-            console.log(this.graphData.detailedStatistics[i].name);
-            xAxisChart[i-1] = this.graphData.detailedStatistics[i].name;
-            if(this.graphData.detailedStatistics[i].scanStatistics!=null) {
-              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
-            }
-            else {
+          for (let i = 1; i < keyData.length; i++) {
+            console.log(keyData[i]);
+            let key = keyData[i];
+            console.log(this.graphData.detailedStatistics[key].name);
+            xAxisChart[i - 1] = this.graphData.detailedStatistics[key].name;
+            if (this.graphData.detailedStatistics[key].scanStatistics != null) {
+              this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
+            } else {
               this.bar3ChartOptions.series[0].data[i] = 0;
             }
-            if(this.graphData.detailedStatistics[i].judgeStatistics!=null) {
-              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
+            if (this.graphData.detailedStatistics[key].judgeStatistics != null) {
+              this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[key].judgeStatistics.workingSeconds;
+            } else {
+              this.bar3ChartOptions.series[1].data[i] = 0;
             }
-            else {
-              this.bar3ChartOptions.series[1].data[i]=0;
-            }
-            if(this.graphData.detailedStatistics[i].handExaminationStatistics!=null) {
-              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
-            }
-            else {
-              this.bar3ChartOptions.series[2].data[i]=0;
+            if (this.graphData.detailedStatistics[key].handExaminationStatistics != null) {
+              this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[key].handExaminationStatistics.workingSeconds;
+            } else {
+              this.bar3ChartOptions.series[2].data[i] = 0;
             }
             //this.bar3ChartOptions.xAxis.data[i].value = this.graphData.detailedStatistics[i].name;
             // this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[i].scanStatistics.workingSeconds;
@@ -851,7 +792,7 @@
       },
 
       getPreviewData() {
-        getApiManager().post(`${apiBaseUrl}/task/statistics/get-by-user-sum`, {
+        getApiManager().post(`${apiBaseUrl}/task/statistics/get-statistics-filter-by-user`, {
           filter: this.filter
         }).then((response) => {
           let message = response.data.message;
@@ -861,27 +802,31 @@
           // this.scan = [];
           // this.judge = [];
           // this.hand = [];
+          let totalSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds + this.preViewData.totalStatistics.judgeStatistics.workingSeconds + this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
+          let scanSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds;
+          let judgeSeconds = this.preViewData.totalStatistics.judgeStatistics.workingSeconds;
+          let handSeconds = this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
 
-          this.totalData['second'].value = this.preViewData.totalSeconds % 60;
-          this.totalData['minute'].value = ((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60;
-          this.totalData['hour'].value = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.totalData['day'].value = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.scanData['second'].value = this.preViewData.scanSeconds % 60;
-          this.scanData['minute'].value = ((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60;
-          this.scanData['hour'].value = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.scanData['day'].value = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.judgeData['second'].value = this.preViewData.judgeSeconds % 60;
-          this.judgeData['minute'].value = ((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60;
-          this.judgeData['hour'].value = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.judgeData['day'].value = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          this.handData['second'].value = this.preViewData.handSeconds % 60;
-          this.handData['minute'].value = ((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60;
-          this.handData['hour'].value = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
-          this.handData['day'].value = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.totalData['second'].value = totalSeconds % 60;
+          this.totalData['minute'].value = ((totalSeconds - totalSeconds % 60) / 60) % 60;
+          this.totalData['hour'].value = (((totalSeconds - totalSeconds % 60) / 60 - (((totalSeconds - totalSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.totalData['day'].value = (((totalSeconds - totalSeconds % 60) / 60 - (((totalSeconds - totalSeconds % 60) / 60) % 60)) / 60 - (((totalSeconds - totalSeconds % 60) / 60 - (((totalSeconds - totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.scanData['second'].value = scanSeconds % 60;
+          this.scanData['minute'].value = ((scanSeconds - scanSeconds % 60) / 60) % 60;
+          this.scanData['hour'].value = (((scanSeconds - scanSeconds % 60) / 60 - (((scanSeconds - scanSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.scanData['day'].value = (((scanSeconds - scanSeconds % 60) / 60 - (((scanSeconds - scanSeconds % 60) / 60) % 60)) / 60 - (((scanSeconds - scanSeconds % 60) / 60 - (((scanSeconds - scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.judgeData['second'].value = judgeSeconds % 60;
+          this.judgeData['minute'].value = ((judgeSeconds - judgeSeconds % 60) / 60) % 60;
+          this.judgeData['hour'].value = (((judgeSeconds - judgeSeconds % 60) / 60 - (((judgeSeconds - judgeSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.judgeData['day'].value = (((judgeSeconds - judgeSeconds % 60) / 60 - (((judgeSeconds - judgeSeconds % 60) / 60) % 60)) / 60 - (((judgeSeconds - judgeSeconds % 60) / 60 - (((judgeSeconds - judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
+          this.handData['second'].value = handSeconds % 60;
+          this.handData['minute'].value = ((handSeconds - handSeconds % 60) / 60) % 60;
+          this.handData['hour'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24;
+          this.handData['day'].value = (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60 - (((handSeconds - handSeconds % 60) / 60 - (((handSeconds - handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
 
-          this.scanData['rate'].value = Math.floor(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
-          this.judgeData['rate'].value = Math.floor(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
-          this.handData['rate'].value = Math.floor(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
+          this.scanData['rate'].value = Math.round(scanSeconds / totalSeconds * 100);
+          this.judgeData['rate'].value = Math.round(judgeSeconds / totalSeconds * 100);
+          this.handData['rate'].value = Math.round(handSeconds / totalSeconds * 100);
 
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
@@ -905,9 +850,9 @@
           // this.hand.hour = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
           // this.hand.day = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
           //
-          // this.scan.rate = Math.floor(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
-          // this.judge.rate = Math.floor(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
-          // this.hand.rate = Math.floor(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
+          // this.scan.rate = Math.round(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
+          // this.judge.rate = Math.round(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
+          // this.hand.rate = Math.round(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
           //
           // this.doublePieChartOptions.series[0].data[0].value = this.scan.rate;
           // this.doublePieChartOptions.series[0].data[1].value = this.judge.rate;

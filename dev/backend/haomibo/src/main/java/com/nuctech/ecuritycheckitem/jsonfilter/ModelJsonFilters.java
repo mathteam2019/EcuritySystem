@@ -30,6 +30,8 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_ARCHIVE_TEMPLATE = "filter_ser_archive_template";
     public final static String FILTER_SER_ARCHIVE_INDICATORS = "filter_ser_archive_indicators";
     public final static String FILTER_SYS_DEVICE = "filter_sys_device";
+    public final static String FILTER_SYS_DICTONARY_DATA = "filter_sys_dictionary_data";
+    public final static String FILTER_SYS_DEVICE_DICTIONARY_DATA = "filter_sys_dictionary_data";
     public final static String FILTER_SYS_MANUAL_DEVICE = "filter_sys_manual_device";
     public final static String FILTER_SYS_MANUAL_GROUP = "filter_sys_manual_group";
     public final static String FILTER_SYS_JUDGE_DEVICE = "filter_sys_judge_device";

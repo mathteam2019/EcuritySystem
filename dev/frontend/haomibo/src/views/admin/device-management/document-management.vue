@@ -62,13 +62,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_archive_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_archive_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_archive_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -94,18 +94,18 @@
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
-                            :disabled="props.rowData.status === 'active'">
+                            :disabled="props.rowData.status === '1000000701' || checkPermItem('device_archive_modify')">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
-                    size="sm" @click="onAction('activate',props.rowData)"
+                    v-if="props.rowData.status=='1000000702'"
+                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
                     variant="success default btn-square">
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='active'"
-                    size="sm" @click="onAction('inactivate',props.rowData)"
+                    v-if="props.rowData.status=='1000000701'"
+                    size="sm" @click="onAction('inactivate',props.rowData)" :disabled="checkPermItem('device_archive_update_status')"
                     variant="warning default btn-square"
                   >
                     <i class="icofont-ban"></i>
@@ -113,7 +113,7 @@
                   <b-button
                     size="sm" @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === 'active'">
+                    :disabled="props.rowData.status === '1000000701' || checkPermItem('device_archive_delete')">
                     <i class="icofont-bin"></i>
                   </b-button>
 
@@ -200,7 +200,7 @@
                 <b-col cols="4" v-for="(item,index) in indicatorsData">
                   <b-form-group>
                     <template slot="label">{{item.indicatorsName}}
-                      <span v-if="item.isNull ==='yes'" class="text-danger">*</span>
+                      <span v-if="item.isNull ==='1000000601'" class="text-danger">*</span>
                       <span class="font-weight-normal text-dark" v-if="item.indicatorsUnit!==null">( {{item.indicatorsUnit}} )</span>
                     </template>
                     <b-form-input v-model="indicatorsForm[index]" ></b-form-input>
@@ -220,8 +220,8 @@
               <img v-else-if="!(archivesForm.image!=null&&archivesForm.image!=='')"
                    src="../../../assets/img/device.png">
               <div class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="archivesForm.status === 'active'" src="../../../assets/img/active_stamp.png">
-                <img v-if="archivesForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="archivesForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -235,15 +235,15 @@
                 class="icofont-save"></i>
                 {{$t('device-management.save')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === 'inactive'"
-                        @click="onAction('activate',archivesForm)" variant="success default">
+              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000702'"
+                        @click="onAction('activate',archivesForm)" variant="success default" :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === 'active'"
-                        @click="onAction('inactivate',archivesForm)" variant="warning default">
+              <b-button size="sm" v-if="pageStatus !== 'create' && archivesForm.status === '1000000701'"
+                        @click="onAction('inactivate',archivesForm)" variant="warning default" :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === 'inactive'"
+              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === '1000000702'" :disabled="checkPermItem('device_archive_delete')"
                         @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"></i>
                 {{$t('device-management.delete')}}
               </b-button>
@@ -260,7 +260,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -288,6 +288,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem, getDicDataByDicIdForOptions} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -310,6 +311,7 @@
     mounted() {
       this.getCategoryData();
       this.getTemplateData();
+      this.getManufacturerOptions();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
     },
     mixins: [validationMixin],
@@ -337,15 +339,11 @@
         pageStatus: 'list',
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
-        manufacturerOptions: [
-          {text: "同方威视", value: "0"},
-          {text: "海康威视", value: '1'},
-          {text: "大华股份", value: '2'},
-          {text: "华为", value: '3'}
-        ],
+
+        manufacturerOptions: [],
         indicatorsData: [],
         filterOption: {
           archivesName: '',
@@ -367,9 +365,10 @@
           imageUrl: null,
           image: null,
           note: '',
-          status: 'inactive',
+          status: '1000000702',
           archiveValueList:[]
         },
+
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/device-management/document-management/archive/get-by-filter-and-page`,
           perPage: 10,
@@ -408,12 +407,13 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               }
+
             },
             {
               name: 'categoryName',
@@ -452,7 +452,12 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+      getManufacturerOptions(){
+        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -461,7 +466,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-management/archive/export`;
+        let link = `device-management/document-management/archive`;
         downLoadFileFromServer(link,params,'document');
       },
       onPrintButton(){
@@ -472,7 +477,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-management/archive/print`;
+        let link = `device-management/document-management/archive/pdf`;
         printFileFromServer(link,params);
       },
       hideModal(modal) {
@@ -534,7 +539,7 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.$refs['modal-inactive'].show();
@@ -554,7 +559,7 @@
             image: null,
             imageUrl: null,
             note: '',
-            status: 'inactive',
+            status: '1000000702',
             archiveValueList:[]
           };
         else {
@@ -641,7 +646,7 @@
               "indicatorsId": item.indicatorsId,
               "value": this.indicatorsForm[index]
             })
-          } else if (item.isNull === 'yes') {
+          } else if (item.isNull === '1000000601') {
             this.invalidIndicators.push(index);
             isRequired = true;
           }
@@ -788,6 +793,7 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.categorySelectOptions = [];

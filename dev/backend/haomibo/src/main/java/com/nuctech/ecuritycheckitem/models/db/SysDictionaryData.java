@@ -25,7 +25,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE)
+@JsonFilter(ModelJsonFilters.FILTER_SYS_DICTONARY_DATA)
 @Table(name = "sys_dictionary_data")
 public class SysDictionaryData extends BaseEntity implements Serializable {
     @Id

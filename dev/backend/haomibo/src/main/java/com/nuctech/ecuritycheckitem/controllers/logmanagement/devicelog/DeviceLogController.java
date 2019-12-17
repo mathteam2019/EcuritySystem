@@ -212,7 +212,7 @@ public class DeviceLogController extends BaseController {
      * Device Log generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_LOG_EXPORT)
-    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object deviceLogGenerateExcelFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
                                     BindingResult bindingResult) {
 
@@ -240,8 +240,8 @@ public class DeviceLogController extends BaseController {
     /**
      * Device Log generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_LOG_TOWORD)
-    @RequestMapping(value = "/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object deviceLogGenerateWordFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -270,7 +270,7 @@ public class DeviceLogController extends BaseController {
      * Device Log generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_LOG_PRINT)
-    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object deviceLogGeneratePDFFile(@RequestBody @Valid DeviceLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

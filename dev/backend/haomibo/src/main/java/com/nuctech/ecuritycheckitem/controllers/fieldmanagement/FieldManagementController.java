@@ -265,8 +265,16 @@ public class FieldManagementController extends BaseController {
         }
 
         // Check if parent field is existing.
-        if (requestBody.getParentFieldId() != 0 && fieldService.checkFieldExist(requestBody.getParentFieldId())) {
+        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
+        }
+
+        if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
         }
 
         SysField sysField = requestBody.convert2SysField();
@@ -301,11 +309,21 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), requestBody.getFieldId())) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
+        }
+
+        if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), requestBody.getFieldId())) {
+            return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
+        }
+
         // Check if field has children.
         if (fieldService.checkHasChild(requestBody.getFieldId())) {
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
+
+
 
 
         //check if device use this field
@@ -453,7 +471,7 @@ public class FieldManagementController extends BaseController {
      * Field generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
-    @RequestMapping(value = "/field/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/field/xlsx", method = RequestMethod.POST)
     public Object fieldGenerateExcelFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
 
@@ -489,8 +507,8 @@ public class FieldManagementController extends BaseController {
     /**
      * Field generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_TOWORD)
-    @RequestMapping(value = "/field/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/field/docx", method = RequestMethod.POST)
     public Object fieldGenerateWordFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 
@@ -528,7 +546,7 @@ public class FieldManagementController extends BaseController {
      * Field generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
-    @RequestMapping(value = "/field/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/field/pdf", method = RequestMethod.POST)
     public Object fieldGeneratePDFFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 

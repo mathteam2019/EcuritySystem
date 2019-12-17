@@ -64,13 +64,13 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onClickUserResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_export')" @click="onExportUserButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_print')" @click="onPrintUserButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAssignUserCreatePage()" :disabled="checkPermItem('assign_user_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -102,6 +102,7 @@
                       <div>
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_modify')"
                           variant="primary default btn-square"
                           @click="editUserRoles(props.rowData)">
                           <i class="icofont-edit"></i>
@@ -109,6 +110,7 @@
 
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_delete')"
                           variant="danger default btn-square"
                           @click="promptDeleteUserRoles(props.rowData.userId)">
                           <i class="icofont-bin"></i>
@@ -259,7 +261,7 @@
                 <b-button size="sm" variant="info default" @click="onUserActionGroup('save-item')"
                           v-if="pageStatus !== 'show'"><i class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')"
+                <b-button size="sm" variant="danger default" @click="onUserActionGroup('delete-item')" :disabled="checkPermItem('assign_user_delete')"
                           v-if="pageStatus !== 'create'"><i class="icofont-bin"></i>
                   {{$t('permission-management.delete')}}
                 </b-button>
@@ -314,13 +316,13 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="onAssignUserGroupResetButton()">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_group_export')" @click="onExportGroupButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('assign_user_group_print')" @click="onPrintGroupButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAssignUserGroupCreatePage()" :disabled="checkPermItem('assign_user_group_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -347,13 +349,14 @@
                       <div>
 
                         <b-button
-                          size="sm"
+                          size="sm" :disabled="checkPermItem('assign_user_group_modify')"
                           variant="primary default btn-square" @click="onActionGroup('edit-item',props.rowData)">
                           <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
                           size="sm"
+                          :disabled="checkPermItem('assign_user_group_delete')"
                           variant="danger default btn-square" @click="onActionGroup('delete-item',props.rowData)">
                           <i class="icofont-bin"></i>
                         </b-button>
@@ -464,7 +467,7 @@
                           @click="onActionGroup('save-item')"><i
                   class="icofont-save"></i> {{$t('permission-management.save')}}
                 </b-button>
-                <b-button v-if="groupPageStatus !== 'create'" variant="danger default" size="sm"
+                <b-button v-if="groupPageStatus !== 'create'" variant="danger default" size="sm" :disabled="checkPermItem('assign_user_group_delete')"
                           @click="onActionGroup('delete-item',selectedUserGroupItem)"><i
                   class="icofont-bin"></i> {{$t('permission-management.delete')}}
                 </b-button>
@@ -511,7 +514,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
   import {validationMixin} from 'vuelidate';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
@@ -722,9 +725,9 @@
               width: '5%',
               callback: (value) => {
                 const dictionary = {
-                  "male": `<span>${this.$t('permission-management.male')}</span>`,
-                  "female": `<span>${this.$t('permission-management.female')}</span>`,
-                  "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+                  "1000000001": `<span>${this.$t('permission-management.male')}</span>`,
+                  "1000000002": `<span>${this.$t('permission-management.female')}</span>`,
+                  "1000000003": `<span>${this.$t('permission-management.unknown')}</span>`,
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
@@ -765,15 +768,15 @@
               dataClass: 'text-center',
               width: '13%',
               callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person' || dataRangeCategory === null) {
+                if (dataRangeCategory === '1000000501' || dataRangeCategory === null) {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'org') {
+                } else if (dataRangeCategory === '1000000502') {
                   return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data');
-                } else if (dataRangeCategory === 'org_desc') {
+                } else if (dataRangeCategory === '1000000503') {
                   return this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data');
-                } else if (dataRangeCategory === 'all') {
+                } else if (dataRangeCategory === '1000000504') {
                   return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
+                } else if (dataRangeCategory === '1000000505') {
                   return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
                 } else {
                   return '';
@@ -813,38 +816,38 @@
         userDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
           {
-            value: 'person',
+            value: '1000000501',
             text: this.$t('permission-management.assign-permission-management.user-form.one-user-data')
           },
           {
-            value: 'org',
+            value: '1000000502',
             text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')
           },
           {
-            value: 'org_desc',
+            value: '1000000503',
             text: this.$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')
           },
-          {value: 'all', text: this.$t('permission-management.assign-permission-management.user-form.all-user-data')},
+          {value: '1000000504', text: this.$t('permission-management.assign-permission-management.user-form.all-user-data')},
           {
-            value: 'specified',
+            value: '1000000505',
             text: this.$t('permission-management.assign-permission-management.user-form.select-data-group')
           }
         ],
         //TODO assign permission management for user group part
         userGroupDataRangeOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'person', text: this.$t('permission-management.assign-permission-management.group.one-user-data')},
-          {value: 'group', text: this.$t('permission-management.assign-permission-management.group.group-user-data')},
-          {value: 'all', text: this.$t('permission-management.assign-permission-management.group.all-user-data')},
+          {value: '1000000501', text: this.$t('permission-management.assign-permission-management.group.one-user-data')},
+          {value: '1000000503', text: this.$t('permission-management.assign-permission-management.group.group-user-data')},
+          {value: '1000000504', text: this.$t('permission-management.assign-permission-management.group.all-user-data')},
           {
-            value: 'specified',
+            value: '1000000505',
             text: this.$t('permission-management.assign-permission-management.group.select-data-group')
           }
         ],
         groupForm: {
           userGroup: null,
           role: null,
-          dataRange: "person",
+          dataRange: "1000000501",
           filterGroup: null,
           selectedUserGroupMembers: [],
         },
@@ -911,13 +914,13 @@
               dataClass: 'text-center',
               width: '15%',
               callback: (dataRangeCategory) => {
-                if (dataRangeCategory === 'person') {
+                if (dataRangeCategory === '1000000501') {
                   return this.$t('permission-management.assign-permission-management.user-form.one-user-data');
-                } else if (dataRangeCategory === 'group') {
+                } else if (dataRangeCategory === '1000000503') {
                   return this.$t('permission-management.assign-permission-management.group.group-user-data');
-                } else if (dataRangeCategory === 'all') {
+                } else if (dataRangeCategory === '1000000504') {
                   return this.$t('permission-management.assign-permission-management.user-form.all-user-data');
-                } else if (dataRangeCategory === 'specified') {
+                } else if (dataRangeCategory === '1000000505') {
                   return this.$t('permission-management.assign-permission-management.user-form.select-data-group');
                 } else {
                   return '';
@@ -958,11 +961,11 @@
           }
         });
 
-        if (this.selectedUser.gender === 'male') {
+        if (this.selectedUser.gender === '1000000001') {
           this.selectedUserGender = this.$t('permission-management.male');
-        } else if (this.selectedUser.gender === 'female') {
+        } else if (this.selectedUser.gender === '1000000002') {
           this.selectedUserGender = this.$t('permission-management.female');
-        } else if (this.selectedUser.gender === 'other') {
+        } else if (this.selectedUser.gender === '1000000003') {
           this.selectedUserGender = this.$t('permission-management.unknown');
         } else {
           this.selectedUserGender = '';
@@ -994,7 +997,9 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportUserButton() {
         let checkedAll = this.$refs.userVuetable.checkedAllStatus;
         let checkedIds = this.$refs.userVuetable.selectedTo;
@@ -1003,7 +1008,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user/export`;
+        let link = `permission-management/assign-permission-management/user`;
         downLoadFileFromServer(link, params, 'assign-user');
       },
       onPrintUserButton() {
@@ -1014,7 +1019,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user/print`;
+        let link = `permission-management/assign-permission-management/user/pdf`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1025,7 +1030,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group/export`;
+        let link = `permission-management/assign-permission-management/user-group`;
         downLoadFileFromServer(link, params, 'assign-userGroup');
       },
       onPrintGroupButton() {
@@ -1036,7 +1041,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group/print`;
+        let link = `permission-management/assign-permission-management/user-group/pdf`;
         printFileFromServer(link, params);
       },
 
@@ -1117,9 +1122,9 @@
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
           this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
         }
         this.pageStatus = 'show';
@@ -1138,7 +1143,7 @@
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
               userId: this.selectedUserId,
               roleIdList: [],
-              dataRangeCategory: 'person',
+              dataRangeCategory: '1000000501',
               selectedDataGroupId: null
             }).then((response) => {
             let message = response.data.message;
@@ -1167,9 +1172,9 @@
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = 'person';
+        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
-        if (this.userForm.dataRangeCategory === 'specified' && userWithRole.dataGroups.length > 0) {
+        if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
           this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
         }
         this.pageStatus = 'modify';
@@ -1221,7 +1226,7 @@
         this.groupForm = {
           userGroup: null,
           role: null,
-          dataRange: "person",
+          dataRange: "1000000501",
           filterGroup: null,
           selectedUserGroupMembers: [],
         };
@@ -1274,7 +1279,7 @@
           getApiManager()
             .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/assign-role-and-data-range`, {
               userGroupId: this.selectedUserGroupItem.userGroupId,
-              dataRangeCategory: "person",
+              dataRangeCategory: "1000000501",
               selectedDataGroupId: 0,
               roleIdList: []
             })
@@ -1312,7 +1317,7 @@
           return;
         }
         let dataRangeGroupID = 0;
-        if (this.groupForm.dataRange === 'specified')
+        if (this.groupForm.dataRange === '1000000505')
           dataRangeGroupID = this.groupForm.filterGroup;
         let groupSelectedRoles = [];
         this.groupForm.role.forEach(role => {
@@ -1402,7 +1407,7 @@
           userId: null,
           nextUserId: null, // when edit or show user's role, userId should be stored here.
           roles: [],
-          dataRangeCategory: "person",
+          dataRangeCategory: "1000000501",
           selectedDataGroupId: null,
           nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         };

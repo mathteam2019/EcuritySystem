@@ -120,7 +120,7 @@ public class HandExaminationStatisticsController extends BaseController {
     /**
      * HandExamination Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/handexamination/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/handexamination/generate/pdf", method = RequestMethod.POST)
     public Object handExaminationStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 
@@ -158,7 +158,7 @@ public class HandExaminationStatisticsController extends BaseController {
     /**
      * HandExamination Statistics generate excel file request.
      */
-    @RequestMapping(value = "/handexamination/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/handexamination/generate/xlsx", method = RequestMethod.POST)
     public Object handExaminationsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
@@ -194,7 +194,7 @@ public class HandExaminationStatisticsController extends BaseController {
     /**
      * HandExamination Statistics generate word file request.
      */
-    @RequestMapping(value = "/handexamination/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/handexamination/generate/docx", method = RequestMethod.POST)
     public Object handExaminationsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 

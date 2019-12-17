@@ -54,11 +54,11 @@ public class SysUser extends BaseEntity implements Serializable {
     @AllArgsConstructor
     @Getter
     public enum DataRangeCategory {
-        PERSON("person"),
-        ORG("org"),
-        ORG_DESC("org_desc"),
-        ALL("all"),
-        SPECIFIED("specified");
+        PERSON("1000000501"),
+        ORG("1000000502"),
+        ORG_DESC("1000000503"),
+        ALL("1000000504"),
+        SPECIFIED("1000000505");
 
         String value;
 

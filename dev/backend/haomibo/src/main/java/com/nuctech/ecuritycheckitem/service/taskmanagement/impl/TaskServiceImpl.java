@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.taskmanagement;
+package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.InvalidTaskController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.models.db.QSerTask;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;

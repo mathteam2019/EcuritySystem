@@ -171,7 +171,7 @@
             </b-col>
             <b-col>
               <b-form-group :label="$t('statistics.evaluate-monitors.security-device')">
-                <b-form-select v-model="filter.deviceId" :options="securityDeviceOptions" plain/>
+                <b-form-select v-model="filter.deviceId" :options="manualDeviceOptions" plain/>
               </b-form-group>
             </b-col>
             <b-col>
@@ -268,7 +268,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>误报率</span></div>
@@ -299,7 +299,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>漏报率</span></div>
@@ -316,7 +316,8 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
+                <div><span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.artificialJudge}}</span>
                   <span v-else>0</span></div>
                 <div><span>手检（人工判图）</span></div>
               </div>
@@ -346,7 +347,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图误报率</span></div>
@@ -377,7 +378,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>人工判图漏报率</span></div>
@@ -394,7 +395,8 @@
                 <b-img src="/assets/img/hand_check_icon.svg"/>
               </div>
               <div>
-                <div><span v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudge}}</span>
+                <div><span
+                  v-if="preViewData.totalStatistics!=null">{{preViewData.totalStatistics.intelligenceJudge}}</span>
                   <span v-else>0</span></div>
                 <div><span>手检（智能判图）</span></div>
               </div>
@@ -424,7 +426,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图误报率</span></div>
@@ -455,7 +457,7 @@
               <div>
                 <div>
                   <span v-if="preViewData.totalStatistics==null">0%</span>
-                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <span v-else-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                   <span v-else>0%</span>
                 </div>
                 <div><span>智能判图漏报率</span></div>
@@ -472,10 +474,10 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="showTable = !showTable">
               <i class="icofont-exchange"></i>&nbsp;{{ $t('statistics.evaluate-monitors.displacement') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white" @click="onGenerateExcelButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" style="background: white" @click="onGeneratePdfButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
               <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
             </b-button>
           </div>
@@ -490,9 +492,11 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)"
+                                       :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.missingReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -502,9 +506,11 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)"
+                                       :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.floor(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.total!==0">{{Math.round(preViewData.totalStatistics.mistakeReport/preViewData.totalStatistics.total * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
@@ -537,9 +543,11 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)"
+                                       :total-steps=100>
                     <span class="chart percent clearfix" v-if="preViewData.totalStatistics==null">0%</span>
-                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                    <span class="chart percent clearfix" v-else-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMissing/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -549,8 +557,10 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.floor(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="172" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)"
+                                       :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.artificialJudge!==0">{{Math.round(preViewData.totalStatistics.artificialJudgeMistake/preViewData.totalStatistics.artificialJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     漏报
                   </radial-progress-bar>
@@ -583,8 +593,10 @@
               </b-card-header>
               <b-row style="height: 300px;">
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-1">
-                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar v-if="preViewData.totalStatistics!=null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)"
+                                       :total-steps=100>
+                    <span class="chart percent clearfix" v-if="preViewData.totalStatistics.intelligenceJudge!==0">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMissing/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     <span class="chart percent clearfix" v-else>0%</span>
                     误报
                   </radial-progress-bar>
@@ -594,15 +606,20 @@
                   </radial-progress-bar>
                 </b-col>
                 <b-col cols="6" class="d-flex justify-content-around align-items-center chart-type-2">
-                  <radial-progress-bar v-if="preViewData.totalStatistics==null" :diameter="156" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                  <radial-progress-bar v-if="preViewData.totalStatistics==null" :diameter="156" :strokeWidth="8"
+                                       :completed-steps="0" :total-steps=100>
                     <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172" :strokeWidth="8" :completed-steps="Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)" :total-steps=100>
-                    <span class="chart percent clearfix">{{Math.floor(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
+                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge!==0" :diameter="172"
+                                       :strokeWidth="8"
+                                       :completed-steps="Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)"
+                                       :total-steps=100>
+                    <span class="chart percent clearfix">{{Math.round(preViewData.totalStatistics.intelligenceJudgeMistake/preViewData.totalStatistics.intelligenceJudge * 100)}}%</span>
                     漏报
                   </radial-progress-bar>
-                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge===0" :diameter="172" :strokeWidth="8" :completed-steps="0" :total-steps=100>
+                  <radial-progress-bar v-else-if="preViewData.totalStatistics.intelligenceJudge===0" :diameter="172"
+                                       :strokeWidth="8" :completed-steps="0" :total-steps=100>
                     <span class="chart percent clearfix">0%</span>
                     漏报
                   </radial-progress-bar>
@@ -663,7 +680,8 @@
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>时间:</b></b-col>
-                <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span></b-col>
+                <b-col cols="11"><span>{{this.getDateTimeFormat(filter.startTime)}}-{{this.getDateTimeFormat(filter.endTime)}}</span>
+                </b-col>
               </b-row>
               <b-row class="no-gutters mb-2">
                 <b-col cols="1"><b>统计步长:</b></b-col>
@@ -683,7 +701,6 @@
                   :http-fetch="taskVuetableHttpFetch"
                   :per-page="taskVuetableItems.perPage"
                   track-by="time"
-                  @vuetable:checkbox-toggled-all="onCheckEvent"
                   pagination-path="pagination"
                   class="table-hover"
                   @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -724,7 +741,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -891,6 +908,7 @@
         siteData: [],
         allField: '',
         preViewData: [],
+        manualDeviceOptions: [],
 
         xYear: [],
         xQuarter: ['1', '2', '3', '4'],
@@ -981,7 +999,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time+1;
+                if (this.filter.statWidth === 'hour') return time + 1;
                 else return time;
               }
             },
@@ -1093,7 +1111,7 @@
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
       },
-      siteData:function (newVal,oldVal) {
+      siteData: function (newVal, oldVal) {
         console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
@@ -1112,106 +1130,65 @@
       }
     },
     methods: {
+      getManualDeviceData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              let options = [];
+              options = data.map(opt => ({
+                text: opt.device ? opt.device.deviceName : "Unknown",
+                value: opt.manualDeviceId
+              }));
+
+              this.manualDeviceOptions = options;
+              this.manualDeviceOptions.push({
+                text: this.$t('personal-inspection.all'),
+                value: null
+              });
+              break;
+          }
+        });
+      },
       getDateTimeFormat(datatime) {
-        if(datatime==null)return '';
+        if (datatime == null) return '';
         return getDateTimeWithFormat(datatime);
       },
 
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
-        console.log(this.isCheckAll);
 
-      },
-      onGenerateExcelButton() {
-        let str = "";
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/evaluatejudge/generate/export`, {
-            'isAll': this.isCheckAll,
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
             'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/evaluatejudge/generate`;
+        downLoadFileFromServer(link, params, 'Statistics-Evaluate');
 
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Statistics-Evaluate.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
       },
 
-      onGeneratePdfButton() {
-        let str = "";
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/evaluatejudge/generate/print`, {
-            'isAll': this.isCheckAll,
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
             'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/evaluatejudge/generate`;
+        printFileFromServer(link, params);
 
       },
 
 
-      getSiteOption(){
+      getSiteOption() {
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
           let message = response.data.message;
@@ -1253,7 +1230,7 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            //console.log(Math.floor(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
+            //console.log(Math.round(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
             this.lineChart1Options.xAxis.data = this.xDay;
             this.lineChart2Options.xAxis.data = this.xDay;
             this.lineChart3Options.xAxis.data = this.xDay;

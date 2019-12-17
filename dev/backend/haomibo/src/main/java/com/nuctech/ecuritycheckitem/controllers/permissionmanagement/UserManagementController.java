@@ -302,7 +302,7 @@ public class UserManagementController extends BaseController {
         Long userId;
 
         @NotNull
-        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED)
+        @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED + "|" + SysUser.Status.PENDING)
         String status;
 
     }
@@ -577,7 +577,7 @@ public class UserManagementController extends BaseController {
      * User generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_EXPORT)
-    @RequestMapping(value = "/user/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/xlsx", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -615,8 +615,8 @@ public class UserManagementController extends BaseController {
     /**
      * User generate word request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_TOWORD)
-    @RequestMapping(value = "/user/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/user/docx", method = RequestMethod.POST)
     public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -656,7 +656,7 @@ public class UserManagementController extends BaseController {
      * User generate pdf request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_PRINT)
-    @RequestMapping(value = "/user/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/pdf", method = RequestMethod.POST)
     public Object userGeneratePdfFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -773,6 +773,16 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if (userService.checkGroupNameExist(requestBody.getGroupName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NAME);
+        }
+
+        if (userService.checkGroupNumberExist(requestBody.getGroupNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NUMBER);
+        }
+
+
+
         // Create user group with created info.
 
         SysUserGroup userGroup = (SysUserGroup) SysUserGroup
@@ -859,7 +869,7 @@ public class UserManagementController extends BaseController {
      * User Group generate excel request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_EXPORT)
-    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/user-group/xlsx", method = RequestMethod.POST)
     public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -893,8 +903,8 @@ public class UserManagementController extends BaseController {
     /**
      * User Group generate excel request.
      */
-    @PreAuthorize(Role.Authority.HAS_USER_GROUP_TOWORD)
-    @RequestMapping(value = "/user-group/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/user-group/docx", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -930,7 +940,7 @@ public class UserManagementController extends BaseController {
      * User Group generate pdf request.
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_PRINT)
-    @RequestMapping(value = "/user-group/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/user-group/pdf", method = RequestMethod.POST)
     public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 

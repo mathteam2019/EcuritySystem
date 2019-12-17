@@ -29,6 +29,24 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Autowired
     AuthenticationFacade authenticationFacade;
 
+    @Override
+    public boolean checkOrgNameExist(String orgName, Long orgId) {
+        if(orgId == null) {
+            return sysOrgRepository.exists(QSysOrg.sysOrg.orgName.eq(orgName));
+        }
+        return sysOrgRepository.exists(QSysOrg.sysOrg.orgName.eq(orgName)
+                .and(QSysOrg.sysOrg.orgId.ne(orgId)));
+    }
+
+    @Override
+    public boolean checkOrgNumberExist(String orgNumber, Long orgId) {
+        if(orgId == null) {
+            return sysOrgRepository.exists(QSysOrg.sysOrg.orgNumber.eq(orgNumber));
+        }
+        return sysOrgRepository.exists(QSysOrg.sysOrg.orgNumber.eq(orgNumber)
+                .and(QSysOrg.sysOrg.orgId.ne(orgId)));
+    }
+
     public boolean createOrganization(Long parentOrgId, SysOrg sysOrg) {
 
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(parentOrgId))) {

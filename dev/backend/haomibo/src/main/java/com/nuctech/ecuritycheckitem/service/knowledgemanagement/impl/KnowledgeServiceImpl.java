@@ -1,10 +1,11 @@
-package com.nuctech.ecuritycheckitem.service.knowledgemanagement;
+package com.nuctech.ecuritycheckitem.service.knowledgemanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.knowledgemanagement.KnowledgeDealManagementController;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;

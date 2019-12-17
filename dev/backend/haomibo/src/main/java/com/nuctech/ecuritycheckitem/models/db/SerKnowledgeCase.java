@@ -30,9 +30,9 @@ import java.util.Date;
 public class SerKnowledgeCase extends BaseEntity implements Serializable {
 
     public static class Status {
-        public static final String SUBMIT_APPROVAL = "submit_approval";
-        public static final String DISMISS = "dismiss";
-        public static final String SUCCESS_APPROVAL = "success_approval";
+        public static final String SUBMIT_APPROVAL = "1000002501";
+        public static final String DISMISS = "1000002502";
+        public static final String SUCCESS_APPROVAL = "1000002503";
     }
 
     @Id

@@ -44,13 +44,13 @@
                   <b-button size="sm" class="ml-2" @click="onResetButton()" variant="info default">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_export')" @click="onExportButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_print')" @click="onPrintButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAction('create')" :disabled="checkPermItem('field_create')" variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -73,34 +73,34 @@
                     <template slot="fieldSerial" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.fieldSerial }}</span>
                     </template>
-
                     <div slot="operating" slot-scope="props">
 
                       <b-button
                         size="sm" @click="onAction('edit',props.rowData)"
                         variant="primary default btn-square"
-                        :disabled="props.rowData.status === 'active'">
+                        :disabled="props.rowData.status === '1000000701' || checkPermItem('field_modify')">
                         <i class="icofont-edit"></i>
                       </b-button>
 
                       <b-button
-                        v-if="props.rowData.status === 'inactive'"
+                        :disabled="checkPermItem('field_update_status')"
+                        v-if="props.rowData.status === '1000000702'"
                         size="sm" @click="onAction('activate',props.rowData)"
                         variant="success default btn-square">
                         <i class="icofont-check-circled"></i>
                       </b-button>
 
                       <b-button
-                        v-if="props.rowData.status === 'active'"
+                        v-if="props.rowData.status === '1000000701'"
                         size="sm" @click="onAction('inactivate',props.rowData)"
                         variant="warning default btn-square"
-                        :disabled="props.rowData.parentFieldId === 0"
+                        :disabled="props.rowData.parentFieldId === 0 || checkPermItem('field_update_status')"
                       >
                         <i class="icofont-ban"></i>
                       </b-button>
 
                       <b-button
-                        :disabled="props.rowData.status==='active'"
+                        :disabled="props.rowData.status==='1000000701' || checkPermItem('field_delete')"
                         size="sm" @click="onAction('delete',props.rowData)"
                         variant="danger default btn-square"
                       >
@@ -214,11 +214,8 @@
                   <b-button @click="onAction('save')" size="sm" variant="success default" v-if="pageStatus !== 'show'">
                     <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <!--<b-button v-if="siteForm.status === 'inactive' && pageStatus !== 'create'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
-                    <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
-                  </b-button>-->
                   <b-button @click="onAction('delete',siteForm)" size="sm" variant="danger default"
-                            v-if="pageStatus !== 'create'">
+                            v-if="pageStatus !== 'create' || checkPermItem('field_delete')">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
                   <b-button @click="onAction('list')" size="sm" variant="info default">
@@ -314,14 +311,14 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button v-if="siteForm.status === 'active' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
-                            variant="warning default">
+                  <b-button v-if="siteForm.status === '1000000701' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
+                            variant="warning default" :disabled="checkPermItem('field_update_status')">
                     <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_update_status')" @click="onAction('activate',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === 'inactive'" @click="onAction('delete',siteForm)" size="sm"
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')" @click="onAction('delete',siteForm)" size="sm"
                             variant="danger default">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
@@ -332,8 +329,8 @@
               </b-col>
             </b-row>
             <div class="position-absolute" style="bottom: 4%;left: 28%">
-              <img v-if="siteForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-              <img v-else-if="siteForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+              <img v-if="siteForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+              <img v-else-if="siteForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
             </div>
           </b-col>
         </b-row>
@@ -358,7 +355,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('site-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -381,20 +378,19 @@
 
 
 <script>
-  import _ from 'lodash';
+
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import Vue2OrgTree from '../../../components/vue2-org-tree'
-  import 'vue-select/dist/vue-select.css'
   import {validationMixin} from 'vuelidate';
 
   import {apiBaseUrl} from "../../../constants/config";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
-
 
 
   let getParentSerialName = (siteData, fieldId) => {
@@ -409,14 +405,14 @@
   };
 
   let fnGetOrgLevel = orgData => {
-      let level = 0;
-      if (orgData == null)
-          return level;
-      while (orgData.parent != null) {
-          level++;
-          orgData = orgData.parent;
-      }
+    let level = 0;
+    if (orgData == null)
       return level;
+    while (orgData.parent != null) {
+      level++;
+      orgData = orgData.parent;
+    }
+    return level;
   };
 
   export default {
@@ -428,6 +424,7 @@
     },
     mixins: [validationMixin],
     mounted() {
+
       ///////////////////////////////////////////////////////////
       ////////////// Load site list from server /////////////////
       ///////////////////////////////////////////////////////////
@@ -444,12 +441,37 @@
         if (this.selectedParentSerial === null)
           this.selectedParentSerial = this.$t('system-setting.none');
       },
-      siteData:function (newVal,oldVal) {
-        console.log(newVal);
+
+      siteData: function (newVal, oldVal) {
+        let getLevel = (org) => {
+
+          let getParent = (org) => {
+            for (let i = 0; i < newVal.length; i++) {
+              if (newVal[i].fieldId == org.parentFieldId) {
+                return newVal[i];
+              }
+            }
+            return null;
+          };
+          let stepValue = org;
+          let level = 0;
+          while (getParent(stepValue) !== null) {
+            stepValue = getParent(stepValue);
+            level++;
+          }
+          return level;
+        };
+        let generateSpace = (count) => {
+          let string = '';
+          while (count--) {
+            string += '&nbsp;&nbsp;&nbsp;&nbsp;';
+          }
+          return string;
+        };
         this.superSiteOptions = [];
         this.superSiteOptions = newVal.map(site => ({
-          text: site.fieldDesignation,
-          value: site.fieldId
+          value: site.fieldId,
+          html: `${generateSpace(getLevel(site))}${site.fieldDesignation}`
         }));
         if (this.superSiteOptions.length === 0)
           this.superSiteOptions.push({
@@ -468,6 +490,7 @@
           status: null,
           parentFieldDesignation: ''
         },
+
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/site-management/field/get-by-filter-and-page`,
           perPage: 10,
@@ -506,8 +529,8 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
@@ -571,8 +594,8 @@
         },
         stateOptions: [
           {value: null, text: this.$t('system-setting.status-all')},
-          {value: "active", text: this.$t('system-setting.status-active')},
-          {value: "inactive", text: this.$t('system-setting.status-inactive')},
+          {value: "1000000701", text: this.$t('system-setting.status-active')},
+          {value: "1000000702", text: this.$t('system-setting.status-inactive')},
         ],
         pageStatus: 'table', // table, create, edit, show
         selectedSite: '0000',
@@ -637,6 +660,14 @@
       }
     },
     methods: {
+
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
+      },
+
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -645,10 +676,10 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `site-management/field/export`;
-        downLoadFileFromServer(link,params,'site');
+        let link = `site-management/field`;
+        downLoadFileFromServer(link, params, 'site');
       },
-      onPrintButton(){
+      onPrintButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -656,11 +687,11 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `site-management/field/print`;
-        printFileFromServer(link,params);
+        let link = `site-management/field/pdf`;
+        printFileFromServer(link, params);
       },
 
-      getSiteData(){
+      getSiteData() {
         getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
@@ -686,7 +717,7 @@
             break;
           case 'activate':
             this.siteForm = data;
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);
@@ -889,19 +920,19 @@
         this.$refs[modal].hide();
       },
       renderTreeContent: function (h, data) {
-          return h('div', {
-                  domProps: {
-                      innerHTML: data.label
-                  }
-              }
-          );
+        return h('div', {
+            domProps: {
+              innerHTML: data.label
+            }
+          }
+        );
       },
       treeLabelClass: function (data) {
-          let level = fnGetOrgLevel(data);
-          console.log(data);
-          console.log(level);
-          const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3','bg-level-4','bg-level-5'];
-          return `${labelClasses[level % 5]} text-white`;
+        let level = fnGetOrgLevel(data);
+        console.log(data);
+        console.log(level);
+        const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3', 'bg-level-4', 'bg-level-5'];
+        return `${labelClasses[level % 5]} text-white`;
       }
     }
   }

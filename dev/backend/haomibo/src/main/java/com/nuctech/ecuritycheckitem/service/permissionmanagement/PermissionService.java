@@ -24,6 +24,14 @@ public interface PermissionService {
 
     boolean checkUserGroupExist(long roleId);
 
+    boolean checkGroupNameExist(String groupName);
+
+    boolean checkGroupNumberExist(String groupNumber);
+
+    boolean checkRoleNameExist(String roleName, Long roleId);
+
+    boolean checkRoleNumberExist(String roleNumber, Long roleId);
+
     void removeRole(long roleId);
 
     boolean createDataGroup(SysDataGroup dataGroup, List<Long> userIdList);

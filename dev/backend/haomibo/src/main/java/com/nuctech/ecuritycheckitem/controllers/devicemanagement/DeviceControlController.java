@@ -430,7 +430,7 @@ public class DeviceControlController extends BaseController {
      * Device generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_EXPORT)
-    @RequestMapping(value = "/device/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/xlsx", method = RequestMethod.POST)
     public Object deviceGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -473,8 +473,8 @@ public class DeviceControlController extends BaseController {
     /**
      * Device generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TOWORD)
-    @RequestMapping(value = "/device/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/device/docx", method = RequestMethod.POST)
     public Object deviceGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                           BindingResult bindingResult) {
 
@@ -518,7 +518,7 @@ public class DeviceControlController extends BaseController {
      * Device generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
-    @RequestMapping(value = "/device/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/pdf", method = RequestMethod.POST)
     public Object deviceGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
 
@@ -563,7 +563,7 @@ public class DeviceControlController extends BaseController {
      * Device generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
-    @RequestMapping(value = "/device/field/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/field/xlsx", method = RequestMethod.POST)
     public Object deviceFieldGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                           BindingResult bindingResult) {
 
@@ -603,11 +603,52 @@ public class DeviceControlController extends BaseController {
 
     }
 
+    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
+    @RequestMapping(value = "/device/field/word", method = RequestMethod.POST)
+    public Object deviceFieldGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                               BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName();
+            deviceName = filter.getDeviceName();
+            status = filter.getStatus();
+            fieldId = filter.getFieldId();
+            categoryId = filter.getCategoryId();
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());
+        setDictionary();
+        InputStream inputStream = DeviceFieldWordView.buildWordDocument(exportList);
+
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+
+    }
+
     /**
      * Device generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_PRINT)
-    @RequestMapping(value = "/device/field/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/field/pdf", method = RequestMethod.POST)
     public Object deviceFieldGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -689,6 +730,18 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
+        }
+
+        if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
+        }
+
+        if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
+        }
+
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
         return new CommonResponseBody(ResponseMessage.OK);
@@ -716,6 +769,18 @@ public class DeviceControlController extends BaseController {
         // Check if device is valid.
         if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
+        }
+
+        if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
+        }
+
+        if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), requestBody.getDeviceId())) {
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
 
         SysDevice sysDevice = requestBody.convert2SysDevice();

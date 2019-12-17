@@ -323,6 +323,14 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(permissionService.checkRoleNameExist(requestBody.getRoleName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ROLE_NAME);
+        }
+
+        if(permissionService.checkRoleNumberExist(requestBody.getRoleNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ROLE_NUMBER);
+        }
+
         // Create role with created info.
 
         SysRole role = requestBody.convert2SysRole();
@@ -394,7 +402,7 @@ public class PermissionControlController extends BaseController {
      * Role generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_EXPORT)
-    @RequestMapping(value = "/role/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/role/xlsx", method = RequestMethod.POST)
     public Object roleGenerateExelFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -425,8 +433,8 @@ public class PermissionControlController extends BaseController {
     /**
      * Role generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ROLE_TOWORD)
-    @RequestMapping(value = "/role/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/role/docx", method = RequestMethod.POST)
     public Object roleGenerateWordFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 
@@ -459,7 +467,7 @@ public class PermissionControlController extends BaseController {
      * Role generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ROLE_PRINT)
-    @RequestMapping(value = "/role/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/role/pdf", method = RequestMethod.POST)
     public Object roleGeneratePDFFile(@RequestBody @Valid RoleGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 
@@ -510,18 +518,22 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+
         // Get role from database.
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList());
         if(result == false) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysResource> permission = userService.getResourceList(utils.userId);
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
         value.setFilters(filters);
 
@@ -568,12 +580,16 @@ public class PermissionControlController extends BaseController {
 
         permissionService.removeRole(requestBody.getRoleId());
 
-        List<SysResource> permission = userService.getResourceList(utils.userId);
+
+        SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
         value.setFilters(filters);
 
@@ -593,6 +609,14 @@ public class PermissionControlController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if (permissionService.checkGroupNameExist(requestBody.getDataGroupName())) {
+            return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NAME);
+        }
+
+        if (permissionService.checkGroupNumberExist(requestBody.getDataGroupNumber())) {
+            return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NUMBER);
         }
 
         SysDataGroup dataGroup = requestBody
@@ -665,7 +689,7 @@ public class PermissionControlController extends BaseController {
      * Data Group generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DATA_GROUP_EXPORT)
-    @RequestMapping(value = "/data-group/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/xlsx", method = RequestMethod.POST)
     public Object dataGroupGenerateExcelFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -696,8 +720,8 @@ public class PermissionControlController extends BaseController {
     /**
      * Data Group generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DATA_GROUP_TOWORD)
-    @RequestMapping(value = "/data-group/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/data-group/docx", method = RequestMethod.POST)
     public Object dataGroupGenerateWordFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -731,7 +755,7 @@ public class PermissionControlController extends BaseController {
      * Data Group generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_DATA_GROUP_PRINT)
-    @RequestMapping(value = "/data-group/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/data-group/pdf", method = RequestMethod.POST)
     public Object dataGroupGeneratePDFFile(@RequestBody @Valid DataGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

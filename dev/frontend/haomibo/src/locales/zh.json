@@ -37,13 +37,14 @@
     "name-should-be-numerical-or-characters": "名称应为数字或字符",
     "confirmation-should-be-match-as-password": "确认应与密码相同"
   },
-  "login":{
-    "admin-title":"统一权限管理系统",
-    "user-title":"综合业务平台",
+  "login": {
+    "admin-title": "统一权限管理系统",
+    "user-title": "综合业务平台",
     "enter-user-email": "输入用户账号",
     "enter-user-password": "请输入人员密码",
     "not-admin-role": "这用户不是系统管理员",
-    "not-normal-role": "这用户不是普通职员"
+    "not-normal-role": "这用户不是普通职员",
+    "title": "毫米波集中查验系统"
   },
   "menu": {
     "admin": "主场",
@@ -89,7 +90,7 @@
     "log-management": "日志管理",
     "operating-log": "操作日志",
     "device-log": "设备日志",
-    "personal-inspection":"人员査验",
+    "personal-inspection": "人员査验",
     "process-task": "过程任务",
     "history-task": "历史任务",
     "invalid-task": "无效任务",
@@ -126,6 +127,14 @@
     "error-code": "错码",
     "go-back-home": "退回",
     "register-desc": "如果你是会员，请登录"
+  },
+  "password-reset": {
+    "password-change": "密码变更",
+    "user-account": "用户姓名",
+    "new-password": "新密码",
+    "confirm-password": "确认密码",
+    "confirm": "确认",
+    "update-password-successful" : "密码变更成功"
   },
   "dashboard": {
     "article-title-1": "2秒完成扫描",
@@ -221,16 +230,20 @@
     "action-reset-password": "重置密码",
     "male": "男",
     "female": "女",
+    "no": "否",
+    "yes": "是",
+    "timeout": "超时",
+    "timein": "不超时",
     "unknown": "其他",
     "belowcollege": "大专及以下",
-    "student":"本科",
+    "student": "本科",
     "master_student": "硕士研究生",
     "doctor_student": "博士研究生",
     "other": "其他",
     "bachelor": "学士",
     "master": "硕士",
     "doctor": "博士",
-    "upload-image":"上传照片",
+    "upload-image": "上传照片",
     "please-enter-user-name": "请输入人员姓名",
     "please-enter-user-id": "请输入人员编号",
     "gender": "性别",
@@ -238,7 +251,7 @@
     "please-enter-license-number": "请输入证件号",
     "post": "职位",
     "please-enter-post": "请输入人员岗位",
-    "education":"学历",
+    "education": "学历",
     "degree": "学位",
     "email": "邮箱",
     "please-enter-email": "请输入邮箱",
@@ -281,11 +294,11 @@
       "user": "人员",
       "affiliated-org": "隶属机构",
       "user-form": {
-        "one-user-data":"个人数据",
-        "affiliated-org-user-data":"隶属机构所有人数据",
-        "affiliated-org-all-user-data":"隶属机构及下级机构所有人数据",
-        "all-user-data":"所有人数据",
-        "select-data-group":"选定数据组数据"
+        "one-user-data": "个人数据",
+        "affiliated-org-user-data": "隶属机构所有人数据",
+        "affiliated-org-all-user-data": "隶属机构及下级机构所有人数据",
+        "all-user-data": "所有人数据",
+        "select-data-group": "选定数据组数据"
       },
       "group": {
         "user-group": "人员组",
@@ -293,10 +306,10 @@
         "role": "角色",
         "data-range": "数据范围",
         "member": "组员",
-        "one-user-data":"个人数据",
-        "group-user-data":"组内所有人数据",
-        "all-user-data":"所有人数据",
-        "select-data-group":"选定数据组数据",
+        "one-user-data": "个人数据",
+        "group-user-data": "组内所有人数据",
+        "all-user-data": "所有人数据",
+        "select-data-group": "选定数据组数据",
         "user-group-delete-prompt": "是否删除该人员组",
         "user-group-mandatory": "人员组是必需的",
         "group-member-not-exit": "组员不存在",
@@ -311,9 +324,7 @@
         "not-assigned": "未授权"
       }
     },
-
     "organization-has-children": "该机构有孩子",
-
     "user": {
       "username-field-is-mandatory": "人员姓名是必需的",
       "userId-field-is-mandatory": "人员编号是必需的",
@@ -327,9 +338,9 @@
       "group-name": "分组",
       "required-field": "This field is required.",
       "note": "备注",
-      "enter-note":"请输入备注信息",
+      "enter-note": "请输入备注信息",
       "group-flag": "分组标志",
-      "grouped":"己分组",
+      "grouped": "己分组",
       "no-grouped": "未分组",
       "please-enter-group-name": "请输入分组名称",
       "user-group-name": "人员组",
@@ -339,14 +350,13 @@
       "group-member": "人员",
       "userNumber-field-is-mandatory": "人员编号是必需的",
       "category-field-is-mandatory": "类别是必需的",
-      "user-group-delete-prompt":"是否删除该人员组",
+      "user-group-delete-prompt": "是否删除该人员组",
       "inactive-prompt": "是否失效该",
       "block-prompt": "block-prompt",
       "user-group-modified-successfully": "人员组修改成功",
-      "used-email":"邮箱已经使用",
-      "used-phone":"电话已经使用"
+      "used-email": "邮箱已经使用",
+      "used-phone": "电话已经使用"
     },
-
     "permission-control": {
       "role": "角色",
       "role-setting": "角色设置",
@@ -370,7 +380,6 @@
       "group-flag": "分组标记",
       "grouped": "已分组",
       "ungrouped": "未分组",
-
       "enter-role-number": "请输入角色编号",
       "enter-role-name": "请输入角色名称",
       "enter-note": "请输入备注信息",
@@ -391,11 +400,11 @@
       "prompt": "提示"
     }
   },
-  "site-management" : {
-    "status-updated-successfully":"场地修改成功",
-    "site-deleted-successfully" : "场地删除成功",
-    "site-has-children" : "该场地有孩子",
-    "site-added-successfully" : "场地创建成功",
+  "site-management": {
+    "status-updated-successfully": "场地修改成功",
+    "site-deleted-successfully": "场地删除成功",
+    "site-has-children": "该场地有孩子",
+    "site-added-successfully": "场地创建成功",
     "delete-prompt": "是否失效该场地",
     "make-inactive-prompt": "是否失效该场地",
     "site-has-devices": "这场地已经有设备"
@@ -412,7 +421,7 @@
     "device-classify-placeholder": "请选择设备分类",
     "manufacture": "生产厂商",
     "origin-model": "原厂型号",
-    "device-model":"设备型号",
+    "device-model": "设备型号",
     "origin-model-placeholder": "请输入原厂型号",
     "device": "设备",
     "save": "保存",
@@ -455,13 +464,13 @@
     "action": "操作",
     "before-selected": "待选",
     "selected": "己选",
-    "status-updated-successfully":"设备分类修改成功",
-    "category-deleted-successfully" : "设备分类删除成功",
-    "category-has-children" : "该设备分类有孩子",
-    "category-added-successfully" : "设备分类创建成功",
+    "status-updated-successfully": "设备分类修改成功",
+    "category-deleted-successfully": "设备分类删除成功",
+    "category-has-children": "该设备分类有孩子",
+    "category-added-successfully": "设备分类创建成功",
     "delete-prompt": "是否失效该设备分类",
-    "make-inactive-prompt" : "是否失效该设备分类",
-    "device-classify-item":{
+    "make-inactive-prompt": "是否失效该设备分类",
+    "device-classify-item": {
       "classify": "分类",
       "super-classify": "上级分类",
       "classify-number": "设备编号",
@@ -472,7 +481,7 @@
       "parent-device": "上级分类",
       "remark": "备注",
       "no-classify": "没有上级分类",
-      "field-is-mandatory" : "这输入是必需的"
+      "field-is-mandatory": "这输入是必需的"
     },
     "document-template": {
       "device-show-list": "设备指标项",
@@ -483,14 +492,14 @@
       "required": "必填",
       "yes": "YES",
       "no": "NO",
-      "status-updated-successfully":"模板修改成功",
-      "deleted-successfully" : "模板删除成功",
-      "has-children" : "该模板有孩子",
-      "added-successfully" : "模板创建成功",
+      "status-updated-successfully": "模板修改成功",
+      "deleted-successfully": "模板删除成功",
+      "has-children": "该模板有孩子",
+      "added-successfully": "模板创建成功",
       "delete-prompt": "是否失效该模板",
       "make-inactive-prompt": "是否失效该模板",
       "has-archives": "已经有档案",
-      "not-have-indicators" : "没有指标"
+      "not-have-indicators": "没有指标"
     },
     "device-table": {
       "device-info": "设备信息",
@@ -510,16 +519,16 @@
     "document-management": {
       "document-table": "档案列表",
       "document-stat": "业务统计",
-      "status-updated-successfully":"档案修改成功",
-      "deleted-successfully" : "档案删除成功",
-      "has-children" : "该档案有孩子",
-      "added-successfully" : "档案创建成功",
+      "status-updated-successfully": "档案修改成功",
+      "deleted-successfully": "档案删除成功",
+      "has-children": "该档案有孩子",
+      "added-successfully": "档案创建成功",
       "delete-prompt": "是否失效该档案",
       "make-inactive-prompt": "是否失效该档案",
       "has-devices": "已经有设备"
     },
-    "archive":{
-      "technical-indicator":"技术指标",
+    "archive": {
+      "technical-indicator": "技术指标",
       "battery-capacity": "电池容量(mAh)",
       "running-memory": "运行内存(BG)",
       "screen-size": "屏幕尺寸(英寸)",
@@ -535,7 +544,7 @@
       "mobile-tablet": "移动平板",
       "surveillance-camera-01": "监控摄像头01",
       "surveillance-camera-02": "监控摄像头02",
-      "inspection-method":"查验方式",
+      "inspection-method": "查验方式",
       "single-scan-time": "单次扫描时间(s)",
       "number-of-operator": "操作员人数(人)",
       "detectable-item-type": "可检测物品种类",
@@ -566,16 +575,16 @@
       "status-updated-successfully": "设备修改成功"
     },
     "device-monitoring": {
-      "disk-space" :"磁盘空间",
-      "main-acquire-card":"主采集卡",
-      "from-acquire-card":"从采集卡",
-      "servo":"伺服",
-      "slider-position":"滑块位置",
-      "emergency-stop":"急停",
-      "footstep-alarm":"脚步报警",
-      "data-monitor":"流量监控",
-      "landing-time":"登陆时间",
-      "running-time":"远行时长"
+      "disk-space": "磁盘空间",
+      "main-acquire-card": "主采集卡",
+      "from-acquire-card": "从采集卡",
+      "servo": "伺服",
+      "slider-position": "滑块位置",
+      "emergency-stop": "急停",
+      "footstep-alarm": "脚步报警",
+      "data-monitor": "流量监控",
+      "landing-time": "登陆时间",
+      "running-time": "远行时长"
     }
   },
   "system-setting": {
@@ -711,7 +720,7 @@
       "access-time": "访问时间",
       "action": "动作",
       "account-number": "操作账号",
-      "client-ip":"客户端ip",
+      "client-ip": "客户端ip",
       "object": "操作对象",
       "operating-result": "操作结果",
       "status-all": "全部",
@@ -755,7 +764,7 @@
     "statics": "业务统计",
     "user-name": "姓名",
     "license-number": "证件号",
-    "grade":"等级",
+    "grade": "等级",
     "number": "编号",
     "gender": "性别",
     "country": "国籍",
@@ -845,6 +854,19 @@
     "collection": "收藏"
   },
   "maintenance-management": {
+    "maintenance-task": {
+      "task": "任务",
+      "status": "任务状态",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "no": "序号",
+      "number": "任务编号",
+      "plan": "计划",
+      "category": "任务类别",
+      "completed": "待处理",
+      "processing": "处理中"
+    },
     "time-task": {
       "time-task-name": "定时任务",
       "status": "生效",
@@ -860,26 +882,13 @@
       "by-day": "按天",
       "by-week": "按周",
       "by-month": "按月",
-      "every":"每",
+      "every": "每",
       "hour": "时",
       "day": "天",
       "week": "周",
       "month": "月",
       "guide-for-time-task": "日期范围为1-31日，如果当月没有29、30或31日，则默认为最后一天",
       "after-task-created": "任务创建后"
-    },
-    "maintenance-task": {
-      "task": "任务",
-      "status": "任务状态",
-      "position": "现场",
-      "device-classification": "设备分类",
-      "device": "设备",
-      "no": "序号",
-      "number": "任务编号",
-      "plan": "计划",
-      "category": "任务类别",
-      "completed": "待处理",
-      "processing": "处理中"
     },
     "process-task": {
       "task": "任务",
@@ -897,58 +906,11 @@
       "estimated-start-time": "预计开发时间",
       "real-start-time": "预计开发时间",
       "plan-works": "计划工作",
-      "real-works": "实际工作"
-    },
-    "history-record": {
-      "task": "任务",
-      "status": "任务状态",
-      "position": "现场",
-      "device-classification": "设备分类",
-      "device": "设备",
-      "no": "序号",
-      "number": "任务编号",
-      "plan": "计划",
-      "security-department": "维保部门",
-      "security-user": "维保员",
-      "estimated-start-time": "预计开发时间",
-      "actual-start-time": "实际开始时间",
-      "real-start-time": "预计开发时间",
-      "complete-time": "完成时间",
-      "creat-time": "创建时间",
-      "maintenance-info":"维保信息",
-      "device-info":"设备信息",
-      "site": "现场",
-      "device-no": "设备编号",
-      "device-name": "设备名称",
-      "file-name": "档案名称",
-      "manufacturer": "生产厂商",
-      "origianl-model": "原厂型号",
-      "original-no": "原厂编号",
-      "product-date": "生产日期",
-      "purchase-date": "采购日期",
-      "supplier": "供应商",
-      "supplier-contact": "供应商联系人",
-      "supplier-contact-information": "供应商联系方式",
-      "maintenance-department": "维护部门",
-      "maintenance-user": "维护员",
-      "maintenance-contact-info": "维护员联系方式",
-      "regular-task": "定期任务",
-      "technical-indicator":"技术指标",
-      "inspection-method":"查验方式",
-      "single-scan-time": "单次扫描时间(s)",
-      "number-of-operator": "操作员人数(人)",
-      "detectable-item-type": "可检测物品种类",
-      "automatic-identification": "自动识别标识",
-      "privacy-protection": "隐私保护",
-      "equipment-size": "设备尺寸(mm)",
-      "channel-size": "通道尺寸(mm)",
-      "equipment-weight": "设备重量(kg)",
-      "power-by": "供电(VAC，Hz)",
-      "rated-power": "额定功率(mm)",
-      "operating-temperature-humidity": "运行温/湿度(℃，%)",
-      "storage-temperature-humidity": "存储温/湿度(℃，%)",
-      "plan-works": "计划工作",
-      "real-works": "实际工作"
+      "real-works": "实际工作",
+      "dispatch": "分派",
+      "judge": "判图",
+      "hand": "手检",
+      "scan": "扫描"
     },
     "routine-plan": {
       "plan": "计划",
@@ -968,7 +930,7 @@
       "by-day": "按天",
       "by-week": "按周",
       "by-month": "按月",
-      "every":"每",
+      "every": "每",
       "hour": "时",
       "day": "天",
       "week": "周",
@@ -990,6 +952,57 @@
       "number-of-execute": "执行次数",
       "timing-active-start-time": "定时生效起始时间",
       "timing-active-end-time": "定时生效截至时间"
+    },
+    "history-record": {
+      "task": "任务",
+      "status": "任务状态",
+      "position": "现场",
+      "device-classification": "设备分类",
+      "device": "设备",
+      "no": "序号",
+      "number": "任务编号",
+      "plan": "计划",
+      "security-department": "维保部门",
+      "security-user": "维保员",
+      "estimated-start-time": "预计开发时间",
+      "actual-start-time": "实际开始时间",
+      "real-start-time": "预计开发时间",
+      "complete-time": "完成时间",
+      "creat-time": "创建时间",
+      "maintenance-info": "维保信息",
+      "device-info": "设备信息",
+      "site": "现场",
+      "device-no": "设备编号",
+      "device-name": "设备名称",
+      "file-name": "档案名称",
+      "manufacturer": "生产厂商",
+      "origianl-model": "原厂型号",
+      "original-no": "原厂编号",
+      "product-date": "生产日期",
+      "purchase-date": "采购日期",
+      "supplier": "供应商",
+      "supplier-contact": "供应商联系人",
+      "supplier-contact-information": "供应商联系方式",
+      "maintenance-department": "维护部门",
+      "maintenance-user": "维护员",
+      "maintenance-contact-info": "维护员联系方式",
+      "regular-task": "定期任务",
+      "technical-indicator": "技术指标",
+      "inspection-method": "查验方式",
+      "single-scan-time": "单次扫描时间(s)",
+      "number-of-operator": "操作员人数(人)",
+      "detectable-item-type": "可检测物品种类",
+      "automatic-identification": "自动识别标识",
+      "privacy-protection": "隐私保护",
+      "equipment-size": "设备尺寸(mm)",
+      "channel-size": "通道尺寸(mm)",
+      "equipment-weight": "设备重量(kg)",
+      "power-by": "供电(VAC，Hz)",
+      "rated-power": "额定功率(mm)",
+      "operating-temperature-humidity": "运行温/湿度(℃，%)",
+      "storage-temperature-humidity": "存储温/湿度(℃，%)",
+      "plan-works": "计划工作",
+      "real-works": "实际工作"
     }
   },
   "device-config": {
@@ -1011,7 +1024,6 @@
       "inspection": "查验",
       "updated-successful": "远行配置改变成功",
       "deleted-successful": "原型配置删除成功"
-
     },
     "field-config": {
       "updated-successful": "场地配置改变成功"
@@ -1019,22 +1031,21 @@
   },
   "statistics": {
     "evaluate-monitors": {
-      "on-site":"现场",
-      "security-device":"安检仪",
-      "hand-checker":"手检员",
-      "time":"时间",
-      "step-size":"统计步长",
-      "displacement":"切换"
+      "on-site": "现场",
+      "security-device": "安检仪",
+      "hand-checker": "手检员",
+      "time": "时间",
+      "step-size": "统计步长",
+      "displacement": "切换"
     },
-
-    "view" : {
-      "on-site" : "现场",
-      "security-device":"安检仪",
-      "operator-type" : "操作员类型",
-      "operator" : "操作员",
-      "start-time" : "开始时间",
-      "end-time" : "结束时间",
-      "step-size":"统计步长"
+    "view": {
+      "on-site": "现场",
+      "security-device": "安检仪",
+      "operator-type": "操作员类型",
+      "operator": "操作员",
+      "start-time": "开始时间",
+      "end-time": "结束时间",
+      "step-size": "统计步长"
     }
   },
   "error-404": {

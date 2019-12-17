@@ -82,6 +82,24 @@ public class ArchiveServiceImpl implements ArchiveService {
     }
 
     @Override
+    public boolean checkArchiveNameExist(String archiveName, Long archiveId) {
+        if(archiveId == null) {
+            return serArchiveRepository.exists(QSerArchive.serArchive.archivesName.eq(archiveName));
+        }
+        return serArchiveRepository.exists(QSerArchive.serArchive.archivesName.eq(archiveName)
+                .and(QSerArchive.serArchive.archiveId.ne(archiveId)));
+    }
+
+    @Override
+    public boolean checkArchiveNumberExist(String archiveNumber, Long archiveId) {
+        if(archiveId == null) {
+            return serArchiveRepository.exists(QSerArchive.serArchive.archivesNumber.eq(archiveNumber));
+        }
+        return serArchiveRepository.exists(QSerArchive.serArchive.archivesNumber.eq(archiveNumber)
+                .and(QSerArchive.serArchive.archiveId.ne(archiveId)));
+    }
+
+    @Override
     public boolean checkArchiveTemplateExist(long archiveTemplateId) {
         if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(archiveTemplateId))) {

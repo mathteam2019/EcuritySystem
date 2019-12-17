@@ -256,7 +256,7 @@ public class ProcessTaskController extends BaseController {
     /**
      * Process Task table generate excel file request.
      */
-    @RequestMapping(value = "/process-task/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/generate/xlsx", method = RequestMethod.POST)
     public Object processTaskGenerateExcelFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
@@ -291,7 +291,7 @@ public class ProcessTaskController extends BaseController {
     /**
      * Process Task table generate word file request.
      */
-    @RequestMapping(value = "/process-task/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/generate/docx", method = RequestMethod.POST)
     public Object processTaskGenerateWordFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
@@ -326,7 +326,7 @@ public class ProcessTaskController extends BaseController {
     /**
      * Process-task generate pdf file request.
      */
-    @RequestMapping(value = "/process-task/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/process-task/generate/pdf", method = RequestMethod.POST)
     public Object processTaskPDFGenerateFile(@RequestBody @Valid TaskGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 

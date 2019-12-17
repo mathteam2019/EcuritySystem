@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.fieldmanagement;
+package com.nuctech.ecuritycheckitem.service.fieldmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
@@ -7,6 +7,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,26 @@ public class FieldServiceImpl implements FieldService {
     public boolean checkFieldExist(Long fieldId) {
         return sysFieldRepository.exists(QSysField.sysField.fieldId.eq(fieldId));
     }
+
+    @Override
+    public boolean checkFieldSerial(String fieldSerial, Long fieldId) {
+        if(fieldId == null) {
+            return sysFieldRepository.exists(QSysField.sysField.fieldSerial.eq(fieldSerial));
+        }
+        return sysFieldRepository.exists(QSysField.sysField.fieldSerial.eq(fieldSerial)
+                .and(QSysField.sysField.fieldId.ne(fieldId)));
+    }
+
+    @Override
+    public boolean checkFieldDesignation(String fieldDesignation, Long fieldId) {
+        if(fieldId == null) {
+            return sysFieldRepository.exists(QSysField.sysField.fieldDesignation.eq(fieldDesignation));
+        }
+        return sysFieldRepository.exists(QSysField.sysField.fieldDesignation.eq(fieldDesignation)
+                .and(QSysField.sysField.fieldId.ne(fieldId)));
+    }
+
+
 
     @Override
     public boolean checkDeviceExist(Long fieldId) {

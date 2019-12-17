@@ -71,6 +71,24 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     }
 
     @Override
+    public boolean checkTemplateNameExist(String templateName, Long templateId) {
+        if(templateId == null) {
+            return serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate.templateName.eq(templateName));
+        }
+        return serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate.templateName.eq(templateName)
+                .and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.ne(templateId)));
+    }
+
+    @Override
+    public boolean checkTemplateNumberExist(String templateNumber, Long templateId) {
+        if(templateId == null) {
+            return serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateNumber.eq(templateNumber));
+        }
+        return serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateNumber.eq(templateNumber)
+                .and(QSerArchiveTemplate.serArchiveTemplate.archivesTemplateId.ne(templateId)));
+    }
+
+    @Override
     public boolean checkArchiveTemplateExist(long archiveTemplateId) {
         if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(archiveTemplateId))) {

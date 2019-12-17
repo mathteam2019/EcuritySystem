@@ -37,7 +37,26 @@ public enum ResponseMessage {
     HAS_RESOURCES("has_resources"),
     HAS_ARCHIVES("has_archives"),
     HAS_ARCHIVE_TEMPLATE("has_archive_template"),
-    HAS_DEVICES("has_devices");
+    HAS_DEVICES("has_devices"),
+    USED_CATEGORY_NAME("used_category_name"),
+    USED_CATEGORY_NUMBER("used_category_number"),
+    USED_TEMPLATE_NAME("used_template_name"),
+    USED_TEMPLATE_NUMBER("used_template_number"),
+    USED_ARCHIVE_NAME("used_archive_name"),
+    USED_ARCHIVE_NUMBER("used_archive_number"),
+    USED_DEVICE_NAME("used_device_name"),
+    USED_DEVICE_SERIAL("used_device_serial"),
+    USED_DEVICE_GUID("used_device_guid"),
+    USED_FIELD_SERIAL("used_field_serial"),
+    USED_FIELD_DESIGNATION("used_field_designation"),
+    USED_ORG_NAME("used_org_name"),
+    USED_ORG_NUMBER("used_org_number"),
+    USED_USER_GROUP_NAME("used_user_group_name"),
+    USED_USER_GROUP_NUMBER("used_user_group_number"),
+    USED_DATA_GROUP_NAME("used_data_group_name"),
+    USED_DATA_GROUP_NUMBER("used_data_group_number"),
+    USED_ROLE_NAME("used_role_name"),
+    USED_ROLE_NUMBER("used_role_number"),;
 
     private final String value;
 

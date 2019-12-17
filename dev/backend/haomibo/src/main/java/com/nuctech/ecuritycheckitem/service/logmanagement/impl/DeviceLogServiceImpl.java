@@ -1,9 +1,10 @@
-package com.nuctech.ecuritycheckitem.service.logmanagement;
+package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.logmanagement.devicelog.DeviceLogController;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.repositories.SerDevLogRepository;
+import com.nuctech.ecuritycheckitem.service.logmanagement.DeviceLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;

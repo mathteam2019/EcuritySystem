@@ -6,6 +6,7 @@
     cursor: pointer;
     background-color: #007bff;
   }
+
   .operation-icon {
     width: 24px;
     height: 24px;
@@ -33,13 +34,13 @@
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.operating-mode')">
-                  <b-form-select v-model="filter.modeName" :options="modeOptions" plain/>
+                  <b-form-select v-model="filter.modeName" :options="operationModeOptions" plain/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-result')">
-                  <b-form-select v-model="filter.taskResult" :options="resultTypeOptions" plain/>
+                  <b-form-select v-model="filter.taskResult" :options="handResultOption" plain/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -75,10 +76,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -95,7 +96,6 @@
                 :fields="pendingListTableItems.fields"
                 :http-fetch="pendingListTableHttpFetch"
                 :per-page="pendingListTableItems.perPage"
-                @vuetable:checkbox-toggled-all = "onCheckEvent"
                 pagination-path="pagination"
                 @vuetable:pagination-data="onBlackListTablePaginationData"
                 class="table-striped"
@@ -104,14 +104,15 @@
                     <span class="cursor-p text-primary" v-if="props.rowData.task!=null">
                       {{props.rowData.task.taskNumber}}
                     </span>
-                    <span v-else> </span>
+                  <span v-else> </span>
                 </template>
                 <template slot="scanImage" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl" class="operation-icon" />
+                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl"
+                         class="operation-icon"/>
                   <b-img v-else/>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workMode==null"> </div>
+                  <div v-if="props.rowData.workMode==null"></div>
                   <div v-else>
                     <div v-if="props.rowData.workMode.modeName==='1000001304'">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -168,7 +169,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager} from "../../../api";
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {apiBaseUrl} from "../../../constants/config";
   import {responseMessages} from '../../../constants/response-messages';
 
@@ -178,18 +179,18 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
-      //this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
+
       this.getSiteOption();
 
     },
     data() {
       return {
         isExpanded: false,
-        isCheckAll:false,
-        idList:[],
+        isCheckAll: false,
+        idList: [],
         filter: {
-          fieldId : null,
-          caseStatus: 'submit_approval',
+          fieldId: null,
+          caseStatus: '1000002501',
           taskNumber: null,
           modeName: null,
           taskResult: null,
@@ -201,26 +202,21 @@
           status: null,
         },
         siteData: [],
-        modeOptions: [
+
+        operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: '1000001304', text: '安检仪+审图端+手检端'},
           {value: '1000001301', text: '安检仪+(本地手检)'},
           {value: '1000001302', text: '安检仪+手检端'},
           {value: '1000001303', text: '安检仪+审图端'},
         ],
-        siteOptions: [
-          {value: 'male', text: this.$t('knowledge-base.all')},
-          {value: 'female', text: this.$t('knowledge-base.airport')},
-          {value: 'unknown', text: this.$t('knowledge-base.port')},
-          {value: 'unknown', text: this.$t('knowledge-base.land-border')},
+
+        handResultOption: [
+          {value: null, text: this.$t('personal-inspection.all')},
+          {value: 'TRUE', text: this.$t('knowledge-base.seized')},
+          {value: 'FALSE', text: this.$t('knowledge-base.no-seized')},
         ],
-        resultTypeOptions: [
-	{value: null, text: this.$t('personal-inspection.all')},
-	{value: 'doubt', text: this.$t('knowledge-base.suspect')},
-          {value: 'nodoubt', text: this.$t('knowledge-base.no-suspect')},
-          {value: 'seized', text: this.$t('knowledge-base.seized')},
-          {value: 'noseizure', text: this.$t('knowledge-base.no-seized')},
-        ],
+
         onSiteOption: [],
         pendingListTableItems: {
           apiUrl: `${apiBaseUrl}/knowledge-base/get-by-filter-and-page`,
@@ -264,14 +260,13 @@
               callback: (handTaskResult) => {
 
                 const dictionary = {
-                  "noseizure": `<span style="color:#e8a23e;">无查获</span>`,
-                  "seized": `<span style="color:#e8a23e;">有查获</span>`,
-                  "doubt": `<span style="color:#ef6e69;">有嫌疑</span>`,
-                  "nodoubt": `<span style="color:#e8a23e;">无嫌疑</span>`,
-                  "while_inspection": `<span style="color:#ef6e69;">${this.$t('personal-inspection.while-inspection')}</span>`,
+
+                  "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
+                  "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
+
                 };
 
-                if(handTaskResult==null) return '';
+                if (handTaskResult == null) return '';
                 if (!dictionary.hasOwnProperty(handTaskResult)) return 'Invalid';
                 return dictionary[handTaskResult];
               }
@@ -283,7 +278,7 @@
               dataClass: 'text-center',
               callback: (scanDevice) => {
                 if (scanDevice == null) return '';
-                    if(scanDevice.field==null)  return '';
+                if (scanDevice.field == null) return '';
                 return scanDevice.field.fieldDesignation;
               }
             },
@@ -339,7 +334,6 @@
         this.$refs.pendingListTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -354,36 +348,35 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
-      }
+      },
+
     },
     methods: {
-      onCheckEvent(){
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.pendingListTable.selectedTo.length;
-        console.log(cnt);
-        if(cnt === 0){
-          this.isCheckAll = false;
-        }
-        else {
-          this.isCheckAll = true;
-        }
-        console.log(this.isCheckAll);
 
-        // console.log(isCheck);
-        // if (isCheck === false) {
-        //   console.log(this.idList.length);
-        //   // for (let i =0; i<this.idList.length; i++){
-        //   //   this.$refs.pendingListTable.selectedTo.push(this.idList[i]);
-        //   // }
-        //   this.$refs.pendingListTable.selectedTo.push(12);
-        //   console.log(this.$refs.pendingListTable.selectedTo);
-        //   this.isCheckAll = true;
-        // }
-        // else {
-        //   this.$refs.pendingListTable.selectedTo = [];
-        //   this.isCheckAll = false;
-        // }
+    getOptionValue(dataCode) {
+        const dictionary = {
+          "1000000001": `${this.$t('permission-management.male')}`,
+          "1000000002": `${this.$t('permission-management.female')}`,
+          "1000000601": `${this.$t('system-setting.parameter-setting.yes')}`,
+          "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
+          "1000001701": `${this.$t('permission-management.timeout')}`,
+          "1000001702": `${this.$t('permission-management.timein')}`,
+          "TRUE": `${this.$t('knowledge-base.suspect')}`,
+          "FALSE": `${this.$t('knowledge-base.no-suspect')}`,
+          "1000001301": `${this.$t('permission-management.female')}`,
+          "1000001302": `${this.$t('permission-management.female')}`,
+          "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001304": `${this.$t('maintenance-management.process-task.scan')}`,
+          "1000001102": `${this.$t('maintenance-management.process-task.dispatch')}`,
+          "1000001103": `${this.$t('maintenance-management.process-task.judge')}}`,
+          "1000001104": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
+
+        };
+
+        if (!dictionary.hasOwnProperty(dataCode)) return '';
+        return dictionary[dataCode];
+
       },
       getSiteOption() {
         getApiManager()
@@ -403,95 +396,44 @@
       onSearchButton() {
         this.$refs.pendingListTable.refresh();
       },
-      onResetButton(){
+      onResetButton() {
         this.filter = {
-            taskNumber: null,
-            modeName: null,
-            taskResult: null,
-	    fieldId:null,
-            fieldDesignation:null,
-            handGoods:null,
+          taskNumber: null,
+          modeName: null,
+          taskResult: null,
+          fieldId: null,
+          fieldDesignation: null,
+          handGoods: null,
         };
-        //this.$refs.pendingListTable.refresh();
       },
 
-      onGenerateExcelButton(){
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.pendingListTable.selectedTo.length;
-          str = str + this.$refs.pendingListTable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.pendingListTable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/knowledge-base/generate/pending/export`, {
-            'isAll' : this.isCheckAll,
-            'filter' : {"caseStatus": 'submit_approval'},
-            'exportType' : 'excel',
-            'idList' : str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
+       onExportButton() {
+        let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
+        let checkedIds = this.$refs.pendingListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `knowledge-base/generate/pending`;
+        downLoadFileFromServer(link, params, 'Knowledge-Pending');
 
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'knowledge-pending.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
       },
 
-      onGeneratePdfButton(){
-        let str = "";
-
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.pendingListTable.selectedTo.length;
-          str = str + this.$refs.pendingListTable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.pendingListTable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/knowledge-base/generate/pending/print`, {
-            'isAll' : this.isCheckAll,
-            'filter' : {"caseStatus": 'submit_approval'},
-            'exportType' : 'pdf',
-            'idList' : str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
+      onPrintButton() {
+        let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
+        let checkedIds = this.$refs.pendingListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `knowledge-base/generate/pending`;
+        printFileFromServer(link,params);
 
 
       },
+
 
       transform(response) {
 
@@ -508,22 +450,21 @@
           to: data.to
         };
 
-            transformed.data = [];
-            //transformed.idList = [];
-            let temp;
-            let idTemp;
-            for (let i = 0; i < data.data.length; i++) {
-                temp = data.data[i];
-                idTemp = data.data[i].caseDealId;
-                if(temp.scanImage!=null) {
-                  temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
-                }
-                transformed.data.push(temp);
-                this.idList.push(idTemp);
-                if(this.isCheckAll === true){
-                  this.$refs.pendingListTable.selectedTo.push(idTemp);
-                }
-            }
+        transformed.data = [];
+        let temp;
+        let idTemp;
+        for (let i = 0; i < data.data.length; i++) {
+          temp = data.data[i];
+          idTemp = data.data[i].caseDealId;
+          if (temp.scanImage != null) {
+            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          }
+          transformed.data.push(temp);
+          this.idList.push(idTemp);
+          if (this.isCheckAll === true) {
+            this.$refs.pendingListTable.selectedTo.push(idTemp);
+          }
+        }
 
         return transformed
 
@@ -535,14 +476,7 @@
           currentPage: httpOptions.params.page,
           perPage: this.pendingListTableItems.perPage,
 
-          filter: {
-            caseStatus: this.filter.caseStatus,
-            taskNumber: this.filter.taskNumber,
-            modeName: this.filter.modeName,
-            taskResult: this.filter.taskResult,
-            fieldDesignation: this.filter.fieldDesignation,
-            handGoods: this.filter.handGoods,
-          },
+          filter: this.filter,
         });
       },
       onBlackListTablePaginationData(paginationData) {
@@ -558,14 +492,14 @@
 
           this.actionFilter = {
             caseId: data,
-            status: "success_approval",
+            status: "1000002503",
           };
         };
 
         let dismissItem = () => {
           this.actionFilter = {
             caseId: data,
-            status: "dismiss",
+            status: "1000002502",
           };
         };
 

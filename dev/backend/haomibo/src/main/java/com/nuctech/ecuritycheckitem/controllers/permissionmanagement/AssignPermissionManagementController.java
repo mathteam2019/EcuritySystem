@@ -250,12 +250,15 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            List<SysResource> permission = userService.getResourceList(utils.userId);
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
 
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
             value.setFilters(filters);
 
@@ -281,12 +284,15 @@ public class AssignPermissionManagementController extends BaseController {
         }
 
         if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
-            List<SysResource> permission = userService.getResourceList(utils.userId);
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
 
             MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
 
 
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption"));
 
             value.setFilters(filters);
 
@@ -408,7 +414,7 @@ public class AssignPermissionManagementController extends BaseController {
      * User generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_EXPORT)
-    @RequestMapping(value = "/user/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/xlsx", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                            BindingResult bindingResult) {
 
@@ -441,8 +447,8 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_TOWORD)
-    @RequestMapping(value = "/user/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/user/docx", method = RequestMethod.POST)
     public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -476,7 +482,7 @@ public class AssignPermissionManagementController extends BaseController {
      * User generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_PRINT)
-    @RequestMapping(value = "/user/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/pdf", method = RequestMethod.POST)
     public Object userGeneratePDFFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -589,7 +595,7 @@ public class AssignPermissionManagementController extends BaseController {
      * User Group generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_EXPORT)
-    @RequestMapping(value = "/user-group/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/user-group/xlsx", method = RequestMethod.POST)
     public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                    BindingResult bindingResult) {
 
@@ -624,8 +630,8 @@ public class AssignPermissionManagementController extends BaseController {
     /**
      * User Group generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_TOWORD)
-    @RequestMapping(value = "/user-group/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/user-group/docx", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -662,7 +668,7 @@ public class AssignPermissionManagementController extends BaseController {
      * User Group generate pdf file request.
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_PRINT)
-    @RequestMapping(value = "/user-group/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/user-group/pdf", method = RequestMethod.POST)
     public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 

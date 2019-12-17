@@ -120,7 +120,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     /**
      * Evaluate Statistics generate pdf file request.
      */
-    @RequestMapping(value = "/evaluatejudge/generate/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/evaluatejudge/generate/pdf", method = RequestMethod.POST)
     public Object evaluateJudgeStatisticsPDFGenerateFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
@@ -157,7 +157,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     /**
      * EvaluateJudge Statistics generate excel file request.
      */
-    @RequestMapping(value = "/evaluatejudge/generate/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/evaluatejudge/generate/xlsx", method = RequestMethod.POST)
     public Object evaluateJudgeGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                  BindingResult bindingResult) {
 
@@ -193,7 +193,7 @@ public class EvaluateJudgeStatisticsController extends BaseController {
     /**
      * EvaluateJudge Statistics generate word file request.
      */
-    @RequestMapping(value = "/evaluatejudge/generate/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/evaluatejudge/generate/docx", method = RequestMethod.POST)
     public Object evaluateJudgeGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                  BindingResult bindingResult) {
 

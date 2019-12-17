@@ -365,7 +365,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_EXPORT)
-    @RequestMapping(value = "/archive-template/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive-template/xlsx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateExcelFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                       BindingResult bindingResult) {
 
@@ -400,8 +400,8 @@ public class ArchiveTemplateManagementController extends BaseController {
     /**
      * Archive Template generate word file request.
      */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_TOWORD)
-    @RequestMapping(value = "/archive-template/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/archive-template/docx", method = RequestMethod.POST)
     public Object archiveTemplateGenerateWordFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
@@ -437,7 +437,7 @@ public class ArchiveTemplateManagementController extends BaseController {
      * Archive Template generate excel file request.
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_TEMPLATE_PRINT)
-    @RequestMapping(value = "/archive-template/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/archive-template/pdf", method = RequestMethod.POST)
     public Object archiveTemplateGeneratePDFFile(@RequestBody @Valid ArchiveTemplateGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 
@@ -537,6 +537,14 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
+        }
+
+        if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
+        }
+
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();
         archiveTemplateService.createSerArchiveTemplate(serArchiveTemplate);
 
@@ -591,6 +599,14 @@ public class ArchiveTemplateManagementController extends BaseController {
         //check this template used
         if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
+
+        if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), requestBody.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
+        }
+
+        if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), requestBody.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
         }
 
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();

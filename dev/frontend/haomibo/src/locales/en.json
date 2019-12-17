@@ -14,10 +14,37 @@
     "register-button": "REGISTER",
     "reset-password-button": "RESET",
     "buy": "BUY",
-    "username": "Username"
+    "name": "Name",
+    "confirm-password": "Confirm Password",
+    "username": "Username",
+    "login-fail": "Login Fail",
+    "fail": "Failed",
+    "warning": "Warning",
+    "success": "Success",
+    "enter-valid-email": "Please, Enter valid Email.",
+    "enter-valid-password": "Please, Enter valid Password.",
+    "login-success": "Login Success",
+    "register-success": "Register Success",
+    "register-invalid-parameter": "Register invalid parameter",
+    "used-email": "Used Email",
+    "server-error": "Server Error",
+    "please-enter-valid-email": "Please, Enter valid email.",
+    "password-length-need-to-be-more-than-6-letters": "Password length need to be more than 6 letters",
+    "password-field-is-mandatory": "Password field is mandatory.",
+    "name-field-is-mandatory": "Name field is mandatory.",
+    "email-field-is-mandatory": "Email field is mandatory.",
+    "password-confirm-field-is-mandatory": "Password confirm field is mandatory.",
+    "name-should-be-numerical-or-characters": "Name should be numerical or characters.",
+    "confirmation-should-be-match-as-password": "Confirm should be match as password."
   },
   "login": {
-    "title": "Title"
+    "admin-title":"统一权限管理系统",
+    "user-title":"综合业务平台",
+    "enter-user-email": "输入用户账号",
+    "enter-user-password": "请输入人员密码",
+    "not-admin-role": "这用户不是系统管理员",
+    "not-normal-role": "这用户不是普通职员",
+    "title" : "毫米波集中查验系统"
   },
   "menu": {
     "app": "Home",
@@ -75,7 +102,22 @@
     "time-task": "Time Task",
     "routine-plan": "Routine Plan",
     "maintenance-task": "Maintenance Task",
-    "history-record": "History Record"
+    "history-record": "History Record",
+    "statistics": "Statistics",
+    "statistics-view": "View",
+    "statistics-scan-devices": "Scan Devices",
+    "statistics-monitors": "Monitors",
+    "statistics-hand-checks": "Hand Checks",
+    "statistics-evaluate-monitors": "Evaluate Monitors",
+    "statistics-working-hours": "Working Hours",
+    "statistics-operating-hours": "Operating Hours",
+    "view": "View",
+    "scan-devices": "Scan Devices",
+    "monitors": "Monitors",
+    "hand-checks": "Hand Checks",
+    "evaluate-monitors": "Evaluate Monitors",
+    "working-hours": "Working Hours",
+    "operating-hours": "Operating Hours"
   },
   "pages": {
     "project-name": "MAGIC IS IN THE DETAILS",
@@ -85,8 +127,20 @@
     "go-back-home": "GO BACK HOME",
     "register-desc":"If you are a member, please login"
   },
+  "dashboard": {
+    "article-title-1": "2秒完成扫描",
+    "article-extract-1": "项目主要是通过安检门对人进行安检，人可以快速通过，简化化安检流程，提高安检效率",
+    "article-title-2": "通过率高",
+    "article-extract-2": "项目主要是通过安检门对人进行安检，人可以快速通过，简化化安检流程，提高安检效率",
+    "article-title-3": "仪器占地小",
+    "article-extract-3": "项目主要是通过安检门对人进行安检，人可以快速通过，简化化安检流程，提高安检效率",
+    "article-title-4": "保护隐私",
+    "article-extract-4": "项目主要是通过安检门对人进行安检，人可以快速通过，简化化安检流程，提高安检效率"
+  },
   "permission-management": {
     "organization-table": "Organizations",
+    "organization-structure": "Structure",
+    "active-state": "Status",
     "organization-name": "Name",
     "organization-number": "Number",
     "please-enter-organization-name": "Please enter organization name.",
@@ -98,6 +152,8 @@
     "organization-leader": "Leader",
     "organization-mobile": "Mobile",
     "organization-note": "Note",
+    "please-enter-organization-name": "Please enter organization name.",
+    "please-enter-organization-number": "Please enter organization number.",
     "org-none": "None",
     "please-enter-organization-leader": "Please enter organization leader.",
     "please-enter-organization-mobile": "Please enter organization mobile.",
@@ -210,6 +266,85 @@
     "action-block": "Block",
     "action-unblock": "Unblock",
     "action-reset-password": "Reset password",
+    "organization-management": {
+      "please-enter-organization-name": "Please, Enter organization name.",
+      "please-enter-organization-number": "Please, Enter organization number.",
+      "please-select-parent-organization": "Please, select parent organization."
+    },
+    "assign-permission-management": {
+      "assign-to-user": "Assign to User",
+      "assign-to-group": "Assing to Group",
+      "summary-table": "Summary Table",
+      "assign-flag": "Assign Flag",
+      "please-input-user-name": "Please, Input user name.",
+      "user": "User",
+      "affiliated-org": "Affiliated Org",
+      "user-form": {
+        "one-user-data":"One user data",
+        "affiliated-org-user-data":"Affiliated org user data",
+        "affiliated-org-all-user-data":"Affiliated org all user data",
+        "all-user-data":"All user data",
+        "select-data-group":"Select data group"
+      },
+      "group": {
+        "user-group": "User Group",
+        "groupMember": "Group Member",
+        "role": "Role",
+        "data-range": "Data Range",
+        "member": "Member",
+        "one-user-data":"One user data",
+        "group-user-data":"Group user data",
+        "all-user-data":"All user data",
+        "select-data-group":"Select data group",
+        "user-group-delete-prompt": "User group delete prompt",
+        "user-group-mandatory": "User group mandatory",
+        "group-member-not-exit": "Group member not exist.",
+        "role-mandatory": "Role Mandatory",
+        "data-range-mandatory": "Data Range Mandatory",
+        "group-assigned-successfully": "Group assigned successfully",
+        "group-assigned-removed-successfully": "Group assinged removed successfully"
+      },
+      "assign-flag-select-options": {
+        "all": "All",
+        "assigned": "Assigned",
+        "not-assigned": "Not Assigned"
+      }
+    },
+
+    "organization-has-children": "Organization has children",
+
+    "user": {
+      "username-field-is-mandatory": "Username field is mandatory.",
+      "userId-field-is-mandatory": "UserId field is mandatory.",
+      "gender-field-is-mandatory": "Gender field is mandatory.",
+      "license-number-field-is-mandatory": "License number field is mandatory.",
+      "organization-field-is-mandatory": "Organization field is mandatory.",
+      "userCategory-field-is-mandatory": "Usercategory field is mandatory.",
+      "account-field-is-mandatory": "Account field is mandatory.",
+      "orgId-field-is-mandatory": "OrgId field is mandatory.",
+      "account-should-be-numerical-or-characters": "Account should be numerical or characters",
+      "group-name": "Group Name",
+      "required-field": "This field is required.",
+      "note": "Note",
+      "enter-note":"Enter Note",
+      "group-flag": "Group Flag",
+      "grouped":"Grouped",
+      "no-grouped": "No Grouped",
+      "please-enter-group-name": "Please, Enter group name.",
+      "user-group-name": "User group name",
+      "operating": "Operating",
+      "user-group-number": "User group number",
+      "group-number": "Group Number",
+      "group-member": "Group Member",
+      "userNumber-field-is-mandatory": "Usernumber field is mandatory.",
+      "category-field-is-mandatory": "Category field is mandatory.",
+      "user-group-delete-prompt":"User group delete prompt.",
+      "inactive-prompt": "Inactive Prompt",
+      "block-prompt": "block-prompt",
+      "user-group-modified-successfully": "User group modified successfully.",
+      "used-email":"Used Email",
+      "used-phone":"Used Phone"
+    },
 
     "permission-control": {
       "role": "Role",
@@ -274,6 +409,15 @@
       "account-field-is-mandatory": "Account is mandatory.",
       "gender-field-is-mandatory": "Gender is mandatory."
     },
+    "site-management" : {
+    "status-updated-successfully":"Status updated Successfully.",
+    "site-deleted-successfully" : "Site deleted successfully.",
+    "site-has-children" : "Site has children",
+    "site-added-successfully" : "Site added successfully.",
+    "delete-prompt": "Delete Prompt",
+    "make-inactive-prompt": "Make inactive promtp",
+    "site-has-devices": "Site has devices"
+  },
     "assign-permission-management": {
       "assign-to-user": "Assign to user",
       "assign-to-group": "Assign to group",
@@ -349,20 +493,6 @@
     "device": "Device",
     "before-selected": "Before selected",
     "selected": "Selected",
-    "document-management": {
-      "document-table": "Table",
-      "document-stat": "Statistics"
-    },
-    "document-template": {
-      "device-show-list": "Show device list",
-      "add-indicator": "Add indicator",
-      "indicator": "Indicator",
-      "classify": "Classify",
-      "unit": "Unit",
-      "required": "Required",
-      "yes": "YES",
-      "no": "NO"
-    },
     "device-classify-item":{
       "classify": "Classify",
       "super-classify": "Super classify",
@@ -373,21 +503,52 @@
       "parent-device-number": "Parent device number",
       "parent-device": "Parent device",
       "remark": "Remark",
-      "no-classify":"No classify"
+      "no-classify":"No classify",
+      "field-is-mandatory" : "Field is mandatory"
     },
-    "device-list":{
-      "archive": "Archive",
-      "template": "Template",
-      "device-information": "Information",
-      "original-number": "Original number",
-      "production-date": "Production date",
-      "purchase-date": "Purchase date",
-      "supplier": "Supplier",
-      "supplier-contact": "Supplier contact",
-      "supplier-contact-information": "Supplier contact information",
-      "ip": "IP",
-      "wave-security-device": "Wave security device",
-      "huawei-m6-tablet": "Huawei-m6-tablet"
+    "document-template": {
+      "device-show-list": "Show device list",
+      "add-indicator": "Add indicator",
+      "indicator": "Indicator",
+      "classify": "Classify",
+      "unit": "Unit",
+      "required": "Required",
+      "yes": "YES",
+      "no": "NO",
+      "status-updated-successfully":"模板修改成功",
+      "deleted-successfully" : "模板删除成功",
+      "has-children" : "该模板有孩子",
+      "added-successfully" : "模板创建成功",
+      "delete-prompt": "是否失效该模板",
+      "make-inactive-prompt": "是否失效该模板",
+      "has-archives": "已经有档案",
+      "not-have-indicators" : "没有指标"
+    },
+    "device-table": {
+      "device-info": "Device information",
+      "archive-info": "Archive information",
+      "guid": "GUID",
+      "device-type": "Device Type",
+      "device": "Device",
+      "judge": "Judge",
+      "manual": "Manual",
+      "status-updated-successfully": "Status updated successfully.",
+      "deleted-successfully": "Deleted successfully.",
+      "has-children": "Has children",
+      "added-successfully": "Added successfully.",
+      "delete-prompt": "Delete prompt",
+      "make-inactive-prompt": "Make inactive prompt"
+    },
+    "document-management": {
+      "document-table": "Table",
+      "document-stat": "Statistics",
+      "status-updated-successfully": "Status updated successfully.",
+      "deleted-successfully": "Deleted successfully.",
+      "has-children": "Has children",
+      "added-successfully": "Added successfully.",
+      "delete-prompt": "Delete prompt",
+      "make-inactive-prompt": "Make inactive prompt",
+      "has-devices": "Has devices."
     },
     "archive":{
       "technical-indicator":"Technical Indicator",
@@ -420,9 +581,33 @@
       "operating-temperature-humidity": "Operating temperature/Humidity(℃，%)",
       "storage-temperature-humidity": "Storage temperature/Humidity(℃，%)"
     },
-    "device-table": {
-      "device-info": "Device information",
-      "archive-info": "Archive information"
+    "device-list":{
+      "archive": "Archive",
+      "template": "Template",
+      "device-information": "Information",
+      "original-number": "Original number",
+      "production-date": "Production date",
+      "purchase-date": "Purchase date",
+      "supplier": "Supplier",
+      "supplier-contact": "Supplier contact",
+      "supplier-contact-information": "Supplier contact information",
+      "ip": "IP",
+      "wave-security-device": "Wave security device",
+      "huawei-m6-tablet": "Huawei-m6-tablet",
+      "make-inactive-prompt": "Make inactive prompt",
+      "status-updated-successfully": "Status updated successfully."
+    },
+    "device-monitoring": {
+      "disk-space" :"Disk Space",
+      "main-acquire-card":"Main acquire card.",
+      "from-acquire-card":"From acquire card.",
+      "servo":"Servo",
+      "slider-position":"Slider Position",
+      "emergency-stop":"Emergency stop",
+      "footstep-alarm":"Footstep alarm",
+      "data-monitor":"Data monitor",
+      "landing-time":"Landing Time",
+      "running-time":"Running Time"
     }
   },
   "system-setting": {
@@ -745,6 +930,17 @@
       "created-user": "Created user",
       "created-time": "Created time",
       "plan-info": "Plan information",
+      "by-day": "Day",
+      "by-week": "Week",
+      "by-month": "Month",
+      "every":"Every",
+      "hour": "Hour",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "guide-for-time-task": "日期范围为1-31日，如果当月没有29、30或31日，则默认为最后一天",
+      "after-task-created": "After Task Created",
+      "by-time": "Time",
       "plan-no": "No.",
       "site": "Site",
       "time-task": "Time task",
@@ -754,7 +950,11 @@
       "effective-start-time": "Effective start time",
       "effective-deadline": "Effective deadline",
       "create-user": "Create user",
-      "plan-work": "Plan work"
+      "plan-work": "Plan work",
+      "estimated-start-time": "Estimated Start Time",
+      "number-of-execute": "Number of execute",
+      "timing-active-start-time": "Timing active start time",
+      "timing-active-end-time": "Timing acitve end time"
     },
     "history-record": {
       "task": "Task",
@@ -823,11 +1023,52 @@
       "male-inspection-object": "Male inspection object",
       "hand-check-position": "Hand check position",
       "suitable-for": "Suitable for"
+    },
+    "field-config": {
+      "updated-successful": "Updated Successful."
+    }
+  },
+  "statistics": {
+    "evaluate-monitors": {
+      "on-site":"Site",
+      "security-device":"Device",
+      "hand-checker":"Hand Checker",
+      "time":"Time",
+      "step-size":"Step Size",
+      "displacement":"Displacement"
+    },
+
+    "view" : {
+      "on-site" : "Site",
+      "security-device":"Device",
+      "operator-type" : "Operator Type",
+      "operator" : "Operator",
+      "start-time" : "Start Time",
+      "end-time" : "End Time",
+      "step-size":"Step Size"
     }
   },
   "error-404": {
-    "it-is-indeed":"Yes, it is indeed!"
-
+    "it-is-indeed": "Yes, it is indeed!"
+  },
+  "response-messages": {
+    "ok": "ok",
+    "invalid-parameter": "Invalid Paramter",
+    "user-not-found": "User Not Found",
+    "invalid-password": "Invalid Password",
+    "token-expired": "Token Expired",
+    "invalid-token": "Token Invalid"
+  },
+  "auth-token-messages": {
+    "error-title": "Error Report",
+    "invalid-token": "Invalid token information",
+    "token-expired": "Token is expired"
+  },
+  "api-call-error-messages": {
+    "error-title": "Error Report",
+    "network-error": "Network Error",
+    "forbidden": "That action is forbidden",
+    "invalid-parameter": "Unknown error is occurred"
   },
   "vuetable": {
     "every-page-showing": "every",

@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.logmanagement;
+package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog.AccessLogController;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
@@ -6,6 +6,7 @@ import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class AccessLogServiceImpl implements AccessLogService{
+public class AccessLogServiceImpl implements AccessLogService {
 
     @Autowired
     SysAccessLogRepository sysAccessLogRepository;

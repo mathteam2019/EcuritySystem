@@ -191,7 +191,7 @@ public class AccessLogController extends BaseController {
      * Access Log generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_EXPORT)
-    @RequestMapping(value = "/export", method = RequestMethod.POST)
+    @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object accessLogGenerateExcelFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
@@ -220,8 +220,8 @@ public class AccessLogController extends BaseController {
     /**
      * Access Log generate file request.
      */
-    @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_TOWORD)
-    @RequestMapping(value = "/word", method = RequestMethod.POST)
+
+    @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object accessLogGenerateWordFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
@@ -251,7 +251,7 @@ public class AccessLogController extends BaseController {
      * Access Log generate file request.
      */
     @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_PRINT)
-    @RequestMapping(value = "/print", method = RequestMethod.POST)
+    @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object accessLogGeneratePDFFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 

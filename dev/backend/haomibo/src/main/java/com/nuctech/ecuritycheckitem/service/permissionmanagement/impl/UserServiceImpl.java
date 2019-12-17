@@ -74,6 +74,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkGroupNameExist(String groupName, Long groupId) {
+        if(groupId == null) {
+            return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName));
+        }
+        return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName)
+                .and(QSysUser.sysUser.userId.ne(groupId)));
+    }
+
+    @Override
+    public boolean checkGroupNumberExist(String groupNumber, Long groupId) {
+        if(groupId == null) {
+            return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber));
+        }
+        return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber)
+                .and(QSysUser.sysUser.userId.ne(groupId)));
+    }
+
+    @Override
     public boolean checkMobileExist(String mobile, Long userId) {
         if(userId == null) {
             return sysUserRepository.exists(QSysUser.sysUser.mobile.eq(mobile));

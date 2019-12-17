@@ -30,10 +30,10 @@ import java.io.Serializable;
 public class SerPlatformCheckParams extends BaseEntity implements Serializable {
 
     public static class HistoryData {
-        public static final String BUSINESS = "business";
-        public static final String CARTOON = "cartoon";
-        public static final String CONVERSION = "conversion";
-        public static final String ORIGINAL = "original";
+        public static final String BUSINESS = "1000002201";
+        public static final String CARTOON = "1000002202";
+        public static final String CONVERSION = "1000002203";
+        public static final String ORIGINAL = "1000002204";
     }
 
 

@@ -45,13 +45,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_category_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()" :disabled="checkPermItem('device_category_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_category_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -76,22 +76,22 @@
                 </div>
                 <div slot="operating" slot-scope="props">
                   <b-button @click="onAction('edit',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === 'active'"
+                            size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_modify')"
                             variant="primary default btn-square">
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
-                    size="sm" @click="onAction('activate',props.rowData)"
+                    v-if="props.rowData.status=='1000000702'"
+                    size="sm" @click="onAction('activate',props.rowData)" :disabled="checkPermItem('device_category_update_status')"
                     variant="success default btn-square"
                   >
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button
                     @click="onAction('inactivate',props.rowData)"
-                    v-if="props.rowData.status=='active'"
+                    v-if="props.rowData.status=='1000000701'"
                     size="sm"
-                    :disabled="props.rowData.parentCategoryId === 0"
+                    :disabled="props.rowData.parentCategoryId === 0 || checkPermItem('device_category_update_status')"
                     variant="warning default btn-square" >
                     <i class="icofont-ban"></i>
                   </b-button>
@@ -99,7 +99,7 @@
                     size="sm"
                     @click="onAction('delete',props.rowData)"
                     variant="danger default btn-square"
-                    :disabled="props.rowData.status === 'active'">
+                    :disabled="props.rowData.status === '1000000701' || checkPermItem('device_category_delete')">
                     <i class="icofont-bin"></i>
                   </b-button>
                 </div>
@@ -191,7 +191,7 @@
             <b-button size="sm" @click="saveCategoryItem()" variant="info default"><i class="icofont-save"></i>
               {{$t('device-management.save')}}
             </b-button>
-            <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default"
+            <b-button @click="onAction('delete',classifyForm)" size="sm" variant="danger default" :disabled="checkPermItem('device_category_delete')"
                       v-if="pageStatus !== 'create'">
               <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
             </b-button>
@@ -200,8 +200,8 @@
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
       </div>
@@ -257,14 +257,14 @@
             </b-row>
           </b-col>
           <b-col cols="12 text-right mt-3 " class="align-self-end">
-            <b-button v-if="classifyForm.status === 'active' && classifyForm.parentCategoryId !== 0" @click="onAction('inactivate',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000701' && classifyForm.parentCategoryId !== 0" :disabled="checkPermItem('device_category_update_status')" @click="onAction('inactivate',classifyForm)" size="sm"
                       variant="warning default">
               <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
             </b-button>
-            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('activate',classifyForm)" size="sm" variant="success default">
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('activate',classifyForm)" :disabled="checkPermItem('device_category_update_status')" size="sm" variant="success default">
               <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
             </b-button>
-            <b-button v-if="classifyForm.status === 'inactive'" @click="onAction('delete',classifyForm)" size="sm"
+            <b-button v-if="classifyForm.status === '1000000702'" @click="onAction('delete',classifyForm)" size="sm" :disabled="checkPermItem('device_category_delete')"
                       variant="danger default">
               <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
             </b-button>
@@ -273,8 +273,8 @@
             </b-button>
           </b-col>
           <div class="position-absolute" style="left: 3%;bottom: 17%">
-            <img v-if="classifyForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
-            <img v-else-if="classifyForm.status === 'active'" src="../../../assets/img/active_stamp.png">
+            <img v-if="classifyForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
+            <img v-else-if="classifyForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
           </div>
         </b-row>
       </div>
@@ -282,7 +282,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -312,6 +312,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
 
@@ -370,6 +371,7 @@
           categoryId: 0,
           note: null
         },
+
         deviceClassifyTableItems: {
           apiUrl: `${apiBaseUrl}/device-management/device-classify/category/get-by-filter-and-page`,
           perPage: 10,
@@ -408,12 +410,13 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               }
+
             },
             {
               name: 'parentCategoryNumber',
@@ -459,15 +462,18 @@
             }
           ]
         },
+
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportButton(){
         let checkedAll = this.$refs.deviceClassifyTable.checkedAllStatus;
         let checkedIds = this.$refs.deviceClassifyTable.selectedTo;
@@ -476,7 +482,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-classify/category/export`;
+        let link = `device-management/device-classify/category`;
         downLoadFileFromServer(link,params,'category');
       },
       onPrintButton(){
@@ -487,7 +493,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-classify/category/print`;
+        let link = `device-management/device-classify/category/pdf`;
         printFileFromServer(link,params);
       },
 
@@ -532,7 +538,7 @@
             break;
           case 'activate':
             this.initialize(data);
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'show':
             this.initialize(data);
@@ -710,6 +716,7 @@
         if (this.classifyForm.parentCategoryNumber === null)
           this.classifyForm.parentCategoryNumber = this.$t('system-setting.none');
       },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.parentClassifyOptions = [];

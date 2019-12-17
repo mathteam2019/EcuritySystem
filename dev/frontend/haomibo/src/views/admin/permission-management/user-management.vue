@@ -64,13 +64,13 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportUserButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_export')" @click="onExportUserButton()">
                   <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintUserButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_print')" @click="onPrintUserButton()">
                   <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" @click="onCreatePage()" variant="success default">
+                <b-button size="sm" class="ml-2" @click="onCreatePage()" :disabled="checkPermItem('user_create')" variant="success default">
                   <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                 </b-button>
               </b-col>
@@ -96,15 +96,16 @@
                       <div>
 
                         <b-button
-                          v-if="props.rowData.status=='inactive'"
+                          v-if="props.rowData.status=='1000000302'"
                           size="sm"
                           variant="primary default btn-square"
+                          :disabled="checkPermItem('user_modify')"
                           @click="onAction('modify', props.rowData, props.rowIndex)">
                           <i class="icofont-edit"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='inactive'"
+                          v-if="props.rowData.status!='1000000302'"
                           size="sm"
                           variant="primary default btn-square"
                           disabled>
@@ -112,23 +113,25 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='inactive'"
+                          v-if="props.rowData.status=='1000000302'"
                           size="sm"
                           variant="success default btn-square"
-                          @click="onAction('active', props.rowData, props.rowIndex)">
+                          @click="onAction('activate', props.rowData, props.rowIndex)"
+                          :disabled="checkPermItem('user_update_status')">
                           <i class="icofont-check-circled"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='active'"
+                          v-if="props.rowData.status=='1000000301'"
                           size="sm"
+                          :disabled="checkPermItem('user_update_status')"
                           variant="warning default btn-square"
-                          @click="onAction('inactive', props.rowData, props.rowIndex)">
+                          @click="onAction('inactivate', props.rowData, props.rowIndex)">
                           <i class="icofont-ban"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='active'"
+                          v-if="props.rowData.status!='1000000302' && props.rowData.status!='1000000301'"
                           size="sm"
                           variant="success default btn-square"
                           disabled>
@@ -136,23 +139,25 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='inactive'"
+                          v-if="props.rowData.status=='1000000302'"
                           size="sm"
                           variant="danger default btn-square"
+                          :disabled="checkPermItem('user_update_status')"
                           @click="onAction('blocked', props.rowData, props.rowIndex)">
                           <i class="icofont-minus-circle"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='blocked'"
+                          v-if="props.rowData.status=='1000000304'"
                           size="sm"
                           variant="success default btn-square"
+                          :disabled="checkPermItem('user_update_status')"
                           @click="onAction('unblock', props.rowData, props.rowIndex)">
                           <i class="icofont-power"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='inactive' && props.rowData.status!='blocked'"
+                          v-if="props.rowData.status!='1000000302' && props.rowData.status!='1000000304'"
                           size="sm"
                           variant="danger default btn-square"
                           disabled>
@@ -160,15 +165,16 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='pending'"
+                          v-if="props.rowData.status=='1000000303'"
                           size="sm"
                           variant="purple default btn-square"
+                          :disabled="checkPermItem('user_modify')"
                           @click="onAction('reset-password', props.rowData, props.rowIndex)">
                           <i class="icofont-ui-password"></i>
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='pending'"
+                          v-if="props.rowData.status!='1000000303'"
                           size="sm"
                           variant="purple default btn-square"
                           disabled>
@@ -372,8 +378,8 @@
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
               <div class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='active'" src="../../../assets/img/active_stamp.png">
-                <img v-else-if="profileForm.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
@@ -533,18 +539,18 @@
                 <img :src="profileForm.avatar" onerror="src='\\assets\\img\\profile.png'" class="card-img-top"/>
               </div>
               <div class="position-absolute" style="bottom: -18%;left: -50%">
-                <img v-if="profileForm.status==='active'" src="../../../assets/img/active_stamp.png">
-                <img v-else-if="profileForm.status==='inactive'" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="profileForm.status==='1000000301'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="profileForm.status==='1000000302'" src="../../../assets/img/no_active_stamp.png">
               </div>
               <input type="file" ref="profileFile" @change="onFileChange" style="display: none"/>
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button v-if="profileForm.status==='active'" class="mr-1" @click="onAction('inactive', profileForm)"
+            <b-button v-if="profileForm.status==='1000000301'" class="mr-1" @click="onAction('inactivate', profileForm)"
                       variant="warning default" size="sm"><i class="icofont-ban"></i> {{
               $t('permission-management.action-make-inactive') }}
             </b-button>
-            <b-button v-if="profileForm.status==='inactive'" class="mr-1" @click="onAction('active', profileForm)"
+            <b-button v-if="profileForm.status==='1000000302'" class="mr-1" @click="onAction('activate', profileForm)"
                       variant="success default" size="sm"><i class="icofont-check-circled"></i> {{
               $t('permission-management.action-unblock') }}
             </b-button>
@@ -576,13 +582,13 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupResetButton()">
                       <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_export')" @click="onExportGroupButton()">
                       <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_print')" @click="onPrintGroupButton()">
                       <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" :disabled="checkPermItem('user_group_create')" variant="success default">
                       <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -606,7 +612,7 @@
                         <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0"
+                        <b-button variant="danger default btn-square" class="m-0" :disabled="checkPermItem('user_group_delete')"
                                   @click="onAction('group-remove', props.rowData, props.rowIndex)"><i
                           class="icofont-bin"></i></b-button>
                       </template>
@@ -715,10 +721,10 @@
               </div>
               <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status!='create'">
                 <div>
-                  <b-button @click="onClickModifyUserGroup" variant="info default" size="sm"><i
+                  <b-button @click="onClickModifyUserGroup" variant="info default" :disabled="checkPermItem('user_group_modify')" size="sm"><i
                     class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteUserGroup" variant="danger default" size="sm"><i
+                  <b-button @click="onClickDeleteUserGroup"  :disabled="checkPermItem('user_group_delete')" variant="danger default" size="sm"><i
                     class="icofont-bin"></i> {{$t('permission-management.delete')}}
                   </b-button>
 
@@ -749,7 +755,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getDirection} from "../../../utils";
+  import {checkPermissionItem,getDirection} from "../../../utils";
   import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -834,6 +840,7 @@
       }
     },
     mounted() {
+
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
       this.$refs.userGroupTable.$parent.transform = this.fnTransformUserGroupTable.bind(this);
       getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
@@ -881,45 +888,39 @@
         orgUserTreeData: [],
         direction: getDirection().direction,
         genderOptions: [
-          {value: 'male', text: this.$t('permission-management.male')},
-          {value: 'female', text: this.$t('permission-management.female')},
-          {value: 'other', text: this.$t('permission-management.unknown')},
+          {value: '1000000001', text: this.$t('permission-management.male')},
+          {value: '1000000002', text: this.$t('permission-management.female')},
         ],
         genderFilterOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'male', text: this.$t('permission-management.male')},
-          {value: 'female', text: this.$t('permission-management.female')},
-          {value: 'other', text: this.$t('permission-management.unknown')},
+          {value: '1000000001', text: this.$t('permission-management.male')},
+          {value: '1000000002', text: this.$t('permission-management.female')},
         ],
         statusSelectData: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')},
-          {value: 'pending', text: this.$t('permission-management.pending')},
-          {value: 'blocked', text: this.$t('permission-management.blocked')},
+          {value: '1000000301', text: this.$t('permission-management.active')},
+          {value: '1000000302', text: this.$t('permission-management.inactive')},
+          {value: '1000000304', text: this.$t('permission-management.pending')},
+          {value: '1000000303', text: this.$t('permission-management.blocked')},
         ],
         orgNameSelectData: {},
-        categorySelectData: [
-          {value: null, text: this.$t('permission-management.all')},
-          {value: 'admin', text: this.$t('permission-management.admin')},
-          {value: 'normal', text: this.$t('permission-management.normal-staff')}
-        ],
         educationOptions: [
-          {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
-          {value: 'student', text: this.$t('permission-management.student')},
-          {value: 'master_student', text: this.$t('permission-management.master_student')},
-          {value: 'doctor_student', text: this.$t('permission-management.doctor_student')},
-          {value: 'other', text: this.$t('permission-management.other')},
+          {value: '1000000101', text: this.$t('permission-management.belowcollege')},
+          {value: '1000000102', text: this.$t('permission-management.student')},
+          {value: '1000000103', text: this.$t('permission-management.master_student')},
+          {value: '1000000104', text: this.$t('permission-management.doctor_student')},
+          {value: '1000000105', text: this.$t('permission-management.other')},
         ],
         degreeOptions: [
-          {value: 'belowcollege', text: this.$t('permission-management.belowcollege')},
-          {value: 'bachelor', text: this.$t('permission-management.bachelor')},
-          {value: 'master', text: this.$t('permission-management.master')},
-          {value: 'doctor', text: this.$t('permission-management.doctor')},
-          {value: 'other', text: this.$t('permission-management.other')},
+          {value: '1000000201', text: this.$t('permission-management.belowcollege')},
+          {value: '1000000202', text: this.$t('permission-management.bachelor')},
+          {value: '1000000203', text: this.$t('permission-management.master')},
+          {value: '1000000204', text: this.$t('permission-management.doctor')},
+          {value: '1000000205', text: this.$t('permission-management.other')},
         ],
+
         profileForm: {
-          status: 'inactive',
+          status: '1000000102',
           userId: 0,
           avatar: '',
           userName: '',
@@ -939,11 +940,6 @@
           note: '',
           portrait: null
         },
-        items: [
-          {id: 1, first_name: 'Mark', last_name: 'Otto', username: '@mdo'},
-          {id: 2, first_name: 'Jacob', last_name: 'Thornton', username: '@fat'},
-          {id: 3, first_name: 'Lary', last_name: 'the Bird', username: '@twitter'}
-        ],
         vuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user/get-by-filter-and-page`,
           fields: [
@@ -985,9 +981,8 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "male": `<span>${this.$t('permission-management.male')}</span>`,
-                  "female": `<span>${this.$t('permission-management.female')}</span>`,
-                  "unknown": `<span>${this.$t('permission-management.unknown')}</span>`,
+                  "1000000001": `<span>${this.$t('permission-management.male')}</span>`,
+                  "1000000002": `<span>${this.$t('permission-management.female')}</span>`,
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
@@ -1001,12 +996,11 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
-
                 const dictionary = {
-                  "active": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
-                  "blocked": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
-                  "pending": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
+                  "1000000301": `<span class="text-success">${this.$t('permission-management.active')}</span>`,
+                  "1000000302": `<span class="text-muted">${this.$t('permission-management.inactive')}</span>`,
+                  "1000000303": `<span class="text-danger">${this.$t('permission-management.blocked')}</span>`,
+                  "1000000304": `<span class="text-warning">${this.$t('permission-management.pending')}</span>`,
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
@@ -1184,6 +1178,9 @@
       }
     },
     methods: {
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onExportUserButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -1192,7 +1189,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user/export`;
+        let link = `permission-management/user-management/user`;
         downLoadFileFromServer(link, params, 'user');
       },
       onPrintUserButton() {
@@ -1203,7 +1200,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user/print`;
+        let link = `permission-management/user-management/user/pdf`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1214,7 +1211,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user-group/print`;
+        let link = `permission-management/user-management/user-group`;
         downLoadFileFromServer(link, params, 'userGroup');
       },
       onPrintGroupButton() {
@@ -1225,7 +1222,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user-group/print`;
+        let link = `permission-management/user-management/user-group/pdf`;
         printFileFromServer(link, params);
       },
 
@@ -1304,11 +1301,11 @@
             this.fnShowItem(data);
             break;
           case 'reset-password':
-          case 'active':
+          case 'activate':
           case 'unblock':
             this.fnChangeItemStatus(userId, action);
             break;
-          case 'inactive':
+          case 'inactivate':
           case 'blocked':
             this.fnShowConfDiaglog(userId, action);
             break;
@@ -1363,8 +1360,12 @@
         if (action === '')
           action = this.promptTemp.action;
         let status = action;
-        if (status === 'unblock' || status === 'reset-password')
-          status = 'inactive';
+        if (status === 'unblock' || status === 'reset-password' || status === 'inactivate')
+          status = '1000000302';
+        else if(status === 'activate')
+          status = '1000000301';
+        else if(status === 'blocked')
+          status = '1000000303';
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {
             'userId': userId,
@@ -1422,7 +1423,7 @@
       },
       onInitialUserData() {
         this.profileForm = {
-          status: 'inactive',
+          status: '1000000102',
           userId: 0,
           avatar: '',
           userName: '',

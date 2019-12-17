@@ -20,7 +20,7 @@
 
           <b-col>
             <b-form-group :label="$t('statistics.view.security-device')">
-              <b-form-select v-model="filter.deviceId" :options="securityDeviceOptions" plain/>
+              <b-form-select v-model="filter.deviceId" :options="manualDeviceOptions" plain/>
             </b-form-group>
           </b-col>
 
@@ -124,7 +124,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.noSeizure/preViewData.totalStatistics.total * 100)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>无查获率</span></div>
@@ -157,7 +157,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{Math.floor(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{Math.round(preViewData.totalStatistics.seizure/preViewData.totalStatistics.total * 100)}}%</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>查获率</span></div>
@@ -175,7 +175,7 @@
                 </div>
                 <div>
                   <div>
-                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.floor(preViewData.totalStatistics.avgDuration)%60}}s</span>
+                    <span v-if="preViewData.totalStatistics!=null">{{(preViewData.totalStatistics.avgDuration-preViewData.totalStatistics.avgDuration%60)/60}}m{{Math.round(preViewData.totalStatistics.avgDuration)%60}}s</span>
                     <span v-else>0</span>
                   </div>
                   <div><span>手检平均时长</span></div>
@@ -225,10 +225,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGenerateExcelButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onGeneratePdfButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -295,7 +295,6 @@
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
               track-by="time"
-              @vuetable:checkbox-toggled-all="onCheckEvent"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -319,10 +318,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
             <i class="icofont-exchange"></i>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onGenerateExcelButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onExportButton2()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onGeneratePdfButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onPrintButton2()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -410,7 +409,6 @@
               :http-fetch="taskVuetable2HttpFetch"
               :per-page="taskVuetable2Items.perPage"
               track-by="time"
-              @vuetable:checkbox-toggled-all="onCheckEvent2"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetable2PaginationData"
@@ -451,7 +449,7 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -655,7 +653,7 @@
         siteData: [],
         allField: '',
         preViewData: [],
-        graphData: [],
+        manualDeviceOptions: [],
 
         xYear: [],
         xQuarter: ['1', '2', '3', '4'],
@@ -858,197 +856,89 @@
       }
     },
     methods: {
+      getManualDeviceData() {
+        getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              let options = [];
+              options = data.map(opt => ({
+                text: opt.device ? opt.device.deviceName : "Unknown",
+                value: opt.manualDeviceId
+              }));
+
+              this.manualDeviceOptions = options;
+              this.manualDeviceOptions.push({
+                text: this.$t('personal-inspection.all'),
+                value: null
+              });
+              break;
+          }
+        });
+      },
+
       getDateTimeFormat(datatime) {
         if (datatime == null) return '';
         return getDateTimeWithFormat(datatime, 'monitor');
       },
 
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
-        console.log(this.isCheckAll);
-
-      },
-
-      onCheckEvent2() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll2;
-        let cnt = this.$refs.taskVuetable2.selectedTo.length;
-        console.log(cnt);
-        if (cnt === 0) {
-          this.isCheckAll2 = false;
-        } else {
-          this.isCheckAll2 = true;
-        }
-        console.log(this.isCheckAll2);
-
-      },
-      onGenerateExcelButton() {
-        let str = "";
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/handexamination/generate/export`, {
-            'isAll': this.isCheckAll,
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
             'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/handexamination/generate`;
+        downLoadFileFromServer(link, params, 'Statistics-Hand');
 
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Statistics-Hand.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
       },
 
-      onGeneratePdfButton() {
-        let str = "";
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         if (this.pageStatus === 'charts')
-          this.isCheckAll = true;
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/handexamination/generate/print`, {
-            'isAll': this.isCheckAll,
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
             'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-
-
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/handexamination/generate`;
+        printFileFromServer(link, params);
       },
 
 
-      onGenerateExcelButton2() {
-        let str = "";
-        if (this.pageStatus2 === 'charts')
-          this.isCheckAll2 = true;
-        if (this.isCheckAll2 === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable2.selectedTo.length;
-          str = str + this.$refs.taskVuetable2.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable2.selectedTo[i];
-            //console.log(str);
-          }
-        }
-
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/suspiciongoods/generate/export`, {
-            'isAll': this.isCheckAll,
-            'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
-
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Statistics-Handgoods.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
+      onExportButton2() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        if (this.pageStatus === 'charts')
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/suspiciongoods/generate`;
+        downLoadFileFromServer(link, params, 'Statistics-Handgoods');
       },
 
-      onGeneratePdfButton2() {
-        let str = "";
-        if (this.pageStatus2 === 'charts')
-          this.isCheckAll2 = true;
-        if (this.isCheckAll2 === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable2.selectedTo.length;
-          str = str + this.$refs.taskVuetable2.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable2.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/statistics/suspiciongoods/generate/print`, {
-            'isAll': this.isCheckAll,
-            'filter': {'filter': this.filter},
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-
-
+      onPrintButton2() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        if (this.pageStatus === 'charts')
+          checkedAll = true;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/statistics/suspiciongoods/generate`;
+        printFileFromServer(link, params);
       },
 
       getSiteOption() {

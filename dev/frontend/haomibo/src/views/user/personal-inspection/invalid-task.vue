@@ -48,10 +48,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGenerateExcelButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
                 <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onGeneratePdfButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
                 <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -68,7 +68,6 @@
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
-                @vuetable:checkbox-toggled-all="onCheckEvent"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -82,8 +81,8 @@
                   <b-img :src="props.rowData.scanImageUrl" class="operation-icon"/>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workFlow==null"> </div>
-                  <div v-else-if="props.rowData.workFlow.workMode==null"> </div>
+                  <div v-if="props.rowData.workFlow==null"></div>
+                  <div v-else-if="props.rowData.workFlow.workMode==null"></div>
                   <div v-else>
                     <div v-if="props.rowData.workFlow.workMode.modeName==='1000001304'">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -343,9 +342,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-if="showPage.serScan.scanImageGender === 'male'">男</label>
-                  <label v-else-if="showPage.serScan.scanImageGender === 'female'">女</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -419,9 +416,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else-if="showPage.serScan.scanAtrResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.serScan.scanAtrResult==='false'">嫌疑</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanAtrResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -430,9 +425,7 @@
                     {{$t('personal-inspection.foot-alarm')}}
                   </template>
                   <label v-if="showPage.serScan == null">None</label>
-                  <label v-else-if="showPage.serScan.scanFootAlarm==='true'">无</label>
-                  <label v-else-if="showPage.serScan.scanFootAlarm==='false'">有</label>
-                  <label v-else>Invalid Value</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanFootAlarm)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -642,7 +635,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   //import {getApiManager} from '../../../api';
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
@@ -656,10 +649,12 @@
       'switches': Switches
     },
     mounted() {
+
       this.getSiteOption();
 
     },
     data() {
+
       return {
         isExpanded: false,
         isCheckAll: false,
@@ -680,26 +675,17 @@
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 4, text: '安检仪+审图端+手检端'},
-          {value: 1, text: '安检仪+(本地手检)'},
-          {value: 2, text: '安检仪+手检端'},
-          {value: 3, text: '安检仪+审图端'},
+          {value: '1000001304', text: '安检仪+审图端+手检端'},
+          {value: '1000001301', text: '安检仪+(本地手检)'},
+          {value: '1000001302', text: '安检仪+手检端'},
+          {value: '1000001303', text: '安检仪+审图端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending_dispatch', text: this.$t('personal-inspection.pending-dispatch')},
-          {value: 'pending_review', text: this.$t('personal-inspection.pending-review')},
-          {value: 'while_review', text: this.$t('personal-inspection.while-review')},
-          {value: 'pending_inspection', text: this.$t('personal-inspection.pending-inspection')},
-          {value: 'while_inspection', text: this.$t('personal-inspection.while-inspection')}
-        ],
-        onSiteOptions: [
-          {value: null, text: this.$t('personal-inspection.all')},
-          {value: 'pending-dispatch', text: this.$t('personal-inspection.task-pending-dispatch')},
-          {value: 'dispatch', text: this.$t('personal-inspection.task-dispatched')},
-          {value: 'while-review', text: this.$t('personal-inspection.while-review')},
-          {value: 'reviewed', text: this.$t('personal-inspection.reviewed')},
-          {value: 'while-inspection', text: this.$t('personal-inspection.while-inspection')},
+          {value: '1000001102', text: this.$t('maintenance-management.process-task.dispatch')},
+          {value: '1000001103', text: this.$t('maintenance-management.process-task.judge')},
+          {value: '1000001104', text: this.$t('maintenance-management.process-task.hand')},
+          {value: '1000001106', text: this.$t('maintenance-management.process-task.scan')}
         ],
 
         onSiteOption: [],
@@ -803,7 +789,6 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -818,93 +803,52 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
+      },
+
+      modeData: function (newVal, oldVal) {
+        //console.log(newVal);
+        this.modeOption = [];
+        this.modeOption = newVal.map(mode => ({
+          text: mode.dataValue,
+          value: mode.dataCode
+        }));
+        this.modeOption.push({
+          text: this.$t('personal-inspection.all'),
+          value: null
+        });
+        if (this.modeOption.length === 0)
+          this.modeOption.push({
+            text: this.$t('system-setting.none'),
+            value: 0
+          });
       }
     },
     methods: {
-      onCheckEvent() {
-        //this.$refs.vuetable.toggleAllCheckboxes('__checkbox', {target: {checked: value}})
-        let isCheck = this.isCheckAll;
-        let cnt = this.$refs.taskVuetable.selectedTo.length;
-        console.log(cnt);
-        if (cnt === 0) {
-          this.isCheckAll = false;
-        } else {
-          this.isCheckAll = true;
-        }
-        console.log(this.isCheckAll);
+
+      onExportButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/invalid-task/generate`;
+        downLoadFileFromServer(link, params, 'Invalid-Task');
+
 
       },
-      onGenerateExcelButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/invalid-task/generate/export`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-            let fileLink = document.createElement('a');
 
-            fileLink.href = fileURL;
-            fileLink.setAttribute('download', 'Invalid-Task.xlsx');
-            document.body.appendChild(fileLink);
-
-            fileLink.click();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
-      },
-
-      onGeneratePdfButton() {
-        let str = "";
-        if (this.isCheckAll === true) {
-          str = "";
-        } else {
-          let cnt = this.$refs.taskVuetable.selectedTo.length;
-          str = str + this.$refs.taskVuetable.selectedTo[0];
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-          for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
-            str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-            //console.log(str);
-          }
-        }
-        getApiManager()
-          .post(`${apiBaseUrl}/task/invalid-task/generate/print`, {
-            'isAll': this.isCheckAll,
-            'filter': this.filter,
-            'idList': str
-          }, {
-            responseType: 'blob'
-          })
-          .then((response) => {
-            let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-            var objFra = document.createElement('iframe');   // Create an IFrame.
-            objFra.style.visibility = "hidden";    // Hide the frame.
-            objFra.src = fileURL;                      // Set source.
-            document.body.appendChild(objFra);  // Add the frame to the web page.
-            objFra.contentWindow.focus();       // Set focus.
-            objFra.contentWindow.print();
-          })
-          .catch(error => {
-            throw new Error(error);
-          });
+      onPrintButton() {
+        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.filter,
+          'idList': checkedIds.join()
+        };
+        let link = `task/invalid-task/generate`;
+        printFileFromServer(link, params);
 
 
       },
@@ -938,7 +882,7 @@
             switch (message) {
               case responseMessages['ok']:
                 this.showPage = response.data.data;
-                this.apiBaseURL =apiBaseUrl;
+                this.apiBaseURL = apiBaseUrl;
                 break;// okay
 
             }
@@ -954,6 +898,9 @@
       },
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
+      },
+      getDictDataValue(dataCode, dicId = null) {
+        return getDictData(dataCode, dicId);
       },
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
@@ -989,11 +936,15 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.scanImageUrl = apiBaseUrl+ temp.serScan.scanImage.imageUrl;
+          if (temp.serScan.scanImage != null) {
+            temp.scanImageUrl = apiBaseUrl + temp.serScan.scanImage.imageUrl;
+          } else {
+            temp.scanImageUrl = '';
+          }
           transformed.data.push(temp);
 
           idTemp = temp.taskId;
-          if(this.isCheckAll === true){
+          if (this.isCheckAll === true) {
             this.$refs.taskVuetable.selectedTo.push(idTemp);
           }
         }

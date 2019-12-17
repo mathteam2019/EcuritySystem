@@ -65,13 +65,13 @@
             <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
               <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()" :disabled="checkPermItem('device_export')">
               <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
             </b-button>
-            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton">
+            <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton" :disabled="checkPermItem('device_print')">
               <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
             </b-button>
-            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default">
+            <b-button size="sm" class="ml-2" @click="onAction('create')" variant="success default" :disabled="checkPermItem('device_create')">
               <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
             </b-button>
           </b-col>
@@ -95,28 +95,28 @@
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerial }}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
-                  <b-button :disabled="props.rowData.status === 'active'" @click="onAction('edit',props.rowData)"
+                  <b-button :disabled="props.rowData.status === '1000000701' || checkPermItem('device_modify')" @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
                   >
                     <i class="icofont-edit"></i>
                   </b-button>
                   <b-button
-                    v-if="props.rowData.status=='inactive'"
+                    v-if="props.rowData.status=='1000000702'"
                     size="sm" @click="onAction('activate',props.rowData)"
-                    variant="success default btn-square"
+                    variant="success default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
                     <i class="icofont-check-circled"></i>
                   </b-button>
                   <b-button @click="onAction('inactivate',props.rowData)"
-                            v-if="props.rowData.status=='active'"
+                            v-if="props.rowData.status=='1000000701'"
                             size="sm"
-                            variant="warning default btn-square"
+                            variant="warning default btn-square" :disabled="checkPermItem('device_update_status')"
                   >
                     <i class="icofont-ban"></i>
                   </b-button>
                   <b-button @click="onAction('delete',props.rowData)"
-                            size="sm" :disabled="props.rowData.status === 'active'"
+                            size="sm" :disabled="props.rowData.status === '1000000701' || checkPermItem('device_delete')"
                             variant="danger default btn-square"
                   >
                     <i class="icofont-bin"></i>
@@ -239,7 +239,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier')">
-                  <b-form-select v-model="mainForm.supplier" :options="supplierOptions" plain/>
+                  <b-form-select v-model="mainForm.supplier" :options="manufacturerOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -266,8 +266,8 @@
               <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                    src="../../../assets/img/device.png">
               <div class="position-absolute" style="bottom: -18%;left: -41%">
-                <img v-if="mainForm.status === 'active'" src="../../../assets/img/active_stamp.png">
-                <img v-else-if="mainForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+                <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
             </div>
             <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -277,7 +277,7 @@
           </b-col>
           <b-col cols="12 d-flex align-items-end justify-content-end mt-3">
             <div>
-              <b-button size="sm" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>
+              <b-button size="sm" @click="saveDeviceItem()" variant="info default" ><i class="icofont-save"></i>
                 {{$t('device-management.save')}}
               </b-button>
 
@@ -386,7 +386,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.supplier')">
-                      <b-form-select v-model="mainForm.supplier" :options="supplierOptions" plain/>
+                      <b-form-select v-model="mainForm.supplier" :options="manufacturerOptions" plain/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
@@ -412,8 +412,8 @@
                   <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
                   <div class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === 'active'" src="../../../assets/img/active_stamp.png">
-                    <img v-else-if="mainForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+                    <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -489,8 +489,8 @@
                   <img v-else-if="!(mainForm.image!=null&&mainForm.image!=='')"
                        src="../../../assets/img/device.png">
                   <div class="position-absolute" style="bottom: -18%;left: -41%">
-                    <img v-if="mainForm.status === 'active'" src="../../../assets/img/active_stamp.png">
-                    <img v-else-if="mainForm.status === 'inactive'" src="../../../assets/img/no_active_stamp.png">
+                    <img v-if="mainForm.status === '1000000701'" src="../../../assets/img/active_stamp.png">
+                    <img v-else-if="mainForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
                   </div>
                 </div>
                 <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
@@ -507,16 +507,16 @@
             <b-button size="sm" v-if="pageStatus === 'edit'" @click="saveDeviceItem()" variant="info default"><i class="icofont-save"></i>
               {{$t('device-management.save')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'inactive'"
+            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === '1000000702'" :disabled="checkPermItem('device_update_status')"
                       @click="onAction('activate',mainForm)" variant="success default"><i
               class="icofont-check-circled"></i>
               {{$t('device-management.active')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'active'"
+            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'active'" :disabled="checkPermItem('device_update_status')"
                       @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"></i>
               {{$t('device-management.inactive')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'inactive'"
+            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'inactive'" :disabled="checkPermItem('device_delete')"
                       @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"></i>
               {{$t('device-management.delete')}}
             </b-button>
@@ -532,7 +532,7 @@
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.device-table.make-inactive-prompt')}}
       <template slot="modal-footer">
-        <b-button variant="primary" @click="updateItemStatus('inactive')" class="mr-1">
+        <b-button variant="primary" @click="updateItemStatus('1000000702')" class="mr-1">
           {{$t('system-setting.ok')}}
         </b-button>
         <b-button variant="danger" @click="hideModal('modal-inactive')">{{$t('system-setting.cancel')}}
@@ -560,6 +560,7 @@
   import {responseMessages} from '../../../constants/response-messages';
   import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from '../../../api';
   import {validationMixin} from 'vuelidate';
+  import {checkPermissionItem, getDicDataByDicIdForOptions} from "../../../utils";
 
   const {required} = require('vuelidate/lib/validators');
   //todo need to remove after applying dictionaly
@@ -581,6 +582,7 @@
     mounted() {
       this.getArchivesData();
       this.getCategoryData();
+      this.getManufacturerOptions();
       this.$refs.vuetable.$parent.transform = this.transformTable.bind(this);
     },
     mixins: [validationMixin],
@@ -612,24 +614,15 @@
         categorySelectOptions: [],
         stateOptions: [
           {value: null, text: this.$t('permission-management.all')},
-          {value: 'active', text: this.$t('permission-management.active')},
-          {value: 'inactive', text: this.$t('permission-management.inactive')}
+          {value: '1000000701', text: this.$t('permission-management.active')},
+          {value: '1000000702', text: this.$t('permission-management.inactive')}
         ],
         deviceTypeSelectOptions: [
-          {value: 'device', text: this.$t('device-management.device-table.device')},
-          {value: 'judge', text: this.$t('device-management.device-table.judge')},
-          {value: 'manual', text: this.$t('device-management.device-table.manual')}
+          {value: '1000001901', text: this.$t('device-management.device-table.device')},
+          {value: '1000001902', text: this.$t('device-management.device-table.judge')},
+          {value: '1000001903', text: this.$t('device-management.device-table.manual')}
         ],
-        supplierOptions: [
-          {value: 'tongbang', text: '同方威视代理'},
-          {value: 'huawei', text: '华为产品部'}
-        ],
-        manufacturerOptions: [
-          {text: "同方威视", value: "0"},
-          {text: "海康威视", value: '1'},
-          {text: "大华股份", value: '2'},
-          {text: "华为", value: '3'}
-        ],
+        manufacturerOptions: [],
         selectedStatus: 'all',
         archivesSelectOptions: [],
         archivesData: [],
@@ -670,12 +663,13 @@
               dataClass: 'text-center',
               callback: (value) => {
                 const dictionary = {
-                  "active": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
-                  "inactive": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
+                  "1000000701": `<span class="text-success">${this.$t('system-setting.status-active')}</span>`,
+                  "1000000702": `<span class="text-muted">${this.$t('system-setting.status-inactive')}</span>`
                 };
                 if (!dictionary.hasOwnProperty(value)) return '';
                 return dictionary[value];
               }
+
             },
             {
               name: 'categoryName',
@@ -689,14 +683,7 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (value) => {
-                const dictionary = {
-                  "0": `<span >同方威视</span>`,
-                  "1": `<span >海康威视</span>`,
-                  "2": `<span >大华股份</span>`,
-                  "3": `<span >华为</span>`
-                };
-                if (!dictionary.hasOwnProperty(value)) return '';
-                return dictionary[value];
+                return getManufacturerName(this.manufacturerOptions,value);
               }
             },
             {
@@ -714,6 +701,7 @@
             }
           ]
         },
+
         filterOption: {
           deviceName: null,
           status: null,
@@ -736,7 +724,7 @@
           guid: '',
           image: null,
           imageUrl: null,
-          status: 'inactive'
+          status: '1000000702'
         },
         archiveForm: {
           name: '',
@@ -751,7 +739,13 @@
       }
     },
     methods: {
-
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+      getManufacturerOptions(){
+        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+        console.log(this.manufacturerOptions);
+      },
       onExportButton(){
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
@@ -760,7 +754,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/export`;
+        let link = `device-management/device-table/device`;
         downLoadFileFromServer(link,params,'device');
       },
       onPrintButton(){
@@ -771,7 +765,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/print`;
+        let link = `device-management/device-table/device/pdf`;
         printFileFromServer(link,params);
       },
 
@@ -858,7 +852,7 @@
             guid: '',
             image: null,
             imageUrl: null,
-            status: 'inactive'
+            status: '1000000702'
           };
         else {
           if (Object.keys(data).includes('createdBy')) { //if getting data from table , needful to processing
@@ -907,7 +901,7 @@
             this.pageStatus = 'list';
             break;
           case 'activate':
-            this.updateItemStatus('active');
+            this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
             this.$refs['modal-inactive'].show();
@@ -1075,6 +1069,7 @@
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
       },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         this.categorySelectOptions = [];

@@ -20,6 +20,10 @@ public interface UserService {
 
     boolean checkMobileExist(String mobile, Long userId);
 
+    boolean checkGroupNameExist(String groupName, Long groupId);
+
+    boolean checkGroupNumberExist(String groupNumber, Long groupId);
+
     boolean createUser(SysUser user, MultipartFile portraitFile);
 
     boolean modifyUser(SysUser user, MultipartFile portraitFile);
