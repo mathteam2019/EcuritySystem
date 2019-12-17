@@ -70,6 +70,24 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
     }
 
     @Override
+    public boolean checkCategoryNameExist(String categoryName, Long categoryId) {
+        if(categoryId == null) {
+            return sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryName.eq(categoryName));
+        }
+        return sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryName.eq(categoryName)
+                .and(QSysDeviceCategory.sysDeviceCategory.categoryId.ne(categoryId)));
+    }
+
+    @Override
+    public boolean checkCategoryNumberExist(String categoryNumber, Long categoryId) {
+        if(categoryId == null) {
+            return sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryNumber.eq(categoryNumber));
+        }
+        return sysDeviceCategoryRepository.exists(QSysDeviceCategory.sysDeviceCategory.categoryNumber.eq(categoryNumber)
+                .and(QSysDeviceCategory.sysDeviceCategory.categoryId.ne(categoryId)));
+    }
+
+    @Override
     public boolean checkCategoryExist(long categoryId) {
         return sysDeviceCategoryRepository.exists(QSysDeviceCategory.
                 sysDeviceCategory.categoryId.eq(categoryId));

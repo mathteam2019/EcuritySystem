@@ -37,7 +37,9 @@ public enum ResponseMessage {
     HAS_RESOURCES("has_resources"),
     HAS_ARCHIVES("has_archives"),
     HAS_ARCHIVE_TEMPLATE("has_archive_template"),
-    HAS_DEVICES("has_devices");
+    HAS_DEVICES("has_devices"),
+    USED_CATEGORY_NAME("used_category_name"),
+    USED_CATEGORY_NUMBER("used_category_number"),;
 
     private final String value;
 

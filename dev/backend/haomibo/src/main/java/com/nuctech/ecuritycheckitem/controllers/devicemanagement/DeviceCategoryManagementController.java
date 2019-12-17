@@ -246,6 +246,14 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
+        }
+
+        if(deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
+        }
+
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
 
         deviceCategoryService.createSysDeviceCategory(sysDeviceCategory);
@@ -283,6 +291,14 @@ public class DeviceCategoryManagementController extends BaseController {
 
         if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
+        }
+
+        if(deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
+        }
+
+        if(deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();

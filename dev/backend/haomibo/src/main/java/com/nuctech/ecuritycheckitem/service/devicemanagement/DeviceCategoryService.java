@@ -12,6 +12,10 @@ public interface DeviceCategoryService {
 
     boolean checkCategoryExist(long categoryId);
 
+    boolean checkCategoryNameExist(String categoryName, Long categoryId);
+
+    boolean checkCategoryNumberExist(String categoryNumber, Long categoryId);
+
     boolean checkChildernCategoryExist(long categoryId);
 
     void updateStatus(long categoryId, String status);
