@@ -276,6 +276,35 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    public boolean checkGroupNameExist(String groupName) {
+        return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.dataGroupName.eq(groupName));
+
+    }
+
+    @Override
+    public boolean checkGroupNumberExist(String groupNumber) {
+        return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.dataGroupNumber.eq(groupNumber));
+    }
+
+    @Override
+    public boolean checkRoleNameExist(String roleName, Long roleId) {
+        if(roleId == null) {
+            return sysRoleRepository.exists(QSysRole.sysRole.roleName.eq(roleName));
+        }
+        return sysRoleRepository.exists(QSysRole.sysRole.roleName.eq(roleName)
+                .and(QSysRole.sysRole.roleId.ne(roleId)));
+    }
+
+    @Override
+    public boolean checkRoleNumberExist(String roleNumber, Long roleId) {
+        if(roleId == null) {
+            return sysRoleRepository.exists(QSysRole.sysRole.roleNumber.eq(roleNumber));
+        }
+        return sysRoleRepository.exists(QSysRole.sysRole.roleNumber.eq(roleNumber)
+                .and(QSysRole.sysRole.roleId.ne(roleId)));
+    }
+
+    @Override
     @Transactional
     public boolean createDataGroup(SysDataGroup dataGroup, List<Long> userIdList) {
         dataGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());

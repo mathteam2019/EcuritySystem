@@ -323,6 +323,14 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(permissionService.checkRoleNameExist(requestBody.getRoleName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ROLE_NAME);
+        }
+
+        if(permissionService.checkRoleNumberExist(requestBody.getRoleNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ROLE_NUMBER);
+        }
+
         // Create role with created info.
 
         SysRole role = requestBody.convert2SysRole();
@@ -509,6 +517,7 @@ public class PermissionControlController extends BaseController {
             // If role is not found, it's invalid parameter.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+        
 
         // Get role from database.
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList());
@@ -600,6 +609,14 @@ public class PermissionControlController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if (permissionService.checkGroupNameExist(requestBody.getDataGroupName())) {
+            return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NAME);
+        }
+
+        if (permissionService.checkGroupNumberExist(requestBody.getDataGroupNumber())) {
+            return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NUMBER);
         }
 
         SysDataGroup dataGroup = requestBody
