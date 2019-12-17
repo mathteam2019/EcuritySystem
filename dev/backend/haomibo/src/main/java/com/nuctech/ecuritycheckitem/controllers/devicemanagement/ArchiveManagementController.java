@@ -344,6 +344,14 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveService.checkArchiveNameExist(requestBody.getArchivesName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NAME);
+        }
+
+        if(archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NUMBER);
+        }
+
 
         SerArchive serArchive = requestBody.convert2SerArchive();
 
@@ -376,11 +384,21 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveService.checkArchiveNameExist(requestBody.getArchivesName(), requestBody.getArchiveId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NAME);
+        }
+
+        if(archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), requestBody.getArchiveId())) {
+            return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NUMBER);
+        }
+
         SerArchive serArchive = requestBody.convert2SerArchive();
 
         if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
+
+
         archiveService.modifySerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson());
 
         return new CommonResponseBody(ResponseMessage.OK);

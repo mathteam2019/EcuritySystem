@@ -12,6 +12,10 @@ public interface ArchiveService {
 
     boolean checkArchiveExist(long archiveId);
 
+    boolean checkArchiveNameExist(String archiveName, Long archiveId);
+
+    boolean checkArchiveNumberExist(String archiveNumber, Long archiveId);
+
     boolean checkArchiveTemplateExist(long archiveTemplateId);
 
     boolean checkDeviceExist(long archiveId);

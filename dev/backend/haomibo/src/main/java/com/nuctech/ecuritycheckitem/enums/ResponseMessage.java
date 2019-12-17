@@ -41,7 +41,9 @@ public enum ResponseMessage {
     USED_CATEGORY_NAME("used_category_name"),
     USED_CATEGORY_NUMBER("used_category_number"),
     USED_TEMPLATE_NAME("used_template_name"),
-    USED_TEMPLATE_NUMBER("used_template_number"),;
+    USED_TEMPLATE_NUMBER("used_template_number"),
+    USED_ARCHIVE_NAME("used_archive_name"),
+    USED_ARCHIVE_NUMBER("used_archive_number"),;
 
     private final String value;
 
