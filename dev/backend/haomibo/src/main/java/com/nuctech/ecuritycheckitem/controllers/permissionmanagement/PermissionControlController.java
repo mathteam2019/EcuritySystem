@@ -517,7 +517,7 @@ public class PermissionControlController extends BaseController {
             // If role is not found, it's invalid parameter.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        
+
 
         // Get role from database.
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList());

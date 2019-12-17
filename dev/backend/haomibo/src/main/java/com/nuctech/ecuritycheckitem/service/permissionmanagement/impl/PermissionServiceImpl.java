@@ -115,7 +115,7 @@ public class PermissionServiceImpl implements PermissionService {
                 )
                 .collect(Collectors.toList());
         sysRoleResourceRepository.saveAll(relationList);
-        return false;
+        return true;
     }
 
 
