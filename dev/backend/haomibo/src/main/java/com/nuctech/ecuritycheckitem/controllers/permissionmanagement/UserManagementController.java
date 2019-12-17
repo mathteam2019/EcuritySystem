@@ -773,6 +773,16 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if (userService.checkGroupNameExist(requestBody.getGroupName(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NAME);
+        }
+
+        if (userService.checkGroupNumberExist(requestBody.getGroupNumber(), null)) {
+            return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NUMBER);
+        }
+
+
+
         // Create user group with created info.
 
         SysUserGroup userGroup = (SysUserGroup) SysUserGroup

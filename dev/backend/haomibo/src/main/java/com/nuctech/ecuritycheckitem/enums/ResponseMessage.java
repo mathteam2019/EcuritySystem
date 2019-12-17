@@ -50,7 +50,9 @@ public enum ResponseMessage {
     USED_FIELD_SERIAL("used_field_serial"),
     USED_FIELD_DESIGNATION("used_field_designation"),
     USED_ORG_NAME("used_org_name"),
-    USED_ORG_NUMBER("used_org_number"),;
+    USED_ORG_NUMBER("used_org_number"),
+    USED_USER_GROUP_NAME("used_user_group_name"),
+    USED_USER_GROUP_NUMBER("used_user_group_number"),;
 
     private final String value;
 
