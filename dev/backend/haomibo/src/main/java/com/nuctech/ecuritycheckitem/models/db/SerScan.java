@@ -59,6 +59,9 @@ public class SerScan extends BaseEntity implements Serializable {
     @Column(name = "SCAN_IMAGE_ID", length = 20)
     private Long scanImageId;
 
+    @Column(name = "SCAN_DEVICEIMAGES", length = 1000)
+    private String scanDeviceImages;
+
     @Column(name = "SCAN_ATR_RESULT", length = 10)
     private String scanAtrResult;
 
