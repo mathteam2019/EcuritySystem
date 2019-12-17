@@ -35,6 +35,7 @@ public class RoleWordView extends BaseWordView {
 
     private static void createTableHeader(XWPFTable table) {
 
+
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);

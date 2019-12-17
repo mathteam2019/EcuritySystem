@@ -1,4 +1,4 @@
-package com.nuctech.ecuritycheckitem.service.fieldmanagement;
+package com.nuctech.ecuritycheckitem.service.fieldmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
@@ -7,6 +7,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;

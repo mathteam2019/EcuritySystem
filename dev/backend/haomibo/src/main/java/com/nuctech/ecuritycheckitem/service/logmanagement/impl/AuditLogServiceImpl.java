@@ -1,8 +1,9 @@
-package com.nuctech.ecuritycheckitem.service.logmanagement;
+package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.QSysAuditLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class AuditLogServiceImpl implements AuditLogService{
+public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     SysAuditLogRepository sysAuditLogRepository;

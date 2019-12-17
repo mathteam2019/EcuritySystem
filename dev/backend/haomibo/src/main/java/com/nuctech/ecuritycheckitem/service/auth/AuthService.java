@@ -6,7 +6,7 @@
  * @FileName AuthService.java
  * @ModifyHistory
  */
-package com.nuctech.ecuritycheckitem.service;
+package com.nuctech.ecuritycheckitem.service.auth;
 
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;

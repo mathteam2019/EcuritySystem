@@ -1,8 +1,9 @@
-package com.nuctech.ecuritycheckitem.service.taskmanagement;
+package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
+import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
