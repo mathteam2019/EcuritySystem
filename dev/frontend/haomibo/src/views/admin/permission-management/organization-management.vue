@@ -1189,6 +1189,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['has-users']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-user`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
               case responseMessages['used-org-number']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-number`), {
                   duration: 3000,
@@ -1326,6 +1332,12 @@
                   this.modifyPage.selectedOrg.status = '1000000702';
                 this.$refs.vuetable.refresh();
 
+                break;
+              case responseMessages['has-users']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-user`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
               case responseMessages['has-fields']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
