@@ -328,7 +328,6 @@ public class UserManagementController extends BaseController {
         List<Long> userIdList;
 
         String note;
-
     }
 
 

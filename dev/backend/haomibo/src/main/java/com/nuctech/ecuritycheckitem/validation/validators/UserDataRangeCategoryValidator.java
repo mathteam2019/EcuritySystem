@@ -28,7 +28,8 @@ public class UserDataRangeCategoryValidator extends BaseValidator implements Con
                 SysUser.DataRangeCategory.ORG.getValue().equals(dataRangeCategory) ||
                 SysUser.DataRangeCategory.ORG_DESC.getValue().equals(dataRangeCategory) ||
                 SysUser.DataRangeCategory.ALL.getValue().equals(dataRangeCategory) ||
-                SysUser.DataRangeCategory.SPECIFIED.getValue().equals(dataRangeCategory);
+                SysUser.DataRangeCategory.SPECIFIED.getValue().equals(dataRangeCategory) ||
+                SysUser.DataRangeCategory.EVERYONE.getValue().equals(dataRangeCategory);
 
     }
 }

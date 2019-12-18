@@ -116,12 +116,15 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
-    public List<SysField> findAll() {
+    public List<SysField> findAll(boolean isAll) {
         QSysField builder = QSysField.sysField;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        predicate.and(builder.status.eq(SysField.Status.ACTIVE));
+        if(isAll == false) {
+            predicate.and(builder.status.eq(SysField.Status.ACTIVE));
+        }
+
 
         List<SysField> sysFieldList = StreamSupport
                 .stream(sysFieldRepository.findAll(predicate).spliterator(), false)

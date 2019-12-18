@@ -106,6 +106,8 @@ public class ScanParamManagementController extends BaseController {
         @NotNull
         Long scanParamsId;
 
+        Long deviceId;
+
         Long airCaliWarnTime;
 
         Long standByTime;
@@ -148,6 +150,7 @@ public class ScanParamManagementController extends BaseController {
 
             return SerScanParam
                     .builder()
+                    .deviceId(this.getDeviceId())
                     .scanParamsId(this.getScanParamsId())
                     .airCaliWarnTime(this.getAirCaliWarnTime())
                     .standByTime(this.getStandByTime())
@@ -287,7 +290,7 @@ public class ScanParamManagementController extends BaseController {
 
         Long paramDeviceId = requestBody.getFromDeviceId();
 
-        if (scanParamService.modifyScanParam(paramDeviceId, serScanParamNew)) {
+        if (!scanParamService.modifyScanParam(paramDeviceId, serScanParamNew)) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         else {

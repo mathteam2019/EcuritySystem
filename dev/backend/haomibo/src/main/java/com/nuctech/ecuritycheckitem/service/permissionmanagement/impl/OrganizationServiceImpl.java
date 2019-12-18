@@ -86,6 +86,11 @@ public class OrganizationServiceImpl implements OrganizationService {
         return sysFieldRepository.exists(QSysField.sysField.orgId.eq(orgId));
     }
 
+    @Override
+    public boolean checkChildrenExist(Long orgId) {
+        return sysOrgRepository.exists(QSysOrg.sysOrg.parentOrgId.eq(orgId));
+    }
+
     public boolean createOrganization(Long parentOrgId, SysOrg sysOrg) {
 
         if (!sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(parentOrgId))) {

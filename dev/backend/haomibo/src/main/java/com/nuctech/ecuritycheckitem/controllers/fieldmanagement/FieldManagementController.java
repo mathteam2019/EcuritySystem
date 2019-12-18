@@ -29,6 +29,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
+import com.sun.istack.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -128,6 +129,15 @@ public class FieldManagementController extends BaseController {
         @NotNull
         Long fieldId;
 
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class FieldGetAllRequestBody {
+        String isAll = "0";
     }
 
     /**
@@ -309,6 +319,8 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+
+
         if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
         }
@@ -385,6 +397,20 @@ public class FieldManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        // Check if field has children.
+        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+            // Can't delete if field has children.
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
+
+
+
+
+        //check if device use this field
+        if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
+
         fieldService.updateStatus(requestBody.getFieldId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -395,9 +421,30 @@ public class FieldManagementController extends BaseController {
      * Field get all request.
      */
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
+    public Object fieldGetAllActive() {
+
+
+        List<SysField> sysFieldList = fieldService.findAll(false);
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
+
+
+        SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Field get all request.
+     */
+    @RequestMapping(value = "/field/get-all-field", method = RequestMethod.POST)
     public Object fieldGetAll() {
 
-        List<SysField> sysFieldList = fieldService.findAll();
+
+
+        List<SysField> sysFieldList = fieldService.findAll(true);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
 
@@ -457,8 +504,8 @@ public class FieldManagementController extends BaseController {
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+                .getDefaultFilters();
+                //.addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 

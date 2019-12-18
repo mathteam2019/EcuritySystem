@@ -302,6 +302,7 @@ public class DeviceServiceImpl implements DeviceService {
             if(fromParams != null) {
                 serScanParamsFromRepository.delete(fromParams);
             }
+            serScanParamRepository.delete(scanParam);
         }
 
         sysDeviceRepository.delete(sysDevice);
