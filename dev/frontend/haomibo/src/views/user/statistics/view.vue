@@ -1019,7 +1019,6 @@
         let temp;
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
-          console.log(j);
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

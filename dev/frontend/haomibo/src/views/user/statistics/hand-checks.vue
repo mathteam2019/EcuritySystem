@@ -463,6 +463,7 @@
     },
     mounted() {
       this.getSiteOption();
+      this.getManualDeviceData();
       this.getPreviewData();
       this.getGraphData();
     },
