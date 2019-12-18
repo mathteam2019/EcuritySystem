@@ -5,14 +5,14 @@
   "user": {
     "login-title": "登录",
     "register": "注册",
-    "forgot-password": "Forgot Password",
+    "forgot-password": "忘记密码",
     "email": "邮件",
     "password": "密码",
-    "forgot-password-question": "Forget password?",
-    "fullname": "Full Name",
+    "forgot-password-question": "忘记密码?",
+    "fullname": "名称",
     "login-button": "登录",
     "register-button": "注册",
-    "reset-password-button": "RESET",
+    "reset-password-button": "重置",
     "buy": "BUY",
     "name": "姓名",
     "confirm-password": "确认密码",
@@ -398,16 +398,67 @@
       "save": "保存",
       "delete": "删除",
       "prompt": "提示"
-    }
+    },
+    "user": {
+      "user-group-name": "Name",
+      "user-group-number": "Number",
+      "operating": "Action",
+      "group-number": "Number",
+      "group-name": "Name",
+      "group-member": "Member",
+      "required-field": "Required",
+      "please-enter-group-name": "Please enter name.",
+      "user-group-delete-prompt": "Delete user group?",
+      "inactive-prompt": "Active user?",
+      "block-prompt": "Block user?",
+      "orgId-field-is-mandatory": "ORG ID is mandatory.",
+      "userId-field-is-mandatory": "User ID is manadatory.",
+      "license-number-field-is-mandatory": "License number is mandatory.",
+      "username-field-is-mandatory": "Username is mandatory.",
+      "userNumber-field-is-mandatory": "Usernumber is mandatory.",
+      "account-field-is-mandatory": "Account is mandatory.",
+      "gender-field-is-mandatory": "Gender is mandatory."
+    },
+    "site-management" : {
+    "status-updated-successfully":"Status updated Successfully.",
+    "site-deleted-successfully" : "Site deleted successfully.",
+    "site-has-children" : "Site has children",
+    "site-added-successfully" : "Site added successfully.",
+    "delete-prompt": "Delete Prompt",
+    "make-inactive-prompt": "Make inactive promtp",
+    "site-has-devices": "Site has devices"
   },
-  "site-management": {
-    "status-updated-successfully": "场地修改成功",
-    "site-deleted-successfully": "场地删除成功",
-    "site-has-children": "该场地有孩子",
-    "site-added-successfully": "场地创建成功",
-    "delete-prompt": "是否失效该场地",
-    "make-inactive-prompt": "是否失效该场地",
-    "site-has-devices": "这场地已经有设备"
+    "assign-permission-management": {
+      "assign-to-user": "Assign to user",
+      "assign-to-group": "Assign to group",
+      "user": "User",
+      "affiliated-org": "Affiliated-ORG",
+      "group": {
+        "role": "Role",
+        "data-range": "Data range",
+        "user-group": "User group",
+        "groupMember": "Group member",
+        "one-user-data": "Single user data",
+        "group-user-data": "Group user data",
+        "all-user-data": "All user data",
+        "select-data-group": "Select data group",
+        "member": "Member",
+        "group-assigned-successfully": "Group assigned successfully.",
+        "user-group-delete-prompt": "Do you want to delete user group?",
+        "group-assigned-removed-successfully": "Group assign removed successfully.",
+        "role-mandatory": "Role is mandatory.",
+        "user-group-mandatory": "User group is mandatory.",
+        "group-member-not-exit": "Group member doesn't exist."
+      },
+      "user-form": {
+        "one-user-data": "Single user data",
+        "select-data-group": "Select data group",
+        "all-user-data": "All user data",
+        "affiliated-org-user-data": "Affiliated ORG user data",
+        "affiliated-org-all-user-data": "Affiliated ORG all user data"
+
+      }
+    }
   },
   "device-management": {
     "file-template": "档案模板",
@@ -585,6 +636,11 @@
       "data-monitor": "流量监控",
       "landing-time": "登陆时间",
       "running-time": "远行时长"
+    },
+    "indicator" : {
+      "name" : "设备指标名",
+      "unit" : "设备指标单位",
+      "isNull" : "设备指标必填"
     }
   },
   "system-setting": {
@@ -617,6 +673,9 @@
     "prompt": "提示",
     "ok": "确认",
     "cancel": "取消",
+    "site": "Site",
+    "super-site": "Super Site",
+    "system-phone": "System Phone",
     "make-inactive-prompt": "是否失效该机构?",
     "delete-prompt": "是否删除该机构",
     "please-enter-site-name": "请输入场地名称",
@@ -703,6 +762,7 @@
       "save-history-image": "保存历史图像",
       "save-only-suspected-image": "仅保存嫌疑图像",
       "suitable-for": "适用于",
+      "item-level": "Item level",
       "yes": "是",
       "no": "不",
       "saved-successful": "安检仪设置改变成功"
@@ -1061,14 +1121,14 @@
   },
   "auth-token-messages": {
     "error-title": "错误",
-    "invalid-token": "Invalid token information",
-    "token-expired": "Token is expired"
+    "invalid-token": "Token无效",
+    "token-expired": "Token超过有效时间"
   },
   "api-call-error-messages": {
     "error-title": "错误",
     "network-error": "网路错误",
-    "forbidden": "That action is forbidden",
-    "invalid-parameter": "Unknown error is occurred"
+    "forbidden": "那个动作是禁止的",
+    "invalid-parameter": "发生未知错误"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

@@ -182,10 +182,10 @@
 
             <b-row class="mb-4">
               <b-col>
-                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
+                <canvas id="firstcanvas" class="img-fluid w-100"></canvas>
               </b-col>
               <b-col>
-                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
+                <canvas id="secondcanvas" class="img-fluid w-100"></canvas>
               </b-col>
             </b-row>
 
@@ -194,63 +194,66 @@
                 <div class="control-btn-wrapper">
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <b-img src="/assets/img/contrast_btn.png" @click="filterId(0)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <b-img src="/assets/img/brightness_btn.png" @click="filterId(5)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <b-img src="/assets/img/color_inverse_btn.png" @click="filterId(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color1_btn.png" @click="filterId(3)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color2_btn.png" @click="filterId(4)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color3_btn.png" @click="filterId(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color4_btn.png" @click="filterId(12)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(7)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(9)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
+                    <b-img src="/assets/img/edge_btn.png" @click="filterId(13)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                   </div>
 
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-if="this.power == false"
+                           @click="loadImage(imageUrls[0], imageUrls[1])"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-else
+                           @click="loadImage(imageUrls[2], imageUrls[3])"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -554,7 +557,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serJudgeGraph == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.serJudgeGraph.judgeResult, 5)}}</label>
+                  <label v-else>{{getOptionValue(showPage.serJudgeGraph.judgeResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -839,6 +842,11 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
+  import {loadImageCanvas, imageFilterById} from '../../../utils'
+  import Chobi from '../../../data/Chobi.js'
+
+  var imgObj = null;
+  var imgObj2 = null;
 
   export default {
     components: {
@@ -872,8 +880,8 @@
 
         siteData: [],
         showPage: [],
-        timeData: [],
 
+        imageUrls : ['/assets/img/scan-lr.gif', '/assets/img/scan-rl.gif', '/assets/img/u244.jpg', '/assets/img/u244.jpg'],
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1065,16 +1073,13 @@
           ],
           perPage: 10,
         },
-        power: true
+        power: false
 
       }
     },
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
-      },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
       },
 
       siteData: function (newVal, oldVal) {
@@ -1094,8 +1099,33 @@
           });
       },
 
+      power(newValue) {
+        //called whenever switch1 changes
+        let url1;
+        let url2;
+        if (newValue == true) {
+          url1 = this.imageUrls[2];
+          url2 = this.imageUrls[3];
+
+        } else {
+          url1 = this.imageUrls[0];
+          url2 = this.imageUrls[1];
+        }
+        console.log(newValue);
+        loadImageCanvas(url1, url2);
+
+      }
     },
     methods: {
+
+      filterId(id) {
+        imageFilterById(id);
+      },
+
+      loadImage(url1, url2) {
+
+        loadImageCanvas(url1, url2);
+      },
 
       getOptionValue(dataCode) {
         const dictionary = {
@@ -1134,41 +1164,6 @@
         let link = `task/process-task/generate`;
         downLoadFileFromServer(link, params, 'Process-Task');
 
-
-        // let str = "";
-        // if (this.isCheckAll === true) {
-        //   str = "";
-        // } else {
-        //   let cnt = this.$refs.taskVuetable.selectedTo.length;
-        //   str = str + this.$refs.taskVuetable.selectedTo[0];
-        //   //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-        //   for (let i = 1; i < cnt; i++) {
-        //     //console.log(this.$refs.taskVuetable.selectedTo[i]);
-        //     str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-        //     //console.log(str);
-        //   }
-        // }
-        // getApiManager()
-        //   .post(`${apiBaseUrl}/task/process-task/generate/export`, {
-        //     'isAll': this.isCheckAll,
-        //     'filter': this.filter,
-        //     'idList': str
-        //   }, {
-        //     responseType: 'blob'
-        //   })
-        //   .then((response) => {
-        //     let fileURL = window.URL.createObjectURL(new Blob([response.data]));
-        //     let fileLink = document.createElement('a');
-        //
-        //     fileLink.href = fileURL;
-        //     fileLink.setAttribute('download', 'Process-Task.xlsx');
-        //     document.body.appendChild(fileLink);
-        //
-        //     fileLink.click();
-        //   })
-        //   .catch(error => {
-        //     throw new Error(error);
-        //   });
       },
 
       onPrintButton() {
@@ -1180,43 +1175,7 @@
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        printFileFromServer(link,params);
-
-        // let str = "";
-        // if (this.isCheckAll === true) {
-        //   str = "";
-        // } else {
-        //   let cnt = this.$refs.taskVuetable.selectedTo.length;
-        //   str = str + this.$refs.taskVuetable.selectedTo[0];
-        //   //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
-        //   for (let i = 1; i < cnt; i++) {
-        //     //console.log(this.$refs.taskVuetable.selectedTo[i]);
-        //     str = str + "," + this.$refs.taskVuetable.selectedTo[i];
-        //     //console.log(str);
-        //   }
-        // }
-        //
-        // getApiManager()
-        //   .post(`${apiBaseUrl}/task/process-task/generate`, {
-        //     'isAll': this.isCheckAll,
-        //     'filter': this.filter,
-        //     'idList': str
-        //   }, {
-        //     responseType: 'blob'
-        //   })
-        //   .then((response) => {
-        //     let fileURL = window.URL.createObjectURL(new Blob([response.data], {type: "application/pdf"}));
-        //     var objFra = document.createElement('iframe');   // Create an IFrame.
-        //     objFra.style.visibility = "hidden";    // Hide the frame.
-        //     objFra.src = fileURL;                      // Set source.
-        //     document.body.appendChild(objFra);  // Add the frame to the web page.
-        //     objFra.contentWindow.focus();       // Set focus.
-        //     objFra.contentWindow.print();
-        //   })
-        //   .catch(error => {
-        //     throw new Error(error);
-        //   });
-
+        printFileFromServer(link, params);
 
       },
 
@@ -1237,6 +1196,10 @@
       },
       onRowClicked: function (taskNumber) {
 
+        var url1 = this.imageUrls[0];
+        var url2 = this.imageUrls[1];
+        // this.loadImage(url, url2);
+        loadImageCanvas(url1, url2);
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/process-task/get-one`, {
@@ -1248,7 +1211,7 @@
             switch (message) {
               case responseMessages['ok']: // okay
                 this.showPage = response.data.data;
-                this.apiBaseURL =apiBaseUrl;
+                this.apiBaseURL = apiBaseUrl;
                 break;
 
             }
@@ -1305,7 +1268,7 @@
           transformed.data.push(temp);
 
           idTemp = temp.taskId;
-          if(this.isCheckAll === true){
+          if (this.isCheckAll === true) {
             this.$refs.taskVuetable.selectedTo.push(idTemp);
           }
         }

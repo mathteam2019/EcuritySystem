@@ -2,6 +2,14 @@ import {apiBaseUrl, defaultDirection, refreshTokenTimeDiff} from '../constants/c
 import {getApiManager} from "../api";
 import {responseMessages} from "../constants/response-messages";
 import app from '../main';
+import Chobi from "../data/Chobi";
+
+var dictionaryDataList;
+var deviceDictionaryDataList;
+
+var imgObj = null;
+var imgObj2 = null;
+
 
 export const addCommas = nStr => {
   nStr += '';
@@ -379,4 +387,70 @@ export const scheduleRefreshToken = () => {
 
   doRefreshToken();
 
+};
+
+export const loadImageCanvas = (url1, url2) => {
+  imgObj = new Chobi(url1);
+  imgObj.ready(function () {
+    this.canvas = document.getElementById("firstcanvas");
+    this.loadImageToCanvas();
+  });
+
+  imgObj2 = new Chobi(url2);
+  imgObj2.ready(function () {
+    this.canvas = document.getElementById("secondcanvas");
+    this.loadImageToCanvas();
+  });
+};
+
+export const imageFilterById = (id) => {
+  if (imgObj == null || imgObj2 == null) {
+    alert("Choose an image first!");
+    return;
+  }
+  if (id == 0) {
+    imgObj.blackAndWhite();
+    imgObj2.blackAndWhite();
+  } else if (id == 1) {
+    imgObj.sepia();
+    imgObj2.sepia();
+  } else if (id == 2) {
+    imgObj.negative();
+    imgObj2.negative();
+  } else if (id == 3) {
+    imgObj.vintage();
+    imgObj2.vintage();
+  } else if (id == 4) {
+    imgObj.crossProcess();
+    imgObj2.crossProcess();
+  } else if (id == 5) {
+    imgObj.brightness(1);
+    imgObj2.brightness(1);
+  } else if (id == 6) {
+    imgObj.brightness(-1);
+    imgObj2.brightness(-1);
+  } else if (id == 7) {
+    imgObj.contrast(1);
+    imgObj2.contrast(1);
+  } else if (id == 8) {
+    imgObj.contrast(-1);
+    imgObj2.contrast(-1);
+  } else if (id == 9) {
+    imgObj.noise();
+    imgObj2.noise();
+  } else if (id == 10) {
+    imgObj.blackAndWhite2();
+    imgObj2.blackAndWhite2();
+  } else if (id == 11) {
+    imgObj.crayon();
+    imgObj2.crayon();
+  } else if (id == 12) {
+    imgObj.cartoon();
+    imgObj2.cartoon();
+  } else if (id == 13) {
+    imgObj.vignette();
+    imgObj2.vignette();
+  }
+  imgObj.loadImageToCanvas();
+  imgObj2.loadImageToCanvas();
 };

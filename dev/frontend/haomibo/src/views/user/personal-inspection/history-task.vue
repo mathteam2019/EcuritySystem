@@ -186,10 +186,10 @@
 
             <b-row class="mb-4">
               <b-col>
-                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
+                <canvas id="firstcanvas" class="img-fluid w-100"></canvas>
               </b-col>
               <b-col>
-                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
+                <canvas id="secondcanvas" class="img-fluid w-100"></canvas>
               </b-col>
             </b-row>
 
@@ -198,63 +198,66 @@
                 <div class="control-btn-wrapper">
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <b-img src="/assets/img/contrast_btn.png" @click="filterId(0)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <b-img src="/assets/img/brightness_btn.png" @click="filterId(5)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <b-img src="/assets/img/color_inverse_btn.png" @click="filterId(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color1_btn.png" @click="filterId(3)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color2_btn.png" @click="filterId(4)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color3_btn.png" @click="filterId(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color4_btn.png" @click="filterId(12)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(7)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(9)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
+                    <b-img src="/assets/img/edge_btn.png" @click="filterId(13)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                   </div>
 
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-if="this.power == false"
+                           @click="loadImage(imageUrls[0], imageUrls[1])"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-else
+                           @click="loadImage(imageUrls[2], imageUrls[3])"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -405,7 +408,8 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task.serScan == null">None</label>
+                  <label v-if="showPage.task == null">None</label>
+                  <label v-else-if="showPage.task.serScan == null">None</label>
                   <label v-else>{{getOptionValue(showPage.task.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
@@ -484,7 +488,7 @@
                     {{$t('personal-inspection.scan-start-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan != null">{{this.getDateTimeFormat(showPage.scanStartTime)}}</label>
+                  <label v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat(showPage.scanStartTime)}}</label>
                   <label v-else>None</label>
                 </b-form-group>
               </b-col>
@@ -497,7 +501,7 @@
                     {{$t('personal-inspection.scan-end-time')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan != null">{{this.getDateTimeFormat(showPage.scanEndTime)}}</label>
+                  <label v-if="showPage.scanEndTime != null">{{this.getDateTimeFormat(showPage.scanEndTime)}}</label>
                   <label v-else>None</label>
                 </b-form-group>
               </b-col>
@@ -539,7 +543,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.judgeResult, 5)}}</label>
+                  <label v-else>{{getOptionValue(showPage.judgeResult)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -628,7 +632,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.handTaskResult == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.handTaskResult, 6)}}</label>
+                  <label v-else>{{getOptionValue(showPage.handTaskResult)}}</label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -962,8 +966,13 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
+  import {loadImageCanvas, imageFilterById} from '../../../utils'
+  import Chobi from '../../../data/Chobi.js'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+
+  var imgObj = null;
+  var imgObj2 = null;
 
   export default {
     components: {
@@ -978,7 +987,8 @@
       this.getSiteOption();
 
     },
-    data: function () {
+    data() {
+
       return {
         isExpanded: false,
         isCheckAll: false,
@@ -996,8 +1006,8 @@
         },
 
         showPage: [],
-	siteData: [],
-
+        siteData: [],
+        imageUrls : ['/assets/img/scan-lr.gif', '/assets/img/scan-rl.gif', '/assets/img/u244.jpg', '/assets/img/u244.jpg'],
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1198,7 +1208,7 @@
           ],
           perPage: 10,
         },
-        power: true,
+        power: false,
 
         thumbs: [
           {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
@@ -1223,9 +1233,7 @@
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
       },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
-      },
+
       siteData: function (newVal, oldVal) {
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
@@ -1243,8 +1251,33 @@
           });
       },
 
+      power(newValue) {
+        //called whenever switch1 changes
+        let url1;
+        let url2;
+        if (newValue == true) {
+          url1 = this.imageUrls[2];
+          url2 = this.imageUrls[3];
+
+        } else {
+          url1 = this.imageUrls[0];
+          url2 = this.imageUrls[1];
+        }
+        console.log(newValue);
+        loadImageCanvas(url1, url2);
+
+      }
     },
     methods: {
+
+      filterId(id) {
+        imageFilterById(id);
+      },
+
+      loadImage(url1, url2) {
+
+        loadImageCanvas(url1, url2);
+      },
 
       getOptionValue(dataCode) {
         const dictionary = {
@@ -1282,8 +1315,6 @@
         };
         let link = `task/history-task/generate`;
         downLoadFileFromServer(link, params, 'History-Task');
-
-
       },
 
       onPrintButton() {
@@ -1296,8 +1327,6 @@
         };
         let link = `task/history-task/generate`;
         printFileFromServer(link, params);
-
-
       },
 
 
@@ -1318,6 +1347,10 @@
 
       },
       onRowClicked(taskNumber) {
+        var url1 = this.imageUrls[0];
+        var url2 = this.imageUrls[1];
+        // this.loadImage(url, url2);
+        loadImageCanvas(url1, url2);
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/history-task/get-one`, {

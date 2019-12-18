@@ -21,7 +21,6 @@ export default {
   },
   mounted () {
     var num
-    console.log(this.$route.path.substring(1, 2))
     if(this.$route.path.substring(1, 2)==='u')
       num = 6;
     else num=7;

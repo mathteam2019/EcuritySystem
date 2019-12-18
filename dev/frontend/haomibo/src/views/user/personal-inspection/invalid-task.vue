@@ -153,10 +153,10 @@
 
             <b-row class="mb-4">
               <b-col>
-                <b-img src="/assets/img/scan-rl.gif" fluid-grow></b-img>
+                <canvas id="firstcanvas" class="img-fluid w-100"></canvas>
               </b-col>
               <b-col>
-                <b-img src="/assets/img/scan-lr.gif" fluid-grow></b-img>
+                <canvas id="secondcanvas" class="img-fluid w-100"></canvas>
               </b-col>
             </b-row>
 
@@ -165,63 +165,66 @@
                 <div class="control-btn-wrapper">
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png"/>
+                    <b-img src="/assets/img/contrast_btn.png" @click="filterId(0)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png"/>
+                    <b-img src="/assets/img/brightness_btn.png" @click="filterId(5)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/color_inverse_btn.png"/>
+                    <b-img src="/assets/img/color_inverse_btn.png" @click="filterId(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.color-inverse')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color1_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color1_btn.png" @click="filterId(3)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color2_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color2_btn.png" @click="filterId(4)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color3_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color3_btn.png" @click="filterId(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/pseudo_color4_btn.png"/>
+                    <b-img src="/assets/img/pseudo_color4_btn.png" @click="filterId(12)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.pseudo-color')}}4</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(7)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(9)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}2</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(10)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}3</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/edge_btn.png"/>
+                    <b-img src="/assets/img/edge_btn.png" @click="filterId(13)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.edge')}}</span>
                   </div>
 
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-if="this.power == false"
+                           @click="loadImage(imageUrls[0], imageUrls[1])"/>
+                    <b-img src="/assets/img/reduction_btn.png" v-else
+                           @click="loadImage(imageUrls[2], imageUrls[3])"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -240,69 +243,6 @@
         </b-col>
         <b-col cols="9">
           <b-card class="h-100 d-flex flex-column right-card">
-            <!--            <div class="history-chart">-->
-            <!--              <div>-->
-
-            <!--                <div class="part">-->
-            <!--                  <div class="left">-->
-            <!--                    <div>开始</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="right">-->
-            <!--                    <div>Start</div>-->
-            <!--                  </div>-->
-            <!--                </div>-->
-
-            <!--                <div class="part">-->
-            <!--                  <div class="left">-->
-            <!--                    <div>扫描</div>-->
-            <!--                    <div>张三</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="right">-->
-            <!--                    <div>Scanning</div>-->
-            <!--                    <div>zhang san</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="top-date">2019-09-21 11:43:55</div>-->
-            <!--                  <div class="bottom-date">2019-09-21 11:43:55</div>-->
-            <!--                </div>-->
-
-            <!--                <div class="part">-->
-            <!--                  <div class="left">-->
-            <!--                    <div>判图</div>-->
-            <!--                    <div>李四</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="right">-->
-            <!--                    <div>Decision diagram</div>-->
-            <!--                    <div>Li si</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="top-date">2019-09-21 11:43:55</div>-->
-            <!--                  <div class="bottom-date">2019-09-21 11:43:55</div>-->
-            <!--                </div>-->
-
-            <!--                <div class="part">-->
-            <!--                  <div class="left">-->
-            <!--                    <div>查验</div>-->
-            <!--                    <div>王五</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="right">-->
-            <!--                    <div>Inspection</div>-->
-            <!--                    <div>Wang wu</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="top-date">2019-09-21 11:43:55</div>-->
-            <!--                  <div class="bottom-date">2019-09-21 11:43:55</div>-->
-            <!--                </div>-->
-
-            <!--                <div class="part">-->
-            <!--                  <div class="left">-->
-            <!--                    <div>结束</div>-->
-            <!--                  </div>-->
-            <!--                  <div class="right">-->
-            <!--                    <div>End</div>-->
-            <!--                  </div>-->
-            <!--                </div>-->
-
-            <!--              </div>-->
-
-            <!--            </div>-->
 
             <b-row>
               <b-col>
@@ -634,13 +574,17 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  //import {getApiManager} from '../../../api';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
   import Switches from 'vue-switches';
+  import {loadImageCanvas, imageFilterById} from '../../../utils'
+  import Chobi from '../../../data/Chobi.js'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
+
+  var imgObj = null;
+  var imgObj2 = null;
 
   export default {
     components: {
@@ -671,7 +615,7 @@
         siteData: [],
         showPage: [],
         timeData: [],
-
+        imageUrls : ['/assets/img/scan-lr.gif', '/assets/img/scan-rl.gif', '/assets/img/u244.jpg', '/assets/img/u244.jpg'],
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -777,7 +721,7 @@
           ],
           perPage: 10,
         },
-        power: true
+        power: false
 
       }
     },
@@ -785,9 +729,7 @@
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
       },
-      'operatingLogTableItems.perPage': function (newVal) {
-        this.$refs.operatingLogTable.refresh();
-      },
+
       siteData: function (newVal, oldVal) {
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
@@ -805,25 +747,59 @@
           });
       },
 
-      modeData: function (newVal, oldVal) {
-        //console.log(newVal);
-        this.modeOption = [];
-        this.modeOption = newVal.map(mode => ({
-          text: mode.dataValue,
-          value: mode.dataCode
-        }));
-        this.modeOption.push({
-          text: this.$t('personal-inspection.all'),
-          value: null
-        });
-        if (this.modeOption.length === 0)
-          this.modeOption.push({
-            text: this.$t('system-setting.none'),
-            value: 0
-          });
+      power(newValue) {
+        //called whenever switch1 changes
+        let url1;
+        let url2;
+        if (newValue == true) {
+          url1 = this.imageUrls[2];
+          url2 = this.imageUrls[3];
+
+        } else {
+          url1 = this.imageUrls[0];
+          url2 = this.imageUrls[1];
+        }
+        console.log(newValue);
+        loadImageCanvas(url1, url2);
+
       }
     },
     methods: {
+
+      filterId(id) {
+        imageFilterById(id);
+      },
+
+      loadImage(url1, url2) {
+
+        loadImageCanvas(url1, url2);
+      },
+
+      getOptionValue(dataCode) {
+        const dictionary = {
+          "1000000001": `${this.$t('permission-management.male')}`,
+          "1000000002": `${this.$t('permission-management.female')}`,
+          "1000000601": `${this.$t('system-setting.parameter-setting.yes')}`,
+          "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
+          "1000001701": `${this.$t('permission-management.timeout')}`,
+          "1000001702": `${this.$t('permission-management.timein')}`,
+          "true": `${this.$t('knowledge-base.suspect')}`,
+          "false": `${this.$t('knowledge-base.no-suspect')}`,
+          "1000001301": `${this.$t('permission-management.female')}`,
+          "1000001302": `${this.$t('permission-management.female')}`,
+          "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001304": `${this.$t('maintenance-management.process-task.scan')}`,
+          "1000001102": `${this.$t('maintenance-management.process-task.dispatch')}`,
+          "1000001103": `${this.$t('maintenance-management.process-task.judge')}}`,
+          "1000001104": `${this.$t('maintenance-management.process-task.hand')}`,
+          "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
+
+        };
+
+        if (!dictionary.hasOwnProperty(dataCode)) return '';
+        return dictionary[dataCode];
+
+      },
 
       onExportButton() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
@@ -870,6 +846,10 @@
       },
       onRowClicked: function (taskNumber) {
 
+        var url1 = this.imageUrls[0];
+        var url2 = this.imageUrls[1];
+        // this.loadImage(url, url2);
+        loadImageCanvas(url1, url2);
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/invalid-task/get-one`, {
@@ -899,9 +879,7 @@
       getDateTimeFormat(datatime) {
         return getDateTimeWithFormat(datatime, 'monitor');
       },
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
+
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
@@ -913,7 +891,7 @@
           fieldId: null,
           userName: null
         };
-        //this.$refs.taskVuetable.refresh();
+
       },
 
       transform(response) {
