@@ -175,7 +175,15 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
 
     @Override
     public List<SysDeviceCategory> findAll() {
-        return sysDeviceCategoryRepository.findAll();
+        QSysDeviceCategory builder = QSysDeviceCategory.sysDeviceCategory;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SysDeviceCategory.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysDeviceCategoryRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     @Override

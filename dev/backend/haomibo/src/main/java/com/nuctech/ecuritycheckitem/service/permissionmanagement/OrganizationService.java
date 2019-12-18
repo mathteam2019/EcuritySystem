@@ -11,6 +11,16 @@ public interface OrganizationService {
 
     boolean checkOrgNumberExist(String orgNumber, Long orgId);
 
+    boolean checkUserExist(Long orgId);
+
+    boolean checkRoleExist(Long orgId);
+
+    boolean checkUserGroupExist(Long orgId);
+
+    boolean checkDataGroupExist(Long orgId);
+
+    boolean checkFieldExist(Long orgId);
+
     boolean createOrganization(Long parentOrgId, SysOrg sysOrg);
 
     boolean modifyOrganization(Long orgId, Long parentOrgId, SysOrg sysOrg);

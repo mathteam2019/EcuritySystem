@@ -213,7 +213,15 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     @Override
     public List<SerArchive> findAll() {
-        return serArchiveRepository.findAll();
+        QSerArchive builder = QSerArchive.serArchive;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SerArchive.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(serArchiveRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     private List<SerArchive> getExportList(List<SerArchive> archiveList, boolean isAll, String idList) {

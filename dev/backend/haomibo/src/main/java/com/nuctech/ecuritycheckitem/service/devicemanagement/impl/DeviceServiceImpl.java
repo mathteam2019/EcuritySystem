@@ -325,7 +325,15 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public List<SysDevice> findAll() {
-        return sysDeviceRepository.findAll();
+        QSysDevice builder = QSysDevice.sysDevice;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SysDevice.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     @Override

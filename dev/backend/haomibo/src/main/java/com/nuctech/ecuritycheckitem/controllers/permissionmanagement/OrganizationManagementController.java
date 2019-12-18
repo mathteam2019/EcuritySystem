@@ -293,6 +293,29 @@ public class OrganizationManagementController extends BaseController {
         }
     }
 
+    private Object checkExist(Long orgId) {
+        if(organizationService.checkDataGroupExist(orgId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
+        }
+
+        if(organizationService.checkUserGroupExist(orgId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+        }
+
+        if(organizationService.checkUserExist(orgId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if(organizationService.checkRoleExist(orgId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_ROLES);
+        }
+
+        if(organizationService.checkFieldExist(orgId)) {
+            return new CommonResponseBody(ResponseMessage.HAS_FIELDS);
+        }
+        return null;
+    }
+
 
     /**
      * Organization modify request.
@@ -313,6 +336,11 @@ public class OrganizationManagementController extends BaseController {
 
         if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
+        }
+
+        Object checkResult = checkExist(requestBody.getOrgId());
+        if(checkResult != null) {
+            return checkResult;
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
@@ -337,6 +365,12 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Object checkResult = checkExist(requestBody.getOrgId());
+        if(checkResult != null) {
+            return checkResult;
+        }
+
+
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
@@ -344,6 +378,7 @@ public class OrganizationManagementController extends BaseController {
         }
 
     }
+
 
 
     /**
@@ -357,6 +392,11 @@ public class OrganizationManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Object checkResult = checkExist(requestBody.getOrgId());
+        if(checkResult != null) {
+            return checkResult;
         }
 
         if (organizationService.updateOrganizationStatus(requestBody.getOrgId(), requestBody.getStatus())) {

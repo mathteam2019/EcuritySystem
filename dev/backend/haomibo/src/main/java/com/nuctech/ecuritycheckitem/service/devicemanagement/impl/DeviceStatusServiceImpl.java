@@ -152,16 +152,21 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
                     .collect(Collectors.toList());
 
             if(serScanParamList != null && serScanParamList.size() > 0) {
-                String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
-                int currentSpace = Integer.parseInt(splitDiskSpace[0]);
-                int totalSpace = Integer.parseInt(splitDiskSpace[1]);
-                Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
-                Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
-                if(deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
-                    storageAlarm = 1;
-                } else if(deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
-                    storageAlarm = 2;
+                try {
+                    String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
+                    int currentSpace = Integer.parseInt(splitDiskSpace[0]);
+                    int totalSpace = Integer.parseInt(splitDiskSpace[1]);
+                    Integer deviceStorageAlarm = serScanParamList.get(0).getDeviceStorageAlarm();
+                    Integer deviceStorageAlarmPercent = serScanParamList.get(0).getDeviceStorageAlarmPercent();
+                    if(deviceStorageAlarm != null && currentSpace > deviceStorageAlarm) {
+                        storageAlarm = 1;
+                    } else if(deviceStorageAlarmPercent != null && currentSpace * 100 > totalSpace * deviceStorageAlarmPercent) {
+                        storageAlarm = 2;
+                    }
+                }catch(Exception ex) {
+
                 }
+
                 deviceStatus.setDeviceStorageAlarm(storageAlarm);
             }
         }

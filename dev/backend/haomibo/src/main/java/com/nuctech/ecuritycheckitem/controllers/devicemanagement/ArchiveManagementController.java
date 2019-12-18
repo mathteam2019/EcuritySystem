@@ -319,6 +319,10 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
+        }
+
         archiveService.updateStatus(requestBody.getArchiveId(), requestBody.getStatus());
 
 

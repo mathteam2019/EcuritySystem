@@ -487,6 +487,10 @@ public class ArchiveTemplateManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
+        }
+
         archiveTemplateService.updateStatus(requestBody.getArchivesTemplateId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);

@@ -564,6 +564,10 @@ public class DeviceCategoryManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
+        }
+
         deviceCategoryService.updateStatus(requestBody.getCategoryId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);

@@ -250,7 +250,15 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
 
     @Override
     public List<SerArchiveTemplate> findAll() {
-        return serArchiveTemplateRepository.findAll();
+        QSerArchiveTemplate builder = QSerArchiveTemplate.serArchiveTemplate;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SerArchiveTemplate.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     private List<SerArchiveTemplate> getExportList(List<SerArchiveTemplate> archiveTemplateList, boolean isAll, String idList) {

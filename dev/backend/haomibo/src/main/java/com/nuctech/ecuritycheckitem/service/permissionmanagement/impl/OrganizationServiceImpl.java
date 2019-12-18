@@ -1,11 +1,9 @@
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -27,6 +25,21 @@ public class OrganizationServiceImpl implements OrganizationService {
     SysOrgRepository sysOrgRepository;
 
     @Autowired
+    SysUserRepository sysUserRepository;
+
+    @Autowired
+    SysRoleRepository sysRoleRepository;
+
+    @Autowired
+    SysFieldRepository sysFieldRepository;
+
+    @Autowired
+    SysUserGroupRepository sysUserGroupRepository;
+
+    @Autowired
+    SysDataGroupRepository sysDataGroupRepository;
+
+    @Autowired
     AuthenticationFacade authenticationFacade;
 
     @Override
@@ -45,6 +58,32 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
         return sysOrgRepository.exists(QSysOrg.sysOrg.orgNumber.eq(orgNumber)
                 .and(QSysOrg.sysOrg.orgId.ne(orgId)));
+    }
+
+    @Override
+    public boolean checkUserExist(Long orgId) {
+        return sysUserRepository.exists(QSysUser.sysUser.orgId.eq(orgId));
+    }
+
+
+    @Override
+    public boolean checkRoleExist(Long orgId){
+        return sysRoleRepository.exists(QSysRole.sysRole.orgId.eq(orgId));
+    }
+
+    @Override
+    public boolean checkUserGroupExist(Long orgId) {
+        return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.orgId.eq(orgId));
+    }
+
+    @Override
+    public boolean checkDataGroupExist(Long orgId) {
+        return sysDataGroupRepository.exists(QSysDataGroup.sysDataGroup.orgId.eq(orgId));
+    }
+
+    @Override
+    public boolean checkFieldExist(Long orgId) {
+        return sysFieldRepository.exists(QSysField.sysField.orgId.eq(orgId));
     }
 
     public boolean createOrganization(Long parentOrgId, SysOrg sysOrg) {
@@ -121,7 +160,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     public List<SysOrg> getAllOrganization() {
-        return sysOrgRepository.findAll();
+        QSysOrg builder = QSysOrg.sysOrg;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SysOrg.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     public PageResult<SysOrg> getOrganizationByFilterAndPage(String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage) {

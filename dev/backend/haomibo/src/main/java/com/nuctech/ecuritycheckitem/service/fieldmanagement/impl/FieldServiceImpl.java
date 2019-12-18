@@ -1,9 +1,6 @@
 package com.nuctech.ecuritycheckitem.service.fieldmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
-import com.nuctech.ecuritycheckitem.models.db.QSysField;
-import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
@@ -120,7 +117,15 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     public List<SysField> findAll() {
-        List<SysField> sysFieldList = sysFieldRepository.findAll();
+        QSysField builder = QSysField.sysField;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SysField.Status.ACTIVE));
+
+        List<SysField> sysFieldList = StreamSupport
+                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
 
 
         //set parent's  parent to null so prevent recursion

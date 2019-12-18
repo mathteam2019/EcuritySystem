@@ -240,7 +240,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<SysUser> findAllUser() {
-        return sysUserRepository.findAll();
+        QSysUser builder = QSysUser.sysUser;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.status.eq(SysUser.Status.ACTIVE));
+
+        return StreamSupport
+                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     @Override
