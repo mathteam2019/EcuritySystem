@@ -87,7 +87,6 @@
     "system-setting": "Configuration",
     "parameter-setting": "Globals",
     "site-management": "Site Settings",
-    
     "log-management": "Logs",
     "personal-inspection": "Personal Inspection",
     "black-list": "Black List",
@@ -166,7 +165,7 @@
     "please-enter-organization-note": "Please enter organization note.",
     "please-select-different-parent-organization": "Please select different parent organization.",
     "organization-delete-prompt": "Delete organization?",
-    "organization-deactivate-prompt": "Deactive organization?",
+    "organization-deactivate-prompt": "Deactivate organization?",
     "prompt": "Prompt",
     "modal-ok": "Ok",
     "modal-cancel": "Cancel",
@@ -401,26 +400,6 @@
       "delete": "Delete",
       "prompt": "Prompt"
     },
-    "user": {
-      "user-group-name": "Name",
-      "user-group-number": "Number",
-      "operating": "Action",
-      "group-number": "Number",
-      "group-name": "Name",
-      "group-member": "Member",
-      "required-field": "Required",
-      "please-enter-group-name": "Please enter name.",
-      "user-group-delete-prompt": "Delete user group?",
-      "inactive-prompt": "Active user?",
-      "block-prompt": "Block user?",
-      "orgId-field-is-mandatory": "ORG ID is mandatory.",
-      "userId-field-is-mandatory": "User ID is manadatory.",
-      "license-number-field-is-mandatory": "License number is mandatory.",
-      "username-field-is-mandatory": "Username is mandatory.",
-      "userNumber-field-is-mandatory": "Usernumber is mandatory.",
-      "account-field-is-mandatory": "Account is mandatory.",
-      "gender-field-is-mandatory": "Gender is mandatory."
-    },
     "site-management" : {
     "status-updated-successfully":"Status updated Successfully.",
     "site-deleted-successfully" : "Site deleted successfully.",
@@ -429,38 +408,7 @@
     "delete-prompt": "Delete Prompt",
     "make-inactive-prompt": "Make inactive promtp",
     "site-has-devices": "Site has devices"
-  },
-    "assign-permission-management": {
-      "assign-to-user": "Assign to user",
-      "assign-to-group": "Assign to group",
-      "user": "User",
-      "affiliated-org": "Affiliated-ORG",
-      "group": {
-        "role": "Role",
-        "data-range": "Data range",
-        "user-group": "User group",
-        "groupMember": "Group member",
-        "one-user-data": "Single user data",
-        "group-user-data": "Group user data",
-        "all-user-data": "All user data",
-        "select-data-group": "Select data group",
-        "member": "Member",
-        "group-assigned-successfully": "Group assigned successfully.",
-        "user-group-delete-prompt": "Do you want to delete user group?",
-        "group-assigned-removed-successfully": "Group assign removed successfully.",
-        "role-mandatory": "Role is mandatory.",
-        "user-group-mandatory": "User group is mandatory.",
-        "group-member-not-exit": "Group member doesn't exist."
-      },
-      "user-form": {
-        "one-user-data": "Single user data",
-        "select-data-group": "Select data group",
-        "all-user-data": "All user data",
-        "affiliated-org-user-data": "Affiliated ORG user data",
-        "affiliated-org-all-user-data": "Affiliated ORG all user data"
-
-      }
-    }
+  }
   },
   "device-management": {
     "file-template": "Templates",
@@ -761,7 +709,6 @@
       "auxiliary-recognition": "Auxiliary recognition",
       "auxiliary-recognition-level": "Auxiliary recognition level",
       "suitable-for": "Suitable for",
-      "item-level": "Item level",
       "yes": "Yes",
       "no": "No",
       "saved-successful": "Saved Successful."
@@ -965,7 +912,7 @@
       "estimated-start-time": "Estimated start time",
       "real-start-time": "Real start time",
       "plan-works": "Plan work",
-      "real-works": "Real work"
+      "real-works": "Real work",
       "dispatch": "Dispatch",
       "judge": "Judge",
       "hand": "Hand",
@@ -1078,7 +1025,7 @@
       "monitor-group": "Monitor group",
       "male-inspection-object": "Male inspection object",
       "hand-check-position": "Hand check position",
-      "suitable-for": "Suitable for"
+      "suitable-for": "Suitable for",
       "release": "Release",
       "inspection": "Inspection",
       "updated-successful": "Updated Successful.",
