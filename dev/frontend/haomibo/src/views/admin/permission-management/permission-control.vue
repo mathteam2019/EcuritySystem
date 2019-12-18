@@ -96,9 +96,6 @@
                       v-model="roleForm.roleNumber"
                       :state="!$v.roleForm.roleNumber.$invalid"
                       :placeholder="$t('permission-management.permission-control.enter-role-number')"/>
-                    <div v-if="!$v.roleForm.roleNumber.$invalid">&nbsp;</div>
-                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
-                    </b-form-invalid-feedback>
                   </b-form-group>
 
                   <b-form-group>
@@ -110,9 +107,6 @@
                       v-model="roleForm.roleName"
                       :state="!$v.roleForm.roleName.$invalid"
                       :placeholder="$t('permission-management.permission-control.enter-role-name')"/>
-                    <div v-if="!$v.roleForm.roleName.$invalid">&nbsp;</div>
-                    <b-form-invalid-feedback>{{$t('permission-management.permission-control.required-field')}}
-                    </b-form-invalid-feedback>
                   </b-form-group>
 
                   <div>
@@ -332,9 +326,6 @@
                   <b-form-input
                     v-model="dataGroupForm.dataGroupNumber"
                     :state="!$v.dataGroupForm.dataGroupNumber.$invalid"/>
-                  <div v-if="!$v.dataGroupForm.dataGroupNumber.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-number')}}
-                  </b-form-invalid-feedback>
                 </b-form-group>
 
                 <b-form-group>
@@ -345,9 +336,6 @@
                   <b-form-input
                     v-model="dataGroupForm.dataGroupName"
                     :state="!$v.dataGroupForm.dataGroupName.$invalid"/>
-                  <div v-if="!$v.dataGroupForm.dataGroupName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.permission-control.enter-data-group-name')}}
-                  </b-form-invalid-feedback>
                 </b-form-group>
               </div>
 
@@ -816,7 +804,7 @@
           'filter': {roleName : this.roleKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/role/pdf`;
+        let link = `permission-management/permission-control/role`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -838,7 +826,7 @@
           'filter': {dataGroupName : this.dataRangeKeyword},
           'idList': checkedIds.join()
         };
-        let link = `permission-management/permission-control/data-group/pdf`;
+        let link = `permission-management/permission-control/data-group`;
         printFileFromServer(link, params);
       },
 
@@ -872,7 +860,20 @@
                 this.roleForm.roleName = '';
                 this.roleFormFlag = null;
                 break;
+              case responseMessages['used-role-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-role-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
               default:
+
 
             }
           })
@@ -917,6 +918,18 @@
                   });
                   this.$refs.roleVuetable.reload();
                   savePermissionInfo(response.data.data.permission);
+                  break;
+                case responseMessages['used-role-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-role-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
                   break;
                 default:
 
@@ -1058,6 +1071,18 @@
                   this.dataGroupForm.dataGroupNumber = '';
                   this.$refs.dataGroupVuetable.refresh();
                   break;
+                case responseMessages['used-data-group-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-data-group-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
                 default:
 
               }
@@ -1091,6 +1116,18 @@
                     permanent: false
                   });
                   this.$refs.dataGroupVuetable.reload();
+                  break;
+                case responseMessages['used-data-group-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-data-group-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
                   break;
                 default:
 

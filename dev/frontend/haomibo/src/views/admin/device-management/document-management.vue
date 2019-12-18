@@ -477,7 +477,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-management/archive/pdf`;
+        let link = `device-management/document-management/archive`;
         printFileFromServer(link,params);
       },
       hideModal(modal) {
@@ -651,8 +651,14 @@
             isRequired = true;
           }
         });
-        if (isRequired)
+        if (isRequired) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.required-indicator-value`), {
+            duration: 3000,
+            permanent: false
+          });
           return;
+        }
+
         const formData = new FormData();
         for (let key in this.archivesForm) {
           if (key !== 'imageUrl' && key !== 'image' && key !=='archiveValueList')
@@ -676,6 +682,18 @@
                 break;
               case responseMessages['has-devices']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-archive-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-archive-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-archive-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-archive-number`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -708,6 +726,12 @@
                   this.archivesForm.status = statusValue;
                 if (this.pageStatus === 'list')
                   this.$refs.vuetable.refresh();
+                break;
+              case responseMessages['has-devices']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
             }

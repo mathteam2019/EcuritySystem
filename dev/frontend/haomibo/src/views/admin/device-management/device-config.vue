@@ -864,7 +864,7 @@
           'filter': this.configFilter,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/field/pdf`;
+        let link = `device-management/device-table/device/field`;
         printFileFromServer(link,params);
       },
       changeSwitchStatus(status) {

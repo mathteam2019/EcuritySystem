@@ -512,7 +512,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/document-template/archive-template/pdf`;
+        let link = `device-management/document-template/archive-template`;
         printFileFromServer(link,params);
       },
 
@@ -692,6 +692,18 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['used-template-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-template-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-template-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-template-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -721,6 +733,18 @@
                   this.basicForm.status = statusValue;
                 if (this.pageStatus === 'list')
                   this.$refs.vuetable.refresh();
+                break;
+              case responseMessages['has-archives']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-archives`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-devices']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
             }
@@ -754,6 +778,12 @@
                 break;
               case responseMessages['has-archives']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-archives`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-devices']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-devices`), {
                   duration: 3000,
                   permanent: false
                 });

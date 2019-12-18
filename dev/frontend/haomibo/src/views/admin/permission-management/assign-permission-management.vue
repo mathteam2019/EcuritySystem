@@ -217,19 +217,19 @@
                         <div>
                           <b-form-radio-group :disabled="pageStatus === 'show'" v-model="userForm.dataRangeCategory"
                                               stacked>
-                            <b-form-radio class="pb-2" value="person">
+                            <b-form-radio class="pb-2" value="1000000501">
                               {{$t('permission-management.assign-permission-management.user-form.one-user-data')}}
                             </b-form-radio>
-                            <b-form-radio class="pb-2" value="org">
+                            <b-form-radio class="pb-2" value="1000000502">
                               {{$t('permission-management.assign-permission-management.user-form.affiliated-org-user-data')}}
                             </b-form-radio>
-                            <b-form-radio class="pb-2" value="org_desc">
+                            <b-form-radio class="pb-2" value="1000000503">
                               {{$t('permission-management.assign-permission-management.user-form.affiliated-org-all-user-data')}}
                             </b-form-radio>
-                            <b-form-radio class="pb-2" value="all">
+                            <b-form-radio class="pb-2" value="1000000504">
                               {{$t('permission-management.assign-permission-management.user-form.all-user-data')}}
                             </b-form-radio>
-                            <b-form-radio class="pb-2" value="specified">
+                            <b-form-radio class="pb-2" value="1000000505">
                               {{$t('permission-management.assign-permission-management.user-form.select-data-group')}}
                             </b-form-radio>
                           </b-form-radio-group>
@@ -1019,7 +1019,7 @@
           'filter': this.userFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user/pdf`;
+        let link = `permission-management/assign-permission-management/user`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1041,7 +1041,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/assign-permission-management/user-group/pdf`;
+        let link = `permission-management/assign-permission-management/user-group`;
         printFileFromServer(link, params);
       },
 

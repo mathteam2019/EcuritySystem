@@ -765,7 +765,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-table/device/pdf`;
+        let link = `device-management/device-table/device`;
         printFileFromServer(link,params);
       },
 
@@ -1056,6 +1056,24 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
+                break;
+              case responseMessages['used-device-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-device-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-device-serial']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-device-serial`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-device-guid']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-device-guid`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })

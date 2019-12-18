@@ -194,7 +194,7 @@
                       <template slot="label">
                         {{$t('system-setting.system-phone')}}
                       </template>
-                      <b-form-input type="text" v-model="siteForm.mobile" :placeholder="''"></b-form-input>
+                      <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$invalid" :placeholder="'xxx-xxxx-xxxx'"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -386,7 +386,7 @@
   import {validationMixin} from 'vuelidate';
 
   import {apiBaseUrl} from "../../../constants/config";
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, isPhoneValid, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {checkPermissionItem} from "../../../utils";
 
@@ -443,6 +443,15 @@
       },
 
       siteData: function (newVal, oldVal) {
+        let nest = (items, id = 0, depth = 1) =>
+          items
+            .filter(item => item.parentFieldId == id)
+            .map(item => ({
+              ...item,
+              children: nest(items, item.fieldId, depth + 1),
+              id: id++,
+              label: `<div class="org-content-top"><span>${depth}</span>${item.fieldSerial}</div><div class="org-content-bottom">${item.fieldDesignation}</div>`
+            }));
         let getLevel = (org) => {
 
           let getParent = (org) => {
@@ -478,6 +487,7 @@
             text: this.$t('system-setting.none'),
             value: 0
           });
+        this.treeData = nest(newVal)[0];
       }
     },
     data() {
@@ -600,40 +610,7 @@
         pageStatus: 'table', // table, create, edit, show
         selectedSite: '0000',
         superSiteOptions: [],
-        treeData: {
-          id: 0,
-          label: `<div class="org-content-top"><span>1</span>0000</div><div class="org-content-bottom">首都机场</div>`,
-          children: [
-            {
-              id: 1,
-              label: '<div class="org-content-top"><span>2</span>0100</div><div class="org-content-bottom">1号航站楼</div>'
-            },
-            {
-              id: 2,
-              label: '<div class="org-content-top"><span>2</span>0200</div><div class="org-content-bottom">2号航站楼</div>',
-              children: [
-                {
-                  id: 3,
-                  label: '<div class="org-content-top"><span>3</span>0201</div><div class="org-content-bottom">通道1</div>'
-                },
-                {
-                  id: 4,
-                  label: '<div class="org-content-top"><span>3</span>0202</div><div class="org-content-bottom">通道2</div>'
-                }
-              ]
-            },
-            {
-              id: 5,
-              label: '<div class="org-content-top"><span>2</span>0300</div><div class="org-content-bottom">3号航站楼</div>',
-              children: [
-                {
-                  id: 6,
-                  label: '<div class="org-content-top"><span>3</span>0301</div><div class="org-content-bottom">通道001</div>'
-                }
-              ]
-            }
-          ]
-        },
+        treeData: {},
         siteForm: {
           fieldId: 0,
           fieldSerial: '',
@@ -656,6 +633,9 @@
         },
         parentFieldId: {
           required
+        },
+        mobile : {
+          isPhoneValid
         }
       }
     },
@@ -687,7 +667,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `site-management/field/pdf`;
+        let link = `site-management/field`;
         printFileFromServer(link, params);
       },
 
@@ -795,6 +775,18 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['used-field-designation']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-field-designation`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-field-serial']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-field-serial`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -865,6 +857,12 @@
                   this.siteForm.status = statusValue;
                 if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
+                break;
+              case responseMessages["has-devices"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
             }

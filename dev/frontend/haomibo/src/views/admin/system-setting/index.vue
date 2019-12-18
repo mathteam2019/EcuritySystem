@@ -86,7 +86,7 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
-                      <b-form-input v-model="platFormData.displayDeleteSuspicion"></b-form-input>
+                      <b-form-select v-model="platFormData.displayDeleteSuspicion"  :options="displayDeleteSuspicionOptions" plain></b-form-select>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -709,6 +709,10 @@
         yesNoOptions: [
           {value: 'TRUE', text: this.$t('system-setting.parameter-setting.yes')},
           {value: 'FALSE', text: this.$t('system-setting.parameter-setting.no')},
+        ],
+        displayDeleteSuspicionOptions: [
+          {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
+          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
         ],
         bitOptions: [
           {value: 1, text: 1},

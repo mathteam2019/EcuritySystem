@@ -166,4 +166,17 @@ const printFileFromServer = (link,params) => {
     });
 };
 
-export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer};
+function isPhoneValid(value) {
+  if(value === "")
+    return true;
+  let phoneno = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
+  if(value.match(phoneno)){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
+
+export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid};

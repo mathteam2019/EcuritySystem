@@ -493,7 +493,7 @@
           'filter': this.filterOption,
           'idList': checkedIds.join()
         };
-        let link = `device-management/device-classify/category/pdf`;
+        let link = `device-management/device-classify/category`;
         printFileFromServer(link,params);
       },
 
@@ -629,6 +629,18 @@
                 this.getCategoryData();
                 this.$refs.deviceClassifyTable.refresh();
                 break;
+              case responseMessages['used-category-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-category-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-category-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-category-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -658,6 +670,12 @@
                   this.classifyForm.status = statusValue;
                 if (this.pageStatus === 'list')
                   this.$refs.deviceClassifyTable.refresh();
+                break;
+              case responseMessages["has-devices"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-devices`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
             }
@@ -694,6 +712,12 @@
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages["has-devices"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-devices`), {
                   duration: 3000,
                   permanent: false
                 });

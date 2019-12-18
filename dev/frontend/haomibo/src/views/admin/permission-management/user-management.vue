@@ -652,12 +652,7 @@
                   <b-form-input
                     v-model="groupForm.groupNumber"
                     :state="!$v.groupForm.groupNumber.$invalid"/>
-                  <div v-if="!$v.groupForm.groupNumber.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
-                  </b-form-invalid-feedback>
-
                 </b-form-group>
-
                 <b-form-group>
                   <template slot="label">
                     {{$t('permission-management.user.group-name')}}&nbsp;
@@ -666,10 +661,6 @@
                   <b-form-input v-if="groupForm.status=='create'"
                                 v-model="groupForm.groupName"
                                 :state="!$v.groupForm.groupName.$invalid"/>
-                  <div v-if="!$v.groupForm.groupName.$invalid">&nbsp;</div>
-                  <b-form-invalid-feedback>{{$t('permission-management.user.required-field')}}
-                  </b-form-invalid-feedback>
-
                 </b-form-group>
               </div>
               <div v-if="groupForm.status!='create'">
@@ -756,25 +747,13 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
   import {checkPermissionItem,getDirection} from "../../../utils";
-  import {downLoadFileFromServer, getApiManager, printFileFromServer} from '../../../api';
+  import {downLoadFileFromServer, getApiManager, isPhoneValid, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
   import VTree from 'vue-tree-halower';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
 
-  export function isPhoneValid(value) {
-    if(value === "")
-      return true;
-    let phoneno = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{4}[\s.-]?\d{4}$/;
-    if(value.match(phoneno)){
-      return true;
-    }
-    else{
-      console.log('invalid phone');
-      return false;
-    }
 
-  }
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -1200,7 +1179,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user/pdf`;
+        let link = `permission-management/user-management/user`;
         printFileFromServer(link, params);
       },
       onExportGroupButton() {
@@ -1222,7 +1201,7 @@
           'filter': this.groupFilter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/user-management/user-group/pdf`;
+        let link = `permission-management/user-management/user-group`;
         printFileFromServer(link, params);
       },
 
@@ -1687,6 +1666,18 @@
                     permanent: false
                   });
                   this.$refs.userGroupTable.refresh();
+                  break;
+                case responseMessages['used-user-group-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-user-group-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
                   break;
                 default:
 

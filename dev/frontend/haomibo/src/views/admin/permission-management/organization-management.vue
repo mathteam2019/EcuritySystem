@@ -241,7 +241,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
-                                v-model="createPage.mobile"
+                                v-model="createPage.mobile"  :state="!$v.createPage.mobile.$dirty ? null : !$v.createPage.mobile.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
                 </b-form-group>
               </b-col>
@@ -340,7 +340,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
-                                v-model="modifyPage.mobile"
+                                v-model="modifyPage.mobile" :state="!$v.modifyPage.mobile.$dirty ? null : !$v.modifyPage.mobile.$invalid"
                                 :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
                 </b-form-group>
               </b-col>
@@ -540,7 +540,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap';
   import {validationMixin} from 'vuelidate';
   import Vue2OrgTree from '../../../components/vue2-org-tree'
-  import {getApiManager, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {getApiManager, downLoadFileFromServer, printFileFromServer, isPhoneValid} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {checkPermissionItem} from '../../../utils';
 
@@ -583,6 +583,9 @@
         },
         parentOrgId: {
           required
+        },
+        mobile:{
+          isPhoneValid
         }
       },
       modifyPage: { // modify page
@@ -594,6 +597,9 @@
         },
         parentOrgId: {
           required
+        },
+        mobile:{
+          isPhoneValid
         }
       }
     },
@@ -860,7 +866,7 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
-        let link = `permission-management/organization-management/organization/pdf`;
+        let link = `permission-management/organization-management/organization`;
         printFileFromServer(link, params);
       },
       onSearchButton() {
@@ -1096,9 +1102,19 @@
                 });
                 // back to table
                 this.pageStatus = 'table';
-
                 this.$refs.vuetable.refresh();
-
+                break;
+              case responseMessages['used-org-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-org-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })
@@ -1142,6 +1158,18 @@
                 this.pageStatus = 'table';
 
                 this.$refs.vuetable.refresh();
+                break;
+              case responseMessages['used-org-name']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['used-org-number']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })

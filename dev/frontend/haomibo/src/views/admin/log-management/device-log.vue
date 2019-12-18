@@ -643,7 +643,7 @@
           'filter': filter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/device-log/pdf`;
+        let link = `log-management/device-log`;
         printFileFromServer(link, params);
       },
 

@@ -2,6 +2,26 @@
   "general": {
     "copyright": "Piaf Vue © 2018 All Rights Reserved."
   },
+  "response-error-message" : {
+    "used-category-name":"设备分类名称重复",
+    "used-template-name":"模板名称重复",
+    "used-archive-name":"档案名称重复",
+    "used-device-name":"设备名称重复",
+    "used-org-name":"机构名称重复",
+    "used-user-group-name":"设备分类名称重复",
+    "used-data-group-name":"设备分类名称重复",
+    "used-role-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+    "used-category-name":"设备分类名称重复",
+
+
+  },
   "user": {
     "login-title": "登录",
     "register": "注册",

@@ -387,7 +387,7 @@
           'filter': this.accessFilter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/operating-log/access/pdf`;
+        let link = `log-management/operating-log/access`;
         printFileFromServer(link, params);
       },
       onExportOperatingButton() {
