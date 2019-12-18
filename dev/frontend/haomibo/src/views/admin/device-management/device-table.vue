@@ -215,7 +215,7 @@
                   <template slot="label">{{$t('device-management.device-table.guid')}}<span
                     class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="mainForm.guid"></b-form-input>
+                  <b-form-input v-model="mainForm.guid" :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"></b-form-input>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.guid.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -249,7 +249,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input v-model="mainForm.mobile"></b-form-input>
+                  <b-form-input v-model="mainForm.mobile" :placeholder="xxx-xxxx-xxxx" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -362,8 +362,8 @@
                       <template slot="label">{{$t('device-management.device-table.guid')}}<span
                         class="text-danger">*</span>
                       </template>
-                      <b-form-input v-model="mainForm.guid"></b-form-input>
-                      <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block">
+                      <b-form-input v-model="mainForm.guid" :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"></b-form-input>
+                      <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block" >
                         {{ (submitted && !$v.mainForm.guid.required) ?
                         $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
                       </div>
@@ -396,7 +396,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                      <b-form-input v-model="mainForm.mobile"></b-form-input>
+                      <b-form-input v-model="mainForm.mobile" :placeholder="xxx-xxxx-xxxx" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
@@ -558,7 +558,13 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {responseMessages} from '../../../constants/response-messages';
-  import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from '../../../api';
+  import {
+    downLoadFileFromServer,
+    getApiManager,
+    getDateTimeWithFormat,
+    isPhoneValid,
+    printFileFromServer
+  } from '../../../api';
   import {validationMixin} from 'vuelidate';
   import {checkPermissionItem, getDicDataByDicIdForOptions} from "../../../utils";
 
@@ -602,6 +608,9 @@
         },
         guid: {
           required
+        },
+        mobile: {
+          isPhoneValid
         }
       }
     },
@@ -712,7 +721,7 @@
           deviceId: 0,
           deviceSerial: '',
           deviceName: '',
-          deviceType: 'device',
+          deviceType: '1000001901',
           archiveId: null,
           originalFactoryNumber: '',
           manufacturerDate: '',
@@ -840,7 +849,7 @@
             deviceId: 0,
             deviceSerial: '',
             deviceName: '',
-            deviceType: 'device',
+            deviceType: '1000001901',
             archiveId: null,
             originalFactoryNumber: '',
             manufacturerDate: '',

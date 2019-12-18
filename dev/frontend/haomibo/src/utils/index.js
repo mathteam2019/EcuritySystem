@@ -226,7 +226,7 @@ export const getDicDataByDicIdForOptions = (dicId) => {
   if (Object.keys(data).indexOf(dicId + "") !== -1) {
     data[dicId].forEach(item => {
       options.push({
-        value: item.dataCode, text: item.dataValue
+        value: item.dataCode, text: (item.dataValue).trim()
       })
     });
     return options;

@@ -282,6 +282,7 @@
   </div>
 </template>
 <script>
+  import _ from 'lodash';
   import {apiBaseUrl} from '../../../constants/config'
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
@@ -753,7 +754,7 @@
           });
         this.$refs['modal-inactive'].hide();
       },
-      //remove category
+      //remove
       removeItem() {
         let templateId = this.basicForm.archivesTemplateId;
         if (templateId === 0)
@@ -841,6 +842,7 @@
                 });
                 this.indicatorForm.indicatorsId = data;
                 this.indicatorData.push(this.indicatorForm);
+                console.log(this.indicatorData);
                 this.indicatorForm = {
                   indicatorsId: 0,
                   indicatorsName: null,

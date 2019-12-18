@@ -416,8 +416,7 @@
                       <b-button variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
                       <b-button class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
                       ['2','3','4'].includes(item.currentStatus)?'success':
-                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}
-                      </b-button>
+                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
                     <div class="img">
                       <img v-if="item.imageUrl" :src="item.imageUrl">
@@ -437,8 +436,8 @@
                         <label>{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
-                        <label class="disabled">{{$t('device-management.number')}}:</label>
-                        <label :class="item.account===null?`disabled`:``">{{item.account}}</label>
+                        <label >{{$t('device-management.number')}}:</label>
+                        <label >{{item.account}}</label>
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-monitoring.landing-time')}}:</label>
@@ -454,7 +453,7 @@
                       </div>
                       <div class="w-100">
                         <label>{{$t('device-management.device-model')}}:</label>
-                        <label>{{item.originalModel}}</label></div>
+                        <label>{{item.device.archive.archiveTemplate.originalModel}}</label></div>
                       <div class="w-100" :style="{opacity:item.device.deviceType === '1000001901'?1:0}">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
                         <label>{{item.diskSpace}}(GB)</label>
@@ -782,7 +781,7 @@
           temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
           temp.category = temp.device ? temp.device.archive.archiveTemplate.deviceCategory.categoryName : '';
-          temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.manufacturer);
+          temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.device.archive.archiveTemplate.manufacturer);
           temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
           temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
           temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;

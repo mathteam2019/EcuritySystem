@@ -641,7 +641,7 @@
         let isRequired = false;
         let indicateFormData = [];
         this.indicatorsData.forEach((item, index) => {
-          if (Object.keys(this.indicatorsForm).includes(index + "")) {
+          if (Object.keys(this.indicatorsForm).includes(index + "") && (this.indicatorsForm[index]).trim()!== "") {
             indicateFormData.push({
               "indicatorsId": item.indicatorsId,
               "value": this.indicatorsForm[index]

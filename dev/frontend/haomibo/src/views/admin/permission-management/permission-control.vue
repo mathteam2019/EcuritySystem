@@ -861,13 +861,13 @@
                 this.roleFormFlag = null;
                 break;
               case responseMessages['used-role-name']:
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-name`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
                   duration: 3000,
                   permanent: false
                 });
                 break;
               case responseMessages['used-role-number']:
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-number`), {
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-number`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -920,13 +920,13 @@
                   savePermissionInfo(response.data.data.permission);
                   break;
                 case responseMessages['used-role-name']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-name`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
                     duration: 3000,
                     permanent: false
                   });
                   break;
                 case responseMessages['used-role-number']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.permission-control.used-role-number`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-number`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -965,8 +965,15 @@
                   this.$refs.roleVuetable.refresh();
                   savePermissionInfo(response.data.data.permission);
                   break;
-                case responseMessages['has-resources']: // okay
+                case responseMessages['has-resources']:
                   this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-users']:
+                case responseMessages['has-user-groups']:
+                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.role-already-used`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1162,8 +1169,15 @@
                   });
                   this.$refs.dataGroupVuetable.refresh();
                   break;
-                case responseMessages['has-users']: // okay
+                case responseMessages['has-children']:
                   this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-users']:
+                case responseMessages['has-user-groups']:
+                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
                     duration: 3000,
                     permanent: false
                   });
