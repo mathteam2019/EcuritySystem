@@ -988,10 +988,11 @@
             console.log(this.xDay);
             this.barChart2Options.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
+              let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[i] != null) {
-                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].noSeizure;
-                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].seizure;
+              if (this.preViewData.detailedStatistics[key] != null) {
+                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].noSeizure;
+                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].seizure;
 
               }
             }

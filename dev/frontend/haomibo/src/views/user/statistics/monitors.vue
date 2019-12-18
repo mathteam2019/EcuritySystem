@@ -1202,17 +1202,18 @@
             this.barChart2Options.xAxis.data = this.xDay;
             this.barChart3Options.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
+              let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[i] != null) {
-                this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[i].artificialJudge;
-                this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[i].assignTimeout;
-                this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[i].judgeTimeout;
-                this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[i].atrResult;
-                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].suspiction;
-                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].noSuspiction;
-                this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[i].avgArtificialJudgeDuration;
-                this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[i].maxArtificialJudgeDuration;
-                this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[i].minArtificialJudgeDuration;
+              if (this.preViewData.detailedStatistics[key] != null) {
+                this.barChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudge;
+                this.barChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].assignTimeout;
+                this.barChart1Options.series[2].data[i] = this.preViewData.detailedStatistics[key].judgeTimeout;
+                this.barChart1Options.series[3].data[i] = this.preViewData.detailedStatistics[key].atrResult;
+                this.barChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].suspiction;
+                this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].noSuspiction;
+                this.barChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].avgArtificialJudgeDuration;
+                this.barChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].maxArtificialJudgeDuration;
+                this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[key].minArtificialJudgeDuration;
               }
             }
           }

@@ -1237,14 +1237,15 @@
             this.lineChart3Options.xAxis.data = this.xDay;
 
             for (let i = 0; i < this.xDay.length; i++) {
+              let key = this.xDay[i];
 
               if (this.preViewData.detailedStatistics[i] != null) {
-                this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[i].missingReport;
-                this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[i].mistakeReport;
-                this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[i].artificialJudgeMissing;
-                this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[i].artificialJudgeMistake;
-                this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMissing;
-                this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[i].intelligenceJudgeMistake;
+                this.lineChart1Options.series[0].data[i] = this.preViewData.detailedStatistics[key].missingReport;
+                this.lineChart1Options.series[1].data[i] = this.preViewData.detailedStatistics[key].mistakeReport;
+                this.lineChart2Options.series[0].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMissing;
+                this.lineChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].artificialJudgeMistake;
+                this.lineChart3Options.series[0].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMissing;
+                this.lineChart3Options.series[1].data[i] = this.preViewData.detailedStatistics[key].intelligenceJudgeMistake;
 
               }
             }
