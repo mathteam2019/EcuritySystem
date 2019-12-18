@@ -399,8 +399,9 @@
       "save": "Save",
       "delete": "Delete",
       "prompt": "Prompt"
-    },
-    "site-management" : {
+    }
+  },
+  "site-management" : {
     "status-updated-successfully":"Status updated Successfully.",
     "site-deleted-successfully" : "Site deleted successfully.",
     "site-has-children" : "Site has children",
@@ -408,7 +409,6 @@
     "delete-prompt": "Delete Prompt",
     "make-inactive-prompt": "Make inactive promtp",
     "site-has-devices": "Site has devices"
-  }
   },
   "device-management": {
     "file-template": "Templates",

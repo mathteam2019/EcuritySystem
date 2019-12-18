@@ -418,8 +418,10 @@
       "save": "保存",
       "delete": "删除",
       "prompt": "提示"
+    }
+
     },
-    "site-management" : {
+  "site-management" : {
     "status-updated-successfully":"状态已成功更新",
     "site-deleted-successfully" : "网站已成功删除",
     "site-has-children" : "网站有孩子",
@@ -427,8 +429,7 @@
     "delete-prompt": "删除提示",
     "make-inactive-prompt": "发出不活动的提示",
     "site-has-devices": "网站有设备"
-  }
-    },
+  },
   "device-management": {
     "file-template": "档案模板",
     "business-stat": "业务统计",

@@ -4,9 +4,6 @@ import {responseMessages} from "../constants/response-messages";
 import app from '../main';
 import Chobi from "../data/Chobi";
 
-var dictionaryDataList;
-var deviceDictionaryDataList;
-
 var imgObj = null;
 var imgObj2 = null;
 
