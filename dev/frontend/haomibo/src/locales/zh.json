@@ -24,7 +24,7 @@
     "used-role-number": "角色编号重复",
     "has-data-groups":"机构已经使用-数据组",
     "has-roles":"机构已经使用-角色",
-    "has-fields":"机构已经使用-场地",
+    "has-fields":"机构已经使用-场地"
   },
   "user": {
     "login-title": "登录",
