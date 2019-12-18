@@ -439,6 +439,7 @@
     },
     mounted() {
       this.getSiteOption();
+      this.getManualDeviceData();
       this.getPreviewData();
     },
     data() {
@@ -963,7 +964,7 @@
         console.log(this.filter.startTime);
         console.log(this.filter.endTime);
         this.getPreviewData();
-        this.$refs.taskVuetable.refresh();
+        //this.$refs.taskVuetable.refresh();
       },
       onResetButton() {
         this.filter = {

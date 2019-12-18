@@ -573,6 +573,7 @@
     },
     mounted() {
       this.getSiteOption();
+      this.getManualDeviceData();
       this.getPreviewData();
     },
     data() {
