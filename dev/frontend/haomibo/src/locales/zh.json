@@ -2,25 +2,29 @@
   "general": {
     "copyright": "Piaf Vue © 2018 All Rights Reserved."
   },
-  "response-error-message" : {
-    "used-category-name":"设备分类名称重复",
-    "used-template-name":"模板名称重复",
-    "used-archive-name":"档案名称重复",
-    "used-device-name":"设备名称重复",
-    "used-org-name":"机构名称重复",
-    "used-user-group-name":"设备分类名称重复",
-    "used-data-group-name":"设备分类名称重复",
-    "used-role-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-    "used-category-name":"设备分类名称重复",
-
-
+  "response-error-message": {
+    "used-category-name": "设备分类名称重复",
+    "used-template-name": "模板名称重复",
+    "used-archive-name": "档案名称重复",
+    "used-device-name": "设备名称重复",
+    "used-org-name": "机构名称重复",
+    "used-user-group-name": "人员组名称重复",
+    "used-data-group-name": "数据组名称重复",
+    "used-role-name": "角色名称重复",
+    "used-category-number": "设备分类编号重复",
+    "used-template-number": "模板编号重复",
+    "used-archive-number": "档案编号重复",
+    "used-device-serial": "设备编号重复",
+    "used-device-designation": "设备名称重复",
+    "used-field-serial": "场地编号重复",
+    "used-field-designation": "场地名称重复",
+    "used-org-number": "机构编号重复",
+    "used-user-group-number": "人员组编号重复",
+    "used-data-group-number": "数据组编号重复",
+    "used-role-number": "角色编号重复",
+    "has-data-groups":"机构已经使用-数据组",
+    "has-roles":"机构已经使用-角色",
+    "has-fields":"机构已经使用-场地",
   },
   "user": {
     "login-title": "登录",
@@ -154,7 +158,7 @@
     "new-password": "新密码",
     "confirm-password": "确认密码",
     "confirm": "确认",
-    "update-password-successful" : "密码变更成功"
+    "update-password-successful": "密码变更成功"
   },
   "dashboard": {
     "article-title-1": "2秒完成扫描",
@@ -419,16 +423,16 @@
       "delete": "删除",
       "prompt": "提示"
     },
-    "site-management" : {
-    "status-updated-successfully":"状态已成功更新",
-    "site-deleted-successfully" : "网站已成功删除",
-    "site-has-children" : "网站有孩子",
-    "site-added-successfully" : "网站已成功添加",
-    "delete-prompt": "删除提示",
-    "make-inactive-prompt": "发出不活动的提示",
-    "site-has-devices": "网站有设备"
-  }
-    },
+    "site-management": {
+      "status-updated-successfully": "状态已成功更新",
+      "site-deleted-successfully": "网站已成功删除",
+      "site-has-children": "网站有孩子",
+      "site-added-successfully": "网站已成功添加",
+      "delete-prompt": "删除提示",
+      "make-inactive-prompt": "发出不活动的提示",
+      "site-has-devices": "网站有设备"
+    }
+  },
   "device-management": {
     "file-template": "档案模板",
     "business-stat": "业务统计",
@@ -545,7 +549,8 @@
       "added-successfully": "档案创建成功",
       "delete-prompt": "是否失效该档案",
       "make-inactive-prompt": "是否失效该档案",
-      "has-devices": "已经有设备"
+      "has-devices": "已经有设备",
+      "required-indicator-value":"有必要设备指标"
     },
     "archive": {
       "technical-indicator": "技术指标",
@@ -606,10 +611,10 @@
       "landing-time": "登陆时间",
       "running-time": "远行时长"
     },
-    "indicator" : {
-      "name" : "设备指标名",
-      "unit" : "设备指标单位",
-      "isNull" : "设备指标必填"
+    "indicator": {
+      "name": "设备指标名",
+      "unit": "设备指标单位",
+      "isNull": "设备指标必填"
     }
   },
   "system-setting": {

@@ -484,7 +484,7 @@
                     {{$t('system-setting.chest-blurring')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-select v-model="scanForm.chestBlurring" :options="bitOptions" plain/>
+                  <b-form-select v-model="scanForm.chestBlurring" :options="yesNoOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">

@@ -33,5 +33,9 @@ export const responseMessages = {
   'used-template-name': 'used_template_name',
   'used-template-number': 'used_template_number',
   'used-category-name': 'used_category_name',
-  'used-category-number': 'used_category_number'
+  'used-category-number': 'used_category_number',
+  'has-user-groups':'has_user_groups',
+  'has-data-groups':'has_data_groups',
+  'has-roles':'has_roles',
+  'has-fields':'has_fields',
 };

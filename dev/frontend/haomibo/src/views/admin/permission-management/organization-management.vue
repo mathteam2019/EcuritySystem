@@ -1116,6 +1116,30 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['has-fields']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-user-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-user-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-data-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-data-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-roles']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -1171,6 +1195,30 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['has-fields']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-user-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-user-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-data-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-data-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-roles']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -1221,6 +1269,30 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['has-fields']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-user-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-user-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-data-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-data-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-roles']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
           })
           .catch((error) => {
@@ -1254,6 +1326,30 @@
                   this.modifyPage.selectedOrg.status = '1000000702';
                 this.$refs.vuetable.refresh();
 
+                break;
+              case responseMessages['has-fields']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-user-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-user-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-data-groups']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-data-groups`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-roles']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           })

@@ -396,11 +396,14 @@
               <div class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
-                  <img v-if="item.maxScanCount > item.deviceTrafficHigh" src="../../../assets/img/icon_user_graphic.png">
+                  <img v-if="item.maxScanCount > item.deviceTrafficHigh"
+                       src="../../../assets/img/icon_user_graphic.png">
                   <img v-else src="../../../assets/img/icon_user_graphic_disabled.png">
                   <img v-if="item.deviceStorageAlarm === 0" src="../../../assets/img/icon_layout.png">
                   <img v-else src="../../../assets/img/icon_layout_disabled.png">
-                  <img v-if="item.plcStatus == '0' && item.slaveCardStatus == '0' && item.masterCardStatus == '0' && item.footWarning == '0' && item.footWarning == '0'" src="../../../assets/img/icon_bell.png">
+                  <img
+                    v-if="item.plcStatus == '0' && item.slaveCardStatus == '0' && item.masterCardStatus == '0' && item.footWarning == '0' && item.footWarning == '0'"
+                    src="../../../assets/img/icon_bell.png">
                   <img v-else src="../../../assets/img/icon_bell_disabled.png">
                   <img v-if="item.deviceOnline === 0" src="../../../assets/img/icon_link.png">
                   <img v-else src="../../../assets/img/icon_link_disabled.png">
@@ -413,7 +416,8 @@
                       <b-button variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
                       <b-button class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
                       ['2','3','4'].includes(item.currentStatus)?'success':
-                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
+                      ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}
+                      </b-button>
                     </div>
                     <div class="img">
                       <img v-if="item.imageUrl" :src="item.imageUrl">
@@ -421,7 +425,8 @@
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
-                    <label class="text-top">{{$t('device-management.device-monitoring.running-time')}} {{item.runningTimeValue}}</label>
+                    <label class="text-top">{{$t('device-management.device-monitoring.running-time')}}
+                      {{item.runningTimeValue}}</label>
                     <div class="flex-grow-1 d-flex content flex-column justify-content-end">
                       <div class="w-100">
                         <label>{{$t('device-management.site')}}:</label>
@@ -432,7 +437,7 @@
                         <label>{{item.ipAddress}}</label>
                       </div>
                       <div class="w-100">
-                        <label class="disabled">{{$t('device-management.no')}}:</label>
+                        <label class="disabled">{{$t('device-management.number')}}:</label>
                         <label :class="item.account===null?`disabled`:``">{{item.account}}</label>
                       </div>
                       <div class="w-100">
@@ -450,7 +455,7 @@
                       <div class="w-100">
                         <label>{{$t('device-management.device-model')}}:</label>
                         <label>{{item.originalModel}}</label></div>
-                      <div class="w-100">
+                      <div class="w-100" :style="{opacity:item.device.deviceType === '1000001901'?1:0}">
                         <label>{{$t('device-management.device-monitoring.disk-space')}}:</label>
                         <label>{{item.diskSpace}}(GB)</label>
                       </div>
@@ -655,9 +660,9 @@
           xAxis: {
             type: 'category',
             boundaryGap: false,
-            axisLabel:{
-              fontSize:8,
-              color:'white'
+            axisLabel: {
+              fontSize: 8,
+              color: 'white'
             },
             data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
           },
@@ -665,13 +670,13 @@
             type: 'value',
             axisLabel: {
               formatter: '{value}',
-              fontSize:8,
-              color:'white'
+              fontSize: 8,
+              color: 'white'
             },
             splitLine: {
-              lineStyle :{
+              lineStyle: {
                 type: 'dotted',
-                color:'#403738'
+                color: '#403738'
               }
             },
           },
@@ -684,18 +689,18 @@
             {
               name: this.$t('system-setting.parameter-setting.security-instrument-flow-high'),
               type: 'line',
-              lineStyle : {
+              lineStyle: {
                 color: 'red',
-                type : 'dotted'
+                type: 'dotted'
               },
               data: [],
             },
             {
               name: this.$t('system-setting.parameter-setting.security-instrument-flow-middle'),
               type: 'line',
-              lineStyle : {
+              lineStyle: {
                 color: 'yellow',
-                type : 'dotted'
+                type: 'dotted'
               },
               data: [],
             }
@@ -704,15 +709,15 @@
       }
     },
     methods: {
-      getDeviceDicData(){
-        this.manufacturerDicData =  getDicDataByDicIdForOptions(9);
+      getDeviceDicData() {
+        this.manufacturerDicData = getDicDataByDicIdForOptions(9);
         this.currentFlowDicData = getDeviceDicDataByDicIdForOptions(10);
         this.currentStatusDicData = getDeviceDicDataByDicIdForOptions(11);
       },
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
-      generateChartData(data,hValue,mValue) {
+      generateChartData(data, hValue, mValue) {
         let xValues = data.timeList;
         let yValues = data.countList;
         let hValues = [];
@@ -777,7 +782,7 @@
           temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
           temp.category = temp.device ? temp.device.archive.archiveTemplate.deviceCategory.categoryName : '';
-          temp.manufacturerName = findDicTextData(this.manufacturerDicData,temp.manufacturer);
+          temp.manufacturerName = findDicTextData(this.manufacturerDicData, temp.manufacturer);
           temp.currentWorkFlowName = findDicTextData(this.currentFlowDicData, temp.currentWorkFlow);
           temp.currentStatusName = findDicTextData(this.currentStatusDicData, temp.currentStatus);
           temp.imageUrl = temp.device && temp.device.imageUrl ? apiBaseUrl + temp.device.imageUrl : null;
@@ -788,9 +793,9 @@
           temp.servoName = findDicTextData(this.servoStatusDicData, temp.servo);
           temp.emergencyStopName = findDicTextData(this.deviceStatusDicData, temp.emergencyStop);
           temp.footWarningName = findDicTextData(this.footStatusDicData, temp.footWarning);
-          temp.lineChartOptions = this.generateChartData(temp.record,temp.deviceTrafficHigh,temp.deviceTrafficMiddle);
-          temp.maxScanCount = Math.max.apply(Math,temp.record.countList);
-          temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime,'monitor-diff',this.$i18n.locale);
+          temp.lineChartOptions = this.generateChartData(temp.record, temp.deviceTrafficHigh, temp.deviceTrafficMiddle);
+          temp.maxScanCount = Math.max.apply(Math, temp.record.countList);
+          temp.runningTimeValue = getDateTimeWithFormat(temp.deviceLoginTime, 'monitor-diff', this.$i18n.locale);
           result.push(temp);
         }
         this.items = result;

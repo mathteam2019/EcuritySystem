@@ -148,7 +148,7 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='1000000304'"
+                          v-if="props.rowData.status=='1000000303'"
                           size="sm"
                           variant="success default btn-square"
                           :disabled="checkPermItem('user_update_status')"
@@ -157,7 +157,7 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='1000000302' && props.rowData.status!='1000000304'"
+                          v-if="props.rowData.status!='1000000302' && props.rowData.status!='1000000303'"
                           size="sm"
                           variant="danger default btn-square"
                           disabled>
@@ -165,7 +165,7 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status=='1000000303'"
+                          v-if="props.rowData.status=='1000000304'"
                           size="sm"
                           variant="purple default btn-square"
                           :disabled="checkPermItem('user_modify')"
@@ -174,7 +174,7 @@
                         </b-button>
 
                         <b-button
-                          v-if="props.rowData.status!='1000000303'"
+                          v-if="props.rowData.status!='1000000304'"
                           size="sm"
                           variant="purple default btn-square"
                           disabled>
