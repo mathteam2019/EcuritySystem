@@ -433,16 +433,16 @@
                       <div class="d-flex ">
                         <div>
                           <b-form-radio-group stacked v-model="groupForm.dataRange">
-                            <b-form-radio value="person" class="pb-2">
+                            <b-form-radio value="1000000501" class="pb-2">
                               {{$t('permission-management.assign-permission-management.group.one-user-data')}}
                             </b-form-radio>
-                            <b-form-radio value="group" class="pb-2">
+                            <b-form-radio value="1000000506" class="pb-2">
                               {{$t('permission-management.assign-permission-management.group.group-user-data')}}
                             </b-form-radio>
-                            <b-form-radio value="all" class="pb-2">
+                            <b-form-radio value="1000000504" class="pb-2">
                               {{$t('permission-management.assign-permission-management.group.all-user-data')}}
                             </b-form-radio>
-                            <b-form-radio value="specified" class="pb-2">
+                            <b-form-radio value="1000000505" class="pb-2">
                               {{$t('permission-management.assign-permission-management.group.select-data-group')}}
                             </b-form-radio>
                           </b-form-radio-group>
