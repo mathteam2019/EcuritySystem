@@ -42,8 +42,8 @@ public class SysUser extends BaseEntity implements Serializable {
     public static class Status {
         public static final String ACTIVE = "1000000301";
         public static final String INACTIVE = "1000000302";
-        public static final String PENDING = "1000000303";
-        public static final String BLOCKED = "1000000304";
+        public static final String PENDING = "1000000304";
+        public static final String BLOCKED = "1000000303";
     }
 
     public static class Category {
@@ -58,7 +58,8 @@ public class SysUser extends BaseEntity implements Serializable {
         ORG("1000000502"),
         ORG_DESC("1000000503"),
         ALL("1000000504"),
-        SPECIFIED("1000000505");
+        SPECIFIED("1000000505"),
+        EVERYONE("1000000506");
 
         String value;
 

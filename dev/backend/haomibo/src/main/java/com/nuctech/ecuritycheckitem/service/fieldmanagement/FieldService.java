@@ -24,7 +24,7 @@ public interface FieldService {
 
     void updateStatus(Long fieldId, String status);
 
-    List<SysField> findAll();
+    List<SysField> findAll(boolean isAll);
 
     PageResult<SysField> getDeviceListByFilter(String designation, String status, String parentDesignation, int currentPage, int perPage);
 

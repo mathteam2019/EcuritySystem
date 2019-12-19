@@ -21,6 +21,8 @@ public interface OrganizationService {
 
     boolean checkFieldExist(Long orgId);
 
+    boolean checkChildrenExist(Long orgId);
+
     boolean createOrganization(Long parentOrgId, SysOrg sysOrg);
 
     boolean modifyOrganization(Long orgId, Long parentOrgId, SysOrg sysOrg);

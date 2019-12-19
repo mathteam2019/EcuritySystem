@@ -946,11 +946,12 @@
             console.log(this.xDay);
             this.bar3ChartOptions.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
+              let key = this.xDay[i];
 
-              if (this.preViewData.detailedStatistics[i] != null && this.preViewData.detailedStatistics[i].scanStatistics != null) {
-                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
-                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
-                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
+              if (this.preViewData.detailedStatistics[key] != null && this.preViewData.detailedStatistics[key].scanStatistics != null) {
+                this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.passedScan;
+                this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.alarmScan;
+                this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].scanStatistics.invalidScan;
               }
               else {
                 this.bar3ChartOptions.series[0].data[i] = 0;
@@ -965,8 +966,6 @@
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
         this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
       },

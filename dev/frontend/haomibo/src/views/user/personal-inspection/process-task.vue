@@ -885,10 +885,10 @@
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
-          {value: '1000001304', text: '安检仪+审图端+手检端'},
-          {value: '1000001301', text: '安检仪+(本地手检)'},
-          {value: '1000001302', text: '安检仪+手检端'},
-          {value: '1000001303', text: '安检仪+审图端'},
+          {value: '4', text: '安检仪+审图端+手检端'},
+          {value: '1', text: '安检仪+(本地手检)'},
+          {value: '2', text: '安检仪+手检端'},
+          {value: '3', text: '安检仪+审图端'},
         ],
         statusOptions: [
           {value: null, text: this.$t('personal-inspection.all')},

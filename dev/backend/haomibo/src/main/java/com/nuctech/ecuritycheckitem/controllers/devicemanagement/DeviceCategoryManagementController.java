@@ -276,6 +276,9 @@ public class DeviceCategoryManagementController extends BaseController {
         }
 
 
+        if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
 
         // Check if category is existing.
         if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {
@@ -562,6 +565,9 @@ public class DeviceCategoryManagementController extends BaseController {
 
         if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         if(deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {

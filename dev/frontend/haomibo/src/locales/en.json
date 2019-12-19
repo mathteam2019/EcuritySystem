@@ -763,7 +763,8 @@
     "reset": "Reset",
     "export": "Export",
     "import": "Import",
-    "print": "Print"
+    "print": "Print",
+    "switch": "Switch"
   },
   "black-list": {
     "personal-black-list": "Personal Black List",

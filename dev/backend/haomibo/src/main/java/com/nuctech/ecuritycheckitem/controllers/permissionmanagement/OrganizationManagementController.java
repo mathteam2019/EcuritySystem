@@ -338,6 +338,10 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
+        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
+
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
             return checkResult;
@@ -365,10 +369,16 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+        }
+
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
             return checkResult;
         }
+
+
 
 
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
@@ -392,6 +402,10 @@ public class OrganizationManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         Object checkResult = checkExist(requestBody.getOrgId());

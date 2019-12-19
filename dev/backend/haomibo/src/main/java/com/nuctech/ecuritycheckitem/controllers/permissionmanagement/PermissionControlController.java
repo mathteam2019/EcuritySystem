@@ -93,6 +93,7 @@ public class PermissionControlController extends BaseController {
                     .builder()
                     .roleNumber(this.getRoleNumber())
                     .roleName(this.getRoleName())
+                    .status(SysOrg.Status.INACTIVE)
                     .note(this.note)
                     .build();
 
@@ -253,6 +254,7 @@ public class PermissionControlController extends BaseController {
                     .dataGroupNumber(this.getDataGroupNumber())
                     .dataGroupName(this.getDataGroupName())
                     .note(this.note)
+                    .status(SysOrg.Status.INACTIVE)
                     .build();
 
         }
@@ -518,6 +520,16 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        if (permissionService.checkUserExist(requestBody.getRoleId())) {
+            // If there are users assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (permissionService.checkUserGroupExist(requestBody.getRoleId())) {
+            // If there are user groups assigned with this role, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+        }
+
 
         // Get role from database.
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList());
@@ -561,10 +573,10 @@ public class PermissionControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (permissionService.checkResourceExist(requestBody.getRoleId())) {
-            // If the role has relation with resource, it can't be deleted.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
-        }
+//        if (permissionService.checkResourceExist(requestBody.getRoleId())) {
+//            // If the role has relation with resource, it can't be deleted.
+//            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+//        }
 
 
         if (permissionService.checkUserExist(requestBody.getRoleId())) {
@@ -804,6 +816,17 @@ public class PermissionControlController extends BaseController {
         if (!permissionService.checkDataGroupExist(requestBody.getDataGroupId())) {
             // If data group is not found, this request is invalid.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) {
+            // If there are users assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
+        }
+
+        if (permissionService.checkDataGroupLookupExist(requestBody.getDataGroupId())) {
+            // If there are user groups assigned with this data group, it can't be deleted.
+            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
 
         List<Long> userIdList = requestBody.getUserIdList();

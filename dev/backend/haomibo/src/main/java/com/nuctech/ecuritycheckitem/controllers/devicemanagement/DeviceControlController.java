@@ -804,7 +804,7 @@ public class DeviceControlController extends BaseController {
         }
 
         //check device exist or not
-        if(deviceService.checkDeviceExist(requestBody.getDeviceId())) {
+        if(!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 

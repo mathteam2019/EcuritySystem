@@ -157,7 +157,7 @@ public class AccessLogController extends BaseController {
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
-        PageResult<SysAccessLog> result = getPageResult(requestBody.getFilter(), requestBody.getCurrentPage(), requestBody.getPerPage());
+        PageResult<SysAccessLog> result = getPageResult(requestBody.getFilter(), currentPage, perPage);
 
         long total = result.getTotal();
         List<SysAccessLog> data = result.getDataList();
