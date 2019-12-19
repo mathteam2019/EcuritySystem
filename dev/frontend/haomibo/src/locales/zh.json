@@ -24,7 +24,11 @@
     "used-role-number": "角色编号重复",
     "has-data-groups":"机构已经使用-数据组",
     "has-roles":"机构已经使用-角色",
-    "has-fields":"机构已经使用-场地"
+    "has-fields":"机构已经使用-场地",
+    "role-already-used":"角色已经使用",
+    "data-group-already-used":"数据组已经使用",
+    "category-has-archive-template":"设备分类已经使用-档案模板",
+    "category-has-children":"设备分类该有孩子"
   },
   "user": {
     "login-title": "登录",
@@ -171,6 +175,8 @@
     "article-extract-4": "项目主要是通过安检门对人进行安检，人可以快速通过，简化化安检流程，提高安检效率"
   },
   "permission-management": {
+    "organization-has-user": "机构已经使用 - 人员",
+    "user-account-already-used":"用户已经使用",
     "organization-table": "机构列表",
     "organization-structure": "组织架构",
     "active-state": "生效",
@@ -350,6 +356,9 @@
     },
     "organization-has-children": "该机构有孩子",
     "user": {
+      "user-group-has-child":"人员组有孩子",
+      "group-has-child":"人员组有孩子",
+      "group-removed-successfully":"人员组删除成功",
       "username-field-is-mandatory": "人员姓名是必需的",
       "userId-field-is-mandatory": "人员编号是必需的",
       "gender-field-is-mandatory": "性别是必需的",
@@ -422,16 +431,16 @@
       "save": "保存",
       "delete": "删除",
       "prompt": "提示"
-    },
-    "site-management": {
-      "status-updated-successfully": "状态已成功更新",
-      "site-deleted-successfully": "网站已成功删除",
-      "site-has-children": "网站有孩子",
-      "site-added-successfully": "网站已成功添加",
-      "delete-prompt": "删除提示",
-      "make-inactive-prompt": "发出不活动的提示",
-      "site-has-devices": "网站有设备"
     }
+  },
+  "site-management": {
+    "status-updated-successfully": "状态已成功更新",
+    "site-deleted-successfully": "场地已成功删除",
+    "site-has-children": "场地有孩子",
+    "site-added-successfully": "场地已成功添加",
+    "delete-prompt": "删除提示",
+    "make-inactive-prompt": "发出不活动的提示",
+    "site-has-devices": "场地有设备"
   },
   "device-management": {
     "file-template": "档案模板",
@@ -523,7 +532,9 @@
       "delete-prompt": "是否失效该模板",
       "make-inactive-prompt": "是否失效该模板",
       "has-archives": "已经有档案",
-      "not-have-indicators": "没有指标"
+      "not-have-indicators": "没有指标",
+      "indicator-added-successfully":"指标创建成功",
+      "indicator-deleted-successfully":"指标删除成功"
     },
     "device-table": {
       "device-info": "设备信息",

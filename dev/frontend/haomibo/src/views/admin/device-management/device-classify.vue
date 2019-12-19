@@ -671,8 +671,14 @@
                 if (this.pageStatus === 'list')
                   this.$refs.deviceClassifyTable.refresh();
                 break;
-              case responseMessages["has-devices"]: // has children
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-devices`), {
+              case "has_archive_template": // already used
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.category-has-archive-template`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-children']: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.category-has-children`), {
                   duration: 3000,
                   permanent: false
                 });
@@ -716,8 +722,8 @@
                   permanent: false
                 });
                 break;
-              case responseMessages["has-devices"]: // has children
-                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.category-has-devices`), {
+              case "has_archive_template": // already used
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.category-has-archive-template`), {
                   duration: 3000,
                   permanent: false
                 });

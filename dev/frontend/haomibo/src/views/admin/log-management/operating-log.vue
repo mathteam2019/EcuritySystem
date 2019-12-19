@@ -398,7 +398,7 @@
           'filter': this.operatingFilter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/operating-log/audit/export`;
+        let link = `log-management/operating-log/audit`;
         downLoadFileFromServer(link, params, 'operating-log');
       },
       onPrintOperatingButton() {
@@ -409,7 +409,7 @@
           'filter': this.operatingFilter,
           'idList': checkedIds.join()
         };
-        let link = `log-management/operating-log/audit/print`;
+        let link = `log-management/operating-log/audit`;
         printFileFromServer(link, params);
       },
       onAccessSearchButton() {

@@ -1666,6 +1666,11 @@
                     permanent: false
                   });
                   this.$refs.userGroupTable.refresh();
+                  this.groupForm = {
+                    groupName: null,
+                    groupNumber: null,
+                    status: 'create'
+                  };
                   break;
                 case responseMessages['used-user-group-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {
@@ -1687,11 +1692,7 @@
 
             }).finally(() => {
             //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
+
           });
         }
       },
@@ -1717,6 +1718,18 @@
                     permanent: false
                   });
                   this.$refs.userGroupTable.refresh();
+                  break;
+                case responseMessages['used-user-group-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-user-group-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
                   break;
                 default:
 

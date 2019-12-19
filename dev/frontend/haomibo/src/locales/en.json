@@ -402,7 +402,7 @@
     }
   },
   "site-management" : {
-    "status-updated-successfully":"Status updated Successfully.",
+    "status-updated-successfully":"Status updated Successfully",
     "site-deleted-successfully" : "Site deleted successfully.",
     "site-has-children" : "Site has children",
     "site-added-successfully" : "Site added successfully.",

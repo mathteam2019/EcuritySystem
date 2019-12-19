@@ -36,13 +36,13 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="deviceFilter.device"></b-form-input>
+                      <b-form-input v-model="deviceFilter.deviceName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="deviceFilter.user"></b-form-input>
+                      <b-form-input v-model="deviceFilter.userName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -143,13 +143,13 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="judgeFilter.device"></b-form-input>
+                      <b-form-input v-model="judgeFilter.deviceName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="judgeFilter.user"></b-form-input>
+                      <b-form-input v-model="judgeFilter.userName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -250,13 +250,13 @@
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.device')">
-                      <b-form-input v-model="manualFilter.device"></b-form-input>
+                      <b-form-input v-model="manualFilter.deviceName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
                   <b-col>
                     <b-form-group :label="$t('log-management.device-log.user')">
-                      <b-form-input v-model="manualFilter.user"></b-form-input>
+                      <b-form-input v-model="manualFilter.userName"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -389,29 +389,29 @@
         deviceFilter: {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'device'
+          deviceType: '1000001901'
         },
         judgeFilter: {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'judge'
+          deviceType: '1000001902'
         },
         manualFilter: {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'manual'
+          deviceType: '1000001903'
         },
         //first tab
         securityLogTableItems: {
@@ -436,9 +436,8 @@
               dataClass: 'text-center',
             },
             {
-              name: 'guid',
+              name: 'deviceSerial',
               title: this.$t('log-management.device-log.device-number'),
-              sortField: 'guid',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -490,7 +489,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'number',
+              name: 'id',
               title: this.$t('log-management.device-log.number'),
               sortField: 'number',
               titleClass: 'text-center',
@@ -503,9 +502,8 @@
               dataClass: 'text-center',
             },
             {
-              name: 'deviceNumber',
+              name: 'deviceSerial',
               title: this.$t('log-management.device-log.device-number'),
-              sortField: 'deviceNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -557,7 +555,7 @@
               dataClass: 'text-center'
             },
             {
-              name: 'number',
+              name: 'id',
               title: this.$t('log-management.device-log.number'),
               sortField: 'number',
               titleClass: 'text-center',
@@ -570,9 +568,8 @@
               dataClass: 'text-center',
             },
             {
-              name: 'deviceNumber',
+              name: 'deviceSerial',
               title: this.$t('log-management.device-log.device-number'),
-              sortField: 'deviceNumber',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -621,7 +618,7 @@
         return checkPermissionItem(value);
       },
       onExportButton(page = 'device') {
-        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decisionLogTable' : 'handCheckLogTable';
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
@@ -634,7 +631,7 @@
         downLoadFileFromServer(link, params, 'device-log');
       },
       onPrintButton(page = 'device') {
-        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decisionLogTable' : 'handCheckLogTable';
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
@@ -664,6 +661,7 @@
           temp = data.data[i];
           temp.deviceName = temp.device.deviceName;
           temp.operateTime  = getDateTimeWithFormat(temp.time,this.$i18n.locale);
+          temp.deviceSerial = temp.device.deviceSerial;
           transformed.data.push(temp);
         }
         return transformed
@@ -675,11 +673,11 @@
         this.deviceFilter = {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'device'
+          deviceType: '1000001901'
         };
       },
       securityLogTableHttpFetch(apiUrl, httpOptions) {
@@ -704,11 +702,11 @@
         this.judgeFilter = {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'device'
+          deviceType: '1000001902'
         };
       },
       decisionLogTableHttpFetch(apiUrl, httpOptions) {
@@ -733,11 +731,11 @@
         this.manualFilter = {
           operateStartTime: null,
           operateEndTime: null,
-          device: '',
-          user: '',
+          deviceName: '',
+          userName: '',
           category: '',
           level: '',
-          deviceType: 'device'
+          deviceType: '1000001903'
         };
       },
       handCheckLogTableHttpFetch(apiUrl, httpOptions) {

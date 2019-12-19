@@ -44,13 +44,16 @@
                   <b-button size="sm" class="ml-2" @click="onResetButton()" variant="info default">
                     <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_export')" @click="onExportButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default"
+                            :disabled="checkPermItem('field_export')" @click="onExportButton()">
                     <i class="icofont-share-alt"></i>&nbsp;{{ $t('permission-management.export') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('field_print')" @click="onPrintButton()">
+                  <b-button size="sm" class="ml-2" variant="outline-info default"
+                            :disabled="checkPermItem('field_print')" @click="onPrintButton()">
                     <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onAction('create')" :disabled="checkPermItem('field_create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onAction('create')" :disabled="checkPermItem('field_create')"
+                            variant="success default">
                     <i class="icofont-plus"></i>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -194,7 +197,8 @@
                       <template slot="label">
                         {{$t('system-setting.system-phone')}}
                       </template>
-                      <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$invalid" :placeholder="'xxx-xxxx-xxxx'"></b-form-input>
+                      <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$invalid"
+                                    :placeholder="'000-0000-0000'"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -294,7 +298,7 @@
                       <template slot="label">
                         {{$t('system-setting.system-phone')}}
                       </template>
-                      <b-form-input type="text" v-model="siteForm.mobile" :placeholder="''"></b-form-input>
+                      <b-form-input type="text" v-model="siteForm.mobile" :placeholder="'000-0000-0000'"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -311,14 +315,17 @@
             <b-row class="flex-grow-1 align-items-end">
               <b-col cols="12" class="d-flex justify-content-end">
                 <div class="mr-3">
-                  <b-button v-if="siteForm.status === '1000000701' && siteForm.parentFieldId !=0" @click="onAction('inactivate',siteForm)" size="sm"
+                  <b-button v-if="siteForm.status === '1000000701' && siteForm.parentFieldId !=0"
+                            @click="onAction('inactivate',siteForm)" size="sm"
                             variant="warning default" :disabled="checkPermItem('field_update_status')">
                     <i class="icofont-ban"></i> {{$t('system-setting.status-inactive')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_update_status')" @click="onAction('activate',siteForm)" size="sm" variant="success default">
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_update_status')"
+                            @click="onAction('activate',siteForm)" size="sm" variant="success default">
                     <i class="icofont-check-circled"></i> {{$t('system-setting.status-active')}}
                   </b-button>
-                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')" @click="onAction('delete',siteForm)" size="sm"
+                  <b-button v-if="siteForm.status === '1000000702'" :disabled="checkPermItem('field_delete')"
+                            @click="onAction('delete',siteForm)" size="sm"
                             variant="danger default">
                     <i class="icofont-bin"></i> {{$t('system-setting.delete')}}
                   </b-button>
@@ -634,21 +641,17 @@
         parentFieldId: {
           required
         },
-        mobile : {
+        mobile: {
           isPhoneValid
         }
       }
     },
     methods: {
 
-      getDictDataValue(dataCode, dicId = null) {
-        return getDictData(dataCode, dicId);
-      },
-
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
-      onExportButton(){
+      onExportButton() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -672,7 +675,7 @@
       },
 
       getSiteData() {
-        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all`).then((response) => {
+        getApiManager().post(`${apiBaseUrl}/site-management/field/get-all-field`).then((response) => {
           let message = response.data.message;
           let data = response.data.data;
           switch (message) {
@@ -857,6 +860,13 @@
                   this.siteForm.status = statusValue;
                 if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
+                this.getSiteData();
+                break;
+              case responseMessages["has-children"]: // has children
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
               case responseMessages["has-devices"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
@@ -927,8 +937,6 @@
       },
       treeLabelClass: function (data) {
         let level = fnGetOrgLevel(data);
-        console.log(data);
-        console.log(level);
         const labelClasses = ['bg-level-1', 'bg-level-2', 'bg-level-3', 'bg-level-4', 'bg-level-5'];
         return `${labelClasses[level % 5]} text-white`;
       }
