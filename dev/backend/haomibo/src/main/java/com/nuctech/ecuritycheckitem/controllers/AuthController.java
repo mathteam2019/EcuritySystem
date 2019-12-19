@@ -55,6 +55,9 @@ public class AuthController extends BaseController {
 
         @NotNull
         String password;
+
+        @NotNull
+        Integer count;
     }
 
     /**
@@ -129,8 +132,13 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_NOT_FOUND);
         }
 
+        if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
+            return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
+        }
+
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
+            authService.checkPendingUser(sysUser, requestBody.getCount());
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
 

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysResourceRepository extends
-        JpaRepository<SysResource, Integer>,
-        PagingAndSortingRepository<SysResource, Integer>,
+        JpaRepository<SysResource, Long>,
+        PagingAndSortingRepository<SysResource, Long>,
         QuerydslPredicateExecutor<SysResource> {
 
 }

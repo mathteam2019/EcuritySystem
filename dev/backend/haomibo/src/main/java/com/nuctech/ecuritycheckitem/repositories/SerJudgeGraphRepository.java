@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerJudgeGraphRepository extends
-        JpaRepository<SerJudgeGraph, Integer>,
-        PagingAndSortingRepository<SerJudgeGraph, Integer>,
+        JpaRepository<SerJudgeGraph, Long>,
+        PagingAndSortingRepository<SerJudgeGraph, Long>,
         QuerydslPredicateExecutor<SerJudgeGraph> {
 
     @Query("SELECT YEAR(MAX(JUDGE_START_TIME)) FROM SerJudgeGraph ")

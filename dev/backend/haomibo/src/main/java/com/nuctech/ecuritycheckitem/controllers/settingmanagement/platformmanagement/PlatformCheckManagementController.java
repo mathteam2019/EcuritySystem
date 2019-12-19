@@ -64,15 +64,11 @@ public class PlatformCheckManagementController extends BaseController {
 
         String handRecogniseColour;
 
-        @NotNull
-        @Pattern(regexp = SerPlatformCheckParams.HistoryData.BUSINESS + "|" + SerPlatformCheckParams.HistoryData.CARTOON
-                + "|" + SerPlatformCheckParams.HistoryData.CONVERSION+ "|" + SerPlatformCheckParams.HistoryData.ORIGINAL)
-        String historyDataStorage;
 
-        @NotNull
-        @Pattern(regexp = SerPlatformCheckParams.HistoryData.BUSINESS + "|" + SerPlatformCheckParams.HistoryData.CARTOON
-                + "|" + SerPlatformCheckParams.HistoryData.CONVERSION+ "|" + SerPlatformCheckParams.HistoryData.ORIGINAL)
-        String historyDataExport;
+        List<String> historyDataStorageList;
+
+
+        List<String> historyDataExportList;
 
         Long displayDeleteSuspicion;
 
@@ -91,8 +87,6 @@ public class PlatformCheckManagementController extends BaseController {
                     .judgeRecogniseColour(this.getJudgeRecogniseColour())
                     .handOverTime(this.getHandOverTime())
                     .handRecogniseColour(this.getHandRecogniseColour())
-                    .historyDataStorage(this.getHistoryDataStorage())
-                    .historyDataExport(this.getHistoryDataExport())
                     .displayDeleteSuspicion(this.getDisplayDeleteSuspicion())
                     .displayDeleteSuspicionColour(this.getDisplayDeleteSuspicionColour())
                     .build();
@@ -134,13 +128,20 @@ public class PlatformCheckManagementController extends BaseController {
         }
 
         SerPlatformCheckParams serPlatformCheckParams = requestBody.convert2SerPlatformCheckParams();
+        serPlatformCheckParams.setHistoryDataStorage(String.join(",", requestBody.getHistoryDataStorageList()));
+        serPlatformCheckParams.setHistoryDataExport(String.join(",", requestBody.getHistoryDataExportList()));
         List<SerPlatformCheckParams> serPlatformCheckParamsList = platformCheckService.findAll();
+
+        boolean isCreate = true;
 
         if(serPlatformCheckParamsList != null && serPlatformCheckParamsList.size() > 0) {
             serPlatformCheckParams.setScanId(serPlatformCheckParamsList.get(0).getScanId());
+            serPlatformCheckParams.setCreatedBy(serPlatformCheckParamsList.get(0).getCreatedBy());
+            serPlatformCheckParams.setCreatedTime(serPlatformCheckParamsList.get(0).getCreatedTime());
+            isCreate = false;
         }
 
-        platformCheckService.modifyPlatform(serPlatformCheckParams);
+        platformCheckService.modifyPlatform(serPlatformCheckParams, isCreate);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }

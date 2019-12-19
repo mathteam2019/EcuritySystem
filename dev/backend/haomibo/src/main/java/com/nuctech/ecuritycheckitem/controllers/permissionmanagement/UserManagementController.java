@@ -1023,6 +1023,15 @@ public class UserManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
+        if(userService.checkUserGroupRoleExist(requestBody.getUserGroupId())) {
+
+            /*
+            * Todo
+            *  return HAS_ROLE
+            * */
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
         // Delete.
         userService.removeUserGroup(requestBody.getUserGroupId());
 

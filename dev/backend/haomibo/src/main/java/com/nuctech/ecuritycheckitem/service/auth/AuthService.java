@@ -11,6 +11,7 @@ package com.nuctech.ecuritycheckitem.service.auth;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
 
 import java.util.List;
 
@@ -22,7 +23,10 @@ public interface AuthService {
 
     boolean modifyPassword(Long userId, String password);
 
+
     List<SysDictionaryData> findAllDictionary();
 
     List<SysDeviceDictionaryData> findAllDeviceDictionary();
+
+    void checkPendingUser(SysUser user, Integer count);
 }

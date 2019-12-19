@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysJudgeDeviceRepository extends
-        JpaRepository<SysJudgeDevice, Integer>,
-        PagingAndSortingRepository<SysJudgeDevice, Integer>,
+        JpaRepository<SysJudgeDevice, Long>,
+        PagingAndSortingRepository<SysJudgeDevice, Long>,
         QuerydslPredicateExecutor<SysJudgeDevice> {
 
 }

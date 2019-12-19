@@ -11,8 +11,8 @@ import java.util.List;
 
 @Repository
 public interface SerHandExaminationRepository extends
-        JpaRepository<SerHandExamination, Integer>,
-        PagingAndSortingRepository<SerHandExamination, Integer>,
+        JpaRepository<SerHandExamination, Long>,
+        PagingAndSortingRepository<SerHandExamination, Long>,
         QuerydslPredicateExecutor<SerHandExamination> {
 
     @Query(value = "SELECT\n" +

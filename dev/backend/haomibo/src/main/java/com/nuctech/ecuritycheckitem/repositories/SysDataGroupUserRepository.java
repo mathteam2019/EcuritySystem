@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysDataGroupUserRepository extends
-        JpaRepository<SysDataGroupUser, Integer>,
-        PagingAndSortingRepository<SysDataGroupUser, Integer>,
+        JpaRepository<SysDataGroupUser, Long>,
+        PagingAndSortingRepository<SysDataGroupUser, Long>,
         QuerydslPredicateExecutor<SysDataGroupUser> {
 
 }

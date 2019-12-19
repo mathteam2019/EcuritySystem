@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerDevLogRepository extends
-        JpaRepository<SerDevLog, Integer>,
-        PagingAndSortingRepository<SerDevLog, Integer>,
+        JpaRepository<SerDevLog, Long>,
+        PagingAndSortingRepository<SerDevLog, Long>,
         QuerydslPredicateExecutor<SerDevLog> {
 
 }

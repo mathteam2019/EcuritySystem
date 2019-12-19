@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HistoryRepository extends
-        JpaRepository<History, Integer>,
-        PagingAndSortingRepository<History, Integer>,
+        JpaRepository<History, Long>,
+        PagingAndSortingRepository<History, Long>,
         QuerydslPredicateExecutor<History> {
 
 }

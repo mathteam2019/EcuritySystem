@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ForbiddenTokenRepository extends
-        JpaRepository<ForbiddenToken, Integer>,
-        PagingAndSortingRepository<ForbiddenToken, Integer>,
+        JpaRepository<ForbiddenToken, Long>,
+        PagingAndSortingRepository<ForbiddenToken, Long>,
         QuerydslPredicateExecutor<ForbiddenToken> {
 
 }

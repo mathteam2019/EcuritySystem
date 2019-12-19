@@ -3,10 +3,7 @@ package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.UserManagementController;
 import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserGroupUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -46,6 +43,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     SysUserGroupUserRepository sysUserGroupUserRepository;
+
+    @Autowired
+    SysUserGroupRoleRepository sysUserGroupRoleRepository;
 
     @Override
     public boolean checkUserExist(long userId) {
@@ -343,6 +343,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean checkUserGroupRoleExist(long userGroupId) {
+        return sysUserGroupRoleRepository.exists(QSysUserGroupRole.sysUserGroupRole.userGroupId.eq(userGroupId));
+    }
+
+    @Override
     @Transactional
     public  boolean modifyUserGroup(long userGroupId, List<Long> userIdList) {
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
@@ -350,7 +355,9 @@ public class UserServiceImpl implements UserService {
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
 
         // Delete all existing relation.
-        sysUserGroupUserRepository.deleteAll(sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId())));
+        Iterable<SysUserGroupUser> userGroupList = sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId()));
+        List<SysUserGroupUser> listTest = StreamSupport.stream(userGroupList.spliterator(), false).collect(Collectors.toList());Collectors.toList();
+        sysUserGroupUserRepository.deleteAll(userGroupList);
 
         // Build relation array which are valid only.
         List<SysUserGroupUser> relationList = StreamSupport.stream(
@@ -396,11 +403,14 @@ public class UserServiceImpl implements UserService {
 
         SysUser sysUser = optionalSysUser.get();
 
+
+
         // Get all available resources for user.
         List<SysResource> availableSysResourceList = new ArrayList<>();
         sysUser.getRoles().forEach(sysRole -> {
             availableSysResourceList.addAll(sysRole.getResources());
         });
+
         return availableSysResourceList;
     }
 }

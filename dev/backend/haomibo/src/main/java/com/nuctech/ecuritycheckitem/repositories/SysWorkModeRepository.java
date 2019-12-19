@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysWorkModeRepository extends
-        JpaRepository<SysWorkMode, Integer>,
-        PagingAndSortingRepository<SysWorkMode, Integer>,
+        JpaRepository<SysWorkMode, Long>,
+        PagingAndSortingRepository<SysWorkMode, Long>,
         QuerydslPredicateExecutor<SysWorkMode> {
 
 }

@@ -164,12 +164,14 @@ public class OrganizationServiceImpl implements OrganizationService {
         return true;
     }
 
-    public List<SysOrg> getAllOrganization() {
+    public List<SysOrg> getAllOrganization(boolean isAll) {
         QSysOrg builder = QSysOrg.sysOrg;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        predicate.and(builder.status.eq(SysOrg.Status.ACTIVE));
+        if(isAll == false) {
+            predicate.and(builder.status.eq(SysOrg.Status.ACTIVE));
+        }
 
         return StreamSupport
                 .stream(sysOrgRepository.findAll(predicate).spliterator(), false)

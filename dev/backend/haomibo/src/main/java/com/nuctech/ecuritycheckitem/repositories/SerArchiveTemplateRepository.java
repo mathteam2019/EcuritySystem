@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerArchiveTemplateRepository extends
-        JpaRepository<SerArchiveTemplate, Integer>,
-        PagingAndSortingRepository<SerArchiveTemplate, Integer>,
+        JpaRepository<SerArchiveTemplate, Long>,
+        PagingAndSortingRepository<SerArchiveTemplate, Long>,
         QuerydslPredicateExecutor<SerArchiveTemplate> {
 
 }

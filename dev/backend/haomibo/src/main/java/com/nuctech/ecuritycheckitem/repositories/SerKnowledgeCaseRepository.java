@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerKnowledgeCaseRepository extends
-        JpaRepository<SerKnowledgeCase, Integer>,
-        PagingAndSortingRepository<SerKnowledgeCase, Integer>,
+        JpaRepository<SerKnowledgeCase, Long>,
+        PagingAndSortingRepository<SerKnowledgeCase, Long>,
         QuerydslPredicateExecutor<SerKnowledgeCase> {
 
 }

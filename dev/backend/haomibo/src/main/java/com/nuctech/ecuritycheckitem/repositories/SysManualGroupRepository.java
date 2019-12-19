@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysManualGroupRepository extends
-        JpaRepository<SysManualGroup, Integer>,
-        PagingAndSortingRepository<SysManualGroup, Integer>,
+        JpaRepository<SysManualGroup, Long>,
+        PagingAndSortingRepository<SysManualGroup, Long>,
         QuerydslPredicateExecutor<SysManualGroup> {
 
 }

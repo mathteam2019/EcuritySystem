@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysDeviceConfigRepository extends
-        JpaRepository<SysDeviceConfig, Integer>,
-        PagingAndSortingRepository<SysDeviceConfig, Integer>,
+        JpaRepository<SysDeviceConfig, Long>,
+        PagingAndSortingRepository<SysDeviceConfig, Long>,
         QuerydslPredicateExecutor<SysDeviceConfig> {
 
 }

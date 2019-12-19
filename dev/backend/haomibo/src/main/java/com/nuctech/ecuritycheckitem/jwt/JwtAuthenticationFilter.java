@@ -143,6 +143,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         });
 
 
+
         // Generate roles for this user.
         List<GrantedAuthority> roles = availableSysResourceList
                 .stream()

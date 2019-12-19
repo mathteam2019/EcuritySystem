@@ -148,4 +148,5 @@ public class SysUser extends BaseEntity implements Serializable {
     )
     private Set<SysDataGroup> dataGroups;
 
+
 }
