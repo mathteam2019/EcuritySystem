@@ -22,6 +22,7 @@ public enum ResponseMessage {
     INVALID_PARAMETER("invalid_parameter"),
     INVALID_SCANID("invalid_serscan_id"),
     USER_NOT_FOUND("user_not_found"),
+    USER_PENDING_STATUS("user_pending_status"),
     INVALID_PASSWORD("invalid_password"),
     TOKEN_EXPIRED("token_expired"),
     INVALID_TOKEN("invalid_token"),

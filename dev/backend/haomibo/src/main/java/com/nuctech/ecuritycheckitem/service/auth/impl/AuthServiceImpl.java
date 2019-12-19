@@ -9,9 +9,8 @@
 package com.nuctech.ecuritycheckitem.service.auth.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceDictionaryDataRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
+import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     SysDictionaryDataRepository sysDictionaryDataRepository;
+
+    @Autowired
+    SerPlatformOtherParamRepository serPlatformOtherParamRepository;
+
+    @Autowired
+    AuthenticationFacade authenticationFacade;
+
 
     @Override
     public SysUser getSysUserByUserAccount(String userAccount) {
@@ -75,6 +81,24 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public List<SysDeviceDictionaryData> findAllDeviceDictionary() {
         return sysDeviceDictionaryDataRepository.findAll();
+    }
+
+    @Override
+    public void checkPendingUser(SysUser user, Integer count) {
+        Integer passwordLimit = 7;
+        List<SerPlatformOtherParams> serPlatformOtherParams = serPlatformOtherParamRepository.findAll();
+        if(serPlatformOtherParams != null && serPlatformOtherParams.size() > 0) {
+            Long loginNumber = serPlatformOtherParams.get(0).getLoginNumber();
+            if(loginNumber != null) {
+                passwordLimit = loginNumber.intValue();
+            }
+        }
+        if(count != null && count >= passwordLimit) {
+            user.setStatus(SysUser.Status.PENDING);
+            user.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysUserRepository.save(user);
+
+        }
     }
 
 }

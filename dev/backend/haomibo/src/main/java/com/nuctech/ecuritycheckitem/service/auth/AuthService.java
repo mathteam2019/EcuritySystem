@@ -27,4 +27,6 @@ public interface AuthService {
     List<SysDictionaryData> findAllDictionary();
 
     List<SysDeviceDictionaryData> findAllDeviceDictionary();
+
+    void checkPendingUser(SysUser user, Integer count);
 }
