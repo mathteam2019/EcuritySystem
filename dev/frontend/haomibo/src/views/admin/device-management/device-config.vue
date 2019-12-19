@@ -2,6 +2,16 @@
   @import '../../../assets/css/dual-list.css';
   $cyan-button-color: #178af7;
   .device-config {
+    .v-select.v-select-custom-style {
+      & > div {
+        border-radius: 0.3rem !important;
+
+        & > div {
+          border-radius: 0.3rem !important;
+        }
+      }
+
+    }
     .p-left-0 {
       padding-left: 0;
     }
@@ -353,6 +363,7 @@
         </b-row>
         <b-row v-show="pageStatus === 'show'" class="h-100 form-section">
           <b-col cols="10">
+
             <b-row class="mb-2">
               <b-col cols="3">
                 <b-form-group>
@@ -376,6 +387,16 @@
                     {{$t('device-config.maintenance-config.device')}}
                   </template>
                   <label>{{selectedDeviceData.deviceName}}</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row class="mb-2">
+              <b-col cols="6">
+                <b-form-group class="full-width">
+                  <template slot="label">
+                    {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
+                  </template>
+                  <v-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions" class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -429,9 +450,9 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.monitor-group')}}
                   </template>
-                  <b-form-select
+                  <v-select
                     :disabled="getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304'"
-                    v-model="configForm.judgeDeviceId" :options="judgeDeviceOptions" plain/>
+                    v-model="configForm.judgeDeviceId" :options="judgeDeviceOptions" class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -461,9 +482,9 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.hand-check-position')}}
                   </template>
-                  <b-form-select
+                  <v-select
                     :disabled="getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304'"
-                    v-model="configForm.manualDeviceId" :options="manualDeviceOptions" plain/>
+                    v-model="configForm.manualDeviceId" :options="manualDeviceOptions" class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -487,16 +508,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row class="mb-2">
-              <b-col cols="6">
-                <b-form-group class="full-width">
-                  <template slot="label">
-                    {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
-                  </template>
-                  <b-form-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions" plain/>
-                </b-form-group>
-              </b-col>
-            </b-row>
+
 
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
@@ -530,6 +542,8 @@
   import Vue from 'vue'
   import VueDualList from '../../../components/Duallist/VueDualList'
   import LiquorTree from 'liquor-tree'
+  import vSelect from 'vue-select'
+  import 'vue-select/dist/vue-select.css'
 
   let getSiteFullName = orgData => {
     let orgFullName = '';
@@ -550,7 +564,8 @@
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'VueDualList': VueDualList
+      'VueDualList': VueDualList,
+      'v-select': vSelect
     },
     mounted() {
       this.getCategoryData();
@@ -809,7 +824,7 @@
             case responseMessages['ok']:
               let options = [];
               options = data.map(opt => ({
-                text: opt.device ? opt.device.deviceName : "Unknown",
+                label: opt.device ? opt.device.deviceName : "Unknown",
                 value: opt.manualDeviceId
               }));
               this.manualDeviceOptions = options;
@@ -825,7 +840,7 @@
             case responseMessages['ok']:
               let options = [];
               options = data.map(opt => ({
-                text: opt.device ? opt.device.deviceName : "Unknown",
+                label: opt.device ? opt.device.deviceName : "Unknown",
                 value: opt.judgeDeviceId
               }));
               this.judgeDeviceOptions = options;
@@ -987,6 +1002,7 @@
       ///////////////////////////////////////////
       /////   setting device with config ////////
       ///////////////////////////////////////////
+
       onRefreshItem(data,index){
         this.$refs.pendingListTable.reload();
       },
@@ -1025,35 +1041,72 @@
           manualSwitch: data.manualSwitch,
           manRemoteGender: data.manRemoteGender,
           womanRemoteGender: data.womanRemoteGender,
-          manualDeviceId: data.manualGroupList.length > 0 ? data.manualGroupList[0].manualDeviceId : 0,
           manManualGender: data.manManualGender,
           womanManualGender: data.womanManualGender,
-          judgeDeviceId: data.judgeGroupList.length > 0 ? data.judgeGroupList[0].judgeDeviceId : 0,
           manDeviceGender: data.manDeviceGender,
           womanDeviceGender: data.womanDeviceGender,
           deviceId: data.deviceId,
-          fromDeviceId: data.fromConfigIdList.length > 0 ? data.fromConfigIdList[0].deviceId : 0
+          judgeDeviceIdList:[],
+          manualDeviceIdList:[],
+          fromDeviceIdList:[],
+          judgeDeviceId: [],
+          manualDeviceId: [],
+          fromDeviceId: []
         };
-      },
-      getConfigDetailData(deviceId) {
-        for (let data of this.fromConfigDeviceData) {
-          if (data.deviceId === deviceId) {
-            this.configForm.modeId = data.modeId;
-            this.configForm.atrSwitch = data.atrSwitch;
-            this.configForm.manualSwitch = data.manualSwitch;
-            this.configForm.manRemoteGender = data.manRemoteGender;
-            this.configForm.womanRemoteGender = data.womanRemoteGender;
-            this.configForm.manualDeviceId = data.manualGroupList.length > 0 ? data.manualGroupList[0].manualDeviceId : 0;
-            this.configForm.manManualGender = data.manManualGender;
-            this.configForm.womanManualGender = data.womanManualGender;
-            this.configForm.judgeDeviceId = data.judgeGroupList.length > 0 ? data.judgeGroupList[0].judgeDeviceId : 0;
-            this.configForm.manDeviceGender = data.manDeviceGender;
-            this.configForm.womanDeviceGender = data.womanDeviceGender;
-            break;
-          }
-        }
+        data.fromConfigIdList.forEach(item => {
+          this.configForm.fromDeviceId.push({
+            value:item.device.deviceId,
+            label:item.device.deviceName
+          })
+        });
+        data.judgeGroupList.forEach(item => {
+          this.configForm.judgeDeviceId.push({
+            value:item.judgeDevice.deviceId,
+            label:item.judgeDevice.deviceName
+          })
+        });
+        data.manualGroupList.forEach(item => {
+          this.configForm.manualDeviceId.push({
+            value:item.manualDevice.deviceId,
+            label:item.manualDevice.deviceName
+          })
+        });
       },
       onSaveDeviceConfig() {
+        if(this.configForm.manualDeviceId.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-manual-device-select`), {
+            duration: 3000,
+            permanent: false
+          });
+          return ;
+        }
+        if(this.configForm.judgeDeviceId.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-judge-device-select`), {
+            duration: 3000,
+            permanent: false
+          });
+          return ;
+        }
+        if(this.configForm.fromDeviceId.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-from-device-select`), {
+            duration: 3000,
+            permanent: false
+          });
+          return ;
+        }
+        this.configForm.manualDeviceIdList = [];
+        this.configForm.judgeDeviceIdList = [];
+        this.configForm.fromDeviceIdList = [];
+        this.configForm.manualDeviceId.forEach(item => {
+          this.configForm.manualDeviceIdList.push(item.value);
+        });
+        this.configForm.judgeDeviceId.forEach(item => {
+          this.configForm.judgeDeviceIdList.push(item.value);
+        });
+        this.configForm.fromDeviceId.forEach(item => {
+          this.configForm.fromDeviceIdList.push(item.value);
+        });
+
         getApiManager().post(`${apiBaseUrl}/device-management/device-config/config/modify`, this.configForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -1234,17 +1287,12 @@
         newVal.forEach((opt) => {
           if (opt.device !== null) {
             options.push({
-              text: opt.device.deviceName,
+              label: opt.device.deviceName,
               value: opt.device.deviceId
             })
           }
         });
         this.fromConfigDeviceSelectOptions = options;
-      },
-      'configForm.fromDeviceId': function (newVal, oldVal) {
-        //when initialize data, need to skip
-        if (oldVal !== null)
-          this.getConfigDetailData(newVal);
       },
       treeFilter:function (newVal,oldVal) {
         //this.selectedFieldId = 0;

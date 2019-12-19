@@ -366,6 +366,17 @@
         </b-row>
         <b-row v-if="pageStatus !== 'table'" class="h-100 form-section">
           <b-col cols="10">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group class="mw-100">
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style" multiple :dir="direction"/>
+                </b-form-group>
+              </b-col>
+            </b-row>
             <b-row class="mb-2">
               <b-col cols="3">
                 <b-form-group>
@@ -522,15 +533,6 @@
             </b-row>
             <b-row class="mb-2">
               <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" plain/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
                 <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
                   <b-form-input type="number" v-model="scanForm.storageAlarm"></b-form-input>
                 </b-form-group>
@@ -665,16 +667,11 @@
         newVal.forEach((scan) => {
           selectOptions.push({
             value: scan.deviceId,
-            text: scan.device ? scan.device.deviceName : 'dev-' + scan.deviceId
+            label: scan.device ? scan.device.deviceName : 'dev-' + scan.deviceId
           });
         });
         this.deviceSelectOptions = selectOptions;
       },
-      'scanForm.fromDeviceId': function (newVal, oldVal) {
-        //when initialize data, need to skip
-        if (oldVal !== null)
-          this.getScanParamsDetail(newVal);
-      }
     },
     data() {
       return {
@@ -816,7 +813,8 @@
           hipBlurring: null,
           groinBlurring: null,
           deviceId: null,
-          fromDeviceId: null,
+          fromDeviceId: [],
+          fromDeviceIdList:[],
           storageAlarmPercent:80,
           storageAlarm:400
         },
@@ -899,15 +897,6 @@
       onTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
-      getScanParamsDetail(deviceId) {
-        for (let item of this.scanParams) {
-          if (item.deviceId === deviceId) {
-            this.initializeSpanFormData(item);
-            break;
-          }
-        }
-
-      },
       initializeSpanFormData(result) {
         this.submitted = false;
         for (let key in this.scanForm) {
@@ -916,10 +905,21 @@
           } else if (key === 'status') {
             this.scanForm.status = result.device ? result.device.status : null;
           }
-          else if (key === 'fromDeviceId') {
+          /*else if (key === 'fromDeviceId') {
             this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
-          }
+          }*/
         }
+        this.scanForm.fromDeviceId = [];
+        if(result != null){
+          result.fromParamsList.forEach(item => {
+            this.scanForm.fromDeviceId.push({
+              value:item.device.deviceId,
+              label:item.device.deviceName
+
+            })
+          })
+        }
+
       },
       //update status
       updateItemStatus(statusValue) {
@@ -952,8 +952,17 @@
       },
       //save scanform
       onSaveScanFormData() {
-
-        this.scanForm.deviceId = this.selectedDeviceId;
+        if(this.scanForm.fromDeviceId.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-from-device-list`), {
+            duration: 3000,
+            permanent: false
+          });
+          return false;
+        }
+        this.scanForm.fromDeviceIdList = [];
+        this.scanForm.fromDeviceId.forEach(item => {
+          this.scanForm.fromDeviceIdList.push(item.value);
+        });
         getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`, this.scanForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -991,6 +1000,8 @@
                     this.platFormData[key] = result[key];
                   }
                 }
+                this.platFormData.historyDataStorageSelect = [];
+                this.platFormData.historyDataExportSelect = [];
                 if(result.historyDataStorageList.length >0 ) {
                   result.historyDataStorageList.forEach(item => {
                     this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions,item,false))
@@ -1042,6 +1053,8 @@
               });
             return;
           }
+          this.platFormData.historyDataStorageList = [];
+          this.platFormData.historyDataExportList = [];
           this.platFormData.historyDataStorageSelect.forEach(item => {
             this.platFormData.historyDataStorageList.push(item.value);
           });
