@@ -1064,7 +1064,9 @@
     "user-not-found": "User Not Found",
     "invalid-password": "Invalid Password",
     "token-expired": "Token Expired",
-    "invalid-token": "Token Invalid"
+    "invalid-token": "Token Invalid",
+    "forbidden_warning" : "Your account may be banned.",
+    "forbidden" : "Forbidden User"
   },
   "auth-token-messages": {
     "error-title": "Error Report",
