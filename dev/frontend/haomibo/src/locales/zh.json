@@ -356,6 +356,8 @@
     },
     "organization-has-children": "该机构有孩子",
     "user": {
+      "user-group-has-child":"人员组有孩子",
+      "group-has-child":"人员组有孩子",
       "group-removed-successfully":"人员组删除成功",
       "username-field-is-mandatory": "人员姓名是必需的",
       "userId-field-is-mandatory": "人员编号是必需的",

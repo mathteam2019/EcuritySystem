@@ -198,7 +198,7 @@
                         {{$t('system-setting.system-phone')}}
                       </template>
                       <b-form-input type="text" v-model="siteForm.mobile" :state="!$v.siteForm.mobile.$invalid"
-                                    :placeholder="'xxx-xxxx-xxxx'"></b-form-input>
+                                    :placeholder="'000-0000-0000'"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -298,7 +298,7 @@
                       <template slot="label">
                         {{$t('system-setting.system-phone')}}
                       </template>
-                      <b-form-input type="text" v-model="siteForm.mobile" :placeholder="''"></b-form-input>
+                      <b-form-input type="text" v-model="siteForm.mobile" :placeholder="'000-0000-0000'"></b-form-input>
                     </b-form-group>
                   </b-col>
 
@@ -860,6 +860,7 @@
                   this.siteForm.status = statusValue;
                 if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
+                this.getSiteData();
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-children`), {

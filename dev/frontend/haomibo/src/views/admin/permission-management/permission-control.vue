@@ -1090,6 +1090,7 @@
                     permanent: false
                   });
                   break;
+
                 default:
 
               }
@@ -1132,6 +1133,19 @@
                   break;
                 case responseMessages['used-data-group-number']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-data-group-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-children']:
+                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-users']:
+                case responseMessages['has-user-groups']:
+                  this.$notify('error', this.$t('permission-management.warning'), this.$t(`response-error-message.data-group-already-used`), {
                     duration: 3000,
                     permanent: false
                   });

@@ -1,3 +1,14 @@
+<style lang="scss">
+  nav.navbar {
+    .dropdown-menu-item-hidden {
+      ul.dropdown-menu {
+        opacity: 0;
+        display: none!important;
+      }
+    }
+  }
+
+</style>
 <template>
   <nav class="navbar fixed-top">
     <div class="d-flex align-items-center navbar-left">
@@ -36,15 +47,15 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
-      <div class="user d-inline-block">
-        <b-dropdown class="dropdown-menu-right" right variant="empty" toggle-class="p-0" menu-class="mt-3" no-caret>
-          <template slot="button-content" v-if="currentUser">
-            <span>
+      <div class="user d-inline-block" >
+        <b-dropdown class="dropdown-menu-right dropdown-menu-item-hidden"  right variant="empty" toggle-class="p-0" menu-class="mt-3" no-caret>
+          <template slot="button-content" v-if="currentUser" >
+            <span @click="showPasswordResetView()">
                 <img :alt="currentUser.title" :src="portrait" @error="portraitOnError"/>
             </span>
-            <span class="name ml-1 mr-2">{{currentUser.name}}</span>
+            <span @click="showPasswordResetView()" class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
-          <b-dropdown-item @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
+          <b-dropdown-item  @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="d-inline-block">

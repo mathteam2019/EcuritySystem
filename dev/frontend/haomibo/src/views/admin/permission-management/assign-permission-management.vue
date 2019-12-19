@@ -337,10 +337,12 @@
                     :api-url="userGroupTableItems.apiUrl"
                     :fields="userGroupTableItems.fields"
                     :http-fetch="userGroupTableHttpFetch"
-                    pagination-path="userGroupTablePagination"
+                    pagination-path="pagination"
                     track-by="userGroupId"
                     class="table-hover"
+                    :per-page="userGroupTableItems.perPage"
                     @vuetable:pagination-data="onUserGroupTablePaginationData"
+
                   >
                     <template slot="groupName" slot-scope="props">
                       <span class="cursor-p text-primary" @click="onActionGroup('show-item', props.rowData)">{{ props.rowData.groupName }}</span>
@@ -371,6 +373,7 @@
                     ref="userGroupTablePagination"
                     @vuetable-pagination:change-page="onUserGroupTableChangePage"
                     :initial-per-page="userGroupTableItems.perPage"
+                    @onUpdatePerPage="userGroupTableItems.perPage = Number($event)"
                   ></vuetable-pagination-bootstrap>
 
                 </div>
@@ -1358,7 +1361,7 @@
 
         let data = response.data;
 
-        transformed.userGroupTablePagination = {
+        transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
           current_page: data.current_page,

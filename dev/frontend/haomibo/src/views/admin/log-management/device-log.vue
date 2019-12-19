@@ -618,7 +618,7 @@
         return checkPermissionItem(value);
       },
       onExportButton(page = 'device') {
-        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decisionLogTable' : 'handCheckLogTable';
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;
@@ -631,7 +631,7 @@
         downLoadFileFromServer(link, params, 'device-log');
       },
       onPrintButton(page = 'device') {
-        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decistionLogTable' : 'handCheckLogTable';
+        let vueField = page === 'device' ? 'securityLogTable' : page === 'judge' ? 'decisionLogTable' : 'handCheckLogTable';
         let filter = page === 'device' ? this.deviceFilter : page === 'judge' ? this.judgeFilter : this.manualFilter;
         let checkedAll = this.$refs[vueField].checkedAllStatus;
         let checkedIds = this.$refs[vueField].selectedTo;

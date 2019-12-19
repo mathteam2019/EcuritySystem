@@ -242,7 +242,7 @@
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
                                 v-model="createPage.mobile"  :state="!$v.createPage.mobile.$dirty ? null : !$v.createPage.mobile.$invalid"
-                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                                :placeholder="'000-0000-0000'"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -341,7 +341,7 @@
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
                                 v-model="modifyPage.mobile" :state="!$v.modifyPage.mobile.$dirty ? null : !$v.modifyPage.mobile.$invalid"
-                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                                :placeholder="'000-0000-0000'"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -451,7 +451,7 @@
                   <template slot="label">{{$t('permission-management.organization-mobile')}}</template>
                   <b-form-input type="text"
                                 v-model="modifyPage.mobile"
-                                :placeholder="$t('permission-management.please-enter-organization-mobile')"></b-form-input>
+                                :placeholder="'000-0000-0000'"></b-form-input>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -605,18 +605,7 @@
     },
     mounted() {
       this.$refs.vuetable.$parent.transform = this.transform.bind(this);
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
-        type: 'with_parent'
-      }).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.orgData = data;
-            break;
-        }
-      })
-
+      this.getOrgDataAll();
     },
     data() {
       return {
@@ -869,6 +858,19 @@
         let link = `permission-management/organization-management/organization`;
         printFileFromServer(link, params);
       },
+      getOrgDataAll(){
+        getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {
+          type: 'with_graphic'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.orgData = data;
+              break;
+          }
+        })
+      },
       onSearchButton() {
         this.$refs.vuetable.refresh();
       },
@@ -1008,6 +1010,55 @@
                   if (this.modifyPage != null)
                     this.modifyPage.selectedOrg.status = '1000000701';
                   this.$refs.vuetable.refresh();
+                  this.getOrgDataAll();
+                  break;
+                case responseMessages['has-children']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-org-name']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-users']: // okay
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-user`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['used-org-number']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-number`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-fields']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-user-groups']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-user-groups`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-data-groups']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-data-groups`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-roles']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-roles`), {
+                    duration: 3000,
+                    permanent: false
+                  });
                   break;
 
               }
@@ -1103,6 +1154,7 @@
                 // back to table
                 this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
+                this.getOrgDataAll();
                 break;
               case responseMessages['used-org-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
@@ -1180,8 +1232,14 @@
                 });
 
                 this.pageStatus = 'table';
-
                 this.$refs.vuetable.refresh();
+                this.getOrgDataAll();
+                break;
+              case responseMessages['has-children']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
               case responseMessages['used-org-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
@@ -1261,7 +1319,7 @@
                 });
                 this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
-
+                this.getOrgDataAll();
                 break;
               case responseMessages["has-children"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
@@ -1331,9 +1389,15 @@
                 if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = '1000000702';
                 this.$refs.vuetable.refresh();
-
+                this.getOrgDataAll();
                 break;
-              case responseMessages['has-users']: // okay
+              case responseMessages['has-children']:
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-users']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-user`), {
                   duration: 3000,
                   permanent: false

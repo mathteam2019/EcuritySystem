@@ -249,7 +249,7 @@
               </b-col>
               <b-col cols="4">
                 <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                  <b-form-input v-model="mainForm.mobile" :placeholder="xxx-xxxx-xxxx" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
+                  <b-form-input v-model="mainForm.mobile" :placeholder="'000-0000-0000'" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
                 </b-form-group>
               </b-col>
               <b-col cols="4">
@@ -396,7 +396,7 @@
                   </b-col>
                   <b-col cols="4">
                     <b-form-group :label="$t('device-management.device-list.supplier-contact-information')">
-                      <b-form-input v-model="mainForm.mobile" :placeholder="xxx-xxxx-xxxx" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
+                      <b-form-input v-model="mainForm.mobile" :placeholder="'000-0000-0000'" :state="!$v.mainForm.mobile.$dirty ? null : !$v.mainForm.mobile.$invalid"></b-form-input>
                     </b-form-group>
                   </b-col>
                   <b-col cols="4">
