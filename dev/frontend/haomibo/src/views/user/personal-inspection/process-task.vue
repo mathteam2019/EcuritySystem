@@ -15,7 +15,7 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.task-number')">
-                  <b-form-input v-model="filter.taskNumber"></b-form-input>
+                  <b-form-input v-model="filter.taskNumber"/>
                 </b-form-group>
               </b-col>
 
@@ -39,7 +39,7 @@
 
               <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
+                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"/>
                       </span>
               </b-col>
             </b-row>
@@ -49,42 +49,40 @@
 
               <b-col>
                 <b-form-group :label="$t('personal-inspection.user')">
-                  <b-form-input v-model="filter.userName"></b-form-input>
+                  <b-form-input v-model="filter.userName"/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.start-time')">
                   <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                               placeholder=""></date-picker>
+                               placeholder=""/>
                 </b-form-group>
               </b-col>
 
               <b-col>
                 <b-form-group :label="$t('log-management.operating-log.end-time')">
                   <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                               placeholder=""></date-picker>
+                               placeholder=""/>
                 </b-form-group>
               </b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-
-
+              <b-col/>
+              <b-col/>
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
+                <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
           </b-col>
@@ -139,7 +137,7 @@
                 @vuetable-pagination:change-page="onTaskVuetableChangePage"
                 :initial-per-page="taskVuetableItems.perPage"
                 @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
+              />
             </div>
           </b-col>
         </b-row>
@@ -174,18 +172,18 @@
                 </div>
               </b-col>
               <b-col class="text-right icon-container">
-                <span><i class="icofont-star"></i></span>
-                <span><i class="icofont-search-user"></i></span>
-                <span><i class="icofont-female"></i></span>
+                <span><i class="icofont-star"/></span>
+                <span><i class="icofont-search-user"/></span>
+                <span><i class="icofont-female"/></span>
               </b-col>
             </b-row>
 
             <b-row class="mb-4">
               <b-col>
-                <canvas id="firstcanvas" class="img-fluid w-100"></canvas>
+                <canvas id="firstcanvas" class="img-fluid w-100"/>
               </b-col>
               <b-col>
-                <canvas id="secondcanvas" class="img-fluid w-100"></canvas>
+                <canvas id="secondcanvas" class="img-fluid w-100"/>
               </b-col>
             </b-row>
 
@@ -194,12 +192,12 @@
                 <div class="control-btn-wrapper">
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/contrast_btn.png" @click="filterId(0)"/>
+                    <b-img src="/assets/img/contrast_btn.png" @click="onlyOneSlide(1)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.contrast')}}</span>
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/brightness_btn.png" @click="filterId(5)"/>
+                    <b-img src="/assets/img/brightness_btn.png" @click="onlyOneSlide(2)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.brightness')}}</span>
                   </div>
 
@@ -229,7 +227,7 @@
                   </div>
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(7)"/>
+                    <b-img src="/assets/img/enhance_btn.png" @click="filterId(0)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.enhance')}}1</span>
                   </div>
 
@@ -250,7 +248,7 @@
 
 
                   <div class="control-btn">
-                    <b-img src="/assets/img/reduction_btn.png" v-if="this.power == false"
+                    <b-img src="/assets/img/reduction_btn.png" v-if="this.power === false"
                            @click="loadImage(imageUrls[0], imageUrls[1])"/>
                     <b-img src="/assets/img/reduction_btn.png" v-else
                            @click="loadImage(imageUrls[2], imageUrls[3])"/>
@@ -261,9 +259,31 @@
                 <div class="switch-wrapper">
                   <div class="separator"></div>
                   <div class="switch">
-                    <switches v-model="power" theme="custom" color="info"></switches>
+                    <switches v-model="power" theme="custom" color="info"/>
                   </div>
                 </div>
+              </b-col>
+              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+                <VueSlideBar
+                  v-model="slidebar2value"
+                  :min="0"
+                  :max="10"
+                  :processStyle="slider.processStyle"
+                  :lineHeight="slider.lineHeight"
+                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
+                  class="slide-class">
+                </VueSlideBar>
+              </b-col>
+              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+                <VueSlideBar
+                  v-model="slidebar1value"
+                  :min="0"
+                  :max="10"
+                  :processStyle="slider.processStyle"
+                  :lineHeight="slider.lineHeight"
+                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
+                  class="slide-class">
+                </VueSlideBar>
               </b-col>
             </b-row>
 
@@ -277,7 +297,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>开始</div>
+                    <div>{{$t('menu.start')}}</div>
                   </div>
                   <div class="right">
                     <div>Start</div>
@@ -286,7 +306,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>扫描</div>
+                    <div>{{$t('maintenance-management.process-task.scan')}}</div>
                     <div>
                       <div v-if="showPage.serScan == null">None</div>
                       <div v-else-if="showPage.serScan.scanPointsman == null">None</div>
@@ -311,7 +331,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>判图</div>
+                    <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
                       <div v-if="showPage.serJudgeGraph == null">None</div>
                       <div v-else-if="showPage.serJudgeGraph.judgeUser == null">None</div>
@@ -334,7 +354,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>查验</div>
+                    <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
                       <div v-if="showPage.serHandExamination == null">None</div>
                       <div v-else-if="showPage.serHandExamination.handUser == null">None</div>
@@ -491,7 +511,6 @@
                 </b-form-group>
               </b-col>
             </b-row>
-
             <b-row>
               <b-col>
                 <b-form-group>
@@ -504,6 +523,7 @@
                   <label v-else>None</label>
                 </b-form-group>
               </b-col>
+
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -548,7 +568,6 @@
                 </b-form-group>
               </b-col>
             </b-row>
-
             <b-row>
               <b-col>
                 <b-form-group>
@@ -645,24 +664,25 @@
             <b-row class="flex-grow-1 d-flex align-items-end">
               <b-col class="text-right">
                 <b-button size="sm" variant="info default" @click="pageStatus='table'">
-                  <i class="icofont-long-arrow-left"></i>
+                  <i class="icofont-long-arrow-left"/>
                   {{ $t('personal-inspection.return') }}
                 </b-button>
               </b-col>
             </b-row>
-
           </b-card>
         </b-col>
       </b-row>
     </div>
-
-
   </div>
 </template>
 
 <style lang="scss">
   span.cursor-p {
     cursor: pointer !important;
+  }
+
+  .slide-class{
+    margin-top: -30px;
   }
 
   .rounded-span {
@@ -769,7 +789,6 @@
     }
   }
 
-
   .history-chart {
 
     $ratio: 12.8;
@@ -821,12 +840,8 @@
           }
         }
       }
-
     }
-
-
   }
-
 
 </style>
 
@@ -843,27 +858,34 @@
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
   import {loadImageCanvas, imageFilterById} from '../../../utils'
-  import Chobi from '../../../data/Chobi.js'
+  import VueSlideBar from 'vue-slide-bar'
 
-  var imgObj = null;
-  var imgObj2 = null;
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
       'switches': Switches,
-      'date-picker': DatePicker
+      'date-picker': DatePicker,
+      VueSlideBar
     },
     mounted() {
-
       this.getSiteOption();
-
     },
     data() {
 
       return {
         isExpanded: false,
+        isSlidebar1Expended:false,
+        isSlidebar2Expended:false,
+        slidebar1value:0,
+        slidebar2value:0,
+        slider: {
+          lineHeight: 10,
+          processStyle: {
+            backgroundColor: 'blue'
+          }
+        },
         isCheckAll: false,
         pageStatus: 'table',
         apiBaseURL: '',
@@ -899,7 +921,6 @@
         ],
 
         onSiteOption: [],
-
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/process-task/get-by-filter-and-page`,
           fields: [
@@ -1103,7 +1124,7 @@
         //called whenever switch1 changes
         let url1;
         let url2;
-        if (newValue == true) {
+        if (newValue === true) {
           url1 = this.imageUrls[2];
           url2 = this.imageUrls[3];
 
@@ -1111,19 +1132,53 @@
           url1 = this.imageUrls[0];
           url2 = this.imageUrls[1];
         }
-        console.log(newValue);
         loadImageCanvas(url1, url2);
+      },
+      slidebar1value(newsValue, oldValue) {
 
-      }
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
+            this.filterId(5);
+          }
+        }
+        else {
+          for(let i=newsValue; i<oldValue; i++) {
+            this.filterId(6);
+          }
+        }
+      },
+      slidebar2value(newsValue, oldValue) {
+
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
+            this.filterId(7);
+          }
+        }
+        else {
+          for(let i=newsValue; i<oldValue; i++) {
+            this.filterId(8);
+          }
+        }
+      },
     },
     methods: {
+
+      onlyOneSlide(value){
+        if(value===1){
+          this.isSlidebar1Expended = !this.isSlidebar1Expended;
+          this.isSlidebar2Expended = !this.isSlidebar1Expended;
+        }
+        if(value===2){
+          this.isSlidebar2Expended = !this.isSlidebar2Expended;
+          this.isSlidebar1Expended = !this.isSlidebar2Expended;
+        }
+      },
 
       filterId(id) {
         imageFilterById(id);
       },
 
       loadImage(url1, url2) {
-
         loadImageCanvas(url1, url2);
       },
 
@@ -1163,7 +1218,6 @@
         };
         let link = `task/process-task/generate`;
         downLoadFileFromServer(link, params, 'Process-Task');
-
       },
 
       onPrintButton() {
@@ -1176,7 +1230,6 @@
         };
         let link = `task/process-task/generate`;
         printFileFromServer(link, params);
-
       },
 
       getSiteOption() {
@@ -1196,8 +1249,8 @@
       },
       onRowClicked: function (taskNumber) {
 
-        var url1 = this.imageUrls[0];
-        var url2 = this.imageUrls[1];
+        let url1 = this.imageUrls[0];
+        let url2 = this.imageUrls[1];
         // this.loadImage(url, url2);
         loadImageCanvas(url1, url2);
         // call api
@@ -1218,14 +1271,13 @@
           })
           .catch((error) => {
           });
-
         this.pageStatus = 'show';
       },
-      getDateTimeFormat2(datatime) {
-        return getDateTimeWithFormat(datatime);
+      getDateTimeFormat2(dataTime) {
+        return getDateTimeWithFormat(dataTime);
       },
-      getDateTimeFormat(datatime) {
-        return getDateTimeWithFormat(datatime, 'monitor');
+      getDateTimeFormat(dataTime) {
+        return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
       onSearchButton() {

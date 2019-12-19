@@ -197,15 +197,15 @@
               <div class="form-group mb-5">
                 <div class="input-group ">
                   <span class="front-input-icon position-absolute "><i style="font-size: 18px"
-                                                                       class="icofont-ui-user"></i> </span>
-                  <input type="text" class="form-control" :placeholder="$t('login.enter-user-email')" v-model="email"
+                                                                       class="icofont-ui-user"/> </span>
+                  <input type="text" class="form-control" :placeholder="$t('login.enter-user-email')" v-model="account"
                          autocomplete="off">
                 </div>
               </div>
               <div class="form-group mb-5">
                 <div class="input-group ">
                   <span class="front-input-icon position-absolute "><i style="font-size: 20px"
-                                                                       class="icofont-unlock"></i> </span>
+                                                                       class="icofont-unlock"/> </span>
                   <input type="password" class="form-control" :placeholder="$t('login.enter-user-password')"
                          v-model="password" autocomplete="off">
                 </div>
@@ -243,6 +243,7 @@
     saveLoginInfo,
     scheduleRefreshToken,
     setDirection,
+    setInvalidCount, getInvalidCount, removeCount,
     saveDicDataGroupByDicId, savePermissionInfo
   } from '../../utils'
   import {getApiManager} from "../../api";
@@ -252,8 +253,9 @@
   export default {
     data() {
       return {
-        email: '',
+        account: '',
         password: '',
+        count:null,
         localeOptions,
         processing: false
       }
@@ -291,8 +293,9 @@
         return localeOptions[1].icon;
       },
       formSubmit() {
+        this.count = getInvalidCount(this.account);
 
-        if (this.email.length === 0) {
+        if (this.account.length === 0) {
           this.$notify('warning', this.$t('user.warning'), this.$t(`user.enter-valid-email`), {
             duration: 3000,
             permanent: false
@@ -309,8 +312,9 @@
 
         getApiManager()
           .post(`${apiBaseUrl}/auth/login`, {
-            userAccount: this.email,
-            password: this.password
+            userAccount: this.account,
+            password: this.password,
+            count:this.count
           })
           .then(response => {
             this.processing = false;
@@ -319,7 +323,6 @@
             //let codeData = response.data.data.
             switch (message) {
               case responseMessages['ok']:
-
                 if (data.user.category !== 'normal' && data.user.category !== 'admin') {
                   this.$notify('success', this.$t('user.login-fail'), this.$t(`login.not-normal-role`), {
                     duration: 3000,
@@ -327,11 +330,12 @@
                   });
                   return;
                 }
-
                 saveLoginInfo(data);
                 savePermissionInfo(data.permission);
                 scheduleRefreshToken();
                 saveDicDataGroupByDicId(data);
+                removeCount(this.account);
+
                 this.$notify('success', this.$t('user.success'), this.$t(`user.login-success`), {
                   duration: 3000,
                   permanent: false
@@ -366,12 +370,28 @@
                 });
                 break;
               case responseMessages['invalid-password']:
-                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.invalid-password`), {
-                  duration: 3000,
+                setInvalidCount(this.account);
+                if(this.count!=='6'){
+                  this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.invalid-password`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                }
+                else {
+                  this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden_warning`), {
+                    duration: 6000,
+                    permanent: false
+                  });
+
+                  break;
+                }
+              case responseMessages['user_pending_status']:
+                this.$notify('error', this.$t(`user.login-fail`), this.$t(`response-messages.forbidden`), {
+                  duration: 10000,
                   permanent: false
                 });
                 break;
-
             }
           })
           .catch((error) => {

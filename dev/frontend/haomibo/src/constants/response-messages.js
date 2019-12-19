@@ -38,4 +38,5 @@ export const responseMessages = {
   'has-data-groups':'has_data_groups',
   'has-roles':'has_roles',
   'has-fields':'has_fields',
+  'user_pending_status':'user_pending_status',
 };

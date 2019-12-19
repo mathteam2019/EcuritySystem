@@ -1098,7 +1098,9 @@
     "user-not-found": "用户找不到",
     "invalid-password": "错密码",
     "token-expired": "Token超过有效时间",
-    "invalid-token": "Token无效"
+    "invalid-token": "Token无效",
+    "forbidden_warning" : "죽을수 있다.",
+    "forbidden" : "죽인다."
   },
   "auth-token-messages": {
     "error-title": "错误",

@@ -180,6 +180,32 @@ export const saveLoginInfo = (loginInfo) => {
   localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
 };
 
+export const setInvalidCount = (account) => {
+  if(localStorage.getItem(account)==null){
+    localStorage.setItem(account, 1);
+  }
+  else{
+    let countValue = localStorage.getItem(account);
+    localStorage.removeItem(account);
+    countValue = (parseInt(countValue) +1).toString();
+    localStorage.setItem(account, countValue);
+  }
+};
+
+export const getInvalidCount = (account) => {
+  if(localStorage.getItem(account)==null){
+    return null;
+  }
+  else{
+    let countValue = localStorage.getItem(account);
+    return countValue;
+  }
+};
+
+export const removeCount = (account) =>{
+  localStorage.removeItem(account);
+};
+
 export const savePermissionInfo = (info) => {
   let data = [];
   info.forEach(item => {
