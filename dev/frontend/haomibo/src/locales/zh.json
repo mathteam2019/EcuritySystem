@@ -1105,8 +1105,8 @@
     "invalid-password": "错密码",
     "token-expired": "Token超过有效时间",
     "invalid-token": "Token无效",
-    "forbidden_warning" : "죽을수 있다.",
-    "forbidden" : "죽인다."
+    "forbidden_warning" : "禁止该用户",
+    "forbidden" : "禁止该用户"
   },
   "auth-token-messages": {
     "error-title": "错误",
