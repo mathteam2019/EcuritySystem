@@ -258,12 +258,15 @@ public class DeviceServiceImpl implements DeviceService {
                 .deviceId.eq(deviceId)).orElse(null);
 
 
+        sysDeviceRepository.deleteById(deviceId);
 
         SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
                 .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
 
         //check device config exist or not
         if(sysDeviceConfig != null) {
+
+            sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
             //remove correspond manual group
             SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
                     sysDeviceConfig.getManualGroupList().get(0): null;
@@ -282,10 +285,10 @@ public class DeviceServiceImpl implements DeviceService {
             FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
                     sysDeviceConfig.getFromConfigIdList().get(0): null;
             if(fromConfigId != null) {
-                fromConfigIdRepository.delete(fromConfigId);
+                fromConfigIdRepository.deleteById(fromConfigId.getFromConfigId());
             }
 
-            sysDeviceConfigRepository.delete(sysDeviceConfig);
+
         }
 
 
@@ -294,18 +297,20 @@ public class DeviceServiceImpl implements DeviceService {
 
         //check scan param exist or not
         if(scanParam != null) {
+            serScanParamRepository.deleteById(scanParam.getScanParamsId());
             //remove correspond from config.
             SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
                     scanParam.getFromParamsList().get(0): null;
 
             //check from params exist or not
             if(fromParams != null) {
-                serScanParamsFromRepository.delete(fromParams);
+                serScanParamsFromRepository.deleteById(fromParams.getScanParamsId());
             }
-            serScanParamRepository.delete(scanParam);
+
         }
 
-        sysDeviceRepository.delete(sysDevice);
+
+
     }
 
     @Override

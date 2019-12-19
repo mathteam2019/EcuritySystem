@@ -8,10 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.service.auth.impl;
 
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceDictionaryDataRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
@@ -51,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
         }
         return optionalSysUser.get();
     }
+
 
     @Override
     @Transactional

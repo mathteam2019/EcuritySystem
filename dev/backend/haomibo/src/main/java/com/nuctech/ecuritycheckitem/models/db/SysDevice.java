@@ -146,9 +146,6 @@ public class SysDevice extends BaseEntity implements Serializable {
     @MapsId("field")
     private SysField field; // Relation to SysField table.
 
-
-
-
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ARCHIVE_ID", referencedColumnName = "ARCHIVE_ID", insertable = false, updatable = false)
@@ -156,18 +153,10 @@ public class SysDevice extends BaseEntity implements Serializable {
     @MapsId("archive")
     private SerArchive archive; // Relation to SerArchives table.
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("config")
+    @javax.persistence.Transient
     private SysDeviceConfig deviceConfig; // Relation to SysDeviceConfig table.
 
-    @ToString.Exclude
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEV_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    @MapsId("scan")
+    @javax.persistence.Transient
     private SerScanParam scanParam; // Relation to SerScanParam table.
 
 }

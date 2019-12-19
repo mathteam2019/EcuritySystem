@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerDeviceStatusRepository extends
-        JpaRepository<SerDeviceStatus, Integer>,
-        PagingAndSortingRepository<SerDeviceStatus, Integer>,
+        JpaRepository<SerDeviceStatus, Long>,
+        PagingAndSortingRepository<SerDeviceStatus, Long>,
         QuerydslPredicateExecutor<SerDeviceStatus> {
 
 }

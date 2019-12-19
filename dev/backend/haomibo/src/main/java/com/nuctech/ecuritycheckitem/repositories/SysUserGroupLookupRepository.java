@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysUserGroupLookupRepository extends
-        JpaRepository<SysUserGroupLookup, Integer>,
-        PagingAndSortingRepository<SysUserGroupLookup, Integer>,
+        JpaRepository<SysUserGroupLookup, Long>,
+        PagingAndSortingRepository<SysUserGroupLookup, Long>,
         QuerydslPredicateExecutor<SysUserGroupLookup> {
 
 }

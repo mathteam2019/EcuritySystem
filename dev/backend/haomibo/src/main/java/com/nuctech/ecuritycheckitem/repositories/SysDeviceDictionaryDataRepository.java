@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysDeviceDictionaryDataRepository extends
-        JpaRepository<SysDeviceDictionaryData, Integer>,
-        PagingAndSortingRepository<SysDeviceDictionaryData, Integer>,
+        JpaRepository<SysDeviceDictionaryData, Long>,
+        PagingAndSortingRepository<SysDeviceDictionaryData, Long>,
         QuerydslPredicateExecutor<SysDeviceDictionaryData> {
 
 }

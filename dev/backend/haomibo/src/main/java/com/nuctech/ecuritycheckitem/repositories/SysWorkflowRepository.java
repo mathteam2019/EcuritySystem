@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysWorkflowRepository extends
-        JpaRepository<SysWorkflow, Integer>,
-        PagingAndSortingRepository<SysWorkflow, Integer>,
+        JpaRepository<SysWorkflow, Long>,
+        PagingAndSortingRepository<SysWorkflow, Long>,
         QuerydslPredicateExecutor<SysWorkflow> {
 
 }

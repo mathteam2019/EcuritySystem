@@ -46,6 +46,8 @@ public interface UserService {
 
     boolean checkUserGroupUserExist(long userGroupId);
 
+    boolean checkUserGroupRoleExist(long userGroupId);
+
     boolean modifyUserGroup(long userGroupId, List<Long> userIdList);
 
     boolean removeUserGroup(long userGroupId);

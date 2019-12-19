@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerArchiveValueRepository extends
-        JpaRepository<SerArchiveValue, Integer>,
-        PagingAndSortingRepository<SerArchiveValue, Integer>,
+        JpaRepository<SerArchiveValue, Long>,
+        PagingAndSortingRepository<SerArchiveValue, Long>,
         QuerydslPredicateExecutor<SerArchiveValue> {
 
 }

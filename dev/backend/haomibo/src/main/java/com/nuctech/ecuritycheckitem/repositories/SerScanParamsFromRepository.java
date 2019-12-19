@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerScanParamsFromRepository extends
-        JpaRepository<SerScanParamsFrom, Integer>,
-        PagingAndSortingRepository<SerScanParamsFrom, Integer>,
+        JpaRepository<SerScanParamsFrom, Long>,
+        PagingAndSortingRepository<SerScanParamsFrom, Long>,
         QuerydslPredicateExecutor<SerScanParamsFrom> {
 
 }

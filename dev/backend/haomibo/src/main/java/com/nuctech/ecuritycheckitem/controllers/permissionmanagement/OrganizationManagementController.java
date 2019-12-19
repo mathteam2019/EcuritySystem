@@ -251,6 +251,7 @@ public class OrganizationManagementController extends BaseController {
             static final String WITH_USERS = "with_users";
             static final String WITH_PARENT_AND_USERS = "with_parent_and_users";
             static final String WITH_CHILDREN_AND_USERS = "with_children_and_users";
+            static final String WITH_GRAPHIC = "with_graphic";
         }
 
         @Pattern(regexp = GetAllType.BARE + "|" +
@@ -258,7 +259,8 @@ public class OrganizationManagementController extends BaseController {
                 GetAllType.WITH_CHILDREN + "|" +
                 GetAllType.WITH_USERS + "|" +
                 GetAllType.WITH_PARENT_AND_USERS + "|" +
-                GetAllType.WITH_CHILDREN_AND_USERS)
+                GetAllType.WITH_CHILDREN_AND_USERS + "|" +
+                GetAllType.WITH_GRAPHIC)
         String type = GetAllType.BARE;
 
 
@@ -338,10 +340,6 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
-        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
-        }
-
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
             return checkResult;
@@ -378,9 +376,6 @@ public class OrganizationManagementController extends BaseController {
             return checkResult;
         }
 
-
-
-
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
@@ -404,9 +399,6 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
-        }
 
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
@@ -432,8 +424,13 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        boolean isAll = false;
 
-        List<SysOrg> sysOrgList = organizationService.getAllOrganization();
+        if(requestBody.getType().equals(OrganizationGetAllRequestBody.GetAllType.WITH_GRAPHIC)) {
+            isAll = true;
+        }
+
+        List<SysOrg> sysOrgList = organizationService.getAllOrganization(isAll);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysOrgList));
 
@@ -448,6 +445,9 @@ public class OrganizationManagementController extends BaseController {
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_PARENT:
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                break;
+            case OrganizationGetAllRequestBody.GetAllType.WITH_GRAPHIC:
                 filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_CHILDREN:

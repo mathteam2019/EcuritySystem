@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerTaskRepository extends
-        JpaRepository<SerTask, Integer>,
-        PagingAndSortingRepository<SerTask, Integer>,
+        JpaRepository<SerTask, Long>,
+        PagingAndSortingRepository<SerTask, Long>,
         QuerydslPredicateExecutor<SerTask> {
 
 }

@@ -7,5 +7,5 @@ import java.util.List;
 public interface PlatformCheckService {
     List<SerPlatformCheckParams> findAll();
 
-    void modifyPlatform(SerPlatformCheckParams serPlatformCheckParams);
+    void modifyPlatform(SerPlatformCheckParams serPlatformCheckParams, boolean isCreate);
 }

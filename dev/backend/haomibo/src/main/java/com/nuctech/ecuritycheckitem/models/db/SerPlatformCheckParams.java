@@ -79,5 +79,11 @@ public class SerPlatformCheckParams extends BaseEntity implements Serializable {
     @Column(name = "DISPLAY_DELETE_SUSPICION_COLOUR", length = 255)
     private String displayDeleteSuspicionColour;
 
+    @javax.persistence.Transient
+    String[] historyDataStorageList;
+
+    @javax.persistence.Transient
+    String[] historyDataExportList;
+
 
 }

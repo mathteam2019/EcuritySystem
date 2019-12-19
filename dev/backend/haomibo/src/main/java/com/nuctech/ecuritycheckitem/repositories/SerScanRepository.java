@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerScanRepository extends
-        JpaRepository<SerScan, Integer>,
-        PagingAndSortingRepository<SerScan, Integer>,
+        JpaRepository<SerScan, Long>,
+        PagingAndSortingRepository<SerScan, Long>,
         QuerydslPredicateExecutor<SerScan> {
 
     @Query("SELECT YEAR(MAX(SCAN_START_TIME)) FROM SerScan ")

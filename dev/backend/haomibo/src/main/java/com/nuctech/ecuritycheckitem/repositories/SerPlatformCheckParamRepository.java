@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerPlatformCheckParamRepository extends
-        JpaRepository<SerPlatformCheckParams, Integer>,
-        PagingAndSortingRepository<SerPlatformCheckParams, Integer>,
+        JpaRepository<SerPlatformCheckParams, Long>,
+        PagingAndSortingRepository<SerPlatformCheckParams, Long>,
         QuerydslPredicateExecutor<SerPlatformCheckParams> {
 
 }

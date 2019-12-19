@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FromConfigIdRepository extends
-        JpaRepository<FromConfigId, Integer>,
-        PagingAndSortingRepository<FromConfigId, Integer>,
+        JpaRepository<FromConfigId, Long>,
+        PagingAndSortingRepository<FromConfigId, Long>,
         QuerydslPredicateExecutor<FromConfigId> {
 
 }

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysAccessLogRepository extends
-        JpaRepository<SysAccessLog, Integer>,
-        PagingAndSortingRepository<SysAccessLog, Integer>,
+        JpaRepository<SysAccessLog, Long>,
+        PagingAndSortingRepository<SysAccessLog, Long>,
         QuerydslPredicateExecutor<SysAccessLog> {
 
 }

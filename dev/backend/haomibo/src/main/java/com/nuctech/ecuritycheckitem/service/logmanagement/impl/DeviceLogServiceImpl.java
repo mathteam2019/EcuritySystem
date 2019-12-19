@@ -38,7 +38,7 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         }
 
         if (!StringUtils.isEmpty(userName)) {
-            predicate.and(builder.user.userAccount.contains(userName));
+            predicate.and(builder.loginName.contains(userName));
         }
 
         if (category != null) {

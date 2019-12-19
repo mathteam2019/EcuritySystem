@@ -17,8 +17,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SysAuditLogRepository extends
-        JpaRepository<SysAuditLog, Integer>,
-        PagingAndSortingRepository<SysAuditLog, Integer>,
+        JpaRepository<SysAuditLog, Long>,
+        PagingAndSortingRepository<SysAuditLog, Long>,
         QuerydslPredicateExecutor<SysAuditLog> {
 
 }

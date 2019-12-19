@@ -31,7 +31,7 @@ public interface OrganizationService {
 
     boolean updateOrganizationStatus(Long orgId, String status);
 
-    List<SysOrg> getAllOrganization();
+    List<SysOrg> getAllOrganization(boolean isAll);
 
     PageResult<SysOrg> getOrganizationByFilterAndPage(String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage);
 
