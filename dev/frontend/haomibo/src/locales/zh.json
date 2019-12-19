@@ -629,6 +629,9 @@
     }
   },
   "system-setting": {
+    "required-history-data-storage": "数据存储要先择",
+    "required-history-data-export": "数据导出要先择",
+    "required-from-device-list" : "适用于要先择",
     "site": "场地",
     "site-list": "场地管理",
     "site-architecture": "场地架构",
@@ -1047,6 +1050,9 @@
     }
   },
   "device-config": {
+    "required-manual-device-select":"手检组要选择",
+    "required-judge-device-select":"判图组要选择",
+    "required-from-device-select":"适用于设备要选择",
     "maintenance-config": {
       "applied": "适用于",
       "hand-check-position": "手检站",

@@ -1,3 +1,17 @@
+<style lang="scss">
+  .system-setting {
+    .v-select.v-select-custom-style {
+      & > div {
+        border-radius: 0.3rem !important;
+
+        & > div {
+          border-radius: 0.3rem !important;
+        }
+      }
+
+    }
+  }
+</style>
 <template>
   <div class="system-setting">
     <div class="breadcrumb-container">
@@ -65,14 +79,14 @@
                   </b-col>
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
-                      <b-form-select v-model="platFormData.historyDataStorage" :options="dataStorageOptions"
-                                     plain></b-form-select>
+                      <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataStorageSelect.$invalid"
+                                     class="v-select-custom-style" multiple  :dir="direction"></v-select>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
-                      <b-form-select v-model="platFormData.historyDataExport" :options="dataStorageOptions"
-                                     plain></b-form-select>
+                      <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataExportSelect.$invalid"
+                                class="v-select-custom-style" multiple  :dir="direction" />
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -192,7 +206,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-high')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh" :state="!$v.platFormOtherData.deviceTrafficHigh.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue || !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
@@ -201,7 +215,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-middle')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle" :state="!$v.platFormOtherData.deviceTrafficMiddle.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue || !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
@@ -352,6 +366,17 @@
         </b-row>
         <b-row v-if="pageStatus !== 'table'" class="h-100 form-section">
           <b-col cols="10">
+            <b-row>
+              <b-col cols="6">
+                <b-form-group class="mw-100">
+                  <template slot="label">
+                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
+                    <span class="text-danger">*</span>
+                  </template>
+                  <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style" multiple :dir="direction"/>
+                </b-form-group>
+              </b-col>
+            </b-row>
             <b-row class="mb-2">
               <b-col cols="3">
                 <b-form-group>
@@ -508,15 +533,6 @@
             </b-row>
             <b-row class="mb-2">
               <b-col cols="3">
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-form-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" plain/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="3">
                 <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size-percentage')">
                   <b-form-input type="number" v-model="scanForm.storageAlarm"></b-form-input>
                 </b-form-group>
@@ -589,19 +605,41 @@
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
+  import vSelect from 'vue-select'
+  import 'vue-select/dist/vue-select.css'
 
   const {required, minValue, maxValue} = require('vuelidate/lib/validators');
+
+  let findDicTextData = (options, value, flag = true) => {
+    let name = null;
+    if (options == null || options.length === 0)
+      return name;
+    options.forEach(option => {
+      if (option.value === value)
+        name = flag ? option.text : option;
+    });
+    return name;
+  };
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'colorpicker': ColorPicker
+      'colorpicker': ColorPicker,
+      'v-select': vSelect
     },
     mixins: [validationMixin],
     validations: {
+      platFormData: {
+        historyDataStorageSelect: {
+          required
+        },
+        historyDataExportSelect: {
+          required
+        }
+      },
       platFormOtherData: {
         deviceTrafficSettings: {
           required
@@ -629,19 +667,15 @@
         newVal.forEach((scan) => {
           selectOptions.push({
             value: scan.deviceId,
-            text: scan.device ? scan.device.deviceName : 'dev-' + scan.deviceId
+            label: scan.device ? scan.device.deviceName : 'dev-' + scan.deviceId
           });
         });
         this.deviceSelectOptions = selectOptions;
       },
-      'scanForm.fromDeviceId': function (newVal, oldVal) {
-        //when initialize data, need to skip
-        if (oldVal !== null)
-          this.getScanParamsDetail(newVal);
-      }
     },
     data() {
       return {
+        direction: getDirection().direction,
         tabIndex: 0,
         submitted: false,
         pageStatus: 'table',
@@ -729,10 +763,12 @@
           judgeRecogniseColour: null,
           handOverTime: null,
           handRecogniseColour: null,
-          historyDataStorage: null,
-          historyDataExport: null,
+          historyDataStorageList: [],
+          historyDataExportList: [],
           displayDeleteSuspicion: null,
           displayDeleteSuspicionColour: null,
+          historyDataStorageSelect:[],
+          historyDataExportSelect: [],
         },
         platFormOtherData: {
           id: 0,
@@ -747,10 +783,10 @@
           deviceTrafficMiddle: null,
         },
         dataStorageOptions: [
-          {value: '1000002201', text: this.$t('system-setting.storage-business')},
-          {value: '1000002202', text: this.$t('system-setting.storage-cartoon')},
-          {value: '1000002203', text: this.$t('system-setting.storage-conversion')},
-          {value: '1000002204', text: this.$t('system-setting.storage-original')},
+          {value: '1000002201', label: this.$t('system-setting.storage-business')},
+          {value: '1000002202', label: this.$t('system-setting.storage-cartoon')},
+          {value: '1000002203', label: this.$t('system-setting.storage-conversion')},
+          {value: '1000002204', label: this.$t('system-setting.storage-original')},
         ],
         levelOptions: [
           {value: 10, text: '10'},
@@ -777,7 +813,8 @@
           hipBlurring: null,
           groinBlurring: null,
           deviceId: null,
-          fromDeviceId: null,
+          fromDeviceId: [],
+          fromDeviceIdList:[],
           storageAlarmPercent:80,
           storageAlarm:400
         },
@@ -860,15 +897,6 @@
       onTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
-      getScanParamsDetail(deviceId) {
-        for (let item of this.scanParams) {
-          if (item.deviceId === deviceId) {
-            this.initializeSpanFormData(item);
-            break;
-          }
-        }
-
-      },
       initializeSpanFormData(result) {
         this.submitted = false;
         for (let key in this.scanForm) {
@@ -877,10 +905,21 @@
           } else if (key === 'status') {
             this.scanForm.status = result.device ? result.device.status : null;
           }
-          else if (key === 'fromDeviceId') {
+          /*else if (key === 'fromDeviceId') {
             this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
-          }
+          }*/
         }
+        this.scanForm.fromDeviceId = [];
+        if(result != null){
+          result.fromParamsList.forEach(item => {
+            this.scanForm.fromDeviceId.push({
+              value:item.device.deviceId,
+              label:item.device.deviceName
+
+            })
+          })
+        }
+
       },
       //update status
       updateItemStatus(statusValue) {
@@ -913,8 +952,17 @@
       },
       //save scanform
       onSaveScanFormData() {
-
-        this.scanForm.deviceId = this.selectedDeviceId;
+        if(this.scanForm.fromDeviceId.length === 0) {
+          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-from-device-list`), {
+            duration: 3000,
+            permanent: false
+          });
+          return false;
+        }
+        this.scanForm.fromDeviceIdList = [];
+        this.scanForm.fromDeviceId.forEach(item => {
+          this.scanForm.fromDeviceIdList.push(item.value);
+        });
         getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`, this.scanForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -951,7 +999,18 @@
                   if (Object.keys(result).includes(key)) {
                     this.platFormData[key] = result[key];
                   }
-
+                }
+                this.platFormData.historyDataStorageSelect = [];
+                this.platFormData.historyDataExportSelect = [];
+                if(result.historyDataStorageList.length >0 ) {
+                  result.historyDataStorageList.forEach(item => {
+                    this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                  });
+                }
+                if(result.historyDataExportList.length >0 ) {
+                  result.historyDataExportList.forEach(item => {
+                    this.platFormData.historyDataExportSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                  });
                 }
               }
 
@@ -979,6 +1038,29 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
+
+          this.$v.platFormData.$touch();
+          if (this.$v.platFormData.$invalid) {
+            if(this.platFormData.historyDataStorageSelect.length === 0)
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-storage`), {
+                duration: 3000,
+                permanent: false
+              });
+            else if(this.platFormData.historyDataExportSelect.length === 0)
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-export`), {
+                duration: 3000,
+                permanent: false
+              });
+            return;
+          }
+          this.platFormData.historyDataStorageList = [];
+          this.platFormData.historyDataExportList = [];
+          this.platFormData.historyDataStorageSelect.forEach(item => {
+            this.platFormData.historyDataStorageList.push(item.value);
+          });
+          this.platFormData.historyDataExportSelect.forEach(item => {
+            this.platFormData.historyDataExportList.push(item.value);
+          });
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/modify`, this.platFormData
           ).then((response) => {
             let message = response.data.message;

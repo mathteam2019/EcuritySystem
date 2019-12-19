@@ -810,7 +810,7 @@
           userId: null,
           nextUserId: null, // when edit or show user's role, userId should be stored here.
           roles: [],
-          dataRangeCategory: "person",
+          dataRangeCategory: "1000000501",
           selectedDataGroupId: null,
           nextSelectedDataGroupId: null, // when edit or show user's data range, dataGroupId should be stored here.
         },
