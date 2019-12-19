@@ -629,6 +629,8 @@
     }
   },
   "system-setting": {
+    "required-history-data-storage": "数据存储必择先",
+    "required-history-data-export": "数据导出必择先",
     "site": "场地",
     "site-list": "场地管理",
     "site-architecture": "场地架构",

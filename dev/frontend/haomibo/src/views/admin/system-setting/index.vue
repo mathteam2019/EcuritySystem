@@ -1,3 +1,17 @@
+<style lang="scss">
+  .system-setting {
+    .v-select.v-select-custom-style {
+      & > div {
+        border-radius: 0.3rem !important;
+
+        & > div {
+          border-radius: 0.3rem !important;
+        }
+      }
+
+    }
+  }
+</style>
 <template>
   <div class="system-setting">
     <div class="breadcrumb-container">
@@ -65,14 +79,14 @@
                   </b-col>
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
-                      <b-form-select v-model="platFormData.historyDataStorage" :options="dataStorageOptions"
-                                     plain></b-form-select>
+                      <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataStorageSelect.$invalid"
+                                     class="v-select-custom-style" multiple  :dir="direction"></v-select>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
-                      <b-form-select v-model="platFormData.historyDataExport" :options="dataStorageOptions"
-                                     plain></b-form-select>
+                      <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataExportSelect.$invalid"
+                                class="v-select-custom-style" multiple  :dir="direction" />
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -192,7 +206,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-high')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh" :state="!$v.platFormOtherData.deviceTrafficHigh.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue || !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
@@ -201,7 +215,7 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-middle')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle" :state="!$v.platFormOtherData.deviceTrafficMiddle.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue || !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
@@ -589,19 +603,41 @@
   import {apiBaseUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
-  import {checkPermissionItem} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
+  import vSelect from 'vue-select'
+  import 'vue-select/dist/vue-select.css'
 
   const {required, minValue, maxValue} = require('vuelidate/lib/validators');
+
+  let findDicTextData = (options, value, flag = true) => {
+    let name = null;
+    if (options == null || options.length === 0)
+      return name;
+    options.forEach(option => {
+      if (option.value === value)
+        name = flag ? option.text : option;
+    });
+    return name;
+  };
 
   export default {
     components: {
       'vuetable': Vuetable,
       'vuetable-pagination': VuetablePagination,
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap,
-      'colorpicker': ColorPicker
+      'colorpicker': ColorPicker,
+      'v-select': vSelect
     },
     mixins: [validationMixin],
     validations: {
+      platFormData: {
+        historyDataStorageSelect: {
+          required
+        },
+        historyDataExportSelect: {
+          required
+        }
+      },
       platFormOtherData: {
         deviceTrafficSettings: {
           required
@@ -642,6 +678,7 @@
     },
     data() {
       return {
+        direction: getDirection().direction,
         tabIndex: 0,
         submitted: false,
         pageStatus: 'table',
@@ -729,10 +766,12 @@
           judgeRecogniseColour: null,
           handOverTime: null,
           handRecogniseColour: null,
-          historyDataStorage: null,
-          historyDataExport: null,
+          historyDataStorageList: [],
+          historyDataExportList: [],
           displayDeleteSuspicion: null,
           displayDeleteSuspicionColour: null,
+          historyDataStorageSelect:[],
+          historyDataExportSelect: [],
         },
         platFormOtherData: {
           id: 0,
@@ -747,10 +786,10 @@
           deviceTrafficMiddle: null,
         },
         dataStorageOptions: [
-          {value: '1000002201', text: this.$t('system-setting.storage-business')},
-          {value: '1000002202', text: this.$t('system-setting.storage-cartoon')},
-          {value: '1000002203', text: this.$t('system-setting.storage-conversion')},
-          {value: '1000002204', text: this.$t('system-setting.storage-original')},
+          {value: '1000002201', label: this.$t('system-setting.storage-business')},
+          {value: '1000002202', label: this.$t('system-setting.storage-cartoon')},
+          {value: '1000002203', label: this.$t('system-setting.storage-conversion')},
+          {value: '1000002204', label: this.$t('system-setting.storage-original')},
         ],
         levelOptions: [
           {value: 10, text: '10'},
@@ -951,7 +990,16 @@
                   if (Object.keys(result).includes(key)) {
                     this.platFormData[key] = result[key];
                   }
-
+                }
+                if(result.historyDataStorageList.length >0 ) {
+                  result.historyDataStorageList.forEach(item => {
+                    this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                  });
+                }
+                if(result.historyDataExportList.length >0 ) {
+                  result.historyDataExportList.forEach(item => {
+                    this.platFormData.historyDataExportSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                  });
                 }
               }
 
@@ -979,6 +1027,27 @@
       savePlatFormData() {
         //save platform main data
         if (this.tabIndex === 0) {
+
+          this.$v.platFormData.$touch();
+          if (this.$v.platFormData.$invalid) {
+            if(this.platFormData.historyDataStorageSelect.length === 0)
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-storage`), {
+                duration: 3000,
+                permanent: false
+              });
+            else if(this.platFormData.historyDataExportSelect.length === 0)
+              this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-export`), {
+                duration: 3000,
+                permanent: false
+              });
+            return;
+          }
+          this.platFormData.historyDataStorageSelect.forEach(item => {
+            this.platFormData.historyDataStorageList.push(item.value);
+          });
+          this.platFormData.historyDataExportSelect.forEach(item => {
+            this.platFormData.historyDataExportList.push(item.value);
+          });
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/modify`, this.platFormData
           ).then((response) => {
             let message = response.data.message;
