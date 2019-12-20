@@ -329,7 +329,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      * Device Statistics generate excel file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/xlsx", method = RequestMethod.POST)
-    public Object userStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
+    public Object deviceStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -363,7 +363,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
      * Device Statistics generate word file request.
      */
     @RequestMapping(value = "/devicestatistics/generate/docx", method = RequestMethod.POST)
-    public Object userStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
+    public Object deviceStatisticsGenerateWordFile(@RequestBody @Valid StatisticsByDeviceGenerateRequestBody requestBody,
                                                   BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -412,7 +412,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) {
+                    if (splits[j].equals(Long.toString(record.getId()))) {
                         isExist = true;
                         break;
                     }

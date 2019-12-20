@@ -171,7 +171,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
      * Suspiction handgoods Statistics generate excel file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/xlsx", method = RequestMethod.POST)
-    public Object suspicioGoodsStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+    public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -207,7 +207,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
      * Suspiction handgoods Statistics generate word file request.
      */
     @RequestMapping(value = "/suspiciongoods/generate/docx", method = RequestMethod.POST)
-    public Object suspicioGoodsStatisticsGenerateExcelFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
+    public Object suspicioGoodsStatisticsGenerateWordFile(@RequestBody @Valid StatisticsGenerateRequestBody requestBody,
                                                            BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
