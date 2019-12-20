@@ -915,10 +915,10 @@
 
 
       onExportButton2() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
         if (this.pageStatus === 'charts')
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let checkedIds = this.$refs.taskVuetable2.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
@@ -929,10 +929,10 @@
       },
 
       onPrintButton2() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
         if (this.pageStatus === 'charts')
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let checkedIds = this.$refs.taskVuetable2.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,

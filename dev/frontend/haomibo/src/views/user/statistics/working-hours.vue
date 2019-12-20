@@ -246,16 +246,11 @@
               :fields="taskVuetableItems.fields"
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
-              track-by="time"
+              track-by="sequence"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
             >
-              <template slot="period" slot-scope="props">
-                        <span class="cursor-p text-primary" @click="onRowClicked(props.rowData)">
-                          {{props.rowData.period}}
-                        </span>
-              </template>
             </vuetable>
           </div>
           <div class="pagination-wrapper">
@@ -264,7 +259,7 @@
               @vuetable-pagination:change-page="onTaskVuetableChangePage"
               :initial-per-page="taskVuetableItems.perPage"
               @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-            ></vuetable-pagination-bootstrap>
+            />
           </div>
         </b-card>
       </b-col>
@@ -695,8 +690,9 @@
 
       onExportButton() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
+        }
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
@@ -710,8 +706,9 @@
 
       onPrintButton() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
+        }
         let checkedIds = this.$refs.taskVuetable.selectedTo;
         let params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,

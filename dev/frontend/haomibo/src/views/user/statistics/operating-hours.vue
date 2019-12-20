@@ -242,7 +242,7 @@
               :fields="taskVuetableItems.fields"
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
-              track-by="time"
+              track-by="sequence"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
