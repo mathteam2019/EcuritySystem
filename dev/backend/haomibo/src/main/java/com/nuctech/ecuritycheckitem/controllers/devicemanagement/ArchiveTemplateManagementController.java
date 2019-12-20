@@ -455,7 +455,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         }
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-        DeviceArchiveTemplatePdfView.setResource(res);
+        DeviceArchiveTemplatePdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList);
 

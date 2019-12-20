@@ -533,7 +533,7 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList());
 
-        DeviceCategoryPdfView.setResource(res);
+        DeviceCategoryPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList);
 

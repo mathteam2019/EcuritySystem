@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
 import javax.persistence.EntityManager;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -230,7 +231,10 @@ public class BaseController {
         ConstantDictionary.setDictionaryList(dictionaryList);
     }
 
+    public URL getFontResource() {
 
+        return this.getClass().getClassLoader().getResource("classpath:font/NotoSansCJKsc-Regular.otf");
+    }
 
 
 

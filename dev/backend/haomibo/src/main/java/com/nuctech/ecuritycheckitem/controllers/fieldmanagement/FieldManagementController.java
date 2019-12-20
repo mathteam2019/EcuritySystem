@@ -611,7 +611,7 @@ public class FieldManagementController extends BaseController {
         }
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
 
-        FieldManagementPdfView.setResource(res);
+        FieldManagementPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
 

@@ -145,7 +145,7 @@ public class PreviewStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        PreviewStatisticsPdfView.setResource(res);
+        PreviewStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);
 

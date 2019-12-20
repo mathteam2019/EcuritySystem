@@ -4,23 +4,23 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class BasePdfView {
 
-    private static Resource res;
+    private static URL fontResource;
 
-    public static void setResource(Resource res_other) {
-        res = res_other;
+    public static void setResource(URL res_other) {
+        fontResource = res_other;
     }
 
     public static BaseFont getBaseFont() {
         try {
-            BaseFont baseFont = BaseFont.createFont(res.getURI().getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            BaseFont baseFont = BaseFont.createFont(fontResource.getPath(), BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             return baseFont;
         }catch(Exception ex) {
             ex.printStackTrace();

@@ -675,7 +675,7 @@ public class UserManagementController extends BaseController {
             orgId = requestBody.getFilter().getOrgId();
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        UserPdfView.setResource(res);
+        UserPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
 
@@ -953,7 +953,7 @@ public class UserManagementController extends BaseController {
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
-        UserGroupPdfView.setResource(res);
+        UserGroupPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
 

@@ -141,7 +141,7 @@ public class HandExaminationStatisticsController extends BaseController {
 
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        HandExaminationStatisticsPdfView.setResource(res);
+        HandExaminationStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);
 

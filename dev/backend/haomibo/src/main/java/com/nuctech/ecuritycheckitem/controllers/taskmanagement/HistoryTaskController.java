@@ -314,7 +314,7 @@ public class HistoryTaskController extends BaseController {
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
-        HistoryTaskPdfView.setResource(res);
+        HistoryTaskPdfView.setResource(getFontResource());
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

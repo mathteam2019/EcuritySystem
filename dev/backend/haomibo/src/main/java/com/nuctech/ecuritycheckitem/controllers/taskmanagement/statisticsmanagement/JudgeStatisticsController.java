@@ -140,7 +140,7 @@ public class JudgeStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        JudgeStatisticsPdfView.setResource(res);
+        JudgeStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList);
 

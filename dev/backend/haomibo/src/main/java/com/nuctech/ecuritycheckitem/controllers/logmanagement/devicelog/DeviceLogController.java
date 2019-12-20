@@ -281,7 +281,7 @@ public class DeviceLogController extends BaseController {
         }
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        DeviceLogPdfView.setResource(res);
+        DeviceLogPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList);
 

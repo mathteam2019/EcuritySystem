@@ -484,7 +484,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
-        RolePdfView.setResource(res);
+        RolePdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList);
 
@@ -782,7 +782,7 @@ public class PermissionControlController extends BaseController {
         }
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
-        DataGroupPdfView.setResource(res);
+        DataGroupPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList);
 

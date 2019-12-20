@@ -315,7 +315,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
 
-        KnowledgeDealPendingPdfView.setResource(res);
+        KnowledgeDealPendingPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList);
 
@@ -399,7 +399,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        KnowledgeDealPersonalPdfView.setResource(res);
+        KnowledgeDealPersonalPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
 

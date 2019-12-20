@@ -345,7 +345,7 @@ public class ProcessTaskController extends BaseController {
                 requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-        ProcessTaskPdfView.setResource(res);
+        ProcessTaskPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 

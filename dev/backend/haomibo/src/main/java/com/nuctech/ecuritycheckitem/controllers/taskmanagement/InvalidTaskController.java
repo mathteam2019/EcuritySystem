@@ -338,7 +338,7 @@ public class InvalidTaskController extends BaseController {
                 requestBody.getFilter().getEndTime());
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-        InvalidTaskPdfView.setResource(res);
+        InvalidTaskPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 

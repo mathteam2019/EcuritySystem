@@ -543,7 +543,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());
 
-        DevicePdfView.setResource(res);
+        DevicePdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
 
@@ -673,7 +673,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());
 
-        DeviceFieldPdfView.setResource(res);
+        DeviceFieldPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
 

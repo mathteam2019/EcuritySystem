@@ -497,7 +497,7 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getRoleName());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
-        AssignUserPdfView.setResource(res);
+        AssignUserPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList);
 
@@ -684,7 +684,7 @@ public class AssignPermissionManagementController extends BaseController {
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
-        AssignUserGroupPdfView.setResource(res);
+        AssignUserGroupPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);
 

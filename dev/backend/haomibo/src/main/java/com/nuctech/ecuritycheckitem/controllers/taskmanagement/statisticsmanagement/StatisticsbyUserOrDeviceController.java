@@ -207,7 +207,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> totalStatistics = response.getDetailedStatistics();
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        UserOrDeviceStatisticsPdfView.setResource(res);
+        UserOrDeviceStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, true);
 
@@ -311,7 +311,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 null);
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(response.getDetailedStatistics(), requestBody.getIsAll(), requestBody.getIdList());
-        UserOrDeviceStatisticsPdfView.setResource(res);
+        UserOrDeviceStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, false);
 

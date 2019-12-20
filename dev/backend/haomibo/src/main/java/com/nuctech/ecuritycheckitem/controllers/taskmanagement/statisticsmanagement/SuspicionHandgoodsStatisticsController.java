@@ -153,7 +153,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
                 null).getDetailedStatistics();
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        HandExaminationStatisticsPdfView.setResource(res);
+        HandExaminationStatisticsPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList);
 

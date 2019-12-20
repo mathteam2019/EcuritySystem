@@ -641,7 +641,7 @@ public class OrganizationManagementController extends BaseController {
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
-        OrganizationPdfView.setResource(res);
+        OrganizationPdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList);
 

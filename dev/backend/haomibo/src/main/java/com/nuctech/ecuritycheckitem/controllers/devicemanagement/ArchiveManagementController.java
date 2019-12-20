@@ -554,7 +554,7 @@ public class ArchiveManagementController extends BaseController {
         }
 
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-        DeviceArchivePdfView.setResource(res);
+        DeviceArchivePdfView.setResource(getFontResource());
         setDictionary();
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
 

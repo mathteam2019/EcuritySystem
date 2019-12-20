@@ -221,7 +221,7 @@ public class ScanStatisticsController extends BaseController {
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
-        ScanStatisticsPdfView.setResource(res);
+        ScanStatisticsPdfView.setResource(getFontResource());
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
