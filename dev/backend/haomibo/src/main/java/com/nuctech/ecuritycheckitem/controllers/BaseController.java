@@ -10,6 +10,7 @@
 package com.nuctech.ecuritycheckitem.controllers;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.repositories.*;
@@ -203,11 +204,6 @@ public class BaseController {
     @Autowired
     public SuspictionHandgoodsStatisticsService suspictionHandgoodsStatisticsService;
 
-
-    @Value("classpath:font/NotoSansCJKsc-Regular.otf")
-    public Resource res;
-
-
     @Autowired
     AuthService authService;
 
@@ -233,7 +229,7 @@ public class BaseController {
 
     public URL getFontResource() {
 
-        return this.getClass().getClassLoader().getResource("classpath:font/NotoSansCJKsc-Regular.otf");
+        return this.getClass().getClassLoader().getResource(Constants.PDF_HEADER_FONT_RESOURCE_PATH);
     }
 
 
