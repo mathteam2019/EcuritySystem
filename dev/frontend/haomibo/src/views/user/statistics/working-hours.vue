@@ -246,7 +246,7 @@
               :fields="taskVuetableItems.fields"
               :http-fetch="taskVuetableHttpFetch"
               :per-page="taskVuetableItems.perPage"
-              track-by="sequence"
+              track-by="id"
               pagination-path="pagination"
               class="table-hover"
               @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -543,14 +543,10 @@
               dataClass: 'text-center'
             },
             {
-              name: '__sequence',
+              name: 'id',
               title: '序号',
               titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (time) => {
-                if (this.filter.statWidth === 'hour') return time + 1;
-                else return time;
-              }
+              dataClass: 'text-center'
             },
             {
               name: 'name',
