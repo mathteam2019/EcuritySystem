@@ -929,11 +929,8 @@
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }
-
         return transformed
-
       },
-
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 

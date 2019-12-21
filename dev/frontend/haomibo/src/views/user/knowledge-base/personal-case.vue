@@ -28,7 +28,7 @@
             <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-number')">
-                  <b-form-input v-model="filter.taskNumber"></b-form-input>
+                  <b-form-input v-model="filter.taskNumber"/>
                 </b-form-group>
               </b-col>
 
@@ -48,39 +48,26 @@
                   <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
                 </b-form-group>
               </b-col>
-              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
-                      </span>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col cols="8" v-if="isExpanded">
-            <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.seized-item')">
-                  <b-form-input v-model="filter.handGoods"></b-form-input>
+                  <b-form-input v-model="filter.handGoods"/>
                 </b-form-group>
               </b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
+                <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
           </b-col>
@@ -111,13 +98,12 @@
                          class="operation-icon"/>
                   <b-img v-else/>
                 </template>
-
                 <div slot="operating" slot-scope="props">
                   <b-button
                     size="sm"
                     variant="danger default btn-square"
                     @click="onAction(props.rowData.caseId)">
-                    <i class="icofont-ban"></i>
+                    <i class="icofont-ban"/>
                   </b-button>
                 </div>
               </vuetable>
@@ -128,7 +114,7 @@
                 :initial-per-page="pendingListTableItems.perPage"
                 @vuetable-pagination:change-page="onBlackListTableChangePage"
                 @onUpdatePerPage="pendingListTableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
+              />
             </div>
           </b-col>
         </b-row>
@@ -139,14 +125,12 @@
 </template>
 <script>
   import {apiBaseUrl} from "../../../constants/config";
-  import Vuetable from '../../../components/Vuetable2/Vuetable'
-  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
+  import Vuetable from '../../../components/Vuetable2/Vuetable';
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {getApiManager, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
-  import Switches from 'vue-switches';
-  
+
 
   export default {
     components: {
@@ -155,9 +139,7 @@
     },
 
     mounted() {
-
       this.getSiteOption();
-
     },
 
     data() {
@@ -230,10 +212,8 @@
               callback: (handTaskResult) => {
 
                 const dictionary = {
-
                   "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
                   "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
-
                 };
 
                 if (handTaskResult == null) return '';
@@ -301,12 +281,10 @@
           });
       },
 
-
-
-         },
+    },
     methods: {
 
-    getOptionValue(dataCode) {
+      getOptionValue(dataCode) {
         const dictionary = {
           "1000000001": `${this.$t('permission-management.male')}`,
           "1000000002": `${this.$t('permission-management.female')}`,
@@ -360,7 +338,7 @@
         };
       },
 
-       onExportButton() {
+      onExportButton() {
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let params = {
@@ -370,9 +348,6 @@
         };
         let link = `knowledge-base/generate/personal`;
         downLoadFileFromServer(link, params, 'Knowledge-Personal');
-
-
-
       },
 
       onPrintButton() {
@@ -384,9 +359,7 @@
           'idList': checkedIds.join()
         };
         let link = `knowledge-base/generate/personal`;
-        printFileFromServer(link,params);
-
-
+        printFileFromServer(link, params);
       },
 
 

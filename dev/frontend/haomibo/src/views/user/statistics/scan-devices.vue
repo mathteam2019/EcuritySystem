@@ -26,7 +26,7 @@
 
           <b-col>
             <b-form-group :label="'引导员'">
-              <b-form-input v-model="filter.userName"></b-form-input>
+              <b-form-input v-model="filter.userName"/>
             </b-form-group>
           </b-col>
 
@@ -38,7 +38,7 @@
 
           <b-col class="d-flex align-items-center" style="padding-top: 10px;">
                       <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
+                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"/>
                       </span>
           </b-col>
         </b-row>
@@ -49,23 +49,23 @@
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
               <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
               <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
 
 
             </b-form-group>
           </b-col>
 
-          <b-col></b-col>
-          <b-col></b-col>
-          <b-col></b-col>
-          <b-col></b-col>
+          <b-col/>
+          <b-col/>
+          <b-col/>
+          <b-col/>
 
 
         </b-row>
@@ -73,10 +73,10 @@
       <b-col cols="4" class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-            <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+            <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-            <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+            <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
           </b-button>
         </div>
       </b-col>
@@ -238,13 +238,13 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
+            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
-            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+            <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
-            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+            <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
       </b-col>
@@ -391,7 +391,7 @@
                       @vuetable-pagination:change-page="onTaskVuetableChangePage"
                       :initial-per-page="taskVuetableItems.perPage"
                       @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-                    ></vuetable-pagination-bootstrap>
+                    />
                   </div>
 
                 </b-col>
@@ -804,9 +804,9 @@
         });
       },
 
-      getDateTimeFormat(datatime) {
-        if(datatime==null)return '';
-        return getDateTimeWithFormat(datatime, 'monitor');
+      getDateTimeFormat(dataTime) {
+        if(dataTime==null)return '';
+        return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
       onExportButton() {

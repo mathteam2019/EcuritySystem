@@ -20,21 +20,21 @@
 
           <b-col>
             <b-form-group :label="'设备'">
-              <b-form-input v-model="filter.deviceCategoryId"></b-form-input>
+              <b-form-input v-model="filter.deviceCategoryId"/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.start-time')">
               <date-picker v-model="filter.startTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
             </b-form-group>
           </b-col>
 
           <b-col>
             <b-form-group :label="$t('statistics.view.end-time')">
               <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
-                           placeholder=""></date-picker>
+                           placeholder=""/>
             </b-form-group>
           </b-col>
 
@@ -48,10 +48,10 @@
       <b-col cols="4" class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-            <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+            <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-            <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+            <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
           </b-button>
         </div>
       </b-col>
@@ -116,13 +116,13 @@
       <b-col class="d-flex justify-content-end align-items-center">
         <div>
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
-            <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
+            <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
-            <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
+            <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
           <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
-            <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+            <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
       </b-col>
@@ -260,7 +260,7 @@
               @vuetable-pagination:change-page="onTaskVuetableChangePage"
               :initial-per-page="taskVuetableItems.perPage"
               @onUpdatePerPage="taskVuetableItems.perPage = Number($event)"
-            ></vuetable-pagination-bootstrap>
+            />
           </div>
         </b-card>
       </b-col>
@@ -273,14 +273,11 @@
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
-  import Vuetable from '../../../components/Vuetable2/Vuetable'
+  import Vuetable from '../../../components/Vuetable2/Vuetable';
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import 'vue-tree-halower/dist/halower-tree.min.css' // you can customize the style of the tree
+  import 'vue-tree-halower/dist/halower-tree.min.css';
   import Switches from 'vue-switches';
-
-
-  import ECharts from 'vue-echarts'
-
+  import ECharts from 'vue-echarts';
   import 'echarts/lib/chart/pie';
   import 'echarts/lib/chart/bar';
   import 'echarts/lib/component/tooltip';
@@ -728,9 +725,9 @@
         });
       },
 
-      getDateTimeFormat(datatime) {
-        if (datatime == null) return '';
-        return getDateTimeWithFormat(datatime, 'monitor');
+      getDateTimeFormat(dataTime) {
+        if (dataTime == null) return '';
+        return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
       onExportButton() {

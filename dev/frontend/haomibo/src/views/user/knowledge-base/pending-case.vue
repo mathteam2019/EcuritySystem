@@ -28,7 +28,7 @@
             <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.task-number')">
-                  <b-form-input v-model="filter.taskNumber"></b-form-input>
+                  <b-form-input v-model="filter.taskNumber"/>
                 </b-form-group>
               </b-col>
 
@@ -48,39 +48,26 @@
                   <b-form-select v-model="filter.fieldId" :options="onSiteOption" plain/>
                 </b-form-group>
               </b-col>
-              <b-col class="d-flex align-items-center" style="padding-top: 10px;">
-                      <span class="rounded-span flex-grow-0 text-center text-light" @click="isExpanded = !isExpanded">
-                        <i :class="!isExpanded?'icofont-rounded-down':'icofont-rounded-up'"></i>
-                      </span>
-              </b-col>
-            </b-row>
-          </b-col>
-          <b-col cols="8" v-if="isExpanded">
-            <b-row>
               <b-col>
                 <b-form-group :label="$t('knowledge-base.seized-item')">
-                  <b-form-input v-model="filter.handGoods"></b-form-input>
+                  <b-form-input v-model="filter.handGoods"/>
                 </b-form-group>
               </b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
-              <b-col></b-col>
             </b-row>
           </b-col>
           <b-col cols="4" class="d-flex justify-content-end align-items-center">
             <div>
               <b-button size="sm" class="ml-2" variant="info default" @click="onSearchButton()">
-                <i class="icofont-search-1"></i>&nbsp;{{ $t('log-management.search') }}
+                <i class="icofont-search-1"/>&nbsp;{{ $t('log-management.search') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
-                <i class="icofont-ui-reply"></i>&nbsp;{{$t('log-management.reset') }}
+                <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
-                <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export')}}
+                <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
               <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
-                <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
+                <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
           </b-col>
@@ -138,13 +125,13 @@
                       size="sm"
                       variant="success default btn-square"
                       @click="onAction('success', props.rowData.caseId)">
-                      <i class="icofont-check-alt"></i>
+                      <i class="icofont-check-alt"/>
                     </b-button>
                     <b-button
                       size="sm"
                       variant="danger default btn-square"
                       @click="onAction('dismiss', props.rowData.caseId)">
-                      <i class="icofont-ban"></i>
+                      <i class="icofont-ban"/>
                     </b-button>
                   </div>
                 </template>
@@ -156,7 +143,7 @@
                 :initial-per-page="pendingListTableItems.perPage"
                 @vuetable-pagination:change-page="onBlackListTableChangePage"
                 @onUpdatePerPage="pendingListTableItems.perPage = Number($event)"
-              ></vuetable-pagination-bootstrap>
+              />
             </div>
           </b-col>
         </b-row>
@@ -167,9 +154,8 @@
 </template>
 <script>
   import Vuetable from '../../../components/Vuetable2/Vuetable'
-  import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
+  import {getApiManager, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {apiBaseUrl} from "../../../constants/config";
   import {responseMessages} from '../../../constants/response-messages';
 
@@ -179,9 +165,7 @@
       'vuetable-pagination-bootstrap': VuetablePaginationBootstrap
     },
     mounted() {
-
       this.getSiteOption();
-
     },
     data() {
       return {
@@ -417,7 +401,6 @@
         };
         let link = `knowledge-base/generate/pending`;
         downLoadFileFromServer(link, params, 'Knowledge-Pending');
-
       },
 
       onPrintButton() {
@@ -430,8 +413,6 @@
         };
         let link = `knowledge-base/generate/pending`;
         printFileFromServer(link,params);
-
-
       },
 
 
@@ -526,8 +507,6 @@
             })
             .catch((error) => {
             });
-
-
         };
 
 
