@@ -267,5 +267,28 @@ public class Utils {
         return result;
     }
 
+    /**
+     * validate sort by param
+     * @param sortBy
+     * @return "sortBy": "userId", "order": "asc"
+     */
+    public static Map<String, String> getSortParams(String sortBy) {
+
+        String[] sortParams = sortBy.split("\\|");
+        if (sortParams.length != 2) {
+            return null;
+        }
+        else {
+            if (!sortParams[1].equals(Constants.SortOrder.ASC) && !sortParams[1].equals(Constants.SortOrder.DESC)) {
+                return null;
+            }
+        }
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("sortBy",sortParams[0]);
+        params.put("order", sortParams[1]);
+
+        return params;
+    }
+
 
 }
