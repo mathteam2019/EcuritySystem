@@ -34,7 +34,7 @@ public interface HistoryService {
      * @param perPage : perPage count
      * @return
      */
-    PageResult<History> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage);
+    PageResult<History> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
     /**
      * get All history task with filter

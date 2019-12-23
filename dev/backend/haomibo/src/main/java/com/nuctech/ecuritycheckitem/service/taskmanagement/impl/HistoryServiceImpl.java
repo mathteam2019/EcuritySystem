@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
@@ -22,6 +23,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -95,12 +97,20 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public PageResult<History> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public PageResult<History> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
         QHistory builder = QHistory.history;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage); //make page request from input parameters
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (order != null && sortBy != null) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = historyRepository.count(predicate); //get total count from database using repsitory
         List<History> data = historyRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository

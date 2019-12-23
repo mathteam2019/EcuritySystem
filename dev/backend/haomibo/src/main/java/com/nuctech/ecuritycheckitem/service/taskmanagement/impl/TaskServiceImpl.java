@@ -164,13 +164,21 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order,  Integer currentPage, Integer perPage) {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (order != null && sortBy != null) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = serTaskRepository.count(predicate);
         List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
