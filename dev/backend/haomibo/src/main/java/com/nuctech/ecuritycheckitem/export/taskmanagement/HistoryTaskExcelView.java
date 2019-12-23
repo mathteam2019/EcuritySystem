@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 public class HistoryTaskExcelView extends BaseExcelView {
 
@@ -26,7 +27,8 @@ public class HistoryTaskExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        //headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("tableno", null, Locale.CHINESE));
 
         Cell headerCellTaskNumber = header.createCell(1);
         headerCellTaskNumber.setCellValue("任务编号");

@@ -28,18 +28,18 @@ import java.util.Date;
 public class SerScan extends BaseEntity implements Serializable {
 
     public static class Invalid {
-        public static final String TRUE = "true";
-        public static final String FALSE = "false";
+        public static final String FALSE = "FALSE";
+        public static final String TRUE = "TRUE";
     }
 
     public static class ATRResult {
-        public static final String TRUE = "true";
-        public static final String FALSE = "false";
+        public static final String TRUE = "TRUE";
+        public static final String FALSE = "FALSE";
     }
 
     public static class FootAlarm {
-        public static final String TRUE = "true";
-        public static final String FALSE = "false";
+        public static final String TRUE = "TRUE";
+        public static final String FALSE = "FALSE";
     }
 
     @Id

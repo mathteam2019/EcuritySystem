@@ -1,3 +1,17 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（判图统计 controller 1.0）
+ * 文件名：	JudgeStatisticsController.java
+ * 描述：	Controller to get judgegraph statistics
+ * 作者名：	Tiny
+ * 日期：	2019/12/20
+ *
+ */
+
+
 package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
@@ -26,7 +40,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Date;
+import java.util.TreeMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -48,20 +64,20 @@ public class JudgeStatisticsController extends BaseController {
         @AllArgsConstructor
         static class Filter {
 
-            Long fieldId;
-            Long deviceId;
-            Long userCategory;
-            String userName;
+            Long fieldId; //field id
+            Long deviceId; //device id
+            Long userCategory; //user category id
+            String userName; //user name
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date startTime;
+            Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date endTime;
-            String statWidth;
+            Date endTime; //end time
+            String statWidth; //statistics width (possible values: hour, day, week, month, quarter, year)
 
         }
 
-        Integer currentPage;
-        Integer perPage;
+        Integer currentPage; //current page no
+        Integer perPage; //record count per page
         StatisticsRequestBody.Filter filter;
 
     }
@@ -76,9 +92,9 @@ public class JudgeStatisticsController extends BaseController {
     @ToString
     private static class StatisticsGenerateRequestBody {
 
-        String idList;
+        String idList; //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         StatisticsRequestBody filter;
     }
@@ -95,6 +111,7 @@ public class JudgeStatisticsController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -102,16 +119,17 @@ public class JudgeStatisticsController extends BaseController {
 
         JudgeStatisticsPaginationResponse response = new JudgeStatisticsPaginationResponse();
 
+        //get statistics from database through judgeStatisticsService
         response = judgeStatisticsService.getStatistics(
-                requestBody.getFilter().getFieldId(),
-                requestBody.getFilter().getDeviceId(),
-                requestBody.getFilter().getUserCategory(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime(),
-                requestBody.getFilter().getStatWidth(),
-                requestBody.getCurrentPage(),
-                requestBody.getPerPage());
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getStatWidth(),//get statistics width from input parameter
+                requestBody.getCurrentPage(),//get current page no from input parameter
+                requestBody.getPerPage());//get record count per page from input parameter
 
         return new CommonResponseBody(ResponseMessage.OK, response);
 
@@ -125,27 +143,29 @@ public class JudgeStatisticsController extends BaseController {
                                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        //get statistics from database through judgeStatisticsService
         TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
-                requestBody.getFilter().getFilter().getFieldId(),
-                requestBody.getFilter().getFilter().getDeviceId(),
-                requestBody.getFilter().getFilter().getUserCategory(),
-                requestBody.getFilter().getFilter().getUserName(),
-                requestBody.getFilter().getFilter().getStartTime(),
-                requestBody.getFilter().getFilter().getEndTime(),
-                requestBody.getFilter().getFilter().getStatWidth(),
+                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        JudgeStatisticsPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList);
+        JudgeStatisticsPdfView.setResource(getFontResource());  //set header font
+        setDictionary(); //set dictionary data key and values
+        InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.pdf");
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.pdf");  //set filename
 
         return ResponseEntity
                 .ok()
@@ -162,26 +182,28 @@ public class JudgeStatisticsController extends BaseController {
                                                    BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        //get statistics fromd database through judgeStatisticsService
         TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
-                requestBody.getFilter().getFilter().getFieldId(),
-                requestBody.getFilter().getFilter().getDeviceId(),
-                requestBody.getFilter().getFilter().getUserCategory(),
-                requestBody.getFilter().getFilter().getUserName(),
-                requestBody.getFilter().getFilter().getStartTime(),
-                requestBody.getFilter().getFilter().getEndTime(),
-                requestBody.getFilter().getFilter().getStatWidth(),
+                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList);
+        setDictionary();  //set dictionary data key and values
+        InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.xlsx");  //set filename
 
         return ResponseEntity
                 .ok()
@@ -198,26 +220,28 @@ public class JudgeStatisticsController extends BaseController {
                                                    BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        //get statistics from database through judgeStatisticsService
         TreeMap<Integer, JudgeStatisticsResponseModel> totalStatistics = judgeStatisticsService.getStatistics(
-                requestBody.getFilter().getFilter().getFieldId(),
-                requestBody.getFilter().getFilter().getDeviceId(),
-                requestBody.getFilter().getFilter().getUserCategory(),
-                requestBody.getFilter().getFilter().getUserName(),
-                requestBody.getFilter().getFilter().getStartTime(),
-                requestBody.getFilter().getFilter().getEndTime(),
-                requestBody.getFilter().getFilter().getStatWidth(),
+                requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
+                requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
+                requestBody.getFilter().getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getFilter().getEndTime(),//get end time from input parameter
+                requestBody.getFilter().getFilter().getStatWidth(),//get statistics width from input parameter
                 null,
                 null).getDetailedStatistics();
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList);
+        setDictionary(); //set dictionary data key and values
+        InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList); //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.docx");
+        headers.add("Content-Disposition", "attachment; filename=judgeStatistics.docx"); //set file name
 
         return ResponseEntity
                 .ok()
@@ -238,7 +262,7 @@ public class JudgeStatisticsController extends BaseController {
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = new TreeMap<>();
 
         if (isAll == false) {
-            String[] splits = idList.split(",");
+            String[] splits = idList.split(","); //get ids from idList
 
             for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
 
@@ -246,18 +270,18 @@ public class JudgeStatisticsController extends BaseController {
 
                 boolean isExist = false;
                 for (int j = 0; j < splits.length; j++) {
-                    if (splits[j].equals(Long.toString(record.getTime()))) {
+                    if (splits[j].equals(Long.toString(record.getTime()))) {  //if specified id is contained idList
                         isExist = true;
                         break;
                     }
                 }
-                if (isExist == true) {
+                if (isExist == true) {  //if exist
                     exportList.put(entry.getKey(), record);
                 }
 
             }
 
-        } else {
+        } else { //if isAll is true
             exportList = detailedStatistics;
         }
 

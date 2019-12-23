@@ -1,7 +1,5 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.InvalidTaskController;
-import com.nuctech.ecuritycheckitem.controllers.taskmanagement.ProcessTaskController;
 import com.nuctech.ecuritycheckitem.models.db.QSerTask;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
@@ -10,7 +8,6 @@ import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -88,7 +85,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
@@ -115,7 +112,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
         List<SerTask> data = StreamSupport
                 .stream(serTaskRepository.findAll(predicate).spliterator(), false)
@@ -159,7 +156,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
@@ -186,7 +183,7 @@ public class TaskServiceImpl implements TaskService {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
-        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
         List<SerTask> data = StreamSupport
                 .stream(serTaskRepository.findAll(predicate).spliterator(), false)

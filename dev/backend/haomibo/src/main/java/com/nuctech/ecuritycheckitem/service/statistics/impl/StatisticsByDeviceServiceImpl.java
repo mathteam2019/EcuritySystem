@@ -387,8 +387,8 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( SCAN_ID ) AS totalScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS validScan,\n" +
-                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS invalidScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "', 1, 0 ) ) AS validScan,\n" +
+                "\t\tsum( IF ( SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "', 1, 0 ) ) AS invalidScan,\n" +
                 "\t\tsum( IF ( SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS passedScan,\n" +
                 "\t\tsum( IF ( SCAN_FOOT_ALARM LIKE '" + SerScan.FootAlarm.TRUE + "', 1, 0 ) ) AS alarmScan,\n" +
                 "\t\tsum(TIMESTAMPDIFF(SECOND,SCAN_START_TIME,SCAN_END_TIME)) as scanWorkingSeconds,\n" +

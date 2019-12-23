@@ -27,8 +27,8 @@ import java.util.Date;
 public class SerHandExamination extends BaseEntity implements Serializable {
 
     public static class Result {
-        public static final String TRUE = "true";
-        public static final String FALSE = "false";
+        public static final String TRUE = "TRUE";
+        public static final String FALSE = "FALSE";
     }
 
     public static class HandAppraise {

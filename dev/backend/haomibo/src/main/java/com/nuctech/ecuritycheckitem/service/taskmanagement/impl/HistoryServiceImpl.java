@@ -1,6 +1,19 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（历史任务 service 1.0)
+ * 文件名：	HistoryServiceImpl.java
+ * 描述：	Service to get invalid task data from database using models and repositories
+ * 作者名：	申日哲
+ * 日期：	2019/12/20
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
@@ -24,7 +37,7 @@ public class HistoryServiceImpl implements HistoryService {
     HistoryRepository historyRepository;
 
     /**
-     * Get filter condition
+     * Get filter condition from input parameters
      * @param taskNumber
      * @param modeId
      * @param taskStatus
@@ -40,28 +53,28 @@ public class HistoryServiceImpl implements HistoryService {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        if (taskNumber != null) {
+        if (taskNumber != null) { //if task number is input
             predicate.and(builder.task.taskNumber.contains(taskNumber));
         }
-        if (modeId != null) {
+        if (modeId != null) { //if mode id is input
             predicate.and(builder.mode.eq(modeId));
         }
-        if (taskStatus != null && !taskStatus.isEmpty()) {
+        if (taskStatus != null && !taskStatus.isEmpty()) { //if taskStatus is input
             predicate.and(builder.task.taskStatus.eq(taskStatus));
         }
-        if (fieldId != null) {
+        if (fieldId != null) { //if field id is input
             predicate.and(builder.task.workflowId.eq(fieldId));
         }
-        if (userName != null && !userName.isEmpty()) {
+        if (userName != null && !userName.isEmpty()) { //if username is input
             Predicate scanUserName = builder.scanPointsman.userName.contains(userName)
                     .or(builder.judgeUser.userName.contains(userName))
                     .or(builder.judgeUser.userName.contains(userName));
             predicate.and(scanUserName);
         }
-        if (startTime != null) {
+        if (startTime != null) { //if start time is input
             predicate.and(builder.createdTime.after(startTime));
         }
-        if (endTime != null) {
+        if (endTime != null) { //if end time is input
             predicate.and(builder.createdTime.before(endTime));
         }
 
@@ -85,12 +98,12 @@ public class HistoryServiceImpl implements HistoryService {
     public PageResult<History> getHistoryTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         QHistory builder = QHistory.history;
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
-        PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        PageRequest pageRequest = PageRequest.of(currentPage, perPage); //make page request from input parameters
 
-        long total = historyRepository.count(predicate);
-        List<History> data = historyRepository.findAll(predicate, pageRequest).getContent();
+        long total = historyRepository.count(predicate); //get total count from database using repsitory
+        List<History> data = historyRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
 
         return new PageResult<History>(total, data);
 
@@ -111,25 +124,25 @@ public class HistoryServiceImpl implements HistoryService {
     public List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
 
         QHistory builder = QHistory.history;
-        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
+        BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
         List<History> data = StreamSupport
                 .stream(historyRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()); //get data as list from database using repository
 
         return data;
     }
 
     /**
-     * Get one history info
-     * @param taskId : id of a task
+     * Get one history information
+     * @param taskId : id of a history task
      * @return
      */
     @Override
     public History getOne(Long taskId) {
 
         QHistory builder = QHistory.history;
-        Optional<History> data = historyRepository.findOne(builder.historyId.eq(taskId));
+        Optional<History> data = historyRepository.findOne(builder.historyId.eq(taskId)); //get a history record from database using repository
         if (!data.isPresent()) {
             return null;
         }
