@@ -552,8 +552,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else-if="showPage.judgeResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.judgeResult==='false'">嫌疑</label>
+                  <label v-else-if="showPage.judgeResult==='TRUE'">无嫌疑</label>
+                  <label v-else-if="showPage.judgeResult==='FALSE'">嫌疑</label>
                   <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
@@ -1099,8 +1099,8 @@
 
                 const dictionary = {
 
-                  "true": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
-                  "false": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
+                  "TRUE": `<span style="color:#ef6e69;">${this.$t('knowledge-base.seized')}</span>`,
+                  "FALSE": `<span style="color:#e8a23e;">${this.$t('knowledge-base.no-seized')}</span>`,
 
                 };
 
@@ -1347,8 +1347,8 @@
           "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
           "1000001701": `${this.$t('permission-management.timeout')}`,
           "1000001702": `${this.$t('permission-management.timein')}`,
-          "true": `${this.$t('knowledge-base.suspect')}`,
-          "false": `${this.$t('knowledge-base.no-suspect')}`,
+          "TRUE": `${this.$t('knowledge-base.suspect')}`,
+          "FALSE": `${this.$t('knowledge-base.no-suspect')}`,
           "1000001301": `${this.$t('permission-management.female')}`,
           "1000001302": `${this.$t('permission-management.female')}`,
           "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
@@ -1473,7 +1473,12 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          if (temp.scanImage != null) {
+            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          }
+          else {
+            temp.scanImageUrl = '';
+          }
           transformed.data.push(temp);
 
           idTemp = temp.historyId;
