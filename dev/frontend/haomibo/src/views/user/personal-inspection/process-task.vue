@@ -562,8 +562,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.serJudgeGraph == null">None</label>
-                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='true'">无嫌疑</label>
-                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='false'">嫌疑</label>
+                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='TRUE'">无嫌疑</label>
+                  <label v-else-if="showPage.serJudgeGraph.judgeResult==='FALSE'">嫌疑</label>
                   <label v-else>Invalid Value</label>
                 </b-form-group>
               </b-col>
@@ -1190,8 +1190,8 @@
           "1000000602": `${this.$t('system-setting.parameter-setting.no')}`,
           "1000001701": `${this.$t('permission-management.timeout')}`,
           "1000001702": `${this.$t('permission-management.timein')}`,
-          "true": `${this.$t('knowledge-base.suspect')}`,
-          "false": `${this.$t('knowledge-base.no-suspect')}`,
+          "TRUE": `${this.$t('knowledge-base.suspect')}`,
+          "FALSE": `${this.$t('knowledge-base.no-suspect')}`,
           "1000001301": `${this.$t('permission-management.female')}`,
           "1000001302": `${this.$t('permission-management.female')}`,
           "1000001303": `${this.$t('maintenance-management.process-task.hand')}`,
