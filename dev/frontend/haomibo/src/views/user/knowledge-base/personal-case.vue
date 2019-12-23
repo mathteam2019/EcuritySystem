@@ -387,6 +387,9 @@
           if (temp.scanImage != null) {
             temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
           }
+          else {
+            temp.scanImageUrl = '';
+          }
           transformed.data.push(temp);
           this.idList.push(idTemp);
           if (this.isCheckAll === true) {

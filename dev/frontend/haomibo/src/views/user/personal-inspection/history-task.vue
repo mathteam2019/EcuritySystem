@@ -1473,7 +1473,12 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          if (temp.scanImage != null) {
+            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
+          }
+          else {
+            temp.scanImageUrl = '';
+          }
           transformed.data.push(temp);
 
           idTemp = temp.historyId;
