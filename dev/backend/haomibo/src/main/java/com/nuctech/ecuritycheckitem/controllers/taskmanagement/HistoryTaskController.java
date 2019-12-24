@@ -121,6 +121,7 @@ public class HistoryTaskController extends BaseController {
         @NotNull
         Boolean isAll; //true/false if isAll is true, idList is ignored
 
+        String sort; //sortby and order ex: deviceName|asc
         HistoryGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -245,10 +246,13 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-//        String s1 = messageSource.getMessage("name", null, Locale.ENGLISH);
-//        String s2 = messageSource.getMessage("tableno", null, Locale.ENGLISH);
-//        String s3 = messageSource.getMessage("name", null, Locale.CHINESE);
-//        String s4 = messageSource.getMessage("tableno", null, Locale.CHINESE);
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
 
         //get all pending case deal list
         List<History> taskList = new ArrayList<>();
@@ -259,7 +263,9 @@ public class HistoryTaskController extends BaseController {
                 requestBody.getFilter().getFieldId(), //get field id from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getStartTime(), //get start time from input parameter
-                requestBody.getFilter().getEndTime()); //get end time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
 
@@ -294,22 +300,31 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
         //get all pending case deal list
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(),//get task number from input parameter
-                requestBody.getFilter().getMode(),//get mode id from input parameter
+                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                requestBody.getFilter().getMode(), //get mode id from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
-                requestBody.getFilter().getFieldId(),//get field id from input parameter
-                requestBody.getFilter().getUserName(),//get user name from input parameter
-                requestBody.getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getEndTime());//get end time from input parameter
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
 
         setDictionary(); //set dictionary data key and values
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
-
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=history-task.docx"); //set filename and make header
@@ -332,6 +347,13 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
 
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
@@ -341,7 +363,9 @@ public class HistoryTaskController extends BaseController {
                 requestBody.getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getUserName(),//get user name from input parameter
                 requestBody.getFilter().getStartTime(),//get start time from input parameter
-                requestBody.getFilter().getEndTime());//get end time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be printed with isAll and idList
         setDictionary(); //set dictionary data key and values

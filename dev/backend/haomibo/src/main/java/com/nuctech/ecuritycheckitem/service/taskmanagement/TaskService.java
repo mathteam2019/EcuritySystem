@@ -34,7 +34,7 @@ public interface TaskService {
      * @param endTime
      * @return
      */
-    List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime);
+    List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * get paginated list of process task with filter
@@ -62,7 +62,7 @@ public interface TaskService {
      * @param endTime
      * @return
      */
-    List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime);
+    List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * get detailed information of a process task with ID

@@ -121,6 +121,7 @@ public class InvalidTaskController extends BaseController {
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
+        String sort; //sortby and order ex: deviceName|asc
         TaskGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -278,16 +279,26 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
         //get all pending case deal list
         List<SerTask> taskList = new ArrayList<>();
         taskList = taskService.getInvalidTaskAll(
-                requestBody.getFilter().getTaskNumber(), //get task numer from request body
-                requestBody.getFilter().getMode(), //get mode id from request body
-                requestBody.getFilter().getStatus(), // get status from request body
-                requestBody.getFilter().getFieldId(), // get field id from request body
-                requestBody.getFilter().getUserName(), //get user name from request body
-                requestBody.getFilter().getStartTime(), //get start time from request body
-                requestBody.getFilter().getEndTime()); //get end time from request body
+                requestBody.getFilter().getTaskNumber(),//get task numer from request body
+                requestBody.getFilter().getMode(),//get mode id from request body
+                requestBody.getFilter().getStatus(), //get status from request body
+                requestBody.getFilter().getFieldId(),//get field id from request body
+                requestBody.getFilter().getUserName(),//get user name from request body
+                requestBody.getFilter().getStartTime(),//get start time from request body
+                requestBody.getFilter().getEndTime(), //get end time from request body
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
@@ -316,17 +327,27 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
         //get all pending case deal list
         List<SerTask> taskList = new ArrayList<>();
-
         taskList = taskService.getInvalidTaskAll(
-                requestBody.getFilter().getTaskNumber(), //get task numer from request body
-                requestBody.getFilter().getMode(), //get mode id from request body
+                requestBody.getFilter().getTaskNumber(),//get task numer from request body
+                requestBody.getFilter().getMode(),//get mode id from request body
                 requestBody.getFilter().getStatus(), //get status from request body
-                requestBody.getFilter().getFieldId(), //get field id from request body
-                requestBody.getFilter().getUserName(), //get user name from request body
-                requestBody.getFilter().getStartTime(), //get start time from request body
-                requestBody.getFilter().getEndTime()); //get end time from request body
+                requestBody.getFilter().getFieldId(),//get field id from request body
+                requestBody.getFilter().getUserName(),//get user name from request body
+                requestBody.getFilter().getStartTime(),//get start time from request body
+                requestBody.getFilter().getEndTime(), //get end time from request body
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
+
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
 
         setDictionary(); //set dictionary key and values
@@ -355,6 +376,14 @@ public class InvalidTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
         //get all pending case deal list
         List<SerTask> taskList = new ArrayList<>();
         taskList = taskService.getInvalidTaskAll(
@@ -364,7 +393,9 @@ public class InvalidTaskController extends BaseController {
                 requestBody.getFilter().getFieldId(),//get field id from request body
                 requestBody.getFilter().getUserName(),//get user name from request body
                 requestBody.getFilter().getStartTime(),//get start time from request body
-                requestBody.getFilter().getEndTime());//get end time from request body
+                requestBody.getFilter().getEndTime(), //get end time from request body
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         InvalidTaskPdfView.setResource(getFontResource()); //set header font

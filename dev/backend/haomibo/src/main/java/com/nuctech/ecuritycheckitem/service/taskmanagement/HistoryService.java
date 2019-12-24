@@ -47,7 +47,7 @@ public interface HistoryService {
      * @param endTime : end time
      * @return
      */
-    List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime);
+    List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * Get one history task with id

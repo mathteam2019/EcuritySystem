@@ -120,14 +120,19 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+    public List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        if (order.equals(Constants.SortOrder.DESC)) {
+            sort = Sort.by(Sort.Direction.DESC, sortBy);
+        }
+
         List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
                 .collect(Collectors.toList());
 
         return data;
@@ -170,6 +175,7 @@ public class TaskServiceImpl implements TaskService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
+
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (order != null && sortBy != null) {
             if (order.equals(Constants.SortOrder.ASC)) {
@@ -199,14 +205,19 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+    public List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        if (order.equals(Constants.SortOrder.DESC)) {
+            sort = Sort.by(Sort.Direction.DESC, sortBy);
+        }
+
         List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
                 .collect(Collectors.toList());
 
         return data;

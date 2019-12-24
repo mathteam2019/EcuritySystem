@@ -131,13 +131,17 @@ public class HistoryServiceImpl implements HistoryService {
      * @return
      */
     @Override
-    public List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
+    public List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
         QHistory builder = QHistory.history;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
+        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
+        if (order.equals(Constants.SortOrder.DESC)) {
+            sort = Sort.by(Sort.Direction.DESC, sortBy);
+        }
         List<History> data = StreamSupport
-                .stream(historyRepository.findAll(predicate).spliterator(), false)
+                .stream(historyRepository.findAll(predicate, sort).spliterator(), false)
                 .collect(Collectors.toList()); //get data as list from database using repository
 
         return data;
