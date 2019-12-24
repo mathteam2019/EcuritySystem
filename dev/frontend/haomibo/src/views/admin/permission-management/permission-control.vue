@@ -1023,6 +1023,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.roleVuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             roleName: this.roleKeyword,
           }
@@ -1241,6 +1242,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.dataGroupVuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             dataGroupName: this.groupKeyword,
           }

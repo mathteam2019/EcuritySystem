@@ -383,7 +383,6 @@
             },
             {
               name: 'categoryId',
-              sortField: 'categoryId',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -397,14 +396,12 @@
             },
             {
               name: 'categoryName',
-              sortField: 'categoryName',
               title: this.$t('device-management.device-classify-item.classify'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'status',
-              sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -420,7 +417,6 @@
             },
             {
               name: 'parentCategoryNumber',
-              sortField: 'parentCategoryNumber',
               title: this.$t('device-management.device-classify-item.super-classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -434,7 +430,6 @@
             },
             {
               name: 'parentCategoryName',
-              sortField: 'parentCategoryName',
               title: this.$t('device-management.device-classify-item.super-classify'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -448,7 +443,6 @@
             },
             {
               name: 'note',
-              sortField: 'note',
               title: this.$t('system-setting.remarks'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -583,6 +577,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.deviceClassifyTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filterOption
         });
       },

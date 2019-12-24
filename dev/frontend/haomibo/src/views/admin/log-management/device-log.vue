@@ -684,6 +684,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.securityLogTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.deviceFilter
         });
       },
@@ -713,6 +714,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.decisionLogTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.judgeFilter
         });
       },
@@ -742,6 +744,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.handCheckLogTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.manualFilter
         });
       },

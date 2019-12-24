@@ -380,7 +380,6 @@
             },
             {
               name: 'archiveId',
-              sortField: 'archiveId',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -394,14 +393,12 @@
             },
             {
               name: 'archivesName',
-              sortField: 'archivesName',
               title: this.$t('device-management.device-list.template'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'status',
-              sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -429,7 +426,6 @@
             },
             {
               name: 'originalModelName',
-              sortField: 'originalModel',
               title: this.$t('device-management.device-model'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -802,6 +798,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filterOption
         });
       },

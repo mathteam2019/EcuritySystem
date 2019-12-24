@@ -1476,7 +1476,7 @@
                   this.selectedUserGroupItem = null;
                   break;
                 case responseMessages['has-users']: // okay
-                  this.$notify('success', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-child`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.group-has-users`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -1520,6 +1520,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             userName: this.filter.userName,
             status: this.filter.status,
@@ -1534,41 +1535,12 @@
       onUserTableChangePage(page) {
         this.$refs.vuetable.changePage(page)
       },
-      onGroupFormSubmit() {
-        getApiManager()
-          .post(`${apiBaseUrl}/permission-management/user-management/user-group/create`, this.groupForm)
-          .then((response) => {
-            let message = response.data.message;
-            let data = response.data.data;
-            switch (message) {
-              case responseMessages['ok']: // okay
-                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.user.group-created-successfully`), {
-                  duration: 3000,
-                  permanent: false
-                });
-
-                this.$refs.userGroupTable.refresh();
-
-                break;
-
-            }
-          })
-          .catch((error) => {
-          })
-          .finally(() => {
-            //
-            this.groupForm = {
-              groupName: null,
-              groupNumber: null,
-              status: 'create'
-            };
-          });
-      },
       userGroupTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             groupName: this.groupFilter.name,
           }
@@ -1591,7 +1563,6 @@
       onUserGroupTableRowClick(dataItems) {
         this.selectedUserGroupItem = dataItems;
         this.groupForm.status = 'modify';
-        console.log(this.selectedUserGroupItem);
       },
       // user tree group
       fnRefreshOrgUserTreeData() {

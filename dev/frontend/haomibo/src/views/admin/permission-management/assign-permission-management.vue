@@ -239,8 +239,8 @@
                             <b-form-select class="mw-100"
                                            v-model="userForm.selectedDataGroupId"
                                            :options="dataGroupSelectData" plain
-                                           :state="userForm.dataRangeCategory !== 'specified' ? null : (!$v.userForm.selectedDataGroupId.$dirty ? null : !$v.userForm.selectedDataGroupId.$invalid)"
-                                           :disabled="userForm.dataRangeCategory !== 'specified'"
+                                           :state="userForm.dataRangeCategory !== '1000000505' ? null : (!$v.userForm.selectedDataGroupId.$dirty ? null : !$v.userForm.selectedDataGroupId.$invalid)"
+                                           :disabled="userForm.dataRangeCategory !== '1000000505'"
                             />
                             <div
                               v-if="userForm.dataRangeCategory !== 'specified' || !$v.userForm.selectedDataGroupId.$invalid">
@@ -1170,6 +1170,7 @@
 
       editUserRoles(userWithRole) {
         this.userForm.orgId = userWithRole.org.orgId;
+        this.userForm.userId = userWithRole.userId;
         this.userForm.nextUserId = userWithRole.userId;
         this.userForm.roles = userWithRole.roles.map(role => ({
           label: role.roleName,
@@ -1240,6 +1241,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.userGroupTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             groupName: this.groupFilter.groupName,
             userName: this.groupFilter.userName,
@@ -1309,7 +1311,7 @@
             });
         } else
           console.log('this not selected');
-        console.log(this.selectedUserGroupItem);
+
       },
 
       fnAssignUserGroupItem() {
