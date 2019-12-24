@@ -1020,7 +1020,7 @@ public class UserManagementController extends BaseController {
 
         if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) {
             // If user group has users, it can't be delete.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
 
         if(userService.checkUserGroupRoleExist(requestBody.getUserGroupId())) {
