@@ -56,7 +56,6 @@ public class AuthController extends BaseController {
         @NotNull
         String password;
 
-        @NotNull
         Integer count;
     }
 
