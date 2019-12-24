@@ -225,7 +225,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 groupBy +
                 "\t( judge_start_time ) AS time,\n" +
                 "\tsum( IF ( g.judge_user_id != l.USER_ID, 1, 0 ) ) AS artificialJudge,\n" +
-                "\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.TRUE + "' AND a.ASSIGN_TIMEOUT LIKE 'true', 1, 0 ) ) AS assignResult,\n" +
+                "\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "' AND a.ASSIGN_TIMEOUT LIKE 'true', 1, 0 ) ) AS assignResult,\n" +
                 "\tsum( IF ( g.judge_user_id = l.USER_ID, 1, 0 ) ) AS judgeTimeout,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS atrResult,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +

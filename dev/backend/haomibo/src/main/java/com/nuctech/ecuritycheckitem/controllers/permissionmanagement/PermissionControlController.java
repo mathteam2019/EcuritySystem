@@ -859,7 +859,7 @@ public class PermissionControlController extends BaseController {
 
         if (permissionService.checkGroupChildExist(requestBody.getDataGroupId())) {
             // If data group has users, it can't be deleted.
-            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
+            return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
 
         if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) {

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,7 +125,7 @@ public class ScanParamServiceImpl implements ScanParamService {
     }
 
     @Override
-    public boolean modifyScanParam(Long paramDeviceId, SerScanParam serScanParamNew) {
+    public boolean modifyScanParam(List<Long> paramDeviceIdList, SerScanParam serScanParamNew) {
 
         SerScanParam serScanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
                 .scanParamsId.eq(serScanParamNew.getScanParamsId())).orElse(null);
@@ -134,34 +135,76 @@ public class ScanParamServiceImpl implements ScanParamService {
             return false;
         }
 
-        SerScanParamsFrom fromParams = (serScanParam.getFromParamsList() != null && serScanParam.getFromParamsList().size() > 0) ?
-                serScanParam.getFromParamsList().get(0) : null;
+        List<SerScanParamsFrom> fromParams = serScanParam.getFromParamsList();
         //check from params exist or not
         if (fromParams != null) {
-            if (paramDeviceId != null) {
-                fromParams.setFromDeviceId(paramDeviceId);
-                fromParams.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                serScanParamsFromRepository.save(fromParams);
-            } else {
-                serScanParamsFromRepository.delete(fromParams);
-            }
+            serScanParamsFromRepository.deleteAll(fromParams);
+        }
+        // Add edited info.
+        serScanParamNew.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamNew.setCreatedBy(serScanParam.getCreatedBy());
+        serScanParamNew.setCreatedTime(serScanParam.getCreatedTime());
+        serScanParamNew.setDeviceId(serScanParam.getDeviceId());
 
-        } else if (paramDeviceId != null) {//create judge group
-            fromParams = SerScanParamsFrom.
-                    builder()
-                    .fromDeviceId(paramDeviceId)
-                    .deviceId(serScanParam.getDeviceId())
-                    .scanParamsId(serScanParam.getScanParamsId())
-                    .build();
-            fromParams.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            serScanParamsFromRepository.save(fromParams);
+        serScanParamRepository.save(serScanParamNew);
+
+        if(paramDeviceIdList != null && paramDeviceIdList.size() > 0) {
+            List<SerScanParamsFrom> serScanParamsFromList = new ArrayList<>();
+            List<SerScanParam> serScanParamList = StreamSupport
+                    .stream(serScanParamRepository.findAll(QSerScanParam.serScanParam
+                    .deviceId.in(paramDeviceIdList)).spliterator(), false)
+                    .collect(Collectors.toList());
+            for(int i = 0; i < paramDeviceIdList.size(); i ++) {
+                boolean isExist = false;
+                SerScanParam scanParam = null;
+                for(int j = 0; j < serScanParamList.size(); j ++) {
+                    if(serScanParamList.get(j).getDeviceId() == paramDeviceIdList.get(i)) {
+                        scanParam = serScanParamList.get(j);
+                        scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == false) {
+                    scanParam = SerScanParam.builder().deviceId(paramDeviceIdList.get(i)).build();
+                    scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    serScanParamList.add(scanParam);
+                }
+                scanParam.setAirCaliWarnTime(serScanParamNew.getAirCaliWarnTime());
+                scanParam.setStandByTime(serScanParamNew.getStandByTime());
+                scanParam.setAlarmSound(serScanParamNew.getAlarmSound());
+                scanParam.setPassSound(serScanParamNew.getPassSound());
+                scanParam.setPosErrorSound(serScanParamNew.getPosErrorSound());
+                scanParam.setStandSound(serScanParamNew.getStandSound());
+                scanParam.setScanSound(serScanParamNew.getScanSound());
+                scanParam.setScanOverUseSound(serScanParamNew.getScanOverUseSound());
+                scanParam.setAutoRecognise(serScanParamNew.getAutoRecognise());
+                scanParam.setRecognitionRate(serScanParamNew.getRecognitionRate());
+                scanParam.setSaveScanData(serScanParamNew.getSaveScanData());
+                scanParam.setSaveSuspectData(serScanParamNew.getSaveSuspectData());
+                scanParam.setFacialBlurring(serScanParamNew.getFacialBlurring());
+                scanParam.setChestBlurring(serScanParamNew.getChestBlurring());
+                scanParam.setHipBlurring(serScanParamNew.getHipBlurring());
+                scanParam.setGroinBlurring(serScanParamNew.getGroinBlurring());
+                scanParam.setDeviceStorageAlarm(serScanParamNew.getDeviceStorageAlarm());
+                scanParam.setDeviceStorageAlarmPercent(serScanParamNew.getDeviceStorageAlarmPercent());
+            }
+            for(int i = 0; i < paramDeviceIdList.size(); i ++) {
+                Long deviceId = paramDeviceIdList.get(i);
+                SerScanParamsFrom paramsFrom = SerScanParamsFrom.builder()
+                        .deviceId(deviceId)
+                        .fromDeviceId(serScanParam.getDeviceId())
+                        .scanParamsId(serScanParam.getScanParamsId())
+                        .build();
+                paramsFrom.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                serScanParamsFromList.add(paramsFrom);
+            }
+            serScanParamRepository.saveAll(serScanParamList);
+            serScanParamsFromRepository.saveAll(serScanParamsFromList);
         }
 
-        serScanParam = serScanParamNew;
-        // Add edited info.
-        serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
-        serScanParamRepository.save(serScanParam);
+
 
         return  true;
     }

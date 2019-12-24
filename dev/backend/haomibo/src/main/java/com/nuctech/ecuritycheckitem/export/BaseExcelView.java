@@ -5,11 +5,20 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.context.MessageSource;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class BaseExcelView {
+
+    public static MessageSource messageSource;
+
+    public static void setMessageSource(MessageSource messageSource) {
+        BaseExcelView.messageSource = messageSource;
+    }
+
     public static CellStyle getHeaderStyle(Workbook workbook) {
         CellStyle headerStyle = workbook.createCellStyle();
         XSSFFont font = ((XSSFWorkbook) workbook).createFont();

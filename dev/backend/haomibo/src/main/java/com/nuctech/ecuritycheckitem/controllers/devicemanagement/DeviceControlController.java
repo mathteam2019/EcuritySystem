@@ -604,7 +604,7 @@ public class DeviceControlController extends BaseController {
     }
 
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
-    @RequestMapping(value = "/device/field/word", method = RequestMethod.POST)
+    @RequestMapping(value = "/device/field/docx", method = RequestMethod.POST)
     public Object deviceFieldGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 

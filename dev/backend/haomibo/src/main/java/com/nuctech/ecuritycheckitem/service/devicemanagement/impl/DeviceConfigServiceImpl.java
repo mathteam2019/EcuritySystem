@@ -123,79 +123,108 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     @Transactional
-    public void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, Long manualDeviceId, Long judgeDeviceId, Long configDeviceId) {
+    public void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, List<Long> manualDeviceIdList, List<Long> judgeDeviceIdList,
+                                   List<Long> configDeviceIdList) {
 
-        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                sysDeviceConfig.getManualGroupList().get(0): null;
-        //check manual Group exist or not
-        if(manualGroup != null) {
-            if(manualDeviceId != null) {
-                manualGroup.setManualDeviceId(manualDeviceId);
-                manualGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                sysManualGroupRepository.save(manualGroup);
-            } else {
-                sysManualGroupRepository.delete(manualGroup);
-            }
-
-        } else if(manualDeviceId != null) {//create manual group
-            manualGroup = SysManualGroup.
-                    builder()
-                    .manualDeviceId(manualDeviceId)
-                    .configId(sysDeviceConfig.getConfigId())
-                    .build();
-            manualGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysManualGroupRepository.save(manualGroup);
-        }
-
-        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                sysDeviceConfig.getJudgeGroupList().get(0): null;
-        //check judge Group exist or not
-        if(judgeGroup != null) {
-            if(judgeDeviceId != null) {
-                judgeGroup.setJudgeDeviceId(judgeDeviceId);
-                judgeGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                sysJudgeGroupRepository.save(judgeGroup);
-            } else {
-                sysJudgeGroupRepository.delete(judgeGroup);
-            }
-
-        } else if(judgeDeviceId != null) {//create judge group
-            judgeGroup = SysJudgeGroup.
-                    builder()
-                    .judgeDeviceId(judgeDeviceId)
-                    .configId(sysDeviceConfig.getConfigId())
-                    .build();
-            judgeGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            sysJudgeGroupRepository.save(judgeGroup);
-        }
-
-        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                sysDeviceConfig.getFromConfigIdList().get(0): null;
-        //check from config exist or not
-        if(fromConfigId != null) {
-            if(configDeviceId != null) {
-                fromConfigId.setFromDeviceId(configDeviceId);
-                fromConfigId.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-                fromConfigIdRepository.save(fromConfigId);
-            } else {
-                fromConfigIdRepository.delete(fromConfigId);
-            }
-
-        } else if(configDeviceId != null) {//create judge group
-            fromConfigId = FromConfigId.
-                    builder()
-                    .fromDeviceId(configDeviceId)
-                    .deviceId(sysDeviceConfig.getDeviceId())
-                    .configId(sysDeviceConfig.getConfigId())
-                    .build();
-            fromConfigId.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-            fromConfigIdRepository.save(fromConfigId);
-        }
-
-        // Add edited info.
         sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        List<SysDeviceConfig> deviceConfigList = new ArrayList<>();
+        if(configDeviceIdList != null && configDeviceIdList.size() > 0) {
+            deviceConfigList = StreamSupport
+                    .stream(sysDeviceConfigRepository.findAll(QSysDeviceConfig.sysDeviceConfig
+                            .deviceId.in(configDeviceIdList)).spliterator(), false)
+                    .collect(Collectors.toList());
 
-        sysDeviceConfigRepository.save(sysDeviceConfig);
+            for(int i = 0; i < configDeviceIdList.size(); i ++) {
+                boolean isExist = false;
+                SysDeviceConfig deviceConfig = null;
+                for(int j = 0; j < deviceConfigList.size(); j ++) {
+                    if(deviceConfigList.get(j).getDeviceId() == configDeviceIdList.get(i)) {
+                        deviceConfig = deviceConfigList.get(j);
+                        deviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(isExist == false) {
+                    deviceConfig = SysDeviceConfig.builder().deviceId(configDeviceIdList.get(i)).build();
+                    deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    deviceConfigList.add(deviceConfig);
+                }
+                deviceConfig.setModeId(sysDeviceConfig.getModeId());
+                deviceConfig.setAtrSwitch(sysDeviceConfig.getAtrSwitch());
+                deviceConfig.setManualSwitch(sysDeviceConfig.getManualSwitch());
+                deviceConfig.setManRemoteGender(sysDeviceConfig.getManRemoteGender());
+                deviceConfig.setWomanRemoteGender(sysDeviceConfig.getWomanRemoteGender());
+                deviceConfig.setManManualGender(sysDeviceConfig.getManManualGender());
+                deviceConfig.setWomanManualGender(sysDeviceConfig.getWomanManualGender());
+                deviceConfig.setManDeviceGender(sysDeviceConfig.getManDeviceGender());
+                deviceConfig.setWomanDeviceGender(sysDeviceConfig.getWomanDeviceGender());
+            }
+            deviceConfigList.add(sysDeviceConfig);
+        } else {
+            deviceConfigList.add(sysDeviceConfig);
+        }
+        sysDeviceConfigRepository.saveAll(deviceConfigList);
+
+        List<SysManualGroup> manualGroups = new ArrayList<>();
+        List<SysJudgeGroup> judgeGroups = new ArrayList<>();
+
+        for(int i = 0; i < deviceConfigList.size(); i ++) {
+            if(deviceConfigList.get(i).getManualGroupList() != null) {
+                for(int j = 0; j < deviceConfigList.get(i).getManualGroupList().size(); j ++) {
+                    manualGroups.add(deviceConfigList.get(i).getManualGroupList().get(j));
+                }
+            }
+
+            if(deviceConfigList.get(i).getJudgeGroupList() != null) {
+                for(int j = 0; j < deviceConfigList.get(i).getJudgeGroupList().size(); j ++) {
+                    judgeGroups.add(deviceConfigList.get(i).getJudgeGroupList().get(j));
+                }
+            }
+
+        };
+        sysManualGroupRepository.deleteAll(manualGroups);
+        sysJudgeGroupRepository.deleteAll(judgeGroups);
+        fromConfigIdRepository.deleteAll(sysDeviceConfig.getFromConfigIdList());
+
+        manualGroups = new ArrayList<>();
+        judgeGroups = new ArrayList<>();
+        List<FromConfigId> configList = new ArrayList<>();
+        for(int i = 0; i < deviceConfigList.size(); i ++) {
+            if(manualDeviceIdList != null) {
+                for(int j = 0; j < manualDeviceIdList.size(); j ++) {
+                    SysManualGroup manualGroup = SysManualGroup.builder()
+                            .configId(deviceConfigList.get(i).getConfigId())
+                            .manualDeviceId(manualDeviceIdList.get(j))
+                            .build();
+                    manualGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    manualGroups.add(manualGroup);
+                }
+            }
+
+            if(judgeDeviceIdList != null) {
+                for(int j = 0; j < judgeDeviceIdList.size(); j ++) {
+                    SysJudgeGroup judgeGroup = SysJudgeGroup.builder()
+                            .configId(deviceConfigList.get(i).getConfigId())
+                            .judgeDeviceId(judgeDeviceIdList.get(j))
+                            .build();
+                    judgeGroup.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                    judgeGroups.add(judgeGroup);
+                }
+            }
+            if(deviceConfigList.get(i).getConfigId() != sysDeviceConfig.getConfigId()) {
+                FromConfigId configIdVal = FromConfigId.builder()
+                        .configId(sysDeviceConfig.getConfigId())
+                        .deviceId(deviceConfigList.get(i).getDeviceId())
+                        .fromDeviceId(sysDeviceConfig.getDeviceId())
+                        .build();
+                configIdVal.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                configList.add(configIdVal);
+            }
+        }
+        fromConfigIdRepository.saveAll(configList);
+        sysManualGroupRepository.saveAll(manualGroups);
+        sysJudgeGroupRepository.saveAll(judgeGroups);
     }
 
     @Override

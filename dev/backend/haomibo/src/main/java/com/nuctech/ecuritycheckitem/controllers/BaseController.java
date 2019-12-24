@@ -21,8 +21,7 @@ import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.springframework.context.MessageSource;
 
 import javax.persistence.EntityManager;
 import java.net.URL;
@@ -206,6 +205,9 @@ public class BaseController {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    public MessageSource messageSource;
 
     public void setDictionary() {
         List<SysDictionaryData> dictionaryDataList = authService.findAllDictionary();

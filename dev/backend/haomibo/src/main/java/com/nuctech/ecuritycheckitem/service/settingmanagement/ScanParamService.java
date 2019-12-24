@@ -12,6 +12,6 @@ public interface ScanParamService {
     List<SerScanParam> getAllWithFilter(String deviceName, String status);
     List<SerScanParam> getAllWithoutFilter();
 
-    boolean modifyScanParam(Long paramDeviceId, SerScanParam serScanParamNew);
+    boolean modifyScanParam(List<Long> paramDeviceIdList, SerScanParam serScanParamNew);
 
 }

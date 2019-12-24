@@ -46,9 +46,9 @@ public class SysJudgeGroup extends BaseEntity implements Serializable {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "JUDGE_DEVICE_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
-    private SysJudgeDevice judgeDevice; // Relation to SysJudgeDevice table.
+    private SysDevice judgeDevice; // Relation to SysJudgeDevice table.
     
 }

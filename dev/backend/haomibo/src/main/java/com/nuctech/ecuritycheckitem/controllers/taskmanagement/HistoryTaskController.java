@@ -1,3 +1,16 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（历史任务 controller 1.0）
+ * 文件名：	HistoryTaskController.java
+ * 描述：	Controller to process API requests of history tasks
+ * 作者名：	Tiny
+ * 日期：	2019/12/20
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.controllers.taskmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -13,15 +26,13 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -37,12 +48,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/history-task")
@@ -63,29 +69,29 @@ public class HistoryTaskController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String taskNumber;
-            Long mode;
-            String status;
-            Long fieldId;
-            String userName;
+            String taskNumber; //task number
+            Long mode; //mode id
+            String status; //task status
+            Long fieldId; //field id
+            String userName; //user name
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date startTime;
+            Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
-            Date endTime;
+            Date endTime; //end time
         }
 
         @NotNull
         @Min(1)
-        int currentPage;
-
+        int currentPage; //current page no
         @NotNull
-        int perPage;
+        int perPage; //record count per page
+        String sort; //sortby and order ex: deviceName|asc
         HistoryGetByFilterAndPageRequestBody.Filter filter;
 
     }
 
     /**
-     * Get detailed info of a history task request body
+     * Get detailed information of a history task request body
      */
     @Getter
     @Setter
@@ -96,7 +102,7 @@ public class HistoryTaskController extends BaseController {
 
         @NotNull
         @Min(1)
-        Long historyId;
+        Long historyId; //id of a history task
 
     }
 
@@ -111,15 +117,16 @@ public class HistoryTaskController extends BaseController {
     @ToString
     private static class HistoryGenerateRequestBody {
 
-        String idList;
+        String idList; //id list of history tasks which is combined with comma. Example : "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true/false if isAll is true, idList is ignored
 
+        String sort; //sortby and order ex: deviceName|asc
         HistoryGetByFilterAndPageRequestBody.Filter filter;
     }
 
     /**
-     *  detailed info of a history task.
+     *  detailed information of a history task.
      */
     @RequestMapping(value = "/get-one", method = RequestMethod.POST)
     public Object historyTaskGetById(
@@ -127,33 +134,32 @@ public class HistoryTaskController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         QHistory builder = QHistory.history;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        Long id = requestBody.getHistoryId();
 
-        History optionalHistory = historyService.getOne(requestBody.getHistoryId());
+        History optionalHistory = historyService.getOne(requestBody.getHistoryId()); //get detailed history task from historyService
 
-        if (optionalHistory == null) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        if (optionalHistory == null) { //if history task with specified id does not exist
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER); //return invalid parameter
         }
 
-        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory));
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalHistory)); //make response body : response message - ok
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination"))
-                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        value.setFilters(filters);
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
+                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerScan model
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerJudgeGraph model
+                .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerHandExamination model
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //only return "modeName" from SysWorkMode model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName")) //only return "deviceName" from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")) //only return "userName" from SysUser model
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except "parent" from SysField model
+        value.setFilters(filters); //apply filter to response data
 
         return value;
     }
@@ -167,49 +173,62 @@ public class HistoryTaskController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        Integer currentPage = requestBody.getCurrentPage();
-        Integer perPage = requestBody.getPerPage();
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
+        Integer currentPage = requestBody.getCurrentPage(); //get current page from input parameter
+        Integer perPage = requestBody.getPerPage(); //get record count per page from input parameter
         currentPage --;
+
+        //get paginated result from historyService
         PageResult<History> result = historyService.getHistoryTaskByFilter(
-                requestBody.getFilter().getTaskNumber(),
-                requestBody.getFilter().getMode(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getFieldId(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime(),
+                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                requestBody.getFilter().getMode(), //get mode id from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"),
+                sortParams.get("order"),
                 currentPage,
                 perPage);
 
-        long total = result.getTotal();
-        List<History> data = result.getDataList();
+        long total = result.getTotal(); //set total records count
+        List<History> data = result.getDataList(); //set data list
 
+        //make response body
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data list
                         .build()));
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination"))
-                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow")) //only return specified fields from SerTask model
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
+                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))  //only return specified fields from SerScan model
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode")) //only return workModeId from SysWorkFlow
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //only return modeName from SysWorkMode model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName")) //only return "deviceName" from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")); //only return "userName" from SysUser model
         value.setFilters(filters);
 
         return value;
@@ -223,28 +242,42 @@ public class HistoryTaskController extends BaseController {
                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
         }
 
         //get all pending case deal list
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(),
-                requestBody.getFilter().getMode(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getFieldId(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime());
+                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                requestBody.getFilter().getMode(), //get mode id from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
-        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
 
-        setDictionary();
-        InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList);
+        setDictionary(); //set dictionary data key and values
+
+//        ApplicationContext context = new ClassPath
+        HistoryTaskExcelView.setMessageSource(messageSource);
+        InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList); //get inputstream to be exported
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=history-task.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=history-task.xlsx"); //set filename and make header
 
         return ResponseEntity
                 .ok()
@@ -261,28 +294,38 @@ public class HistoryTaskController extends BaseController {
                                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
         }
 
         //get all pending case deal list
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(),
-                requestBody.getFilter().getMode(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getFieldId(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime());
+                requestBody.getFilter().getTaskNumber(), //get task number from input parameter
+                requestBody.getFilter().getMode(), //get mode id from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getFieldId(), //get field id from input parameter
+                requestBody.getFilter().getUserName(), //get user name from input parameter
+                requestBody.getFilter().getStartTime(), //get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
-        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
 
-        setDictionary();
-        InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList);
-
+        setDictionary(); //set dictionary data key and values
+        InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=history-task.docx");
+        headers.add("Content-Disposition", "attachment; filename=history-task.docx"); //set filename and make header
 
         return ResponseEntity
                 .ok()
@@ -302,23 +345,34 @@ public class HistoryTaskController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (sortParams.isEmpty()) {
+                return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+            }
+        }
+
         List<History> taskList = new ArrayList<>();
         taskList = historyService.getHistoryTaskAll(
-                requestBody.getFilter().getTaskNumber(),
-                requestBody.getFilter().getMode(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getFieldId(),
-                requestBody.getFilter().getUserName(),
-                requestBody.getFilter().getStartTime(),
-                requestBody.getFilter().getEndTime());
+                requestBody.getFilter().getTaskNumber(),//get task number from input parameter
+                requestBody.getFilter().getMode(),//get mode id from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getFieldId(),//get field id from input parameter
+                requestBody.getFilter().getUserName(),//get user name from input parameter
+                requestBody.getFilter().getStartTime(),//get start time from input parameter
+                requestBody.getFilter().getEndTime(), //get end time from input parameter
+                sortParams.get("sortBy"), //field name
+                sortParams.get("order")); //asc or desc
 
-        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        HistoryTaskPdfView.setResource(getFontResource());
-        InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList);
+        List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be printed with isAll and idList
+        setDictionary(); //set dictionary data key and values
+        HistoryTaskPdfView.setResource(getFontResource()); //set header font
+
+        InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList); //get inputstream of datas to be printed
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=history-task.pdf");
+        headers.add("Content-Disposition", "attachment; filename=history-task.pdf"); //set filename and make header
 
         return ResponseEntity
                 .ok()
@@ -338,21 +392,21 @@ public class HistoryTaskController extends BaseController {
 
         List<History> exportList = new ArrayList<>();
         if(isAll == false) {
-            String[] splits = idList.split(",");
+            String[] splits = idList.split(","); //get ids from idList
             for(int i = 0; i < taskList.size(); i ++) {
                 History task = taskList.get(i);
                 boolean isExist = false;
                 for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(task.getTaskId().toString())) {
+                    if(splits[j].equals(task.getTaskId().toString())) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if(isExist == true) {//if exist
                     exportList.add(task);
                 }
             }
-        } else {
+        } else {//if isAll is true
             exportList = taskList;
         }
         return exportList;

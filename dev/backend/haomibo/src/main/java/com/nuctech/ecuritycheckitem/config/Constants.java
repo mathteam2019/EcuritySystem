@@ -62,4 +62,10 @@ public class Constants {
         public static final String YEAR = "year";
     }
 
+    //add by tiny 2019/12/24
+    public static class SortOrder {
+        public static final String ASC = "asc";
+        public static final String DESC = "desc";
+    }
+
 }
