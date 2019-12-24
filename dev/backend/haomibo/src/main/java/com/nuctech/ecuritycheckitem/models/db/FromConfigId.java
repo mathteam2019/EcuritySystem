@@ -46,5 +46,12 @@ public class FromConfigId extends BaseEntity implements Serializable {
     @Column(name = "DEVICE_ID", length = 20)
     private Long deviceId;
 
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("device")
+    private SysDevice device;
+
 
 }

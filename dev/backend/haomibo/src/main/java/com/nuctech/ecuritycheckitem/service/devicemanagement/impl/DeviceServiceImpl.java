@@ -267,26 +267,7 @@ public class DeviceServiceImpl implements DeviceService {
         if(sysDeviceConfig != null) {
 
             sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
-            //remove correspond manual group
-            SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                    sysDeviceConfig.getManualGroupList().get(0): null;
-            if(manualGroup != null) {
-                sysManualGroupRepository.delete(manualGroup);
-            }
 
-            //remove correspond judge group
-            SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                    sysDeviceConfig.getJudgeGroupList().get(0): null;
-            if(judgeGroup != null) {
-                sysJudgeGroupRepository.delete(judgeGroup);
-            }
-
-            //remove correspond from config.
-            FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                    sysDeviceConfig.getFromConfigIdList().get(0): null;
-            if(fromConfigId != null) {
-                fromConfigIdRepository.deleteById(fromConfigId.getFromConfigId());
-            }
 
 
         }

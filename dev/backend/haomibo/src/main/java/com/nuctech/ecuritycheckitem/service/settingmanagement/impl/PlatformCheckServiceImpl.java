@@ -23,8 +23,13 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
         List<SerPlatformCheckParams> result = serPlatformCheckParamRepository.findAll();
         for(int i = 0; i < result.size(); i ++) {
             SerPlatformCheckParams params = result.get(i);
-            params.setHistoryDataExportList(params.getHistoryDataExport().split(","));
-            params.setHistoryDataStorageList(params.getHistoryDataStorage().split(","));
+            if(params.getHistoryDataExport() != null) {
+                params.setHistoryDataExportList(params.getHistoryDataExport().split(","));
+            }
+            if(params.getHistoryDataStorage() != null) {
+                params.setHistoryDataStorageList(params.getHistoryDataStorage().split(","));
+            }
+
         }
         return result;
     }

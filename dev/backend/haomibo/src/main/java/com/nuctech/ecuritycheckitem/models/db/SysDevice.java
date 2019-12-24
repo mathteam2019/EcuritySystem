@@ -153,10 +153,10 @@ public class SysDevice extends BaseEntity implements Serializable {
     @MapsId("archive")
     private SerArchive archive; // Relation to SerArchives table.
 
-    @javax.persistence.Transient
-    private SysDeviceConfig deviceConfig; // Relation to SysDeviceConfig table.
-
-    @javax.persistence.Transient
-    private SerScanParam scanParam; // Relation to SerScanParam table.
+//    @javax.persistence.Transient
+//    private SysDeviceConfig deviceConfig; // Relation to SysDeviceConfig table.
+//
+//    @javax.persistence.Transient
+//    private SerScanParam scanParam; // Relation to SerScanParam table.
 
 }
