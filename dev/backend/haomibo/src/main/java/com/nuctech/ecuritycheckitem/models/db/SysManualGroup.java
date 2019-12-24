@@ -46,9 +46,9 @@ public class SysManualGroup extends BaseEntity implements Serializable {
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "MANUAL_DEVICE_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "MANUAL_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     @MapsId("device")
-    private SysManualDevice manualDevice; // Relation to SysManualDevice table.
+    private SysDevice manualDevice; // Relation to SysManualDevice table.
     
 }

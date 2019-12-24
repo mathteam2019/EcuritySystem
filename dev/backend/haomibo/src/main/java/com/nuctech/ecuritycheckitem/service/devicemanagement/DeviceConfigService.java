@@ -12,7 +12,8 @@ public interface DeviceConfigService {
 
     SysDeviceConfig findConfigById(Long configId);
     PageResult<SysDeviceConfig> findConfigByFilter(String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage);
-    void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, Long manualDeviceId, Long judgeDeviceId, Long configDeviceId);
+    void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, List<Long> manualDeviceIdList, List<Long> judgeDeviceIdList,
+                            List<Long> configDeviceIdList);
     void removeDeviceConfig(SysDeviceConfig sysDeviceConfig);
     List<SysDeviceConfig> findAllDeviceConfigExceptId(Long deviceId);
     List<SysWorkMode> findAllWorkMode();

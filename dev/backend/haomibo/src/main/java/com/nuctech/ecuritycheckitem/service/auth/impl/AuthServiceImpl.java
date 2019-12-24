@@ -93,9 +93,9 @@ public class AuthServiceImpl implements AuthService {
                 passwordLimit = loginNumber.intValue();
             }
         }
+        passwordLimit --;
         if(count != null && count >= passwordLimit) {
             user.setStatus(SysUser.Status.PENDING);
-            user.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysUserRepository.save(user);
 
         }

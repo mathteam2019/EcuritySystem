@@ -91,19 +91,19 @@ public class DeviceConfigManagementController extends BaseController {
 
         String womanRemoteGender;
 
-        Long manualDeviceId;
+        List<Long> manualDeviceIdList;
 
         String manManualGender;
 
         String womanManualGender;
 
-        Long judgeDeviceId;
+        List<Long> judgeDeviceIdList;
 
         String manDeviceGender;
 
         String womanDeviceGender;
 
-        Long fromDeviceId;
+        List<Long> fromDeviceIdList;
 
     }
 
@@ -246,9 +246,9 @@ public class DeviceConfigManagementController extends BaseController {
         if(sysDeviceConfig == null) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        Long manualDeviceId = requestBody.getManualDeviceId();
-        Long judgeDeviceId = requestBody.getJudgeDeviceId();
-        Long configDeviceId = requestBody.getFromDeviceId();
+        List<Long> manualDeviceIdList = requestBody.getManualDeviceIdList();
+        List<Long> judgeDeviceIdList = requestBody.getJudgeDeviceIdList();
+        List<Long> configDeviceIdList = requestBody.getFromDeviceIdList();
 
         sysDeviceConfig.setModeId(requestBody.getModeId());
         sysDeviceConfig.setAtrSwitch(requestBody.getAtrSwitch());
@@ -260,7 +260,7 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setManDeviceGender(requestBody.getManDeviceGender());
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
-        deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceId, judgeDeviceId, configDeviceId);
+        deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
 
 
 

@@ -106,8 +106,6 @@ public class ScanParamManagementController extends BaseController {
         @NotNull
         Long scanParamsId;
 
-        Long deviceId;
-
         Long airCaliWarnTime;
 
         Long standByTime;
@@ -140,7 +138,7 @@ public class ScanParamManagementController extends BaseController {
 
         String groinBlurring;
 
-        Long fromDeviceId;
+        List<Long> fromDeviceIdList;
 
         Integer storageAlarm;
 
@@ -150,7 +148,6 @@ public class ScanParamManagementController extends BaseController {
 
             return SerScanParam
                     .builder()
-                    .deviceId(this.getDeviceId())
                     .scanParamsId(this.getScanParamsId())
                     .airCaliWarnTime(this.getAirCaliWarnTime())
                     .standByTime(this.getStandByTime())
@@ -285,12 +282,9 @@ public class ScanParamManagementController extends BaseController {
 
         SerScanParam serScanParamNew  = requestBody.convert2SerScanParam();
 
+        List<Long> paramDeviceIdList = requestBody.getFromDeviceIdList();
 
-
-
-        Long paramDeviceId = requestBody.getFromDeviceId();
-
-        if (!scanParamService.modifyScanParam(paramDeviceId, serScanParamNew)) {
+        if (!scanParamService.modifyScanParam(paramDeviceIdList, serScanParamNew)) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         else {
