@@ -954,7 +954,9 @@
       "dispatch": "分派",
       "judge": "判图",
       "hand": "手检",
-      "scan": "扫描"
+      "scan": "扫描",
+      "system": "系统",
+      "artificial": "人工"
     },
     "routine-plan": {
       "plan": "计划",
