@@ -99,6 +99,7 @@
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
+                :sort-order="task"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
@@ -109,9 +110,6 @@
                       {{props.rowData.task.taskNumber}}
                     </span>
                   <span v-else> </span>
-                </template>
-                <template slot="scanImageUrl" slot-scope="props">
-                  <b-img :src="props.rowData.scanImageUrl" class="operation-icon"/>
                 </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null">None</div>
@@ -428,25 +426,33 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null">None</label>
-                  <label v-else-if="showPage.task.serScan == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.task.serScan.scanImageGender)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scanned-image')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <b-img v-if="showPage.scanImage != null" :src="this.apiBaseURL + showPage.scanImage.imageUrl"
-                         class="operation-icon"/>
-
+                  <label v-if="showPage.serScan == null">None</label>
+                  <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
 
             <b-row>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.hand-check-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label v-if="showPage.handDevice == null">None</label>
+                  <label v-else>{{showPage.handDevice.deviceName}}</label>
+                </b-form-group>
+              </b-col>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    {{$t('personal-inspection.judgement-station')}}&nbsp
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label v-if="showPage.judgeDevice == null">None</label>
+                  <label v-else>{{showPage.judgeDevice.deviceName}}</label>
+                </b-form-group>
+              </b-col>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -477,194 +483,16 @@
               <b-col>
                 <b-form-group>
                   <template slot="label">
-                    {{$t('personal-inspection.guide')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>{{showPage.scanPointsmanName}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.atr-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.scanAtrResult == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.scanAtrResult)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.foot-alarm')}}
-                  </template>
-                  <label v-if="showPage.scanFootAlarm == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.scanFootAlarm)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label
-                    v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat(showPage.scanStartTime)}}</label>
-                  <label v-else>None</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.scan-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.scanEndTime != null">{{this.getDateTimeFormat(showPage.scanEndTime)}}</label>
-                  <label v-else>None</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.dispatch-timeout')}}
-                  </template>
-                  <label v-if="showPage.assignJudgeTimeout == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.assignJudgeTimeout)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.judgeDevice == null">None</label>
-                  <label v-else>{{showPage.judgeDevice.deviceName}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else-if="showPage.judgeResult==='TRUE'">无嫌疑</label>
-                  <label v-else-if="showPage.judgeResult==='FALSE'">嫌疑</label>
-                  <label v-else>Invalid Value</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.judgeResult == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.judgeResult)}}</label>
+                  <label v-if="showPage.task == null">None</label>
+                  <label v-else-if="showPage.task.serJudgeGraph==null">None</label>                  
+                  <label v-else>{{getOptionValue(showPage.task.serJudgeGraph.judgeResult)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
-
             <b-row>
-
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-timeout')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.judgeTimeout == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.judgeTimeout)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label
-                    v-if="showPage.judgeStartTime != null">{{this.getDateTimeFormat(showPage.judgeStartTime)}}</label>
-                  <label v-else>None</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judgement-end-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.judgeEndTime != null">{{this.getDateTimeFormat(showPage.judgeEndTime)}}</label>
-                  <label v-else>None</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.judge')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.judgeUser == null">None</label>
-                  <label v-else>{{showPage.judgeUser.userName}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-station')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.handDevice == null">None</label>
-                  <label v-else>{{showPage.handDevice.deviceName}}</label>
-                </b-form-group>
-              </b-col>
-            </b-row>
-
-            <b-row>
-
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-check-start-time')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.handStartTime == null">None</label>
-                  <label v-else>{{this.getDateTimeFormat(showPage.handStartTime)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.hand-checker')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.handUser == null">None</label>
-                  <label v-else>{{showPage.handUser.userName}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('personal-inspection.task-result')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label v-if="showPage.handTaskResult == null">None</label>
-                  <label v-else>{{getOptionValue(showPage.handTaskResult)}}</label>
-                </b-form-group>
-              </b-col>
-              <b-col>
-                <b-form-group>
-                  <template slot="label">
-                    {{$t('system-setting.parameter-setting.item-level')}}&nbsp
-                    <span class="text-danger">*</span>
-                  </template>
-                  <label>{{showPage.handGoodsGrade}} </label>
-                </b-form-group>
-              </b-col>
               <b-col>
                 <b-form-group>
                   <template slot="label">
@@ -674,81 +502,86 @@
                   <label>{{showPage.handAppraise}} </label>
                 </b-form-group>
               </b-col>
-
-            </b-row>
-
-            <b-row>
-              <b-col/>
-              <b-col/>
-              <b-col/>
-            </b-row>
-
-            <b-row class="flex-grow-1 d-flex align-items-end">
               <b-col>
-                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
-                <b-row class="evidence-gallery">
-                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
-                         @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 75px; height: 60px;" :alt="thumb.name"/>
-                    <label class="d-block text-center mt-2">{{thumb.name}}</label>
-                  </b-col>
-                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
-                </b-row>
               </b-col>
-
-              <b-col class="seized-list">
-                <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
-                <b-row class="d-flex justify-content-end">
-                  <b-col cols="auto">
-                    <div class="seized-item" style="background-color: #ff0000">
-                      <b-img src="/assets/img/pistol_icon.svg" class="contraband-icon"/>
-                      <span class="contraband-count">2</span>
-                      <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
-                    </div>
-                  </b-col>
-                  <b-col cols="auto">
-                    <div class="seized-item" style="background-color: #ff4e00">
-                      <b-img src="/assets/img/drug_icon.svg" class="contraband-icon"/>
-                      <span class="contraband-count">1</span>
-                      <span class="contraband-category">{{$t('personal-inspection.drug')}}</span>
-                    </div>
-                  </b-col>
-                  <b-col cols="auto">
-                    <div class="seized-item" style="background-color: #ff7e00">
-                      <b-img src="/assets/img/knife_icon.svg" class="contraband-icon"/>
-                      <span class="contraband-count">0</span>
-                      <span class="contraband-category">{{$t('personal-inspection.dagger')}}</span>
-                    </div>
-                  </b-col>
-                  <b-col cols="auto">
-                    <div class="seized-item" style="background-color: #ffae00">
-                      <b-img src="/assets/img/cigarette_icon.svg" class="contraband-icon"/>
-                      <span class="contraband-count">9</span>
-                      <span class="contraband-category">{{$t('personal-inspection.firearms')}}</span>
-                    </div>
-                  </b-col>
-                </b-row>
+              <b-col>
+              </b-col>
+              <b-col>
               </b-col>
             </b-row>
-
             <b-row>
-              <b-col cols="12" class="align-self-end text-right mt-3">
-                <b-button size="sm" variant="orange default" @click="pageStatus='table'">
-                  <i class="icofont-gift"/>
-                  {{ $t('personal-inspection.collection') }}
-                </b-button>
-                <b-button size="sm" variant="info default" @click="pageStatus='table'">
-                  <i class="icofont-long-arrow-left"/>
-                  {{ $t('personal-inspection.return') }}
-                </b-button>
+              <b-col>
+                <b-form-group>
+                  <template slot="label">
+                    备注
+                    <span class="text-danger">*</span>
+                  </template>
+                  <label v-if="showPage.note == null">None</label>
+                  <label v-else>{{showPage.note}}</label>
+                </b-form-group>
+              </b-col>
+            </b-row>
+            <b-row>
+              <b-col>
+                <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
+                <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
+                    <b-col>
+                      <div class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                        <span>2{{$t('personal-inspection.firearms')}}</span>
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <div class="text-center" style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                        <span>1{{$t('personal-inspection.drug')}}</span>
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <div class="text-center" style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                        <span>0{{$t('personal-inspection.dagger')}}</span>
+                      </div>
+                    </b-col>
+                    <b-col>
+                      <div class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                        <span>9{{$t('personal-inspection.firearms')}}</span>
+                      </div>
+                    </b-col>
+                  </b-row>
+
+                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                <b-row class="evidence-gallery" style="margin-top: 0.5rem">
+                    <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
+                           @click="onThumbClick(thumbIndex)">
+                      <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
+                      <label class="d-block text-center mt-2">{{thumb.name}}</label>
+                    </b-col>
+                    <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
+                  </b-row>
+              </b-col>
+              <b-col style="max-width: 45%;">
+                <b-row>
+                  <b-col cols="12" class="align-self-end text-right mt-3">
+                  <b-img src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                  </b-col>
+                </b-row>
+                <b-row style="margin-top: 2rem">
+                  <b-col cols="12" class="align-self-end text-right mt-3">
+                    <b-button size="sm" variant="orange default" @click="pageStatus='table'">
+                      <i class="icofont-gift"/>
+                      {{ $t('personal-inspection.collection') }}
+                    </b-button>
+                    <b-button size="sm" variant="info default" @click="pageStatus='table'">
+                      <i class="icofont-long-arrow-left"/>
+                      {{ $t('personal-inspection.return') }}
+                    </b-button>
+                  </b-col>
+                </b-row>
+
               </b-col>
             </b-row>
           </b-card>
         </b-col>
       </b-row>
     </div>
-
-
   </div>
 </template>
 
@@ -941,7 +774,7 @@
       }
 
       .seized-item {
-        width: 80px;
+        width: 100px;
         height: 62px;
         border-radius: 5px;
 
@@ -954,7 +787,7 @@
         }
 
         span.contraband-count {
-          position: absolute;
+          position: center;
           top: 13px;
           left: 32px;
           color: white;
@@ -1051,6 +884,14 @@
 
         onSiteOption: [],
 
+        sortOrder: [
+          {
+            field: 'historyId',
+            sortField: 'historyId',
+            direction: 'asc'
+          }
+        ],
+
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/history-task/get-by-filter-and-page`,
           fields: [
@@ -1062,7 +903,7 @@
             {
               name: 'historyId',
               title: this.$t('personal-inspection.serial-number'),
-              sortField: 'task_id',
+              sortField: 'historyId',
               titleClass: 'text-center',
               dataClass: 'text-center',
               callback: (historyId) => {
@@ -1072,14 +913,8 @@
             },
             {
               name: '__slot:task',
+              sortField: 'task',
               title: this.$t('personal-inspection.task-number'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-
-            },
-            {
-              name: '__slot:scanImageUrl',
-              title: this.$t('personal-inspection.image'),
               titleClass: 'text-center',
               dataClass: 'text-center'
 
@@ -1158,76 +993,6 @@
               callback: (scanEndTime) => {
                 if (scanEndTime == null) return '';
                 return getDateTimeWithFormat(scanEndTime);
-              }
-            },
-            {
-              name: 'judgeDevice',
-              title: this.$t('personal-inspection.judgement-station'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeDevice) => {
-                if (judgeDevice == null) return '';
-                return judgeDevice.deviceName;
-              }
-            },
-            {
-              name: 'judgeUser',
-              title: this.$t('personal-inspection.judge'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeUser) => {
-                if (judgeUser == null) return '';
-                return judgeUser.userName;
-              }
-            },
-            {
-              name: 'judgeStartTime',
-              title: this.$t('personal-inspection.judgement-start-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeStartTime) => {
-                if (judgeStartTime == null) return '';
-                return getDateTimeWithFormat(judgeStartTime);
-              }
-            },
-            {
-              name: 'judgeEndTime',
-              title: this.$t('personal-inspection.judgement-end-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (judgeEndTime) => {
-                if (judgeEndTime == null) return '';
-                return getDateTimeWithFormat(judgeEndTime);
-              }
-            },
-            {
-              name: 'handDevice',
-              title: this.$t('personal-inspection.hand-check-station'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handDevice) => {
-                if (handDevice == null) return '';
-                return handDevice.deviceName;
-              }
-            },
-            {
-              name: 'handUser',
-              title: this.$t('personal-inspection.hand-checker'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handUser) => {
-                if (handUser == null) return '';
-                return handUser.userName;
-              }
-            },
-            {
-              name: 'handStartTime',
-              title: this.$t('personal-inspection.hand-check-start-time'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              callback: (handStartTime) => {
-                if (handStartTime == null) return '';
-                return getDateTimeWithFormat(handStartTime);
               }
             },
           ],
@@ -1357,7 +1122,8 @@
           "1000001103": `${this.$t('maintenance-management.process-task.judge')}}`,
           "1000001104": `${this.$t('maintenance-management.process-task.hand')}`,
           "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
-
+          "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
+          "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
         };
 
         if (!dictionary.hasOwnProperty(dataCode)) return '';
@@ -1470,21 +1236,11 @@
 
         transformed.data = [];
         let temp;
-        let idTemp;
+
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          if (temp.scanImage != null) {
-            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
-          }
-          else {
-            temp.scanImageUrl = '';
-          }
           transformed.data.push(temp);
 
-          idTemp = temp.historyId;
-          if (this.isCheckAll === true) {
-            this.$refs.taskVuetable.selectedTo.push(idTemp);
-          }
         }
 
         return transformed
@@ -1495,9 +1251,8 @@
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
-
           filter: this.filter,
-
+          sort:httpOptions.params.sort,
           perPage: this.taskVuetableItems.perPage,
         });
       },

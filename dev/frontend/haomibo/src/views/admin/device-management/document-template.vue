@@ -153,9 +153,7 @@
               <b-row>
                 <b-col v-if="pageStatus!=='show'" cols="12" class="d-flex justify-content-between mb-2">
                   <label class="font-weight-bold" style="line-height: 28px">{{$t('device-management.document-template.device-show-list')}}</label>
-                  <b-button size="sm" variant="success default">
-                    <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
-                  </b-button>
+
                 </b-col>
                 <b-col v-if="pageStatus!=='show'" cols="12">
                   <b-row>
@@ -174,10 +172,12 @@
                         <b-form-select v-model="indicatorForm.isNull" :options="yesNoOptions" plain/>
                       </b-form-group>
                     </b-col>
-                    <b-col class="d-flex">
-                      <b-button size="sm" variant="success default" class="align-self-center" @click="onSaveIndicator()" :disabled="checkPermItem('device_indicator_create')">
-                        <i class="icofont-save"></i> {{$t('permission-management.save')}}
-                      </b-button>
+                    <b-col class="d-flex align-items-center">
+                      <div style="margin-top: 0.3rem">
+                        <b-button size="sm" variant="success default" @click="onSaveIndicator()" :disabled="checkPermItem('device_indicator_create')">
+                          <i class="icofont-plus"></i> {{$t('device-management.document-template.add-indicator')}}
+                        </b-button>
+                      </div>
                     </b-col>
                   </b-row>
                 </b-col>
@@ -362,7 +362,6 @@
             },
             {
               name: 'archivesTemplateId',
-              sortField: 'archivesTemplateId',
               title: this.$t('system-setting.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -376,14 +375,12 @@
             },
             {
               name: 'templateName',
-              sortField: 'templateName',
               title: this.$t('device-management.template'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'status',
-              sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -405,14 +402,12 @@
             },
             {
               name: 'manufacturerName',
-              sortField: 'manufacturer',
               title: this.$t('device-management.manufacture'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
             {
               name: 'originalModel',
-              sortField: 'originalModel',
               title: this.$t('device-management.device-model'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -429,7 +424,7 @@
 
         yesNoOptions: [
           {value: '1000000601', text: this.$t('system-setting.parameter-setting.yes')},
-          {value: '1000000602', text: this.$t('system-setting.parameter-setting.no')},
+          {value: '1000000602', text: this.$t('system-setting.parameter-setting.none')},
         ],
         indicatorForm: {
           indicatorsId: 0,
@@ -607,6 +602,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filterOption
         });
       },

@@ -447,6 +447,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.accessFilter
         });
       },
@@ -481,6 +482,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.operatingLogTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.operatingFilter
         });
       },

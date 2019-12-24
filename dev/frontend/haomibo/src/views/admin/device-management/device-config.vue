@@ -1,5 +1,6 @@
 <style lang="scss">
   @import '../../../assets/css/dual-list.css';
+
   $cyan-button-color: #178af7;
   .device-config {
     .v-select.v-select-custom-style {
@@ -106,6 +107,7 @@
     }
 
   }
+
   body.rtl {
     .device-config {
       .switch-button {
@@ -113,11 +115,11 @@
         padding-left: 1rem;
         span {
           &:first-child {
-            border-right-color: #cccccc!important;
+            border-right-color: #cccccc !important;
             border-left-color: transparent !important;
           }
           &:last-child {
-            border-left-color: #cccccc!important;
+            border-left-color: #cccccc !important;
             border-right-color: transparent !important;
           }
         }
@@ -150,7 +152,6 @@
       .vue-dual-list .list ul.pd {
         padding-right: 0;
       }
-
 
     }
   }
@@ -209,7 +210,8 @@
               </b-row>
               <b-row class="mx-4">
                 <b-col cols="12" class="d-flex justify-content-end align-self-end">
-                  <b-button :disabled="selectedFieldId === 0|| checkPermItem('device_field_modify')" size="sm" variant="info default mr-1"
+                  <b-button :disabled="selectedFieldId === 0|| checkPermItem('device_field_modify')" size="sm"
+                            variant="info default mr-1"
                             @click="onSaveDeviceToField()">
                     <i class="icofont-save"></i>
                     {{ $t('permission-management.save-button') }}
@@ -250,11 +252,13 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onConfigResetButton()">
                   <i class="icofont-ui-reply"></i>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton" :disabled="checkPermItem('device_field_export')">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton"
+                          :disabled="checkPermItem('device_field_export')">
                   <i class="icofont-share-alt"></i>&nbsp;
                   {{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton" :disabled="checkPermItem('device_field_print')">
+                <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton"
+                          :disabled="checkPermItem('device_field_print')">
                   <i class="icofont-printer"></i>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
               </b-col>
@@ -339,13 +343,15 @@
                             @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerialNumber}}</span>
                     </div>
                     <div slot="operating" slot-scope="props">
-                      <b-button size="sm" variant="info default btn-square" :disabled="checkPermItem('device_config_modify')"
+                      <b-button size="sm" variant="info default btn-square"
+                                :disabled="checkPermItem('device_config_modify')"
                                 @click="onAction('show',props.rowData)">
                         <i class="icofont-edit"></i>
                       </b-button>
-                      <b-button size="sm" variant="success default btn-square" @click="onRefreshItem(props.rowData,props.rowIndex)">
+                      <!--<b-button size="sm" variant="success default btn-square"
+                                @click="onRefreshItem(props.rowData,props.rowIndex)">
                         <i class="icofont-refresh"></i>
-                      </b-button>
+                      </b-button>-->
                     </div>
                   </vuetable>
                 </div>
@@ -396,7 +402,8 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
                   </template>
-                  <v-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions" class="v-select-custom-style" :dir="direction" multiple/>
+                  <v-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions"
+                            class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -452,7 +459,8 @@
                   </template>
                   <v-select
                     :disabled="getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304'"
-                    v-model="configForm.judgeDeviceId" :options="judgeDeviceOptions" class="v-select-custom-style" :dir="direction" multiple/>
+                    v-model="configForm.judgeDeviceId" :options="judgeDeviceOptions" class="v-select-custom-style"
+                    :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -461,7 +469,7 @@
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
                   <b-form-select
-                    :disabled="!(configForm.judgeDeviceId > 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -471,7 +479,7 @@
                     {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
                   <b-form-select
-                    :disabled="!(configForm.judgeDeviceId > 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -484,7 +492,8 @@
                   </template>
                   <v-select
                     :disabled="getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304'"
-                    v-model="configForm.manualDeviceId" :options="manualDeviceOptions" class="v-select-custom-style" :dir="direction" multiple/>
+                    v-model="configForm.manualDeviceId" :options="manualDeviceOptions" class="v-select-custom-style"
+                    :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
@@ -493,7 +502,7 @@
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
                   <b-form-select
-                    :disabled="!(configForm.manualDeviceId > 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -503,7 +512,7 @@
                     {{$t('device-config.maintenance-config.female-scan-object')}}&nbsp;
                   </template>
                   <b-form-select
-                    :disabled="!(configForm.manualDeviceId > 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -513,10 +522,12 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button variant="info default" size="sm" @click="onSaveDeviceConfig()" v-if="!checkPermItem('device_config_modify')">
+              <b-button variant="info default" size="sm" @click="onSaveDeviceConfig()"
+                        v-if="!checkPermItem('device_config_modify')">
                 <i class="icofont-save"></i> {{$t('permission-management.permission-control.save')}}
               </b-button>
-              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()" v-if="!checkPermItem('device_config_modify')">
+              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()"
+                        v-if="!checkPermItem('device_config_modify')">
                 <i class="icofont-bin"></i> {{$t('permission-management.delete')}}
               </b-button>
               <b-button @click="onAction('list')" variant="info default" size="sm"><i
@@ -550,11 +561,11 @@
     if (orgData == null)
       return orgFullName;
     while (orgData.parent != null) {
-      orgFullName = orgData.fieldDesignation +  '/' + orgFullName;
+      orgFullName = orgData.fieldDesignation + '/' + orgFullName;
       orgData = orgData.parent;
     }
-    orgFullName = orgData.fieldDesignation +'/'+ orgFullName;
-    return orgFullName.slice(0,-1);
+    orgFullName = orgData.fieldDesignation + '/' + orgFullName;
+    return orgFullName.slice(0, -1);
   };
 
   Vue.use(LiquorTree);
@@ -631,9 +642,12 @@
         },
         manualDeviceOptions: [],
         judgeDeviceOptions: [],
-        configForm: {},
+        configForm: {
+          manualDeviceId: [],
+          judgeDeviceId: [],
+        },
         direction: getDirection().direction,
-        appliedItems:[],
+        appliedItems: [],
         isRequired: false,
         fieldSelectOptions: {
           label: this.$t('device-management.filter'),
@@ -657,7 +671,6 @@
             },
             {
               name: 'configId',
-              sortField: 'configId',
               title: this.$t('maintenance-management.maintenance-task.no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -665,6 +678,7 @@
             },
             {
               name: '__slot:number',
+              sortField: 'deviceSerial',
               title: this.$t('device-management.device-no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -672,7 +686,6 @@
             },
             {
               name: 'deviceName',
-              sortField: 'deviceName',
               title: this.$t('maintenance-management.maintenance-task.device'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -684,14 +697,6 @@
               titleClass: 'text-center',
               dataClass: 'text-center',
 
-            },
-            {
-              name: 'fromConfig',
-              sortField: 'fromConfig',
-              title: this.$t('system-setting.parameter-setting.configuration'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-              width: '17%',
             },
             {
               name: '__slot:operating',
@@ -713,7 +718,6 @@
             },
             {
               name: 'deviceId',
-              sortField: 'deviceId',
               title: this.$t('maintenance-management.maintenance-task.no'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -729,7 +733,6 @@
             },
             {
               name: 'deviceName',
-              sortField: 'deviceName',
               title: this.$t('maintenance-management.maintenance-task.device'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -759,8 +762,8 @@
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
-      getManufacturerOptions(){
-        this.manufacturerOptions =  getDicDataByDicIdForOptions(9);
+      getManufacturerOptions() {
+        this.manufacturerOptions = getDicDataByDicIdForOptions(9);
       },
       //getting all device category options
       getCategoryData() {
@@ -860,18 +863,7 @@
       ///////////////////////////////////////////
       /////   setting device with field /////////
       ///////////////////////////////////////////
-      onExportButton(){
-        let checkedAll = this.$refs.configListTable.checkedAllStatus;
-        let checkedIds = this.$refs.configListTable.selectedTo;
-        let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-          'filter': this.configFilter,
-          'idList': checkedIds.join()
-        };
-        let link = `device-management/device-table/device/field/export`;
-        downLoadFileFromServer(link,params,'device-config');
-      },
-      onPrintButton(){
+      onExportButton() {
         let checkedAll = this.$refs.configListTable.checkedAllStatus;
         let checkedIds = this.$refs.configListTable.selectedTo;
         let params = {
@@ -880,7 +872,18 @@
           'idList': checkedIds.join()
         };
         let link = `device-management/device-table/device/field`;
-        printFileFromServer(link,params);
+        downLoadFileFromServer(link, params, 'device-config');
+      },
+      onPrintButton() {
+        let checkedAll = this.$refs.configListTable.checkedAllStatus;
+        let checkedIds = this.$refs.configListTable.selectedTo;
+        let params = {
+          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'filter': this.configFilter,
+          'idList': checkedIds.join()
+        };
+        let link = `device-management/device-table/device/field`;
+        printFileFromServer(link, params);
       },
       changeSwitchStatus(status) {
         this.switchStatus = status;
@@ -931,7 +934,7 @@
         let options = this.$refs.fieldSelectList.options.selectedItems;
         let updatedDevice = [];
         let selectedDeviceIds = [];
-        if(options.length > 0){
+        if (options.length > 0) {
           options.forEach(opt => {
             updatedDevice.push({
               deviceId: opt.id,
@@ -941,14 +944,14 @@
           });
         }
         this.appliedItems.forEach(item => {
-          if(!selectedDeviceIds.includes(item.id))
+          if (!selectedDeviceIds.includes(item.id))
             updatedDevice.push({
               deviceId: item.id,
               fieldId: null
             })
         });
         getApiManager().post(`${apiBaseUrl}/device-management/device-table/device/field-modify`, {
-          deviceList:updatedDevice
+          deviceList: updatedDevice
         }).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -989,6 +992,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.configListTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.configFilter
         });
       },
@@ -1003,7 +1007,7 @@
       /////   setting device with config ////////
       ///////////////////////////////////////////
 
-      onRefreshItem(data,index){
+      onRefreshItem(data, index) {
         this.$refs.pendingListTable.reload();
       },
       onPendingSearchButton() {
@@ -1029,7 +1033,7 @@
       },
       initializeConfigData(data) {
         this.selectedDeviceData = {
-          fieldName: data.device.field.fieldDesignation,
+          fieldName: data.device.field ? data.device.field.fieldDesignation : '',
           deviceName: data.device.deviceName,
           category: data.device.archive.archiveTemplate.deviceCategory.categoryName
         };
@@ -1046,53 +1050,49 @@
           manDeviceGender: data.manDeviceGender,
           womanDeviceGender: data.womanDeviceGender,
           deviceId: data.deviceId,
-          judgeDeviceIdList:[],
-          manualDeviceIdList:[],
-          fromDeviceIdList:[],
+          judgeDeviceIdList: [],
+          manualDeviceIdList: [],
+          fromDeviceIdList: [],
           judgeDeviceId: [],
           manualDeviceId: [],
           fromDeviceId: []
         };
         data.fromConfigIdList.forEach(item => {
-          this.configForm.fromDeviceId.push({
-            value:item.device.deviceId,
-            label:item.device.deviceName
-          })
+          if (item.device != null)
+            this.configForm.fromDeviceId.push({
+              value: item.device.deviceId,
+              label: item.device.deviceName
+            })
         });
         data.judgeGroupList.forEach(item => {
-          this.configForm.judgeDeviceId.push({
-            value:item.judgeDevice.deviceId,
-            label:item.judgeDevice.deviceName
-          })
+          if (item.judgeDevice != null)
+            this.configForm.judgeDeviceId.push({
+              value: item.judgeDevice.deviceId,
+              label: item.judgeDevice.deviceName
+            })
         });
         data.manualGroupList.forEach(item => {
-          this.configForm.manualDeviceId.push({
-            value:item.manualDevice.deviceId,
-            label:item.manualDevice.deviceName
-          })
+          if (item.manualDevice != null)
+            this.configForm.manualDeviceId.push({
+              value: item.manualDevice.deviceId,
+              label: item.manualDevice.deviceName
+            })
         });
       },
       onSaveDeviceConfig() {
-        if(this.configForm.manualDeviceId.length === 0) {
+        if (this.configForm.manualDeviceId.length === 0) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-manual-device-select`), {
             duration: 3000,
             permanent: false
           });
-          return ;
+          return;
         }
-        if(this.configForm.judgeDeviceId.length === 0) {
+        if (this.configForm.judgeDeviceId.length === 0) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-judge-device-select`), {
             duration: 3000,
             permanent: false
           });
-          return ;
-        }
-        if(this.configForm.fromDeviceId.length === 0) {
-          this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-from-device-select`), {
-            duration: 3000,
-            permanent: false
-          });
-          return ;
+          return;
         }
         this.configForm.manualDeviceIdList = [];
         this.configForm.judgeDeviceIdList = [];
@@ -1158,7 +1158,7 @@
           temp.deviceSerialNumber = temp.device ? temp.device.deviceSerial : '';
           temp.deviceName = temp.device ? temp.device.deviceName : '';
           temp.siteNameWithParent = getSiteFullName(temp.device ? temp.device.field : null);
-          temp.fromConfig = temp.fromConfigIdList.length > 0 ? temp.fromConfigDeviceName : '';
+         // temp.fromConfig = temp.fromConfigIdList.length > 0 ? temp.fromConfigDeviceName : '';
           transformed.data.push(temp);
         }
         return transformed
@@ -1167,6 +1167,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.pendingListTableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.pendingFilter
         });
       },
@@ -1294,7 +1295,7 @@
         });
         this.fromConfigDeviceSelectOptions = options;
       },
-      treeFilter:function (newVal,oldVal) {
+      treeFilter: function (newVal, oldVal) {
         //this.selectedFieldId = 0;
       }
     }

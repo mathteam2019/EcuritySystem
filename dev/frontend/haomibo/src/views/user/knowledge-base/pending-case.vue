@@ -93,11 +93,6 @@
                     </span>
                   <span v-else> </span>
                 </template>
-                <template slot="scanImage" slot-scope="props">
-                  <b-img v-if="props.rowData.scanImageUrl != null" :src="props.rowData.scanImageUrl"
-                         class="operation-icon"/>
-                  <b-img v-else/>
-                </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null"></div>
                   <div v-else>
@@ -221,12 +216,6 @@
             {
               name: '__slot:task',
               title: this.$t('knowledge-base.task-number'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: '__slot:scanImage',
-              title: this.$t('knowledge-base.image'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -436,13 +425,6 @@
         let idTemp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
-          idTemp = data.data[i].caseDealId;
-          if (temp.scanImage != null) {
-            temp.scanImageUrl = apiBaseUrl + temp.scanImage.imageUrl;
-          }
-          else {
-            temp.scanImageUrl = '';
-          }
           transformed.data.push(temp);
           this.idList.push(idTemp);
           if (this.isCheckAll === true) {

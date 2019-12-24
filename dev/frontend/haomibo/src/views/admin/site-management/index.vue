@@ -798,9 +798,11 @@
 
 
       siteTableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filterOption
         });
       },

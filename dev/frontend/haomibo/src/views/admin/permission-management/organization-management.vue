@@ -675,7 +675,6 @@
             {
               name: 'status',
               title: this.$t('permission-management.th-org-status'),
-              sortField: 'status',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '7%',
@@ -715,7 +714,6 @@
             {
               name: 'leader',
               title: this.$t('permission-management.th-org-leader'),
-              sortField: 'leader',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '8%'
@@ -911,6 +909,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: {
             orgName: this.filter.orgName,
             status: this.filter.status,

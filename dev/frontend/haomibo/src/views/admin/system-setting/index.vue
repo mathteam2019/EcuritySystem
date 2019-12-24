@@ -79,14 +79,16 @@
                   </b-col>
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
-                      <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataStorageSelect.$invalid"
-                                     class="v-select-custom-style" multiple  :dir="direction"></v-select>
+                      <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions"
+                                :state="!$v.platFormData.historyDataStorageSelect.$invalid"
+                                class="v-select-custom-style" multiple :dir="direction"></v-select>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
-                      <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions" :state="!$v.platFormData.historyDataExportSelect.$invalid"
-                                class="v-select-custom-style" multiple  :dir="direction" />
+                      <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions"
+                                :state="!$v.platFormData.historyDataExportSelect.$invalid"
+                                class="v-select-custom-style" multiple :dir="direction"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -100,7 +102,8 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.show-deleted-suspected-box')">
-                      <b-form-select v-model="platFormData.displayDeleteSuspicion"  :options="displayDeleteSuspicionOptions" plain></b-form-select>
+                      <b-form-select v-model="platFormData.displayDeleteSuspicion"
+                                     :options="displayDeleteSuspicionOptions" plain></b-form-select>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -206,18 +209,22 @@
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-high')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh" :state="!$v.platFormOtherData.deviceTrafficHigh.$invalid"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh"
+                                    :state="!$v.platFormOtherData.deviceTrafficHigh.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
-                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue || !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
+                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue ||
+                        !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
                       </div>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-middle')">
-                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle" :state="!$v.platFormOtherData.deviceTrafficMiddle.$invalid"></b-form-input>
+                      <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle"
+                                    :state="!$v.platFormOtherData.deviceTrafficMiddle.$invalid"></b-form-input>
                       <div class="invalid-feedback d-block">
-                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue || !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
+                        {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue ||
+                        !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
                         $t('system-setting.parameter-setting.field-value-range-0-400') : " " }}
                       </div>
                     </b-form-group>
@@ -270,11 +277,13 @@
         </div>
 
         <div class="text-right mr-3 mt-3">
-          <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()" :disabled="checkPermItem('platform_check_modify')">
+          <b-button v-if="tabIndex === 0" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
+                    :disabled="checkPermItem('platform_check_modify')">
             <i class="icofont-save"></i>
             {{$t('permission-management.permission-control.save')}}
           </b-button>
-          <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()" :disabled="checkPermItem('platform_other_modify')">
+          <b-button v-if="tabIndex === 1" size="sm" variant="info default" class="mr-3" @click="savePlatFormData()"
+                    :disabled="checkPermItem('platform_other_modify')">
             <i class="icofont-save"></i>
             {{$t('permission-management.permission-control.save')}}
           </b-button>
@@ -340,12 +349,12 @@
                           <i class="icofont-edit"></i>
                         </b-button>
 
-                        <b-button
-                          size="sm"
-                          variant="success default btn-square"
-                          @click="onRefreshItem('restart', props.rowData)">
-                          <i class="icofont-refresh"></i>
-                        </b-button>
+                        <!-- <b-button
+                           size="sm"
+                           variant="success default btn-square"
+                           @click="onRefreshItem('restart', props.rowData)">
+                           <i class="icofont-refresh"></i>
+                         </b-button>-->
 
                       </div>
                     </template>
@@ -373,7 +382,8 @@
                     {{$t('system-setting.parameter-setting.suitable-for')}}&nbsp;
                     <span class="text-danger">*</span>
                   </template>
-                  <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style" multiple :dir="direction"/>
+                  <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style"
+                            multiple :dir="direction"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -547,11 +557,12 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
-              <b-button  @click="onSaveScanFormData()" variant="success default" :disabled="checkPermItem('scan_param_modify')"
+              <b-button @click="onSaveScanFormData()" variant="success default"
+                        :disabled="checkPermItem('scan_param_modify')"
                         size="sm"><i class="icofont-save"></i>
                 {{ $t('permission-management.save-button') }}
               </b-button>
-              <b-button @click="onAction('back')" variant="info default" size="sm" ><i
+              <b-button @click="onAction('back')" variant="info default" size="sm"><i
                 class="icofont-long-arrow-left"></i> {{
                 $t('permission-management.return') }}
               </b-button>
@@ -705,6 +716,7 @@
             },
             {
               name: '__slot:deviceNumber',
+              sortField: 'deviceSerial',
               title: this.$t('device-management.device-classify-item.classify-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -718,12 +730,6 @@
             {
               name: 'siteName',
               title: this.$t('system-setting.site'),
-              titleClass: 'text-center',
-              dataClass: 'text-center'
-            },
-            {
-              name: 'configValue',
-              title: this.$t('system-setting.parameter-setting.configuration'),
               titleClass: 'text-center',
               dataClass: 'text-center'
             },
@@ -767,7 +773,7 @@
           historyDataExportList: [],
           displayDeleteSuspicion: null,
           displayDeleteSuspicionColour: null,
-          historyDataStorageSelect:[],
+          historyDataStorageSelect: [],
           historyDataExportSelect: [],
         },
         platFormOtherData: {
@@ -814,9 +820,9 @@
           groinBlurring: null,
           deviceId: null,
           fromDeviceId: [],
-          fromDeviceIdList:[],
-          storageAlarmPercent:80,
-          storageAlarm:400
+          fromDeviceIdList: [],
+          storageAlarmPercent: 80,
+          storageAlarm: 400
         },
       }
     },
@@ -836,7 +842,7 @@
           status: null
         };
       },
-      onRefreshItem(data,index){
+      onRefreshItem(data, index) {
         this.$refs.vuetable.reload();
       },
       onAction(action, data) {
@@ -878,8 +884,7 @@
           temp = data.data[i];
           temp.deviceNumber = temp.device ? temp.device.deviceSerial : '';
           temp.deviceName = temp.device ? temp.device.deviceName : '';
-          /* temp.siteName = temp.device ? temp.device.field.fieldDesignation : '';*/
-          temp.configValue = temp.fromParamsList.length > 0 ? temp.fromParamsList[0].device.deviceName : "";
+          temp.siteName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           transformed.data.push(temp);
         }
         return transformed
@@ -888,6 +893,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filter
         });
       },
@@ -910,11 +916,11 @@
           }*/
         }
         this.scanForm.fromDeviceId = [];
-        if(result != null){
+        if (result != null) {
           result.fromParamsList.forEach(item => {
             this.scanForm.fromDeviceId.push({
-              value:item.device.deviceId,
-              label:item.device.deviceName
+              value: item.device.deviceId,
+              label: item.device.deviceName
 
             })
           })
@@ -952,7 +958,7 @@
       },
       //save scanform
       onSaveScanFormData() {
-        if(this.scanForm.fromDeviceId.length === 0) {
+        if (this.scanForm.fromDeviceId.length === 0) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-from-device-list`), {
             duration: 3000,
             permanent: false
@@ -1002,14 +1008,14 @@
                 }
                 this.platFormData.historyDataStorageSelect = [];
                 this.platFormData.historyDataExportSelect = [];
-                if(result.historyDataStorageList.length >0 ) {
+                if (result.historyDataStorageList.length > 0) {
                   result.historyDataStorageList.forEach(item => {
-                    this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                    this.platFormData.historyDataStorageSelect.push(findDicTextData(this.dataStorageOptions, item, false))
                   });
                 }
-                if(result.historyDataExportList.length >0 ) {
+                if (result.historyDataExportList.length > 0) {
                   result.historyDataExportList.forEach(item => {
-                    this.platFormData.historyDataExportSelect.push(findDicTextData(this.dataStorageOptions,item,false))
+                    this.platFormData.historyDataExportSelect.push(findDicTextData(this.dataStorageOptions, item, false))
                   });
                 }
               }
@@ -1041,12 +1047,12 @@
 
           this.$v.platFormData.$touch();
           if (this.$v.platFormData.$invalid) {
-            if(this.platFormData.historyDataStorageSelect.length === 0)
+            if (this.platFormData.historyDataStorageSelect.length === 0)
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-storage`), {
                 duration: 3000,
                 permanent: false
               });
-            else if(this.platFormData.historyDataExportSelect.length === 0)
+            else if (this.platFormData.historyDataExportSelect.length === 0)
               this.$notify('warning', this.$t('permission-management.warning'), this.$t(`system-setting.required-history-data-export`), {
                 duration: 3000,
                 permanent: false

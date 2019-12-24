@@ -646,7 +646,6 @@
             },
             {
               name: 'deviceId',
-              sortField: 'deviceId',
               title: this.$t('device-management.no'),
               titleClass: 'text-center',
               dataClass: 'text-center'
@@ -666,7 +665,6 @@
             },
             {
               name: 'status',
-              sortField: 'status',
               title: this.$t('device-management.active'),
               titleClass: 'text-center',
               dataClass: 'text-center',
@@ -963,6 +961,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           perPage: this.vuetableItems.perPage,
+          sort: httpOptions.params.sort,
           filter: this.filterOption
         });
       },

@@ -357,6 +357,7 @@
     "organization-has-children": "该机构有孩子",
     "user": {
       "user-group-has-child":"人员组有孩子",
+      "group-has-users":"人员组已经使用的",
       "group-has-child":"人员组有孩子",
       "group-removed-successfully":"人员组删除成功",
       "username-field-is-mandatory": "人员姓名是必需的",
@@ -629,9 +630,9 @@
     }
   },
   "system-setting": {
-    "required-history-data-storage": "数据存储要先择",
-    "required-history-data-export": "数据导出要先择",
-    "required-from-device-list" : "适用于要先择",
+    "required-history-data-storage": "数据存储要选择",
+    "required-history-data-export": "数据导出要选择",
+    "required-from-device-list" : "适用于要选择",
     "site": "场地",
     "site-list": "场地管理",
     "site-architecture": "场地架构",
@@ -748,7 +749,8 @@
       "save-only-suspected-image": "仅保存嫌疑图像",
       "suitable-for": "适用于",
       "yes": "是",
-      "no": "不",
+      "no": "否",
+      "none": "否",
       "saved-successful": "安检仪设置改变成功"
     }
   },
@@ -954,7 +956,9 @@
       "dispatch": "分派",
       "judge": "判图",
       "hand": "手检",
-      "scan": "扫描"
+      "scan": "扫描",
+      "system": "系统",
+      "artificial": "人工"
     },
     "routine-plan": {
       "plan": "计划",
