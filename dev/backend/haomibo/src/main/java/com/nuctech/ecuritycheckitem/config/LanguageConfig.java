@@ -17,6 +17,7 @@ public class LanguageConfig {
         this.getClass().getClassLoader().getResource(Constants.PDF_HEADER_FONT_RESOURCE_PATH);
 
         source.setBasenames("language/messages");
+        source.setDefaultEncoding("UTF-8");
         source.setUseCodeAsDefaultMessage(true);
 
         return source;

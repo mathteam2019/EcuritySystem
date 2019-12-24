@@ -233,7 +233,7 @@ public class ProcessTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan")) //only return specified fields from SerTask model
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow")) //only return specified fields from SerTask model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))  //only return specified fields from SerScan model
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode")) //only return workModeId from SysWorkFlow
