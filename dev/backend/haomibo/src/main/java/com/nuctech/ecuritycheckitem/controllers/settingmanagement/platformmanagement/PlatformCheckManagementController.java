@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/21
- * @CreatedBy Choe.
- * @FileName PlatformCheckManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（PlatformCheckManagementController）
+ * 文件名：	PlatformCheckManagementController.java
+ * 描述：	Platform Check Management Controller.
+ * 作者名：	Choe
+ * 日期：	2019/11/21
  */
+
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.platformmanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -16,10 +20,8 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
-import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +31,7 @@ import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/system-setting/platform-check")
@@ -39,6 +39,7 @@ public class PlatformCheckManagementController extends BaseController {
 
     @Autowired
     PlatformCheckService platformCheckService;
+
     /**
      * Platform check modify request body.
      */
@@ -48,34 +49,20 @@ public class PlatformCheckManagementController extends BaseController {
     @AllArgsConstructor
     private static class PlatformCheckrModifyRequestBody {
 
-        String scanRecogniseColour;
+        String scanRecogniseColour; //scan Recognize Colour
+        Long scanOverTime; //scan OverTime
+        Long judgeAssignTime; //judge AssignTime
+        Long judgeProcessingTime; //judge Processing Time
+        Long judgeScanOvertime; //judge ScanOvertime
+        String judgeRecogniseColour; //judge Recognise Colour
+        Long handOverTime; //hand OverTime
+        String handRecogniseColour; //hand Recognise Colour
+        List<String> historyDataStorageList; //history Data Storage List
+        List<String> historyDataExportList; //history Data Export List
+        Long displayDeleteSuspicion; //display Delete Suspicion
+        String displayDeleteSuspicionColour; //display Delete Suspicion Colour
 
-        Long scanOverTime;
-
-        Long judgeAssignTime;
-
-        Long judgeProcessingTime;
-
-        Long judgeScanOvertime;
-
-        String judgeRecogniseColour;
-
-        Long handOverTime;
-
-        String handRecogniseColour;
-
-
-        List<String> historyDataStorageList;
-
-
-        List<String> historyDataExportList;
-
-        Long displayDeleteSuspicion;
-
-        String displayDeleteSuspicionColour;
-
-
-        SerPlatformCheckParams convert2SerPlatformCheckParams() {
+        SerPlatformCheckParams convert2SerPlatformCheckParams() { //create new object from input parameters
 
             return SerPlatformCheckParams
                     .builder()
@@ -90,24 +77,18 @@ public class PlatformCheckManagementController extends BaseController {
                     .displayDeleteSuspicion(this.getDisplayDeleteSuspicion())
                     .displayDeleteSuspicionColour(this.getDisplayDeleteSuspicionColour())
                     .build();
-
         }
-
     }
-
 
     /**
      * Platform Check  get request
+     * @return
      */
     @RequestMapping(value = "/get", method = RequestMethod.POST)
     public Object platformCheckGet() {
 
-
         List<SerPlatformCheckParams> serPlatformCheckParamsList = platformCheckService.findAll();
-
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, serPlatformCheckParamsList));
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         value.setFilters(filters);
@@ -116,6 +97,9 @@ public class PlatformCheckManagementController extends BaseController {
 
     /**
      * Platform check modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_PLATFORM_CHECK_MODIFY)
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
@@ -123,7 +107,7 @@ public class PlatformCheckManagementController extends BaseController {
             @RequestBody @Valid PlatformCheckrModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -133,14 +117,12 @@ public class PlatformCheckManagementController extends BaseController {
         List<SerPlatformCheckParams> serPlatformCheckParamsList = platformCheckService.findAll();
 
         boolean isCreate = true;
-
         if(serPlatformCheckParamsList != null && serPlatformCheckParamsList.size() > 0) {
             serPlatformCheckParams.setScanId(serPlatformCheckParamsList.get(0).getScanId());
             serPlatformCheckParams.setCreatedBy(serPlatformCheckParamsList.get(0).getCreatedBy());
             serPlatformCheckParams.setCreatedTime(serPlatformCheckParamsList.get(0).getCreatedTime());
             isCreate = false;
         }
-
         platformCheckService.modifyPlatform(serPlatformCheckParams, isCreate);
 
         return new CommonResponseBody(ResponseMessage.OK);
