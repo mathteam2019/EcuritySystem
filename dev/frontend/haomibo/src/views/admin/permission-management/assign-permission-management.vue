@@ -953,6 +953,7 @@
             value: user.userId,
             text: user.userName,
           }));
+        console.log(this.userSelectData);
         this.userForm.userId = this.userForm.nextUserId;
         this.userForm.nextUserId = null;
       },
@@ -1169,14 +1170,15 @@
       },
 
       editUserRoles(userWithRole) {
+        console.log(userWithRole);
         this.userForm.orgId = userWithRole.org.orgId;
-        this.userForm.userId = userWithRole.userId;
         this.userForm.nextUserId = userWithRole.userId;
         this.userForm.roles = userWithRole.roles.map(role => ({
           label: role.roleName,
           value: role.roleId
         }));
-        if (userWithRole.dataRangeCategory == null) userWithRole.dataRangeCategory = '1000000501';
+        if (userWithRole.dataRangeCategory == null)
+          userWithRole.dataRangeCategory = '1000000501';
         this.userForm.dataRangeCategory = userWithRole.dataRangeCategory;
         if (this.userForm.dataRangeCategory === '1000000505' && userWithRole.dataGroups.length > 0) {
           this.userForm.nextSelectedDataGroupId = userWithRole.dataGroups[0].dataGroupId;
