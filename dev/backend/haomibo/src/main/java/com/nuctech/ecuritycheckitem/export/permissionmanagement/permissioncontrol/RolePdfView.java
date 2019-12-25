@@ -44,17 +44,18 @@ public class RolePdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("角色设置"));
+
+            document.add(getTitle(messageSource.getMessage("Role.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(100);
-            Stream.of("序号", "角色编号", "角色")
+            Stream.of("Role.No", "Role.Number", "Role.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

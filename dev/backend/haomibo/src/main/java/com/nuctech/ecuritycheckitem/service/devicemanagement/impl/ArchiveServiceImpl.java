@@ -1,19 +1,40 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（ArchiveServiceImpl）
+ * 文件名：	ArchiveServiceImpl.java
+ * 描述：	Archive Service implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
+
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+
+import com.nuctech.ecuritycheckitem.models.db.QSerArchive;
+import com.nuctech.ecuritycheckitem.models.db.SerArchive;
+import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
+import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.SerArchiveValue;
+
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveTemplateRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerArchiveValueRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
+
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
+
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
+
 import com.querydsl.core.BooleanBuilder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +69,13 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Autowired
     SysDeviceRepository sysDeviceRepository;
 
+    /**
+     * get predicate from filter parameters
+     * @param archiveName
+     * @param status
+     * @param categoryId
+     * @return
+     */
     private BooleanBuilder getPredicate(String archiveName, String status, Long categoryId) {
         QSerArchive builder = QSerArchive.serArchive;
 
@@ -65,6 +93,15 @@ public class ArchiveServiceImpl implements ArchiveService {
         return predicate;
     }
 
+    /**
+     * get paginated and filtered result
+     * @param archiveName
+     * @param status
+     * @param categoryId
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
     public PageResult<SerArchive> getArchiveListByPage(String archiveName, String status, Long categoryId, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(archiveName, status, categoryId);
@@ -75,12 +112,23 @@ public class ArchiveServiceImpl implements ArchiveService {
         return new PageResult<SerArchive>(total, data);
     }
 
+    /**
+     * check if archive exists
+     * @param archiveId
+     * @return
+     */
     @Override
     public boolean checkArchiveExist(long archiveId) {
         return serArchiveRepository.exists(QSerArchive.
                 serArchive.archiveId.eq(archiveId));
     }
 
+    /**
+     * check if archive name exist
+     * @param archiveName
+     * @param archiveId
+     * @return
+     */
     @Override
     public boolean checkArchiveNameExist(String archiveName, Long archiveId) {
         if(archiveId == null) {
@@ -90,6 +138,12 @@ public class ArchiveServiceImpl implements ArchiveService {
                 .and(QSerArchive.serArchive.archiveId.ne(archiveId)));
     }
 
+    /**
+     * check if archive number exists
+     * @param archiveNumber
+     * @param archiveId
+     * @return
+     */
     @Override
     public boolean checkArchiveNumberExist(String archiveNumber, Long archiveId) {
         if(archiveId == null) {
@@ -99,6 +153,11 @@ public class ArchiveServiceImpl implements ArchiveService {
                 .and(QSerArchive.serArchive.archiveId.ne(archiveId)));
     }
 
+    /**
+     * check if archive template exists
+     * @param archiveTemplateId
+     * @return
+     */
     @Override
     public boolean checkArchiveTemplateExist(long archiveTemplateId) {
         if (!serArchiveTemplateRepository.exists(QSerArchiveTemplate.serArchiveTemplate
@@ -108,12 +167,22 @@ public class ArchiveServiceImpl implements ArchiveService {
         return true;
     }
 
+    /**
+     * check if device exists
+     * @param archiveId
+     * @return
+     */
     @Override
     public boolean checkDeviceExist(long archiveId) {
         return sysDeviceRepository.exists(QSysDevice.
                 sysDevice.archiveId.eq(archiveId));
     }
 
+    /**
+     * update archive status
+     * @param archiveId
+     * @param status
+     */
     @Override
     @Transactional
     public void updateStatus(long archiveId, String status) {
@@ -130,6 +199,11 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchiveRepository.save(serArchive);
     }
 
+    /**
+     * create archive value
+     * @param json
+     * @param serArchive
+     */
     private void createArchiveValue(String json, SerArchive serArchive) {
         ObjectMapper mapper = new ObjectMapper();
         serArchive.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -151,6 +225,12 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     }
 
+    /**
+     * create serArchive
+     * @param portraitFile
+     * @param serArchive
+     * @param json
+     */
     @Override
     @Transactional
     public void createSerArchive(MultipartFile portraitFile, SerArchive serArchive, String json) {
@@ -165,6 +245,12 @@ public class ArchiveServiceImpl implements ArchiveService {
         createArchiveValue(json, serArchive);
     }
 
+    /**
+     * modify SerArchive
+     * @param portraitFile
+     * @param serArchive
+     * @param json
+     */
     @Override
     @Transactional
     public void modifySerArchive(MultipartFile portraitFile, SerArchive serArchive, String json) {
@@ -197,6 +283,10 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchiveRepository.save(serArchive);
     }
 
+    /**
+     * remove SerArchive
+     * @param archiveId
+     */
     @Override
     @Transactional
     public void removeSerArchive(long archiveId) {
@@ -211,6 +301,10 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchiveRepository.delete(serArchive);
     }
 
+    /**
+     * find all Archives
+     * @return
+     */
     @Override
     public List<SerArchive> findAll() {
         QSerArchive builder = QSerArchive.serArchive;
@@ -224,6 +318,13 @@ public class ArchiveServiceImpl implements ArchiveService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * get export list of archives
+     * @param archiveList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SerArchive> getExportList(List<SerArchive> archiveList, boolean isAll, String idList) {
         List<SerArchive> exportList = new ArrayList<>();
         if(isAll == false) {
@@ -247,6 +348,15 @@ public class ArchiveServiceImpl implements ArchiveService {
         return exportList;
     }
 
+    /**
+     * get filtered archive list
+     * @param archiveName
+     * @param status
+     * @param categoryId
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SerArchive> getExportListByFilter(String archiveName, String status, Long categoryId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(archiveName, status, categoryId);

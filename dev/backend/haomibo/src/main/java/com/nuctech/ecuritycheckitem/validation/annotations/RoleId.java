@@ -1,23 +1,28 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/01
- * @CreatedBy Sandy.
- * @FileName RoleId.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（RoleId)
+ * 文件名：	RoleId.java
+ * 描述：	Role Id validator annotation class.
+ * 作者名：	Sandy
+ * 日期：	2019/11/1
  *
  */
+
 package com.nuctech.ecuritycheckitem.validation.annotations;
 
 import com.nuctech.ecuritycheckitem.validation.validators.RoleIdValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-/**
- * Role Id validator annotation class.
- */
 @Documented
 @Constraint(validatedBy = RoleIdValidator.class)
 @Target({ElementType.FIELD, ElementType.TYPE_USE})

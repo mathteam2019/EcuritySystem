@@ -43,17 +43,17 @@ public class DataGroupPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("数据组"));
+            document.add(getTitle(messageSource.getMessage("DataGroup.Title",null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
-            Stream.of("序号", "数据组编号", "数据组", "数据组范围")
+            Stream.of("DataGroup.No", "DataGroup.Number", "DataGroup.Name", "DataGroup.Range")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

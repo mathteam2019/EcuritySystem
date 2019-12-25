@@ -38,19 +38,19 @@ public class AccessLogExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("AccessLog.No", null, currentLocale));
 
         Cell headerCellOperateTime = header.createCell(1);
-        headerCellOperateTime.setCellValue("访问时间");
+        headerCellOperateTime.setCellValue(messageSource.getMessage("AccessLog.OperateTime", null, currentLocale));
 
         Cell headerCellAction = header.createCell(2);
-        headerCellAction.setCellValue("动作");
+        headerCellAction.setCellValue(messageSource.getMessage("AccessLog.Action", null, currentLocale));
 
         Cell headerCellClientIp = header.createCell(3);
-        headerCellClientIp.setCellValue("访问ip");
+        headerCellClientIp.setCellValue(messageSource.getMessage("AccessLog.ClientIp", null, currentLocale));
 
         Cell headerCellOperateAccount = header.createCell(4);
-        headerCellOperateAccount.setCellValue("访问用户");
+        headerCellOperateAccount.setCellValue(messageSource.getMessage("AccessLog.OperateAccount", null, currentLocale));
     }
 
     /**
@@ -68,7 +68,7 @@ public class AccessLogExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("访问日志");
+            titleCell.setCellValue(messageSource.getMessage("AccessLog.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

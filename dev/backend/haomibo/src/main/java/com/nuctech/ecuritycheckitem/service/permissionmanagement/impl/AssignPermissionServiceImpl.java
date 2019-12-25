@@ -1,10 +1,45 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AssignPermissionServiceImpl）
+ * 文件名：	AssignPermissionServiceImpl.java
+ * 描述：	AssignPermissionService impl
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.AssignPermissionManagementController;
-import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
-import com.nuctech.ecuritycheckitem.repositories.*;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.QSysUser;
+import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
+import com.nuctech.ecuritycheckitem.models.db.QSysDataGroup;
+import com.nuctech.ecuritycheckitem.models.db.QSysRoleUser;
+import com.nuctech.ecuritycheckitem.models.db.SysRoleUser;
+import com.nuctech.ecuritycheckitem.models.db.SysUserLookup;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserLookup;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroupRole;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupRole;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroupLookup;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupLookup;
+import com.nuctech.ecuritycheckitem.models.db.SysRole;
+import com.nuctech.ecuritycheckitem.models.db.SysOrg;
+import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
+
+import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysRoleUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserLookupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupLookupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
+
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -53,6 +88,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Assign user role and data range
+     *
      * @param userId
      * @param roleIdList
      * @param dataRangeCategory
@@ -119,6 +155,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Assign role and datagroup for user group
+     *
      * @param userGroupId
      * @param roleIdList
      * @param dataRangeCategory
@@ -186,6 +223,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get all roles
+     *
      * @return
      */
     public List<SysRole> roleGetAll() {
@@ -194,6 +232,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get all UserGroup
+     *
      * @return
      */
     public List<SysUserGroup> userGroupGetAll() {
@@ -202,6 +241,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get paginated user list by filter
+     *
      * @param userName
      * @param orgId
      * @param roleName
@@ -224,6 +264,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get user list by filter
+     *
      * @param userName
      * @param orgId
      * @param roleName
@@ -239,6 +280,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get paginated user group by filter and page
+     *
      * @param groupName
      * @param userName
      * @param roleName
@@ -260,6 +302,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get user group by filter
+     *
      * @param groupName
      * @param userName
      * @param roleName
@@ -275,6 +318,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get predicate for user filter
+     *
      * @param userName
      * @param orgId
      * @param roleName
@@ -311,6 +355,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
     /**
      * Get predicate for usergroup filter
+     *
      * @param groupName
      * @param userName
      * @param roleName

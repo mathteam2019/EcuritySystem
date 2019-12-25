@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.DataGroupExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -554,6 +555,7 @@ public class UserManagementController extends BaseController {
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
+        UserWordView.setMessageSource(messageSource);
         InputStream inputStream = UserWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -591,6 +593,7 @@ public class UserManagementController extends BaseController {
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         UserPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        UserPdfView.setMessageSource(messageSource);
         InputStream inputStream = UserPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -772,6 +775,7 @@ public class UserManagementController extends BaseController {
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        UserGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -803,6 +807,7 @@ public class UserManagementController extends BaseController {
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        UserGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

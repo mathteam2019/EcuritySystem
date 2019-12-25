@@ -40,25 +40,25 @@ public class UserExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("User.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("人员编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("User.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("人员");
+        headerCellName.setCellValue(messageSource.getMessage("User.Name", null, currentLocale));
 
         Cell headerCellGender = header.createCell(3);
-        headerCellGender.setCellValue("性别");
+        headerCellGender.setCellValue(messageSource.getMessage("User.Gender", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(4);
-        headerCellStatus.setCellValue("状态");
+        headerCellStatus.setCellValue(messageSource.getMessage("User.Status", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(5);
-        headerCellCategory.setCellValue("隶属机构");
+        headerCellCategory.setCellValue(messageSource.getMessage("User.Category", null, currentLocale));
 
         Cell headerCellAccount = header.createCell(6);
-        headerCellAccount.setCellValue("账号");
+        headerCellAccount.setCellValue(messageSource.getMessage("User.Account", null, currentLocale));
     }
 
     /**
@@ -76,7 +76,7 @@ public class UserExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员列表");
+            titleCell.setCellValue(messageSource.getMessage("User.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

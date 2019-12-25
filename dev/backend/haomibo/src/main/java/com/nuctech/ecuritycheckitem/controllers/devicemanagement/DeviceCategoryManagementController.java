@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateWordView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryPdfView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceCategoryWordView;
@@ -416,6 +417,7 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         setDictionary(); //set dictionary data
+        DeviceCategoryExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceCategoryExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -454,6 +456,7 @@ public class DeviceCategoryManagementController extends BaseController {
         List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         setDictionary(); //set dictionary data
+        DeviceCategoryWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceCategoryWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
 
@@ -496,6 +499,7 @@ public class DeviceCategoryManagementController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         DeviceCategoryPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        DeviceCategoryPdfView.setMessageSource(messageSource);
         InputStream inputStream = DeviceCategoryPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

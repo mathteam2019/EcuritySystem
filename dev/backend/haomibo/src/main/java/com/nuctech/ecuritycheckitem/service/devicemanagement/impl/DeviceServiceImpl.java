@@ -1,9 +1,37 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceConfigServiceImpl）
+ * 文件名：	DeviceConfigServiceImpl.java
+ * 描述：	DeviceConfigService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.controllers.devicemanagement.DeviceControlController;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.repositories.*;
+import com.nuctech.ecuritycheckitem.models.db.SysDeviceConfig;
+import com.nuctech.ecuritycheckitem.models.db.QSysDeviceConfig;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
+import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.SerScanParam;
+import com.nuctech.ecuritycheckitem.models.db.SerScanParamsFrom;
+import com.nuctech.ecuritycheckitem.models.db.QSerScanParam;
+import com.nuctech.ecuritycheckitem.models.db.QSerArchive;
+
+
+import com.nuctech.ecuritycheckitem.repositories.SysDeviceConfigRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysManualGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysJudgeGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.FromConfigIdRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerArchiveRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
+
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -15,9 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,17 +82,33 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     Utils utils;
 
+    /**
+     * check if device exists
+     * @param deviceId
+     * @return
+     */
     @Override
     public boolean checkDeviceExist(Long deviceId) {
         return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceId.eq(deviceId));
     }
 
+    /**
+     * check if archive id exists
+     * @param archiveId
+     * @return
+     */
     @Override
     public boolean checkArchiveExist(Long archiveId) {
         return serArchiveRepository.exists(QSerArchive.serArchive
                 .archiveId.eq(archiveId));
     }
 
+    /**
+     * check if device name exists
+     * @param deviceName
+     * @param deviceId
+     * @return
+     */
     @Override
     public boolean checkDeviceNameExist(String deviceName, Long deviceId) {
         if(deviceId == null) {
@@ -76,6 +118,12 @@ public class DeviceServiceImpl implements DeviceService {
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
     }
 
+    /**
+     * check if device serial exists
+     * @param deviceSerial
+     * @param deviceId
+     * @return
+     */
     @Override
     public boolean checkDeviceSerialExist(String deviceSerial, Long deviceId) {
         if(deviceId == null) {
@@ -85,6 +133,12 @@ public class DeviceServiceImpl implements DeviceService {
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
     }
 
+    /**
+     * check if device guid exits
+     * @param guid
+     * @param deviceId
+     * @return
+     */
     @Override
     public boolean checkDeviceGuidExist(String guid, Long deviceId) {
         if(deviceId == null) {
@@ -94,6 +148,14 @@ public class DeviceServiceImpl implements DeviceService {
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
     }
 
+    /**
+     * get paginated and filtered device
+     * @param preDeviceList
+     * @param categoryId
+     * @param startIndex
+     * @param endIndex
+     * @return
+     */
     private PageResult<SysDevice> getFilterDeviceByCategory(List<SysDevice> preDeviceList, Long categoryId, int startIndex, int endIndex) {
         if(endIndex == -1) {
             endIndex = preDeviceList.size();
@@ -129,6 +191,17 @@ public class DeviceServiceImpl implements DeviceService {
         return result;
     }
 
+    /**
+     * get filtered device list
+     * @param archiveName
+     * @param deviceName
+     * @param status
+     * @param fieldId
+     * @param categoryId
+     * @param startIndex
+     * @param endIndex
+     * @return
+     */
     @Override
     public PageResult<SysDevice> getFilterDeviceList(String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                                int startIndex, int endIndex) {
@@ -162,6 +235,13 @@ public class DeviceServiceImpl implements DeviceService {
         return getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
     }
 
+    /**
+     * get device export list
+     * @param deviceList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysDevice> getExportList(List<SysDevice> deviceList, boolean isAll, String idList) {
         List<SysDevice> exportList = new ArrayList<>();
         if(isAll == false) {
@@ -185,6 +265,17 @@ public class DeviceServiceImpl implements DeviceService {
         return exportList;
     }
 
+    /**
+     * get export device data list
+     * @param archiveName
+     * @param deviceName
+     * @param status
+     * @param fieldId
+     * @param categoryId
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SysDevice> getExportDataList(String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                              boolean isAll, String idList) {
@@ -192,6 +283,11 @@ public class DeviceServiceImpl implements DeviceService {
         return getExportList(preList, isAll, idList);
     }
 
+    /**
+     * update device status
+     * @param deviceId
+     * @param status
+     */
     @Override
     @Transactional
     public void updateStatus(Long deviceId, String status) {
@@ -208,6 +304,11 @@ public class DeviceServiceImpl implements DeviceService {
         sysDeviceRepository.save(sysDevice);
     }
 
+    /**
+     * create new device
+     * @param sysDevice
+     * @param portraitFile
+     */
     @Override
     @Transactional
     public void createDevice(SysDevice sysDevice, MultipartFile portraitFile) {
@@ -228,6 +329,11 @@ public class DeviceServiceImpl implements DeviceService {
         serScanParamRepository.save(scanParam);
     }
 
+    /**
+     * edit device
+     * @param sysDevice
+     * @param portraitFile
+     */
     @Override
     @Transactional
     public void modifyDevice(SysDevice sysDevice, MultipartFile portraitFile) {
@@ -251,6 +357,10 @@ public class DeviceServiceImpl implements DeviceService {
         sysDeviceRepository.save(sysDevice);
     }
 
+    /**
+     * remove device
+     * @param deviceId
+     */
     @Override
     @Transactional
     public void removeDevice(Long deviceId) {
@@ -267,11 +377,7 @@ public class DeviceServiceImpl implements DeviceService {
         if(sysDeviceConfig != null) {
 
             sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
-
-
-
         }
-
 
         SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
                 .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
@@ -289,11 +395,12 @@ public class DeviceServiceImpl implements DeviceService {
             }
 
         }
-
-
-
     }
 
+    /**
+     * remove device field
+     * @param deviceList
+     */
     @Override
     @Transactional
     public void modifyDeviceField(List<SysDevice> deviceList) {
@@ -310,6 +417,10 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
+    /**
+     * find all device
+     * @return
+     */
     @Override
     public List<SysDevice> findAll() {
         QSysDevice builder = QSysDevice.sysDevice;
@@ -323,6 +434,11 @@ public class DeviceServiceImpl implements DeviceService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * get empty field device
+     * @param categoryId
+     * @return
+     */
     @Override
     public List<SysDevice> getEmptyFieldDevice(Long categoryId) {
         QSysDevice builder = QSysDevice.sysDevice;
@@ -338,14 +454,18 @@ public class DeviceServiceImpl implements DeviceService {
         return sysDeviceList;
     }
 
+    /**
+     * get device by field
+     * @param fieldId
+     * @param categoryId
+     * @return
+     */
     @Override
     @Transactional
     public List<SysDevice> getDeviceByField(Long fieldId, Long categoryId) {
         QSysDevice builder = QSysDevice.sysDevice;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-
-
 
         if(fieldId!= null) {
             predicate.and(builder.fieldId.eq(fieldId));

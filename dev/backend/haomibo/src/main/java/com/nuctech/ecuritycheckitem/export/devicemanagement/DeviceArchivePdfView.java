@@ -45,15 +45,16 @@ public class DeviceArchivePdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("档案管理"));
+
+            document.add(getTitle(messageSource.getMessage("DeviceArchive.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(7);
             table.setWidthPercentage(100);
-            Stream.of("序号", "档案编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
+            Stream.of("DeviceArchive.No", "DeviceArchive.Archive", "DeviceArchive.Name", "DeviceArchive.Status", "DeviceArchive.Category", "DeviceArchive.Manufacturer", "DeviceArchive.OriginalModel")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

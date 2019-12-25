@@ -6,7 +6,7 @@
  * 项目：	Haomibo V1.0（历史任务 service 1.0)
  * 文件名：	HistoryServiceImpl.java
  * 描述：	Service to get invalid task data from database using models and repositories
- * 作者名：	申日哲
+ * 作者名：	Tiny
  * 日期：	2019/12/20
  *
  */

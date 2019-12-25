@@ -42,7 +42,7 @@ public class DeviceWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("设备管理");
+        titleRun.setText(messageSource.getMessage("Device.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,13 +65,13 @@ public class DeviceWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("设备编号");
-        tableRowHeader.addNewTableCell().setText("模板");
-        tableRowHeader.addNewTableCell().setText("生效");
-        tableRowHeader.addNewTableCell().setText("设备分类");
-        tableRowHeader.addNewTableCell().setText("生产厂商");
-        tableRowHeader.addNewTableCell().setText("设备型号");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("Device.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Device", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Category", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
 
     }
 

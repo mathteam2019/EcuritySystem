@@ -45,7 +45,7 @@ public class AssignUserWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("人员授权");
+        titleRun.setText(messageSource.getMessage("AssignUser.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -68,13 +68,13 @@ public class AssignUserWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("人员");
-        tableRowHeader.addNewTableCell().setText("性别");
-        tableRowHeader.addNewTableCell().setText("账号");
-        tableRowHeader.addNewTableCell().setText("隶属机构");
-        tableRowHeader.addNewTableCell().setText("角色");
-        tableRowHeader.addNewTableCell().setText("数据范围");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("AssignUser.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Gender", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Account", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Group", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Role", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignUser.Category", null, currentLocale));
 
     }
 

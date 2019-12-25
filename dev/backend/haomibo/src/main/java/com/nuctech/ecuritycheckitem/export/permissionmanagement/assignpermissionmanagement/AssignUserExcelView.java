@@ -42,25 +42,25 @@ public class AssignUserExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("AssignUser.No", null, currentLocale));
 
         Cell headerCellName = header.createCell(1);
-        headerCellName.setCellValue("人员");
+        headerCellName.setCellValue(messageSource.getMessage("AssignUser.Name", null, currentLocale));
 
         Cell headerCellGender = header.createCell(2);
-        headerCellGender.setCellValue("性别");
+        headerCellGender.setCellValue(messageSource.getMessage("AssignUser.Gender", null, currentLocale));
 
         Cell headerCellAccount = header.createCell(3);
-        headerCellAccount.setCellValue("账号");
+        headerCellAccount.setCellValue(messageSource.getMessage("AssignUser.Account", null, currentLocale));
 
         Cell headerCellGroup = header.createCell(4);
-        headerCellGroup.setCellValue("隶属机构");
+        headerCellGroup.setCellValue(messageSource.getMessage("AssignUser.Group", null, currentLocale));
 
         Cell headerCellRole = header.createCell(5);
-        headerCellRole.setCellValue("角色");
+        headerCellRole.setCellValue(messageSource.getMessage("AssignUser.Role", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(6);
-        headerCellCategory.setCellValue("数据范围");
+        headerCellCategory.setCellValue(messageSource.getMessage("AssignUser.Category", null, currentLocale));
     }
 
     /**
@@ -78,7 +78,7 @@ public class AssignUserExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员授权");
+            titleCell.setCellValue(messageSource.getMessage("AssignUser.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

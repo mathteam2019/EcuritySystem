@@ -39,23 +39,22 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("任务编号");
-
+        headerCellNumber.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Number", null, currentLocale));
 
         Cell headerCellResult = header.createCell(2);
-        headerCellResult.setCellValue("任务结论");
+        headerCellResult.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Result", null, currentLocale));
 
         Cell headerCellField = header.createCell(3);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Field", null, currentLocale));
 
         Cell headerCellDevicePassageWay = header.createCell(4);
-        headerCellDevicePassageWay.setCellValue("通道");
+        headerCellDevicePassageWay.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.DevicePassageWay", null, currentLocale));
 
         Cell headerCellGoods = header.createCell(5);
-        headerCellGoods.setCellValue("查获物品");
+        headerCellGoods.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Goods", null, currentLocale));
     }
 
     /**
@@ -73,7 +72,7 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员案例");
+            titleCell.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

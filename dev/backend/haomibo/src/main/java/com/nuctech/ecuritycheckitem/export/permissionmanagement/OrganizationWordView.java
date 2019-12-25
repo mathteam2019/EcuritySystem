@@ -42,7 +42,7 @@ public class OrganizationWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("机构管理");
+        titleRun.setText(messageSource.getMessage("Organization.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,15 +65,16 @@ public class OrganizationWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("机构编号");
-        tableRowHeader.addNewTableCell().setText("机构名称");
-        tableRowHeader.addNewTableCell().setText("生效");
-        tableRowHeader.addNewTableCell().setText("上级机构编号");
-        tableRowHeader.addNewTableCell().setText("上级机构");
-        tableRowHeader.addNewTableCell().setText("负责人");
-        tableRowHeader.addNewTableCell().setText("联系方式");
-        tableRowHeader.addNewTableCell().setText("备注");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("Organization.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.ParentNumber", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.ParentName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Leader", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Mobile", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Organization.Note", null, currentLocale));
+
     }
 
     /**

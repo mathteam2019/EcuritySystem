@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol.*;
+import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.UserGroupWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -389,6 +391,7 @@ public class PermissionControlController extends BaseController {
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        RoleExcelView.setMessageSource(messageSource);
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -422,6 +425,7 @@ public class PermissionControlController extends BaseController {
 
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        RoleWordView.setMessageSource(messageSource);
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -458,6 +462,7 @@ public class PermissionControlController extends BaseController {
         List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
         RolePdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
+        RolePdfView.setMessageSource(messageSource);
         InputStream inputStream = RolePdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -653,6 +658,7 @@ public class PermissionControlController extends BaseController {
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        DataGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -686,8 +692,8 @@ public class PermissionControlController extends BaseController {
 
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
+        DataGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);//create inputstream of result to be exported
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=data-group.docx"); //set filename
 
@@ -718,6 +724,7 @@ public class PermissionControlController extends BaseController {
         List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         DataGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
+        DataGroupPdfView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

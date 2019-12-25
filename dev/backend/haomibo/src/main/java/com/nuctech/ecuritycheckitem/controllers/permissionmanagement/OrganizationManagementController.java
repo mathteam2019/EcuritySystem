@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationPdfView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationWordView;
@@ -564,6 +565,7 @@ public class OrganizationManagementController extends BaseController {
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        OrganizationExcelView.setMessageSource(messageSource);
         InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -599,6 +601,7 @@ public class OrganizationManagementController extends BaseController {
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
+        OrganizationWordView.setMessageSource(messageSource);
         InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -634,6 +637,7 @@ public class OrganizationManagementController extends BaseController {
 
         OrganizationPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        OrganizationPdfView.setMessageSource(messageSource);
         InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

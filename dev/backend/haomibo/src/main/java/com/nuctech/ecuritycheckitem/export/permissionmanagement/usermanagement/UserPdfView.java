@@ -44,17 +44,17 @@ public class UserPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("人员列表"));
+            document.add(getTitle(messageSource.getMessage("User.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(7);
             table.setWidthPercentage(100);
-            Stream.of("序号", "人员编号", "人员", "性别", "状态", "隶属机构", "账号")
+            Stream.of("User.No", "User.Number", "User.Name", "User.Gender", "User.Status", "User.Category", "User.Account")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

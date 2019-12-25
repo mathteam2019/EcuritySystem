@@ -38,31 +38,31 @@ public class AuditLogExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("AuditLog.Title", null, currentLocale));
 
         Cell headerCellOperatorId = header.createCell(1);
-        headerCellOperatorId.setCellValue("操作员ID");
+        headerCellOperatorId.setCellValue(messageSource.getMessage("AuditLog.OperatorId", null, currentLocale));
 
         Cell headerCellClientIp = header.createCell(2);
-        headerCellClientIp.setCellValue("客户端ip");
+        headerCellClientIp.setCellValue(messageSource.getMessage("AuditLog.ClientIp", null, currentLocale));
 
         Cell headerCellOperateObject = header.createCell(3);
-        headerCellOperateObject.setCellValue("操作对象");
+        headerCellOperateObject.setCellValue(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
 
         Cell headerCellAction = header.createCell(4);
-        headerCellAction.setCellValue("操作");
+        headerCellAction.setCellValue(messageSource.getMessage("AuditLog.Action", null, currentLocale));
 
         Cell headerCellOperateContent = header.createCell(5);
-        headerCellOperateContent.setCellValue("操作内容");
+        headerCellOperateContent.setCellValue(messageSource.getMessage("AuditLog.OperateContent", null, currentLocale));
 
         Cell headerCellOperateResult = header.createCell(6);
-        headerCellOperateResult.setCellValue("操作结果");
+        headerCellOperateResult.setCellValue(messageSource.getMessage("AuditLog.OperateResult", null, currentLocale));
 
         Cell headerCellReasonCode = header.createCell(7);
-        headerCellReasonCode.setCellValue("失败原因代码");
+        headerCellReasonCode.setCellValue(messageSource.getMessage("AuditLog.ReasonCode", null, currentLocale));
 
         Cell headerCellOperateTime = header.createCell(8);
-        headerCellOperateTime.setCellValue("操作时间");
+        headerCellOperateTime.setCellValue(messageSource.getMessage("AuditLog.OperateTime", null, currentLocale));
     }
 
     /**
@@ -80,7 +80,7 @@ public class AuditLogExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("操作日志");
+            titleCell.setCellValue(messageSource.getMessage("AuditLog.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

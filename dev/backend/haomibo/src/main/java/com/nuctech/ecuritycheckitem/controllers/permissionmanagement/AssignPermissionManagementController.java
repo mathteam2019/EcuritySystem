@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -410,6 +411,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
+        AssignUserExcelView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -445,6 +447,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        AssignUserWordView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -482,6 +485,7 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        AssignUserPdfView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -601,6 +605,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
+        AssignUserGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -637,6 +642,7 @@ public class AssignPermissionManagementController extends BaseController {
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
+        AssignUserGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -675,6 +681,7 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        AssignUserGroupPdfView.setMessageSource(messageSource);
         InputStream inputStream = AssignUserGroupPdfView.buildPDFDocument(exportList);//create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

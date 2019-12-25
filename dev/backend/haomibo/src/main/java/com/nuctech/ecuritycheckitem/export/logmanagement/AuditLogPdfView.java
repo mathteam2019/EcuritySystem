@@ -45,21 +45,19 @@ public class AuditLogPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("操作日志"));
+            document.add(getTitle(messageSource.getMessage("AuditLog.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "操作员ID", "客户端ip", "操作对象", "操作", "操作内容", "操作结果", "失败原因代码", "操作时间")
+            Stream.of("AuditLog.No", "AuditLog.OperatorId", "AuditLog.ClientIp", "AuditLog.OperateObject", "AuditLog.Action", "AuditLog.OperateContent", "AuditLog.OperateResult", "AuditLog.ReasonCode", "AuditLog.OperateTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
-
-
 
             for (SysAuditLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());

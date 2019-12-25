@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchivePdfView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveWordView;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -458,7 +459,7 @@ public class ArchiveManagementController extends BaseController {
         //get list of archives from database through archiveService
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
-
+        DeviceArchiveExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -499,6 +500,7 @@ public class ArchiveManagementController extends BaseController {
         //get list of archives from database through archiveService
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
+        DeviceArchiveWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -541,6 +543,7 @@ public class ArchiveManagementController extends BaseController {
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        DeviceArchivePdfView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);  //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

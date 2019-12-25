@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceFieldWordView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementWordView;
@@ -460,6 +461,7 @@ public class FieldManagementController extends BaseController {
         }
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
+        FieldManagementExcelView.setMessageSource(messageSource);
         InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -496,6 +498,7 @@ public class FieldManagementController extends BaseController {
         }
         List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
+        FieldManagementWordView.setMessageSource(messageSource);
         InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -535,6 +538,7 @@ public class FieldManagementController extends BaseController {
 
         FieldManagementPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        FieldManagementPdfView.setMessageSource(messageSource);
         InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

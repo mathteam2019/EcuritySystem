@@ -42,20 +42,19 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
-
+        headerCellNo.setCellValue(messageSource.getMessage("AssignUserGroup.No", null, currentLocale));
 
         Cell headerCellName = header.createCell(1);
-        headerCellName.setCellValue("人员组");
+        headerCellName.setCellValue(messageSource.getMessage("AssignUserGroup.Name", null, currentLocale));
 
         Cell headerCellUser = header.createCell(2);
-        headerCellUser.setCellValue("组员");
+        headerCellUser.setCellValue(messageSource.getMessage("AssignUserGroup.User", null, currentLocale));
 
         Cell headerCellRole = header.createCell(3);
-        headerCellRole.setCellValue("角色");
+        headerCellRole.setCellValue(messageSource.getMessage("AssignUserGroup.Role", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(4);
-        headerCellCategory.setCellValue("数据范围");
+        headerCellCategory.setCellValue(messageSource.getMessage("AssignUserGroup.Category", null, currentLocale));
     }
 
     /**
@@ -73,7 +72,7 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员组授权");
+            titleCell.setCellValue(messageSource.getMessage("AssignUserGroup.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

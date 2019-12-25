@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -374,6 +375,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(); //set dictionary data
+        KnowledgeDealPendingExcelView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -404,6 +406,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(); //set dictionary data
+        KnowledgeDealPendingWordView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -435,6 +438,7 @@ public class KnowledgeDealManagementController extends BaseController {
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
         KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
+        KnowledgeDealPendingPdfView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -465,6 +469,7 @@ public class KnowledgeDealManagementController extends BaseController {
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(); //set dictionary data
+        KnowledgeDealPersonalExcelView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -496,6 +501,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(); //set dictionary data
+        KnowledgeDealPersonalWordView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -528,6 +534,7 @@ public class KnowledgeDealManagementController extends BaseController {
         List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         KnowledgeDealPersonalPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        KnowledgeDealPersonalPdfView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -42,7 +42,7 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("人员案例");
+        titleRun.setText(messageSource.getMessage("KnowledgeDealPersonal.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,12 +65,12 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("任务编号");
-        tableRowHeader.addNewTableCell().setText("任务结论");
-        tableRowHeader.addNewTableCell().setText("现场");
-        tableRowHeader.addNewTableCell().setText("通道");
-        tableRowHeader.addNewTableCell().setText("查获物品");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("KnowledgeDealPersonal.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPersonal.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPersonal.Result", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPersonal.Field", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPersonal.DevicePassageWay", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPersonal.Goods", null, currentLocale));
 
     }
 

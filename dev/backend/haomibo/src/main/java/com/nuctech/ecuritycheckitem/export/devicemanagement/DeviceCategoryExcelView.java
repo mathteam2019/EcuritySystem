@@ -40,25 +40,25 @@ public class DeviceCategoryExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DeviceCategory.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("分类编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("DeviceCategory.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("分类");
+        headerCellName.setCellValue(messageSource.getMessage("DeviceCategory.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("DeviceCategory.Status", null, currentLocale));
 
         Cell headerCellParentNumber = header.createCell(4);
-        headerCellParentNumber.setCellValue("上级机构编号");
+        headerCellParentNumber.setCellValue(messageSource.getMessage("DeviceCategory.ParentNumber", null, currentLocale));
 
         Cell headerCellParentName = header.createCell(5);
-        headerCellParentName.setCellValue("上级分类");
+        headerCellParentName.setCellValue(messageSource.getMessage("DeviceCategory.ParentName", null, currentLocale));
 
         Cell headerCellNote = header.createCell(6);
-        headerCellNote.setCellValue("备注");
+        headerCellNote.setCellValue(messageSource.getMessage("DeviceCategory.Note", null, currentLocale));
     }
 
     /**
@@ -76,7 +76,7 @@ public class DeviceCategoryExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("设备分类");
+            titleCell.setCellValue(messageSource.getMessage("DeviceCategory.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

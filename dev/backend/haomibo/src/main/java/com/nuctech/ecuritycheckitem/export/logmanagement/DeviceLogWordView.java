@@ -41,7 +41,7 @@ public class DeviceLogWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("设备日志");
+        titleRun.setText(messageSource.getMessage("DeviceLog.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,14 +64,14 @@ public class DeviceLogWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("设备");
-        tableRowHeader.addNewTableCell().setText("账号");
-        tableRowHeader.addNewTableCell().setText("用户");
-        tableRowHeader.addNewTableCell().setText("类别");
-        tableRowHeader.addNewTableCell().setText("级别");
-        tableRowHeader.addNewTableCell().setText("内容");
-        tableRowHeader.addNewTableCell().setText("操作时间");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("DeviceLog.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Device", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Account", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.UserName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Category", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Level", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Content", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceLog.Time", null, currentLocale));
 
     }
 

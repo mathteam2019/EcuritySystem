@@ -47,17 +47,17 @@ public class DeviceLogPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("设备日志"));
+            document.add(getTitle(messageSource.getMessage("DeviceLog.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(8);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "设备", "账号", "用户", "类别", "级别", "内容", "操作时间")
+            Stream.of("DeviceLog.No", "DeviceLog.Device", "DeviceLog.Account", "DeviceLog.UserName", "DeviceLog.Category", "DeviceLog.Level", "DeviceLog.Content", "DeviceLog.Time")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

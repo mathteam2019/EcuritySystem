@@ -1,12 +1,16 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/01
- * @CreatedBy Sandy.
- * @FileName UserDataRangeCategoryValidator.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（UserDataRangeCategoryValidator)
+ * 文件名：	UserDataRangeCategoryValidator.java
+ * 描述：	User's data range category validator.
+ * 作者名：	Sandy
+ * 日期：	2019/11/01
  *
  */
+
 package com.nuctech.ecuritycheckitem.validation.validators;
 
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -15,9 +19,6 @@ import com.nuctech.ecuritycheckitem.validation.annotations.UserDataRangeCategory
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-/**
- * User's data range category validator.
- */
 public class UserDataRangeCategoryValidator extends BaseValidator implements ConstraintValidator<UserDataRangeCategory, String> {
 
     @Override

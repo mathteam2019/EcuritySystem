@@ -1,3 +1,15 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（JudgeStatisticsResponseModel）
+ * 文件名：	JudgeStatisticsResponseModel.java
+ * 描述：	JudgeStatistics model
+ * 作者名：	Tiny
+ * 日期：	2019/12/04
+ */
+
 package com.nuctech.ecuritycheckitem.models.response.userstatistics;
 
 import lombok.Getter;
@@ -6,39 +18,36 @@ import lombok.ToString;
 
 import java.util.Map;
 
-/**
- * Judge statistics Response Body
- */
 @Getter
 @Setter
 @ToString
 public class JudgeStatisticsResponseModel {
 
-    int time; //时间段
-    long artificialJudge; //人工判图
-    long assignTimeout; //分派超时
-    long judgeTimeout; //判图超时
-    long atrResult; //ATR
-    long suspiction; //嫌疑
-    long noSuspiction; //无嫌疑
-    double avgDuration; //平均时长
-    double maxDuration; //最高时长
-    double minDuration; //最低时长
-    long total; //判图总量
-    long artificialResult; //"人工结论量	"
-    double artificialResultRate; //人工结论率
-    double assignTimeoutResultRate; //分派超时结论率
-    double judgeTimeoutResultRate; //"判图超时结论率	"
-    long scanResult; //扫描结论量
-    double scanResultRate; //扫描结论量
-    double noSuspictionRate; //无嫌疑率
-    double suspictionRate; //嫌疑率
-    double limitedArtificialDuration;  //人工判图时长阈值
-    double avgArtificialJudgeDuration; //人工判图平均时长
-    double maxArtificialJudgeDuration; //人工判图最高时长
-    double minArtificialJudgeDuration; //人工判图最低时长
+    int time; //time
+    long artificialJudge; //artificial Judge count
+    long assignTimeout; //assign Timeout
+    long judgeTimeout; //judge Timeout
+    long atrResult; //atrResult
+    long suspiction; //suspiction
+    long noSuspiction; //noSuspiction
+    double avgDuration; //avg Duration
+    double maxDuration; //max Duration
+    double minDuration; //min Duration
+    long total; //total count
+    long artificialResult; //artificial Result count
+    double artificialResultRate; //artificial Result Rate
+    double assignTimeoutResultRate; //assign Timeout Result Rate
+    double judgeTimeoutResultRate; //judge Timeout Result Rate
+    long scanResult; //scan Result
+    double scanResultRate; //scanResult Rate
+    double noSuspictionRate; //noSuspiction Rate
+    double suspictionRate; //suspiction Rate
+    double limitedArtificialDuration; //limited Artificial Duration
+    double avgArtificialJudgeDuration; //avg Artificial Judge Duration
+    double maxArtificialJudgeDuration; //max Artificial Judge Duration
+    double minArtificialJudgeDuration; //min Artificial Judge Duration
 
-    Map<String, Integer> handGoods;
+    Map<String, Integer> handGoods; //suspiction hand goods
 
 }
 

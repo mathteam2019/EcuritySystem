@@ -41,7 +41,7 @@ public class UserGroupWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("人员组");
+        titleRun.setText(messageSource.getMessage("UserGroup.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,9 +64,10 @@ public class UserGroupWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("人员分组编号");
-        tableRowHeader.addNewTableCell().setText("人员组");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("UserGroup.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserGroup.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserGroup.Name", null, currentLocale));
+
     }
 
     /**

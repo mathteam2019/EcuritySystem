@@ -1,12 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/21
- * @CreatedBy Choe.
- * @FileName SysAccessLog.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
+ * 项目：	Haomibo V1.0（SysAccessLog）
+ * 文件名：	SysAccessLog.java
+ * 描述：	SysAccessLog Model
+ * 作者名：	Choe
+ * 日期：	2019/11/21
  */
+
 
 package com.nuctech.ecuritycheckitem.models.db;
 
