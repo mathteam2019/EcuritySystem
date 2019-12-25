@@ -244,7 +244,7 @@ public class UserServiceImpl implements UserService {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        predicate.and(builder.status.eq(SysUser.Status.ACTIVE));
+        //predicate.and(builder.status.eq(SysUser.Status.ACTIVE));
 
         return StreamSupport
                 .stream(sysUserRepository.findAll(predicate).spliterator(), false)

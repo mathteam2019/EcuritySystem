@@ -958,7 +958,9 @@
       "hand": "手检",
       "scan": "扫描",
       "system": "系统",
-      "artificial": "人工"
+      "artificial": "人工",
+      "underreport": "漏报",
+      "falsepositive": "误报"
     },
     "routine-plan": {
       "plan": "计划",

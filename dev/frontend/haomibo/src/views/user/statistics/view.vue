@@ -256,10 +256,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -996,13 +996,9 @@
           this.pageStatus = 'charts';
         }
       },
-
       transform(response) {
-
         let transformed = {};
-
         let data = response.data;
-
         transformed.pagination = {
           total: data.total,
           per_page: data.per_page,
@@ -1011,18 +1007,15 @@
           from: data.from,
           to: data.to
         };
-
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
           temp = data.detailedStatistics[j];
-          transformed.data.push(temp)
+          transformed.data.push(temp);
         }
-
         return transformed
-
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
