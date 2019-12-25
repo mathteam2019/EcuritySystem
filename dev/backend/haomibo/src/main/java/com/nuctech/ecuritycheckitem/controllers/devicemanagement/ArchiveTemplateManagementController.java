@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateExcelView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplatePdfView;
 import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceArchiveTemplateWordView;
@@ -372,6 +373,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplateService
         setDictionary(); //set dictionary data
+        DeviceArchiveTemplateExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveTemplateExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -409,6 +411,7 @@ public class ArchiveTemplateManagementController extends BaseController {
 
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplateService
         setDictionary(); //set dictionary data
+        DeviceArchiveTemplateWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveTemplateWordView.buildWordDocument(exportList);//make input stream to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -449,6 +452,7 @@ public class ArchiveTemplateManagementController extends BaseController {
         List<SerArchiveTemplate> exportList = archiveTemplateService.getExportListByFilter(templateName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList()); //get list of archiveTemplates from database through archiveTemplatesService
         DeviceArchiveTemplatePdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary date
+        DeviceArchiveTemplatePdfView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveTemplatePdfView.buildPDFDocument(exportList); //make input stream to be printed
 
         HttpHeaders headers = new HttpHeaders();

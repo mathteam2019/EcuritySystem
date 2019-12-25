@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogPdfView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AuditLogWordView;
@@ -218,6 +219,7 @@ public class AuditLogController extends BaseController {
 
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
+        AuditLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -246,6 +248,7 @@ public class AuditLogController extends BaseController {
 
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
+        AuditLogWordView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -276,6 +279,7 @@ public class AuditLogController extends BaseController {
         List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         AuditLogPdfView.setResource(getFontResource()); // set font resource
         setDictionary(); //set dictionary data
+        AuditLogPdfView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -400,6 +400,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
+        DeviceExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -443,6 +444,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
+        DeviceWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -488,6 +490,7 @@ public class DeviceControlController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList());  //get list of device to be exported
         DevicePdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        DevicePdfView.setMessageSource(messageSource);
         InputStream inputStream = DevicePdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -532,6 +535,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
+        DeviceFieldExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -577,6 +581,7 @@ public class DeviceControlController extends BaseController {
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
+        DeviceFieldWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceFieldWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -622,6 +627,7 @@ public class DeviceControlController extends BaseController {
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         DeviceFieldPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        DeviceFieldPdfView.setMessageSource(messageSource);
         InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();

@@ -21,6 +21,7 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogPdfView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogWordView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
@@ -211,6 +212,7 @@ public class AccessLogController extends BaseController {
 
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
+        AccessLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -239,6 +241,7 @@ public class AccessLogController extends BaseController {
 
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
+        AccessLogWordView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -269,6 +272,7 @@ public class AccessLogController extends BaseController {
         List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AccessLogPdfView.setResource(getFontResource()); //set font resource
+        AccessLogPdfView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();

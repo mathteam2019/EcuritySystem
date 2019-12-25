@@ -1,10 +1,22 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（SuspictionHandgoodsStatisticsWordView）
+ * 文件名：	SuspictionHandgoodsStatisticsWordView.java
+ * 描述：	SuspictionHandgoodsStatisticsWordView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -22,6 +34,10 @@ import java.util.TreeMap;
 
 public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
 
+    /**
+     * create title paragraph
+     * @param document
+     */
     private static void createHeaderPart(XWPFDocument document) {
 
         XWPFParagraph title = document.createParagraph();
@@ -42,6 +58,10 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
 
     }
 
+    /**
+     * create table header row
+     * @param table
+     */
     private static void createTableHeader(XWPFTable table) {
 
         table.setWidthType(TableWidthType.DXA);
@@ -57,6 +77,11 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
 
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param detailedStatistics
+     * @return
+     */
     public static InputStream buildWordDocument(TreeMap<Integer, TreeMap<String, Long>> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

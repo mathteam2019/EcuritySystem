@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
+import com.nuctech.ecuritycheckitem.export.knowledgemanagement.KnowledgeDealPersonalExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogPdfView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogWordView;
@@ -225,6 +226,7 @@ public class DeviceLogController extends BaseController {
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
+        DeviceLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -253,6 +255,7 @@ public class DeviceLogController extends BaseController {
 
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //set list to be exported
         setDictionary(); //set dictionary data
+        DeviceLogWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -283,6 +286,7 @@ public class DeviceLogController extends BaseController {
         List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
         DeviceLogPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
+        DeviceLogPdfView.setMessageSource(messageSource);
         InputStream inputStream = DeviceLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
