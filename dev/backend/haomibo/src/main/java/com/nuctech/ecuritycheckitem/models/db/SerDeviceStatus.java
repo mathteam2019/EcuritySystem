@@ -27,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
 import javax.persistence.FetchType;
@@ -155,6 +156,22 @@ public class SerDeviceStatus extends BaseEntity implements Serializable {
 
     @javax.persistence.Transient
     private Integer deviceStorageAlarm;
+
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("scan")
+    private List<SerScanSimple> scanList; // Relation to SysDevice table.
+
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEV_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("scan_param")
+    List<SerScanParamSimple> serScanParamList;
+
+
 
     @javax.persistence.Transient
     private MonitorRecord record;
