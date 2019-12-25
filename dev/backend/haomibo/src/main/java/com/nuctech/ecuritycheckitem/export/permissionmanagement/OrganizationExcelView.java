@@ -39,31 +39,31 @@ public class OrganizationExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("Organization.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("机构编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("Organization.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("机构名称");
+        headerCellName.setCellValue(messageSource.getMessage("Organization.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("Organization.Status", null, currentLocale));
 
         Cell headerCellParentNumber = header.createCell(4);
-        headerCellParentNumber.setCellValue("上级机构编号");
+        headerCellParentNumber.setCellValue(messageSource.getMessage("Organization.ParentNumber", null, currentLocale));
 
         Cell headerCellParentName = header.createCell(5);
-        headerCellParentName.setCellValue("上级机构");
+        headerCellParentName.setCellValue(messageSource.getMessage("Organization.ParentName", null, currentLocale));
 
         Cell headerCellLeader = header.createCell(6);
-        headerCellLeader.setCellValue("负责人");
+        headerCellLeader.setCellValue(messageSource.getMessage("Organization.Leader", null, currentLocale));
 
         Cell headerCellMobile = header.createCell(7);
-        headerCellMobile.setCellValue("联系方式");
+        headerCellMobile.setCellValue(messageSource.getMessage("Organization.Mobile", null, currentLocale));
 
         Cell headerCellNote = header.createCell(8);
-        headerCellNote.setCellValue("备注");
+        headerCellNote.setCellValue(messageSource.getMessage("Organization.Note", null, currentLocale));
     }
 
     /**
@@ -81,7 +81,7 @@ public class OrganizationExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("机构管理");
+            titleCell.setCellValue(messageSource.getMessage("Organization.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

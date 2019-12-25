@@ -39,13 +39,13 @@ public class RoleExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("Role.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("角色编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("Role.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("角色");
+        headerCellName.setCellValue(messageSource.getMessage("Role.Name", null, currentLocale));
     }
 
     /**
@@ -63,7 +63,7 @@ public class RoleExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("角色设置");
+            titleCell.setCellValue(messageSource.getMessage("Role.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

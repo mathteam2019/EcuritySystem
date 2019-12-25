@@ -38,28 +38,28 @@ public class DeviceLogExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DeviceLog.No", null, currentLocale));
 
         Cell headerCellDevice = header.createCell(1);
-        headerCellDevice.setCellValue("设备");
+        headerCellDevice.setCellValue(messageSource.getMessage("DeviceLog.Device", null, currentLocale));
 
         Cell headerCellAccount = header.createCell(2);
-        headerCellAccount.setCellValue("账号");
+        headerCellAccount.setCellValue(messageSource.getMessage("DeviceLog.Account", null, currentLocale));
 
         Cell headerCellUserName = header.createCell(3);
-        headerCellUserName.setCellValue("用户");
+        headerCellUserName.setCellValue(messageSource.getMessage("DeviceLog.UserName", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(4);
-        headerCellCategory.setCellValue("类别");
+        headerCellCategory.setCellValue(messageSource.getMessage("DeviceLog.Category", null, currentLocale));
 
         Cell headerCellLevel = header.createCell(5);
-        headerCellLevel.setCellValue("级别");
+        headerCellLevel.setCellValue(messageSource.getMessage("DeviceLog.Level", null, currentLocale));
 
         Cell headerCellContent = header.createCell(6);
-        headerCellContent.setCellValue("内容");
+        headerCellContent.setCellValue(messageSource.getMessage("DeviceLog.Content", null, currentLocale));
 
         Cell headerCellTime = header.createCell(7);
-        headerCellTime.setCellValue("操作时间");
+        headerCellTime.setCellValue(messageSource.getMessage("DeviceLog.Time", null, currentLocale));
     }
 
     /**
@@ -77,7 +77,7 @@ public class DeviceLogExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("设备日志");
+            titleCell.setCellValue(messageSource.getMessage("DeviceLog.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -39,13 +39,13 @@ public class UserGroupExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("UserGroup.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("人员分组编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("UserGroup.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("人员组");
+        headerCellName.setCellValue(messageSource.getMessage("UserGroup.Name", null, currentLocale));
     }
 
     /**
@@ -63,7 +63,7 @@ public class UserGroupExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员组");
+            titleCell.setCellValue(messageSource.getMessage("UserGroup.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -39,31 +39,31 @@ public class FieldManagementExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("FieldManagement.No", null, currentLocale));
 
         Cell headerCellSerial = header.createCell(1);
-        headerCellSerial.setCellValue("场地编号");
+        headerCellSerial.setCellValue(messageSource.getMessage("FieldManagement.Serial", null, currentLocale));
 
         Cell headerCellDesignation = header.createCell(2);
-        headerCellDesignation.setCellValue("场地");
+        headerCellDesignation.setCellValue(messageSource.getMessage("FieldManagement.Designation", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("FieldManagement.Status", null, currentLocale));
 
         Cell headerCellParentSerial = header.createCell(4);
-        headerCellParentSerial.setCellValue("上级场地编号");
+        headerCellParentSerial.setCellValue(messageSource.getMessage("FieldManagement.ParentSerial", null, currentLocale));
 
         Cell headerCellParentDesignation = header.createCell(5);
-        headerCellParentDesignation.setCellValue("上级场地");
+        headerCellParentDesignation.setCellValue(messageSource.getMessage("FieldManagement.ParentDesignation", null, currentLocale));
 
         Cell headerCellLeader = header.createCell(6);
-        headerCellLeader.setCellValue("负责人");
+        headerCellLeader.setCellValue(messageSource.getMessage("FieldManagement.Leader", null, currentLocale));
 
         Cell headerCellMobile = header.createCell(7);
-        headerCellMobile.setCellValue("联系电话");
+        headerCellMobile.setCellValue(messageSource.getMessage("FieldManagement.Mobile", null, currentLocale));
 
         Cell headerCellNote = header.createCell(8);
-        headerCellNote.setCellValue("备注");
+        headerCellNote.setCellValue(messageSource.getMessage("FieldManagement.Note", null, currentLocale));
     }
 
     /**
@@ -81,7 +81,7 @@ public class FieldManagementExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("场地管理");
+            titleCell.setCellValue(messageSource.getMessage("FieldManagement.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

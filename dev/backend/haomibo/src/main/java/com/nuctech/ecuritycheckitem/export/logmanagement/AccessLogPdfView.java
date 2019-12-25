@@ -45,17 +45,17 @@ public class AccessLogPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("访问日志"));
+            document.add(getTitle(messageSource.getMessage("AccessLog.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(5);
             table.setWidthPercentage(100);
-            Stream.of("序号", "访问时间", "动作", "访问ip", "访问用户")
+            Stream.of("AccessLog.No", "AccessLog.OperateTime", "AccessLog.Action", "AccessLog.ClientIp", "AccessLog.OperateAccount")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

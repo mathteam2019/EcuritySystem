@@ -41,17 +41,17 @@ public class DevicePdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("设备管理"));
+            document.add(getTitle(messageSource.getMessage("Device.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(7);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "设备编号", "模板", "生效", "设备分类", "生产厂商", "设备型号")
+            Stream.of("Device.No", "Device.Device", "Device.Name", "Device.Status", "Device.Category", "Device.Manufacturer", "Device.OriginalModel")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

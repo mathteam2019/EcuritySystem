@@ -39,16 +39,16 @@ public class DataGroupExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DataGroup.No",null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("数据组编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("DataGroup.Number",null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("数据组");
+        headerCellName.setCellValue(messageSource.getMessage("DataGroup.Name",null, currentLocale));
 
         Cell headerCellRange = header.createCell(3);
-        headerCellRange.setCellValue("数据组范围");
+        headerCellRange.setCellValue(messageSource.getMessage("DataGroup.Range",null, currentLocale));
     }
 
     /**
@@ -66,7 +66,7 @@ public class DataGroupExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("数据组");
+            titleCell.setCellValue(messageSource.getMessage("DataGroup.Title",null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

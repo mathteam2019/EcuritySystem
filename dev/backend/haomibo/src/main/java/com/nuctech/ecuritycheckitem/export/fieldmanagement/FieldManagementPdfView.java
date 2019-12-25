@@ -46,22 +46,20 @@ public class FieldManagementPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("场地管理"));
+            document.add(getTitle(messageSource.getMessage("FieldManagement.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
 
-            Stream.of("序号", "场地编号", "场地", "生效", "上级场地编号", "上级场地", "负责人", "联系电话", "备注")
+            Stream.of("FieldManagement.No", "FieldManagement.Serial", "FieldManagement.Designation", "FieldManagement.Status", "FieldManagement.ParentSerial", "FieldManagement.ParentDesignation", "FieldManagement.Leader", "FieldManagement.Mobile", "FieldManagement.Note")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
-
-
 
             for (SysField field : exportFieldList) {
                 addTableCell(table, field.getFieldId().toString());

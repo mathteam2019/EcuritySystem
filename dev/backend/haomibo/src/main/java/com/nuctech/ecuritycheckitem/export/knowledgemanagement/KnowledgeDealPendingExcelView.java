@@ -38,31 +38,31 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("KnowledgeDealPending.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("任务编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("KnowledgeDealPending.Number", null, currentLocale));
 
         Cell headerCellMode = header.createCell(2);
-        headerCellMode.setCellValue("工作模式");
+        headerCellMode.setCellValue(messageSource.getMessage("KnowledgeDealPending.Mode", null, currentLocale));
 
         Cell headerCellResult = header.createCell(3);
-        headerCellResult.setCellValue("任务结论");
+        headerCellResult.setCellValue(messageSource.getMessage("KnowledgeDealPending.Result", null, currentLocale));
 
         Cell headerCellField = header.createCell(4);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("KnowledgeDealPending.Field", null, currentLocale));
 
         Cell headerCellScanDevice = header.createCell(5);
-        headerCellScanDevice.setCellValue("安检仪");
+        headerCellScanDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.ScanDevice", null, currentLocale));
 
         Cell headerCellJudgeDevice = header.createCell(6);
-        headerCellJudgeDevice.setCellValue("判图站");
+        headerCellJudgeDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.JudgeDevice", null, currentLocale));
 
         Cell headerCellHandDevice = header.createCell(7);
-        headerCellHandDevice.setCellValue("手检站");
+        headerCellHandDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.HandDevice", null, currentLocale));
 
         Cell headerCellGoods = header.createCell(8);
-        headerCellGoods.setCellValue("查获物品");
+        headerCellGoods.setCellValue(messageSource.getMessage("KnowledgeDealPending.Goods", null, currentLocale));
     }
 
     /**
@@ -78,9 +78,10 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
 
             Sheet sheet = workbook.createSheet("Knowledge-Pending");
 
+
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("待审批案例");
+            titleCell.setCellValue(messageSource.getMessage("KnowledgeDealPending.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -41,7 +41,7 @@ public class AccessLogWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("访问日志");
+        titleRun.setText(messageSource.getMessage("AccessLog.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,12 +64,11 @@ public class AccessLogWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("访问时间");
-        tableRowHeader.addNewTableCell().setText("动作");
-        tableRowHeader.addNewTableCell().setText("访问ip");
-        tableRowHeader.addNewTableCell().setText("访问用户");
-
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("AccessLog.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AccessLog.OperateTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AccessLog.Action", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AccessLog.ClientIp", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AccessLog.OperateAccount", null, currentLocale));
     }
 
     /**

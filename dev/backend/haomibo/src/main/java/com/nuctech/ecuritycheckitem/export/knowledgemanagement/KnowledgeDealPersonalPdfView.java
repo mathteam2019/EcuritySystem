@@ -47,18 +47,18 @@ public class KnowledgeDealPersonalPdfView extends BasePdfView {
 
             document.open();
 
-            document.add(getTitle("人员案例"));
+            document.add(getTitle(messageSource.getMessage("KnowledgeDealPersonal.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(6);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "任务结论", "现场", "通道", "查获物品")
+            Stream.of("KnowledgeDealPersonal.No", "KnowledgeDealPersonal.Number", "KnowledgeDealPersonal.Result", "KnowledgeDealPersonal.Field", "KnowledgeDealPersonal.DevicePassageWay", "KnowledgeDealPersonal.Goods")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

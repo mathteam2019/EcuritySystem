@@ -41,7 +41,7 @@ public class DeviceFieldWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("场地配置");
+        titleRun.setText(messageSource.getMessage("DeviceField.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,11 +64,11 @@ public class DeviceFieldWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("设备编号");
-        tableRowHeader.addNewTableCell().setText("设备");
-        tableRowHeader.addNewTableCell().setText("设备分类");
-        tableRowHeader.addNewTableCell().setText("场地");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("DeviceField.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceField.Device", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceField.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceField.Category", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceField.OriginalModel", null, currentLocale));
     }
 
     //build inputstream of data to be exported

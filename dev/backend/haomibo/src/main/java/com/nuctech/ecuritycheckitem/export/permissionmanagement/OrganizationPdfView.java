@@ -46,18 +46,18 @@ public class OrganizationPdfView extends BasePdfView {
             document.open();
 
 
-            document.add(getTitle("机构管理"));
+            document.add(getTitle(messageSource.getMessage("Organization.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "机构编号", "机构名称", "生效", "上级机构编号", "上级机构", "负责人", "联系方式", "备注")
+            Stream.of("Organization.No", "Organization.Number", "Organization.Name", "Organization.Status", "Organization.ParentNumber", "Organization.ParentName", "Organization.Leader", "Organization.Mobile", "Organization.Note")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

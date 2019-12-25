@@ -46,16 +46,16 @@ public class KnowledgeDealPendingPdfView extends BasePdfView {
 
             document.open();
 
-            document.add(getTitle("待审批案例"));
+            document.add(getTitle(messageSource.getMessage("KnowledgeDealPending.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(9);
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "工作模式", "任务结论", "现场", "安检仪", "判图站", "手检站", "查获物品")
+            Stream.of("KnowledgeDealPending.No", "KnowledgeDealPending.Number", "KnowledgeDealPending.Mode", "KnowledgeDealPending.Result", "KnowledgeDealPending.Field", "KnowledgeDealPending.ScanDevice", "KnowledgeDealPending.JudgeDevice", "KnowledgeDealPending.HandDevice", "KnowledgeDealPending.Goods")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

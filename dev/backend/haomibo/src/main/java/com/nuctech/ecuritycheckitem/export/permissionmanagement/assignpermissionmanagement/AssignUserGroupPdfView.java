@@ -46,17 +46,17 @@ public class AssignUserGroupPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("人员组授权"));
+            document.add(getTitle(messageSource.getMessage("AssignUserGroup.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(5);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "人员组", "组员", "角色", "数据范围")
+            Stream.of("AssignUserGroup.No", "AssignUserGroup.Name", "AssignUserGroup.User", "AssignUserGroup.Role", "AssignUserGroup.Category")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

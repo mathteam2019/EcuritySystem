@@ -42,7 +42,7 @@ public class UserWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("人员列表");
+        titleRun.setText(messageSource.getMessage("User.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,14 +65,13 @@ public class UserWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("人员编号");
-        tableRowHeader.addNewTableCell().setText("人员");
-        tableRowHeader.addNewTableCell().setText("性别");
-        tableRowHeader.addNewTableCell().setText("状态");
-        tableRowHeader.addNewTableCell().setText("隶属机构");
-        tableRowHeader.addNewTableCell().setText("账号");
-
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("User.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Gender", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Category", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("User.Account", null, currentLocale));
     }
 
     /**

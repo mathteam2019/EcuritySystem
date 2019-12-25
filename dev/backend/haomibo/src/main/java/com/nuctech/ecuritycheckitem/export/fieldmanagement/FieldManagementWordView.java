@@ -42,7 +42,7 @@ public class FieldManagementWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("场地管理");
+        titleRun.setText(messageSource.getMessage("FieldManagement.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,15 +65,15 @@ public class FieldManagementWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("场地编号");
-        tableRowHeader.addNewTableCell().setText("场地");
-        tableRowHeader.addNewTableCell().setText("生效");
-        tableRowHeader.addNewTableCell().setText("上级场地编号");
-        tableRowHeader.addNewTableCell().setText("上级场地");
-        tableRowHeader.addNewTableCell().setText("负责人");
-        tableRowHeader.addNewTableCell().setText("联系电话");
-        tableRowHeader.addNewTableCell().setText("备注");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("FieldManagement.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Serial", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Designation", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Status", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.ParentSerial", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.ParentDesignation", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Leader", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Mobile", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("FieldManagement.Note", null, currentLocale));
 
     }
 

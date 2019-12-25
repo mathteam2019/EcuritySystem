@@ -41,7 +41,7 @@ public class DataGroupWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("数据组");
+        titleRun.setText(messageSource.getMessage("DataGroup.Title",null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,10 +64,10 @@ public class DataGroupWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("数据组编号");
-        tableRowHeader.addNewTableCell().setText("数据组");
-        tableRowHeader.addNewTableCell().setText("数据组范围");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("DataGroup.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Name", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DataGroup.Range", null, currentLocale));
 
     }
 

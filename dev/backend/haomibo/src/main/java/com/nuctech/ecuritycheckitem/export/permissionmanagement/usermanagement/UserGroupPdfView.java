@@ -43,17 +43,17 @@ public class UserGroupPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("人员组"));
+            document.add(getTitle(messageSource.getMessage("UserGroup.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(100);
-            Stream.of("序号", "人员分组编号", "人员组")
+            Stream.of("UserGroup.No", "UserGroup.Number", "UserGroup.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

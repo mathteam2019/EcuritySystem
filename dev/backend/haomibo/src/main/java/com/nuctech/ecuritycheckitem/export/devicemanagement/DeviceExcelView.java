@@ -39,25 +39,25 @@ public class DeviceExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("Device.No", null, currentLocale));
 
         Cell headerCellDevice = header.createCell(1);
-        headerCellDevice.setCellValue("设备编号");
+        headerCellDevice.setCellValue(messageSource.getMessage("Device.Device", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("模板");
+        headerCellName.setCellValue(messageSource.getMessage("Device.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("Device.Status", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(4);
-        headerCellCategory.setCellValue("设备分类");
+        headerCellCategory.setCellValue(messageSource.getMessage("Device.Category", null, currentLocale));
 
         Cell headerCellManufacturer = header.createCell(5);
-        headerCellManufacturer.setCellValue("生产厂商");
+        headerCellManufacturer.setCellValue(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
 
         Cell headerCellOriginalModel = header.createCell(6);
-        headerCellOriginalModel.setCellValue("设备型号");
+        headerCellOriginalModel.setCellValue(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
     }
 
     /**
@@ -76,7 +76,7 @@ public class DeviceExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("设备管理");
+            titleCell.setCellValue(messageSource.getMessage("Device.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

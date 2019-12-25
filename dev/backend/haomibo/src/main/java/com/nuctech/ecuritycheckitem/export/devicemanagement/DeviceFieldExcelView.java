@@ -38,19 +38,19 @@ public class DeviceFieldExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DeviceField.No", null, currentLocale));
 
         Cell headerCellDevice = header.createCell(1);
-        headerCellDevice.setCellValue("设备编号");
+        headerCellDevice.setCellValue(messageSource.getMessage("DeviceField.Device", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("设备");
+        headerCellName.setCellValue(messageSource.getMessage("DeviceField.Name", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(3);
-        headerCellCategory.setCellValue("设备分类");
+        headerCellCategory.setCellValue(messageSource.getMessage("DeviceField.Category", null, currentLocale));
 
         Cell headerCellOriginalModel = header.createCell(4);
-        headerCellOriginalModel.setCellValue("场地");
+        headerCellOriginalModel.setCellValue(messageSource.getMessage("DeviceField.OriginalModel", null, currentLocale));
     }
 
     /**
@@ -66,7 +66,7 @@ public class DeviceFieldExcelView extends BaseExcelView {
             Sheet sheet = workbook.createSheet("DeviceArchive");
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("场地配置");
+            titleCell.setCellValue(messageSource.getMessage("DeviceField.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

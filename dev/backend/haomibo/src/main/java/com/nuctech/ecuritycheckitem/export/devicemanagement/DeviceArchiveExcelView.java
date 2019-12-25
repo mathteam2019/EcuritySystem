@@ -39,25 +39,25 @@ public class DeviceArchiveExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DeviceArchive.No", null, currentLocale));
 
         Cell headerCellArchive = header.createCell(1);
-        headerCellArchive.setCellValue("档案编号");
+        headerCellArchive.setCellValue(messageSource.getMessage("DeviceArchive.Archive", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("模板");
+        headerCellName.setCellValue(messageSource.getMessage("DeviceArchive.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("DeviceArchive.Status", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(4);
-        headerCellCategory.setCellValue("设备分类");
+        headerCellCategory.setCellValue(messageSource.getMessage("DeviceArchive.Category", null, currentLocale));
 
         Cell headerCellManufacturer = header.createCell(5);
-        headerCellManufacturer.setCellValue("生产厂商");
+        headerCellManufacturer.setCellValue(messageSource.getMessage("DeviceArchive.Manufacturer", null, currentLocale));
 
         Cell headerCellOriginalModel = header.createCell(6);
-        headerCellOriginalModel.setCellValue("设备型号");
+        headerCellOriginalModel.setCellValue(messageSource.getMessage("DeviceArchive.OriginalModel", null, currentLocale));
     }
 
     /**
@@ -75,7 +75,7 @@ public class DeviceArchiveExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("档案管理");
+            titleCell.setCellValue(messageSource.getMessage("DeviceArchive.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -41,7 +41,7 @@ public class RoleWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("角色设置");
+        titleRun.setText(messageSource.getMessage("Role.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -65,9 +65,9 @@ public class RoleWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("角色编号");
-        tableRowHeader.addNewTableCell().setText("角色");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("Role.No", null,currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Role.Number", null,currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Role.Name", null,currentLocale));
 
     }
 

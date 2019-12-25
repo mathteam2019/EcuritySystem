@@ -41,7 +41,7 @@ public class AuditLogWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("操作日志");
+        titleRun.setText(messageSource.getMessage("AuditLog.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -64,15 +64,15 @@ public class AuditLogWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("操作员ID");
-        tableRowHeader.addNewTableCell().setText("客户端ip");
-        tableRowHeader.addNewTableCell().setText("操作对象");
-        tableRowHeader.addNewTableCell().setText("操作");
-        tableRowHeader.addNewTableCell().setText("操作内容");
-        tableRowHeader.addNewTableCell().setText("操作结果");
-        tableRowHeader.addNewTableCell().setText("失败原因代码");
-        tableRowHeader.addNewTableCell().setText("操作时间");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("AuditLog.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperatorId", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.ClientIp", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateObject", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.Action", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateContent", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.ReasonCode", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AuditLog.OperateTime", null, currentLocale));
 
     }
 
