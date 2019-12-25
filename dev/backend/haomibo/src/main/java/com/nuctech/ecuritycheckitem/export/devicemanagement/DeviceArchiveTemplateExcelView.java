@@ -1,19 +1,25 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/29
- * @CreatedBy Choe.
- * @FileName DeviceArchiveTemplateExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceArchiveTemplateExcelView）
+ * 文件名：	DeviceArchiveTemplateExcelView.java
+ * 描述：	DeviceArchiveTemplate ExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/29
+ *
  */
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -24,9 +30,13 @@ import java.util.List;
 
 public class DeviceArchiveTemplateExcelView extends BaseExcelView {
 
+    /**
+     * set header of excel sheet
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
-        Row header = sheet.createRow(3);
 
+        Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
         headerCellNo.setCellValue("序号");
@@ -50,6 +60,11 @@ public class DeviceArchiveTemplateExcelView extends BaseExcelView {
         headerCellOriginalModel.setCellValue("设备型号");
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportTemplateList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SerArchiveTemplate> exportTemplateList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
