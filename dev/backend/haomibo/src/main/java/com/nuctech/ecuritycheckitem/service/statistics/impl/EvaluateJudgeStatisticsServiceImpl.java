@@ -6,7 +6,7 @@
  * 项目：	Haomibo V1.0（EvaluateJudgeStatisticsServiceImpl）
  * 文件名：	EvaluateJudgeStatisticsServiceImpl.java
  * 描述：	EvaluateJudgeStatisticsService implement
- * 作者名：	Choe
+ * 作者名：	Tiny
  * 日期：	2019/12/10
  */
 
