@@ -100,11 +100,11 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @Column(name = "ASSIGN_USER_NAME", length = 50)
     private String assignUserName;
 
-    @Column(name = "ASSIGN_JUDGE_DEVICE_ID", length = 10)
-    private String assignJudgeDeviceId;
+    @Column(name = "ASSIGN_JUDGE_DEVICE_ID", length = 20)
+    private Long assignJudgeDeviceId;
 
-    @Column(name = "ASSIGN_HAND_DEVICE_ID", length = 10)
-    private String assignHandDeviceId;
+    @Column(name = "ASSIGN_HAND_DEVICE_ID", length = 20)
+    private Long assignHandDeviceId;
 
     @Column(name = "ASSIGN_START_TIME", nullable = false)
     private Date assignStartTime;

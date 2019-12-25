@@ -61,18 +61,18 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     private List<SerKnowledgeCaseDeal> getExportList(List<SerKnowledgeCaseDeal> dealList, boolean isAll, String idList) {
         List<SerKnowledgeCaseDeal> exportList = new ArrayList<>();
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
-            for(int i = 0; i < dealList.size(); i ++) {
+            for (int i = 0; i < dealList.size(); i++) {
                 SerKnowledgeCaseDeal deal = dealList.get(i);
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(deal.getCaseDealId().toString())) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(deal.getCaseDealId().toString())) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.add(deal);
                 }
             }
@@ -96,7 +96,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public List<SerKnowledgeCaseDeal> getDealExportList(String caseStatus, String taskNumber, String modeName, String taskResult,
-                                                 String fieldDesignation, String handGoods, boolean isAll, String idList) {
+                                                        String fieldDesignation, String handGoods, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldDesignation, handGoods);
         List<SerKnowledgeCaseDeal> dealList = StreamSupport
                 .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
@@ -127,4 +127,33 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         serKnowledgeCaseRepository.save(serKnowledgeCase);
     }
 
+    public Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase) {
+
+        knowledgeCase.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(knowledgeCase);
+        if (serKnowledgeCase != null) {
+            return serKnowledgeCase.getCaseId();
+        } else
+            return null;
+    }
+
+    public Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal) {
+
+        knowledgeCaseDeal.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        SerKnowledgeCaseDeal serKnowledgeCaseDeal = serKnowledgeCaseDealRepository.save(knowledgeCaseDeal);
+        if (serKnowledgeCaseDeal != null) {
+            return serKnowledgeCaseDeal.getCaseDealId();
+        } else
+            return null;
+    }
+
+    public Long updateKnowledgeCase(Long knowledgeId, SerKnowledgeCase knowledgeCase) {
+
+        knowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(knowledgeCase);
+        if (serKnowledgeCase != null) {
+            return serKnowledgeCase.getCaseId();
+        } else
+            return null;
+    }
 }

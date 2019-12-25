@@ -1,5 +1,6 @@
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement;
 
+import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
@@ -15,4 +16,11 @@ public interface KnowledgeService {
     boolean checkKnowledgeExist(Long caseId);
 
     void updateStatus(Long caseId, String status);
+
+    Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase);
+
+    Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal);
+
+    Long updateKnowledgeCase(Long knowledgeId, SerKnowledgeCase knowledgeCase);
+
 }

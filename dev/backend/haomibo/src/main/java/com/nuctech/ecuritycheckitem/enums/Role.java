@@ -104,7 +104,18 @@ public enum Role {
     AUDIT_LOG_PRINT("audit_log_print"), //can print audit log
     AUDIT_LOG_EXPORT("audit_log_export"), //can export audit log
     ACCESS_LOG_PRINT("access_log_print"), //can print access log
-    ACCESS_LOG_EXPORT("access_log_export"); //can export access log
+    ACCESS_LOG_EXPORT("access_log_export"),
+    KNOWLEDGECASE_CREATE("knowledgecase_create"),
+    KNOWLEDGECASE_MODIFY("knowledgecase_modify"),
+    KNOWLEDGECASE_DELETE("knowledgecase_delete"),
+    KNOWLEDGECASEDEAL_CREATE("knowledgecasedeal_create"),
+    KNOWLEDGECASEDEAL_MODIFY("knowledgecasedeal_modify"),
+    KNOWLEDGECASEDEAL_DELETE("knowledgecasedeal_delete"); //can export access log
+
+
+
+
+
 
 
 
@@ -212,7 +223,12 @@ public enum Role {
         public static final String HAS_ACCESS_LOG_PRINT = "hasRole('ROLE_access_log_print')";
         public static final String HAS_ACCESS_LOG_EXPORT = "hasRole('ROLE_access_log_export')";
         public static final String HAS_ACCESS_LOG_TOWORD = "hasRole('ROLE_access_log_toword')";
-
+        public static final String HAS_KNOWLEDGECASE_CREATE = "hasRole('ROLE_knowledgecase_create')";
+        public static final String HAS_KNOWLEDGECASE_MODIFY = "hasRole('ROLE_knowledgecase_modify')";
+        public static final String HAS_KNOWLEDGECASE_DELETE = "hasRole('ROLE_knowledgecase_delete')";
+        public static final String HAS_KNOWLEDGECASEDEAL_CREATE = "hasRole('ROLE_knowledgecasedeal_create')";
+        public static final String HAS_KNOWLEDGECASEDEAL_MODIFY = "hasRole('ROLE_knowledgecasedeal_modify')";
+        public static final String HAS_KNOWLEDGECASEDEAL_DELETE = "hasRole('ROLE_knowledgecasedeal_delete')";
 
 
     }

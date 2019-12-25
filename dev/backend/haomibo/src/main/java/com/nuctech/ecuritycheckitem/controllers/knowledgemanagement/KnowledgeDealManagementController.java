@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.knowledgemanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +55,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
     @Autowired
     KnowledgeService knowledgeService;
+
     /**
      * Knowledge datatable request body.
      */
@@ -125,7 +128,119 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
+     * new Knowledge Case insert request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class KnowledgeCaseInsertRequestBody {
+
+        @NotNull
+        Long historyId;
+        @NotNull
+        Long userId;
+    }
+
+    //@PreAuthorize(Role.Authority.HAS_KNOWLEDGECASE_CREATE)
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public Object insertKnowledgeCase(@RequestBody @Valid KnowledgeCaseInsertRequestBody requestBody, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        History history = historyService.getOne(requestBody.getHistoryId());
+        if (history == null) { //if specified history id doesn't exist
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        //prepare knowledgecase object to insert
+        SerKnowledgeCase knowledgeCase = new SerKnowledgeCase();
+        knowledgeCase.setTaskId(history.getTaskId());
+        knowledgeCase.setCaseStatus(SerKnowledgeCase.Status.SUBMIT_APPROVAL);
+        knowledgeCase.setCaseCollectUserId(requestBody.getUserId());
+
+        //insert new knowledge case and get new id
+        Long knowledgeId = knowledgeService.insertNewKnowledgeCase(knowledgeCase);
+        if (knowledgeId == null) { //failed inserting
+            return new CommonResponseBody(ResponseMessage.FAILED_INSERT_KNOWLEDGECASE);
+        }
+        knowledgeCase.setCaseId(knowledgeId);
+
+        //prepare new knowledgecasedeal to insert
+        SerKnowledgeCaseDeal knowledgeCaseDeal = initSerKnowCaseDealFromHistory(history);
+        knowledgeCaseDeal.setCaseId(knowledgeId);
+        Long knowledgeCaseDealId = knowledgeService.insertNewKnowledgeCaseDeal(knowledgeCaseDeal);
+        if (knowledgeCaseDealId == null) { //failed inserting
+            return new CommonResponseBody(ResponseMessage.FAILED_INSERT_KNOWLEDGECASEDEAL);
+        }
+        knowledgeCase.setCaseDealId(knowledgeCaseDealId); //set new knowledgecasedeal id to knowledgecase and update it
+        if (knowledgeService.updateKnowledgeCase(knowledgeId, knowledgeCase) == null) { //failed updating
+            return new CommonResponseBody(ResponseMessage.FAILED_UPDATE_KNOWLEDGECASE);
+        }
+
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    private SerKnowledgeCaseDeal initSerKnowCaseDealFromHistory(History history) {
+
+        SerKnowledgeCaseDeal serKnowledgeCaseDeal = new SerKnowledgeCaseDeal();
+
+        serKnowledgeCaseDeal.setTaskId(history.getTaskId());
+        serKnowledgeCaseDeal.setMode(history.getMode());
+        serKnowledgeCaseDeal.setScanId(history.getScanId());
+        serKnowledgeCaseDeal.setScanWorkflowId(history.getScanWorkflowId());
+        serKnowledgeCaseDeal.setScanDeviceId(history.getScanDeviceId());
+        serKnowledgeCaseDeal.setScanImageId(history.getScanImageId());
+        serKnowledgeCaseDeal.setScanAtrResult(history.getScanAtrResult());
+        serKnowledgeCaseDeal.setScanFootAlarm(history.getScanFootAlarm());
+        serKnowledgeCaseDeal.setScanStartTime(history.getScanStartTime());
+        serKnowledgeCaseDeal.setScanEndTime(history.getScanEndTime());
+        serKnowledgeCaseDeal.setScanPointsmanId(history.getScanPointsmanId());
+        serKnowledgeCaseDeal.setScanPointsmanName(history.getScanPointsmanName());
+//        serKnowledgeCaseDeal.setAssignscanId(history.getAssignScanId());
+//        serKnowledgeCaseDeal.setAssignWorkflowId(history.getAssignWorkflowId());
+//        serKnowledgeCaseDeal.setAssignUserId(history.getAssignUserId());
+//        serKnowledgeCaseDeal.setAssignUserName(history.getAssignUserName());
+        serKnowledgeCaseDeal.setAssignJudgeDeviceId(history.getAssignJudgeDeviceId());
+        serKnowledgeCaseDeal.setAssignHandDeviceId(history.getAssignHandDeviceId());
+//        serKnowledgeCaseDeal.setAssignStartTime(history.getAssignStartTime());
+//        serKnowledgeCaseDeal.setAssignEndTime(history.getAssignEndTime());
+//        serKnowledgeCaseDeal.setAssignTimeout(history.getAssignTimeout());
+//        serKnowledgeCaseDeal.setAssignStatus(history.getAssignStatus());
+        serKnowledgeCaseDeal.setJudgeId(history.getJudgeId());
+        serKnowledgeCaseDeal.setJudgeWorkflowId(history.getJudgeWorkflowId());
+        serKnowledgeCaseDeal.setJudgeDeviceId(history.getJudgeDeviceId());
+        serKnowledgeCaseDeal.setJudgeResult(history.getJudgeResult());
+        serKnowledgeCaseDeal.setJudgeTimeout(history.getJudgeTimeout());
+        serKnowledgeCaseDeal.setHandExaminationId(history.getHandExaminationId());
+        serKnowledgeCaseDeal.setHandWorkflowId(history.getHandWorkflowId());
+        serKnowledgeCaseDeal.setHandDeviceId(history.getHandDeviceId());
+        serKnowledgeCaseDeal.setHandResult(history.getHandResult());
+        serKnowledgeCaseDeal.setHandStartTime(history.getHandStartTime());
+        serKnowledgeCaseDeal.setHandEndTime(history.getHandEndTime());
+        serKnowledgeCaseDeal.setHandUserId(history.getHandUserId());
+        serKnowledgeCaseDeal.setHandTaskResult(history.getHandTaskResult());
+        serKnowledgeCaseDeal.setHandGoods(history.getHandGoods());
+        serKnowledgeCaseDeal.setHandGoodsGrade(history.getHandGoodsGrade());
+        serKnowledgeCaseDeal.setHandCollectSign(history.getHandCollectSign());
+        //serKnowledgeCaseDeal.setHandAttachedId(history.getHandAttached());
+        serKnowledgeCaseDeal.setHandCollectLabel(history.getHandCollectLabel());
+        serKnowledgeCaseDeal.setHandAppraise(history.getHandAppraise());
+        serKnowledgeCaseDeal.setJudgeStartTime(history.getJudgeStartTime());
+        serKnowledgeCaseDeal.setJudgeEndTime(history.getJudgeEndTime());
+        serKnowledgeCaseDeal.setJudgeUserId(history.getJudgeUserId());
+        serKnowledgeCaseDeal.setJudgeAssignTimeout(history.getJudgeAssignTimeout());
+        serKnowledgeCaseDeal.setJudgeStatus(history.getJudgeStatus());
+
+        return serKnowledgeCaseDeal;
+    }
+
+    /**
      * Knowledge Case Deal datatable data.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
@@ -149,7 +264,7 @@ public class KnowledgeDealManagementController extends BaseController {
         String taskResult = "";
         String fieldDesignation = "";
         String handGoods = "";
-        if(filter != null) {
+        if (filter != null) {
             caseStatus = filter.getCaseStatus(); //get case status from input parameter
             modeName = filter.getModeName(); //get mode name from input parameter
             taskNumber = filter.getTaskNumber(); //get task number from input parameter
@@ -191,6 +306,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case update status request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
@@ -214,6 +330,7 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * get list of data to be exported
+     *
      * @param filter
      * @param isAll
      * @param idList
@@ -226,7 +343,7 @@ public class KnowledgeDealManagementController extends BaseController {
         String taskResult = "";
         String fieldDesignation = "";
         String handGoods = "";
-        if(filter != null) {
+        if (filter != null) {
             caseStatus = filter.getCaseStatus(); //get case status from input parameter
             modeName = filter.getModeName(); //get mode name from input parameter
             taskNumber = filter.getTaskNumber(); //get task number from input parameter
@@ -241,13 +358,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case pending generate excel file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/pending/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                    BindingResult bindingResult) {
+                                                        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -270,13 +388,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case pending generate word file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/pending/docx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                        BindingResult bindingResult) {
+                                                       BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -299,13 +418,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case pending generate pdf file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/pending/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePendingGeneratePDFFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                   BindingResult bindingResult) {
+                                                      BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -329,13 +449,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate excel file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/personal/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                        BindingResult bindingResult) {
+                                                         BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -358,13 +479,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate word file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/personal/docx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                         BindingResult bindingResult) {
+                                                        BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -388,13 +510,14 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate pdf file request.
+     *
      * @param requestBody
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/generate/personal/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
-                                                   BindingResult bindingResult) {
+                                                    BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
