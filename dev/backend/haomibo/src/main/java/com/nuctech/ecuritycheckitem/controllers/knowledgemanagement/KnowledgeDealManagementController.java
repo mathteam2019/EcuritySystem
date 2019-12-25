@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/18
- * @CreatedBy Choe.
- * @FileName KnowledgeDealManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（KnowledgeDealManagementController）
+ * 文件名：	KnowledgeDealManagementController.java
+ * 描述：	KnowledgeDeal Management Controller.
+ * 作者名：	Choe
+ * 日期：	2019/11/18
  */
+
 package com.nuctech.ecuritycheckitem.controllers.knowledgemanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -19,17 +23,16 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,13 +44,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 
 @RestController
 @RequestMapping("/knowledge-base")
@@ -83,7 +81,6 @@ public class KnowledgeDealManagementController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
 
@@ -120,33 +117,30 @@ public class KnowledgeDealManagementController extends BaseController {
     @ToString
     private static class KnowledgeCaseGenerateRequestBody {
 
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter;
     }
 
-
-
-
-
     /**
      * Knowledge Case Deal datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
     public Object knowledgeDealGetByFilterAndPage(
             @RequestBody @Valid KnowLedgeDealGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
-
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         String caseStatus = "";
@@ -156,44 +150,40 @@ public class KnowledgeDealManagementController extends BaseController {
         String fieldDesignation = "";
         String handGoods = "";
         if(filter != null) {
-            caseStatus = filter.getCaseStatus();
-            modeName = filter.getModeName();
-            taskNumber = filter.getTaskNumber();
-            taskResult = filter.getTaskResult();
-            fieldDesignation = filter.getFieldDesignation();
-            handGoods = filter.getHandGoods();
+            caseStatus = filter.getCaseStatus(); //get case status from input parameter
+            modeName = filter.getModeName(); //get mode name from input parameter
+            taskNumber = filter.getTaskNumber(); //get task number from input parameter
+            taskResult = filter.getTaskResult(); //get task result from input parameter
+            fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
+            handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
         PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(caseStatus, taskNumber, modeName, taskResult,
-                fieldDesignation, handGoods, currentPage, perPage);
+                fieldDesignation, handGoods, currentPage, perPage); //get result from database through service
         long total = result.getTotal();
         List<SerKnowledgeCaseDeal> data = result.getDataList();
 
-
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
         // Set filters.
-
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseStatus"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName"))
-                .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl"))
-                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay", "deviceName"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation"));
-
+                .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseStatus"))  //return all fields except caseStatus from SerKnowLedgeCase model
+                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //return all fields except modeName from  SysWorkMode model
+                .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl")) //return all fields except imageUrl from  SerImage model
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskNumber")) //return all fields except taskNumber from  SerTask model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("field", "devicePassageWay", "deviceName")) //return all fields except specified fieldds from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")); //return all fields except " from  SysField model
         value.setFilters(filters);
 
         return value;
@@ -201,29 +191,34 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/update-status", method = RequestMethod.POST)
     public Object knowledgeCaseUpdateStatus(
             @RequestBody @Valid KnowledgeCaseUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if knowledge case is existing.
-
-
-        if (!knowledgeService.checkKnowledgeExist(requestBody.getCaseId())) {
+        if (!knowledgeService.checkKnowledgeExist(requestBody.getCaseId())) { // Check if knowledge case is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        knowledgeService.updateStatus(requestBody.getCaseId(), requestBody.getStatus());
-
+        knowledgeService.updateStatus(requestBody.getCaseId(), requestBody.getStatus()); //update db through knowledgeService
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
+    /**
+     * get list of data to be exported
+     * @param filter
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SerKnowledgeCaseDeal> getExportList(KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String caseStatus = "";
         String modeName = "";
@@ -232,38 +227,39 @@ public class KnowledgeDealManagementController extends BaseController {
         String fieldDesignation = "";
         String handGoods = "";
         if(filter != null) {
-            caseStatus = filter.getCaseStatus();
-            modeName = filter.getModeName();
-            taskNumber = filter.getTaskNumber();
-            taskResult = filter.getTaskResult();
-            fieldDesignation = filter.getFieldDesignation();
-            handGoods = filter.getHandGoods();
+            caseStatus = filter.getCaseStatus(); //get case status from input parameter
+            modeName = filter.getModeName(); //get mode name from input parameter
+            taskNumber = filter.getTaskNumber(); //get task number from input parameter
+            taskResult = filter.getTaskResult(); //get task result from input parameter
+            fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
+            handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
         List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(caseStatus, modeName, taskNumber, taskResult,
-                fieldDesignation, handGoods, isAll, idList);
+                fieldDesignation, handGoods, isAll, idList); //get export list from service
         return exportList;
     }
 
     /**
      * Knowledge Case pending generate excel file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/pending/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                     BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList);
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+        setDictionary(); //set dictionary data
+        InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -274,24 +270,25 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case pending generate word file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/pending/docx", method = RequestMethod.POST)
     public Object knowledgeCasePendingGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList);
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+        setDictionary(); //set dictionary data
+        InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -302,25 +299,26 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case pending generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/pending/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePendingGeneratePDFFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-
-        KnowledgeDealPendingPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList);
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
+        KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
+        setDictionary();  //set dictionary data
+        InputStream inputStream = KnowledgeDealPendingPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -331,24 +329,25 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate excel file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/personal/xlsx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateExcelFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList);
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        setDictionary(); //set dictionary data
+        InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -359,24 +358,26 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate word file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/personal/docx", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateWordFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                          BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList);
-
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        setDictionary(); //set dictionary data
+        InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.docx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -387,24 +388,27 @@ public class KnowledgeDealManagementController extends BaseController {
 
     /**
      * Knowledge Case personal generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/generate/personal/pdf", method = RequestMethod.POST)
     public Object knowledgeCasePersonalGenerateFile(@RequestBody @Valid KnowledgeCaseGenerateRequestBody requestBody,
                                                    BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
 
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList());
-        KnowledgeDealPersonalPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList);
+        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        KnowledgeDealPersonalPdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = KnowledgeDealPersonalPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf");
+        headers.add("Content-Disposition", "attachment; filename=knowledge-pending.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -412,6 +416,4 @@ public class KnowledgeDealManagementController extends BaseController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
     }
-
-
 }
