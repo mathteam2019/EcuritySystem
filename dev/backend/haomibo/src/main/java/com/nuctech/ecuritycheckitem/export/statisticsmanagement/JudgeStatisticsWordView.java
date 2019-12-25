@@ -21,7 +21,7 @@ public class JudgeStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("判图统计");
+        titleRun.setText(messageSource.getMessage("JudgeStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -40,25 +40,25 @@ public class JudgeStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
-        tableRowHeader.addNewTableCell().setText("判图总量");
-        tableRowHeader.addNewTableCell().setText("人工结论量");
-        tableRowHeader.addNewTableCell().setText("人工结论率");
-        tableRowHeader.addNewTableCell().setText("分派超时结论量");
-        tableRowHeader.addNewTableCell().setText("分派超时结论率");
-        tableRowHeader.addNewTableCell().setText("判图超时结论量");
-        tableRowHeader.addNewTableCell().setText("判图超时结论率");
-        tableRowHeader.addNewTableCell().setText("扫描结论量");
-        tableRowHeader.addNewTableCell().setText("扫描结论率");
-        tableRowHeader.addNewTableCell().setText("无嫌疑量");
-        tableRowHeader.addNewTableCell().setText("无嫌疑率");
-        tableRowHeader.addNewTableCell().setText("嫌疑量");
-        tableRowHeader.addNewTableCell().setText("嫌疑率");
-        tableRowHeader.addNewTableCell().setText("人工判图时长阈值");
-        tableRowHeader.addNewTableCell().setText("人工判图平均时长");
-        tableRowHeader.addNewTableCell().setText("人工判图最高时长");
-        tableRowHeader.addNewTableCell().setText("人工判图最低时长");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalJudge", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialResultRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignTimoutResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AssignTimeoutResultRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeTimeoutResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeTimeoutResultRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanResult", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanResultRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSuspicion", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSuspicionRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Suspicion", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("SuspicionRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeDefaultTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeAvgTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMaxTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMinTime", null, currentLocale));
         
 
     }

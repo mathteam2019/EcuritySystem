@@ -23,7 +23,7 @@ public class ProcessTaskWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("过程任务");
+        titleRun.setText(messageSource.getMessage("ProcessTaskTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -42,24 +42,22 @@ public class ProcessTaskWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("任务编号");
-        tableRowHeader.addNewTableCell().setText("工作模式");
-        tableRowHeader.addNewTableCell().setText("状态");
-        tableRowHeader.addNewTableCell().setText("现场");
-        tableRowHeader.addNewTableCell().setText("安检仪");
-        tableRowHeader.addNewTableCell().setText("引导员");
-        tableRowHeader.addNewTableCell().setText("扫描开始时间");
-        tableRowHeader.addNewTableCell().setText("扫描结束时间");
-        tableRowHeader.addNewTableCell().setText("判图站");
-        tableRowHeader.addNewTableCell().setText("判图员");
-        tableRowHeader.addNewTableCell().setText("判图开始时间");
-        tableRowHeader.addNewTableCell().setText("判图结束时间");
-        tableRowHeader.addNewTableCell().setText("手检站");
-        tableRowHeader.addNewTableCell().setText("手检员");
-        tableRowHeader.addNewTableCell().setText("手检开始时间");
-
-
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TaskNumber", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("WorkMode", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TaskStatus", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Scene", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanDeviceName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanUserName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanStartTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanEndTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeUserName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeStartTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeEndTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
 
     }
 

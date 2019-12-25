@@ -19,7 +19,7 @@ public class InvalidTaskWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("无效任务");
+        titleRun.setText(messageSource.getMessage("InvalidTaskTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -38,14 +38,15 @@ public class InvalidTaskWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("任务编号");
-        tableRowHeader.addNewTableCell().setText("工作模式");
-        tableRowHeader.addNewTableCell().setText("现场");
-        tableRowHeader.addNewTableCell().setText("安检仪");
-        tableRowHeader.addNewTableCell().setText("引导员");
-        tableRowHeader.addNewTableCell().setText("扫描开始时间");
-        tableRowHeader.addNewTableCell().setText("扫描结束时间");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TaskNumber", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("WorkMode", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Scene", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanDeviceName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanUserName", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanStartTime", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanEndTime", null, currentLocale));
+
 
     }
 

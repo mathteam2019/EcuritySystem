@@ -1,5 +1,6 @@
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
@@ -21,7 +22,7 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("毫米波人体查验手检统计");
+        titleRun.setText(messageSource.getMessage("SuspictionHandgoodsStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -40,12 +41,12 @@ public class SuspictionHandgoodsStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
 
         SuspicionHandgoodsStatisticsController.handGoodsIDList
                 .forEach(columnTitle -> {
-                    tableRowHeader.addNewTableCell().setText(columnTitle);
+                    tableRowHeader.addNewTableCell().setText(ConstantDictionary.getDataValue(columnTitle));
                 });
 
     }

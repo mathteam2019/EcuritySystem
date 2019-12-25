@@ -41,18 +41,18 @@ public class JudgeStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("判图统计"));
+            document.add(getTitle(messageSource.getMessage("JudgeStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(19);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "判图总量", "人工结论量", "人工结论率", "分派超时结论量", "分派超时结论率", "判图超时结论量", "判图超时结论率", "扫描结论量", "扫描结论率", "无嫌疑量", "无嫌疑率", "嫌疑量", "嫌疑率", "人工判图时长阈值", "人工判图平均时长", "人工判图最高时长", "人工判图最低时长")
+            Stream.of("ID", "StatWidth", "TotalJudge", "ArtificialResult", "ArtificialResultRate", "AssignTimoutResult", "AssignTimeoutResultRate", "JudgeTimeoutResult", "JudgeTimeoutResultRate", "ScanResult", "ScanResultRate", "NoSuspicion", "NoSuspicionRate", "Suspicion", "SuspicionRate", "ArtificialJudgeDefaultTime", "ArtificialJudgeAvgTime", "ArtificialJudgeMaxTime", "ArtificialJudgeMinTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

@@ -45,18 +45,18 @@ public class PreviewStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("统计预览"));
+            document.add(getTitle(messageSource.getMessage("PreviewStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(13);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率")
+            Stream.of("ID", "StatWidth", "TotalScan", "InvalidScans", "InvalidScanRate", "TotalJudge", "TotalHands", "Nosuspicion", "ScanNosuspictionRate", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

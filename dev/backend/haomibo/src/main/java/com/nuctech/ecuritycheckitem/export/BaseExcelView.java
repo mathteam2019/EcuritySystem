@@ -14,9 +14,13 @@ import java.util.Locale;
 public class BaseExcelView {
 
     public static MessageSource messageSource;
+    public static Locale currentLocale = Locale.CHINESE;
 
     public static void setMessageSource(MessageSource messageSource) {
         BaseExcelView.messageSource = messageSource;
+    }
+    public static void setCurrentLocale(Locale locale) {
+        currentLocale = locale;
     }
 
     public static CellStyle getHeaderStyle(Workbook workbook) {

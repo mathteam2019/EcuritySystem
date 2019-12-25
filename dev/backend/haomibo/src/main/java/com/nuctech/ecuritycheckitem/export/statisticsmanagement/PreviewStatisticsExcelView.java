@@ -31,43 +31,43 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalScan = header.createCell(2);
-        headerCellTotalScan.setCellValue("扫描总量");
+        headerCellTotalScan.setCellValue(messageSource.getMessage("TotalScan", null, currentLocale));
 
-        Cell invalidScans = header.createCell(3);
-        invalidScans.setCellValue("无效扫描量");
+        Cell headerCellInvalidScans = header.createCell(3);
+        headerCellInvalidScans.setCellValue(messageSource.getMessage("InvalidScans", null, currentLocale));
 
         Cell headerInvalidScanRate = header.createCell(4);
-        headerInvalidScanRate.setCellValue("无效率");
+        headerInvalidScanRate.setCellValue(messageSource.getMessage("InvalidScanRate", null, currentLocale));
 
         Cell headerCellTotalJudge = header.createCell(5);
-        headerCellTotalJudge.setCellValue("判图量");
+        headerCellTotalJudge.setCellValue(messageSource.getMessage("TotalJudge", null, currentLocale));
 
         Cell headerCellTotalHands = header.createCell(6);
-        headerCellTotalHands.setCellValue("手检量");
+        headerCellTotalHands.setCellValue(messageSource.getMessage("TotalHands", null, currentLocale));
 
         Cell headerCellNosuspicion = header.createCell(7);
-        headerCellNosuspicion.setCellValue("无嫌疑量");
+        headerCellNosuspicion.setCellValue(messageSource.getMessage("Nosuspicion", null, currentLocale));
 
         Cell headerCellScanNosuspictionRate = header.createCell(8);
-        headerCellScanNosuspictionRate.setCellValue("无嫌疑率");
+        headerCellScanNosuspictionRate.setCellValue(messageSource.getMessage("ScanNosuspictionRate", null, currentLocale));
 
         Cell headerCellNoSeizure = header.createCell(9);
-        headerCellNoSeizure.setCellValue("无查获量");
+        headerCellNoSeizure.setCellValue(messageSource.getMessage("NoSeizure", null, currentLocale));
 
         Cell headerCellNoSeizureRate = header.createCell(10);
-        headerCellNoSeizureRate.setCellValue("无查获率");
+        headerCellNoSeizureRate.setCellValue(messageSource.getMessage("NoSeizureRate", null, currentLocale));
 
         Cell headerCellSeizure = header.createCell(11);
-        headerCellSeizure.setCellValue("查获量");
+        headerCellSeizure.setCellValue(messageSource.getMessage("Seizure", null, currentLocale));
 
         Cell headerCellSeizureRate = header.createCell(12);
-        headerCellSeizureRate.setCellValue("查获率");
+        headerCellSeizureRate.setCellValue(messageSource.getMessage("SeizureRate", null, currentLocale));
 
     }
 
@@ -83,7 +83,7 @@ public class PreviewStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("统计预览");
+            titleCell.setCellValue(messageSource.getMessage("PreviewStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

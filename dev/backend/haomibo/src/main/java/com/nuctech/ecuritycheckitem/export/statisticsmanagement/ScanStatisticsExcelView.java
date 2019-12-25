@@ -27,37 +27,37 @@ public class ScanStatisticsExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalScan = header.createCell(2);
-        headerCellTotalScan.setCellValue("扫描总量");
+        headerCellTotalScan.setCellValue(messageSource.getMessage("TotalScan", null, currentLocale));
 
         Cell headerCellValidScans = header.createCell(3);
-        headerCellValidScans.setCellValue("有效扫描量");
+        headerCellValidScans.setCellValue(messageSource.getMessage("ValidScans", null, currentLocale));
 
         Cell headerCellValidScanRate = header.createCell(4);
-        headerCellValidScanRate.setCellValue("有效率");
+        headerCellValidScanRate.setCellValue(messageSource.getMessage("ValidScanRate", null, currentLocale));
 
         Cell headerCellInvalidScans = header.createCell(5);
-        headerCellInvalidScans.setCellValue("无效扫描量");
+        headerCellInvalidScans.setCellValue(messageSource.getMessage("InvalidScans", null, currentLocale));
 
         Cell headerCellInvalidScanRate = header.createCell(6);
-        headerCellInvalidScanRate.setCellValue("无效率");
+        headerCellInvalidScanRate.setCellValue(messageSource.getMessage("InvalidScanRate", null, currentLocale));
 
         Cell headerCellPassedScans = header.createCell(7);
-        headerCellPassedScans.setCellValue("通过量");
+        headerCellPassedScans.setCellValue(messageSource.getMessage("PassedScans", null, currentLocale));
 
         Cell headerCellPassedScanRate = header.createCell(8);
-        headerCellPassedScanRate.setCellValue("通过率");
+        headerCellPassedScanRate.setCellValue(messageSource.getMessage("PassedScanRate", null, currentLocale));
 
         Cell headerCellAlarmScans = header.createCell(9);
-        headerCellAlarmScans.setCellValue("报警量");
+        headerCellAlarmScans.setCellValue(messageSource.getMessage("AlarmScans", null, currentLocale));
 
         Cell headerCellAlarmScanRate = header.createCell(10);
-        headerCellAlarmScanRate.setCellValue("报警率");
+        headerCellAlarmScanRate.setCellValue(messageSource.getMessage("AlarmScanRate", null, currentLocale));
 
     }
 
@@ -73,7 +73,7 @@ public class ScanStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("扫描统计");
+            titleCell.setCellValue(messageSource.getMessage("ScanStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

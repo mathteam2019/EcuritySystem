@@ -268,10 +268,7 @@ public class HistoryTaskController extends BaseController {
                 sortParams.get("order")); //asc or desc
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
-
         setDictionary(); //set dictionary data key and values
-
-//        ApplicationContext context = new ClassPath
         HistoryTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskExcelView.buildExcelDocument(exportList); //get inputstream to be exported
 
@@ -320,8 +317,8 @@ public class HistoryTaskController extends BaseController {
                 sortParams.get("order")); //asc or desc
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be exported with isAll and idList
-
         setDictionary(); //set dictionary data key and values
+        HistoryTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = HistoryTaskWordView.buildWordDocument(exportList); //get inputstream to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -367,6 +364,7 @@ public class HistoryTaskController extends BaseController {
 
         List<History> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList()); //get data list to be printed with isAll and idList
         setDictionary(); //set dictionary data key and values
+        HistoryTaskPdfView.setMessageSource(messageSource);
         HistoryTaskPdfView.setResource(getFontResource()); //set header font
 
         InputStream inputStream = HistoryTaskPdfView.buildPDFDocument(exportList); //get inputstream of datas to be printed

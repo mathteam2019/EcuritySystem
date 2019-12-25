@@ -303,8 +303,8 @@ public class InvalidTaskController extends BaseController {
                 sortParams.get("order")); //asc or desc
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
         setDictionary(); //set dictionary key and values
+        InvalidTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = InvalidTaskExcelView.buildExcelDocument(exportList);
 
 
@@ -351,8 +351,8 @@ public class InvalidTaskController extends BaseController {
                 sortParams.get("order")); //asc or desc
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
-
         setDictionary(); //set dictionary key and values
+        InvalidTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = InvalidTaskWordView.buildWordDocument(exportList);
 
 
@@ -402,6 +402,7 @@ public class InvalidTaskController extends BaseController {
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         InvalidTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(); //set dicionary key and values
+        InvalidTaskPdfView.setMessageSource(messageSource);
         InputStream inputStream = InvalidTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

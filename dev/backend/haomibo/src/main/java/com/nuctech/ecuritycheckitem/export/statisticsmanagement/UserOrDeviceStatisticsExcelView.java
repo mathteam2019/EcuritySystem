@@ -29,49 +29,49 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         if (type) {
             Cell headerCellTime = header.createCell(1);
-            headerCellTime.setCellValue("用户名");
+            headerCellTime.setCellValue(messageSource.getMessage("UserName", null, currentLocale));
         }
         else {
             Cell headerCellTime = header.createCell(1);
-            headerCellTime.setCellValue("设备名");
+            headerCellTime.setCellValue(messageSource.getMessage("DeviceName", null, currentLocale));
         }
 
         Cell headerCellTotalHandExam = header.createCell(2);
-        headerCellTotalHandExam.setCellValue("扫描总量");
+        headerCellTotalHandExam.setCellValue(messageSource.getMessage("TotalHandExam", null, currentLocale));
 
         Cell headerCellMissing = header.createCell(3);
-        headerCellMissing.setCellValue("无效扫描量");
+        headerCellMissing.setCellValue(messageSource.getMessage("Missing", null, currentLocale));
 
         Cell headerCellMissingRate = header.createCell(4);
-        headerCellMissingRate.setCellValue("无效率");
+        headerCellMissingRate.setCellValue(messageSource.getMessage("MissingRate", null, currentLocale));
 
         Cell headerCellMistake = header.createCell(5);
-        headerCellMistake.setCellValue("判图量");
+        headerCellMistake.setCellValue(messageSource.getMessage("Mistake", null, currentLocale));
 
         Cell headerCellMistakeRate = header.createCell(6);
-        headerCellMistakeRate.setCellValue("手检量");
+        headerCellMistakeRate.setCellValue(messageSource.getMessage("MistakeRate", null, currentLocale));
 
         Cell headerCellArtificialJudge = header.createCell(7);
-        headerCellArtificialJudge.setCellValue("无嫌疑量");
+        headerCellArtificialJudge.setCellValue(messageSource.getMessage("ArtificialJudge", null, currentLocale));
 
         Cell headerCellArtificialJudgeMissing = header.createCell(8);
-        headerCellArtificialJudgeMissing.setCellValue("无嫌疑率");
+        headerCellArtificialJudgeMissing.setCellValue(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
 
         Cell headerCellArtificialJudgeMissingRate = header.createCell(9);
-        headerCellArtificialJudgeMissingRate.setCellValue("无查获量");
+        headerCellArtificialJudgeMissingRate.setCellValue(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
 
         Cell headerCellArtificialJudgeMistake = header.createCell(10);
-        headerCellArtificialJudgeMistake.setCellValue("无查获率");
+        headerCellArtificialJudgeMistake.setCellValue(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
 
         Cell headerCellArtificialJudgeMistakeRate = header.createCell(11);
-        headerCellArtificialJudgeMistakeRate.setCellValue("查获量");
+        headerCellArtificialJudgeMistakeRate.setCellValue(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
 
         Cell headerCellIntelligenceJudge = header.createCell(12);
-        headerCellIntelligenceJudge.setCellValue("查获率");
+        headerCellIntelligenceJudge.setCellValue(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
 
     }
 
@@ -89,9 +89,9 @@ public class UserOrDeviceStatisticsExcelView extends BaseExcelView {
             Cell titleCell = title.createCell(0);
 
             if (type) {
-                titleCell.setCellValue("人员工时统计");
+                titleCell.setCellValue(messageSource.getMessage("UserStatisticsTableTitle", null,currentLocale));
             } else {
-                titleCell.setCellValue("设备运行时长统计");
+                titleCell.setCellValue(messageSource.getMessage("DeviceStatisticsTableTitle", null, currentLocale));
             }
             titleCell.setCellStyle(getHeaderStyle(workbook));
 

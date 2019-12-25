@@ -27,58 +27,56 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
-
-
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalHandExam = header.createCell(2);
-        headerCellTotalHandExam.setCellValue("手检总量");
+        headerCellTotalHandExam.setCellValue(messageSource.getMessage("TotalHandExam", null, currentLocale));
 
         Cell headerCellMissing = header.createCell(3);
-        headerCellMissing.setCellValue("误报总量");
+        headerCellMissing.setCellValue(messageSource.getMessage("Missing", null, currentLocale));
 
         Cell headerCellMissingRate = header.createCell(4);
-        headerCellMissingRate.setCellValue("误报率");
+        headerCellMissingRate.setCellValue(messageSource.getMessage("MissingRate", null, currentLocale));
 
         Cell headerCellMistake = header.createCell(5);
-        headerCellMistake.setCellValue("漏报总量");
+        headerCellMistake.setCellValue(messageSource.getMessage("Mistake", null, currentLocale));
 
         Cell headerCellMistakeRate = header.createCell(6);
-        headerCellMistakeRate.setCellValue("漏报率");
+        headerCellMistakeRate.setCellValue(messageSource.getMessage("MistakeRate", null, currentLocale));
 
         Cell headerCellArtificialJudge = header.createCell(7);
-        headerCellArtificialJudge.setCellValue("手检（人工判图）量");
+        headerCellArtificialJudge.setCellValue(messageSource.getMessage("ArtificialJudge", null, currentLocale));
 
         Cell headerCellArtificialJudgeMissing = header.createCell(8);
-        headerCellArtificialJudgeMissing.setCellValue("人工判图误报量");
+        headerCellArtificialJudgeMissing.setCellValue(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
 
         Cell headerCellArtificialJudgeMissingRate = header.createCell(9);
-        headerCellArtificialJudgeMissingRate.setCellValue("人工判图误报率");
+        headerCellArtificialJudgeMissingRate.setCellValue(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
 
         Cell headerCellArtificialJudgeMistake = header.createCell(10);
-        headerCellArtificialJudgeMistake.setCellValue("人工判图漏报量");
+        headerCellArtificialJudgeMistake.setCellValue(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
 
         Cell headerCellArtificialJudgeMistakeRate = header.createCell(11);
-        headerCellArtificialJudgeMistakeRate.setCellValue("人工判图漏报率");
+        headerCellArtificialJudgeMistakeRate.setCellValue(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
 
         Cell headerCellIntelligenceJudge = header.createCell(12);
-        headerCellIntelligenceJudge.setCellValue("手检（智能判图）量");
+        headerCellIntelligenceJudge.setCellValue(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
 
         Cell headerCellIntelligenceJudgeMistake = header.createCell(13);
-        headerCellIntelligenceJudgeMistake.setCellValue("智能判图误报量");
+        headerCellIntelligenceJudgeMistake.setCellValue(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
 
         Cell headerCellIntelligenceJudgeMistakeRate = header.createCell(14);
-        headerCellIntelligenceJudgeMistakeRate.setCellValue("智能判图误报率");
+        headerCellIntelligenceJudgeMistakeRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
 
         Cell headerCellIntelligenceJudgeMissing = header.createCell(15);
-        headerCellIntelligenceJudgeMissing.setCellValue("智能判图漏报量");
+        headerCellIntelligenceJudgeMissing.setCellValue(messageSource.getMessage("IntelligenceJudgeMissing", null, currentLocale));
 
         Cell headerCellIntelligenceJudgeMissingRate = header.createCell(16);
-        headerCellIntelligenceJudgeMissingRate.setCellValue("智能判图漏报率");
+        headerCellIntelligenceJudgeMissingRate.setCellValue(messageSource.getMessage("IntelligenceJudgeMissingRate", null, currentLocale));
 
 
     }
@@ -95,7 +93,7 @@ public class EvaluateJudgeStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("毫米波人体查验评价判图统计");
+            titleCell.setCellValue(messageSource.getMessage("EvaluateJudgeStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

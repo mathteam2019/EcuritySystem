@@ -40,18 +40,18 @@ public class HistoryTaskPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("历史任务"));
+            document.add(getTitle(messageSource.getMessage("HistoryTaskTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(16);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
+            Stream.of("ID", "TaskNumber", "WorkMode", "TaskResult", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime", "JudgeDeviceName", "JudgeUserName", "JudgeStartTime", "JudgeEndTime", "HandExaminationDeviceName", "HandExaminationUserName", "HandExaminationStartTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

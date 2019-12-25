@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.EvaluateJudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsWordView;
@@ -162,6 +163,7 @@ public class HandExaminationStatisticsController extends BaseController {
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(getFontResource()); //set header font
         setDictionary(); //set dictionary data key and values
+        HandExaminationStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = HandExaminationStatisticsPdfView.buildPDFDocument(exportList);  //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -200,6 +202,7 @@ public class HandExaminationStatisticsController extends BaseController {
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        HandExaminationStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = HandExaminationStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -237,6 +240,7 @@ public class HandExaminationStatisticsController extends BaseController {
 
         TreeMap<Integer, HandExaminationResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();  //set dictionary data key and values
+        HandExaminationStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = HandExaminationStatisticsWordView.buildWordDocument(exportList);  //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

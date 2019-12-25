@@ -17,6 +17,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsWordView;
@@ -165,6 +166,7 @@ public class PreviewStatisticsController extends BaseController {
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         PreviewStatisticsPdfView.setResource(getFontResource());  //set header font
         setDictionary(); //set dictionary data key and values
+        PreviewStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = PreviewStatisticsPdfView.buildPDFDocument(exportList);  //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -203,6 +205,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();   //set dictionary data key and values
+        PreviewStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = PreviewStatisticsExcelView.buildExcelDocument(exportList);//make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -241,6 +244,7 @@ public class PreviewStatisticsController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        PreviewStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = PreviewStatisticsWordView.buildWordDocument(exportList);  //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

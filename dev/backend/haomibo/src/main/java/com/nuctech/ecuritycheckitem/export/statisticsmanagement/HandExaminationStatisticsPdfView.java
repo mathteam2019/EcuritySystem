@@ -41,18 +41,19 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("毫米波人体查验手检统计"));
+            document.add(getTitle(messageSource.getMessage("HandExaminationStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(10);
 
+
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "手检总量", "无查获量", "无查获率", "查获", "查获率", "手检平均时长", "手检最高时长", "手检最低时长")
+            Stream.of("ID", "StatWidth", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate", "HandAvgDuration", "HandMaxDuration", "HandMinDuration")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

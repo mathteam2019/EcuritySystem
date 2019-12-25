@@ -8,6 +8,7 @@
  */
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
@@ -30,14 +31,14 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
        Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         for (int i = 0; i < SuspicionHandgoodsStatisticsController.handGoodsIDList.size(); i ++) {
             Cell headerCellItem = header.createCell(i + 2);
-            headerCellItem.setCellValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i));
+            headerCellItem.setCellValue(ConstantDictionary.getDataValue(SuspicionHandgoodsStatisticsController.handGoodsIDList.get(i)));
         }
 
     }
@@ -54,7 +55,7 @@ public class SuspictionHandgoodsStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("毫米波人体查验手检统计");
+            titleCell.setCellValue(messageSource.getMessage("SuspictionHandgoodsStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -21,7 +21,7 @@ public class ScanStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("扫描统计");
+        titleRun.setText(messageSource.getMessage("ScanStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -40,18 +40,17 @@ public class ScanStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
-        tableRowHeader.addNewTableCell().setText("扫描总量");
-        tableRowHeader.addNewTableCell().setText("有效扫描量");
-        tableRowHeader.addNewTableCell().setText("有效率");
-        tableRowHeader.addNewTableCell().setText("无效扫描量");
-        tableRowHeader.addNewTableCell().setText("无效率");
-        tableRowHeader.addNewTableCell().setText("通过量");
-        tableRowHeader.addNewTableCell().setText("通过率");
-        tableRowHeader.addNewTableCell().setText("报警量");
-        tableRowHeader.addNewTableCell().setText("报警率");
-        
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalScan", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ValidScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ValidScanRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScanRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("PassedScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("PassedScanRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AlarmScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("AlarmScanRate", null, currentLocale));
 
     }
 

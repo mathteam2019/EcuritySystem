@@ -41,9 +41,9 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             document.open();
             if (type) {
-                document.add(getTitle("人员工时统计"));
+                document.add(getTitle(messageSource.getMessage("UserStatisticsTableTitle", null,currentLocale)));
             } else {
-                document.add(getTitle("设备运行时长统计"));
+                document.add(getTitle(messageSource.getMessage("DeviceStatisticsTableTitle", null,currentLocale)));
             }
             document.add(getTime());
 
@@ -51,11 +51,12 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             List<String> strHeaderList = new ArrayList<>();
 
+
             if (type) {
-                strHeaderList = Arrays.asList(new String[]{"序号", "用户名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+                strHeaderList = Arrays.asList(new String[]{"ID", "UserName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
             }
             else {
-                strHeaderList = Arrays.asList(new String[]{"序号", "设备名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+                strHeaderList = Arrays.asList(new String[]{"ID", "DeviceName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
             }
 
 
@@ -65,7 +66,7 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

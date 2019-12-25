@@ -30,34 +30,34 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalHandExam = header.createCell(2);
-        headerCellTotalHandExam.setCellValue("手检总量");
+        headerCellTotalHandExam.setCellValue(messageSource.getMessage("TotalHandExam", null, currentLocale));
 
         Cell headerCellNoSeizure = header.createCell(3);
-        headerCellNoSeizure.setCellValue("无查获量");
+        headerCellNoSeizure.setCellValue(messageSource.getMessage("NoSeizure", null, currentLocale));
 
         Cell headerCellNoSeizureRate = header.createCell(4);
-        headerCellNoSeizureRate.setCellValue("无查获率");
+        headerCellNoSeizureRate.setCellValue(messageSource.getMessage("NoSeizureRate", null, currentLocale));
 
         Cell headerCellSeizure = header.createCell(5);
-        headerCellSeizure.setCellValue("查获");
+        headerCellSeizure.setCellValue(messageSource.getMessage("Seizure", null, currentLocale));
 
         Cell headerCellSeizureRate = header.createCell(6);
-        headerCellSeizureRate.setCellValue("查获率");
+        headerCellSeizureRate.setCellValue(messageSource.getMessage("SeizureRate", null, currentLocale));
 
         Cell headerCellHandAvgDuration = header.createCell(7);
-        headerCellHandAvgDuration.setCellValue("手检平均时长");
+        headerCellHandAvgDuration.setCellValue(messageSource.getMessage("HandAvgDuration", null, currentLocale));
 
         Cell headerCellHandMaxDuration = header.createCell(8);
-        headerCellHandMaxDuration.setCellValue("手检最高时长");
+        headerCellHandMaxDuration.setCellValue(messageSource.getMessage("HandMaxDuration", null, currentLocale));
 
         Cell headerCellHandMinDuration = header.createCell(9);
-        headerCellHandMinDuration.setCellValue("手检最低时长");
+        headerCellHandMinDuration.setCellValue(messageSource.getMessage("HandMinDuration", null, currentLocale));
 
     }
 
@@ -73,7 +73,7 @@ public class HandExaminationStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("毫米波人体查验手检统计");
+            titleCell.setCellValue(messageSource.getMessage("HandExaminationStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

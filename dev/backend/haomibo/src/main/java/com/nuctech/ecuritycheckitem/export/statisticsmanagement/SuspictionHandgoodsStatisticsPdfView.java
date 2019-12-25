@@ -15,6 +15,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.HandExaminationStatisticsController;
 import com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanagement.SuspicionHandgoodsStatisticsController;
@@ -42,7 +43,7 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("毫米波人体查验手检统计"));
+            document.add(getTitle(messageSource.getMessage("SuspictionHandgoodsStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(SuspicionHandgoodsStatisticsController.handGoodsIDList.size() + 2);
@@ -51,12 +52,12 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
 
             PdfPCell headerNo = new PdfPCell();
             headerNo.setBorderWidth(2);
-            headerNo.setPhrase(new Phrase("序号", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            headerNo.setPhrase(new Phrase(messageSource.getMessage("ID", null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
             table.addCell(headerNo);
 
             PdfPCell headerTime = new PdfPCell();
             headerTime.setBorderWidth(2);
-            headerTime.setPhrase(new Phrase("时间段", getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+            headerTime.setPhrase(new Phrase(messageSource.getMessage("StatWidth", null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
             table.addCell(headerTime);
 
             SuspicionHandgoodsStatisticsController.handGoodsIDList
@@ -64,7 +65,7 @@ public class SuspictionHandgoodsStatisticsPdfView extends BasePdfView {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(ConstantDictionary.getDataValue(columnTitle), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

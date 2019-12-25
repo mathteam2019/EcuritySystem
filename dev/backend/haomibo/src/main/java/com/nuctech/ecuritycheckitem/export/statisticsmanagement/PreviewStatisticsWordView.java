@@ -21,7 +21,7 @@ public class PreviewStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("统计预览");
+        titleRun.setText(messageSource.getMessage("PreviewStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -40,19 +40,19 @@ public class PreviewStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
-        tableRowHeader.addNewTableCell().setText("扫描总量");
-        tableRowHeader.addNewTableCell().setText("无效扫描量");
-        tableRowHeader.addNewTableCell().setText("无效率");
-        tableRowHeader.addNewTableCell().setText("判图量");
-        tableRowHeader.addNewTableCell().setText("手检量");
-        tableRowHeader.addNewTableCell().setText("无嫌疑量");
-        tableRowHeader.addNewTableCell().setText("无嫌疑率");
-        tableRowHeader.addNewTableCell().setText("无查获量");
-        tableRowHeader.addNewTableCell().setText("无查获率");
-        tableRowHeader.addNewTableCell().setText("查获量");
-        tableRowHeader.addNewTableCell().setText("查获率");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalScan", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScans", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("InvalidScanRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalJudge", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHands", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Nosuspicion", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanNosuspictionRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizure", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Seizure", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("SeizureRate", null, currentLocale));
         
 
     }

@@ -21,7 +21,7 @@ public class HandExaminationStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("毫米波人体查验手检统计");
+        titleRun.setText(messageSource.getMessage("HandExaminationStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -40,16 +40,16 @@ public class HandExaminationStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
-        tableRowHeader.addNewTableCell().setText("手检总量");
-        tableRowHeader.addNewTableCell().setText("无查获量");
-        tableRowHeader.addNewTableCell().setText("无查获率");
-        tableRowHeader.addNewTableCell().setText("查获");
-        tableRowHeader.addNewTableCell().setText("查获率");
-        tableRowHeader.addNewTableCell().setText("手检平均时长");
-        tableRowHeader.addNewTableCell().setText("手检最高时长");
-        tableRowHeader.addNewTableCell().setText("手检最低时长");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHandExam", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizure", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("NoSeizureRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Seizure", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("SeizureRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandAvgDuration", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandMaxDuration", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandMinDuration", null, currentLocale));
         
 
     }

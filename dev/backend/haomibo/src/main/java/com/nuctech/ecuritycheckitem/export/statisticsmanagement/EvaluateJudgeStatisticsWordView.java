@@ -23,7 +23,7 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("毫米波人体查验评价判图统计");
+        titleRun.setText(messageSource.getMessage("EvaluateJudgeStatisticsTableTitle", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -42,24 +42,24 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("时间段");
-        tableRowHeader.addNewTableCell().setText("手检总量");
-        tableRowHeader.addNewTableCell().setText("误报总量");
-        tableRowHeader.addNewTableCell().setText("误报率");
-        tableRowHeader.addNewTableCell().setText("漏报总量");
-        tableRowHeader.addNewTableCell().setText("漏报率");
-        tableRowHeader.addNewTableCell().setText("手检（人工判图）量");
-        tableRowHeader.addNewTableCell().setText("人工判图误报量");
-        tableRowHeader.addNewTableCell().setText("人工判图误报率");
-        tableRowHeader.addNewTableCell().setText("人工判图漏报量");
-        tableRowHeader.addNewTableCell().setText("人工判图漏报率");
-        tableRowHeader.addNewTableCell().setText("手检（智能判图）量");
-        tableRowHeader.addNewTableCell().setText("智能判图误报量");
-        tableRowHeader.addNewTableCell().setText("智能判图误报率");
-        tableRowHeader.addNewTableCell().setText("智能判图漏报量");
-        tableRowHeader.addNewTableCell().setText("智能判图漏报率");
-        
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("StatWidth", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHandExam", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Missing", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MissingRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Mistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MistakeRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudge", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMistakeRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMissing", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudgeMissingRate", null, currentLocale));
+
 
     }
 
@@ -87,7 +87,7 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                tableRow.getCell(0).setText(Long.toString(index ++));
+                tableRow.getCell(0).setText(Long.toString(index++));
                 tableRow.getCell(1).setText(Long.toString(record.getTime()));
                 tableRow.getCell(2).setText(Long.toString(record.getTotal()));
                 tableRow.getCell(3).setText(Long.toString(record.getMistakeReport()));
@@ -109,8 +109,7 @@ public class EvaluateJudgeStatisticsWordView extends BaseWordView {
 
             document.write(out);
             document.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
         }
 

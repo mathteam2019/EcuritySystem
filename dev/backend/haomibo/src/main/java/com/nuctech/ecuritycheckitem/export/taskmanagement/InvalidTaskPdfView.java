@@ -39,18 +39,18 @@ public class InvalidTaskPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("无效任务"));
+            document.add(getTitle(messageSource.getMessage("InvalidTaskTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(8);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "工作模式", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间")
+            Stream.of("ID", "TaskNumber", "WorkMode", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
@@ -59,18 +59,6 @@ public class InvalidTaskPdfView extends BasePdfView {
                 addTableCell(table, task.getTaskId().toString());
 
                 addTableCell(table, task.getTaskNumber());
-
-//                if (task.getSerScan() != null) {
-//                    if (task.getSerScan().getScanImage() != null) {
-//                        addTableCell(table, task.getSerScan().getScanImage().getImageLabel());
-//                    }
-//                    else {
-//                        addTableCell(table, "无");
-//                    }
-//                }
-//                else {
-//                    addTableCell(table, "无");
-//                }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {

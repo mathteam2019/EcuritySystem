@@ -16,10 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsExcelView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsPdfView;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.SuspictionHandgoodsStatisticsWordView;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
 import lombok.Getter;
@@ -173,6 +170,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         HandExaminationStatisticsPdfView.setResource(getFontResource()); //get header font
         setDictionary();//set dictionary data key and values
+        SuspictionHandgoodsStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = SuspictionHandgoodsStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -210,6 +208,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        SuspictionHandgoodsStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = SuspictionHandgoodsStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -247,6 +246,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         TreeMap<Integer, TreeMap<String, Long>> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();   //set dictionary data key and values
+        SuspictionHandgoodsStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = SuspictionHandgoodsStatisticsWordView.buildWordDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

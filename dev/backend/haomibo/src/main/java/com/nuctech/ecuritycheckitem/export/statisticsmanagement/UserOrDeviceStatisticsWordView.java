@@ -21,10 +21,10 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
 
         XWPFRun titleRun = title.createRun();
         if (isUserStatOrDeviceStat) {
-            titleRun.setText("人员工时统计");
+            titleRun.setText(messageSource.getMessage("UserStatisticsTableTitle", null, currentLocale));
         }
         else {
-            titleRun.setText("设备运行时长统计");
+            titleRun.setText(messageSource.getMessage("DeviceStatisticsTableTitle", null, currentLocale));
         }
 
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
@@ -45,25 +45,25 @@ public class UserOrDeviceStatisticsWordView extends BaseWordView {
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("ID", null, currentLocale));
 
         if (isUserStatOrDeviceStat) {
-            tableRowHeader.addNewTableCell().setText("用户名");
+            tableRowHeader.addNewTableCell().setText(messageSource.getMessage("UserName", null, currentLocale));
         }
         else {
-            tableRowHeader.addNewTableCell().setText("设备名");
+            tableRowHeader.addNewTableCell().setText(messageSource.getMessage("DeviceName", null, currentLocale));
         }
-        tableRowHeader.addNewTableCell().setText("扫描总量");
-        tableRowHeader.addNewTableCell().setText("无效扫描量");
-        tableRowHeader.addNewTableCell().setText("无效率");
-        tableRowHeader.addNewTableCell().setText("判图量");
-        tableRowHeader.addNewTableCell().setText("手检量");
-        tableRowHeader.addNewTableCell().setText("无嫌疑量");
-        tableRowHeader.addNewTableCell().setText("无嫌疑率");
-        tableRowHeader.addNewTableCell().setText("无查获量");
-        tableRowHeader.addNewTableCell().setText("无查获率");
-        tableRowHeader.addNewTableCell().setText("查获量");
-        tableRowHeader.addNewTableCell().setText("查获率");
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("TotalHandExam", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Missing", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MissingRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("Mistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("MistakeRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudge", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissing", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMissingRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistake", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ArtificialJudgeMistakeRate", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("IntelligenceJudge", null, currentLocale));
         
 
     }

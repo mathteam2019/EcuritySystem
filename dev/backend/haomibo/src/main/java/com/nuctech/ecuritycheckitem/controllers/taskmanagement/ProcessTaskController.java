@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.taskmanagement.InvalidTaskPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.ProcessTaskWordView;
@@ -310,6 +311,7 @@ public class ProcessTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
+        ProcessTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -356,6 +358,7 @@ public class ProcessTaskController extends BaseController {
 
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();  //set dictionary key and values
+        ProcessTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = ProcessTaskWordView.buildWordDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();
@@ -402,6 +405,7 @@ public class ProcessTaskController extends BaseController {
         List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         ProcessTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(); //set dictionary key and values
+        ProcessTaskPdfView.setMessageSource(messageSource);
         InputStream inputStream = ProcessTaskPdfView.buildPDFDocument(exportList);
 
         HttpHeaders headers = new HttpHeaders();

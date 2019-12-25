@@ -41,18 +41,18 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("毫米波人体查验评价判图统计"));
+            document.add(getTitle(messageSource.getMessage("EvaluateJudgeStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(17);
 
- table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "手检总量", "误报总量", "误报率", "漏报总量", "漏报率", "手检（人工判图）量", "人工判图误报量", "人工判图误报率", "人工判图漏报量", "人工判图漏报率", "手检（智能判图）量", "智能判图误报量", "智能判图误报率", "智能判图漏报量", "智能判图漏报率")
+            table.setWidthPercentage(100);
+            Stream.of("ID", "StatWidth", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge", "IntelligenceJudgeMistake", "IntelligenceJudgeMistakeRate", "IntelligenceJudgeMissing", "IntelligenceJudgeMissingRate")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
@@ -64,7 +64,7 @@ public class EvaluateJudgeStatisticsPdfView extends BasePdfView {
 
                 DecimalFormat df = new DecimalFormat("0.00");
 
-                addTableCell(table, Long.toString(index ++));
+                addTableCell(table, Long.toString(index++));
                 addTableCell(table, Long.toString(record.getTime()));
                 addTableCell(table, Long.toString(record.getTotal()));
                 addTableCell(table, Long.toString(record.getMistakeReport()));
