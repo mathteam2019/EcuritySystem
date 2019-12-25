@@ -99,7 +99,7 @@ public class DeviceStatusController extends BaseController {
         int currentPage = requestBody.getCurrentPage() - 1;
         int perPage = requestBody.getPerPage();
         //get SerDeviceStatus list from database through deviceStatusService
-        PageResult<SerDeviceStatus> result = deviceStatusService.getFDeviceStatusByFilter(fieldId, deviceName, categoryId, currentPage, perPage);
+        PageResult<SerDeviceStatus> result = deviceStatusService.getDeviceStatusByFilter(fieldId, deviceName, categoryId, currentPage, perPage);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK,
