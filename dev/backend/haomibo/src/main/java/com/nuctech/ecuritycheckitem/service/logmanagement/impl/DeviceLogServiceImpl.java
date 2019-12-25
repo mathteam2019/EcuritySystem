@@ -1,6 +1,17 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceLogServiceImpl）
+ * 文件名：	DeviceLogServiceImpl.java
+ * 描述：	DeviceLogService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.logmanagement.devicelog.DeviceLogController;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.repositories.SerDevLogRepository;
@@ -23,6 +34,17 @@ public class DeviceLogServiceImpl implements DeviceLogService {
     @Autowired
     SerDevLogRepository serDevLogRepository;
 
+    /**
+     * get predicate from filter parameters
+     * @param deviceType
+     * @param deviceName
+     * @param userName
+     * @param category
+     * @param level
+     * @param operateStartTime
+     * @param operateEndTime
+     * @return
+     */
     private BooleanBuilder getPredicate(String deviceType, String deviceName, String userName, Long category,
                                         Long level, Date operateStartTime, Date operateEndTime) {
         QSerDevLog builder = QSerDevLog.serDevLog;
@@ -59,6 +81,13 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         return predicate;
     }
 
+    /**
+     * extract export list
+     * @param logList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SerDevLog> getExportList(List<SerDevLog> logList, boolean isAll, String idList) {
         List<SerDevLog> exportList = new ArrayList<>();
         if(isAll == false) {
@@ -82,6 +111,19 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         return exportList;
     }
 
+    /**
+     * get paginated and filtered dev log list
+     * @param deviceType
+     * @param deviceName
+     * @param userName
+     * @param category
+     * @param level
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
     public PageResult<SerDevLog> getDeviceLogListByFilter(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
@@ -94,6 +136,19 @@ public class DeviceLogServiceImpl implements DeviceLogService {
         return new PageResult<>(total, data);
     }
 
+    /**
+     * get dev log export list
+     * @param deviceType
+     * @param deviceName
+     * @param userName
+     * @param category
+     * @param level
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SerDevLog> getExportList(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {

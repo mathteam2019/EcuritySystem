@@ -1,9 +1,18 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AccessLogServiceImpl）
+ * 文件名：	AccessLogServiceImpl.java
+ * 描述：	AccessLogService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog.AccessLogController;
-import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
-import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
@@ -26,6 +35,14 @@ public class AccessLogServiceImpl implements AccessLogService {
     @Autowired
     SysAccessLogRepository sysAccessLogRepository;
 
+    /**
+     * get predicate from filter parameters
+     * @param clientIp
+     * @param operateAccount
+     * @param operateStartTime
+     * @param operateEndTime
+     * @return
+     */
     private BooleanBuilder getPredicate(String clientIp, String operateAccount, Date operateStartTime, Date operateEndTime) {
         QSysAccessLog builder = QSysAccessLog.sysAccessLog;
 
@@ -51,6 +68,13 @@ public class AccessLogServiceImpl implements AccessLogService {
         return predicate;
     }
 
+    /**
+     * extract access log export list
+     * @param logList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysAccessLog> getExportList(List<SysAccessLog> logList, boolean isAll, String idList) {
         List<SysAccessLog> exportList = new ArrayList<>();
         if(isAll == false) {
@@ -74,6 +98,16 @@ public class AccessLogServiceImpl implements AccessLogService {
         return exportList;
     }
 
+    /**
+     * get paginated and filtered access log list
+     * @param clientIp
+     * @param operateAccount
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
     public PageResult<SysAccessLog> getAccessLogListByFilter(String clientIp, String operateAccount, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
@@ -86,6 +120,16 @@ public class AccessLogServiceImpl implements AccessLogService {
         return new PageResult<>(total, data);
     }
 
+    /**
+     * get access loge export list
+     * @param clientIp
+     * @param operateAccount
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SysAccessLog> getExportList(String clientIp, String operateAccount, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
