@@ -1,3 +1,16 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（KnowledgeDealPersonalWordView）
+ * 文件名：	KnowledgeDealPersonalWordView.java
+ * 描述：	KnowledgeDealPersonalWordView
+ * 作者名：	Tiny
+ * 日期：	2019/11/29
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
@@ -19,6 +32,10 @@ import java.util.List;
 
 public class KnowledgeDealPersonalWordView extends BaseWordView {
 
+    /**
+     * create title paragraph
+     * @param document
+     */
     private static void createHeaderPart(XWPFDocument document) {
 
         XWPFParagraph title = document.createParagraph();
@@ -39,6 +56,10 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
 
     }
 
+    /**
+     * create table header row
+     * @param table
+     */
     private static void createTableHeader(XWPFTable table) {
 
         table.setWidthType(TableWidthType.DXA);
@@ -53,6 +74,11 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
 
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportList
+     * @return
+     */
     public static InputStream buildWordDocument(List<SerKnowledgeCaseDeal> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -60,11 +86,8 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
         try {
             //Blank Document
             XWPFDocument document = new XWPFDocument();
-
             createHeaderPart(document);
-
             XWPFTable table = document.createTable();
-
             createTableHeader(table);
 
             for (Integer i = 0; i < exportList.size(); i ++) {
@@ -80,9 +103,6 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
                     tableRow.getCell(1).setText("无");
                 }
 
-
-
-
                 tableRow.getCell(2).setText(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
                     tableRow.getCell(3).setText(deal.getScanDevice().getField().getFieldDesignation());
@@ -97,18 +117,14 @@ public class KnowledgeDealPersonalWordView extends BaseWordView {
                 }
 
                 tableRow.getCell(5).setText(deal.getHandResult());
-
             }
 
             document.write(out);
             document.close();
         }
-        catch (Exception e) {
-
-        }
+        catch (Exception e) { }
 
         return new ByteArrayInputStream(out.toByteArray());
-
     }
 
 }
