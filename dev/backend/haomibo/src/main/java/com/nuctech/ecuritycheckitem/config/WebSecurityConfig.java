@@ -1,11 +1,16 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/10/14
- * @CreatedBy Sandy.
- * @FileName WebSecurityConfig.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（Web security config）
+ * 文件名：	WebSecurityConfig.java
+ * 描述：	Web security config
+ * 作者名：	Sandy
+ * 日期：	2019/10/14
+ *
  */
+
 package com.nuctech.ecuritycheckitem.config;
 
 import com.nuctech.ecuritycheckitem.jwt.JwtAuthenticationEntryPoint;
@@ -45,6 +50,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter();
     }
 
+    /**
+     * Configure http security
+     * @param httpSecurity
+     * @throws Exception
+     */
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -61,6 +71,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+    /**
+     * password encode
+     * @return
+     */
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();

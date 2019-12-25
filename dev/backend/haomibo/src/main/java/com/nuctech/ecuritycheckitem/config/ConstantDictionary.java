@@ -1,25 +1,23 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/12/7
- * @CreatedBy Sandy.
- * @FileName Constants.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（static constant dictionary values）
+ * 文件名：	ConstantDictionary.java
+ * 描述：	Static dictionary values used in System
+ * 作者名：	Sandy
+ * 日期：	2019/12/07
+ *
  */
+
 package com.nuctech.ecuritycheckitem.config;
-
-import java.util.Map;
-
-/**
- * Defines constants for this project.
- */
-
 
 public class ConstantDictionary {
     public static class Dictionary {
-        String dataCode;
-        String dataValue;
-        String dictionaryName;
+        String dataCode; //data code
+        String dataValue; //data value of code
+        String dictionaryName; //dictionary name
         public Dictionary(String dataCode, String dataValue) {
             this.dataCode = dataCode;
             this.dataValue = dataValue;
@@ -57,6 +55,11 @@ public class ConstantDictionary {
         dictionaryList = newDictionaryList;
     }
 
+    /**
+     * get data value from data code
+     * @param dataCode
+     * @return
+     */
     public static String getDataValue(String dataCode) {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {
@@ -68,6 +71,12 @@ public class ConstantDictionary {
         return answer;
     }
 
+    /**
+     * get data value from data code and dictionary name
+     * @param dataCode
+     * @param dictionaryName
+     * @return
+     */
     public static String getDataValue(String dataCode, String dictionaryName) {
         String answer = "";
         for(int i = 0; i < dictionaryList.length; i ++) {

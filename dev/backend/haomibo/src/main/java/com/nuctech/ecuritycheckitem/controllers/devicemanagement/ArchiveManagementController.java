@@ -1,13 +1,17 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/19
- * @CreatedBy Choe.
- * @FileName ArchiveManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（ArchiveManagementController 1.0）
+ * 文件名：	ArchiveManagementController.java
+ * 描述：	Archive Management Controller
+ * 作者名：	Sandy
+ * 日期：	2019/10/14
+ *
  */
-package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
@@ -74,18 +78,16 @@ public class ArchiveManagementController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String archivesName;
-            String status;
-            Long categoryId;
+            String archivesName; //archieve name
+            String status; //status
+            Long categoryId; //category id
         }
 
         @NotNull
         @Min(1)
-        int currentPage;
-
+        int currentPage; //current page no
         @NotNull
-        int perPage;
-
+        int perPage; //record count per page
         Filter filter;
     }
 
@@ -100,14 +102,13 @@ public class ArchiveManagementController extends BaseController {
     private static class ArchiveUpdateStatusRequestBody {
 
         @NotNull
-        Long archiveId;
+        Long archiveId; //archive id
 
         @NotNull
         @Pattern(regexp = SerArchive.Status.ACTIVE + "|" + SerArchive.Status.INACTIVE)
         String status;
 
     }
-
 
     /**
      * Archive create request body.
@@ -120,42 +121,23 @@ public class ArchiveManagementController extends BaseController {
 
         @NotNull
         Long archivesTemplateId;
-
         @NotNull
         String archivesName;
-
         @NotNull
         String archivesNumber;
-
-//        @NotNull
-//        Long categoryId;
-//
-//        String manufacturer;
-//
-//        String originalModel;
-
         String note;
-
         private MultipartFile imageUrl;
-
         String json;
 
-
-
         SerArchive convert2SerArchive() {
-
             return SerArchive
                     .builder()
                     .archivesTemplateId(this.getArchivesTemplateId())
                     .archivesName(this.getArchivesName())
                     .archivesNumber(this.getArchivesNumber())
-//                    .categoryId(this.getCategoryId())
-//                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-//                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SerArchive.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
 
     }
@@ -171,45 +153,27 @@ public class ArchiveManagementController extends BaseController {
 
         @NotNull
         Long archiveId;
-
         @NotNull
         Long archivesTemplateId;
-
         @NotNull
         String archivesName;
-
         @NotNull
         String archivesNumber;
-
-//        @NotNull
-//        Long categoryId;
-//
-//        String manufacturer;
-//
-//        String originalModel;
-
         String note;
-
         private MultipartFile imageUrl;
-
         String json;
 
         SerArchive convert2SerArchive() {
-
             return SerArchive
                     .builder()
                     .archiveId(this.getArchiveId())
                     .archivesTemplateId(this.getArchivesTemplateId())
                     .archivesName(this.getArchivesName())
                     .archivesNumber(this.getArchivesNumber())
-//                    .categoryId(this.getCategoryId())
-//                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-//                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SerArchive.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
-
     }
 
     /**
@@ -226,7 +190,6 @@ public class ArchiveManagementController extends BaseController {
         Long archiveId;
     }
 
-
     /**
      * Archive  generate request body.
      */
@@ -237,65 +200,67 @@ public class ArchiveManagementController extends BaseController {
     @ToString
     private static class ArchiveGenerateRequestBody {
 
-
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         ArchiveGetByFilterAndPageRequestBody.Filter filter;
     }
 
-
-
     /**
      * Archive datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/archive/get-by-filter-and-page", method = RequestMethod.POST)
     public Object archiveGetByFilterAndPage(
             @RequestBody @Valid ArchiveGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String archiveName = "";
         String status = "";
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            archiveName = requestBody.getFilter().getArchivesName();
-            status = requestBody.getFilter().getStatus();
-            categoryId = requestBody.getFilter().getCategoryId();
+        if (requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input paramter
+            status = requestBody.getFilter().getStatus(); //get status from input parameter
+            categoryId = requestBody.getFilter().getCategoryId(); //get category id from input parameter
         }
 
-        int currentPage = requestBody.getCurrentPage();
-        int perPage = requestBody.getPerPage();
-        currentPage --;
+        int currentPage = requestBody.getCurrentPage(); //get current page no from input parameter
+        int perPage = requestBody.getPerPage(); //get records count per page from input parameter
+        currentPage--;
+
+        //get archive list from database through service
         PageResult<SerArchive> result = archiveService.getArchiveListByPage(archiveName, status, categoryId,
                 currentPage, perPage);
-        long total = result.getTotal();
+
+        long total = result.getTotal(); //get total count of result
         List<SerArchive> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count of result
+                        .perPage(perPage) //set per page count
+                        .currentPage(currentPage + 1) //set current page no
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set last index of current page
+                        .data(data) //set result data
                         .build()));
 
         // Set filters.
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));;
-
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
         value.setFilters(filters);
 
         return value;
@@ -303,6 +268,9 @@ public class ArchiveManagementController extends BaseController {
 
     /**
      * Archive update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_UPDATE_STATUS)
     @RequestMapping(value = "/archive/update-status", method = RequestMethod.POST)
@@ -311,6 +279,7 @@ public class ArchiveManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -319,18 +288,20 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
+        // Check if device is existing.
+        if (archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
-
-        archiveService.updateStatus(requestBody.getArchiveId(), requestBody.getStatus());
-
+        archiveService.updateStatus(requestBody.getArchiveId(), requestBody.getStatus()); //update archive state to database through archiveService
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
     /**
      * Archive create request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_CREATE)
     @RequestMapping(value = "/archive/create", method = RequestMethod.POST)
@@ -339,34 +310,34 @@ public class ArchiveManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
 
         // Check if template is valid
         if (!archiveService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(archiveService.checkArchiveNameExist(requestBody.getArchivesName(), null)) {
+        if (archiveService.checkArchiveNameExist(requestBody.getArchivesName(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NAME);
         }
 
-        if(archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), null)) {
+        if (archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NUMBER);
         }
 
-
         SerArchive serArchive = requestBody.convert2SerArchive();
-
-        archiveService.createSerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson());
+        archiveService.createSerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson()); //insert new archive to database through archiveService
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * Archive modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_MODIFY)
     @RequestMapping(value = "/archive/modify", method = RequestMethod.POST)
@@ -375,11 +346,12 @@ public class ArchiveManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check archive is valid
-        if(!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
+        if (!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -388,28 +360,30 @@ public class ArchiveManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(archiveService.checkArchiveNameExist(requestBody.getArchivesName(), requestBody.getArchiveId())) {
+        if (archiveService.checkArchiveNameExist(requestBody.getArchivesName(), requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NAME);
         }
 
-        if(archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), requestBody.getArchiveId())) {
+        if (archiveService.checkArchiveNumberExist(requestBody.getArchivesNumber(), requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.USED_ARCHIVE_NUMBER);
         }
 
         SerArchive serArchive = requestBody.convert2SerArchive();
 
-        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
+        if (archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
-
-        archiveService.modifySerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson());
+        archiveService.modifySerArchive(requestBody.getImageUrl(), serArchive, requestBody.getJson()); //modify archive to database through archiveService
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
     /**
      * Archive delete request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_DELETE)
     @RequestMapping(value = "/archive/delete", method = RequestMethod.POST)
@@ -418,33 +392,31 @@ public class ArchiveManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check archive exist or not
-        if(!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
+        if (!archiveService.checkArchiveExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check used device
-        if(archiveService.checkDeviceExist(requestBody.getArchiveId())) {
+        if (archiveService.checkDeviceExist(requestBody.getArchiveId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
         archiveService.removeSerArchive(requestBody.getArchiveId());
 
-
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
-
     /**
      * Archive  get all request.
+     * @return
      */
     @RequestMapping(value = "/archive/get-all", method = RequestMethod.POST)
     public Object archiveGetAll() {
-
 
         List<SerArchive> serArchiveList = archiveService.findAll();
 
@@ -458,35 +430,39 @@ public class ArchiveManagementController extends BaseController {
         return value;
     }
 
-
     /**
      * Archive generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_EXPORT)
     @RequestMapping(value = "/archive/xlsx", method = RequestMethod.POST)
     public Object archiveGenerateExcelFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
-                                                    BindingResult bindingResult) {
+                                           BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String archiveName = "";
         String status = "";
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            archiveName = requestBody.getFilter().getArchivesName();
-            status = requestBody.getFilter().getStatus();
-            categoryId = requestBody.getFilter().getCategoryId();
+        if (requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
+            status = requestBody.getFilter().getStatus(); //get archive status from input parameter
+            categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        //get list of archives from database through archiveService
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
 
-        InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList);
+        InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=archive.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=archive.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -498,30 +474,35 @@ public class ArchiveManagementController extends BaseController {
 
     /**
      * Archive generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/archive/docx", method = RequestMethod.POST)
     public Object archiveGenerateWordFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
-                                           BindingResult bindingResult) {
+                                          BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String archiveName = "";
         String status = "";
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            archiveName = requestBody.getFilter().getArchivesName();
-            status = requestBody.getFilter().getStatus();
-            categoryId = requestBody.getFilter().getCategoryId();
+        if (requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
+            status = requestBody.getFilter().getStatus(); //get archive status from input parameter
+            categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        //get list of archives from database through archiveService
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
-        InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList);
+        InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=archive.docx");
+        headers.add("Content-Disposition", "attachment; filename=archive.docx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -531,35 +512,39 @@ public class ArchiveManagementController extends BaseController {
 
     }
 
-
     /**
      * Archive generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_ARCHIVE_PRINT)
     @RequestMapping(value = "/archive/pdf", method = RequestMethod.POST)
     public Object archiveGeneratePDFFile(@RequestBody @Valid ArchiveGenerateRequestBody requestBody,
-                                           BindingResult bindingResult) {
+                                         BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String archiveName = "";
         String status = "";
         Long categoryId = null;
-        if(requestBody.getFilter() != null) {
-            archiveName = requestBody.getFilter().getArchivesName();
-            status = requestBody.getFilter().getStatus();
-            categoryId = requestBody.getFilter().getCategoryId();
+        if (requestBody.getFilter() != null) {
+            archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input parameter
+            status = requestBody.getFilter().getStatus(); //get archive status from input parameter
+            categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        //get list of archives from database through archiveService
         List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
-        DeviceArchivePdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);
+        DeviceArchivePdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = DeviceArchivePdfView.buildPDFDocument(exportList);  //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=archive.pdf");
+        headers.add("Content-Disposition", "attachment; filename=archive.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
