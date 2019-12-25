@@ -1,44 +1,38 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/18
- * @CreatedBy Choe.
- * @FileName FieldManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（FieldManagementController）
+ * 文件名：	FieldManagementController.java
+ * 描述：	Field management controller.
+ * 作者名：	Sandy
+ * 日期：	2019/10/30
  */
 
 package com.nuctech.ecuritycheckitem.controllers.fieldmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.export.devicemanagement.DeviceExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementExcelView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementPdfView;
 import com.nuctech.ecuritycheckitem.export.fieldmanagement.FieldManagementWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
-import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
-import com.sun.istack.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,11 +49,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Field management controller.
@@ -82,27 +73,16 @@ public class FieldManagementController extends BaseController {
 
         @NotNull
         String fieldSerial;
-
         @NotNull
         String fieldDesignation;
-
-//        @NotNull
-//        Long orgId;
-
         @NotNull
         Long parentFieldId;
-
         String leader;
-
         String mobile;
-
         String note;
-
-        SysField convert2SysField() {
-
+        SysField convert2SysField() { //create new object from input parameters
             return SysField
                     .builder()
-                    //.orgId(this.getOrgId())
                     .fieldSerial(this.getFieldSerial())
                     .fieldDesignation(this.getFieldDesignation())
                     .parentFieldId(this.getParentFieldId())
@@ -111,9 +91,7 @@ public class FieldManagementController extends BaseController {
                     .status(SysField.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
-
     }
 
     /**
@@ -128,7 +106,6 @@ public class FieldManagementController extends BaseController {
 
         @NotNull
         Long fieldId;
-
     }
 
     @Getter
@@ -163,13 +140,9 @@ public class FieldManagementController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
-
         Filter filter;
-
-
     }
 
     /**
@@ -181,7 +154,6 @@ public class FieldManagementController extends BaseController {
     @AllArgsConstructor
     @ToString
     private static class FieldGenerateRequestBody {
-
 
         String idList;
         @NotNull
@@ -202,27 +174,17 @@ public class FieldManagementController extends BaseController {
 
         @NotNull
         Long fieldId;
-
         @NotNull
         String fieldSerial;
-
         @NotNull
         String fieldDesignation;
-
-//        @NotNull
-//        Long orgId;
-
         @NotNull
         Long parentFieldId;
-
         String leader;
-
         String mobile;
-
         String note;
 
-        SysField convert2SysField() {
-
+        SysField convert2SysField() { //create new object from input parameters
             return SysField
                     .builder()
                     .fieldId(this.getFieldId())
@@ -235,9 +197,7 @@ public class FieldManagementController extends BaseController {
                     .status(SysField.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
-
     }
 
     /**
@@ -256,13 +216,13 @@ public class FieldManagementController extends BaseController {
         @NotNull
         @Pattern(regexp = SysField.Status.ACTIVE + "|" + SysField.Status.INACTIVE)
         String status;
-
     }
-
-
 
     /**
      * Field create request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/field/create", method = RequestMethod.POST)
@@ -270,19 +230,16 @@ public class FieldManagementController extends BaseController {
             @RequestBody @Valid FieldCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if parent field is existing.
-        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {
+        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {// Check if parent field is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
         }
-
         if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
         }
@@ -293,9 +250,11 @@ public class FieldManagementController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * Field modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/field/modify", method = RequestMethod.POST)
@@ -303,40 +262,26 @@ public class FieldManagementController extends BaseController {
             @RequestBody @Valid FieldModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-
-        // Check if field is existing.
-        if (!fieldService.checkFieldExist(requestBody.getFieldId())) {
+        if (!fieldService.checkFieldExist(requestBody.getFieldId())) { // Check if field is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if parent field is existing.
-        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {
+        if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) { // Check if parent field is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-
-
         if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
         }
-
         if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
         }
-
-        // Check if field has children.
-        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+        if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
-
-
-
 
         //check if device use this field
         if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
@@ -349,9 +294,11 @@ public class FieldManagementController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * Field delete request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/field/delete", method = RequestMethod.POST)
@@ -359,20 +306,17 @@ public class FieldManagementController extends BaseController {
             @RequestBody @Valid FieldDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if field has children.
-        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+        if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
-
         if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
-
         fieldService.removeField(requestBody.getFieldId());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -380,6 +324,9 @@ public class FieldManagementController extends BaseController {
 
     /**
      * Field update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_UPDATE_STATUS)
     @RequestMapping(value = "/field/update-status", method = RequestMethod.POST)
@@ -387,27 +334,18 @@ public class FieldManagementController extends BaseController {
             @RequestBody @Valid FieldUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if field is existing.
-
-        if (!fieldService.checkFieldExist(requestBody.getFieldId())) {
+        if (!fieldService.checkFieldExist(requestBody.getFieldId())) { // Check if field is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if field has children.
-        if (fieldService.checkHasChild(requestBody.getFieldId())) {
+        if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
-
-
-
-
-        //check if device use this field
-        if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
+        if(fieldService.checkDeviceExist(requestBody.getFieldId())) { //check if device use this field
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
@@ -416,21 +354,16 @@ public class FieldManagementController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * Field get all request.
+     * @return
      */
     @RequestMapping(value = "/field/get-all", method = RequestMethod.POST)
     public Object fieldGetAllActive() {
 
-
-        List<SysField> sysFieldList = fieldService.findAll(false);
-
+        List<SysField> sysFieldList = fieldService.findAll(false); //get all list of SysField from database through fieldService
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
-
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
         value.setFilters(filters);
 
         return value;
@@ -438,91 +371,82 @@ public class FieldManagementController extends BaseController {
 
     /**
      * Field get all request.
+     * @return
      */
     @RequestMapping(value = "/field/get-all-field", method = RequestMethod.POST)
     public Object fieldGetAll() {
 
-
-
-        List<SysField> sysFieldList = fieldService.findAll(true);
-
+        List<SysField> sysFieldList = fieldService.findAll(true); //get all list of SysField from database through fieldService
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysFieldList));
-
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
         value.setFilters(filters);
 
         return value;
     }
 
-
-
-
     /**
      * Field datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/field/get-by-filter-and-page", method = RequestMethod.POST)
     public Object fieldGetByFilterAndPage(
             @RequestBody @Valid FieldGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
 
         String designation = "";
         String status = "";
         String parentDesignation = "";
         if(requestBody.getFilter() != null) {
-            designation = requestBody.getFilter().getFieldDesignation();
-            status = requestBody.getFilter().getStatus();
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+            designation = requestBody.getFilter().getFieldDesignation(); //get field name from input parameter
+            status = requestBody.getFilter().getStatus(); //get status from input parameter
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SysField> result = fieldService.getDeviceListByFilter(designation, status, parentDesignation, currentPage, perPage);
-        long total = result.getTotal();
+        PageResult<SysField> result = fieldService.getDeviceListByFilter(designation, status, parentDesignation, currentPage, perPage); //get list of field from database through fieldService
+        long total = result.getTotal(); //get total count
         List<SysField> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set last index of current page
+                        .data(data) //set data
                         .build()));
-
-        // Set filters.
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-                //.addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
 
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * Field generate excel file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_EXPORT)
     @RequestMapping(value = "/field/xlsx", method = RequestMethod.POST)
     public Object fieldGenerateExcelFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                      BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -530,36 +454,35 @@ public class FieldManagementController extends BaseController {
         String status = "";
         String parentDesignation = "";
         if(requestBody.getFilter() != null) {
-            designation = requestBody.getFilter().getFieldDesignation();
-            status = requestBody.getFilter().getStatus();
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+            designation = requestBody.getFilter().getFieldDesignation(); //get field name from input parameter
+            status = requestBody.getFilter().getStatus(); //get status from input parameter
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList);
-
-
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        setDictionary(); //set dictionary data
+        InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=field.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=field.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Field generate word file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
     @RequestMapping(value = "/field/docx", method = RequestMethod.POST)
     public Object fieldGenerateWordFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -571,33 +494,32 @@ public class FieldManagementController extends BaseController {
             status = requestBody.getFilter().getStatus();
             parentDesignation = requestBody.getFilter().getParentFieldDesignation();
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList);
-
-
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        setDictionary(); //set dictionary data
+        InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=field.docx");
+        headers.add("Content-Disposition", "attachment; filename=field.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
     }
-
 
     /**
      * Field generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_FIELD_PRINT)
     @RequestMapping(value = "/field/pdf", method = RequestMethod.POST)
     public Object fieldGeneratePDFFile(@RequestBody @Valid FieldGenerateRequestBody requestBody,
                                          BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -605,24 +527,23 @@ public class FieldManagementController extends BaseController {
         String status = "";
         String parentDesignation = "";
         if(requestBody.getFilter() != null) {
-            designation = requestBody.getFilter().getFieldDesignation();
-            status = requestBody.getFilter().getStatus();
-            parentDesignation = requestBody.getFilter().getParentFieldDesignation();
+            designation = requestBody.getFilter().getFieldDesignation(); //get field name from input parameter
+            status = requestBody.getFilter().getStatus(); //get status from input parameter
+            parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
 
-        FieldManagementPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList);
+        FieldManagementPdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = FieldManagementPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=field.pdf");
+        headers.add("Content-Disposition", "attachment; filename=field.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
 }
