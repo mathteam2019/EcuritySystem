@@ -347,18 +347,6 @@
                 <b-row >
                   <b-col cols="4">
                     <b-form-group>
-                      <template slot="label">{{$t('device-management.device-table.device-type')}}<span
-                        class="text-danger">*</span>
-                      </template>
-                      <b-form-select v-model="mainForm.deviceType" :options="deviceTypeSelectOptions" plain/>
-                      <div v-if="pageStatus === 'edit'" class="invalid-feedback d-block">
-                        {{ (submitted && !$v.mainForm.deviceType.required) ?
-                        $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-                      </div>
-                    </b-form-group>
-                  </b-col>
-                  <b-col cols="4">
-                    <b-form-group>
                       <template slot="label">{{$t('device-management.device-table.guid')}}<span
                         class="text-danger">*</span>
                       </template>
@@ -601,9 +589,6 @@
           required
         },
         deviceSerial: {
-          required
-        },
-        deviceType: {
           required
         },
         guid: {
