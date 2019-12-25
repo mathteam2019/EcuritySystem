@@ -1,9 +1,34 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（UserServiceImpl）
+ * 文件名：	UserServiceImpl.java
+ * 描述：	UserService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.controllers.permissionmanagement.UserManagementController;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.repositories.*;
+import com.nuctech.ecuritycheckitem.models.db.QSysUser;
+import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.SysOrg;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysUserGroupUser;
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupUser;
+import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupRole;
+
+import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupUserRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
+
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -16,9 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +49,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Autowired
     SysOrgRepository sysOrgRepository;
 
@@ -47,58 +71,104 @@ public class UserServiceImpl implements UserService {
     @Autowired
     SysUserGroupRoleRepository sysUserGroupRoleRepository;
 
+    /**
+     * check if user exists
+     * @param userId
+     * @return
+     */
     @Override
     public boolean checkUserExist(long userId) {
         return sysUserRepository.exists(QSysUser.sysUser.userId.eq(userId));
     }
 
+    /**
+     * check if org exists
+     * @param orgId
+     * @return
+     */
     @Override
     public boolean checkOrgExist(long orgId) {
         return sysOrgRepository.exists(QSysOrg.sysOrg.orgId.eq(orgId));
     }
 
+    /**
+     * check if account exists
+     * @param userAccount
+     * @param userId
+     * @return
+     */
     @Override
     public boolean checkAccountExist(String userAccount, Long userId) {
-        if(userId == null) {
+        if (userId == null) {
             return sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(userAccount));
         }
         return sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(userAccount).and(QSysUser.sysUser.userId.ne(userId)));
     }
 
+    /**
+     * check if email exists
+     * @param email
+     * @param userId
+     * @return
+     */
     @Override
     public boolean checkEmailExist(String email, Long userId) {
-        if(userId == null) {
+        if (userId == null) {
             return sysUserRepository.exists(QSysUser.sysUser.email.eq(email));
         }
         return sysUserRepository.exists(QSysUser.sysUser.email.eq(email).and(QSysUser.sysUser.userId.ne(userId)));
     }
 
+    /**
+     * check if group name exists
+     * @param groupName
+     * @param groupId
+     * @return
+     */
     @Override
     public boolean checkGroupNameExist(String groupName, Long groupId) {
-        if(groupId == null) {
+        if (groupId == null) {
             return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName));
         }
         return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupName.eq(groupName)
                 .and(QSysUser.sysUser.userId.ne(groupId)));
     }
 
+    /**
+     * check if group number exists
+     * @param groupNumber
+     * @param groupId
+     * @return
+     */
     @Override
     public boolean checkGroupNumberExist(String groupNumber, Long groupId) {
-        if(groupId == null) {
+        if (groupId == null) {
             return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber));
         }
         return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.groupNumber.eq(groupNumber)
                 .and(QSysUser.sysUser.userId.ne(groupId)));
     }
 
+    /**
+     * check if mobile exists
+     * @param mobile
+     * @param userId
+     * @return
+     */
     @Override
     public boolean checkMobileExist(String mobile, Long userId) {
-        if(userId == null) {
+        if (userId == null) {
             return sysUserRepository.exists(QSysUser.sysUser.mobile.eq(mobile));
         }
         return sysUserRepository.exists(QSysUser.sysUser.mobile.eq(mobile).and(QSysUser.sysUser.userId.ne(userId)));
     }
 
+    /**
+     * create new user
+     * @param user
+     * @param portraitFile
+     * @return
+     */
     @Override
     @Transactional
     public boolean createUser(SysUser user, MultipartFile portraitFile) {
@@ -114,6 +184,12 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * edit user
+     * @param user
+     * @param portraitFile
+     * @return
+     */
     @Override
     @Transactional
     public boolean modifyUser(SysUser user, MultipartFile portraitFile) {
@@ -132,7 +208,7 @@ public class UserServiceImpl implements UserService {
 
         // Process user portrait file.
         String fileName = utils.saveImageFile(portraitFile);
-        if(!fileName.equals("")) {
+        if (!fileName.equals("")) {
             user.setPortrait(fileName);
         }
 
@@ -143,6 +219,14 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * get prediate from filer parameters
+     * @param userName
+     * @param status
+     * @param gender
+     * @param orgId
+     * @return
+     */
     private BooleanBuilder getPredicate(String userName, String status, String gender, Long orgId) {
         QSysUser builder = QSysUser.sysUser;
 
@@ -172,6 +256,16 @@ public class UserServiceImpl implements UserService {
         return predicate;
     }
 
+    /**
+     * get paginated and filtered user list
+     * @param userName
+     * @param status
+     * @param gender
+     * @param orgId
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
     public PageResult<SysUser> getUserListByPage(String userName, String status, String gender, Long orgId, int currentPage, int perPage) {
         // Build query.
@@ -186,20 +280,27 @@ public class UserServiceImpl implements UserService {
         return new PageResult<>(total, data);
     }
 
+    /**
+     * extract export list
+     * @param userList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysUser> getExportList(List<SysUser> userList, boolean isAll, String idList) {
         List<SysUser> exportList = new ArrayList<>();
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
-            for(int i = 0; i < userList.size(); i ++) {
+            for (int i = 0; i < userList.size(); i++) {
                 SysUser user = userList.get(i);
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(user.getUserId().toString())) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(user.getUserId().toString())) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.add(user);
                 }
             }
@@ -209,6 +310,16 @@ public class UserServiceImpl implements UserService {
         return exportList;
     }
 
+    /**
+     * get filtered export user list
+     * @param userName
+     * @param status
+     * @param gender
+     * @param orgId
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SysUser> getExportUserListByPage(String userName, String status, String gender, Long orgId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(userName, status, gender, orgId);
@@ -222,6 +333,12 @@ public class UserServiceImpl implements UserService {
         return exportList;
     }
 
+    /**
+     * update user status
+     * @param userId
+     * @param status
+     * @return
+     */
     @Override
     @Transactional
     public boolean updateStatus(long userId, String status) {
@@ -238,6 +355,10 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * find all users
+     * @return
+     */
     @Override
     public List<SysUser> findAllUser() {
         QSysUser builder = QSysUser.sysUser;
@@ -251,6 +372,12 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * create new user group
+     * @param userGroup
+     * @param userIdList
+     * @return
+     */
     @Override
     @Transactional
     public boolean createUserGroup(SysUserGroup userGroup, List<Long> userIdList) {
@@ -272,6 +399,11 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * get usergroup predicate with groupname
+     * @param groupName
+     * @return
+     */
     private BooleanBuilder getUserGroupPredicate(String groupName) {
         // Build query.
         QSysUserGroup builder = QSysUserGroup.sysUserGroup;
@@ -286,8 +418,15 @@ public class UserServiceImpl implements UserService {
         return predicate;
     }
 
+    /**
+     * get pagniated and filtered user group list
+     * @param groupName
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
-    public PageResult<SysUserGroup> getUserGroupListByPage(String groupName, int currentPage, int perPage){
+    public PageResult<SysUserGroup> getUserGroupListByPage(String groupName, int currentPage, int perPage) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -297,20 +436,27 @@ public class UserServiceImpl implements UserService {
         return new PageResult<>(total, data);
     }
 
+    /**
+     * extract usergroup export list
+     * @param userGroupList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysUserGroup> getExportUserGroupList(List<SysUserGroup> userGroupList, boolean isAll, String idList) {
         List<SysUserGroup> exportList = new ArrayList<>();
-        if(isAll == false) {
+        if (isAll == false) {
             String[] splits = idList.split(",");
-            for(int i = 0; i < userGroupList.size(); i ++) {
+            for (int i = 0; i < userGroupList.size(); i++) {
                 SysUserGroup userGroup = userGroupList.get(i);
                 boolean isExist = false;
-                for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(userGroup.getUserGroupId().toString())) {
+                for (int j = 0; j < splits.length; j++) {
+                    if (splits[j].equals(userGroup.getUserGroupId().toString())) {
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == true) {
+                if (isExist == true) {
                     exportList.add(userGroup);
                 }
             }
@@ -320,6 +466,13 @@ public class UserServiceImpl implements UserService {
         return exportList;
     }
 
+    /**
+     * get export usergroup list
+     * @param groupName
+     * @param isAll
+     * @param idList
+     * @return
+     */
     @Override
     public List<SysUserGroup> getExportUserGroupListByPage(String groupName, boolean isAll, String idList) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName);
@@ -328,35 +481,57 @@ public class UserServiceImpl implements UserService {
                 .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
-        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, isAll,idList);
+        List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, isAll, idList);
         return exportList;
     }
 
+    /**
+     * check if usergroup exists
+     * @param userGroupId
+     * @return
+     */
     @Override
     public boolean checkUserGroupExist(long userGroupId) {
         return sysUserGroupRepository.exists(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
     }
 
+    /**
+     * check if usergroupuser exists
+     * @param userGroupId
+     * @return
+     */
     @Override
     public boolean checkUserGroupUserExist(long userGroupId) {
         return sysUserGroupUserRepository.exists(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(userGroupId));
     }
 
+    /**
+     * check if userGroupRole exists
+     * @param userGroupId
+     * @return
+     */
     @Override
     public boolean checkUserGroupRoleExist(long userGroupId) {
         return sysUserGroupRoleRepository.exists(QSysUserGroupRole.sysUserGroupRole.userGroupId.eq(userGroupId));
     }
 
+    /**
+     * edit user group
+     * @param userGroupId
+     * @param userIdList
+     * @return
+     */
     @Override
     @Transactional
-    public  boolean modifyUserGroup(long userGroupId, List<Long> userIdList) {
+    public boolean modifyUserGroup(long userGroupId, List<Long> userIdList) {
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
 
         // Delete all existing relation.
         Iterable<SysUserGroupUser> userGroupList = sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId()));
-        List<SysUserGroupUser> listTest = StreamSupport.stream(userGroupList.spliterator(), false).collect(Collectors.toList());Collectors.toList();
+        List<SysUserGroupUser> listTest = StreamSupport.stream(userGroupList.spliterator(), false).collect(Collectors.toList());
+        Collectors.toList();
         sysUserGroupUserRepository.deleteAll(userGroupList);
 
         // Build relation array which are valid only.
@@ -381,9 +556,14 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * remove usergroup
+     * @param userGroupId
+     * @return
+     */
     @Override
     @Transactional
-    public  boolean removeUserGroup(long userGroupId) {
+    public boolean removeUserGroup(long userGroupId) {
         sysUserGroupRepository.delete(
                 SysUserGroup
                         .builder()
@@ -393,6 +573,11 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * get resoure list with specified user id
+     * @param userId
+     * @return
+     */
     @Override
     public List<SysResource> getResourceList(long userId) {
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
@@ -402,8 +587,6 @@ public class UserServiceImpl implements UserService {
         }
 
         SysUser sysUser = optionalSysUser.get();
-
-
 
         // Get all available resources for user.
         List<SysResource> availableSysResourceList = new ArrayList<>();

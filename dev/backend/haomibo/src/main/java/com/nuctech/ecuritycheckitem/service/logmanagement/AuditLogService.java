@@ -19,9 +19,32 @@ import java.util.Date;
 import java.util.List;
 
 public interface AuditLogService {
+
+    /**
+     * get paginated and filtered audit log
+     * @param clientIp
+     * @param operateResult
+     * @param operateObject
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     PageResult<SysAuditLog> getAuditLogListByFilter(String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                                      Date operateEndTime, int currentPage, int perPage);
 
+    /**
+     * get audit log export list
+     * @param clientIp
+     * @param operateResult
+     * @param operateObject
+     * @param operateStartTime
+     * @param operateEndTime
+     * @param isAll
+     * @param idList
+     * @return
+     */
     List<SysAuditLog> getExportList(String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                      Date operateEndTime, boolean isAll, String idList);
 }
