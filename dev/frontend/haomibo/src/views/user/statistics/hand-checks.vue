@@ -57,8 +57,6 @@
             <b-form-group :label="$t('statistics.view.end-time')">
               <date-picker v-model="filter.endTime" type="datetime" format="YYYY-MM-DD HH:mm"
                            placeholder=""/>
-
-
             </b-form-group>
           </b-col>
 
@@ -225,10 +223,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -318,10 +316,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
             <i class="icofont-exchange"/>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onExportButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton2()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" style="background-color: white" @click="onPrintButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton2()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -1458,11 +1456,7 @@
       cursor: pointer;
       background-color: #007bff;
     }
-
-    .btn-outline-info:hover {
-      color: #122881;
-    }
-
+   
     .parameter-items {
 
       & > .col:nth-child(1) {

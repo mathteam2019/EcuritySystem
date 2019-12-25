@@ -144,9 +144,6 @@
       }
     }
 
-    .btn-outline-info:hover {
-      color: #122881;
-    }
   }
 
 </style>

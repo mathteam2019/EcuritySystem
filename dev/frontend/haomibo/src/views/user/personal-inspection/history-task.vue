@@ -112,7 +112,7 @@
                   <span v-else> </span>
                 </template>
                 <template slot="mode" slot-scope="props">
-                  <div v-if="props.rowData.workMode==null">None</div>
+                  <div v-if="props.rowData.workMode==null"></div>
                   <div v-else>
                     <div v-if="props.rowData.workMode.modeName==='1000001304'">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -153,7 +153,7 @@
           <b-card class="pt-4 h-100">
             <b-row class="mb-1">
               <b-col>
-                <div v-if="showPage.workMode==null">None</div>
+                <div v-if="showPage.workMode==null"></div>
                 <div v-else>
                   <div v-if="showPage.workMode.modeName==='1000001304'">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -311,7 +311,7 @@
                     <div>{{$t('maintenance-management.process-task.scan')}}</div>
                     <div>
                       <div v-if="showPage.scanPointsmanName != null">{{showPage.scanPointsmanName}}</div>
-                      <div v-else>None</div>
+                      <div v-else></div>
                     </div>
                   </div>
                   <div class="right">
@@ -321,11 +321,11 @@
                   <div class="top-date">
                     <label
                       v-if="showPage.scanStartTime != null">{{this.getDateTimeFormat2(showPage.scanStartTime)}}</label>
-                    <label v-else>None</label>
+                    <label v-else></label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.scanEndTime != null">{{this.getDateTimeFormat2(showPage.scanEndTime)}}</label>
-                    <label v-else>None</label>
+                    <label v-else></label>
                   </div>
                 </div>
 
@@ -334,7 +334,7 @@
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
                       <div v-if="showPage.judgeUser != null">{{showPage.judgeUser.userName}}</div>
-                      <div v-else>None</div>
+                      <div v-else></div>
                     </div>
                   </div>
                   <div class="right">
@@ -344,12 +344,12 @@
                   <div class="top-date">
                     <label
                       v-if="showPage.judgeStartTime != null">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
-                    <label v-else>None</label>
+                    <label v-else></label>
                   </div>
                   <div class="bottom-date">
                     <label
                       v-if="showPage.judgeEndTime != null">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
-                    <label v-else>None</label>
+                    <label v-else></label>
                   </div>
                 </div>
 
@@ -357,7 +357,7 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-                      <div v-if="showPage.handUser == null">None</div>
+                      <div v-if="showPage.handUser == null"></div>
                       <div v-else>{{showPage.handUser.userName}}</div>
                     </div>
                   </div>
@@ -366,11 +366,11 @@
                     <div>Wang wu</div>
                   </div>
                   <div class="top-date">
-                    <label v-if="showPage.handStartTime == null">None</label>
+                    <label v-if="showPage.handStartTime == null"></label>
                     <label v-else>{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.handEndTime == null">None</label>
+                    <label v-if="showPage.handEndTime == null"></label>
                     <label v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
                   </div>
                 </div>
@@ -395,7 +395,7 @@
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null">None</label>
+                  <label v-if="showPage.task == null"></label>
                   <label v-else>{{showPage.task.taskNumber}}</label>
                 </b-form-group>
               </b-col>
@@ -405,8 +405,8 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null">None</label>
-                  <label v-else-if="showPage.task.field == null">None</label>
+                  <label v-if="showPage.task == null"></label>
+                  <label v-else-if="showPage.task.field == null"></label>
                   <label v-else>{{showPage.task.field.fieldDesignation}}</label>
                 </b-form-group>
               </b-col>
@@ -416,7 +416,7 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.scanDevice == null">None</label>
+                  <label v-if="showPage.scanDevice == null"></label>
                   <label v-else>{{showPage.scanDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
@@ -426,7 +426,7 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan == null">None</label>
+                  <label v-if="showPage.serScan == null"></label>
                   <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
                 </b-form-group>
               </b-col>
@@ -439,7 +439,7 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.handDevice == null">None</label>
+                  <label v-if="showPage.handDevice == null"></label>
                   <label v-else>{{showPage.handDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
@@ -449,7 +449,7 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.judgeDevice == null">None</label>
+                  <label v-if="showPage.judgeDevice == null"></label>
                   <label v-else>{{showPage.judgeDevice.deviceName}}</label>
                 </b-form-group>
               </b-col>
@@ -459,7 +459,7 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <div v-if="showPage.workMode==null">None</div>
+                  <div v-if="showPage.workMode==null"></div>
                   <div v-else>
                     <div v-if="showPage.workMode.modeName==='1000001304'">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -486,8 +486,8 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null">None</label>
-                  <label v-else-if="showPage.task.serJudgeGraph==null">None</label>                  
+                  <label v-if="showPage.task == null"></label>
+                  <label v-else-if="showPage.task.serJudgeGraph==null"></label>
                   <label v-else>{{getOptionValue(showPage.task.serJudgeGraph.judgeResult)}}</label>
                 </b-form-group>
               </b-col>
@@ -499,7 +499,7 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.handAppraise}} </label>
+                  <label>{{getOptionValue(showPage.handAppraise)}} </label>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -516,7 +516,7 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.note == null">None</label>
+                  <label v-if="showPage.note == null"></label>
                   <label v-else>{{showPage.note}}</label>
                 </b-form-group>
               </b-col>
@@ -1124,6 +1124,8 @@
           "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
           "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
           "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
+          "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
+          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
         };
 
         if (!dictionary.hasOwnProperty(dataCode)) return '';

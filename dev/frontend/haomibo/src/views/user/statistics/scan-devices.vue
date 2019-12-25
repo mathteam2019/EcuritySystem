@@ -240,10 +240,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default bg-white" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
