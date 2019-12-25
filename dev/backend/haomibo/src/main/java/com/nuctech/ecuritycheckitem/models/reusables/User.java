@@ -14,6 +14,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import lombok.Builder;
 
 /**
  * This class is used for user's information in login response.

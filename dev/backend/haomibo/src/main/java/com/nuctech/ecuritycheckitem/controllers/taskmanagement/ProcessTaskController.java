@@ -164,7 +164,8 @@ public class ProcessTaskController extends BaseController {
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination", "workFlow", "scanDeviceImages", "note")) //only return specified fields from task model
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field","history", "serScan", "serJudgeGraph", "serHandExamination", "workFlow", "scanDeviceImages",  "note")) //only return specified fields from task model
+                .addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("handAppraise")) //return only handAppraise
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) // return all fields except "task" from SerScan model
                 .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout", "judgeUser", "judgeStartTime", "judgeEndTime")) //only return "judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime" from SerJudgeGraph model

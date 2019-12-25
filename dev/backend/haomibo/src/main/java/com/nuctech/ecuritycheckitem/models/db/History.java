@@ -1,6 +1,8 @@
 package com.nuctech.ecuritycheckitem.models.db;
 
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +11,15 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,6 +30,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history")
 public class History extends BaseEntity implements Serializable {
 

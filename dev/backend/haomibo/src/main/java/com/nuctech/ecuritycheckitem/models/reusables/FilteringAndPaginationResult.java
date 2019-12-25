@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
+import lombok.Builder;
 
 /**
  * this class is used for filtering and pagination result which is used in datatable.

@@ -21,7 +21,17 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.List;
 
@@ -57,27 +67,11 @@ public class SerArchive extends BaseEntity implements Serializable {
     @Column(name = "ARCHIVES_NUMBER", length = 50)
     private String archivesNumber;
 
-//    @Column(name = "CATEGORY_ID", length = 20)
-//    private Long categoryId;
-//
-//    @Column(name = "MANUFACTURER", length = 10)
-//    private String manufacturer;
-//
-//    @Column(name = "ORIGINAL_MODEL", length = 50)
-//    private String originalModel;
-
     @Column(name = "STATUS", length = 10)
     private String status;
 
     @Column(name = "IMAGE_URL", length = 200)
     private String imageUrl;
-
-//    @ToString.Exclude
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "CATEGORY_ID", insertable = false, updatable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    @MapsId("category")
-//    private SysDeviceCategory deviceCategory; // Relation to SysDeviceCategory table.
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)

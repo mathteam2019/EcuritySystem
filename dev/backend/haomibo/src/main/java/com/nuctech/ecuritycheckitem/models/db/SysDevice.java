@@ -21,7 +21,16 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.FetchType;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -73,15 +82,6 @@ public class SysDevice extends BaseEntity implements Serializable {
 
     @Column(name = "DEVICE_SERIAL", length = 50)
     private String deviceSerial;
-
-//    @Column(name = "CATEGORY_ID", length = 20)
-//    Long categoryId;
-//
-//    @Column(name = "MANUFACTURER", length = 10)
-//    String manufacturer;
-//
-//    @Column(name = "ORIGINAL_MODEL", length = 50)
-//    String originalModel;
 
     @Column(name = "ORIGINAL_FACTORY_NUMBER", length = 50)
     private String originalFactoryNumber;
