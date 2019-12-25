@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/10/24
- * @CreatedBy Sandy.
- * @FileName UerManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（UserManagementController）
+ * 文件名：	UserManagementController.java
+ * 描述：	User management controller.
+ * 作者名：	Sandy
+ * 日期：	2019/10/24
  */
+
 package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -15,7 +19,6 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement.AssignUserExcelView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.usermanagement.*;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
@@ -23,16 +26,13 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,25 +47,15 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-/**
- * User management controller.
- */
 @RestController
 @RequestMapping("/permission-management/user-management")
 public class UserManagementController extends BaseController {
 
     @Autowired
     UserService userService;
-
 
     /**
      * User create request body.
@@ -83,29 +73,21 @@ public class UserManagementController extends BaseController {
 
         @NotNull
         long orgId;
-
         @NotNull
         String userName;
-
         @NotNull
         String userAccount;
-
         @NotNull
         @Pattern(regexp = PasswordType.DEFAULT + "|" + PasswordType.OTHER)
         String passwordType;
-
         String passwordValue;
-
         @NotNull
         String userNumber;
-
         @NotNull
         @Pattern(regexp = SysUser.Gender.MALE + "|" + SysUser.Gender.FEMALE + "|" + SysUser.Gender.OTHER)
         String gender;
-
         @NotNull
         String identityCard;
-
         String post;
         String education;
         String degree;
@@ -113,13 +95,11 @@ public class UserManagementController extends BaseController {
         String email;
         String mobile;
         String address;
-
-
         String note;
 
         private MultipartFile portrait;
 
-        SysUser convert2SysUser() {
+        SysUser convert2SysUser() { //create new object from input parameters
 
             return SysUser.builder()
                     .orgId(this.getOrgId())
@@ -142,7 +122,6 @@ public class UserManagementController extends BaseController {
         }
     }
 
-
     /**
      * User modify request body.
      */
@@ -154,25 +133,18 @@ public class UserManagementController extends BaseController {
 
         @NotNull
         long userId;
-
         @NotNull
         long orgId;
-
         @NotNull
         String userName;
-
         String userAccount;
-
         @NotNull
         String userNumber;
-
         @NotNull
         @Pattern(regexp = SysUser.Gender.MALE + "|" + SysUser.Gender.FEMALE + "|" + SysUser.Gender.OTHER)
         String gender;
-
         @NotNull
         String identityCard;
-
         String post;
         String education;
         String degree;
@@ -184,7 +156,7 @@ public class UserManagementController extends BaseController {
 
         private MultipartFile portrait;
 
-        SysUser convert2SysUser() {
+        SysUser convert2SysUser() { //create new object from input parameters
 
             return SysUser.builder()
                     .userId(this.getUserId())
@@ -207,7 +179,6 @@ public class UserManagementController extends BaseController {
         }
     }
 
-
     /**
      * User get all request body.
      */
@@ -226,8 +197,6 @@ public class UserManagementController extends BaseController {
         @Pattern(regexp = GetAllType.BARE + "|" +
                 GetAllType.WITH_ORG_TREE)
         String type = GetAllType.BARE;
-
-
     }
 
     /**
@@ -245,33 +214,26 @@ public class UserManagementController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
+
             String userName;
-
             Long orgId;
-
             @Pattern(regexp = SysUser.Status.ACTIVE + "|" +
                     SysUser.Status.INACTIVE + "|" +
                     SysUser.Status.PENDING + "|" +
                     SysUser.Status.BLOCKED)
             String status;
-
             @Pattern(regexp = SysUser.Gender.MALE + "|" +
                     SysUser.Gender.FEMALE + "|" +
                     SysUser.Gender.OTHER)
             String gender;
-
-
         }
 
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
-
         Filter filter;
-
     }
 
     /**
@@ -284,13 +246,12 @@ public class UserManagementController extends BaseController {
     @ToString
     private static class UserGenerateRequestBody {
 
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         UserGetByFilterAndPageRequestBody.Filter filter;
     }
-
 
     /**
      * User update status request body.
@@ -308,7 +269,6 @@ public class UserManagementController extends BaseController {
         @NotNull
         @Pattern(regexp = SysUser.Status.ACTIVE + "|" + SysUser.Status.INACTIVE + "|" + SysUser.Status.BLOCKED + "|" + SysUser.Status.PENDING)
         String status;
-
     }
 
 
@@ -324,16 +284,12 @@ public class UserManagementController extends BaseController {
 
         @NotNull
         String groupNumber;
-
         @NotNull
         String groupName;
-
         @NotNull
         List<Long> userIdList;
-
         String note;
     }
-
 
     /**
      * User group modify request body.
@@ -343,13 +299,12 @@ public class UserManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     private static class UserGroupModifyRequestBody {
+
         @NotNull
         long userGroupId;
-
         @NotNull
         List<Long> userIdList;
     }
-
 
     /**
      * User group datatable request body.
@@ -372,12 +327,9 @@ public class UserManagementController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
-
         Filter filter;
-
     }
 
     /**
@@ -390,13 +342,12 @@ public class UserManagementController extends BaseController {
     @ToString
     private static class UserGroupGenerateRequestBody {
 
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
     }
-
 
     /**
      * User group delete request body.
@@ -410,7 +361,6 @@ public class UserManagementController extends BaseController {
         long userGroupId;
     }
 
-
     /**
      * User create request.
      */
@@ -420,46 +370,37 @@ public class UserManagementController extends BaseController {
             @ModelAttribute @Valid UserCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {//return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if org is valid.
-        if (!userService.checkOrgExist(requestBody.getOrgId())) {
-            // If organization is not found, this is invalid request.
+        if (!userService.checkOrgExist(requestBody.getOrgId())) {// If organization is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if user account is duplicated.
-        if (userService.checkAccountExist(requestBody.getUserAccount(), null)) {
+        if (userService.checkAccountExist(requestBody.getUserAccount(), null)) { // Check if user account is duplicated.
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
-
-        // Check password.
-        if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) {
+        if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) { // Check password.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if user email is duplicated.
-        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), null)) {
+        if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), null)) { // Check if user email is duplicated.
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
-
-        // Check if user phone number is duplicated.
-        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), null)) {
+        if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), null)) { // Check if user phone number is duplicated.
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
 
         SysUser sysUser = requestBody.convert2SysUser();
         userService.createUser(sysUser, requestBody.getPortrait());
-
-
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * User modify request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_MODIFY)
     @RequestMapping(value = "/user/modify", method = RequestMethod.POST)
@@ -467,61 +408,44 @@ public class UserManagementController extends BaseController {
             @ModelAttribute @Valid UserModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if user is existing.
-
-        if (!userService.checkUserExist(requestBody.getUserId())) {
-            // If user is not found, this is invalid request.
+        if (!userService.checkUserExist(requestBody.getUserId())) { // Check if user is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-
-
-        // Check if org is valid.
-        if (!userService.checkOrgExist(requestBody.getOrgId())) {
+        if (!userService.checkOrgExist(requestBody.getOrgId())) { // Check if org is valid.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if user account is duplicated.
-        if (userService.checkAccountExist(requestBody.getUserAccount(), requestBody.getUserId())) {
+        if (userService.checkAccountExist(requestBody.getUserAccount(), requestBody.getUserId())) { // Check if user account is duplicated.
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
-
         if (!requestBody.getMobile().equals("") && userService.checkMobileExist(requestBody.getMobile(), requestBody.getUserId())) {
             return new CommonResponseBody(ResponseMessage.USED_MOBILE);
         }
-
-
         if (!requestBody.getEmail().equals("") && userService.checkEmailExist(requestBody.getEmail(), requestBody.getUserId())) {
             return new CommonResponseBody(ResponseMessage.USED_EMAIL);
         }
-
-
         SysUser sysUser = requestBody.convert2SysUser();
-
         userService.modifyUser(sysUser, requestBody.getPortrait());
-
-
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
-
-
     /**
      * User datatable request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/user/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGetByFilterAndPage(
             @RequestBody @Valid UserGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -529,14 +453,12 @@ public class UserManagementController extends BaseController {
         String status = "";
         String gender = "";
         Long orgId = null;
-        if(requestBody.getFilter() != null) {
-            userName = requestBody.getFilter().getUserName();
-            status = requestBody.getFilter().getStatus();
-            gender = requestBody.getFilter().getGender();
-            orgId = requestBody.getFilter().getOrgId();
+        if (requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName(); //get user name from input parameters
+            status = requestBody.getFilter().getStatus(); //get status from input parameters
+            gender = requestBody.getFilter().getGender(); //get gender from input parameters
+            orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
-
-        // Pagination.
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -546,45 +468,38 @@ public class UserManagementController extends BaseController {
         List<SysUser> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
-
-        // Set filters.
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"))
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
-                        SimpleBeanPropertyFilter.serializeAllExcept("users"));
-
+        FilterProvider filters = ModelJsonFilters.getDefaultFilters().addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children", "users")) //return all fields except "children", "users" from SysOrg model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users")); //return all fields except users from SysDataGroup model
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * User generate excel request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_EXPORT)
     @RequestMapping(value = "/user/xlsx", method = RequestMethod.POST)
     public Object userGenerateExcelFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
-                                   BindingResult bindingResult) {
+                                        BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -592,67 +507,63 @@ public class UserManagementController extends BaseController {
         String status = "";
         String gender = "";
         Long orgId = null;
-        if(requestBody.getFilter() != null) {
-            userName = requestBody.getFilter().getUserName();
-            status = requestBody.getFilter().getStatus();
-            gender = requestBody.getFilter().getGender();
-            orgId = requestBody.getFilter().getOrgId();
+        if (requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName(); //get user name from input parameters
+            status = requestBody.getFilter().getStatus(); //get status from input parameters
+            gender = requestBody.getFilter().getGender(); //get gender from input parameters
+            orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = UserExcelView.buildExcelDocument(exportList);
-
-
+        setDictionary(); //set dictionary data
+        InputStream inputStream = UserExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=user.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=user.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * User generate word request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
     @RequestMapping(value = "/user/docx", method = RequestMethod.POST)
     public Object userGenerateWordFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
-                                        BindingResult bindingResult) {
+                                       BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
 
         String userName = "";
         String status = "";
         String gender = "";
         Long orgId = null;
-        if(requestBody.getFilter() != null) {
-            userName = requestBody.getFilter().getUserName();
-            status = requestBody.getFilter().getStatus();
-            gender = requestBody.getFilter().getGender();
-            orgId = requestBody.getFilter().getOrgId();
+        if (requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName(); //get user name from input parameters
+            status = requestBody.getFilter().getStatus(); //get status from input parameters
+            gender = requestBody.getFilter().getGender(); //get gender from input parameters
+            orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = UserWordView.buildWordDocument(exportList);
-
-
+        setDictionary();//set dictionary data
+        InputStream inputStream = UserWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=user.docx");
+        headers.add("Content-Disposition", "attachment; filename=user.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
@@ -661,27 +572,26 @@ public class UserManagementController extends BaseController {
     @PreAuthorize(Role.Authority.HAS_USER_PRINT)
     @RequestMapping(value = "/user/pdf", method = RequestMethod.POST)
     public Object userGeneratePdfFile(@RequestBody @Valid UserGenerateRequestBody requestBody,
-                                   BindingResult bindingResult) {
+                                      BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
         String userName = "";
         String status = "";
         String gender = "";
         Long orgId = null;
-        if(requestBody.getFilter() != null) {
-            userName = requestBody.getFilter().getUserName();
-            status = requestBody.getFilter().getStatus();
-            gender = requestBody.getFilter().getGender();
-            orgId = requestBody.getFilter().getOrgId();
+        if (requestBody.getFilter() != null) {
+            userName = requestBody.getFilter().getUserName(); //get user name from input parameters
+            status = requestBody.getFilter().getStatus(); //get status from input parameters
+            gender = requestBody.getFilter().getGender(); //get gender from input parameters
+            orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
         List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
-        UserPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = UserPdfView.buildPDFDocument(exportList);
+        UserPdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = UserPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=user.pdf");
@@ -691,12 +601,14 @@ public class UserManagementController extends BaseController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
-
 
     /**
      * User update status request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_UPDATE_STATUS)
     @RequestMapping(value = "/user/update-status", method = RequestMethod.POST)
@@ -704,63 +616,53 @@ public class UserManagementController extends BaseController {
             @RequestBody @Valid UserUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if org is existing.
-
-        if (!userService.checkUserExist(requestBody.getUserId())) {
-            // If org is not found ,this is invalid request.
+        if (!userService.checkUserExist(requestBody.getUserId())) { // Check if org is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         userService.updateStatus(requestBody.getUserId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * User get all request.
      * BARE, WITH_ORG_TREE.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/user/get-all", method = RequestMethod.POST)
     public Object userGetAll(@RequestBody @Valid UserGetAllRequestBody requestBody,
                              BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
         List<SysUser> sysUserList = userService.findAllUser();
-
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysUserList));
-
         String type = requestBody.getType();
-
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
         switch (type) {
             case UserGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")); //return all fields except specified fields from SysUser model
                 break;
             case UserGetAllRequestBody.GetAllType.WITH_ORG_TREE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("roles", "dataGroups"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("roles", "dataGroups")) //return all fields except specified fields from SysUser model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children")); //return all fields except specified fields from SysOrg model
                 break;
             default:
                 break;
         }
 
         value.setFilters(filters);
-
         return value;
-
-
     }
 
     /**
@@ -772,22 +674,18 @@ public class UserManagementController extends BaseController {
             @RequestBody @Valid UserGroupCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if (userService.checkGroupNameExist(requestBody.getGroupName(), null)) {
+        if (userService.checkGroupNameExist(requestBody.getGroupName(), null)) { //check group name existance
             return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NAME);
         }
-
-        if (userService.checkGroupNumberExist(requestBody.getGroupNumber(), null)) {
+        if (userService.checkGroupNumberExist(requestBody.getGroupNumber(), null)) { //check group number existance
             return new CommonResponseBody(ResponseMessage.USED_USER_GROUP_NUMBER);
         }
 
-
-
         // Create user group with created info.
-
         SysUserGroup userGroup = (SysUserGroup) SysUserGroup
                 .builder()
                 .groupName(requestBody.getGroupName())
@@ -796,39 +694,32 @@ public class UserManagementController extends BaseController {
                 .build()
                 .addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         List<Long> userIdList = requestBody.getUserIdList();
-
         userService.createUserGroup(userGroup, userIdList);
-
-        // Build relation array which are valid only.
-
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
-
-
     /**
      * User group datatable request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/user-group/get-by-filter-and-page", method = RequestMethod.POST)
     public Object userGroupGetByFilterAndPage(
             @RequestBody @Valid UserGroupGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-
-
         // Pagination.
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
         String groupName = "";
-        if(requestBody.getFilter() != null) {
+        if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
         }
         PageResult<SysUserGroup> result = userService.getUserGroupListByPage(groupName, currentPage, perPage);
@@ -837,70 +728,60 @@ public class UserManagementController extends BaseController {
 
         // Set filters.
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_USER,
-                        SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"))
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_DATA_GROUP,
-                        SimpleBeanPropertyFilter.serializeAllExcept("users"))
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ROLE,
-                        SimpleBeanPropertyFilter.serializeAllExcept("resources"));
-
+                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")) //return all fields except specified fields from SysUser model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DATA_GROUP, SimpleBeanPropertyFilter.serializeAllExcept("users")) //return all fields except "users" from SysDataGroup model
+                .addFilter(ModelJsonFilters.FILTER_SYS_ROLE, SimpleBeanPropertyFilter.serializeAllExcept("resources")); //return all fields except "resources" from SysRole model
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * User Group generate excel request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_EXPORT)
     @RequestMapping(value = "/user-group/xlsx", method = RequestMethod.POST)
     public Object userGroupGenerateExcelFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
-                                        BindingResult bindingResult) {
+                                             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String groupName = "";
-        if(requestBody.getFilter() != null) {
+        if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList);
-
-
+        setDictionary(); //set dictionary data
+        InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=user-group.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=user-group.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
-
     }
 
     /**
@@ -909,100 +790,94 @@ public class UserManagementController extends BaseController {
 
     @RequestMapping(value = "/user-group/docx", method = RequestMethod.POST)
     public Object userGroupGenerateWordFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
-                                             BindingResult bindingResult) {
+                                            BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String groupName = "";
-        if(requestBody.getFilter() != null) {
+        if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = UserGroupWordView.buildWordDocument(exportList);
-
-
+        setDictionary(); //set dictionary data
+        InputStream inputStream = UserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=user-group.docx");
+        headers.add("Content-Disposition", "attachment; filename=user-group.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
-
     }
-
 
     /**
      * User Group generate pdf request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_PRINT)
     @RequestMapping(value = "/user-group/pdf", method = RequestMethod.POST)
     public Object userGroupGeneratePDFFile(@RequestBody @Valid UserGroupGenerateRequestBody requestBody,
-                                        BindingResult bindingResult) {
+                                           BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         String groupName = "";
-        if(requestBody.getFilter() != null) {
+        if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
         }
 
         List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
-        UserGroupPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList);
+        UserGroupPdfView.setResource(getFontResource()); //set font resource
+        setDictionary();  //set dictionary data
+        InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=user-group.pdf");
+        headers.add("Content-Disposition", "attachment; filename=user-group.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
-
 
     /**
      * User group modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_MODIFY)
     @RequestMapping(value = "/user-group/modify", method = RequestMethod.POST)
-    public Object userGroupModify(
-            @RequestBody @Valid UserGroupModifyRequestBody requestBody,
+    public Object userGroupModify(@RequestBody @Valid UserGroupModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-
-        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) {
-            // If user group is not found, this is invalid request.
+        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) { // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         userService.modifyUserGroup(requestBody.getUserGroupId(), requestBody.getUserIdList());
 
         return new CommonResponseBody(ResponseMessage.OK);
-
     }
-
 
     /**
      * User group delete request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_USER_GROUP_DELETE)
     @RequestMapping(value = "/user-group/delete", method = RequestMethod.POST)
@@ -1010,37 +885,25 @@ public class UserManagementController extends BaseController {
             @RequestBody @Valid UserGroupDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) {
-            // If user group is not found, this is invalid request.
+        if (!userService.checkUserGroupExist(requestBody.getUserGroupId())) { // If user group is not found, this is invalid request.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-
-        if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) {
-            // If user group has users, it can't be delete.
+        if (userService.checkUserGroupUserExist(requestBody.getUserGroupId())) { // If user group has users, it can't be delete.
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
-
-        if(userService.checkUserGroupRoleExist(requestBody.getUserGroupId())) {
-
+        if (userService.checkUserGroupRoleExist(requestBody.getUserGroupId())) {
             /*
-            * Todo
-            *  return HAS_ROLE
-            * */
+             * Todo
+             *  return HAS_ROLE
+             * */
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Delete.
-        userService.removeUserGroup(requestBody.getUserGroupId());
+        userService.removeUserGroup(requestBody.getUserGroupId()); // Delete.
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
-
-
 }
