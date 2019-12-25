@@ -9,7 +9,11 @@
  */
 package com.nuctech.ecuritycheckitem.models.reusables;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 /**
  * This class is used for user's information in login response.

@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/10/19
- * @CreatedBy Sandy.
- * @FileName OrganizationManagementController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（OrganizationManagementController）
+ * 文件名：	OrganizationManagementController.java
+ * 描述：	Organization management controller.
+ * 作者名：	Sandy
+ * 日期：	2019/10/19
  */
+
 package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 
 import com.fasterxml.jackson.databind.ser.FilterProvider;
@@ -18,20 +22,18 @@ import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationExce
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationPdfView;
 import com.nuctech.ecuritycheckitem.export.permissionmanagement.OrganizationWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
-import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -51,8 +53,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Organization management controller.
@@ -76,21 +76,15 @@ public class OrganizationManagementController extends BaseController {
 
         @NotNull
         String orgName;
-
         @NotNull
         String orgNumber;
-
         @NotNull
         Long parentOrgId;
-
         String leader;
-
         String mobile;
-
         String note;
 
-        SysOrg convert2SysOrg() {
-
+        SysOrg convert2SysOrg() { //create new object from input parameters
             return SysOrg
                     .builder()
                     .orgName(this.getOrgName())
@@ -101,9 +95,7 @@ public class OrganizationManagementController extends BaseController {
                     .status(SysOrg.Status.INACTIVE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
-
     }
 
     /**
@@ -118,7 +110,6 @@ public class OrganizationManagementController extends BaseController {
 
         @NotNull
         Long orgId;
-
     }
 
     /**
@@ -144,13 +135,9 @@ public class OrganizationManagementController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
-
         Filter filter;
-
-
     }
 
     /**
@@ -163,9 +150,9 @@ public class OrganizationManagementController extends BaseController {
     @ToString
     private static class OrganizationGenerateRequestBody {
 
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         OrganizationGetByFilterAndPageRequestBody.Filter filter;
     }
@@ -182,23 +169,17 @@ public class OrganizationManagementController extends BaseController {
 
         @NotNull
         Long orgId;
-
         @NotNull
         String orgName;
-
         @NotNull
         String orgNumber;
-
         @NotNull
         Long parentOrgId;
-
         String leader;
-
         String mobile;
-
         String note;
 
-        SysOrg convert2SysOrg() {
+        SysOrg convert2SysOrg() { //create new object from input parameters
             return SysOrg
                     .builder()
                     .orgId(this.getOrgId())
@@ -211,7 +192,6 @@ public class OrganizationManagementController extends BaseController {
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
         }
-
     }
 
     /**
@@ -230,7 +210,6 @@ public class OrganizationManagementController extends BaseController {
         @NotNull
         @Pattern(regexp = SysOrg.Status.ACTIVE + "|" + SysOrg.Status.INACTIVE)
         String status;
-
     }
 
 
@@ -263,11 +242,13 @@ public class OrganizationManagementController extends BaseController {
                 GetAllType.WITH_GRAPHIC)
         String type = GetAllType.BARE;
 
-
     }
 
     /**
      * Organization create request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ORG_CREATE)
     @RequestMapping(value = "/organization/create", method = RequestMethod.POST)
@@ -275,15 +256,14 @@ public class OrganizationManagementController extends BaseController {
             @RequestBody @Valid OrganizationCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), null)) {
+        if(organizationService.checkOrgNameExist(requestBody.getOrgName(), null)) { //check OrgName Exist
             return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
         }
-
-        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), null)) {
+        if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), null)) { //check org number exist
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
@@ -295,7 +275,13 @@ public class OrganizationManagementController extends BaseController {
         }
     }
 
+    /**
+     * check org exists
+     * @param orgId
+     * @return
+     */
     private Object checkExist(Long orgId) {
+
         if(organizationService.checkDataGroupExist(orgId)) {
             return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
         }
@@ -318,9 +304,11 @@ public class OrganizationManagementController extends BaseController {
         return null;
     }
 
-
     /**
      * Organization modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ORG_MODIFY)
     @RequestMapping(value = "/organization/modify", method = RequestMethod.POST)
@@ -328,14 +316,13 @@ public class OrganizationManagementController extends BaseController {
             @RequestBody @Valid OrganizationModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(organizationService.checkOrgNameExist(requestBody.getOrgName(), requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
         }
-
         if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), requestBody.getOrgId())) {
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
@@ -356,6 +343,9 @@ public class OrganizationManagementController extends BaseController {
 
     /**
      * Organization delete request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ORG_DELETE)
     @RequestMapping(value = "/organization/delete", method = RequestMethod.POST)
@@ -363,7 +353,7 @@ public class OrganizationManagementController extends BaseController {
             @RequestBody @Valid OrganizationDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -381,13 +371,13 @@ public class OrganizationManagementController extends BaseController {
         } else {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
     }
-
-
 
     /**
      * Organization update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ORG_UPDATE_STATUS)
     @RequestMapping(value = "/organization/update-status", method = RequestMethod.POST)
@@ -395,10 +385,9 @@ public class OrganizationManagementController extends BaseController {
             @RequestBody @Valid OrganizationUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
 
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
@@ -415,17 +404,19 @@ public class OrganizationManagementController extends BaseController {
     /**
      * Organization get all request.
      * BARE, WITH_PARENT, WITH_CHILDREN, WITH_USERS, WITH_PARENT_AND_USERS, WITH_CHILDREN_AND_USERS.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/organization/get-all", method = RequestMethod.POST)
     public Object organizationGetAll(@RequestBody @Valid OrganizationGetAllRequestBody requestBody,
                                      BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         boolean isAll = false;
-
         if(requestBody.getType().equals(OrganizationGetAllRequestBody.GetAllType.WITH_GRAPHIC)) {
             isAll = true;
         }
@@ -433,43 +424,37 @@ public class OrganizationManagementController extends BaseController {
         List<SysOrg> sysOrgList = organizationService.getAllOrganization(isAll);
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysOrgList));
-
         String type = requestBody.getType();
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        // Set filters for different type.
-        switch (type) {
-
+        switch (type) { // Set filters for different type.
             case OrganizationGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users", "children")); //return all fields except specified fields from SysOrg model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_PARENT:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children")); //return all fields except specified fields from SysOrg model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_GRAPHIC:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("users", "children")); //return all fields except specified fields from SysOrg model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_CHILDREN:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "users")); //return all fields except specified fields from SysOrg model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_USERS:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent", "children")) //return all fields except specified fields from SysOrg model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")); //return all fields except specified fields from SysUser model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_PARENT_AND_USERS:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children")) //return all fields except specified fields from SysOrg model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")); //return all fields except specified fields from SysUser model
                 break;
             case OrganizationGetAllRequestBody.GetAllType.WITH_CHILDREN_AND_USERS:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups"));
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("parent")) //return all fields except specified fields from SysOrg model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.serializeAllExcept("org", "roles", "dataGroups")); //return all fields except specified fields from SysUser model
                 break;
             default:
-
                 break;
         }
-
         value.setFilters(filters);
 
         return value;
@@ -477,14 +462,16 @@ public class OrganizationManagementController extends BaseController {
 
     /**
      * Organization datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/organization/get-by-filter-and-page", method = RequestMethod.POST)
     public Object organizationGetByFilterAndPage(
             @RequestBody @Valid OrganizationGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -492,42 +479,44 @@ public class OrganizationManagementController extends BaseController {
         Integer perPage = requestBody.getPerPage();
         currentPage--;
         PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(
-                requestBody.getFilter().getOrgName(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getParentOrgName(),
+                requestBody.getFilter().getOrgName(), //get org name from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getParentOrgName(), //get parent org name from input parameter
                 currentPage,
                 perPage);
 
         long total = result.getTotal();
         List<SysOrg> data = result.getDataList();
 
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
         // Set filters.
-
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(
-                        ModelJsonFilters.FILTER_SYS_ORG,
-                        SimpleBeanPropertyFilter.serializeAllExcept("children", "users"));
-
+                .addFilter(ModelJsonFilters.FILTER_SYS_ORG, SimpleBeanPropertyFilter.serializeAllExcept("children", "users")); // return all fields except "children" and "users" from SysOrg model
         value.setFilters(filters);
 
         return value;
     }
 
+    /**
+     * get export list
+     * @param orgList
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysOrg> getExportList(List<SysOrg> orgList, boolean isAll, String idList) {
         List<SysOrg> exportList = new ArrayList<>();
         if (isAll == false) {
@@ -553,71 +542,73 @@ public class OrganizationManagementController extends BaseController {
 
     /**
      * Organization generate excel request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ORG_EXPORT)
     @RequestMapping(value = "/organization/xlsx", method = RequestMethod.POST)
     public Object organizationGenerateExcelFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                 BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //get all org list
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(
-                requestBody.getFilter().getOrgName(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getParentOrgName()
+                requestBody.getFilter().getOrgName(), //get org name from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);
-
+        setDictionary(); //set dictionary data
+        InputStream inputStream = OrganizationExcelView.buildExcelDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=organization.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=organization.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Organization generate word request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
     @RequestMapping(value = "/organization/docx", method = RequestMethod.POST)
     public Object organizationGenerateWordFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //get all org list
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(
-                requestBody.getFilter().getOrgName(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getParentOrgName()
+                requestBody.getFilter().getOrgName(), //get org name from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);
+        setDictionary();//set dictionary data
+        InputStream inputStream = OrganizationWordView.buildWordDocument(exportList);//create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=organization.docx");
+        headers.add("Content-Disposition", "attachment; filename=organization.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
@@ -628,32 +619,31 @@ public class OrganizationManagementController extends BaseController {
     public Object organizationGeneratePdfFile(@RequestBody @Valid OrganizationGenerateRequestBody requestBody,
                                               BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //get all org list
         List<SysOrg> orgList = organizationService.getOrganizationByFilter(
-                requestBody.getFilter().getOrgName(),
-                requestBody.getFilter().getStatus(),
-                requestBody.getFilter().getParentOrgName()
+                requestBody.getFilter().getOrgName(), //get org name from input parameter
+                requestBody.getFilter().getStatus(), //get status from input parameter
+                requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
         );
 
         List<SysOrg> exportList = getExportList(orgList, requestBody.getIsAll(), requestBody.getIdList());
 
-        OrganizationPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList);
+        OrganizationPdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = OrganizationPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=organization.pdf");
+        headers.add("Content-Disposition", "attachment; filename=organization.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
 
 }

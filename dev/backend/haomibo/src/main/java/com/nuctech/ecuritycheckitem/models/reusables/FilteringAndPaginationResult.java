@@ -10,7 +10,11 @@
 package com.nuctech.ecuritycheckitem.models.reusables;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 /**
  * this class is used for filtering and pagination result which is used in datatable.
