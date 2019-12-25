@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
+import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -104,6 +106,15 @@ public class HistoryServiceImpl implements HistoryService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (order != null && sortBy != null) {
+            sortBy = "task.taskNumber";
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = historyRepository.count(predicate); //get total count from database using repsitory
         List<History> data = historyRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
@@ -129,9 +140,26 @@ public class HistoryServiceImpl implements HistoryService {
         QHistory builder = QHistory.history;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
-        List<History> data = StreamSupport
-                .stream(historyRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList()); //get data as list from database using repository
+        Sort sort = null;
+        if (sortBy != null && order != null) {
+            sortBy = "task.taskNumber";
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<History> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(historyRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(historyRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
         return data;
     }

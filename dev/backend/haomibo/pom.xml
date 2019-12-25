@@ -11,7 +11,7 @@
     <groupId>com.nuctech</groupId>
     <artifactId>ecuritycheckitem</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-<!--    <packaging>war</packaging>-->
+    <packaging>war</packaging>
     <name>ecuritycheckitem</name>
     <description>haomibo project</description>
 

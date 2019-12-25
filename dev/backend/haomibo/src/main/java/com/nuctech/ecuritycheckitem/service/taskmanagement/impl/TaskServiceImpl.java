@@ -10,6 +10,7 @@ import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,7 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * Get filter condition
+     *
      * @param taskNumber
      * @param modeId
      * @param taskStatus
@@ -72,15 +74,16 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * Get paginated and filtered records of process task
-     * @param taskNumber : task number
-     * @param modeId : workmode id
-     * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
+     *
+     * @param taskNumber  : task number
+     * @param modeId      : workmode id
+     * @param taskStatus  : task status
+     * @param fieldId     : scene id
+     * @param userName    : user name
+     * @param startTime   : start time
+     * @param endTime     : end time
      * @param currentPage : current page no
-     * @param perPage : record count per page
+     * @param perPage     : record count per page
      * @return
      */
     @Override
@@ -91,6 +94,13 @@ public class TaskServiceImpl implements TaskService {
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (order != null && sortBy != null) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            } else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = serTaskRepository.count(predicate);
         List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
@@ -101,13 +111,14 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * get all filtered records of process task
+     *
      * @param taskNumber : task number
-     * @param modeId : workmode id
+     * @param modeId     : workmode id
      * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
+     * @param fieldId    : scene id
+     * @param userName   : user name
+     * @param startTime  : start time
+     * @param endTime    : end time
      * @return
      */
     @Override
@@ -117,15 +128,32 @@ public class TaskServiceImpl implements TaskService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
-        List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (sortBy != null && order != null) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<SerTask> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
         return data;
     }
 
     /**
      * get detailed info of an invalid task
+     *
      * @param taskId
      * @return
      */
@@ -143,26 +171,33 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * Get paginated and filtered records of invalid task
-     * @param taskNumber : task number
-     * @param modeId : workmode id
-     * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
+     *
+     * @param taskNumber  : task number
+     * @param modeId      : workmode id
+     * @param taskStatus  : task status
+     * @param fieldId     : scene id
+     * @param userName    : user name
+     * @param startTime   : start time
+     * @param endTime     : end time
      * @param currentPage : current page no
-     * @param perPage : record count per page
+     * @param perPage     : record count per page
      * @return
      */
     @Override
-    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order,  Integer currentPage, Integer perPage) {
+    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
         QSerTask builder = QSerTask.serTask;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
-
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (order != null && sortBy != null) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            } else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = serTaskRepository.count(predicate);
         List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
@@ -173,13 +208,14 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * get all filtered records of invalid task
+     *
      * @param taskNumber : task number
-     * @param modeId : workmode id
+     * @param modeId     : workmode id
      * @param taskStatus : task status
-     * @param fieldId : scene id
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
+     * @param fieldId    : scene id
+     * @param userName   : user name
+     * @param startTime  : start time
+     * @param endTime    : end time
      * @return
      */
     @Override
@@ -189,9 +225,26 @@ public class TaskServiceImpl implements TaskService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
-        List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+
+        if (sortBy != null && order != null) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
+        List<SerTask> data = new ArrayList<>();
+        if (sort != null) {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        else {
+            data = StreamSupport
+                    .stream(serTaskRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
         return data;
     }
