@@ -27,14 +27,10 @@ public class HistoryTaskExcelView extends BaseExcelView {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        //headerCellNo.setCellValue("序号");
-        headerCellNo.setCellValue(messageSource.getMessage("tableno", null, Locale.CHINESE));
+        headerCellNo.setCellValue("序号");
 
         Cell headerCellTaskNumber = header.createCell(1);
         headerCellTaskNumber.setCellValue("任务编号");
-
-//        Cell headerCellScanImage = header.createCell(2);
-//        headerCellScanImage.setCellValue("图像");
 
         Cell headerCellWorkMode = header.createCell(2);
         headerCellWorkMode.setCellValue("工作模式");

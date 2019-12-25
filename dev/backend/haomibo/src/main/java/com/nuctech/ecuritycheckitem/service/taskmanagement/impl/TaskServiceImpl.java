@@ -91,15 +91,6 @@ public class TaskServiceImpl implements TaskService {
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
-            if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
-            }
-            else {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
-            }
-        }
-
 
         long total = serTaskRepository.count(predicate);
         List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
@@ -126,13 +117,8 @@ public class TaskServiceImpl implements TaskService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        if (order.equals(Constants.SortOrder.DESC)) {
-            sort = Sort.by(Sort.Direction.DESC, sortBy);
-        }
-
         List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
         return data;
@@ -177,14 +163,6 @@ public class TaskServiceImpl implements TaskService {
 
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
-            if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
-            }
-            else {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
-            }
-        }
 
         long total = serTaskRepository.count(predicate);
         List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
@@ -211,13 +189,8 @@ public class TaskServiceImpl implements TaskService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        if (order.equals(Constants.SortOrder.DESC)) {
-            sort = Sort.by(Sort.Direction.DESC, sortBy);
-        }
-
         List<SerTask> data = StreamSupport
-                .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
+                .stream(serTaskRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
 
         return data;

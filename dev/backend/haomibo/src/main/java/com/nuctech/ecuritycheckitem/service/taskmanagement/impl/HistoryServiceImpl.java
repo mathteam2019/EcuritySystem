@@ -21,6 +21,7 @@ import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -103,14 +104,6 @@ public class HistoryServiceImpl implements HistoryService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
-            if (order.equals(Constants.SortOrder.ASC)) {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
-            }
-            else {
-                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
-            }
-        }
 
         long total = historyRepository.count(predicate); //get total count from database using repsitory
         List<History> data = historyRepository.findAll(predicate, pageRequest).getContent(); //get list of data from database using repository
@@ -136,12 +129,8 @@ public class HistoryServiceImpl implements HistoryService {
         QHistory builder = QHistory.history;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
-        Sort sort = Sort.by(Sort.Direction.ASC, sortBy);
-        if (order.equals(Constants.SortOrder.DESC)) {
-            sort = Sort.by(Sort.Direction.DESC, sortBy);
-        }
         List<History> data = StreamSupport
-                .stream(historyRepository.findAll(predicate, sort).spliterator(), false)
+                .stream(historyRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList()); //get data as list from database using repository
 
         return data;
