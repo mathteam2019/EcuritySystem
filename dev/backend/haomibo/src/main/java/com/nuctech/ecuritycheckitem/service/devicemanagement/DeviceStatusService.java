@@ -4,5 +4,5 @@ import com.nuctech.ecuritycheckitem.models.db.SerDeviceStatus;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 public interface DeviceStatusService {
-    PageResult<SerDeviceStatus> getFDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage);
+    PageResult<SerDeviceStatus> getDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage);
 }

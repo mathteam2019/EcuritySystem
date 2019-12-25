@@ -36,7 +36,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
     SerScanParamRepository serScanParamRepository;
 
 
-    private SerDeviceStatus.MonitorRecord getRecordList(long deviceId, int deviceTrafficSetting) {
+    private SerDeviceStatus.MonitorRecord getRecordList(SerDeviceStatus devicueStatus, int deviceTrafficSetting) {
         Date curDate = new Date();
         long times = curDate.getTime();
         long unitMiliSecond = deviceTrafficSetting * 60 * 1000;
@@ -48,17 +48,12 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             rangeDate[i] = new Date(startDateTime + unitMiliSecond * i);
             countArray[i] = 0;
         }
-        QSerScan builder = QSerScan.serScan;
-        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
-        //predicate.and(builder.scanStartTime.after(rangeDate[0]));
-        predicate.and(builder.scanDeviceId.eq(deviceId));
-        List<SerScan> scanDataList = StreamSupport
-                .stream(serScanRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerScanSimple> scanDataList = devicueStatus.getScanList();
+
 
         if(scanDataList != null) {
             for(int i = 0; i < scanDataList.size(); i ++) {
-                SerScan scan = scanDataList.get(i);
+                SerScanSimple scan = scanDataList.get(i);
                 Date scanStartTime = scan.getScanStartTime();
                 for(int j = 0; j < 10; j ++) {
                     if((scanStartTime.after(rangeDate[j]) || scanStartTime.equals(rangeDate[j])) && scanStartTime.before(rangeDate[j + 1])) {
@@ -85,7 +80,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
     }
 
     @Override
-    public PageResult<SerDeviceStatus> getFDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage) {
+    public PageResult<SerDeviceStatus> getDeviceStatusByFilter(Long fieldId, String deviceName, Long categoryId, int currentPage, int perPage) {
         QSerDeviceStatus builder = QSerDeviceStatus.serDeviceStatus;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -144,13 +139,9 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             SerDeviceStatus deviceStatus = data.get(i);
             deviceStatus.setDeviceTrafficHigh(deviceTrafficHigh);
             deviceStatus.setDeviceTrafficMiddle(deviceTrafficMiddle);
-            deviceStatus.setRecord(getRecordList(deviceStatus.getDeviceId(), deviceTrafficSetting));
+            deviceStatus.setRecord(getRecordList(deviceStatus, deviceTrafficSetting));
 
-            List<SerScanParam> serScanParamList = StreamSupport
-                    .stream(serScanParamRepository.findAll(QSerScanParam.serScanParam
-                            .deviceId.eq(deviceStatus.getDeviceId())).spliterator(), false)
-                    .collect(Collectors.toList());
-
+            List<SerScanParamSimple> serScanParamList = deviceStatus.getSerScanParamList();
             if(serScanParamList != null && serScanParamList.size() > 0) {
                 try {
                     String[] splitDiskSpace = deviceStatus.getDiskSpace().split("/");
