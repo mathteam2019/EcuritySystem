@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/21
- * @CreatedBy Choe.
- * @FileName AuditLogController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AuditLogController）
+ * 文件名：	AuditLogController.java
+ * 描述：	Audit Log Controller.
+ * 作者名：	Choe
+ * 日期：	2019/11/21
  */
+
 package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -23,13 +27,13 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
-import lombok.*;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,11 +46,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/log-management/operating-log/audit")
@@ -97,15 +98,20 @@ public class AuditLogController extends BaseController {
     @ToString
     private static class AuditLogGenerateRequestBody {
 
-
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         AuditLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
-
+    /**
+     * get paginated list from service
+     * @param filter
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private PageResult<SysAuditLog> getPageResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
         String operateResult = "";
@@ -125,6 +131,13 @@ public class AuditLogController extends BaseController {
         return result;
     }
 
+    /**
+     * get export list
+     * @param filter
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysAuditLog> getExportResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
         String operateResult = "";
@@ -146,14 +159,16 @@ public class AuditLogController extends BaseController {
 
     /**
      * Audit Log datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
     public Object auditLogGetByFilterAndPage(
             @RequestBody @Valid AuditLogGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -166,115 +181,110 @@ public class AuditLogController extends BaseController {
         long total = result.getTotal();
         List<SysAuditLog> data = result.getDataList();
 
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
         // Set filters.
-
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
-
+        FilterProvider filters = ModelJsonFilters.getDefaultFilters();
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * Audit Log generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_EXPORT)
     @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object auditLogGenerateExcelFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList);
-
-
+        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        setDictionary(); //set dictionary data
+        InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=audit-log.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Audit Log generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
     @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object auditLogGenerateWordFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = AuditLogWordView.buildWordDocument(exportList);
-
-
+        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        setDictionary(); //set dictionary data
+        InputStream inputStream = AuditLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.docx");
+        headers.add("Content-Disposition", "attachment; filename=audit-log.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Audit Log generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_AUDIT_LOG_PRINT)
     @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object auditLogGeneratePDFFile(@RequestBody @Valid AuditLogGenerateRequestBody requestBody,
                                        BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        AuditLogPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList);
+        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        AuditLogPdfView.setResource(getFontResource()); // set font resource
+        setDictionary(); //set dictionary data
+        InputStream inputStream = AuditLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=audit-log.pdf");
+        headers.add("Content-Disposition", "attachment; filename=audit-log.pdf"); //set file name
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
 }
