@@ -86,8 +86,7 @@ public class SerTask extends BaseEntity implements Serializable {
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerHandExamination serHandExamination;
-
-
+    
     @OneToOne()
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)

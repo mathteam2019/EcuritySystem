@@ -61,7 +61,7 @@ public class SerCheckResult extends BaseEntity implements Serializable {
     @Column(name = "HAND_TASK_RESULT", length = 10)
     private String handTaskResult;
 
-    @Column(name = "HAND_GOODS", length = 10)
+    @Column(name = "HAND_GOODS", length = 255)
     private String handGoods;
 
     @Column(name = "HAND_GOODS_GRADE", length = 10)
@@ -79,7 +79,7 @@ public class SerCheckResult extends BaseEntity implements Serializable {
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
-    @Column(name = "HAND_SUBMITRECTS", length = 10)
+    @Column(name = "HAND_SUBMITRECTS", length = 1000)
     private String handSubmitrects;
 
 
