@@ -1,11 +1,16 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName RolePdfView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（RolePdfView）
+ * 文件名：	RolePdfView.java
+ * 描述：	RolePdfView
+ * 作者名：	Choe
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol;
 
 import com.itextpdf.text.BaseColor;
@@ -26,6 +31,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class RolePdfView extends BasePdfView {
+
+    /**
+     * build inputstream of data to be printed
+     * @param exportRoleList
+     * @return
+     */
     public static InputStream buildPDFDocument(List<SysRole> exportRoleList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -33,17 +44,18 @@ public class RolePdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            document.add(getTitle("角色设置"));
+
+            document.add(getTitle(messageSource.getMessage("Role.Title", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(3);
             table.setWidthPercentage(100);
-            Stream.of("序号", "角色编号", "角色")
+            Stream.of("Role.No", "Role.Number", "Role.Name")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

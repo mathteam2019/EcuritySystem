@@ -17,6 +17,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.JudgeStatisticsWordView;
@@ -162,6 +163,7 @@ public class JudgeStatisticsController extends BaseController {
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         JudgeStatisticsPdfView.setResource(getFontResource());  //set header font
         setDictionary(); //set dictionary data key and values
+        JudgeStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = JudgeStatisticsPdfView.buildPDFDocument(exportList); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -200,6 +202,7 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();  //set dictionary data key and values
+        JudgeStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = JudgeStatisticsExcelView.buildExcelDocument(exportList); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -238,6 +241,7 @@ public class JudgeStatisticsController extends BaseController {
 
         TreeMap<Integer, JudgeStatisticsResponseModel> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        JudgeStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = JudgeStatisticsWordView.buildWordDocument(exportList); //make input stream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

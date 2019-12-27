@@ -1,12 +1,24 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（ScanParamServiceImpl）
+ * 文件名：	ScanParamServiceImpl.java
+ * 描述：	ScanParamService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.settingmanagement.scanmanagement.ScanParamManagementController;
-import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.models.db.QSerScanParam;
+import com.nuctech.ecuritycheckitem.models.db.SerScanParam;
+import com.nuctech.ecuritycheckitem.models.db.SerScanParamsFrom;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerScanRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.ScanParamService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -35,7 +47,6 @@ public class ScanParamServiceImpl implements ScanParamService {
     SerScanParamsFromRepository serScanParamsFromRepository;
 
     /**
-     *
      * @param deviceName
      * @param status
      * @return
@@ -57,7 +68,6 @@ public class ScanParamServiceImpl implements ScanParamService {
     }
 
     /**
-     *
      * @param paramId
      * @return
      */
@@ -75,7 +85,6 @@ public class ScanParamServiceImpl implements ScanParamService {
     }
 
     /**
-     *
      * @param deviceName
      * @param status
      * @param currentPage
@@ -96,7 +105,6 @@ public class ScanParamServiceImpl implements ScanParamService {
     }
 
     /**
-     *
      * @param deviceName
      * @param status
      * @return
@@ -115,6 +123,7 @@ public class ScanParamServiceImpl implements ScanParamService {
 
     /**
      * get all records of ser_scan_param table
+     *
      * @return
      */
     @Override
@@ -124,6 +133,12 @@ public class ScanParamServiceImpl implements ScanParamService {
 
     }
 
+    /**
+     * modify scan param
+     * @param paramDeviceIdList
+     * @param serScanParamNew
+     * @return
+     */
     @Override
     public boolean modifyScanParam(List<Long> paramDeviceIdList, SerScanParam serScanParamNew) {
 
@@ -148,24 +163,24 @@ public class ScanParamServiceImpl implements ScanParamService {
 
         serScanParamRepository.save(serScanParamNew);
 
-        if(paramDeviceIdList != null && paramDeviceIdList.size() > 0) {
+        if (paramDeviceIdList != null && paramDeviceIdList.size() > 0) {
             List<SerScanParamsFrom> serScanParamsFromList = new ArrayList<>();
             List<SerScanParam> serScanParamList = StreamSupport
                     .stream(serScanParamRepository.findAll(QSerScanParam.serScanParam
-                    .deviceId.in(paramDeviceIdList)).spliterator(), false)
+                            .deviceId.in(paramDeviceIdList)).spliterator(), false)
                     .collect(Collectors.toList());
-            for(int i = 0; i < paramDeviceIdList.size(); i ++) {
+            for (int i = 0; i < paramDeviceIdList.size(); i++) {
                 boolean isExist = false;
                 SerScanParam scanParam = null;
-                for(int j = 0; j < serScanParamList.size(); j ++) {
-                    if(serScanParamList.get(j).getDeviceId() == paramDeviceIdList.get(i)) {
+                for (int j = 0; j < serScanParamList.size(); j++) {
+                    if (serScanParamList.get(j).getDeviceId() == paramDeviceIdList.get(i)) {
                         scanParam = serScanParamList.get(j);
                         scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == false) {
+                if (isExist == false) {
                     scanParam = SerScanParam.builder().deviceId(paramDeviceIdList.get(i)).build();
                     scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                     serScanParamList.add(scanParam);
@@ -189,7 +204,7 @@ public class ScanParamServiceImpl implements ScanParamService {
                 scanParam.setDeviceStorageAlarm(serScanParamNew.getDeviceStorageAlarm());
                 scanParam.setDeviceStorageAlarmPercent(serScanParamNew.getDeviceStorageAlarmPercent());
             }
-            for(int i = 0; i < paramDeviceIdList.size(); i ++) {
+            for (int i = 0; i < paramDeviceIdList.size(); i++) {
                 Long deviceId = paramDeviceIdList.get(i);
                 SerScanParamsFrom paramsFrom = SerScanParamsFrom.builder()
                         .deviceId(deviceId)
@@ -204,9 +219,7 @@ public class ScanParamServiceImpl implements ScanParamService {
         }
 
 
-
-
-        return  true;
+        return true;
     }
 
 }

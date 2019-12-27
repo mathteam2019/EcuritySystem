@@ -1,18 +1,26 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（JudgeStatisticsExcelView）
+ * 文件名：	JudgeStatisticsExcelView.java
+ * 描述：	JudgeStatisticsExcelView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
+
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponse;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -25,69 +33,77 @@ import java.util.TreeMap;
 
 public class JudgeStatisticsExcelView extends BaseExcelView {
 
+    /**
+     * set table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalJudge = header.createCell(2);
-        headerCellTotalJudge.setCellValue("判图总量");
+        headerCellTotalJudge.setCellValue(messageSource.getMessage("TotalJudge", null, currentLocale));
 
         Cell headerCellArtificialResult = header.createCell(3);
-        headerCellArtificialResult.setCellValue("人工结论量");
+        headerCellArtificialResult.setCellValue(messageSource.getMessage("ArtificialResult", null, currentLocale));
 
         Cell headerCellArtificialResultRate = header.createCell(4);
-        headerCellArtificialResultRate.setCellValue("人工结论率");
+        headerCellArtificialResultRate.setCellValue(messageSource.getMessage("ArtificialResultRate", null, currentLocale));
 
         Cell headerCellAssignTimoutResult = header.createCell(5);
-        headerCellAssignTimoutResult.setCellValue("分派超时结论量");
+        headerCellAssignTimoutResult.setCellValue(messageSource.getMessage("AssignTimoutResult", null, currentLocale));
 
         Cell headerCellAssignTimeoutResultRate = header.createCell(6);
-        headerCellAssignTimeoutResultRate.setCellValue("分派超时结论率");
+        headerCellAssignTimeoutResultRate.setCellValue(messageSource.getMessage("AssignTimeoutResultRate", null, currentLocale));
 
         Cell headerCellJudgeTimeoutResult = header.createCell(7);
-        headerCellJudgeTimeoutResult.setCellValue("判图超时结论量");
+        headerCellJudgeTimeoutResult.setCellValue(messageSource.getMessage("JudgeTimeoutResult", null, currentLocale));
 
         Cell headerCellJudgeTimeoutResultRate = header.createCell(8);
-        headerCellJudgeTimeoutResultRate.setCellValue("判图超时结论率");
+        headerCellJudgeTimeoutResultRate.setCellValue(messageSource.getMessage("JudgeTimeoutResultRate", null, currentLocale));
 
         Cell headerCellScanResult = header.createCell(9);
-        headerCellScanResult.setCellValue("扫描结论量");
+        headerCellScanResult.setCellValue(messageSource.getMessage("ScanResult", null, currentLocale));
 
         Cell headerCellScanResultRate = header.createCell(10);
-        headerCellScanResultRate.setCellValue("扫描结论率");
+        headerCellScanResultRate.setCellValue(messageSource.getMessage("ScanResultRate", null, currentLocale));
 
         Cell headerCellNoSuspicion = header.createCell(11);
-        headerCellNoSuspicion.setCellValue("无嫌疑量");
+        headerCellNoSuspicion.setCellValue(messageSource.getMessage("NoSuspicion", null, currentLocale));
 
         Cell headerCellNoSuspicionRate = header.createCell(12);
-        headerCellNoSuspicionRate.setCellValue("无嫌疑率");
+        headerCellNoSuspicionRate.setCellValue(messageSource.getMessage("NoSuspicionRate", null, currentLocale));
 
         Cell headerCellSuspicion = header.createCell(13);
-        headerCellSuspicion.setCellValue("嫌疑量");
+        headerCellSuspicion.setCellValue(messageSource.getMessage("Suspicion", null, currentLocale));
 
         Cell headerCellSuspicionRate = header.createCell(14);
-        headerCellSuspicionRate.setCellValue("嫌疑率");
+        headerCellSuspicionRate.setCellValue(messageSource.getMessage("SuspicionRate", null, currentLocale));
 
         Cell headerCellArtificialJudgeDefaultTime = header.createCell(15);
-        headerCellArtificialJudgeDefaultTime.setCellValue("人工判图时长阈值");
+        headerCellArtificialJudgeDefaultTime.setCellValue(messageSource.getMessage("ArtificialJudgeDefaultTime", null, currentLocale));
 
         Cell headerCellArtificialJudgeAvgTime = header.createCell(16);
-        headerCellArtificialJudgeAvgTime.setCellValue("人工判图平均时长");
+        headerCellArtificialJudgeAvgTime.setCellValue(messageSource.getMessage("ArtificialJudgeAvgTime", null, currentLocale));
 
         Cell headerCellArtificialJudgeMaxTime = header.createCell(17);
-        headerCellArtificialJudgeMaxTime.setCellValue("人工判图最高时长");
+        headerCellArtificialJudgeMaxTime.setCellValue(messageSource.getMessage("ArtificialJudgeMaxTime", null, currentLocale));
 
         Cell headerCellArtificialJudgeMinTime = header.createCell(18);
-        headerCellArtificialJudgeMinTime.setCellValue("人工判图最低时长");
+        headerCellArtificialJudgeMinTime.setCellValue(messageSource.getMessage("ArtificialJudgeMinTime", null, currentLocale));
 
     }
 
-
+    /**
+     * build inputstream of data to be exported
+     * @param detailedStatistics
+     * @return
+     */
     public static InputStream buildExcelDocument(TreeMap<Integer, JudgeStatisticsResponseModel> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -99,7 +115,7 @@ public class JudgeStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("判图统计");
+            titleCell.setCellValue(messageSource.getMessage("JudgeStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

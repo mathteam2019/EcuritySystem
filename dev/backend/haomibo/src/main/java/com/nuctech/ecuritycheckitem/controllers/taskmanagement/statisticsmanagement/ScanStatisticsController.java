@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.PreviewStatisticsWordView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsWordView;
@@ -163,6 +164,7 @@ public class ScanStatisticsController extends BaseController {
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data key and values
+        ScanStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = ScanStatisticsExcelView.buildExcelDocument(exportList);  //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -201,6 +203,7 @@ public class ScanStatisticsController extends BaseController {
 
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        ScanStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = ScanStatisticsWordView.buildWordDocument(exportList);//make inputstream of data to be exported
 
 
@@ -241,6 +244,7 @@ public class ScanStatisticsController extends BaseController {
         TreeMap<Integer, ScanStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
         ScanStatisticsPdfView.setResource(getFontResource()); //set header font
+        ScanStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = ScanStatisticsPdfView.buildPDFDocument(exportList);//make input stream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();

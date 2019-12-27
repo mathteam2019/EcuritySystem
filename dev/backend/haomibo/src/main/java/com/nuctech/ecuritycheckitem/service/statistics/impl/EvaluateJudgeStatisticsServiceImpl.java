@@ -1,10 +1,25 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（EvaluateJudgeStatisticsServiceImpl）
+ * 文件名：	EvaluateJudgeStatisticsServiceImpl.java
+ * 描述：	EvaluateJudgeStatisticsService implement
+ * 作者名：	Tiny
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
+
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
+
 import com.nuctech.ecuritycheckitem.service.statistics.EvaluateJudgeStatisticsService;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +30,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.ArrayList;
+
 
 @Service
 public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisticsService {
@@ -26,13 +47,14 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * get evaluate judge statistics
-     * @param fieldId : scene id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : scene id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
@@ -46,7 +68,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
         EvaluateJudgeStatisticsPaginationResponse response = new EvaluateJudgeStatisticsPaginationResponse();
 
-        queryBuilder.append(getQueryForSelectPart(groupBy) +"FROM\n" + getQueryForJoin());
+        queryBuilder.append(getQueryForSelectPart(groupBy) + "FROM\n" + getQueryForJoin());
         List<String> whereCause = getWhereCause(fieldId, deviceId, userCategory, userName, startTime, endTime, statWidth);
         if (!whereCause.isEmpty()) {
             queryBuilder.append(" where " + StringUtils.join(whereCause, " and "));
@@ -59,9 +81,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
             Map<String, Object> paginatedResult = getPaginatedList(sorted, statWidth, startTime, endTime, currentPage, perPage);
             response.setFrom(Long.parseLong(paginatedResult.get("from").toString()));
             response.setTo(Long.parseLong(paginatedResult.get("to").toString()));
-            response.setDetailedStatistics((TreeMap<Integer, EvaluateJudgeResponseModel>)paginatedResult.get("list"));
-        }
-        catch (Exception e) {
+            response.setDetailedStatistics((TreeMap<Integer, EvaluateJudgeResponseModel>) paginatedResult.get("list"));
+        } catch (Exception e) {
             response.setDetailedStatistics(sorted);
         }
 
@@ -75,7 +96,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
         return response;
 
@@ -83,6 +105,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * Get paginated list using current pang and per page
+     *
      * @param sorted
      * @param statWidth
      * @param startTime
@@ -101,7 +124,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         if (currentPage != null && currentPage != null && currentPage > 0 && perPage > 0) {
             Integer from, to;
@@ -130,6 +154,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * Get total statistics amount
+     *
      * @param query
      * @return
      */
@@ -148,10 +173,11 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * Get statistics by statistics width
+     *
      * @param query
      * @param statWidth : (hour, day, week, month, quarter, year)
      * @param startTime : start time
-     * @param endTime : endtime
+     * @param endTime   : endtime
      * @return
      */
     private TreeMap<Integer, EvaluateJudgeResponseModel> getDetailedStatistics(String query, String statWidth, Date startTime, Date endTime) {
@@ -164,9 +190,10 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
-        for (Integer i = keyValueMin;i <= keyValueMax; i++) {
+        for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             EvaluateJudgeResponseModel item = new EvaluateJudgeResponseModel();
             item.setTime(i);
             data.put(i, item);
@@ -185,6 +212,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * query of select part
+     *
      * @param groupBy : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
@@ -232,6 +260,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * Get query for join
+     *
      * @return
      */
     private String getQueryForJoin() {
@@ -249,13 +278,14 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * Get where condition list
-     * @param fieldId : field id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : field id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : (hour, day, week, month, quarter, year)
      * @return
      */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
@@ -290,6 +320,7 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
 
     /**
      * return a judge statistics record from a record of a query
+     *
      * @param item
      * @return
      */
@@ -331,7 +362,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 record.setIntelligenceJudgeMissingRate(record.getIntelligenceJudgeMissing() * 100 / (double) record.getIntelligenceJudge());
                 record.setIntelligenceJudgeMistakeRate(record.getIntelligenceJudgeMistake() * 100 / (double) record.getIntelligenceJudge());
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         return record;
     }

@@ -1,14 +1,18 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName OrganizationPdfView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（HistoryTaskPdfView）
+ * 文件名：	HistoryTaskPdfView.java
+ * 描述：	HistoryTaskPdfView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Phrase;
@@ -19,7 +23,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.History;
-import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +33,12 @@ import java.util.stream.Stream;
 
 public class HistoryTaskPdfView extends BasePdfView {
 
-    public static InputStream buildPDFDocument(List<History> exportTaskList) {
+    /**
+     * build inputstream of data to be printed
+     * @param exportTaskList
+     * @return
+     */
+    public static InputStream buildPDFDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -40,22 +49,22 @@ public class HistoryTaskPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("历史任务"));
+            document.add(getTitle(messageSource.getMessage("HistoryTaskTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(16);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "任务编号", "工作模式", "任务结论", "现场", "安检仪", "引导员", "扫描开始时间", "扫描结束时间", "判图站", "判图员", "判图开始时间", "判图结束时间", "手检站", "手检员", "手检开始时间")
+            Stream.of("ID", "TaskNumber", "WorkMode", "TaskResult", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime", "JudgeDeviceName", "JudgeUserName", "JudgeStartTime", "JudgeEndTime", "HandExaminationDeviceName", "HandExaminationUserName", "HandExaminationStartTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 
-            for (History task : exportTaskList) {
+            for (HistorySimplifiedForHistoryTaskManagement task : exportTaskList) {
 
                 addTableCell(table, task.getHistoryId().toString());
 
@@ -65,18 +74,6 @@ public class HistoryTaskPdfView extends BasePdfView {
                 else {
                     addTableCell(table, "无");
                 }
-
-//                if (task.getScanImage() != null) {
-//                    if (task.getScanImage().getImageLabel() != null) {
-//                        addTableCell(table, task.getScanImage().getImageLabel());
-//                    } else {
-//                        addTableCell(table, "无");
-//                    }
-//                }
-//                else {
-//                    addTableCell(table, "无");
-//                }
-
 
                 if (task.getWorkMode() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));

@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsWordView;
@@ -232,6 +233,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         TreeMap<Long, TotalStatistics> exportList = getExportList(totalStatistics, requestBody.getIsAll(), requestBody.getIdList());
         UserOrDeviceStatisticsPdfView.setResource(getFontResource()); //get header font
         setDictionary();//set dictionary data key and values
+        UserOrDeviceStatisticsPdfView.setMessageSource(messageSource);
         InputStream inputStream = UserOrDeviceStatisticsPdfView.buildPDFDocument(exportList, true); //make inputstream of data to be printed
 
         HttpHeaders headers = new HttpHeaders();
@@ -269,6 +271,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        UserOrDeviceStatisticsExcelView.setMessageSource(messageSource);
         InputStream inputStream = UserOrDeviceStatisticsExcelView.buildExcelDocument(exportList, true); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();
@@ -306,6 +309,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
 
         TreeMap<Long, TotalStatistics> exportList = getExportList(userStatistics, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data key and values
+        UserOrDeviceStatisticsWordView.setMessageSource(messageSource);
         InputStream inputStream = UserOrDeviceStatisticsWordView.buildWordDocument(exportList, true); //make inputstream of data to be exported
 
         HttpHeaders headers = new HttpHeaders();

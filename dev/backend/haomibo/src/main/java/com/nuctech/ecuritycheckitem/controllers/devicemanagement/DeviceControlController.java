@@ -1,10 +1,13 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/20
- * @CreatedBy Choe.
- * @FileName DeviceControlController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceControlController）
+ * 文件名：	DeviceControlController.java
+ * 描述：	Device Control Controller
+ * 作者名：	Choe
+ * 日期：	2019/11/20
  */
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
@@ -12,7 +15,6 @@ package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -82,10 +84,8 @@ public class DeviceControlController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
-
         @NotNull
         int perPage;
-
         Filter filter;
     }
 
@@ -99,9 +99,9 @@ public class DeviceControlController extends BaseController {
     @ToString
     private static class DeviceGenerateRequestBody {
 
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         DeviceGetByFilterAndPageRequestBody.Filter filter;
     }
@@ -134,53 +134,29 @@ public class DeviceControlController extends BaseController {
     @AllArgsConstructor
     private static class DeviceCreateRequestBody {
 
-
-
         @NotNull
         String deviceName;
-
         @NotNull
         String deviceType;
-
         @NotNull
         Long archiveId;
-
         @NotNull
         String deviceSerial;
-
-//        Long categoryId;
-//
-//        String manufacturer;
-//
-//        String originalModel;
-
         String originalFactoryNumber;
-
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
-
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
-
         String supplier;
-
         String contacts;
-
         String mobile;
-
         String deviceIp;
-
         String guid;
-
-
-
         String note;
 
         private MultipartFile imageUrl;
 
-
-        SysDevice convert2SysDevice() {
-
+        SysDevice convert2SysDevice() { //create new object from input parameters
             return SysDevice
                     .builder()
                     .archiveId(this.getArchiveId())
@@ -195,16 +171,12 @@ public class DeviceControlController extends BaseController {
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
                     .guid(this.getGuid())
-                    //.manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-                    //.originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .status(SysDevice.Status.INACTIVE)
                     .currentStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .workStatus(SysDevice.DeviceWorkStatus.FREE)
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
-
     }
 
     /**
@@ -218,52 +190,29 @@ public class DeviceControlController extends BaseController {
 
         @NotNull
         Long deviceId;
-
         @NotNull
         String deviceName;
-
         @NotNull
         String deviceType;
-
         @NotNull
         Long archiveId;
-
         @NotNull
         String deviceSerial;
-
-//        Long categoryId;
-//
-//        String manufacturer;
-//
-//        String originalModel;
-
         String originalFactoryNumber;
-
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date manufacturerDate;
-
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         Date purchaseDate;
-
         String supplier;
-
         String contacts;
-
         String mobile;
-
         String deviceIp;
-
         String guid;
-
-
-
         String note;
 
         private MultipartFile imageUrl;
 
-
-        SysDevice convert2SysDevice() {
-
+        SysDevice convert2SysDevice() { //create new object from input parameter
             return SysDevice
                     .builder()
                     .deviceId(this.getDeviceId())
@@ -279,13 +228,9 @@ public class DeviceControlController extends BaseController {
                     .mobile(Optional.ofNullable(this.getMobile()).orElse(""))
                     .deviceIp(Optional.ofNullable(this.getDeviceIp()).orElse(""))
                     .guid(this.getGuid())
-//                    .manufacturer(Optional.of(this.getManufacturer()).orElse(""))
-//                    .originalModel(Optional.of(this.getOriginalModel()).orElse(""))
                     .note(Optional.ofNullable(this.getNote()).orElse(""))
                     .build();
-
         }
-
     }
 
     /**
@@ -364,14 +309,16 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Device datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/device/get-by-filter-and-page", method = RequestMethod.POST)
     public Object deviceGetByFilterAndPage(
             @RequestBody @Valid DeviceGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -388,53 +335,51 @@ public class DeviceControlController extends BaseController {
         Long fieldId = null;
         Long categoryId = null;
         if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
         }
-        PageResult<SysDevice> result = deviceService.getFilterDeviceList(archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex);
+        PageResult<SysDevice> result = deviceService.getFilterDeviceList(archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex); //get list of devices from database through deviceService
         List<SysDevice> data = result.getDataList();
         long total = result.getTotal();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, // set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set last index of current page
+                        .data(data) //set data
                         .build()));
 
         // Set filters.
-
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters()
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-
-
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except parent from SysDeviceCategory model
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * Device generate excel file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_EXPORT)
     @RequestMapping(value = "/device/xlsx", method = RequestMethod.POST)
     public Object deviceGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -445,22 +390,156 @@ public class DeviceControlController extends BaseController {
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList);
-
-
+                requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
+        setDictionary(); //set dictionary data
+        DeviceExcelView.setMessageSource(messageSource);
+        InputStream inputStream = DeviceExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=device.xlsx"); //set filename
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msexcel"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Device generate word file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/device/docx", method = RequestMethod.POST)
+    public Object deviceGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                          BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
+        setDictionary(); //set dictionary data
+        DeviceWordView.setMessageSource(messageSource);
+        InputStream inputStream = DeviceWordView.buildWordDocument(exportList); //create inputstream of result to be exported
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.docx"); //set filename
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.valueOf("application/x-msword"))
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Device generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
+    @RequestMapping(value = "/device/pdf", method = RequestMethod.POST)
+    public Object deviceGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                     BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList());  //get list of device to be exported
+        DevicePdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        DevicePdfView.setMessageSource(messageSource);
+        InputStream inputStream = DevicePdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device.pdf"); //set filename
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    /**
+     * Device generate excel file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
+    @RequestMapping(value = "/device/field/xlsx", method = RequestMethod.POST)
+    public Object deviceFieldGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
+                                          BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        String archiveName = "";
+        String deviceName = "";
+        String status = "";
+        Long fieldId = null;
+        Long categoryId = null;
+        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
+        if(filter != null) {
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+                requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
+        setDictionary(); //set dictionary data
+        DeviceFieldExcelView.setMessageSource(messageSource);
+        InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
@@ -472,143 +551,16 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Device generate word file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
-    @RequestMapping(value = "/device/docx", method = RequestMethod.POST)
-    public Object deviceGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
-                                          BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        String archiveName = "";
-        String deviceName = "";
-        String status = "";
-        Long fieldId = null;
-        Long categoryId = null;
-        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
-        }
-
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = DeviceWordView.buildWordDocument(exportList);
-
-
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device.docx");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.valueOf("application/x-msword"))
-                .body(new InputStreamResource(inputStream));
-
-    }
-
-    /**
-     * Device generate pdf file request.
-     */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_PRINT)
-    @RequestMapping(value = "/device/pdf", method = RequestMethod.POST)
-    public Object deviceGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
-                                     BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        String archiveName = "";
-        String deviceName = "";
-        String status = "";
-        Long fieldId = null;
-        Long categoryId = null;
-        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
-        }
-
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-
-        DevicePdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = DevicePdfView.buildPDFDocument(exportList);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device.pdf");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(inputStream));
-
-    }
-
-
-    /**
-     * Device generate excel file request.
-     */
-    @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
-    @RequestMapping(value = "/device/field/xlsx", method = RequestMethod.POST)
-    public Object deviceFieldGenerateExcelFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
-                                          BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
-        }
-
-        String archiveName = "";
-        String deviceName = "";
-        String status = "";
-        Long fieldId = null;
-        Long categoryId = null;
-        DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
-        }
-
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = DeviceFieldExcelView.buildExcelDocument(exportList);
-
-
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.valueOf("application/x-msexcel"))
-                .body(new InputStreamResource(inputStream));
-
-    }
-
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_EXPORT)
     @RequestMapping(value = "/device/field/docx", method = RequestMethod.POST)
     public Object deviceFieldGenerateWordFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                                BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -619,40 +571,41 @@ public class DeviceControlController extends BaseController {
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = DeviceFieldWordView.buildWordDocument(exportList);
-
-
+                requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
+        setDictionary(); //set dictionary data
+        DeviceFieldWordView.setMessageSource(messageSource);
+        InputStream inputStream = DeviceFieldWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=device-field.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Device generate pdf file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_PRINT)
     @RequestMapping(value = "/device/field/pdf", method = RequestMethod.POST)
     public Object deviceFieldGeneratePDFFile(@RequestBody @Valid DeviceGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -663,33 +616,35 @@ public class DeviceControlController extends BaseController {
         Long categoryId = null;
         DeviceGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
         if(filter != null) {
-            archiveName = filter.getArchivesName();
-            deviceName = filter.getDeviceName();
-            status = filter.getStatus();
-            fieldId = filter.getFieldId();
-            categoryId = filter.getCategoryId();
+            archiveName = filter.getArchivesName(); //get archive name from input parameter
+            deviceName = filter.getDeviceName(); //get device name from input parameter
+            status = filter.getStatus(); //get status from input parameter
+            fieldId = filter.getFieldId(); //get field id from input parameter
+            categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
         List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
-                requestBody.getIsAll(), requestBody.getIdList());
-
-        DeviceFieldPdfView.setResource(getFontResource());
-        setDictionary();
-        InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList);
+                requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
+        DeviceFieldPdfView.setResource(getFontResource()); //set font resource
+        setDictionary(); //set dictionary data
+        DeviceFieldPdfView.setMessageSource(messageSource);
+        InputStream inputStream = DeviceFieldPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=device-field.pdf");
+        headers.add("Content-Disposition", "attachment; filename=device-field.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Device update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_UPDATE_STATUS)
     @RequestMapping(value = "/device/update-status", method = RequestMethod.POST)
@@ -697,16 +652,12 @@ public class DeviceControlController extends BaseController {
             @RequestBody @Valid DeviceUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if device is existing.
-
-        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
+        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {// Check if device is existing.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         deviceService.updateStatus(requestBody.getDeviceId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -714,6 +665,9 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Device create request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_CREATE)
     @RequestMapping(value = "/device/create", method = RequestMethod.POST)
@@ -721,35 +675,33 @@ public class DeviceControlController extends BaseController {
             @ModelAttribute @Valid DeviceCreateRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if archive is valid.
-        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {
+        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) { // Check if archive is valid.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
         }
-
         if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
         }
-
         if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), null)) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
-
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-
     /**
      * Device modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_MODIFY)
     @RequestMapping(value = "/device/modify", method = RequestMethod.POST)
@@ -761,30 +713,23 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        // Check if archive is valid.
-        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {
+        if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {        // Check if archive is valid.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        // Check if device is valid.
-        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
+        if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {        // Check if device is valid.
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
         }
-
         if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
         }
-
         if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), requestBody.getDeviceId())) {
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
 
         SysDevice sysDevice = requestBody.convert2SysDevice();
-
         deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -792,6 +737,9 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Device delete request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_DELETE)
     @RequestMapping(value = "/device/delete", method = RequestMethod.POST)
@@ -799,12 +747,10 @@ public class DeviceControlController extends BaseController {
             @RequestBody @Valid DeviceDeleteRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        //check device exist or not
-        if(!deviceService.checkDeviceExist(requestBody.getDeviceId())) {
+        if(!deviceService.checkDeviceExist(requestBody.getDeviceId())) { //check device exist or not
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -814,6 +760,9 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Device field modify request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_DEVICE_FIELD_MODIFY)
     @RequestMapping(value = "/device/field-modify", method = RequestMethod.POST)
@@ -821,7 +770,7 @@ public class DeviceControlController extends BaseController {
             @RequestBody @Valid DeviceFieldModifyRequestBody requestBody,
             BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -834,47 +783,43 @@ public class DeviceControlController extends BaseController {
     /**
      * Device  get all request.
      * BARE, WITH_CONFIG, WITH_SCAN
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/device/get-all", method = RequestMethod.POST)
     public Object deviceGetAll(@RequestBody @Valid DeviceGetAllRequestBody requestBody,
                                BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         List<SysDevice> sysDeviceList = deviceService.findAll();
-
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
 
         String type = requestBody.getType();
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-
         switch (type) {
-
-            case DeviceGetAllRequestBody.GetAllType.BARE:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+            case DeviceGetAllRequestBody.GetAllType.BARE: //case of bare
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields from SysDevice model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except specified parent from SysDeviceCategory model
                 break;
-            case DeviceGetAllRequestBody.GetAllType.WITH_CONFIG:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CONFIG, SimpleBeanPropertyFilter.serializeAllExcept("device"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+            case DeviceGetAllRequestBody.GetAllType.WITH_CONFIG: //case of with config
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("scanParam"))//return all fields except specified fields from SysDevice model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CONFIG, SimpleBeanPropertyFilter.serializeAllExcept("device")) //return all fields except device from SysDeviceConfig model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except specified parent from SysDeviceCategory model
                 break;
-            case DeviceGetAllRequestBody.GetAllType.WITH_SCAN:
-                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig"))
-                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
-                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAMS_FROM, SimpleBeanPropertyFilter.serializeAllExcept("device"))
-                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+            case DeviceGetAllRequestBody.GetAllType.WITH_SCAN: //case of with scan
+                filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig")) //return all fields except deviceConfig from SysDevice model
+                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAM, SimpleBeanPropertyFilter.serializeAllExcept("device")) //return all fields except device  from SerScanParam model
+                        .addFilter(ModelJsonFilters.FILTER_SER_SCAN_PARAMS_FROM, SimpleBeanPropertyFilter.serializeAllExcept("device")) //return all fields except device  from SerScanParamsFrom model
+                        .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
                 break;
-
-
             default:
-
                 break;
         }
-
         value.setFilters(filters);
 
         return value;
@@ -882,27 +827,24 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Get empty field device request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/device/get-empty-field", method = RequestMethod.POST)
     public Object deviceGetEmptyField(@RequestBody @Valid DeviceGetEmptyFieldRequestBody requestBody,
                                       BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        List<SysDevice> sysDeviceList = deviceService.getEmptyFieldDevice(requestBody.getCategoryId());
+        List<SysDevice> sysDeviceList = deviceService.getEmptyFieldDevice(requestBody.getCategoryId()); //get device list from database through deviceService
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-
-
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam")) //return all fields except specified fields parent from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
         value.setFilters(filters);
 
         return value;
@@ -910,24 +852,24 @@ public class DeviceControlController extends BaseController {
 
     /**
      * Get device list with field request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/device/get-by-field", method = RequestMethod.POST)
     public Object deviceGetByField(@RequestBody @Valid DeviceFilterByFieldRequestBody requestBody,
                                       BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysDevice> sysDeviceList = deviceService.getDeviceByField(requestBody.getFieldId(), requestBody.getCategoryId());
-
+        List<SysDevice> sysDeviceList = deviceService.getDeviceByField(requestBody.getFieldId(), requestBody.getCategoryId()); //get device list from database through deviceService
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, sysDeviceList));
-
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
-        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent"));
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.serializeAllExcept("deviceConfig", "scanParam"))  //return all fields except specified fields parent from SysDevice model
+                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE_CATEGORY, SimpleBeanPropertyFilter.serializeAllExcept("parent")); //return all fields except  parent from SysDeviceCategory model
 
         value.setFilters(filters);
 

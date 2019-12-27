@@ -1,9 +1,27 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（StatisticsByDeviceServiceImpl）
+ * 文件名：	StatisticsByDeviceServiceImpl.java
+ * 描述：	StatisticsByDeviceService implement
+ * 作者名：	Tiny
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.*;
+
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatisticsResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsModelForPreview;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsForPreview;
+
 import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +30,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Date;
+import java.util.ArrayList;
 
 @Service
 public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService {

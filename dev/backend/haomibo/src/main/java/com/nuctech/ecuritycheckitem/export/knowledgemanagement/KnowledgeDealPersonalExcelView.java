@@ -1,54 +1,67 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPersonalExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（KnowledgeDealPersonalExcelView）
+ * 文件名：	KnowledgeDealPersonalExcelView.java
+ * 描述：	KnowledgeDealPersonalExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/26
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class KnowledgeDealPersonalExcelView extends BaseExcelView {
 
+    /**
+     * create table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("任务编号");
-
+        headerCellNumber.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Number", null, currentLocale));
 
         Cell headerCellResult = header.createCell(2);
-        headerCellResult.setCellValue("任务结论");
+        headerCellResult.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Result", null, currentLocale));
 
         Cell headerCellField = header.createCell(3);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Field", null, currentLocale));
 
         Cell headerCellDevicePassageWay = header.createCell(4);
-        headerCellDevicePassageWay.setCellValue("通道");
+        headerCellDevicePassageWay.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.DevicePassageWay", null, currentLocale));
 
         Cell headerCellGoods = header.createCell(5);
-        headerCellGoods.setCellValue("查获物品");
+        headerCellGoods.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Goods", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportDealList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -59,7 +72,7 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员案例");
+            titleCell.setCellValue(messageSource.getMessage("KnowledgeDealPersonal.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -79,9 +92,6 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
                 } else {
                     row.createCell(1).setCellValue("无");
                 }
-
-
-
 
                 row.createCell(2).setCellValue(ConstantDictionary.getDataValue(deal.getHandTaskResult()));
                 if(deal.getScanDevice() != null && deal.getScanDevice().getField() != null) {
@@ -106,8 +116,6 @@ public class KnowledgeDealPersonalExcelView extends BaseExcelView {
             e.printStackTrace();
         }
 
-
         return new ByteArrayInputStream(out.toByteArray());
-
     }
 }

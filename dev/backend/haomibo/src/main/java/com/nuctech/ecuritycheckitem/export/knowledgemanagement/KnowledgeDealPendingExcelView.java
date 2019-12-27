@@ -1,61 +1,75 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（KnowledgeDealPendingExcelView）
+ * 文件名：	KnowledgeDealPendingExcelView.java
+ * 描述：	KnowledgeDealPendingExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/29
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class KnowledgeDealPendingExcelView  extends BaseExcelView {
 
+    /**
+     * create table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("KnowledgeDealPending.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("任务编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("KnowledgeDealPending.Number", null, currentLocale));
 
         Cell headerCellMode = header.createCell(2);
-        headerCellMode.setCellValue("工作模式");
+        headerCellMode.setCellValue(messageSource.getMessage("KnowledgeDealPending.Mode", null, currentLocale));
 
         Cell headerCellResult = header.createCell(3);
-        headerCellResult.setCellValue("任务结论");
+        headerCellResult.setCellValue(messageSource.getMessage("KnowledgeDealPending.Result", null, currentLocale));
 
         Cell headerCellField = header.createCell(4);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("KnowledgeDealPending.Field", null, currentLocale));
 
         Cell headerCellScanDevice = header.createCell(5);
-        headerCellScanDevice.setCellValue("安检仪");
+        headerCellScanDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.ScanDevice", null, currentLocale));
 
         Cell headerCellJudgeDevice = header.createCell(6);
-        headerCellJudgeDevice.setCellValue("判图站");
+        headerCellJudgeDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.JudgeDevice", null, currentLocale));
 
         Cell headerCellHandDevice = header.createCell(7);
-        headerCellHandDevice.setCellValue("手检站");
+        headerCellHandDevice.setCellValue(messageSource.getMessage("KnowledgeDealPending.HandDevice", null, currentLocale));
 
         Cell headerCellGoods = header.createCell(8);
-        headerCellGoods.setCellValue("查获物品");
+        headerCellGoods.setCellValue(messageSource.getMessage("KnowledgeDealPending.Goods", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportDealList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SerKnowledgeCaseDeal> exportDealList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -64,9 +78,10 @@ public class KnowledgeDealPendingExcelView  extends BaseExcelView {
 
             Sheet sheet = workbook.createSheet("Knowledge-Pending");
 
+
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("待审批案例");
+            titleCell.setCellValue(messageSource.getMessage("KnowledgeDealPending.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

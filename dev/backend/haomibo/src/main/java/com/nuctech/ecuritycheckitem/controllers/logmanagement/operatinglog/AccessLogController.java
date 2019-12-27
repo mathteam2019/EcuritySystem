@@ -1,11 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/21
- * @CreatedBy Choe.
- * @FileName AccessLogController.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AccessLogController）
+ * 文件名：	AccessLogController.java
+ * 描述：	Access Log Controller.
+ * 作者名：	Choe
+ * 日期：	2019/11/21
  */
+
 package com.nuctech.ecuritycheckitem.controllers.logmanagement.operatinglog;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -17,20 +21,20 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogExcelView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogPdfView;
 import com.nuctech.ecuritycheckitem.export.logmanagement.AccessLogWordView;
+import com.nuctech.ecuritycheckitem.export.logmanagement.DeviceLogPdfView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
-import com.querydsl.core.BooleanBuilder;
-import lombok.*;
-import org.apache.catalina.AccessLog;
-import org.apache.commons.lang3.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +47,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/log-management/operating-log/access")
@@ -98,14 +99,20 @@ public class AccessLogController extends BaseController {
     @ToString
     private static class AccessLogGenerateRequestBody {
 
-
-        String idList;
+        String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
-        Boolean isAll;
+        Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
 
         AccessLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
+    /**
+     * get paginated result from service
+     * @param filter
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     private PageResult<SysAccessLog> getPageResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
         String operateAccount = "";
@@ -123,6 +130,13 @@ public class AccessLogController extends BaseController {
         return result;
     }
 
+    /**
+     * get list to be exported
+     * @param filter
+     * @param isAll
+     * @param idList
+     * @return
+     */
     private List<SysAccessLog> getExportResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
         String operateAccount = "";
@@ -140,18 +154,18 @@ public class AccessLogController extends BaseController {
         return result;
     }
 
-
-
     /**
      * Access Log datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @RequestMapping(value = "/get-by-filter-and-page", method = RequestMethod.POST)
     public Object accessLogGetByFilterAndPage(
             @RequestBody @Valid AccessLogGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
 
-
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -163,116 +177,112 @@ public class AccessLogController extends BaseController {
         List<SysAccessLog> data = result.getDataList();
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
-                ResponseMessage.OK,
+                ResponseMessage.OK, //set response message as OK
                 FilteringAndPaginationResult
                         .builder()
-                        .total(total)
-                        .perPage(perPage)
-                        .currentPage(currentPage + 1)
-                        .lastPage((int) Math.ceil(((double) total) / perPage))
-                        .from(perPage * currentPage + 1)
-                        .to(perPage * currentPage + data.size())
-                        .data(data)
+                        .total(total) //set total count
+                        .perPage(perPage) //set record count per page
+                        .currentPage(currentPage + 1) //set current page number
+                        .lastPage((int) Math.ceil(((double) total) / perPage)) //set last page number
+                        .from(perPage * currentPage + 1) //set start index of current page
+                        .to(perPage * currentPage + data.size()) //set end index of current page
+                        .data(data) //set data
                         .build()));
 
-        // Set filters.
-
-        FilterProvider filters = ModelJsonFilters
-                .getDefaultFilters();
-
+        FilterProvider filters = ModelJsonFilters.getDefaultFilters();
         value.setFilters(filters);
 
         return value;
     }
 
-
-
     /**
      * Access Log generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_EXPORT)
     @RequestMapping(value = "/xlsx", method = RequestMethod.POST)
     public Object accessLogGenerateExcelFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList);
-
-
+        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        setDictionary(); //set dictionary data
+        AccessLogExcelView.setMessageSource(messageSource);
+        InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.xlsx");
+        headers.add("Content-Disposition", "attachment; filename=access-log.xlsx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msexcel"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Access Log generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
-
     @RequestMapping(value = "/docx", method = RequestMethod.POST)
     public Object accessLogGenerateWordFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                              BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        InputStream inputStream = AccessLogWordView.buildWordDocument(exportList);
-
-
+        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        setDictionary(); //set dictionary data
+        AccessLogWordView.setMessageSource(messageSource);
+        InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.docx");
+        headers.add("Content-Disposition", "attachment; filename=access-log.docx"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.valueOf("application/x-msword"))
                 .body(new InputStreamResource(inputStream));
-
     }
 
     /**
      * Access Log generate file request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
      */
     @PreAuthorize(Role.Authority.HAS_ACCESS_LOG_PRINT)
     @RequestMapping(value = "/pdf", method = RequestMethod.POST)
     public Object accessLogGeneratePDFFile(@RequestBody @Valid AccessLogGenerateRequestBody requestBody,
                                         BindingResult bindingResult) {
 
-        if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList());
-        setDictionary();
-        AccessLogPdfView.setResource(getFontResource());
-        InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList);
+        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        setDictionary(); //set dictionary data
+        AccessLogPdfView.setResource(getFontResource()); //set font resource
+        AccessLogPdfView.setMessageSource(messageSource);
+        InputStream inputStream = AccessLogPdfView.buildPDFDocument(exportList); //create inputstream of result to be printed
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=access-log.pdf");
+        headers.add("Content-Disposition", "attachment; filename=access-log.pdf"); //set filename
 
         return ResponseEntity
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(inputStream));
-
     }
 }
 

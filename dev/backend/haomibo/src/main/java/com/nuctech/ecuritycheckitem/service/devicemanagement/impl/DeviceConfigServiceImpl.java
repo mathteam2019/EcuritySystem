@@ -1,8 +1,38 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceConfigServiceImpl）
+ * 文件名：	DeviceConfigServiceImpl.java
+ * 描述：	DeviceConfigService implement
+ * 作者名：	Choe
+ * 日期：	2019/12/10
+ */
+
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
-import com.nuctech.ecuritycheckitem.controllers.devicemanagement.DeviceConfigManagementController;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import com.nuctech.ecuritycheckitem.repositories.*;
+import com.nuctech.ecuritycheckitem.models.db.SysDeviceConfig;
+import com.nuctech.ecuritycheckitem.models.db.QSysDeviceConfig;
+import com.nuctech.ecuritycheckitem.models.db.SysDevice;
+import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.SysManualGroup;
+import com.nuctech.ecuritycheckitem.models.db.SysJudgeGroup;
+import com.nuctech.ecuritycheckitem.models.db.FromConfigId;
+import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
+import com.nuctech.ecuritycheckitem.models.db.SysManualDevice;
+import com.nuctech.ecuritycheckitem.models.db.SysJudgeDevice;
+
+import com.nuctech.ecuritycheckitem.repositories.SysDeviceConfigRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysWorkModeRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysManualDeviceRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysJudgeDeviceRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysManualGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.SysJudgeGroupRepository;
+import com.nuctech.ecuritycheckitem.repositories.FromConfigIdRepository;
+
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -47,12 +77,26 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired
     AuthenticationFacade authenticationFacade;
 
+    /**
+     * find config with id
+     * @param configId
+     * @return
+     */
     @Override
     public SysDeviceConfig findConfigById(Long configId) {
         return sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
                 .configId.eq(configId)).orElse(null);
     }
 
+    /**
+     * get paginated and filtered device config list with filter parameters
+     * @param deviceName
+     * @param fieldId
+     * @param categoryId
+     * @param currentPage
+     * @param perPage
+     * @return
+     */
     @Override
     public PageResult<SysDeviceConfig> findConfigByFilter(String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage) {
         QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
@@ -83,36 +127,36 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 .collect(Collectors.toList());
         List<SysDeviceConfig> data = new ArrayList<>();
 
-        for(int i = 0; i < allData.size(); i ++) {
+        for (int i = 0; i < allData.size(); i++) {
             SysDeviceConfig config = allData.get(i);
-            if(config.getFromConfigIdList() != null && config.getFromConfigIdList().size() > 0) {
+            if (config.getFromConfigIdList() != null && config.getFromConfigIdList().size() > 0) {
                 Long fromDeviceId = config.getFromConfigIdList().get(0).getFromDeviceId();
                 SysDevice device = sysDeviceRepository.findOne(QSysDevice.sysDevice
                         .deviceId.eq(fromDeviceId)).orElse(null);
-                if(device != null) {
+                if (device != null) {
                     config.setFromConfigDeviceName(device.getDeviceName());
                 }
             }
         }
 
-        if(categoryId != null) {
-            for(int i = 0; i < allData.size(); i ++) {
+        if (categoryId != null) {
+            for (int i = 0; i < allData.size(); i++) {
                 SysDeviceConfig deviceConfigData = allData.get(i);
                 try {
-                    if(deviceConfigData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
-                        if(total >= startIndex && total < endIndex) {
+                    if (deviceConfigData.getDevice().getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == categoryId) {
+                        if (total >= startIndex && total < endIndex) {
                             data.add(deviceConfigData);
                         }
-                        total ++;
+                        total++;
                     }
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
         } else {
-            for(int i = 0; i < allData.size(); i ++) {
+            for (int i = 0; i < allData.size(); i++) {
                 SysDeviceConfig deviceConfigData = allData.get(i);
-                if(i >= startIndex && i < endIndex) {
+                if (i >= startIndex && i < endIndex) {
                     data.add(deviceConfigData);
                 }
             }
@@ -121,6 +165,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         return new PageResult<SysDeviceConfig>(total, data);
     }
 
+    /**
+     * modify device config
+     * @param sysDeviceConfig
+     * @param manualDeviceIdList
+     * @param judgeDeviceIdList
+     * @param configDeviceIdList
+     */
     @Override
     @Transactional
     public void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, List<Long> manualDeviceIdList, List<Long> judgeDeviceIdList,
@@ -128,24 +179,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         List<SysDeviceConfig> deviceConfigList = new ArrayList<>();
-        if(configDeviceIdList != null && configDeviceIdList.size() > 0) {
+        if (configDeviceIdList != null && configDeviceIdList.size() > 0) {
             deviceConfigList = StreamSupport
                     .stream(sysDeviceConfigRepository.findAll(QSysDeviceConfig.sysDeviceConfig
                             .deviceId.in(configDeviceIdList)).spliterator(), false)
                     .collect(Collectors.toList());
 
-            for(int i = 0; i < configDeviceIdList.size(); i ++) {
+            for (int i = 0; i < configDeviceIdList.size(); i++) {
                 boolean isExist = false;
                 SysDeviceConfig deviceConfig = null;
-                for(int j = 0; j < deviceConfigList.size(); j ++) {
-                    if(deviceConfigList.get(j).getDeviceId() == configDeviceIdList.get(i)) {
+                for (int j = 0; j < deviceConfigList.size(); j++) {
+                    if (deviceConfigList.get(j).getDeviceId() == configDeviceIdList.get(i)) {
                         deviceConfig = deviceConfigList.get(j);
                         deviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                         isExist = true;
                         break;
                     }
                 }
-                if(isExist == false) {
+                if (isExist == false) {
                     deviceConfig = SysDeviceConfig.builder().deviceId(configDeviceIdList.get(i)).build();
                     deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                     deviceConfigList.add(deviceConfig);
@@ -169,20 +220,21 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         List<SysManualGroup> manualGroups = new ArrayList<>();
         List<SysJudgeGroup> judgeGroups = new ArrayList<>();
 
-        for(int i = 0; i < deviceConfigList.size(); i ++) {
-            if(deviceConfigList.get(i).getManualGroupList() != null) {
-                for(int j = 0; j < deviceConfigList.get(i).getManualGroupList().size(); j ++) {
+        for (int i = 0; i < deviceConfigList.size(); i++) {
+            if (deviceConfigList.get(i).getManualGroupList() != null) {
+                for (int j = 0; j < deviceConfigList.get(i).getManualGroupList().size(); j++) {
                     manualGroups.add(deviceConfigList.get(i).getManualGroupList().get(j));
                 }
             }
 
-            if(deviceConfigList.get(i).getJudgeGroupList() != null) {
-                for(int j = 0; j < deviceConfigList.get(i).getJudgeGroupList().size(); j ++) {
+            if (deviceConfigList.get(i).getJudgeGroupList() != null) {
+                for (int j = 0; j < deviceConfigList.get(i).getJudgeGroupList().size(); j++) {
                     judgeGroups.add(deviceConfigList.get(i).getJudgeGroupList().get(j));
                 }
             }
 
-        };
+        }
+        ;
         sysManualGroupRepository.deleteAll(manualGroups);
         sysJudgeGroupRepository.deleteAll(judgeGroups);
         fromConfigIdRepository.deleteAll(sysDeviceConfig.getFromConfigIdList());
@@ -190,9 +242,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         manualGroups = new ArrayList<>();
         judgeGroups = new ArrayList<>();
         List<FromConfigId> configList = new ArrayList<>();
-        for(int i = 0; i < deviceConfigList.size(); i ++) {
-            if(manualDeviceIdList != null) {
-                for(int j = 0; j < manualDeviceIdList.size(); j ++) {
+        for (int i = 0; i < deviceConfigList.size(); i++) {
+            if (manualDeviceIdList != null) {
+                for (int j = 0; j < manualDeviceIdList.size(); j++) {
                     SysManualGroup manualGroup = SysManualGroup.builder()
                             .configId(deviceConfigList.get(i).getConfigId())
                             .manualDeviceId(manualDeviceIdList.get(j))
@@ -202,8 +254,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 }
             }
 
-            if(judgeDeviceIdList != null) {
-                for(int j = 0; j < judgeDeviceIdList.size(); j ++) {
+            if (judgeDeviceIdList != null) {
+                for (int j = 0; j < judgeDeviceIdList.size(); j++) {
                     SysJudgeGroup judgeGroup = SysJudgeGroup.builder()
                             .configId(deviceConfigList.get(i).getConfigId())
                             .judgeDeviceId(judgeDeviceIdList.get(j))
@@ -212,7 +264,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     judgeGroups.add(judgeGroup);
                 }
             }
-            if(deviceConfigList.get(i).getConfigId() != sysDeviceConfig.getConfigId()) {
+            if (deviceConfigList.get(i).getConfigId() != sysDeviceConfig.getConfigId()) {
                 FromConfigId configIdVal = FromConfigId.builder()
                         .configId(sysDeviceConfig.getConfigId())
                         .deviceId(deviceConfigList.get(i).getDeviceId())
@@ -227,52 +279,73 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         sysJudgeGroupRepository.saveAll(judgeGroups);
     }
 
+    /**
+     * remove device config
+     * @param sysDeviceConfig
+     */
     @Override
     @Transactional
     public void removeDeviceConfig(SysDeviceConfig sysDeviceConfig) {
-        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null &&  sysDeviceConfig.getManualGroupList().size() > 0)?
-                sysDeviceConfig.getManualGroupList().get(0): null;
-        if(manualGroup != null) {
+        SysManualGroup manualGroup = (sysDeviceConfig.getManualGroupList() != null && sysDeviceConfig.getManualGroupList().size() > 0) ?
+                sysDeviceConfig.getManualGroupList().get(0) : null;
+        if (manualGroup != null) {
             sysManualGroupRepository.delete(manualGroup);
         }
         //remove correspond judge group
-        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null &&  sysDeviceConfig.getJudgeGroupList().size() > 0)?
-                sysDeviceConfig.getJudgeGroupList().get(0): null;
-        if(judgeGroup != null) {
+        SysJudgeGroup judgeGroup = (sysDeviceConfig.getJudgeGroupList() != null && sysDeviceConfig.getJudgeGroupList().size() > 0) ?
+                sysDeviceConfig.getJudgeGroupList().get(0) : null;
+        if (judgeGroup != null) {
             sysJudgeGroupRepository.delete(judgeGroup);
         }
         //remove correspond from config.
-        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null &&  sysDeviceConfig.getFromConfigIdList().size() > 0)?
-                sysDeviceConfig.getFromConfigIdList().get(0): null;
-        if(fromConfigId != null) {
+        FromConfigId fromConfigId = (sysDeviceConfig.getFromConfigIdList() != null && sysDeviceConfig.getFromConfigIdList().size() > 0) ?
+                sysDeviceConfig.getFromConfigIdList().get(0) : null;
+        if (fromConfigId != null) {
             fromConfigIdRepository.delete(fromConfigId);
         }
         sysDeviceConfigRepository.delete(sysDeviceConfig);
     }
 
+    /**
+     * find all device config except specified device id
+     * @param deviceId
+     * @return
+     */
     @Override
     public List<SysDeviceConfig> findAllDeviceConfigExceptId(Long deviceId) {
         List<SysDeviceConfig> preSysDeviceConfigList = sysDeviceConfigRepository.findAll();
         List<SysDeviceConfig> sysDeviceConfigList = new ArrayList<>();
 
-        for(int i = 0; i < preSysDeviceConfigList.size(); i ++) {
-            if(preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
+        for (int i = 0; i < preSysDeviceConfigList.size(); i++) {
+            if (preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
                 sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
             }
         }
         return sysDeviceConfigList;
     }
 
+    /**
+     * find all workmode
+     * @return
+     */
     @Override
     public List<SysWorkMode> findAllWorkMode() {
         return sysWorkModeRepository.findAll();
     }
 
+    /**
+     * find all manual device
+     * @return
+     */
     @Override
     public List<SysManualDevice> findAllManualDevice() {
         return sysManualDeviceRepository.findAll();
     }
 
+    /**
+     * find all judge device
+     * @return
+     */
     @Override
     public List<SysJudgeDevice> findAllJudgeDevice() {
         return sysJudgeDeviceRepository.findAll();

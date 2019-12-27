@@ -1,49 +1,63 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/29
- * @CreatedBy Choe.
- * @FileName AccessLogExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AccessLogExcelView）
+ * 文件名：	AccessLogExcelView.java
+ * 描述：	AccessLogExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/29
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class AccessLogExcelView extends BaseExcelView {
 
+    /**
+     * create table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("AccessLog.No", null, currentLocale));
 
         Cell headerCellOperateTime = header.createCell(1);
-        headerCellOperateTime.setCellValue("访问时间");
+        headerCellOperateTime.setCellValue(messageSource.getMessage("AccessLog.OperateTime", null, currentLocale));
 
         Cell headerCellAction = header.createCell(2);
-        headerCellAction.setCellValue("动作");
+        headerCellAction.setCellValue(messageSource.getMessage("AccessLog.Action", null, currentLocale));
 
         Cell headerCellClientIp = header.createCell(3);
-        headerCellClientIp.setCellValue("访问ip");
+        headerCellClientIp.setCellValue(messageSource.getMessage("AccessLog.ClientIp", null, currentLocale));
 
         Cell headerCellOperateAccount = header.createCell(4);
-        headerCellOperateAccount.setCellValue("访问用户");
+        headerCellOperateAccount.setCellValue(messageSource.getMessage("AccessLog.OperateAccount", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportLogList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SysAccessLog> exportLogList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -54,7 +68,7 @@ public class AccessLogExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("访问日志");
+            titleCell.setCellValue(messageSource.getMessage("AccessLog.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

@@ -1,14 +1,18 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName OrganizationPdfView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（HandExaminationStatisticsPdfView）
+ * 文件名：	HandExaminationStatisticsPdfView.java
+ * 描述：	HandExaminationStatisticsPdfView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Phrase;
@@ -18,7 +22,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +33,11 @@ import java.util.stream.Stream;
 
 public class HandExaminationStatisticsPdfView extends BasePdfView {
 
+    /**
+     * build inputstream of data to be printed
+     * @param detailedStatistics
+     * @return
+     */
     public static InputStream buildPDFDocument(TreeMap<Integer, HandExaminationResponseModel> detailedStatistics) {
 
         Document document = new Document();
@@ -41,18 +49,19 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("毫米波人体查验手检统计"));
+            document.add(getTitle(messageSource.getMessage("HandExaminationStatisticsTableTitle", null, currentLocale)));
             document.add(getTime());
 
             PdfPTable table = new PdfPTable(10);
 
+
             table.setWidthPercentage(100);
-            Stream.of("序号", "时间段", "手检总量", "无查获量", "无查获率", "查获", "查获率", "手检平均时长", "手检最高时长", "手检最低时长")
+            Stream.of("ID", "StatWidth", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate", "HandAvgDuration", "HandMaxDuration", "HandMinDuration")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

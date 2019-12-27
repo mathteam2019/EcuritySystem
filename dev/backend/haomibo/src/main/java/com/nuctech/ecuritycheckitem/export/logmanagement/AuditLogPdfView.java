@@ -1,14 +1,18 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/29
- * @CreatedBy Choe.
- * @FileName AuditLogPdfView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AuditLogPdfView）
+ * 文件名：	AuditLogPdfView.java
+ * 描述：	AuditLogPdfView
+ * 作者名：	Choe
+ * 日期：	2019/11/29
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.logmanagement;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Phrase;
@@ -22,12 +26,16 @@ import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class AuditLogPdfView extends BasePdfView {
+
+    /**
+     * build inputstream of data to be printed
+     * @param exportLogList
+     * @return
+     */
     public static InputStream buildPDFDocument(List<SysAuditLog> exportLogList) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -37,21 +45,19 @@ public class AuditLogPdfView extends BasePdfView {
             PdfWriter.getInstance(document, out);
 
             document.open();
-            document.add(getTitle("操作日志"));
+            document.add(getTitle(messageSource.getMessage("AuditLog.Title", null, currentLocale)));
             document.add(getTime());
             PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
-            Stream.of("序号", "操作员ID", "客户端ip", "操作对象", "操作", "操作内容", "操作结果", "失败原因代码", "操作时间")
+            Stream.of("AuditLog.No", "AuditLog.OperatorId", "AuditLog.ClientIp", "AuditLog.OperateObject", "AuditLog.Action", "AuditLog.OperateContent", "AuditLog.OperateResult", "AuditLog.ReasonCode", "AuditLog.OperateTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
-
-
 
             for (SysAuditLog log : exportLogList) {
                 addTableCell(table, log.getId().toString());

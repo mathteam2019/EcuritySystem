@@ -1,6 +1,19 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（FromConfigId）
+ * 文件名：	FromConfigId.java
+ * 描述：	FromConfigId Model
+ * 作者名：	Tiny
+ * 日期：	2019/10/15
+ */
+
 package com.nuctech.ecuritycheckitem.models.db;
 
-
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +22,15 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,6 +41,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
+@JsonFilter(ModelJsonFilters.FILTER_HISTORY)
 @Table(name = "history")
 public class History extends BaseEntity implements Serializable {
 
@@ -243,4 +263,18 @@ public class History extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScan serScan;
 
+    @OneToOne()
+    @JoinColumn(name = "JUDGE_ID", referencedColumnName = "JUDGE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerJudgeGraph serJudgeGraph;
+
+    @OneToOne()
+    @JoinColumn(name = "HAND_EXAMINATION_ID", referencedColumnName = "HAND_EXAMINATION_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerHandExamination serHandExamination;
+
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerKnowledgeCase serKnowledgeCase;
 }

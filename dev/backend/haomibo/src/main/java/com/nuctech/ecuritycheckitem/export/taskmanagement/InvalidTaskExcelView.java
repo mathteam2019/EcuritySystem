@@ -1,17 +1,28 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（InvalidTaskExcelView）
+ * 文件名：	InvalidTaskExcelView.java
+ * 描述：	InvalidTaskExcelView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
-import org.apache.poi.ss.usermodel.*;
+import com.nuctech.ecuritycheckitem.models.db.SerTaskSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -22,40 +33,41 @@ import java.util.List;
 
 public class InvalidTaskExcelView extends BaseExcelView {
 
+    /**
+     * set table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTaskNumber = header.createCell(1);
-        headerCellTaskNumber.setCellValue("任务编号");
-
-//        Cell headerCellScanImage = header.createCell(2);
-//        headerCellScanImage.setCellValue("图像");
+        headerCellTaskNumber.setCellValue(messageSource.getMessage("TaskNumber", null, currentLocale));
 
         Cell headerCellWorkMode = header.createCell(2);
-        headerCellWorkMode.setCellValue("工作模式");
+        headerCellWorkMode.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
 
         Cell headerCellField = header.createCell(3);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("Scene", null, currentLocale));
 
         Cell headerCellScanDevice = header.createCell(4);
-        headerCellScanDevice.setCellValue("安检仪");
+        headerCellScanDevice.setCellValue(messageSource.getMessage("ScanDeviceName", null, currentLocale));
 
         Cell headerCellScanUser = header.createCell(5);
-        headerCellScanUser.setCellValue("引导员");
+        headerCellScanUser.setCellValue(messageSource.getMessage("ScanUserName", null, currentLocale));
 
         Cell headerCellScanStartTime = header.createCell(6);
-        headerCellScanStartTime.setCellValue("扫描开始时间");
+        headerCellScanStartTime.setCellValue(messageSource.getMessage("ScanStartTime", null, currentLocale));
 
         Cell headerCellScanEndTime = header.createCell(7);
-        headerCellScanEndTime.setCellValue("扫描结束时间");
+        headerCellScanEndTime.setCellValue(messageSource.getMessage("ScanEndTime", null, currentLocale));
 
     }
 
 
-    public static InputStream buildExcelDocument(List<SerTask> exportTaskList) {
+    public static InputStream buildExcelDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -66,7 +78,7 @@ public class InvalidTaskExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("无效任务");
+            titleCell.setCellValue(messageSource.getMessage("InvalidTaskTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -79,25 +91,13 @@ public class InvalidTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            for (SerTask task : exportTaskList) {
+            for (SerTaskSimplifiedForProcessTaskManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
                 row.createCell(0).setCellValue(task.getTaskId());
 
                 row.createCell(1).setCellValue(task.getTaskNumber());
-
-//                if (task.getSerScan() != null) {
-//                    if (task.getSerScan().getScanImage() != null) {
-//                        row.createCell(2).setCellValue(task.getSerScan().getScanImage().getImageLabel());
-//                    }
-//                    else {
-//                        row.createCell(2).setCellValue("无");
-//                    }
-//                }
-//                else {
-//                    row.createCell(2).setCellValue("无");
-//                }
 
                 if (task.getWorkFlow() != null) {
                     if (task.getWorkFlow().getWorkMode() != null) {

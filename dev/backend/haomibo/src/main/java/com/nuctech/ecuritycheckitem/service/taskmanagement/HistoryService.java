@@ -5,8 +5,8 @@
  *
  * 项目：	Haomibo V1.0（历史任务 service interface 1.0)
  * 文件名：	HistoryService.java
- * 描述：	Service Interface to get invalid task data from database using models and repositories
- * 作者名：	申日哲
+ * 描述：	Service Interface to get history task data from database using models and repositories
+ * 作者名：	Tiny
  * 日期：	2019/12/20
  *
  */
@@ -14,6 +14,8 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.History;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.Date;
@@ -34,7 +36,7 @@ public interface HistoryService {
      * @param perPage : perPage count
      * @return
      */
-    PageResult<History> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+    PageResult<HistorySimplifiedForHistoryTaskManagement> getHistoryTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
     /**
      * get All history task with filter
@@ -47,14 +49,14 @@ public interface HistoryService {
      * @param endTime : end time
      * @return
      */
-    List<History> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
+    List<HistorySimplifiedForHistoryTaskManagement> getHistoryTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * Get one history task with id
      * @param taskId
      * @return
      */
-    History getOne(Long taskId);
+    HistorySimplifiedForHistoryTaskManagement getOne(Long taskId);
 
 
 }

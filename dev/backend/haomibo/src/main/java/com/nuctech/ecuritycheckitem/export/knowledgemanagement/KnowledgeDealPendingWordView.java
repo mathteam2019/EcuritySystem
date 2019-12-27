@@ -1,11 +1,29 @@
+/*
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
+ *
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（KnowledgeDealPendingWordView）
+ * 文件名：	KnowledgeDealPendingWordView.java
+ * 描述：	KnowledgeDealPendingWordView
+ * 作者名：	Tiny
+ * 日期：	2019/11/29
+ *
+ */
+
 package com.nuctech.ecuritycheckitem.export.knowledgemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
-import com.nuctech.ecuritycheckitem.models.db.SysField;
-import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.poi.xwpf.usermodel.TableWidthType;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,13 +32,17 @@ import java.util.List;
 
 public class KnowledgeDealPendingWordView extends BaseWordView {
 
+    /**
+     * create title paragraph
+     * @param document
+     */
     private static void createHeaderPart(XWPFDocument document) {
 
         XWPFParagraph title = document.createParagraph();
         title.setAlignment(ParagraphAlignment.CENTER);
 
         XWPFRun titleRun = title.createRun();
-        titleRun.setText("待审批案例");
+        titleRun.setText(messageSource.getMessage("KnowledgeDealPending.Title", null, currentLocale));
         titleRun.setFontSize(Constants.WORD_HEAD_FONT_SIZE);
         titleRun.setFontFamily(Constants.WORD_HEAD_FONT_NAME);
 
@@ -34,23 +56,32 @@ public class KnowledgeDealPendingWordView extends BaseWordView {
 
     }
 
+    /**
+     * create table header row
+     * @param table
+     */
     private static void createTableHeader(XWPFTable table) {
 
         table.setWidthType(TableWidthType.DXA);
         //create first row
         XWPFTableRow tableRowHeader = table.getRow(0);
-        tableRowHeader.getCell(0).setText("序号");
-        tableRowHeader.addNewTableCell().setText("任务编号");
-        tableRowHeader.addNewTableCell().setText("工作模式");
-        tableRowHeader.addNewTableCell().setText("任务结论");
-        tableRowHeader.addNewTableCell().setText("现场");
-        tableRowHeader.addNewTableCell().setText("安检仪");
-        tableRowHeader.addNewTableCell().setText("判图站");
-        tableRowHeader.addNewTableCell().setText("手检站");
-        tableRowHeader.addNewTableCell().setText("查获物品");
+        tableRowHeader.getCell(0).setText(messageSource.getMessage("KnowledgeDealPending.No", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.Number", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.Mode", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.Result", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.Field", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.ScanDevice", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.JudgeDevice", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.HandDevice", null, currentLocale));
+        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("KnowledgeDealPending.Goods", null, currentLocale));
 
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportList
+     * @return
+     */
     public static InputStream buildWordDocument(List<SerKnowledgeCaseDeal> exportList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

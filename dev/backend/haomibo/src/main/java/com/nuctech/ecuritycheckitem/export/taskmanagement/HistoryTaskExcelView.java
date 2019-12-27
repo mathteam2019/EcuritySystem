@@ -1,17 +1,27 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（HistoryTaskExcelView）
+ * 文件名：	HistoryTaskExcelView.java
+ * 描述：	HistoryTaskExcelView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.History;
-import org.apache.poi.ss.usermodel.*;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -19,64 +29,67 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 
 public class HistoryTaskExcelView extends BaseExcelView {
 
+    /**
+     * set table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTaskNumber = header.createCell(1);
-        headerCellTaskNumber.setCellValue("任务编号");
+        headerCellTaskNumber.setCellValue(messageSource.getMessage("TaskNumber", null, currentLocale));
 
         Cell headerCellWorkMode = header.createCell(2);
-        headerCellWorkMode.setCellValue("工作模式");
+        headerCellWorkMode.setCellValue(messageSource.getMessage("WorkMode", null, currentLocale));
 
         Cell headerCellTaskResult = header.createCell(3);
-        headerCellTaskResult.setCellValue("任务结论");
+        headerCellTaskResult.setCellValue(messageSource.getMessage("TaskResult", null, currentLocale));
 
         Cell headerCellField = header.createCell(4);
-        headerCellField.setCellValue("现场");
+        headerCellField.setCellValue(messageSource.getMessage("Scene", null, currentLocale));
 
         Cell headerCellScanDevice = header.createCell(5);
-        headerCellScanDevice.setCellValue("安检仪");
+        headerCellScanDevice.setCellValue(messageSource.getMessage("ScanDeviceName", null, currentLocale));
 
         Cell headerCellScanUser = header.createCell(6);
-        headerCellScanUser.setCellValue("引导员");
+        headerCellScanUser.setCellValue(messageSource.getMessage("ScanUserName", null, currentLocale));
 
         Cell headerCellScanStartTime = header.createCell(7);
-        headerCellScanStartTime.setCellValue("扫描开始时间");
+        headerCellScanStartTime.setCellValue(messageSource.getMessage("ScanStartTime", null, currentLocale));
 
         Cell headerCellScanEndTime = header.createCell(8);
-        headerCellScanEndTime.setCellValue("扫描结束时间");
+        headerCellScanEndTime.setCellValue(messageSource.getMessage("ScanEndTime", null, currentLocale));
 
         Cell headerCellJudgeDevice = header.createCell(9);
-        headerCellJudgeDevice.setCellValue("判图站");
+        headerCellJudgeDevice.setCellValue(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
 
         Cell headerCellJudgeUser = header.createCell(10);
-        headerCellJudgeUser.setCellValue("判图员");
+        headerCellJudgeUser.setCellValue(messageSource.getMessage("JudgeUserName", null, currentLocale));
 
         Cell headerCellJudgeStartTime = header.createCell(11);
-        headerCellJudgeStartTime.setCellValue("判图开始时间");
+        headerCellJudgeStartTime.setCellValue(messageSource.getMessage("JudgeStartTime", null, currentLocale));
 
         Cell headerCellJudgeEndTime = header.createCell(12);
-        headerCellJudgeEndTime.setCellValue("判图结束时间");
+        headerCellJudgeEndTime.setCellValue(messageSource.getMessage("JudgeEndTime", null, currentLocale));
 
         Cell headerCellHandExaminationDevice = header.createCell(13);
-        headerCellHandExaminationDevice.setCellValue("手检站");
+        headerCellHandExaminationDevice.setCellValue(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
 
         Cell headerCellHandExaminationUser = header.createCell(14);
-        headerCellHandExaminationUser.setCellValue("手检员");
+        headerCellHandExaminationUser.setCellValue(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
 
         Cell headerCellStartTime = header.createCell(15);
-        headerCellStartTime.setCellValue("手检开始时间");
+        headerCellStartTime.setCellValue(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
     }
 
 
-    public static InputStream buildExcelDocument(List<History> exportTaskList) {
+    public static InputStream buildExcelDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -87,7 +100,8 @@ public class HistoryTaskExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("历史任务");
+
+            titleCell.setCellValue(messageSource.getMessage("HistoryTaskTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -100,7 +114,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            for (History task : exportTaskList) {
+            for (HistorySimplifiedForHistoryTaskManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
@@ -117,12 +131,6 @@ public class HistoryTaskExcelView extends BaseExcelView {
                 else {
                     row.createCell(1).setCellValue("无");
                 }
-
-//                if (task.getScanImage() != null) {
-//                    row.createCell(2).setCellValue(task.getScanImage().getImageLabel());
-//                } else {
-//                    row.createCell(2).setCellValue("无");
-//                }
 
                 if (task.getWorkMode() != null) {
                     row.createCell(2).setCellValue(ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));

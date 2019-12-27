@@ -1,12 +1,15 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/19
- * @CreatedBy Choe.
- * @FileName SysDevice.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
+ * 项目：	Haomibo V1.0（SysDevice）
+ * 文件名：	SysDevice.java
+ * 描述：	SysDevice Model
+ * 作者名：	Choe
+ * 日期：	2019/11/19
  */
+
 
 package com.nuctech.ecuritycheckitem.models.db;
 
@@ -21,7 +24,16 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.FetchType;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -73,15 +85,6 @@ public class SysDevice extends BaseEntity implements Serializable {
 
     @Column(name = "DEVICE_SERIAL", length = 50)
     private String deviceSerial;
-
-//    @Column(name = "CATEGORY_ID", length = 20)
-//    Long categoryId;
-//
-//    @Column(name = "MANUFACTURER", length = 10)
-//    String manufacturer;
-//
-//    @Column(name = "ORIGINAL_MODEL", length = 50)
-//    String originalModel;
 
     @Column(name = "ORIGINAL_FACTORY_NUMBER", length = 50)
     private String originalFactoryNumber;

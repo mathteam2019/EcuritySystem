@@ -1,14 +1,18 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName OrganizationPdfView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（UserOrDeviceStatisticsPdfView）
+ * 文件名：	UserOrDeviceStatisticsPdfView.java
+ * 描述：	UserOrDeviceStatisticsPdfView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Phrase;
@@ -17,18 +21,25 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
-import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.TotalStatistics;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
 
 public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
+    /**
+     * build inputstream of data to be printed
+     * @param detailedStatistics
+     * @return
+     */
     public static InputStream buildPDFDocument(TreeMap<Long, TotalStatistics> detailedStatistics, boolean type) {
 
         Document document = new Document();
@@ -41,9 +52,9 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             document.open();
             if (type) {
-                document.add(getTitle("人员工时统计"));
+                document.add(getTitle(messageSource.getMessage("UserStatisticsTableTitle", null,currentLocale)));
             } else {
-                document.add(getTitle("设备运行时长统计"));
+                document.add(getTitle(messageSource.getMessage("DeviceStatisticsTableTitle", null,currentLocale)));
             }
             document.add(getTime());
 
@@ -51,11 +62,12 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
 
             List<String> strHeaderList = new ArrayList<>();
 
+
             if (type) {
-                strHeaderList = Arrays.asList(new String[]{"序号", "用户名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+                strHeaderList = Arrays.asList(new String[]{"ID", "UserName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
             }
             else {
-                strHeaderList = Arrays.asList(new String[]{"序号", "设备名", "扫描总量", "无效扫描量", "无效率", "判图量", "手检量", "无嫌疑量", "无嫌疑率", "无查获量", "无查获率", "查获量", "查获率"});
+                strHeaderList = Arrays.asList(new String[]{"ID", "DeviceName", "TotalHandExam", "Missing", "MissingRate", "Mistake", "MistakeRate", "ArtificialJudge", "ArtificialJudgeMissing", "ArtificialJudgeMissingRate", "ArtificialJudgeMistake", "ArtificialJudgeMistakeRate", "IntelligenceJudge"});
             }
 
 
@@ -65,7 +77,7 @@ public class UserOrDeviceStatisticsPdfView extends BasePdfView {
                         PdfPCell header = new PdfPCell();
 
                         header.setBorderWidth(2);
-                        header.setPhrase(new Phrase(columnTitle, getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
+                        header.setPhrase(new Phrase(messageSource.getMessage(columnTitle, null, currentLocale), getFontWithSize(Constants.PDF_HEAD_FONT_SIZE)));
                         table.addCell(header);
                     });
 

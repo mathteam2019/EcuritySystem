@@ -1,16 +1,25 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/26
- * @CreatedBy Choe.
- * @FileName KnowledgeDealPendingExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（ScanStatisticsExcelView）
+ * 文件名：	ScanStatisticsExcelView.java
+ * 描述：	ScanStatisticsExcelView
+ * 作者名：	Tiny
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.statisticsmanagement;
 
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -23,45 +32,53 @@ import java.util.TreeMap;
 
 public class ScanStatisticsExcelView extends BaseExcelView {
 
+    /**
+     * set table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("ID", null, currentLocale));
 
         Cell headerCellTime = header.createCell(1);
-        headerCellTime.setCellValue("时间段");
+        headerCellTime.setCellValue(messageSource.getMessage("StatWidth", null, currentLocale));
 
         Cell headerCellTotalScan = header.createCell(2);
-        headerCellTotalScan.setCellValue("扫描总量");
+        headerCellTotalScan.setCellValue(messageSource.getMessage("TotalScan", null, currentLocale));
 
         Cell headerCellValidScans = header.createCell(3);
-        headerCellValidScans.setCellValue("有效扫描量");
+        headerCellValidScans.setCellValue(messageSource.getMessage("ValidScans", null, currentLocale));
 
         Cell headerCellValidScanRate = header.createCell(4);
-        headerCellValidScanRate.setCellValue("有效率");
+        headerCellValidScanRate.setCellValue(messageSource.getMessage("ValidScanRate", null, currentLocale));
 
         Cell headerCellInvalidScans = header.createCell(5);
-        headerCellInvalidScans.setCellValue("无效扫描量");
+        headerCellInvalidScans.setCellValue(messageSource.getMessage("InvalidScans", null, currentLocale));
 
         Cell headerCellInvalidScanRate = header.createCell(6);
-        headerCellInvalidScanRate.setCellValue("无效率");
+        headerCellInvalidScanRate.setCellValue(messageSource.getMessage("InvalidScanRate", null, currentLocale));
 
         Cell headerCellPassedScans = header.createCell(7);
-        headerCellPassedScans.setCellValue("通过量");
+        headerCellPassedScans.setCellValue(messageSource.getMessage("PassedScans", null, currentLocale));
 
         Cell headerCellPassedScanRate = header.createCell(8);
-        headerCellPassedScanRate.setCellValue("通过率");
+        headerCellPassedScanRate.setCellValue(messageSource.getMessage("PassedScanRate", null, currentLocale));
 
         Cell headerCellAlarmScans = header.createCell(9);
-        headerCellAlarmScans.setCellValue("报警量");
+        headerCellAlarmScans.setCellValue(messageSource.getMessage("AlarmScans", null, currentLocale));
 
         Cell headerCellAlarmScanRate = header.createCell(10);
-        headerCellAlarmScanRate.setCellValue("报警率");
+        headerCellAlarmScanRate.setCellValue(messageSource.getMessage("AlarmScanRate", null, currentLocale));
 
     }
 
-
+    /**
+     * build inputstream of data to be exported
+     * @param detailedStatistics
+     * @return
+     */
     public static InputStream buildExcelDocument(TreeMap<Integer, ScanStatistics> detailedStatistics) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -73,7 +90,7 @@ public class ScanStatisticsExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("扫描统计");
+            titleCell.setCellValue(messageSource.getMessage("ScanStatisticsTableTitle", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

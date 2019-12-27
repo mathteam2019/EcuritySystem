@@ -1,19 +1,26 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/29
- * @CreatedBy Choe.
- * @FileName DeviceArchiveTemplateExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DeviceExcelView）
+ * 文件名：	DeviceExcelView.java
+ * 描述：	DeviceExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/29
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.devicemanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -24,32 +31,42 @@ import java.util.List;
 
 public class DeviceExcelView extends BaseExcelView {
 
+    /**
+     * create header of excel sheet
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("Device.No", null, currentLocale));
 
         Cell headerCellDevice = header.createCell(1);
-        headerCellDevice.setCellValue("设备编号");
+        headerCellDevice.setCellValue(messageSource.getMessage("Device.Device", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("模板");
+        headerCellName.setCellValue(messageSource.getMessage("Device.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("Device.Status", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(4);
-        headerCellCategory.setCellValue("设备分类");
+        headerCellCategory.setCellValue(messageSource.getMessage("Device.Category", null, currentLocale));
 
         Cell headerCellManufacturer = header.createCell(5);
-        headerCellManufacturer.setCellValue("生产厂商");
+        headerCellManufacturer.setCellValue(messageSource.getMessage("Device.Manufacturer", null, currentLocale));
 
         Cell headerCellOriginalModel = header.createCell(6);
-        headerCellOriginalModel.setCellValue("设备型号");
+        headerCellOriginalModel.setCellValue(messageSource.getMessage("Device.OriginalModel", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportDeviceList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SysDevice> exportDeviceList) {
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
 
@@ -59,7 +76,7 @@ public class DeviceExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("设备管理");
+            titleCell.setCellValue(messageSource.getMessage("Device.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
@@ -104,8 +121,6 @@ public class DeviceExcelView extends BaseExcelView {
             e.printStackTrace();
         }
 
-
         return new ByteArrayInputStream(out.toByteArray());
-
     }
 }

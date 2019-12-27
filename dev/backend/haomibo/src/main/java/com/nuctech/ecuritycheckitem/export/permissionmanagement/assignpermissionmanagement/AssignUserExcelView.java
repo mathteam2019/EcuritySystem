@@ -1,20 +1,27 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName UserExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（AssignUserExcelView）
+ * 文件名：	AssignUserExcelView.java
+ * 描述：	AssignUserExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -26,32 +33,41 @@ import java.util.List;
 
 public class AssignUserExcelView extends BaseExcelView {
 
+    /**
+     * create table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("AssignUser.No", null, currentLocale));
 
         Cell headerCellName = header.createCell(1);
-        headerCellName.setCellValue("人员");
+        headerCellName.setCellValue(messageSource.getMessage("AssignUser.Name", null, currentLocale));
 
         Cell headerCellGender = header.createCell(2);
-        headerCellGender.setCellValue("性别");
+        headerCellGender.setCellValue(messageSource.getMessage("AssignUser.Gender", null, currentLocale));
 
         Cell headerCellAccount = header.createCell(3);
-        headerCellAccount.setCellValue("账号");
+        headerCellAccount.setCellValue(messageSource.getMessage("AssignUser.Account", null, currentLocale));
 
         Cell headerCellGroup = header.createCell(4);
-        headerCellGroup.setCellValue("隶属机构");
+        headerCellGroup.setCellValue(messageSource.getMessage("AssignUser.Group", null, currentLocale));
 
         Cell headerCellRole = header.createCell(5);
-        headerCellRole.setCellValue("角色");
+        headerCellRole.setCellValue(messageSource.getMessage("AssignUser.Role", null, currentLocale));
 
         Cell headerCellCategory = header.createCell(6);
-        headerCellCategory.setCellValue("数据范围");
+        headerCellCategory.setCellValue(messageSource.getMessage("AssignUser.Category", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportUserList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SysUser> exportUserList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -62,7 +78,7 @@ public class AssignUserExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("人员授权");
+            titleCell.setCellValue(messageSource.getMessage("AssignUser.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

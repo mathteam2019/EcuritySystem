@@ -1,63 +1,76 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName OrganizationExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（OrganizationExcelView）
+ * 文件名：	OrganizationExcelView.java
+ * 描述：	OrganizationExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.permissionmanagement;
 
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class OrganizationExcelView extends BaseExcelView {
 
-
+    /**
+     * build inputstream of data to be exported
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("Organization.No", null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("机构编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("Organization.Number", null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("机构名称");
+        headerCellName.setCellValue(messageSource.getMessage("Organization.Name", null, currentLocale));
 
         Cell headerCellStatus = header.createCell(3);
-        headerCellStatus.setCellValue("生效");
+        headerCellStatus.setCellValue(messageSource.getMessage("Organization.Status", null, currentLocale));
 
         Cell headerCellParentNumber = header.createCell(4);
-        headerCellParentNumber.setCellValue("上级机构编号");
+        headerCellParentNumber.setCellValue(messageSource.getMessage("Organization.ParentNumber", null, currentLocale));
 
         Cell headerCellParentName = header.createCell(5);
-        headerCellParentName.setCellValue("上级机构");
+        headerCellParentName.setCellValue(messageSource.getMessage("Organization.ParentName", null, currentLocale));
 
         Cell headerCellLeader = header.createCell(6);
-        headerCellLeader.setCellValue("负责人");
+        headerCellLeader.setCellValue(messageSource.getMessage("Organization.Leader", null, currentLocale));
 
         Cell headerCellMobile = header.createCell(7);
-        headerCellMobile.setCellValue("联系方式");
+        headerCellMobile.setCellValue(messageSource.getMessage("Organization.Mobile", null, currentLocale));
 
         Cell headerCellNote = header.createCell(8);
-        headerCellNote.setCellValue("备注");
+        headerCellNote.setCellValue(messageSource.getMessage("Organization.Note", null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportOrgList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SysOrg> exportOrgList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -68,7 +81,7 @@ public class OrganizationExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("机构管理");
+            titleCell.setCellValue(messageSource.getMessage("Organization.Title", null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);

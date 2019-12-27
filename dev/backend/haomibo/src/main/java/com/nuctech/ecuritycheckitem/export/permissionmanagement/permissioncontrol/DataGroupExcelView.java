@@ -1,18 +1,25 @@
 /*
- * Copyright 2019 KR-STAR-DEV team.
+ * 版权所有 ( c ) 同方威视技术股份有限公司2019。保留所有权利。
  *
- * @CreatedDate 2019/11/30
- * @CreatedBy Choe.
- * @FileName DataGroupExcelView.java
- * @ModifyHistory
+ * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
+ *
+ * 项目：	Haomibo V1.0（DataGroupExcelView）
+ * 文件名：	DataGroupExcelView.java
+ * 描述：	DataGroupExcelView
+ * 作者名：	Choe
+ * 日期：	2019/11/30
+ *
  */
+
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.permissioncontrol;
 
-import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayInputStream;
@@ -23,23 +30,32 @@ import java.util.List;
 
 public class DataGroupExcelView extends BaseExcelView {
 
+    /**
+     * create table header row
+     * @param sheet
+     */
     private static void setHeader(Sheet sheet) {
         Row header = sheet.createRow(3);
 
 
         Cell headerCellNo = header.createCell(0);
-        headerCellNo.setCellValue("序号");
+        headerCellNo.setCellValue(messageSource.getMessage("DataGroup.No",null, currentLocale));
 
         Cell headerCellNumber = header.createCell(1);
-        headerCellNumber.setCellValue("数据组编号");
+        headerCellNumber.setCellValue(messageSource.getMessage("DataGroup.Number",null, currentLocale));
 
         Cell headerCellName = header.createCell(2);
-        headerCellName.setCellValue("数据组");
+        headerCellName.setCellValue(messageSource.getMessage("DataGroup.Name",null, currentLocale));
 
         Cell headerCellRange = header.createCell(3);
-        headerCellRange.setCellValue("数据组范围");
+        headerCellRange.setCellValue(messageSource.getMessage("DataGroup.Range",null, currentLocale));
     }
 
+    /**
+     * build inputstream of data to be exported
+     * @param exportDataGroupList
+     * @return
+     */
     public static InputStream buildExcelDocument(List<SysDataGroup> exportDataGroupList) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -50,7 +66,7 @@ public class DataGroupExcelView extends BaseExcelView {
 
             Row title = sheet.createRow(0);
             Cell titleCell = title.createCell(0);
-            titleCell.setCellValue("数据组");
+            titleCell.setCellValue(messageSource.getMessage("DataGroup.Title",null, currentLocale));
             titleCell.setCellStyle(getHeaderStyle(workbook));
 
             Row time = sheet.createRow(1);
