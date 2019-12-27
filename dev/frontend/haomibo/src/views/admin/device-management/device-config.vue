@@ -166,7 +166,7 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('device-management.site-config')">
         <div class="switch-button d-flex mb-3">
           <span :class="`${switchStatus==='config'?'active':''}`" @click="changeSwitchStatus('config')"><i
@@ -539,6 +539,7 @@
         </b-row>
       </b-tab>
     </b-tabs>
+    <div v-show="isLoading" class="loading"></div>
   </div>
 </template>
 <script>
@@ -590,11 +591,12 @@
     },
     data() {
       return {
+        isLoading: false,
         isLoadCompleted: false,
         modeDictionaryData: {
           '1000001301': "安检仪",
-          '1000001302': "安检仪+审图端",
-          '1000001303': "安检仪+查验端",
+          '1000001302': "安检仪+手验端",
+          '1000001303': "安检仪+审图端",
           '1000001304': "安检仪+审图端+查验端"
         },
         siteData: [],
@@ -1106,7 +1108,7 @@
         this.configForm.fromDeviceId.forEach(item => {
           this.configForm.fromDeviceIdList.push(item.value);
         });
-
+        this.isLoading = true;
         getApiManager().post(`${apiBaseUrl}/device-management/device-config/config/modify`, this.configForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -1116,10 +1118,12 @@
                 duration: 3000,
                 permanent: false
               });
-              this.$refs.pendingListTable.refresh();
+              this.$refs.pendingListTable.reload();
               this.pageStatus = 'list';
+
               break;
           }
+          this.isLoading = false;
         });
       },
       onDeleteDeviceConfig() {

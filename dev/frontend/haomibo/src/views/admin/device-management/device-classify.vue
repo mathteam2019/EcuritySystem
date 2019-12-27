@@ -14,8 +14,8 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab">
-      <div v-if="pageStatus=='list'" class="h-100 d-flex flex-column">
+    <b-card v-show="!isLoading" class="main-without-tab">
+      <div v-show="pageStatus=='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
         <b-row class="pt-2">
           <b-col cols="6">
             <b-row>
@@ -279,6 +279,7 @@
         </b-row>
       </div>
     </b-card>
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -353,6 +354,7 @@
     },
     data() {
       return {
+        isLoading: false,
         categoryData: [],
         submitted: false,
         parentClassifyOptions: [],
@@ -609,6 +611,7 @@
         if (this.$v.classifyForm.$invalid) {
           return;
         }
+        this.isLoading = true;
         let finalLink = this.classifyForm.categoryId > 0 ? 'modify' : 'create';
         getApiManager()
           .post(`${apiBaseUrl}/device-management/device-classify/category/` + finalLink, this.classifyForm)
@@ -622,7 +625,8 @@
                 });
                 this.pageStatus = 'list';
                 this.getCategoryData();
-                this.$refs.deviceClassifyTable.refresh();
+                this.$refs.deviceClassifyTable.reload();
+
                 break;
               case responseMessages['used-category-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-category-name`), {
@@ -637,9 +641,12 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           });
+
       },
       //update status
       updateItemStatus(statusValue) {
@@ -664,7 +671,7 @@
                 if (this.classifyForm.categoryId > 0)
                   this.classifyForm.status = statusValue;
                 if (this.pageStatus === 'list')
-                  this.$refs.deviceClassifyTable.refresh();
+                  this.$refs.deviceClassifyTable.reload();
                 break;
               case "has_archive_template": // already used
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.category-has-archive-template`), {

@@ -22,10 +22,10 @@
       </b-row>
     </div>
 
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-user')">
-        <b-row v-if="pageStatus==='table'" class="h-100 ">
+        <b-row v-show="pageStatus==='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="6">
@@ -133,7 +133,7 @@
 
           </b-col>
         </b-row>
-        <b-row v-else-if="pageStatus!=='table'" class="h-100">
+        <b-row v-if="pageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="5">
@@ -276,7 +276,7 @@
       </b-tab>
 
       <b-tab :title="$t('permission-management.assign-permission-management.assign-to-group')">
-        <b-row v-if="groupPageStatus==='table'" class="h-100">
+        <b-row v-show="groupPageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="6">
@@ -381,7 +381,7 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-else-if="groupPageStatus!=='table'" class="h-100">
+        <b-row v-if="groupPageStatus!=='table'" class="h-100">
           <b-col cols="12" class="form-section">
             <b-row class="h-100">
               <b-col cols="5">
@@ -483,7 +483,7 @@
         </b-row>
       </b-tab>
     </b-tabs>
-
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered ref="modal-user-role-delete" :title="$t('permission-management.prompt')">
       {{$t('permission-management.organization-delete-prompt')}}
       <template slot="modal-footer">
@@ -688,6 +688,7 @@
     },
     data() {
       return {
+        isLoading: false,
         direction: getDirection().direction,
         userFilter: {
           userName: '',
@@ -953,7 +954,7 @@
             value: user.userId,
             text: user.userName,
           }));
-        console.log(this.userSelectData);
+
         this.userForm.userId = this.userForm.nextUserId;
         this.userForm.nextUserId = null;
       },
@@ -1079,6 +1080,7 @@
             this.$v.userForm.$touch();
 
             if (!this.$v.userForm.userId.$invalid && (this.userForm.dataRangeCategory !== 'specified' || !this.$v.userForm.selectedDataGroupId.$invalid)) {
+              this.isLoading = true;
               getApiManager()
                 .post(`${apiBaseUrl}/permission-management/assign-permission-management/user/assign-role-and-data-range`, {
                   userId: this.userForm.userId,
@@ -1097,17 +1099,24 @@
                       });
                       this.initializeUserForm();
                       this.pageStatus = 'table';
+                      this.$refs.userGroupTable.refresh();
+
                     } else {
                       this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`permission-management.permission-control.role-modified`), {
                         duration: 3000,
                         permanent: false
                       });
                       this.pageStatus = 'table';
+                      this.$refs.userGroupTable.reload();
                     }
+
                     break;
+
                   default:
                 }
+                this.isLoading = false;
               });
+
             }
             break;
           case 'show-list':
@@ -1170,7 +1179,7 @@
       },
 
       editUserRoles(userWithRole) {
-        console.log(userWithRole);
+
         this.userForm.orgId = userWithRole.org.orgId;
         this.userForm.nextUserId = userWithRole.userId;
         this.userForm.roles = userWithRole.roles.map(role => ({
@@ -1260,6 +1269,7 @@
         this.$refs.userGroupTable.changePage(page)
       },
       fnShowUserGroupItem(userGroupItem) {
+        this.selectedUserGroupItem = userGroupItem;
         this.groupForm.userGroup = userGroupItem.userGroupId;
         this.groupForm.dataRange = userGroupItem.dataRangeCategory;
         this.groupForm.filterGroup = userGroupItem.dataGroups.length === 0 ? null : userGroupItem.dataGroups[0].dataGroupId;
@@ -1281,6 +1291,7 @@
         this.$refs['modal-prompt-group'].show();
       },
       fnDeleteUserGroupItem() {
+        console.log(this.selectedUserGroupItem);
         if (this.selectedUserGroupItem && this.selectedUserGroupItem.userGroupId > 0) {
           this.$refs['modal-prompt-group'].hide();
           getApiManager()
@@ -1299,7 +1310,7 @@
                     duration: 3000,
                     permanent: false
                   });
-
+                  this.groupPageStatus = 'table';
                   this.$refs.userGroupTable.refresh();
                   this.selectedUserGroupItem = null;
                   break;
@@ -1330,6 +1341,7 @@
         this.groupForm.role.forEach(role => {
           groupSelectedRoles.push(role.value);
         });
+        this.isLoading = true;
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/assign-permission-management/user-group/assign-role-and-data-range`, {
             userGroupId: this.groupForm.userGroup,
@@ -1349,15 +1361,19 @@
 
                 this.$refs.userGroupTable.refresh();
                 this.selectedUserGroupItem = null;
+
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           })
           .finally(() => {
             this.groupPageStatus = 'table';
 
           });
+
       },
 
       fnTransformUserGroupTable(response) {

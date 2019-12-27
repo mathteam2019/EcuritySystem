@@ -85,7 +85,15 @@ main {
       padding-left: 0.9375rem;
     }
   }
+  div.loading {
+    &:after {
+      position: absolute;
+      width: 100vh;
+      height: 100vh;
+      background: red;
+    }
 
+  }
   div.container-fluid {
     .breadcrumb-container {
       position: fixed;
@@ -279,6 +287,7 @@ main {
         }
       }
     }
+
   }
 }
 

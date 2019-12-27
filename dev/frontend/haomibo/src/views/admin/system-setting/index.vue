@@ -22,7 +22,7 @@
       </b-row>
     </div>
 
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
       <b-tab :title="$t('system-setting.parameter-setting.platform-parameter')">
 
         <div class="section pt-0 mx-3">
@@ -292,7 +292,7 @@
       </b-tab>
 
       <b-tab :title="$t('system-setting.parameter-setting.security-instrument')">
-        <b-row v-if="pageStatus === 'table'" class="h-100 ">
+        <b-row v-show="pageStatus === 'table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="6">
@@ -576,6 +576,7 @@
         </b-row>
       </b-tab>
     </b-tabs>
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.device-list.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -686,6 +687,7 @@
     },
     data() {
       return {
+        isLoading: false,
         direction: getDirection().direction,
         tabIndex: 0,
         submitted: false,
@@ -969,6 +971,7 @@
         this.scanForm.fromDeviceId.forEach(item => {
           this.scanForm.fromDeviceIdList.push(item.value);
         });
+        this.isLoading = true;
         getApiManager().post(`${apiBaseUrl}/system-setting/scan-param/modify`, this.scanForm).then((response) => {
           let message = response.data.message;
           let result = response.data.data;
@@ -979,8 +982,10 @@
                 permanent: false
               });
               this.pageStatus = 'table';
+              this.$refs.vuetable.reload();
               break;
           }
+          this.isLoading = false;
         });
       },
       getScanParamsData() {
