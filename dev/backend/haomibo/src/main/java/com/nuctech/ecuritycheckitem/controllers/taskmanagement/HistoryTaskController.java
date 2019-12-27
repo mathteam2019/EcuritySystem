@@ -156,7 +156,8 @@ public class HistoryTaskController extends BaseController {
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
+        filters.addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseId")) //only return "caseId" SerKnowledgeCase model
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination", "history")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerScan model
                 .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerJudgeGraph model
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerHandExamination model
@@ -227,7 +228,8 @@ public class HistoryTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow")) //only return specified fields from SerTask model
+        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.serializeAllExcept("serKnowledgeCase")) //return all fields except knowledgecase from history model
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow")) //only return specified fields from SerTask model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))  //only return specified fields from SerScan model
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode")) //only return workModeId from SysWorkFlow

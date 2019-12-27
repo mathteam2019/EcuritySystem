@@ -263,4 +263,8 @@ public class History extends BaseEntity implements Serializable {
     @NotFound(action = NotFoundAction.IGNORE)
     private SerScan serScan;
 
+    @OneToOne()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerKnowledgeCase serKnowledgeCase;
 }
