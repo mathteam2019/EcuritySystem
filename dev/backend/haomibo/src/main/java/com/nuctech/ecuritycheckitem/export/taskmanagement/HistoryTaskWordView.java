@@ -16,8 +16,6 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
-import com.nuctech.ecuritycheckitem.models.db.History;
-import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;

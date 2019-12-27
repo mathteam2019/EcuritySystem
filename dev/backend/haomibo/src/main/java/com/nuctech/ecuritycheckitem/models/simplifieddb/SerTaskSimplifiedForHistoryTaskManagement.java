@@ -3,11 +3,11 @@
  *
  * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
- * 项目：	Haomibo V1.0（SerTask）
- * 文件名：	SerTask.java
- * 描述：	SerTask Model
+ * 项目：	Haomibo V1.0（SerTaskSimplifiedForHistoryTaskManagement）
+ * 文件名：	SerTaskSimplifiedForHistoryTaskManagement.java
+ * 描述：	Simplified SerTask Model for history task management
  * 作者名：	Tiny
- * 日期：	2019/11/21
+ * 日期：	2019/12/27
  */
 
 
@@ -15,13 +15,25 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.AllArgsConstructor;;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import java.io.Serializable;
 
 @Getter

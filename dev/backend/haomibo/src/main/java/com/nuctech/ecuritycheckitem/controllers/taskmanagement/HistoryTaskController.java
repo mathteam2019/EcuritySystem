@@ -22,7 +22,6 @@ import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskExcelView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskPdfView;
 import com.nuctech.ecuritycheckitem.export.taskmanagement.HistoryTaskWordView;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
@@ -51,7 +50,6 @@ import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.ArrayList;
@@ -143,8 +141,6 @@ public class HistoryTaskController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        QHistory builder = QHistory.history;
 
         HistorySimplifiedForHistoryTaskManagement optionalHistory = historyService.getOne(requestBody.getHistoryId()); //get detailed history task from historyService
 
