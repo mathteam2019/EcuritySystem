@@ -1123,7 +1123,7 @@
     "error-title": "错误",
     "network-error": "网路错误",
     "forbidden": "那个动作是禁止的",
-    "invalid-parameter": "发生未知错误"
+    "invalid-parameter": "无效的参数"
   },
   "vuetable": {
     "every-page-showing": "每页显示",

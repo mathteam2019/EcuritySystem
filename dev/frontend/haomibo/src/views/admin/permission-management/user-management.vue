@@ -25,10 +25,10 @@
       </b-row>
     </div>
 
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('permission-management.member-table')">
-        <b-row v-if="pageStatus=='table'" class="h-100 ">
+        <b-row v-show="pageStatus=='table'" class="h-100 ">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="7">
@@ -199,7 +199,7 @@
             </b-row>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus=='create'" class="h-100 form-section">
+        <b-row v-show="pageStatus=='create'" class="h-100 form-section">
           <b-col cols="10">
             <b-row class="mb-2">
               <b-col cols="3">
@@ -400,7 +400,7 @@
             </div>
           </b-col>
         </b-row>
-        <b-row v-if="pageStatus=='show'" class="h-100 form-section">
+        <b-row v-show="pageStatus=='show'" class="h-100 form-section">
           <b-col cols="10">
             <b-row class="mb-2">
               <b-col cols="3">
@@ -725,9 +725,8 @@
           </b-col>
         </b-row>
       </b-tab>
-
     </b-tabs>
-
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered ref="modal-prompt" :title="$t('permission-management.prompt')">
       {{promptTemp.action==='blocked'?$t('permission-management.user.block-prompt'):$t('permission-management.user.inactive-prompt')}}
       <template slot="modal-footer">
@@ -739,7 +738,9 @@
         </b-button>
       </template>
     </b-modal>
+
   </div>
+
 </template>
 <script>
 
@@ -848,6 +849,7 @@
     },
     data() {
       return {
+        isLoading: false,
         submitted: false,
         tableData: [],
         pageStatus: 'table',
@@ -1230,6 +1232,7 @@
           else if (this.profileForm['portrait'] !== null)
             formData.append(key, this.profileForm[key], this.profileForm[key].name);
         }
+        this.isLoading = true;
         // call api
         let finalLink = this.profileForm.userId > 0 ? 'modify' : 'create';
         getApiManager()
@@ -1246,6 +1249,8 @@
                 this.onInitialUserData();
                 // back to table
                 this.pageStatus = 'table';
+                this.$refs.vuetable.reload();
+
                 break;
               case responseMessages['used-user-account']://duplicated user account
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user-account-already-used`), {
@@ -1266,9 +1271,12 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           });
+
       },
       onAction(action, data, index) {
         let userId = data.userId;
@@ -1360,7 +1368,7 @@
                   permanent: false
                 });
                 this.profileForm.status = status;
-                this.$refs.vuetable.refresh();
+                this.$refs.vuetable.reload();
 
                 break;
             }
@@ -1688,7 +1696,7 @@
                     duration: 3000,
                     permanent: false
                   });
-                  this.$refs.userGroupTable.refresh();
+                  this.$refs.userGroupTable.reload();
                   break;
                 case responseMessages['used-user-group-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-user-group-name`), {

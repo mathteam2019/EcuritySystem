@@ -8,10 +8,10 @@
       </b-row>
     </div>
 
-    <b-tabs nav-class="ml-2" :no-fade="true">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true">
 
       <b-tab :title="$t('system-setting.site-list')">
-        <b-row v-if="pageStatus=='table'" class="h-100">
+        <b-row v-show="pageStatus=='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col cols="6">
@@ -359,6 +359,7 @@
       </b-tab>
 
     </b-tabs>
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('site-management.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -499,6 +500,7 @@
     },
     data() {
       return {
+        isLoading: false,
         selectedSiteItem: null,
         siteData: [],
         selectedParentSerial: '',
@@ -757,6 +759,7 @@
         if (this.$v.siteForm.$invalid) {
           return;
         }
+        this.isLoading = true;
         let finalLink = this.siteForm.fieldId > 0 ? 'modify' : 'create';
         getApiManager()
           .post(`${apiBaseUrl}/site-management/field/` + finalLink, this.siteForm)
@@ -771,6 +774,8 @@
                 });
                 this.pageStatus = 'table';
                 this.getSiteData();
+                this.$refs.vuetable.reload();
+                this.isLoading = false;
                 break;
               case responseMessages["has-devices"]: // has children
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`site-management.site-has-devices`), {
@@ -791,9 +796,12 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           });
+
       },
 
 
@@ -861,7 +869,7 @@
                 if (this.siteForm.fieldId > 0)
                   this.siteForm.status = statusValue;
                 if (this.pageStatus === 'table')
-                  this.$refs.vuetable.refresh();
+                  this.$refs.vuetable.reload();
                 this.getSiteData();
                 break;
               case responseMessages["has-children"]: // has children

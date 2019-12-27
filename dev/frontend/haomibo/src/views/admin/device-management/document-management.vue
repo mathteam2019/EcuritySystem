@@ -33,8 +33,8 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab">
-      <div v-if="pageStatus=='list'" class="h-100 d-flex flex-column">
+    <b-card v-show="!isLoading" class="main-without-tab">
+      <div v-show="pageStatus=='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
         <b-row class="pt-2">
           <b-col cols="6">
             <b-row>
@@ -256,7 +256,7 @@
       </div>
 
     </b-card>
-
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.document-management.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -330,6 +330,7 @@
     },
     data() {
       return {
+        isLoading: false,
         submitted: false,
         templateData: [],
         templateOptions: [],
@@ -663,6 +664,7 @@
             formData.append('imageUrl', this.archivesForm['imageUrl'], this.archivesForm['imageUrl'].name);
         }
         formData.append('json', JSON.stringify({"archiveValueList": indicateFormData}));
+        this.isLoading = true;
         let finalLink = this.archivesForm.archiveId > 0 ? 'modify' : 'create';
         getApiManager()
           .post(`${apiBaseUrl}/device-management/document-management/archive/` + finalLink, formData)
@@ -675,6 +677,8 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
+                this.$refs.vuetable.reload();
+                this.isLoading = false;
                 break;
               case responseMessages['has-devices']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {
@@ -695,8 +699,10 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           });
       },
       //update status
@@ -721,7 +727,7 @@
                 if (this.archivesForm.archiveId > 0)
                   this.archivesForm.status = statusValue;
                 if (this.pageStatus === 'list')
-                  this.$refs.vuetable.refresh();
+                  this.$refs.vuetable.reload();
                 break;
               case responseMessages['has-devices']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {

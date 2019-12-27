@@ -356,7 +356,7 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab">
+    <b-card v-show="!isLoading" class="main-without-tab">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
           <b-col cols="6">
@@ -559,6 +559,7 @@
         </div>
       </div>
     </b-card>
+    <div v-show="isLoading" class="loading"></div>
   </div>
 </template>
 <script>
@@ -611,6 +612,7 @@
     },
     data() {
       return {
+        isLoading: false,
         manufacturerDicData: [],
         currentFlowDicData: [],
         currentStatusDicData: [],
@@ -800,6 +802,7 @@
         this.items = result;
       },
       getDataFetch() { // customize data loading for table from server
+        this.isLoading = true;
         getApiManager().post(`${apiBaseUrl}/device-management/condition-monitoring/get-by-filter-and-page`,
           {
             currentPage: this.pagination.currentPage,
@@ -811,9 +814,12 @@
           switch (message) {
             case responseMessages['ok']:
               this.transformData(data);
+
               break;
           }
+          this.isLoading = false;
         });
+
       },
       //pagination methods
       pageRange() {

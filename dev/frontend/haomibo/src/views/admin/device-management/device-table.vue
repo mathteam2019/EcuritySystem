@@ -31,8 +31,8 @@
         </b-colxx>
       </b-row>
     </div>
-    <b-card class="main-without-tab">
-      <div v-if="pageStatus==='list'" class="h-100 d-flex flex-column">
+    <b-card v-show="!isLoading" class="main-without-tab">
+      <div v-show="pageStatus==='list'" class="h-100 flex-column" :class="pageStatus === 'list'?'d-flex':''">
         <b-row class="pt-2">
           <b-col cols="7">
             <b-row>
@@ -198,18 +198,6 @@
               </b-col>
             </b-row>
             <b-row v-show="mainForm.archiveId>0">
-              <b-col cols="4">
-                <b-form-group>
-                  <template slot="label">{{$t('device-management.device-table.device-type')}}<span
-                    class="text-danger">*</span>
-                  </template>
-                  <b-form-select v-model="mainForm.deviceType" :options="deviceTypeSelectOptions" plain/>
-                  <div class="invalid-feedback d-block">
-                    {{ (submitted && !$v.mainForm.deviceType.required) ?
-                    $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
-                  </div>
-                </b-form-group>
-              </b-col>
               <b-col cols="4">
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-table.guid')}}<span
@@ -516,7 +504,7 @@
       </div>
 
     </b-card>
-
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered id="modal-inactive" ref="modal-inactive" :title="$t('system-setting.prompt')">
       {{$t('device-management.device-table.make-inactive-prompt')}}
       <template slot="modal-footer">
@@ -601,6 +589,7 @@
     },
     data() {
       return {
+        isLoading: false,
         pageStatus: 'list',
         submitted: false,
         categoryData: [],
@@ -979,7 +968,7 @@
                 if (this.mainForm.deviceId > 0)
                   this.mainForm.status = statusValue;
                 if (this.pageStatus === 'list')
-                  this.$refs.vuetable.refresh();
+                  this.$refs.vuetable.reload();
                 break;
 
             }
@@ -1038,6 +1027,7 @@
             formData.append('imageUrl', this.mainForm['imageUrl'], this.mainForm['imageUrl'].name);
         }
         let finalLink = this.mainForm.deviceId > 0 ? 'modify' : 'create';
+        this.isLoading = true;
         getApiManager()
           .post(`${apiBaseUrl}/device-management/device-table/device/` + finalLink, formData)
           .then((response) => {
@@ -1049,6 +1039,8 @@
                   permanent: false
                 });
                 this.pageStatus = 'list';
+                this.$refs.vuetable.reload();
+                this.isLoading = false;
                 break;
               case responseMessages['used-device-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-device-name`), {
@@ -1069,8 +1061,10 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
+            this.isLoading = false;
           });
       }
 

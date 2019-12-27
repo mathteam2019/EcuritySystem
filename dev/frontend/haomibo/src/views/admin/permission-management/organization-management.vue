@@ -23,10 +23,10 @@
     </div>
 
 
-    <b-tabs nav-class="ml-2" :no-fade="true" class="h-100">
+    <b-tabs v-show="!isLoading" nav-class="ml-2" :no-fade="true" class="h-100">
 
       <b-tab :title="$t('permission-management.organization-table')">
-        <b-row v-if="pageStatus==='table'" class="h-100">
+        <b-row v-show="pageStatus==='table'" class="h-100">
           <b-col cols="12 d-flex flex-column">
             <b-row class="pt-2">
               <b-col class="d-flex">
@@ -507,7 +507,7 @@
       </b-tab>
 
     </b-tabs>
-
+    <div v-show="isLoading" class="loading"></div>
     <b-modal centered ref="modal-delete" :title="$t('permission-management.prompt')">
       {{$t('permission-management.organization-delete-prompt')}}
       <template slot="modal-footer">
@@ -609,6 +609,7 @@
     },
     data() {
       return {
+        isLoading: false,
         filter: {
           orgName: '',
           status: null,
@@ -1008,7 +1009,7 @@
                   });
                   if (this.modifyPage != null)
                     this.modifyPage.selectedOrg.status = '1000000701';
-                  this.$refs.vuetable.refresh();
+                  this.$refs.vuetable.reload();
                   this.getOrgDataAll();
                   break;
                 case responseMessages['has-children']:
@@ -1130,7 +1131,7 @@
         if (this.$v.createPage.$invalid) {
           return;
         }
-
+        this.isLoading = true;
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/organization-management/organization/create`, {
@@ -1154,6 +1155,7 @@
                 this.pageStatus = 'table';
                 this.$refs.vuetable.refresh();
                 this.getOrgDataAll();
+                this.isLoading = false;
                 break;
               case responseMessages['used-org-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-org-name`), {
@@ -1208,7 +1210,7 @@
         if (this.$v.modifyPage.$invalid) {
           return;
         }
-
+        this.isLoading = true;
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/organization-management/organization/modify`, {
@@ -1231,8 +1233,9 @@
                 });
 
                 this.pageStatus = 'table';
-                this.$refs.vuetable.refresh();
+                this.$refs.vuetable.reload();
                 this.getOrgDataAll();
+
                 break;
               case responseMessages['has-children']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.organization-has-children`), {
@@ -1283,10 +1286,10 @@
                 });
                 break;
             }
+            this.isLoading = false;
           })
           .catch((error) => {
           });
-
 
       },
       onModifyPageBackButton() {
@@ -1387,7 +1390,7 @@
                 });
                 if (this.modifyPage != null)
                   this.modifyPage.selectedOrg.status = '1000000702';
-                this.$refs.vuetable.refresh();
+                this.$refs.vuetable.reload();
                 this.getOrgDataAll();
                 break;
               case responseMessages['has-children']:
