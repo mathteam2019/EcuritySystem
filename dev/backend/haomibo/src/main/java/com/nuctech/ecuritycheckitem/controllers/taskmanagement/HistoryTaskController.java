@@ -158,6 +158,7 @@ public class HistoryTaskController extends BaseController {
                 .getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseId")) //only return "caseId" SerKnowledgeCase model
                 .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination", "history")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
+                .addFilter(ModelJsonFilters.FILTER_SER_CHECK_RESULT, SimpleBeanPropertyFilter.filterOutAllExcept("handGoods", "handAttached")) //return only handGoods and handAttached from SerCheckResult model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerScan model
                 .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerJudgeGraph model
                 .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerHandExamination model

@@ -157,7 +157,8 @@ public class InvalidTaskController extends BaseController {
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
 
         //set filter to the response. there
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination", "workFlow", "scanDeviceImages", "history", "note")) //only return specified fields from task model
+        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "serJudgeGraph", "serHandExamination", "workFlow", "scanDeviceImages", "history", "serCheckResult", "note")) //only return specified fields from task model
+                .addFilter(ModelJsonFilters.FILTER_SER_CHECK_RESULT, SimpleBeanPropertyFilter.filterOutAllExcept("handGoods", "handAttached")) //return only handGoods and handAttached from SerCheckResult model
                 .addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("handAppraise")) //only return handAppraise from History model
                 .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
                 .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) // return all fields except "task" from SerScan model

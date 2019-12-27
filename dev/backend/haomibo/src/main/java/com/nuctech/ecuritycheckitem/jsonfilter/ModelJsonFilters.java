@@ -62,7 +62,7 @@ public class ModelJsonFilters {
     public final static String FILTER_SYS_WORKFLOW = "filter_sys_workflow"; //filter to serialize SysWorkflow
     public final static String FILTER_SER_KNOWLEDGE_CASE_DEAL = "filter_ser_knowledge_case_deal"; //filter to SerKnowledgeCaseDeal
     public final static String FILTER_SER_KNOWLEDGE_CASE = "filter_ser_knowledge_case"; //filter to serialize SerKnowledgeCase
-
+    public final static String FILTER_SER_CHECK_RESULT = "fitler_ser_check_result"; //filter to serialize SerImage
 
     /**
      * Used to get default filter
