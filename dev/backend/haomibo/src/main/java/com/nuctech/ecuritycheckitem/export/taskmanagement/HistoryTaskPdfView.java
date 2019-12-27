@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.History;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,10 +35,10 @@ public class HistoryTaskPdfView extends BasePdfView {
 
     /**
      * build inputstream of data to be printed
-     * @param detailedStatistics
+     * @param exportTaskList
      * @return
      */
-    public static InputStream buildPDFDocument(List<History> exportTaskList) {
+    public static InputStream buildPDFDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -63,7 +64,7 @@ public class HistoryTaskPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            for (History task : exportTaskList) {
+            for (HistorySimplifiedForHistoryTaskManagement task : exportTaskList) {
 
                 addTableCell(table, task.getHistoryId().toString());
 
@@ -73,18 +74,6 @@ public class HistoryTaskPdfView extends BasePdfView {
                 else {
                     addTableCell(table, "无");
                 }
-
-//                if (task.getScanImage() != null) {
-//                    if (task.getScanImage().getImageLabel() != null) {
-//                        addTableCell(table, task.getScanImage().getImageLabel());
-//                    } else {
-//                        addTableCell(table, "无");
-//                    }
-//                }
-//                else {
-//                    addTableCell(table, "无");
-//                }
-
 
                 if (task.getWorkMode() != null) {
                     addTableCell(table, ConstantDictionary.getDataValue(task.getWorkMode().getModeName()));

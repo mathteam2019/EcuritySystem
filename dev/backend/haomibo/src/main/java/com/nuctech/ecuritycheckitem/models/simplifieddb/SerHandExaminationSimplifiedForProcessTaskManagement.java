@@ -7,30 +7,20 @@
  * 文件名：	SerHandExamination.java
  * 描述：	SerHandExamination Model
  * 作者名：	Tiny
- * 日期：	2019/11/21
+ * 日期：	2019/12/27
  */
 
-package com.nuctech.ecuritycheckitem.models.db;
+package com.nuctech.ecuritycheckitem.models.simplifieddb;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.AllArgsConstructor;
+import com.nuctech.ecuritycheckitem.models.db.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -43,17 +33,7 @@ import java.util.Date;
 @SuperBuilder(toBuilder = true)
 @JsonFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION)
 @Table(name = "ser_hand_examination")
-public class SerHandExamination extends BaseEntity implements Serializable {
-
-    public static class Result {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
-    }
-
-    public static class HandAppraise {
-        public static final String MISSING = "1000001801";
-        public static final String MISTAKE = "1000001802";
-    }
+public class SerHandExaminationSimplifiedForProcessTaskManagement extends BaseEntitySimple implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,22 +62,13 @@ public class SerHandExamination extends BaseEntity implements Serializable {
     private Long handUserId;
 
     @OneToOne()
-    @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SysWorkflow workFlow;
-
-    @OneToOne()
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysDevice handDevice;
+    private SysDeviceSimplifiedOnlyHasName handDevice;
 
     @OneToOne()
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
-    private SysUser handUser;
+    private SysUserSimplifiedOnlyHasName handUser;
 
-    @OneToOne()
-    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerTask task;
 }

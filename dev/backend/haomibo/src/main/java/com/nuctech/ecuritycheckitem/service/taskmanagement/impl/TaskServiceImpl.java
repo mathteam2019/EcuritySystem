@@ -17,6 +17,8 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerTask;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.QSerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -54,7 +56,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     private BooleanBuilder getPredicate(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime) {
-        QSerTask builder = QSerTask.serTask;
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
@@ -102,9 +104,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
-        QSerTask builder = QSerTask.serTask;
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
@@ -118,9 +120,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         long total = serTaskRepository.count(predicate);
-        List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
+        List<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
 
-        return new PageResult<SerTask>(total, data);
+        return new PageResult<SerTaskSimplifiedForProcessTaskManagement>(total, data);
 
     }
 
@@ -137,9 +139,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
+    public List<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
-        QSerTask builder = QSerTask.serTask;
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
 
@@ -151,7 +153,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        List<SerTask> data = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
                     .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)
@@ -173,10 +175,10 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public SerTask getOne(Long taskId) {
+    public SerTaskSimplifiedForProcessTaskManagement getOne(Long taskId) {
 
-        QSerTask builder = QSerTask.serTask;
-        Optional<SerTask> data = serTaskRepository.findOne(builder.taskId.eq(taskId));
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
+        Optional<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findOne(builder.taskId.eq(taskId));
         if (!data.isPresent()) {
             return null;
         }
@@ -199,9 +201,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
+    public PageResult<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskByFilter(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage) {
 
-        QSerTask builder = QSerTask.serTask;
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
@@ -215,9 +217,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         long total = serTaskRepository.count(predicate);
-        List<SerTask> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
+        List<SerTaskSimplifiedForProcessTaskManagement> data = serTaskRepository.findAll(predicate, pageRequest).getContent();
 
-        return new PageResult<SerTask>(total, data);
+        return new PageResult<SerTaskSimplifiedForProcessTaskManagement>(total, data);
 
     }
 
@@ -234,9 +236,9 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
+    public List<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order) {
 
-        QSerTask builder = QSerTask.serTask;
+        QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
@@ -249,7 +251,7 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-        List<SerTask> data = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> data = new ArrayList<>();
         if (sort != null) {
             data = StreamSupport
                     .stream(serTaskRepository.findAll(predicate, sort).spliterator(), false)

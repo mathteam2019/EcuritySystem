@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.service.taskmanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.Date;
@@ -34,7 +35,7 @@ public interface TaskService {
      * @param perPage
      * @return
      */
-    PageResult<SerTask> getInvalidTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+    PageResult<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
     /**
      * get all listof invalid task with filter
@@ -47,7 +48,7 @@ public interface TaskService {
      * @param endTime
      * @return
      */
-    List<SerTask> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
+    List<SerTaskSimplifiedForProcessTaskManagement> getInvalidTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * get paginated list of process task with filter
@@ -62,7 +63,7 @@ public interface TaskService {
      * @param perPage
      * @return
      */
-    PageResult<SerTask> getProcessTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
+    PageResult<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskByFilter(String taskNumber, Long mode, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order, Integer currentPage, Integer perPage);
 
     /**
      * get All list of process task with filter
@@ -75,14 +76,14 @@ public interface TaskService {
      * @param endTime
      * @return
      */
-    List<SerTask> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
+    List<SerTaskSimplifiedForProcessTaskManagement> getProcessTaskAll(String taskNumber, Long modeId, String taskStatus, Long fieldId, String userName, Date startTime, Date endTime, String sortBy, String order);
 
     /**
      * get detailed information of a process task with ID
      * @param taskId
      * @return
      */
-    SerTask getOne(Long taskId);
+    SerTaskSimplifiedForProcessTaskManagement getOne(Long taskId);
 
 
 }

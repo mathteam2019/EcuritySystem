@@ -23,6 +23,8 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.db.SerTaskSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,7 +39,7 @@ public class ProcessTaskPdfView extends BasePdfView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildPDFDocument(List<SerTask> exportTaskList) {
+    public static InputStream buildPDFDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
 
         Document document = new Document();
 
@@ -63,7 +65,7 @@ public class ProcessTaskPdfView extends BasePdfView {
                         table.addCell(header);
                     });
 
-            for (SerTask task : exportTaskList) {
+            for (SerTaskSimplifiedForProcessTaskManagement task : exportTaskList) {
 
                 addTableCell(table, task.getTaskId().toString());
 

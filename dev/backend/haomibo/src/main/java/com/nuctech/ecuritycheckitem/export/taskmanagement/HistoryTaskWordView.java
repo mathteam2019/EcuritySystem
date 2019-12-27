@@ -18,6 +18,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -90,7 +91,7 @@ public class HistoryTaskWordView extends BaseWordView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildWordDocument(List<History> exportTaskList) {
+    public static InputStream buildWordDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -106,7 +107,7 @@ public class HistoryTaskWordView extends BaseWordView {
 
             for (Integer i = 0; i < exportTaskList.size(); i ++) {
 
-                History task = exportTaskList.get(i);
+                HistorySimplifiedForHistoryTaskManagement task = exportTaskList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
                 tableRow.getCell(0).setText(task.getHistoryId().toString());

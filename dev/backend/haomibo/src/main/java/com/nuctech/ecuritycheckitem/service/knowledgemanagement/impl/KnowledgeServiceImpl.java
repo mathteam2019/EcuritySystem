@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.rowset.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -201,12 +202,36 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      */
     public Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase) {
 
-        knowledgeCase.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(knowledgeCase);
+        SerKnowledgeCase existKnowledgeCase = checkIfTaskAlreadyExistInKnowledgeCase(knowledgeCase);
+
+        if (existKnowledgeCase == null) {
+
+            existKnowledgeCase = knowledgeCase;
+            existKnowledgeCase.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        }
+        else {
+
+            Long knowledgeCaseId = existKnowledgeCase.getCaseId();
+            knowledgeCase.setCaseId(knowledgeCaseId);
+            existKnowledgeCase = knowledgeCase;
+            existKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        }
+
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(existKnowledgeCase);
         if (serKnowledgeCase != null) {
             return serKnowledgeCase.getCaseId();
         } else
             return null;
+    }
+
+    /**
+     * return object if exist, otherwise null
+     * @param knowledgeCase
+     * @return
+     */
+    private SerKnowledgeCase checkIfTaskAlreadyExistInKnowledgeCase(SerKnowledgeCase knowledgeCase) {
+
+        return serKnowledgeCaseRepository.findOne(QSerKnowledgeCase.serKnowledgeCase.taskId.eq(knowledgeCase.getTaskId())).orElse(null);
     }
 
     /**

@@ -17,6 +17,8 @@ import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.db.SerTaskSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -89,7 +91,7 @@ public class ProcessTaskWordView extends BaseWordView {
      * @param exportTaskList
      * @return
      */
-    public static InputStream buildWordDocument(List<SerTask> exportTaskList) {
+    public static InputStream buildWordDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -105,7 +107,7 @@ public class ProcessTaskWordView extends BaseWordView {
 
             for (Integer i = 0; i < exportTaskList.size(); i ++) {
 
-                SerTask task = exportTaskList.get(i);
+                SerTaskSimplifiedForProcessTaskManagement task = exportTaskList.get(i);
 
                 XWPFTableRow tableRow = table.createRow();
                 tableRow.getCell(0).setText(task.getTaskId().toString());

@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.History;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -88,7 +89,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
     }
 
 
-    public static InputStream buildExcelDocument(List<History> exportTaskList) {
+    public static InputStream buildExcelDocument(List<HistorySimplifiedForHistoryTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -113,7 +114,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            for (History task : exportTaskList) {
+            for (HistorySimplifiedForHistoryTaskManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 

@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.repositories;
 
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -20,8 +21,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SerTaskRepository extends
-        JpaRepository<SerTask, Long>,
-        PagingAndSortingRepository<SerTask, Long>,
-        QuerydslPredicateExecutor<SerTask> {
+        JpaRepository<SerTaskSimplifiedForProcessTaskManagement, Long>,
+        PagingAndSortingRepository<SerTaskSimplifiedForProcessTaskManagement, Long>,
+        QuerydslPredicateExecutor<SerTaskSimplifiedForProcessTaskManagement> {
 
 }

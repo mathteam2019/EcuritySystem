@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
@@ -160,7 +161,7 @@ public class ProcessTaskController extends BaseController {
         }
         Long id = requestBody.getTaskId();
 
-        SerTask optionalTask = taskService.getOne(id);
+        SerTaskSimplifiedForProcessTaskManagement optionalTask = taskService.getOne(id);
 
         if (optionalTask == null) { //if processing task with specified id does not exist
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
@@ -169,18 +170,7 @@ public class ProcessTaskController extends BaseController {
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, optionalTask));
 
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field","history", "serScan", "serJudgeGraph", "serHandExamination", "workFlow", "scanDeviceImages",  "serCheckResult", "note")) //only return specified fields from task model
-                .addFilter(ModelJsonFilters.FILTER_SER_CHECK_RESULT, SimpleBeanPropertyFilter.filterOutAllExcept("handGoods", "handAttached")) //return only handGoods and handAttached from SerCheckResult model
-                .addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.filterOutAllExcept("handAppraise")) //return only handAppraise
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
-                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) // return all fields except "task" from SerScan model
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeDevice", "judgeResult", "judgeTimeout", "judgeSubmitrects", "judgeUser", "judgeStartTime", "judgeEndTime")) //only return "judgeDevice", "judgeUser", "judgeStartTime", "judgeEndTime" from SerJudgeGraph model
-                .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.filterOutAllExcept("handResult", "handDevice", "handUser", "handStartTime", "handEndTime")) //only return "handDevice", "handUser", "handStartTime", "handEndTime" from SerHandExamination model
-                .addFilter(ModelJsonFilters.FILTER_SER_IMAGE, SimpleBeanPropertyFilter.filterOutAllExcept("imageUrl", "imageLabel"))  //only return "imageUrl" and "imageLabel" from SerImage model
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode"))  //only return workModeId from SysWorkFlow
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //only return modeName from SysWorkMode model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName"))  //only return "deviceName" from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")); //only return "userName" from SysUser model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return modeName from SysWorkMode model
         value.setFilters(filters);
 
         return value;
@@ -210,7 +200,7 @@ public class ProcessTaskController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage --;
-        PageResult<SerTask> result = taskService.getProcessTaskByFilter(
+        PageResult<SerTaskSimplifiedForProcessTaskManagement> result = taskService.getProcessTaskByFilter(
                 requestBody.getFilter().getTaskNumber(),//task number from request body
                 requestBody.getFilter().getMode(), //modeId from request body
                 requestBody.getFilter().getStatus(), //status from request body
@@ -224,7 +214,7 @@ public class ProcessTaskController extends BaseController {
                 perPage);
 
         long total = result.getTotal(); // get total count
-        List<SerTask> data = result.getDataList(); //get data list to return
+        List<SerTaskSimplifiedForProcessTaskManagement> data = result.getDataList(); //get data list to return
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK
@@ -241,13 +231,7 @@ public class ProcessTaskController extends BaseController {
 
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.filterOutAllExcept("taskId", "taskNumber", "taskStatus", "field", "serScan", "workFlow")) //only return specified fields from SerTask model
-                .addFilter(ModelJsonFilters.FILTER_SYS_FIELD, SimpleBeanPropertyFilter.filterOutAllExcept("fieldDesignation")) //only return "fieldDesignation" from SysField model
-                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.filterOutAllExcept("scanDevice", "scanPointsman", "scanStartTime", "scanEndTime"))  //only return specified fields from SerScan model
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORKFLOW, SimpleBeanPropertyFilter.filterOutAllExcept("workMode")) //only return workModeId from SysWorkFlow
-                .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //only return modeName from SysWorkMode model
-                .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName")) //only return "deviceName" from SysDevice model
-                .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")); //only return "userName" from SysUser model
+        filters.addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")); //only return modeName from SysWorkMode model
         value.setFilters(filters);
 
         return value;
@@ -260,13 +244,13 @@ public class ProcessTaskController extends BaseController {
      * @param idList : idList to be extracted
      * @return
      */
-    private List<SerTask> getExportList(List<SerTask> taskList, boolean isAll, String idList) {
+    private List<SerTaskSimplifiedForProcessTaskManagement> getExportList(List<SerTaskSimplifiedForProcessTaskManagement> taskList, boolean isAll, String idList) {
 
-        List<SerTask> exportList = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = new ArrayList<>();
         if(isAll == false) { //if isAll is false
             String[] splits = idList.split(","); //get ids list from idList
             for(int i = 0; i < taskList.size(); i ++) {
-                SerTask task = taskList.get(i); //get task using task id
+                SerTaskSimplifiedForProcessTaskManagement task = taskList.get(i); //get task using task id
                 boolean isExist = false;
                 for(int j = 0; j < splits.length; j ++) {
                     if(splits[j].equals(task.getTaskId().toString())) { //check if idList contains specified task id
@@ -304,7 +288,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTask> taskList = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
         taskList = taskService.getProcessTaskAll(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -316,7 +300,7 @@ public class ProcessTaskController extends BaseController {
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order")); //asc or desc
 
-        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
         ProcessTaskExcelView.setMessageSource(messageSource);
         InputStream inputStream = ProcessTaskExcelView.buildExcelDocument(exportList);
@@ -351,7 +335,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTask> taskList = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
         taskList = taskService.getProcessTaskAll(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -363,7 +347,7 @@ public class ProcessTaskController extends BaseController {
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order")); //asc or desc
 
-        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();  //set dictionary key and values
         ProcessTaskWordView.setMessageSource(messageSource);
         InputStream inputStream = ProcessTaskWordView.buildWordDocument(exportList);
@@ -397,7 +381,7 @@ public class ProcessTaskController extends BaseController {
             }
         }
 
-        List<SerTask> taskList = new ArrayList<>();
+        List<SerTaskSimplifiedForProcessTaskManagement> taskList = new ArrayList<>();
         taskList = taskService.getProcessTaskAll(
                 requestBody.getFilter().getTaskNumber(),//get task numer from request body
                 requestBody.getFilter().getMode(),//get mode id from request body
@@ -409,7 +393,7 @@ public class ProcessTaskController extends BaseController {
                 sortParams.get("sortBy"), //field name
                 sortParams.get("order")); //asc or desc
 
-        List<SerTask> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerTaskSimplifiedForProcessTaskManagement> exportList = getExportList(taskList, requestBody.getIsAll(), requestBody.getIdList());
         ProcessTaskPdfView.setResource(getFontResource()); //set header font
         setDictionary(); //set dictionary key and values
         ProcessTaskPdfView.setMessageSource(messageSource);

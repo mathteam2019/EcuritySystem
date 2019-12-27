@@ -16,7 +16,6 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -26,10 +25,9 @@ import javax.persistence.MappedSuperclass;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @MappedSuperclass
 @SuperBuilder(toBuilder = true)
-public class BaseEntitySimple {
 
+public class BaseEntitySimple {
 
 }

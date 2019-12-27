@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import lombok.Getter;
@@ -152,7 +153,7 @@ public class KnowledgeDealManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        History history = historyService.getOne(requestBody.getHistoryId());
+        HistorySimplifiedForHistoryTaskManagement history = historyService.getOne(requestBody.getHistoryId());
         if (history == null) { //if specified history id doesn't exist
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
@@ -185,7 +186,7 @@ public class KnowledgeDealManagementController extends BaseController {
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
-    private SerKnowledgeCaseDeal initSerKnowCaseDealFromHistory(History history) {
+    private SerKnowledgeCaseDeal initSerKnowCaseDealFromHistory(HistorySimplifiedForHistoryTaskManagement history) {
 
         SerKnowledgeCaseDeal serKnowledgeCaseDeal = new SerKnowledgeCaseDeal();
 

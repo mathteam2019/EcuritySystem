@@ -16,6 +16,8 @@ package com.nuctech.ecuritycheckitem.export.taskmanagement;
 import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
+import com.nuctech.ecuritycheckitem.models.db.SerTaskSimple;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -65,7 +67,7 @@ public class InvalidTaskExcelView extends BaseExcelView {
     }
 
 
-    public static InputStream buildExcelDocument(List<SerTask> exportTaskList) {
+    public static InputStream buildExcelDocument(List<SerTaskSimplifiedForProcessTaskManagement> exportTaskList) {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -89,7 +91,7 @@ public class InvalidTaskExcelView extends BaseExcelView {
             CellStyle style = workbook.createCellStyle();
             style.setWrapText(true);
 
-            for (SerTask task : exportTaskList) {
+            for (SerTaskSimplifiedForProcessTaskManagement task : exportTaskList) {
 
                 Row row = sheet.createRow(counter++);
 
