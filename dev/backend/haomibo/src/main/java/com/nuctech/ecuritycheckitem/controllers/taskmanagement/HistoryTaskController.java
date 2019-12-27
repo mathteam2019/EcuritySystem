@@ -156,12 +156,12 @@ public class HistoryTaskController extends BaseController {
         // Set filters.
         SimpleFilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();
-        filters.addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseId")) //only return "caseId" SerKnowledgeCase model
-                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudge", "serHandExamination", "history")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
+        filters.addFilter(ModelJsonFilters.FILTER_HISTORY, SimpleBeanPropertyFilter.serializeAllExcept("serHandExamination")) //only return "caseId" SerKnowledgeCase model
+                .addFilter(ModelJsonFilters.FILTER_SER_KNOWLEDGE_CASE, SimpleBeanPropertyFilter.filterOutAllExcept("caseId")) //only return "caseId" SerKnowledgeCase model
+                .addFilter(ModelJsonFilters.FILTER_SER_TASK, SimpleBeanPropertyFilter.serializeAllExcept("serScan", "serJudgeGraph", "serHandExamination", "history")) //only return "serScan", "serJudge", "serHandExamination" from SerTask model
                 .addFilter(ModelJsonFilters.FILTER_SER_CHECK_RESULT, SimpleBeanPropertyFilter.filterOutAllExcept("handGoods", "handAttached")) //return only handGoods and handAttached from SerCheckResult model
-                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerScan model
-                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerJudgeGraph model
-                .addFilter(ModelJsonFilters.FILTER_SER_HAND_EXAMINATION, SimpleBeanPropertyFilter.serializeAllExcept("task")) //only return "task" from SerHandExamination model
+                .addFilter(ModelJsonFilters.FILTER_SER_SCAN, SimpleBeanPropertyFilter.serializeAllExcept("task")) //return all fields except "task" from SerScan model
+                .addFilter(ModelJsonFilters.FILTER_SER_JUDGE_GRAPH, SimpleBeanPropertyFilter.filterOutAllExcept("judgeSubmitrects")) //only return "judgeSubmitrects" from SerJudgeGraph model
                 .addFilter(ModelJsonFilters.FILTER_SYS_WORK_MODE, SimpleBeanPropertyFilter.filterOutAllExcept("modeName")) //only return "modeName" from SysWorkMode model
                 .addFilter(ModelJsonFilters.FILTER_SYS_DEVICE, SimpleBeanPropertyFilter.filterOutAllExcept("deviceName")) //only return "deviceName" from SysDevice model
                 .addFilter(ModelJsonFilters.FILTER_SYS_USER, SimpleBeanPropertyFilter.filterOutAllExcept("userName")) //only return "userName" from SysUser model

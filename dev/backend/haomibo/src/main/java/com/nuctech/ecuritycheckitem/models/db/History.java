@@ -264,6 +264,16 @@ public class History extends BaseEntity implements Serializable {
     private SerScan serScan;
 
     @OneToOne()
+    @JoinColumn(name = "JUDGE_ID", referencedColumnName = "JUDGE_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerJudgeGraph serJudgeGraph;
+
+    @OneToOne()
+    @JoinColumn(name = "HAND_EXAMINATION_ID", referencedColumnName = "HAND_EXAMINATION_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private SerHandExamination serHandExamination;
+
+    @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerKnowledgeCase serKnowledgeCase;
