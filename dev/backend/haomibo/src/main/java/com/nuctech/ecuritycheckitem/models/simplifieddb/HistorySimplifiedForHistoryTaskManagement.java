@@ -262,4 +262,7 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerKnowledgeCaseSimplifiedForHistoryTaskManagement serKnowledgeCase;
+
+    @javax.persistence.Transient
+    private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;
 }

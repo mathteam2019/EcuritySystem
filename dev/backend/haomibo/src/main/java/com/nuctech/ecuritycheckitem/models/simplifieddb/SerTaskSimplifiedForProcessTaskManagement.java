@@ -90,4 +90,6 @@ public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implem
     @NotFound(action = NotFoundAction.IGNORE)
     private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
 
+    @javax.persistence.Transient
+    private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;
 }

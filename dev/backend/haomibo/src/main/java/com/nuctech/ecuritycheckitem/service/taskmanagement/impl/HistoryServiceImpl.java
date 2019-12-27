@@ -16,9 +16,12 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.History;
 import com.nuctech.ecuritycheckitem.models.db.QHistory;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHistoryTaskManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.QHistorySimplifiedForHistoryTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerPlatformCheckParamsSimplifiedForTaskManagement;
 import com.nuctech.ecuritycheckitem.repositories.HistoryRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -41,6 +44,8 @@ public class HistoryServiceImpl implements HistoryService {
     @Autowired
     HistoryRepository historyRepository;
 
+    @Autowired
+    SerPlatformCheckParamRepository serPlatformCheckParamRepository;
     /**
      * Get filter condition from input parameters
      * @param taskNumber
@@ -178,7 +183,21 @@ public class HistoryServiceImpl implements HistoryService {
             return null;
         }
 
-        return data.get();
+        SerPlatformCheckParamsSimplifiedForTaskManagement platformCheckParams = new SerPlatformCheckParamsSimplifiedForTaskManagement();
+        List<SerPlatformCheckParams> serPlatformCheckParams = serPlatformCheckParamRepository.findAll();
+        if (!serPlatformCheckParams.isEmpty()) {
+
+            SerPlatformCheckParams checkParams = serPlatformCheckParams.get(0);
+            platformCheckParams.setScanRecogniseColour(checkParams.getScanRecogniseColour());
+            platformCheckParams.setJudgeRecogniseColour(checkParams.getJudgeRecogniseColour());
+            platformCheckParams.setHandRecogniseColour(checkParams.getHandRecogniseColour());
+            platformCheckParams.setDisplayDeleteSuspicionColour(checkParams.getDisplayDeleteSuspicionColour());
+        }
+
+        HistorySimplifiedForHistoryTaskManagement history = data.get();
+        history.setPlatFormCheckParams(platformCheckParams);
+
+        return history;
     }
 
 

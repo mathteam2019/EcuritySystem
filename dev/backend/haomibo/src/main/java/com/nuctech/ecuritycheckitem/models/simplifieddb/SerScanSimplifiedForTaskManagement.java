@@ -94,4 +94,5 @@ public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple impleme
     @NotFound(action = NotFoundAction.IGNORE)
     SerImageSimplifiedForTaskManagement scanImage;
 
+
 }

@@ -15,15 +15,19 @@ package com.nuctech.ecuritycheckitem.service.taskmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerTask;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerTask;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.QSerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.models.simplifieddb.SerPlatformCheckParamsSimplifiedForTaskManagement;
 import com.nuctech.ecuritycheckitem.models.simplifieddb.SerTaskSimplifiedForProcessTaskManagement;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskRepository;
 import com.nuctech.ecuritycheckitem.service.taskmanagement.TaskService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -42,6 +46,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     SerTaskRepository serTaskRepository;
+
+    @Autowired
+    SerPlatformCheckParamRepository serPlatformCheckParamRepository;
 
     /**
      * Get filter condition
@@ -183,6 +190,19 @@ public class TaskServiceImpl implements TaskService {
             return null;
         }
 
+        SerPlatformCheckParamsSimplifiedForTaskManagement platformCheckParams = new SerPlatformCheckParamsSimplifiedForTaskManagement();
+        List<SerPlatformCheckParams> serPlatformCheckParams = serPlatformCheckParamRepository.findAll();
+        if (!serPlatformCheckParams.isEmpty()) {
+
+            SerPlatformCheckParams checkParams = serPlatformCheckParams.get(0);
+            platformCheckParams.setScanRecogniseColour(checkParams.getScanRecogniseColour());
+            platformCheckParams.setJudgeRecogniseColour(checkParams.getJudgeRecogniseColour());
+            platformCheckParams.setHandRecogniseColour(checkParams.getHandRecogniseColour());
+            platformCheckParams.setDisplayDeleteSuspicionColour(checkParams.getDisplayDeleteSuspicionColour());
+        }
+
+        SerTaskSimplifiedForProcessTaskManagement serTask = data.get();
+        serTask.setPlatFormCheckParams(platformCheckParams);
         return data.get();
     }
 
