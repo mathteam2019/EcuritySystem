@@ -386,7 +386,7 @@ public class HistoryTaskController extends BaseController {
                 HistorySimplifiedForHistoryTaskManagement task = taskList.get(i);
                 boolean isExist = false;
                 for(int j = 0; j < splits.length; j ++) {
-                    if(splits[j].equals(task.getTaskId().toString())) { //if specified id is contained idList
+                    if(splits[j].equals(task.getHistoryId().toString())) { //if specified id is contained idList
                         isExist = true;
                         break;
                     }
