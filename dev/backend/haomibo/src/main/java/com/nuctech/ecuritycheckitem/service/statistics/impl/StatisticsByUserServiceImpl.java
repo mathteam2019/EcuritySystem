@@ -134,8 +134,10 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
 
         for (int i = 0; i < result.size(); i++) {
             Object[] item = (Object[]) result.get(i);
-            TotalStatistics record = initModelFromObject(item);
-            data.put(record.getId(), record);
+            if (item[0] != null) {
+                TotalStatistics record = initModelFromObject(item);
+                data.put(record.getId(), record);
+            }
         }
 
         return data;
