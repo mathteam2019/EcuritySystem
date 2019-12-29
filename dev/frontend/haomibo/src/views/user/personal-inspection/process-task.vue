@@ -78,10 +78,12 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('process_task_export')" @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default"
+                        :disabled="checkPermItem('process_task_export')" @click="onExportButton()">
                 <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('process_task_print')" @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default"
+                        :disabled="checkPermItem('process_task_print')" @click="onPrintButton()">
                 <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -145,6 +147,7 @@
     </b-card>
 
     <div v-if="pageStatus === 'show'">
+
       <b-row class="fill-main">
         <b-col cols="3">
           <b-card class="pt-4 h-100">
@@ -172,9 +175,12 @@
                 </div>
               </b-col>
               <b-col class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
-                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
+                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
+                  class="icofont-star"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
+                  class="icofont-search-user"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
+                  class="icofont-female"/></span>
               </b-col>
             </b-row>
 
@@ -546,27 +552,32 @@
                 <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
                   <b-col>
-                    <div v-if="handGoodExpanded[0]" class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[0]" class="text-center"
+                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[1]" class="text-center" style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[1]" class="text-center"
+                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[2]" class="text-center" style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[2]" class="text-center"
+                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[3]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[3]" class="text-center"
+                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[4]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[4]" class="text-center"
+                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
                     </div>
                   </b-col>
@@ -577,17 +588,24 @@
                   <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
                          @click="onThumbClick(thumbIndex)">
                     <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
-                    
+
+                  </b-col>
+                  <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
+                         @click="onVideoClick(video)">
+                    <img src="../../../assets/img/drug-thumb.jpg" style="width: 50px; height: 40px;"/>
                   </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
+
                 </b-row>
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-img v-if="validIcon === null" class="align-self-end" style="width: 100px; height: 95px;"/>
-                    <b-img v-else-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
-                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-else-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end"
+                           style="width: 100px; height: 95px;"/>
+                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end"
+                           style="width: 100px; height: 95px;"/>
 
                   </b-col>
                 </b-row>
@@ -608,7 +626,12 @@
           </b-card>
         </b-col>
       </b-row>
-
+      <div class="video-wrapper" v-show="showVideo">
+        <div class="video-container">
+          <video-player ref="videoPlayer" :options="videoOptions"></video-player>
+        </div>
+        <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"></i></span>
+      </div>
     </div>
   </div>
 </template>
@@ -618,7 +641,7 @@
     cursor: pointer !important;
   }
 
-  .slide-class{
+  .slide-class {
     margin-top: -30px;
   }
 
@@ -746,7 +769,6 @@
       background: url("/assets/img/history_chart.png") no-repeat;
       background-size: contain;
 
-
       $elements: 5;
       @for $i from 0 to $elements {
         .part:nth-child(#{$i + 1}) {
@@ -804,6 +826,9 @@
   import {loadImageCanvas, imageFilterById} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
   import {checkPermissionItem} from "../../../utils";
+  import Videoplayer from '../../../components/Common/VideoPlayer';
+
+
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -813,6 +838,7 @@
       'switches': Switches,
       'light-gallery': LightGallery,
       'date-picker': DatePicker,
+      'video-player': Videoplayer,
       VueSlideBar
     },
     mounted() {
@@ -821,18 +847,28 @@
     data() {
 
       return {
+        videoOptions: {
+          autoplay: true,
+          language: 'zh',//todo need to set that lang setting with multiple.
+          poster: '/assets/img/glock-thumb.jpg', //todo need to set its image data differently if needed
+          sources: [{
+            type: "video/mp4",
+            src: '/assets/img/113.mp4',
+          }],
+        },
+        selectedVideo: null,
         isExpanded: false,
-        validIcon:null,
-        isSlidebar1Expended:false,
-        isSlidebar2Expended:false,
-        isSlidebar3Expended:false,
-        isSlidebar4Expended:false,
-        slidebar1value:0,
-        slidebar2value:0,
-        slidebar3value:0,
-        slidebar4value:0,
-        history_id:0,
-        tmp:0,
+        validIcon: null,
+        isSlidebar1Expended: false,
+        isSlidebar2Expended: false,
+        isSlidebar3Expended: false,
+        isSlidebar4Expended: false,
+        slidebar1value: 0,
+        slidebar2value: 0,
+        slidebar3value: 0,
+        slidebar4value: 0,
+        history_id: 0,
+        tmp: 0,
         slider: {
           lineHeight: 10,
           processStyle: {
@@ -856,16 +892,16 @@
         siteData: [],
         showPage: [],
 
-        imageUrls : [],
-        handGoodDataCode:['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
-        handGoodExpanded:[false, false, false, false, false],
-        handGoodDataCodeExpanded:[],
-        handGoodDataCodeValue:{
-          1000001601:{text:'安眠药'},
-          1000001602:{text:'仿真枪'},
-          1000001603:{text:'玩具枪'},
-          1000001604:{text:'气枪'},
-          1000001605:{text:'打火机'},
+        imageUrls: [],
+        handGoodDataCode: ['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
+        handGoodExpanded: [false, false, false, false, false],
+        handGoodDataCodeExpanded: [],
+        handGoodDataCodeValue: {
+          1000001601: {text: '安眠药'},
+          1000001602: {text: '仿真枪'},
+          1000001603: {text: '玩具枪'},
+          1000001604: {text: '气枪'},
+          1000001605: {text: '打火机'},
         },
         // TODO: select options
         operationModeOptions: [
@@ -1001,38 +1037,28 @@
         //   '/assets/img/11.3.mp4',
         // ],
 
-        thumbs: [
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          ],
+        thumbs: [],
         images: [0],
-        videos: [
-          {name: '', src: ''},
-        ],
-        nvideos: [0],
+        videos: [],
         photoIndex: null,
-        videoIndex: null,
-        showVideo:false,
+        showVideo: false,
 
-        widthRate:[],
-        heightRate:[],
-        imgRect:[
-          {x:0, y:0, width:0, height:0}
+        widthRate: [],
+        heightRate: [],
+        imgRect: [
+          {x: 0, y: 0, width: 0, height: 0}
         ],
-        cartoonRect:[
-          {x:0, y:0, width:0, height:0}
+        cartoonRect: [
+          {x: 0, y: 0, width: 0, height: 0}
         ],
-        rRects:[
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          ],
-        rectAdd:[],
-        rectDel:[],
+        rRects: [
+          {x: 0, y: 0, width: 0, height: 0},
+          {x: 0, y: 0, width: 0, height: 0},
+          {x: 0, y: 0, width: 0, height: 0},
+          {x: 0, y: 0, width: 0, height: 0},
+        ],
+        rectAdd: [],
+        rectDel: [],
       }
     },
     watch: {
@@ -1079,69 +1105,77 @@
       },
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        if (oldValue < newsValue) {
+          for (let i = oldValue; i < newsValue; i++) {
             this.filterId(5);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for (let i = newsValue; i < oldValue; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar2value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        if (oldValue < newsValue) {
+          for (let i = oldValue; i < newsValue; i++) {
             this.filterId(7);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for (let i = newsValue; i < oldValue; i++) {
             this.filterId(8);
           }
         }
       },
       slidebar3value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        if (oldValue < newsValue) {
+          for (let i = oldValue; i < newsValue; i++) {
             this.filterId(5);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for (let i = newsValue; i < oldValue; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar4value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        if (oldValue < newsValue) {
+          for (let i = oldValue; i < newsValue; i++) {
             this.filterId(7);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for (let i = newsValue; i < oldValue; i++) {
             this.filterId(8);
           }
         }
       },
     },
     methods: {
-    checkPermItem(value) {
+      checkPermItem(value) {
         return checkPermissionItem(value);
       },
 
-      show(){
-        this.showVideo=true;
+      show() {
+        this.showVideo = true;
       },
-      hide () {
+      hide() {
         this.$modal.hide('video');
       },
-    onThumbClick(index) {
+      onVideoClick(video){
+        this.videoOptions.sources.src = video.src;
+        this.$refs.videoPlayer.initialize();
+        this.showVideo = true;
+      },
+      finishVideoShow(){
+        this.showVideo = false;
+      },
+      onThumbClick(index) {
 
         this.photoIndex = index;
         this.isOpen = true;
@@ -1153,17 +1187,17 @@
       onTVideoClick(index) {
 
         this.videoIndex = index;
-        this.isOpen= true;
+        this.isOpen = true;
       },
       videoHide() {
         this.videoIndex = null;
-        this.autoplay=true;
+        this.autoplay = true;
       },
 
-      onlyOneSlide(value){
-        if(this.power === false) {
-          this.isSlidebar3Expended= false;
-          this.isSlidebar4Expended= false;
+      onlyOneSlide(value) {
+        if (this.power === false) {
+          this.isSlidebar3Expended = false;
+          this.isSlidebar4Expended = false;
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1174,8 +1208,8 @@
           }
         }
         else {
-          this.isSlidebar1Expended= false;
-          this.isSlidebar2Expended =false;
+          this.isSlidebar1Expended = false;
+          this.isSlidebar2Expended = false;
           if (value === 1) {
             this.isSlidebar3Expended = !this.isSlidebar3Expended;
             this.isSlidebar4Expended = !this.isSlidebar3Expended;
@@ -1188,7 +1222,7 @@
       },
 
       filterId(id) {
-        if(id<5||id>8) {
+        if (id < 5 || id > 8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
           this.isSlidebar3Expended = false;
@@ -1200,20 +1234,20 @@
           //   loadImageCanvas(this.imageUrls[3], this.imageUrls[4]);
           // }
         }
-        if(this.power===false) {
+        if (this.power === false) {
           imageFilterById(id, this.imgRect, this.rRects);
-        }else {
+        } else {
           imageFilterById(id, this.cartoonRect, this.rRects);
         }
 
       },
 
       loadImage(url1, url2) {
-        if(this.power===false) {
+        if (this.power === false) {
           this.slidebar1value = 0;
           this.slidebar2value = 0;
           loadImageCanvas(url1, url2, this.imgRect, this.rRects);
-        }else {
+        } else {
           this.slidebar3value = 0;
           this.slidebar4value = 0;
           loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
@@ -1258,7 +1292,7 @@
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        if(checkedIds.length>0) {
+        if (checkedIds.length > 0) {
           downLoadFileFromServer(link, params, 'Process-Task');
         }
       },
@@ -1272,7 +1306,7 @@
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        if(checkedIds.length>0) {
+        if (checkedIds.length > 0) {
           printFileFromServer(link, params);
         }
       },
@@ -1313,29 +1347,29 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
-                if(this.showPage.serHandExamination!=null) {
+                if (this.showPage.serHandExamination != null) {
                   this.validIcon = this.showPage.serHandExamination.handResult;
                 }
                 imageInfo = this.showPage.serScan.scanDeviceImages;
                 imageInfo = JSON.parse(imageInfo);
-                for(let i=0; i<imageInfo.length; i++){
-                  url1=null;
-                  url2=null;
+                for (let i = 0; i < imageInfo.length; i++) {
+                  url1 = null;
+                  url2 = null;
                   rateWidth = 0;
                   rateHeight = 0;
-                  if(imageInfo[i].image !=null) {
+                  if (imageInfo[i].image != null) {
                     url1 = imageInfo[i].image;
-                  }else{
+                  } else {
                     url1 = '/assets/img/scan-lr.gif';
                   }
-                  if(imageInfo[i].cartoon !=null) {
+                  if (imageInfo[i].cartoon != null) {
                     url2 = imageInfo[i].cartoon;
-                  }else{
+                  } else {
                     url2 = '/assets/img/u244.jpg';
                   }
-                 
+
                 }
-                
+
                 loadImageCanvas(url1, url1, this.imgRect, this.rRects);
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;
@@ -1344,10 +1378,10 @@
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
                 let handGood = handGoodsStr.split(",");
                 let handAttached = handAttactedStr.split(",");
-                let k=0;
-                for(let i=0; i<handGood.length; i++){
-                  for(let j=0; j<5; j++){
-                    if(handGood[i] === this.handGoodDataCode[j]){
+                let k = 0;
+                for (let i = 0; i < handGood.length; i++) {
+                  for (let j = 0; j < 5; j++) {
+                    if (handGood[i] === this.handGoodDataCode[j]) {
                       this.handGoodExpanded[k] = true;
                       this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
                       k++;
@@ -1355,26 +1389,37 @@
 
                   }
                 }
-                k=0;
-                let v=0;
-                for(let i=0; i<handAttached.length; i++){
-                  let iHandAttached = handAttached[i].split(".");
-                  if(iHandAttached[1] === "png" || iHandAttached[1] === "jpg"){
-                    this.thumbs[k].name= iHandAttached[0];
-                    this.thumbs[k].src= handAttached[i];
-                    this.images[k] = handAttached[i];
-                    k++;
-                    }
 
-                  else{
-                    this.videos[v].name= iHandAttached[0];
-                    this.videos[v].src= handAttached[i];
-                    this.nvideos[v] = handAttached[i];
-                    v++;
+                //getting media data from server.
+                for (let i = 0; i < handAttached.length; i++) {
+                  let iHandAttached = handAttached[i].split(".");
+                  if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
+                    this.thumbs.push({
+                      name:iHandAttached[0],
+                      src:handAttached[i]
+                    });
+                    this.images.push(handAttached[i]);
+                   /* this.thumbs[k].name = iHandAttached[0];
+                    this.thumbs[k].src = handAttached[i];
+                    this.images[k] = handAttached[i];*/
+
+                  }
+                  else {
+                    this.videos.push({
+                      name:iHandAttached[0],
+                      src:handAttached[i],
+                      poster:'',//todo if client need to show different poster for each videos, should get its poster image from server.
+                    });
                   }
 
                 }
 
+                //todo added this data for testing need to remove after checked...
+                this.videos.push({
+                  name:'',
+                  src:'/assets/img/114.mp4',
+                  poster:''
+                });
                 break;// okay
 
             }
@@ -1440,7 +1485,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           filter: this.filter,
-          sort:httpOptions.params.sort,
+          sort: httpOptions.params.sort,
           perPage: this.taskVuetableItems.perPage,
         });
       },

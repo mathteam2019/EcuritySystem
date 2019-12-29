@@ -24,6 +24,16 @@ export default {
         if (this.player) {
             this.player.dispose()
         }
+    },
+    methods: {
+      initialize(){
+        if (this.player) {
+          let selector = '.video-wrapper .video-container .video-js video';
+          let els = document.querySelectorAll(selector);
+          els[0].src = this.options.sources.src;
+        }
+      }
     }
+
 }
 </script>
