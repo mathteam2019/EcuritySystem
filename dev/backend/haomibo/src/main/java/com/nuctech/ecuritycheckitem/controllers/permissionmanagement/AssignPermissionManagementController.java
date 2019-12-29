@@ -99,7 +99,6 @@ public class AssignPermissionManagementController extends BaseController {
     private static class UserGroupAssignRoleAndDataRangeRequestBody {
 
         @NotNull
-        @UserId
         Long userGroupId;
         @NotNull
         List<@RoleId Long> roleIdList;
