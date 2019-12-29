@@ -223,10 +223,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton1()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('hand_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('hand_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -316,10 +316,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton2()">
             <i class="icofont-exchange"/>&nbsp;切换
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('hand_statistics_export')" @click="onExportButton2()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton2()">
+          <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('hand_statistics_print')" @click="onPrintButton2()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -448,6 +448,7 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -854,6 +855,9 @@
       }
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       getManualDeviceData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
           let message = response.data.message;
@@ -882,61 +886,101 @@
       },
 
       onExportButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/handexamination/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
         downLoadFileFromServer(link, params, 'Statistics-Hand');
+        }
 
       },
 
       onPrintButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/handexamination/generate`;
-        printFileFromServer(link, params);
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
+          printFileFromServer(link, params);
+        }
       },
 
 
       onExportButton2() {
-        let checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable2.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/suspiciongoods/generate`;
-        downLoadFileFromServer(link, params, 'Statistics-Handgoods');
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
+          downLoadFileFromServer(link, params, 'Statistics-Handgoods');
+        }
       },
 
       onPrintButton2() {
-        let checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable2.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/suspiciongoods/generate`;
-        printFileFromServer(link, params);
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
+          printFileFromServer(link, params);
+        }
       },
 
       getSiteOption() {

@@ -79,10 +79,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('history_task_export')" @click="onExportButton()">
                 <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('history_task_print')" @click="onPrintButton()">
                 <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -174,9 +174,9 @@
                 </div>
               </b-col>
               <b-col class="text-right icon-container">
-                <span><i class="icofont-star"/></span>
-                <span><i class="icofont-search-user"/></span>
-                <span><i class="icofont-female"/></span>
+                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
+                <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
               </b-col>
             </b-row>
 
@@ -251,9 +251,9 @@
 
                   <div class="control-btn">
                     <b-img src="/assets/img/reduction_btn.png" v-if="this.power === false"
-                           @click="loadImage(imageUrls[0], imageUrls[1])"/>
+                           @click="loadImage(imageUrls[0], imageUrls[0])"/>
                     <b-img src="/assets/img/reduction_btn.png" v-else
-                           @click="loadImage(imageUrls[2], imageUrls[3])"/>
+                           @click="loadImage(imageUrls[1], imageUrls[1])"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -268,8 +268,8 @@
               <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
                 <VueSlideBar
                   v-model="slidebar2value"
-                  :min="0"
-                  :max="10"
+                  :min="-50"
+                  :max="50"
                   :processStyle="slider.processStyle"
                   :lineHeight="slider.lineHeight"
                   :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
@@ -279,8 +279,30 @@
               <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
                 <VueSlideBar
                   v-model="slidebar1value"
-                  :min="0"
-                  :max="10"
+                  :min="-50"
+                  :max="50"
+                  :processStyle="slider.processStyle"
+                  :lineHeight="slider.lineHeight"
+                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
+                  class="slide-class">
+                </VueSlideBar>
+              </b-col>
+              <b-col cols="8" v-if="isSlidebar3Expended" style="max-width: 100%; flex: none;">
+                <VueSlideBar
+                  v-model="slidebar3value"
+                  :min="-50"
+                  :max="50"
+                  :processStyle="slider.processStyle"
+                  :lineHeight="slider.lineHeight"
+                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
+                  class="slide-class">
+                </VueSlideBar>
+              </b-col>
+              <b-col cols="8" v-if="isSlidebar4Expended" style="max-width: 100%; flex: none;">
+                <VueSlideBar
+                  v-model="slidebar4value"
+                  :min="-50"
+                  :max="50"
                   :processStyle="slider.processStyle"
                   :lineHeight="slider.lineHeight"
                   :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
@@ -288,8 +310,6 @@
                 </VueSlideBar>
               </b-col>
             </b-row>
-
-
           </b-card>
         </b-col>
         <b-col cols="9">
@@ -316,7 +336,6 @@
                   </div>
                   <div class="right">
                     <div>Scanning</div>
-                    <div>zhang san</div>
                   </div>
                   <div class="top-date">
                     <label
@@ -338,8 +357,8 @@
                     </div>
                   </div>
                   <div class="right">
-                    <div>Decision diagram</div>
-                    <div>Li si</div>
+                    <div>Decision</div>
+                    <div>diagram</div>
                   </div>
                   <div class="top-date">
                     <label
@@ -363,7 +382,6 @@
                   </div>
                   <div class="right">
                     <div>Inspection</div>
-                    <div>Wang wu</div>
                   </div>
                   <div class="top-date">
                     <label v-if="showPage.handStartTime == null"></label>
@@ -486,9 +504,8 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null"></label>
-                  <label v-else-if="showPage.task.serJudgeGraph==null"></label>
-                  <label v-else>{{getOptionValue(showPage.task.serJudgeGraph.judgeResult)}}</label>
+                  <label v-if="showPage.judgeResult==null"></label>
+                  <label v-else>{{getOptionValue(showPage.judgeResult)}}</label>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -525,49 +542,61 @@
               <b-col>
                 <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
-                    <b-col>
-                      <div class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                        <span>2{{$t('personal-inspection.firearms')}}</span>
-                      </div>
-                    </b-col>
-                    <b-col>
-                      <div class="text-center" style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                        <span>1{{$t('personal-inspection.drug')}}</span>
-                      </div>
-                    </b-col>
-                    <b-col>
-                      <div class="text-center" style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                        <span>0{{$t('personal-inspection.dagger')}}</span>
-                      </div>
-                    </b-col>
-                    <b-col>
-                      <div class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
-                        <span>9{{$t('personal-inspection.firearms')}}</span>
-                      </div>
-                    </b-col>
-                  </b-row>
+                  <b-col>
+                    <div v-if="handGoodExpanded[0]" class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-if="handGoodExpanded[1]" class="text-center" style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-if="handGoodExpanded[2]" class="text-center" style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-if="handGoodExpanded[3]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
+                    </div>
+                  </b-col>
+                  <b-col>
+                    <div v-if="handGoodExpanded[4]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                      <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
+                    </div>
+                  </b-col>
+                </b-row>
 
                 <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery" style="margin-top: 0.5rem">
-                    <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
-                           @click="onThumbClick(thumbIndex)">
-                      <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
-                      <label class="d-block text-center mt-2">{{thumb.name}}</label>
-                    </b-col>
-                    <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
-                  </b-row>
+                  <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
+                         @click="onThumbClick(thumbIndex)">
+                    <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
+
+                  </b-col>
+                  <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
+                </b-row>
+                
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
                   <b-col cols="12" class="align-self-end text-right mt-3">
-                  <b-img src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+
+                    <b-img v-if="showPage.handResult !== null && showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-if="showPage.handResult !== null && showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+
                   </b-col>
                 </b-row>
                 <b-row style="margin-top: 2rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
-                    <b-button size="sm" variant="orange default" @click="pageStatus='table'">
+                    <b-button size="sm" variant="orange default" :disabled="checkPermItem('history_task_save')" @click="onCollectionClicked(history_id)">
                       <i class="icofont-gift"/>
                       {{ $t('personal-inspection.collection') }}
+                    </b-button>
+                    <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(history_id)">
+                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
                       <i class="icofont-long-arrow-left"/>
@@ -819,8 +848,10 @@
   import DatePicker from 'vue2-datepicker';
   import 'vue2-datepicker/index.css';
   import 'vue2-datepicker/locale/zh-cn';
-  import {loadImageCanvas, imageFilterById} from '../../../utils'
+  import {loadImageCanvas, getLoginInfo, imageFilterById} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
+  import user from "../../../store/modules/user";
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -841,8 +872,13 @@
         isExpanded: false,
         isSlidebar1Expended:false,
         isSlidebar2Expended:false,
+        isSlidebar3Expended:false,
+        isSlidebar4Expended:false,
         slidebar1value:0,
         slidebar2value:0,
+        slidebar3value:0,
+        slidebar4value:0,
+        history_id:0,
         slider: {
           lineHeight: 10,
           processStyle: {
@@ -863,9 +899,20 @@
           // TODO: search filter
         },
 
-        showPage: [],
         siteData: [],
-        imageUrls: ['/assets/img/scan-lr.gif', '/assets/img/scan-rl.gif', '/assets/img/u244.jpg', '/assets/img/u244.jpg'],
+        showPage: [],
+
+        imageUrls : [],
+        handGoodDataCode:['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
+        handGoodExpanded:[false, false, false, false, false],
+        handGoodDataCodeExpanded:[],
+        handGoodDataCodeValue:{
+          1000001601:{text:'安眠药'},
+          1000001602:{text:'仿真枪'},
+          1000001603:{text:'玩具枪'},
+          1000001604:{text:'气枪'},
+          1000001605:{text:'打火机'},
+        },
         // TODO: select options
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1000,23 +1047,56 @@
         },
         power: false,
 
+        // thumbs: [
+        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
+        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
+        //   {name: '11.3.mp4', src: '/assets/img/11.3.mp4'}
+        // ],
+        // images: [
+        //   '/assets/img/drug.jpg',
+        //   '/assets/img/drug.jpg',
+        //   '/assets/img/glock.jpg',
+        //   '/assets/img/glock.jpg',
+        //   '/assets/img/11.3.mp4',
+        // ],
+
         thumbs: [
-          {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-          {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-          {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'}
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
+          ],
+        images: [0],
+        videos: [
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
+          {name: '', src: ''},
         ],
-        images: [
-          '/assets/img/drug.jpg',
-          '/assets/img/drug.jpg',
-          '/assets/img/glock.jpg',
-          '/assets/img/glock.jpg',
-          '/assets/img/glock.jpg',
+        nvideos: [0],
+        photoIndex: null,
+        videoIndex: null,
+
+        widthRate:[],
+        heightRate:[],
+        imgRect:[
+          {x:0, y:0, width:0, height:0}
         ],
-        photoIndex: null
-
-
+        cartoonRect:[
+          {x:0, y:0, width:0, height:0}
+        ],
+        rRects:[
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          ],
+        rectAdd:[],
+        rectDel:[],
       }
     },
     watch: {
@@ -1046,14 +1126,20 @@
         let url1;
         let url2;
         if (newValue === true) {
-          url1 = this.imageUrls[2];
-          url2 = this.imageUrls[3];
+          url1 = this.imageUrls[1];
+          url2 = this.imageUrls[1];
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
 
         } else {
           url1 = this.imageUrls[0];
-          url2 = this.imageUrls[1];
+          url2 = this.imageUrls[0];
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
         }
-        loadImageCanvas(url1, url2);
+        this.isSlidebar3Expended = false;
+        this.isSlidebar4Expended = false;
+        this.isSlidebar1Expended = false;
+        this.isSlidebar2Expended = false;
+
       },
       slidebar1value(newsValue, oldValue) {
 
@@ -1081,27 +1167,97 @@
           }
         }
       },
+      slidebar3value(newsValue, oldValue) {
+
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
+            this.filterId(5);
+          }
+        }
+        else {
+          for(let i=newsValue; i<oldValue; i++) {
+            this.filterId(6);
+          }
+        }
+      },
+      slidebar4value(newsValue, oldValue) {
+
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
+            this.filterId(7);
+          }
+        }
+        else {
+          for(let i=newsValue; i<oldValue; i++) {
+            this.filterId(8);
+          }
+        }
+      },
     },
     methods: {
 
+      checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       onlyOneSlide(value){
-        if(value===1){
-          this.isSlidebar1Expended = !this.isSlidebar1Expended;
-          this.isSlidebar2Expended = !this.isSlidebar1Expended;
+        if(this.power === false) {
+          this.isSlidebar3Expended= false;
+          this.isSlidebar4Expended= false;
+          if (value === 1) {
+            this.isSlidebar1Expended = !this.isSlidebar1Expended;
+            this.isSlidebar2Expended = !this.isSlidebar1Expended;
+          }
+          if (value === 2) {
+            this.isSlidebar2Expended = !this.isSlidebar2Expended;
+            this.isSlidebar1Expended = !this.isSlidebar2Expended;
+          }
         }
-        if(value===2){
-          this.isSlidebar2Expended = !this.isSlidebar2Expended;
-          this.isSlidebar1Expended = !this.isSlidebar2Expended;
+        else {
+          this.isSlidebar1Expended= false;
+          this.isSlidebar2Expended =false;
+          if (value === 1) {
+            this.isSlidebar3Expended = !this.isSlidebar3Expended;
+            this.isSlidebar4Expended = !this.isSlidebar3Expended;
+          }
+          if (value === 2) {
+            this.isSlidebar4Expended = !this.isSlidebar4Expended;
+            this.isSlidebar3Expended = !this.isSlidebar4Expended;
+          }
         }
       },
 
       filterId(id) {
-        imageFilterById(id);
+        if(id<5||id>8) {
+          this.isSlidebar1Expended = false;
+          this.isSlidebar2Expended = false;
+          this.isSlidebar3Expended = false;
+          this.isSlidebar4Expended = false;
+          // if(this.power === false){
+          //   (this.imageUrls[0]);
+          //   loadImageCanvas(this.imageUrls[0], this.imageUrls[1]);
+          // } else{
+          //   loadImageCanvas(this.imageUrls[3], this.imageUrls[4]);
+          // }
+        }
+        if(this.power===false) {
+          imageFilterById(id, this.imgRect, this.rRects);
+        }else {
+          imageFilterById(id, this.cartoonRect, this.rRects);
+        }
+
       },
 
       loadImage(url1, url2) {
+        if(this.power===false) {
+          this.slidebar1value = 0;
+          this.slidebar2value = 0;
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
+        }else {
+          this.slidebar3value = 0;
+          this.slidebar4value = 0;
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
+        }
 
-        loadImageCanvas(url1, url2);
       },
 
       getOptionValue(dataCode) {
@@ -1127,7 +1283,6 @@
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
           "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
         };
-
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
 
@@ -1142,7 +1297,9 @@
           'idList': checkedIds.join()
         };
         let link = `task/history-task/generate`;
-        downLoadFileFromServer(link, params, 'History-Task');
+        if(checkedIds.length>0) {
+          downLoadFileFromServer(link, params, 'History-Task');
+        }
       },
 
       onPrintButton() {
@@ -1153,8 +1310,11 @@
           'filter': this.filter,
           'idList': checkedIds.join()
         };
+
         let link = `task/history-task/generate`;
-        printFileFromServer(link, params);
+        if(checkedIds.length>0) {
+          printFileFromServer(link, params);
+        }
       },
 
       getSiteOption() {
@@ -1174,10 +1334,14 @@
 
       },
       onRowClicked(taskNumber) {
+        this.pageStatus = 'show';
         let url1 = this.imageUrls[0];
         let url2 = this.imageUrls[1];
+        let rateWidth, rateHeight;
+        let imageInfo, rRectInfo;
+        let colourInfo;
         // this.loadImage(url, url2);
-        loadImageCanvas(url1, url2);
+
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/history-task/get-one`, {
@@ -1187,15 +1351,131 @@
             let message = response.data.message;
 
             switch (message) {
-              case responseMessages['ok']: // okay
+              case responseMessages['ok']:
                 this.showPage = response.data.data;
+                this.apiBaseURL = apiBaseUrl;
+                // colourInfo = this.showPage.platFormCheckParams.scanRecogniseColour;
+                // colourInfo = this.showPage.platFormCheckParams.judgeRecogniseColour;
+                // colourInfo = this.showPage.platFormCheckParams.handRecogniseColour;
+                // colourInfo = this.showPage.platFormCheckParams.displayDeleteSuspicionColour;
+                // colourInfo = JSON.parse(colourInfo);
+                imageInfo = this.showPage.serScan.scanDeviceImages;
+                imageInfo = JSON.parse(imageInfo);
+                for(let i=0; i<imageInfo.length; i++){
+                  url1=null;
+                  url2=null;
+                  rateWidth = 0;
+                  rateHeight = 0;
+                  if(imageInfo[i].image !=null) {
+                    url1 = imageInfo[i].image;
+                  }
+                  if(imageInfo[i].cartoon !=null) {
+                    url2 = imageInfo[i].cartoon;
+                  }
+                  if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
+                    rateWidth = 248 / imageInfo[i].width;
+                    rateHeight = 521 / imageInfo[i].height;
+                  }
+                    this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
+                    this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
+                    this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
+                    this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
+                  this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
+                  this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
+                  this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
+                  this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
+
+                }
+                rRectInfo = this.showPage.serJudgeGraph.judgeSubmitrects;
+                rRectInfo = JSON.parse(rRectInfo);
+
+                for(let i=0; i<rRectInfo[0].rectsAdded.length; i++){
+                  this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
+                  // (rRectInfo[0].rectsAdded[i].x);
+                  this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
+                  this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
+                  this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
+                }
+                for(let i=rRectInfo[0].rectsAdded.length; i<rRectInfo[0].rectsDeleted.length+rRectInfo[0].rectsAdded.length; i++){
+                  this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].x;
+                  this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].y;
+                  this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].width;
+                  this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].height;
+                }
+                console.log(this.rRects);
+                console.log(this.imgRect);
+                loadImageCanvas(url1, url1, this.imgRect, this.rRects);
+                this.imageUrls[0] = url1;
+                this.imageUrls[1] = url2;
+
+                let handGoodsStr = this.showPage.task.serCheckResult.handGoods;
+                let handAttactedStr = this.showPage.task.serCheckResult.handAttached;
+                let handGood = handGoodsStr.split(",");
+                let handAttached = handAttactedStr.split(",");
+                let k=0;
+                for(let i=0; i<handGood.length; i++){
+                  for(let j=0; j<5; j++){
+                    if(handGood[i] === this.handGoodDataCode[j]){
+                      this.handGoodExpanded[k] = true;
+                      this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
+                      k++;
+                    }
+
+                  }
+                }
+                k=0;
+                let v=0;
+                for(let i=0; i<handAttached.length; i++){
+                  let iHandAttached = handAttached[i].split(".");
+                  if(iHandAttached[1] === "png" || iHandAttached[1] === "jpg"){
+                    this.thumbs[k].name= iHandAttached[0];
+                    this.thumbs[k].src= handAttached[i];
+                    this.images[k] = handAttached[i];
+                    k++;
+                    }
+
+                  else{
+                    this.videos[k].name= iHandAttached[0];
+                    this.videos[k].src= handAttached[i];
+                    this.nvideos[k] = handAttached[i];
+                    v++;
+                  }
+
+                }
+
+                break;// okay
+
+            }
+          })
+          .catch((error) => {
+          });
+
+      },
+      onCollectionClicked(history_id){
+        let loginfo = getLoginInfo();
+        let userId = loginfo.user.id;
+        getApiManager()
+          .post(`${apiBaseUrl}/knowledge-base/create`, {
+            'historyId': history_id,
+            'userId' :userId,
+          })
+          .then((response) => {
+            let message = response.data.message;
+
+            switch (message) {
+              case responseMessages['ok']:
+                this.$notify('success', this.$t('permission-management.success'), this.$t(`permission-management.assign-permission-management.group.group-assigned-successfully`), {
+                  duration: 3000,
+                  permanent: false
+                });// okay
                 break;
 
             }
           })
           .catch((error) => {
           });
-        this.pageStatus = 'show';
+
+        this.history_id = taskNumber;
       },
       getDateTimeFormat2(dataTime) {
         return getDateTimeWithFormat(dataTime);
@@ -1242,7 +1522,6 @@
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
           transformed.data.push(temp);
-
         }
 
         return transformed

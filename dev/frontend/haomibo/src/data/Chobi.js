@@ -376,7 +376,7 @@ var Chobi = function(elem){
 		    return this;
 		}
 		Chobi.prototype.canvas = null;
-		Chobi.prototype.loadImageToCanvas = function(drawArea){
+		Chobi.prototype.loadImageToCanvas = function(drawArea, rectInfo){
 			if(drawArea==null&&this.canvas!=null){
 				drawArea = this.canvas;
 			}
@@ -386,6 +386,15 @@ var Chobi = function(elem){
 				drawArea.width = imageData.width;
 				drawArea.height = imageData.height;
 				ctx.putImageData(imageData,0,0);
+				var infoLength = rectInfo.length;
+
+				// for(var i=0; i<infoLength; i++) {
+        //   ctx.beginPath();
+        //   ctx.lineWidth = "6";
+        //   ctx.strokeStyle = "red";
+        //   ctx.rect(rectInfo[i].x, rectInfo[i].y, rectInfo[i].width, rectInfo[i].height);
+        //   ctx.stroke();
+        // }
 				return true;
 			}
 			catch(e){

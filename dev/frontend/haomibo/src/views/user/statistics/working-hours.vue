@@ -122,10 +122,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -290,6 +290,7 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -550,7 +551,7 @@
             },
             {
               name: 'name',
-              title: '时间段',
+              title: '用户名',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -679,40 +680,63 @@
       }
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
+
       getDateTimeFormat(datatime) {
         if (datatime == null) return '';
         return getDateTimeWithFormat(datatime, 'monitor');
       },
 
       onExportButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
+          checkedIds = "";
         }
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/userstatistics/generate`;
-        downLoadFileFromServer(link, params, 'Statistics-WorkingHour');
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
+          downLoadFileFromServer(link, params, 'Statistics-WorkingHour');
+        }
+
 
       },
 
       onPrintButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
+          checkedIds = "";
         }
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/userstatistics/generate`;
-        printFileFromServer(link, params);
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
+          printFileFromServer(link, params);
+        }
       },
 
 
@@ -733,9 +757,9 @@
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })

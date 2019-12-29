@@ -118,10 +118,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -288,6 +288,7 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -561,7 +562,7 @@
             },
             {
               name: 'name',
-              title: '时间段',
+              title: '设备名',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -709,6 +710,9 @@
 
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
 
       getCategoryData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
@@ -731,32 +735,52 @@
       },
 
       onExportButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
         downLoadFileFromServer(link, params, 'Statistics-OperatingHour');
+        }
 
       },
 
       onPrintButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+          console.log(checkedIds.length);
+        }else {
         printFileFromServer(link, params);
+        }
       },
 
 
