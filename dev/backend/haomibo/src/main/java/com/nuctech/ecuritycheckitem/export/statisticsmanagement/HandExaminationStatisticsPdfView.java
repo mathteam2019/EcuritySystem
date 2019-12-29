@@ -56,7 +56,7 @@ public class HandExaminationStatisticsPdfView extends BasePdfView {
 
 
             table.setWidthPercentage(100);
-            Stream.of("ID", "StatWidth", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate", "HandAvgDuration", "HandMaxDuration", "HandMinDuration")
+            Stream.of("ID", "StatWidth", "TotalHandExam", "NoSeizure", "NoSeizureRate", "Seizure", "SeizureRate", "HandAvgDuration", "HandMaxDuration", "HandMinDuration")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 

@@ -3,12 +3,11 @@
  *
  * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
- * 项目：	Haomibo V1.0（BaseEntity）
- * 文件名：	BaseEntity.java
- * 描述：	All Entity includes createdBy, createdTime, editedBy, editedTime and note.
- *          This class is base class for other entities.
- * 作者名：	Sandy
- * 日期：	2019/11/13
+ * 项目：	Haomibo V1.0（Simplified BaseEntity）
+ * 文件名：	BaseEntitySimple.java
+ * 描述：	All Entity is base Entity of all simplified Entities
+ * 作者名：	Tiny
+ * 日期：	2019/12/27
  */
 
 package com.nuctech.ecuritycheckitem.models.simplifieddb;
