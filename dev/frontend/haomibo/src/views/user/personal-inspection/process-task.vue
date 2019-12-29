@@ -1321,9 +1321,13 @@
                   rateHeight = 0;
                   if(imageInfo[i].image !=null) {
                     url1 = imageInfo[i].image;
+                  }else{
+                    url1 = '/assets/img/scan-lr.gif';
                   }
                   if(imageInfo[i].cartoon !=null) {
                     url2 = imageInfo[i].cartoon;
+                  }else{
+                    url2 = '/assets/img/u244.jpg';
                   }
                   if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
                     rateWidth = 248 / imageInfo[i].width;
