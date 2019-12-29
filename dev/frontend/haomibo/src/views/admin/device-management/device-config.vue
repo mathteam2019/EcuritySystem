@@ -445,7 +445,7 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('device-config.maintenance-config.female-scan-object')}}
+                    {{$t('device-config.maintenance-config.female-guide-object')}}
                   </template>
                   <b-form-select v-model="configForm.womanDeviceGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
@@ -458,7 +458,7 @@
                     {{$t('device-config.maintenance-config.monitor-group')}}
                   </template>
                   <v-select
-                    :disabled="getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304'"
+                    :disabled="getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304'"
                     v-model="configForm.judgeDeviceId" :options="judgeDeviceOptions" class="v-select-custom-style"
                     :dir="direction" multiple/>
                 </b-form-group>
@@ -466,10 +466,10 @@
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('device-config.maintenance-config.male-inspection-object')}}
+                    {{$t('device-config.maintenance-config.male-scan-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -479,7 +479,7 @@
                     {{$t('device-config.maintenance-config.female-scan-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.judgeDeviceId.length === 0)||(getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanRemoteGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
@@ -491,7 +491,7 @@
                     {{$t('device-config.maintenance-config.hand-check-position')}}
                   </template>
                   <v-select
-                    :disabled="getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304'"
+                    :disabled="getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304'"
                     v-model="configForm.manualDeviceId" :options="manualDeviceOptions" class="v-select-custom-style"
                     :dir="direction" multiple/>
                 </b-form-group>
@@ -502,17 +502,17 @@
                     {{$t('device-config.maintenance-config.male-inspection-object')}}
                   </template>
                   <b-form-select
-                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.manManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                   <template slot="label">
-                    {{$t('device-config.maintenance-config.female-scan-object')}}&nbsp;
+                    {{$t('device-config.maintenance-config.female-inspection-object')}}&nbsp;
                   </template>
                   <b-form-select
-                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001303' && getModeValueFromId(configForm.modeId)!== '1000001304')"
+                    :disabled="(configForm.manualDeviceId.length === 0) || (getModeValueFromId(configForm.modeId)!== '1000001302' && getModeValueFromId(configForm.modeId)!== '1000001304')"
                     v-model="configForm.womanManualGender" :options="genderFilterOptions" plain/>
                 </b-form-group>
               </b-col>
