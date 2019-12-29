@@ -1077,7 +1077,7 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -1143,7 +1143,7 @@
         };
         let link = `task/statistics/judge/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         downLoadFileFromServer(link, params, 'Statistics-Judge');
         }
@@ -1168,7 +1168,7 @@
         };
         let link = `task/statistics/judge/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         printFileFromServer(link, params);
         }
@@ -1187,14 +1187,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -1221,7 +1220,7 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            console.log(this.xDay);
+
             this.barChart1Options.xAxis.data = this.xDay;
             this.barChart2Options.xAxis.data = this.xDay;
             this.barChart3Options.xAxis.data = this.xDay;
@@ -1245,8 +1244,7 @@
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+
         this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
       },
@@ -1297,7 +1295,7 @@
         let temp;
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

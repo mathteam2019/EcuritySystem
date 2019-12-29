@@ -707,7 +707,7 @@
         };
         let link = `task/statistics/userstatistics/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           downLoadFileFromServer(link, params, 'Statistics-WorkingHour');
         }
@@ -733,7 +733,7 @@
         };
         let link = `task/statistics/userstatistics/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           printFileFromServer(link, params);
         }
@@ -752,8 +752,7 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
@@ -776,12 +775,11 @@
 
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
-          console.log(this.graphData.detailedStatistics.length);
-          console.log(keyData);
+
           for (let i = 1; i < keyData.length; i++) {
-            console.log(keyData[i]);
+
             let key = keyData[i];
-            console.log(this.graphData.detailedStatistics[key].name);
+
             xAxisChart[i - 1] = this.graphData.detailedStatistics[key].name;
             if (this.graphData.detailedStatistics[key].scanStatistics != null) {
               this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
@@ -803,7 +801,7 @@
             // this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[i].judgeStatistics.workingSeconds;
             // this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[i].handExaminationStatistics.workingSeconds;
           }
-          console.log(xAxisChart);
+
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })
       },
@@ -850,47 +848,7 @@
           this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
 
 
-          // this.total.second = this.preViewData.totalSeconds % 60;
-          // this.total.minute = ((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60;
-          // this.total.hour = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24;
-          // this.total.day = (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60 - (((this.preViewData.totalSeconds - this.preViewData.totalSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          // this.scan.second = this.preViewData.scanSeconds % 60;
-          // this.scan.minute = ((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60;
-          // this.scan.hour = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24;
-          // this.scan.day = (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60 - (((this.preViewData.scanSeconds - this.preViewData.scanSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          // this.judge.second = this.preViewData.judgeSeconds % 60;
-          // this.judge.minute = ((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60;
-          // this.judge.hour = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24;
-          // this.judge.day = (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60 - (((this.preViewData.judgeSeconds - this.preViewData.judgeSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          // this.hand.second = this.preViewData.handSeconds % 60;
-          // this.hand.minute = ((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60;
-          // this.hand.hour = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24;
-          // this.hand.day = (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60 - (((this.preViewData.handSeconds - this.preViewData.handSeconds % 60) / 60) % 60)) / 60) % 24) / 24;
-          //
-          // this.scan.rate = Math.round(this.preViewData.scanSeconds / this.preViewData.totalSeconds * 100);
-          // this.judge.rate = Math.round(this.preViewData.judgeSeconds / this.preViewData.totalSeconds * 100);
-          // this.hand.rate = Math.round(this.preViewData.handSeconds / this.preViewData.totalSeconds * 100);
-          //
-          // this.doublePieChartOptions.series[0].data[0].value = this.scan.rate;
-          // this.doublePieChartOptions.series[0].data[1].value = this.judge.rate;
-          // this.doublePieChartOptions.series[0].data[2].value = this.hand.rate;
-          // this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
-          //
-          // if (this.filter.statWidth === 'year') {
-          //   this.bar3ChartOptions.xAxis.data = this.xHour;
-          // } else {
-          //   this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          //   console.log(this.xDay);
-          //   this.bar3ChartOptions.xAxis.data = this.xDay;
-          //   for (let i = 0; i < this.xDay.length; i++) {
-          //
-          //     if (this.preViewData.detailedStatistics[i] != null) {
-          //       this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.passedScan;
-          //       this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.alarmScan;
-          //       this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].scanStatistics.invalidScan;
-          //     }
-          //   }
-          // }
+          
 
         }).catch((error) => {
         });
@@ -949,7 +907,7 @@
         let temp;
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

@@ -1111,7 +1111,7 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -1177,7 +1177,7 @@
         };
         let link = `task/statistics/evaluatejudge/generate`;
         if(this.showTable!==false&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           downLoadFileFromServer(link, params, 'Statistics-Evaluate');
         }
@@ -1203,7 +1203,7 @@
         };
         let link = `task/statistics/evaluatejudge/generate`;
         if(this.showTable!==false&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           printFileFromServer(link, params);
         }
@@ -1223,8 +1223,7 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
 
           for (let i = 1; i < cnt; i++) {
@@ -1271,8 +1270,7 @@
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+
         this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
       },
@@ -1311,7 +1309,7 @@
 
         let data = response.data;
 
-        console.log(data.per_page);
+
 
         transformed.pagination = {
           total: data.total,
@@ -1322,14 +1320,13 @@
           to: data.to
         };
 
-        //console.log(Object.keys(data.data.detailedStatistics).length);
-        console.log(Object.keys(data.detailedStatistics).length);
+
         transformed.tKey = Object.keys(data.detailedStatistics);
         transformed.data = [];
         let temp;
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

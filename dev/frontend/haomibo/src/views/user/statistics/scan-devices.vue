@@ -765,7 +765,7 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -831,7 +831,7 @@
         };
         let link = `task/statistics/scan/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         downLoadFileFromServer(link, params, 'Statistics-Scan');
         }
@@ -856,7 +856,7 @@
         };
         let link = `task/statistics/scan/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         printFileFromServer(link, params);
         }
@@ -875,14 +875,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -898,11 +897,7 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
           if(this.preViewData.totalStatistics!=null) {
-          // doublePieChartData['无效扫描'].value = this.preViewData.totalStatistics.invalidScan;
-          // doublePieChartData['有效扫描'].value = this.preViewData.totalStatistics.validScan;
-          // doublePieChartData['报警'].value = this.preViewData.totalStatistics.alarmScan;
-          // doublePieChartData['通过'].value = this.preViewData.totalStatistics.passedScan;
-
+          
           this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.invalidScan;
           this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
           this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
@@ -919,7 +914,7 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            console.log(this.xDay);
+
             this.bar3ChartOptions.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
                let key = this.xDay[i];
@@ -931,65 +926,15 @@
               }
             }
           }
-          // switch (this.filter.statWidth) {
-          //     case 'hour':
-          //         console.log(Object.keys(this.preViewData.detailedStatistics).length);
-          //         // for(let i=0; i<Object.keys(this.preViewData.detailedStatistics).length; i++){
-          //         //
-          //         // }
-          //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          //         console.log(this.xDay);
-          //         this.bar3ChartOptions.xAxis.data = this.xDay;
-          //         for(let i = 0; i<this.xDay.length; i++) {
-          //
-          //             if(this.preViewData.detailedStatistics[i] != null) {
-          //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
-          //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
-          //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
-          //             }
-          //         }
-          //
-          //         break;
-          //     case 'day':
-          //         this.bar3ChartOptions.xAxis.data = this.xHour;
-          //         break;
-          //     case 'week':
-          //         this.bar3ChartOptions.xAxis.data = this.xWeek;
-          //         break;
-          //     case 'month':
-          //         this.bar3ChartOptions.xAxis.data = this.xMonth;
-          //         break;
-          //     case 'quarter':
-          //         this.bar3ChartOptions.xAxis.data = this.xQuarter;
-          //         break;
-          //     case 'year':
-          //         this.bar3ChartOptions.xAxis.data = this.xYear;
-          //         break;
-          //     default:
-          //         this.xDay = Object.keys(this.preViewData.detailedStatistics);
-          //         console.log(this.xDay);
-          //         this.bar3ChartOptions.xAxis.data = this.xDay;
-          //         for(let i = 0; i<this.xDay.length; i++) {
-          //
-          //             if(this.preViewData.detailedStatistics[i] != null) {
-          //                 this.bar3ChartOptions.series[0].data[i] = this.preViewData.detailedStatistics[i].passedScan;
-          //                 this.bar3ChartOptions.series[1].data[i] = this.preViewData.detailedStatistics[i].alarmScan;
-          //                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[i].invalidScan;
-          //             }
-          //         }
-          //
-          //         break;
-          //
-          // }
+          
 
         });
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+
         this.getPreviewData();
-        //this.$refs.taskVuetable.refresh();
+
       },
       onResetButton() {
         this.filter = {

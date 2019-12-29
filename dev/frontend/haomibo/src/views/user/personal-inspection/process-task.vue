@@ -585,9 +585,9 @@
               <b-col style="max-width: 45%;">
                 <b-row>
                   <b-col cols="12" class="align-self-end text-right mt-3">
-
-                    <b-img v-if="showPage.serHandExamination !== null && showPage.serHandExamination.handResult === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
-                    <b-img v-if="showPage.serHandExamination !== null && showPage.serHandExamination.handResult === 'FALSE'" src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-if="validIcon === null" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-else-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
 
                   </b-col>
                 </b-row>
@@ -822,6 +822,7 @@
 
       return {
         isExpanded: false,
+        validIcon:null,
         isSlidebar1Expended:false,
         isSlidebar2Expended:false,
         isSlidebar3Expended:false,
@@ -1312,6 +1313,9 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
+                if(this.showPage.serHandExamination!=null) {
+                  this.validIcon = this.showPage.serHandExamination.handResult;
+                }
                 imageInfo = this.showPage.serScan.scanDeviceImages;
                 imageInfo = JSON.parse(imageInfo);
                 for(let i=0; i<imageInfo.length; i++){
@@ -1329,37 +1333,9 @@
                   }else{
                     url2 = '/assets/img/u244.jpg';
                   }
-                  if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
-                    rateWidth = 248 / imageInfo[i].width;
-                    rateHeight = 521 / imageInfo[i].height;
-                  }
-                    this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
-                    this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
-                    this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
-                    this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
-                  this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
-                  this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
-                  this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
-                  this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
-
+                 
                 }
-                rRectInfo = this.showPage.serJudgeGraph.judgeSubmitrects;
-                rRectInfo = JSON.parse(rRectInfo);
-
-                for(let i=0; i<rRectInfo[0].rectsAdded.length; i++){
-                  this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
-
-                  this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
-                  this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
-                  this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
-                }
-                for(let i=rRectInfo[0].rectsAdded.length; i<rRectInfo[0].rectsDeleted.length+rRectInfo[0].rectsAdded.length; i++){
-                  this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].x;
-                  this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].y;
-                  this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].width;
-                  this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i-rRectInfo[0].rectsAdded.length].height;
-                }
-
+                
                 loadImageCanvas(url1, url1, this.imgRect, this.rRects);
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;

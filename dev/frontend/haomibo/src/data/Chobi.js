@@ -17,6 +17,9 @@ var Chobi = function(elem){
 				var img = new Image();
 				img.crossOrigin = "Anonymous";
 				img.src = elem;
+        img.onerror = function (evt){
+          img.src = '/assets/img/scan-lr.gif';
+        }
 				img.onload = function(){
 					context.image = img;
 					context.imageData = context.extractImageData();

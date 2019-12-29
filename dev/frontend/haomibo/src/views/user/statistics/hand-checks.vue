@@ -837,7 +837,7 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -903,7 +903,7 @@
         };
         let link = `task/statistics/handexamination/generate`;
         if(this.pageStatus1!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         downLoadFileFromServer(link, params, 'Statistics-Hand');
         }
@@ -928,7 +928,7 @@
         };
         let link = `task/statistics/handexamination/generate`;
         if(this.pageStatus1!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           printFileFromServer(link, params);
         }
@@ -953,7 +953,7 @@
         };
         let link = `task/statistics/suspiciongoods/generate`;
         if(this.pageStatus2!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           downLoadFileFromServer(link, params, 'Statistics-Handgoods');
         }
@@ -977,7 +977,7 @@
         };
         let link = `task/statistics/suspiciongoods/generate`;
         if(this.pageStatus2!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
           printFileFromServer(link, params);
         }
@@ -995,14 +995,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+         
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -1026,7 +1025,7 @@
           } else {
             //this.xDay = [];
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            console.log(this.xDay);
+
             this.barChart2Options.xAxis.data = this.xDay;
             for (let i = 0; i < this.xDay.length; i++) {
               let key = this.xDay[i];
@@ -1048,13 +1047,13 @@
           this.graphData = response.data.data;
 
           this.xDay = Object.keys(this.graphData.totalStatistics);
-          console.log(this.xDay);
+
           this.bar3ChartOptions.xAxis.data = this.xDay;
           for (let i = 0; i < this.xDay.length; i++) {
 
             if (this.graphData.totalStatistics != null) {
               let key = this.xDay[i];
-              console.log(this.graphData.totalStatistics[key]);
+
               this.bar3ChartOptions.series[0].data[i] = this.graphData.totalStatistics[key];
 
             }
@@ -1063,8 +1062,7 @@
         });
       },
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+
         this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
       },
@@ -1128,7 +1126,7 @@
         let temp;
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }
@@ -1500,7 +1498,7 @@
       cursor: pointer;
       background-color: #007bff;
     }
-   
+
     .parameter-items {
 
       & > .col:nth-child(1) {

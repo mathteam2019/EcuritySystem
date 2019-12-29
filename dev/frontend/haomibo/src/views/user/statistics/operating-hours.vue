@@ -752,7 +752,7 @@
         };
         let link = `task/statistics/devicestatistics/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         downLoadFileFromServer(link, params, 'Statistics-OperatingHour');
         }
@@ -777,7 +777,7 @@
         };
         let link = `task/statistics/devicestatistics/generate`;
         if(this.pageStatus!=='charts'&& checkedIds.length === 0){
-          console.log(checkedIds.length);
+
         }else {
         printFileFromServer(link, params);
         }
@@ -796,14 +796,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -820,12 +819,11 @@
 
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
-          console.log(this.graphData.detailedStatistics.length);
-          console.log(keyData);
+
           for (let i = 1; i < keyData.length; i++) {
-            console.log(keyData[i]);
+
             let key = keyData[i];
-            console.log(this.graphData.detailedStatistics[key].name);
+
             xAxisChart[i-1] = this.graphData.detailedStatistics[key].name;
             if(this.graphData.detailedStatistics[key].scanStatistics!=null) {
               this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
@@ -846,7 +844,7 @@
               this.bar3ChartOptions.series[2].data[i]=0;
             }
           }
-          console.log(xAxisChart);
+
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })
       },
@@ -856,11 +854,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-
-          // this.total = [];
-          // this.scan = [];
-          // this.judge = [];
-          // this.hand = [];
+          
           let totalSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds + this.preViewData.totalStatistics.judgeStatistics.workingSeconds + this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
           let scanSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds;
           let judgeSeconds = this.preViewData.totalStatistics.judgeStatistics.workingSeconds;
@@ -951,7 +945,7 @@
         let temp;
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }
