@@ -1161,7 +1161,7 @@
 
       onExportButton() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.showTable === false) {
           checkedAll = true;
           checkedIds = "";
         }
@@ -1171,12 +1171,12 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.showTable===false ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.showTable ===false?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/evaluatejudge/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.showTable!==false&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
           downLoadFileFromServer(link, params, 'Statistics-Evaluate');
@@ -1187,7 +1187,7 @@
 
       onPrintButton() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.showTable === false) {
           checkedAll = true;
           checkedIds = "";
         }
@@ -1197,12 +1197,12 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.showTable===false ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.showTable ===false?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/evaluatejudge/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.showTable!==false&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
           printFileFromServer(link, params);
@@ -1226,17 +1226,16 @@
           console.log(this.siteData);
           console.log(this.siteData[0].fieldDesignation);
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
-          //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
+
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
           .catch((error) => {
           });
-
       },
 
       getPreviewData() {
@@ -1246,14 +1245,10 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
 
-          // this.pieChart1Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
-          // this.pieChart1Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
-
           if (this.filter.statWidth === 'year') {
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            //console.log(Math.round(this.preViewData.totalStatistics.intelligenceJudgeMistake/this.preViewData.totalStatistics.intelligenceJudge * 100));
             this.lineChart1Options.xAxis.data = this.xDay;
             this.lineChart2Options.xAxis.data = this.xDay;
             this.lineChart3Options.xAxis.data = this.xDay;

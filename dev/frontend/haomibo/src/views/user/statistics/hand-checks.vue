@@ -887,7 +887,7 @@
 
       onExportButton() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.pageStatus1 === 'charts') {
           checkedAll = true;
           checkedIds = "";
         }
@@ -897,12 +897,12 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus1==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus1 ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/handexamination/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.pageStatus1!=='charts'&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
         downLoadFileFromServer(link, params, 'Statistics-Hand');
@@ -912,7 +912,7 @@
 
       onPrintButton() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.pageStatus1 === 'charts') {
           checkedAll = true;
           checkedIds = "";
         }
@@ -922,12 +922,12 @@
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus1==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus1 ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/handexamination/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.pageStatus1!=='charts'&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
           printFileFromServer(link, params);
@@ -937,22 +937,22 @@
 
       onExportButton2() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.pageStatus2 === 'charts') {
           checkedAll = true;
           checkedIds = "";
         }
         else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable2.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus2==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus2 ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/suspiciongoods/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.pageStatus2!=='charts'&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
           downLoadFileFromServer(link, params, 'Statistics-Handgoods');
@@ -961,22 +961,22 @@
 
       onPrintButton2() {
         let checkedAll, checkedIds;
-        if (this.pageStatus === 'charts') {
+        if (this.pageStatus2 === 'charts') {
           checkedAll = true;
           checkedIds = "";
         }
         else {
-          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-          checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedAll = this.$refs.taskVuetable2.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable2.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus2==='charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus2 ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/suspiciongoods/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if(this.pageStatus2!=='charts'&& checkedIds.length === 0){
           console.log(checkedIds.length);
         }else {
           printFileFromServer(link, params);
