@@ -391,13 +391,13 @@ var Chobi = function(elem){
 				ctx.putImageData(imageData,0,0);
 				var infoLength = rectInfo.length;
 
-				// for(var i=0; i<infoLength; i++) {
-        //   ctx.beginPath();
-        //   ctx.lineWidth = "6";
-        //   ctx.strokeStyle = "red";
-        //   ctx.rect(rectInfo[i].x, rectInfo[i].y, rectInfo[i].width, rectInfo[i].height);
-        //   ctx.stroke();
-        // }
+				for(var i=0; i<infoLength; i++) {
+          ctx.beginPath();
+          ctx.lineWidth = "6";
+          ctx.strokeStyle = "red";
+          ctx.rect(rectInfo[i].x, rectInfo[i].y, rectInfo[i].width, rectInfo[i].height);
+          ctx.stroke();
+        }
 				return true;
 			}
 			catch(e){

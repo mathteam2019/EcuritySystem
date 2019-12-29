@@ -549,6 +549,10 @@
                     <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
 
                   </b-col>
+                  <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
+                         @click="onVideoClick(video)">
+                    <img src="../../../assets/img/drug-thumb.jpg" style="width: 50px; height: 40px;"/>
+                  </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
                 </b-row>
 
@@ -579,6 +583,12 @@
           </b-card>
         </b-col>
       </b-row>
+      <div class="video-wrapper" v-show="showVideo">
+        <div class="video-container">
+          <video-player ref="videoPlayer" :options="videoOptions"></video-player>
+        </div>
+        <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"></i></span>
+      </div>
     </div>
   </div>
 </template>
@@ -774,6 +784,9 @@
   import {loadImageCanvas, imageFilterById} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
   import {checkPermissionItem} from "../../../utils";
+  import Videoplayer from '../../../components/Common/VideoPlayer';
+
+
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -783,6 +796,7 @@
       'switches': Switches,
       'light-gallery': LightGallery,
       'date-picker': DatePicker,
+      'video-player': Videoplayer,
       VueSlideBar
     },
     mounted() {
@@ -791,6 +805,16 @@
     data() {
 
       return {
+        videoOptions: {
+          autoplay: true,
+          language: 'zh',//todo need to set that lang setting with multiple.
+          poster: '/assets/img/glock-thumb.jpg', //todo need to set its image data differently if needed
+          sources: [{
+            type: "video/mp4",
+            src: '/assets/img/113.mp4',
+          }],
+        },
+        selectedVideo: null,
         isExpanded: false,
         validIcon:null,
         isSlidebar1Expended:false,
@@ -949,24 +973,12 @@
         //   '/assets/img/11.3.mp4',
         // ],
 
-        thumbs: [
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          ],
+        thumbs: [],
         images: [0],
-        videos: [
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-          {name: '', src: ''},
-        ],
-        nvideos: [0],
+        videos: [],
         photoIndex: null,
         videoIndex: null,
+        showVideo:false,
 
         widthRate:[],
         heightRate:[],
@@ -1085,6 +1097,14 @@
     methods: {
     checkPermItem(value) {
         return checkPermissionItem(value);
+      },
+      onVideoClick(video){
+        this.videoOptions.sources.src = video.src;
+        this.$refs.videoPlayer.initialize();
+        this.showVideo = true;
+      },
+      finishVideoShow(){
+        this.showVideo = false;
       },
       onThumbClick(index) {
 
@@ -1258,6 +1278,8 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
+                this.thumbs = [];
+                this.videos = [];
                 if(this.showPage.serHandExamination!=null) {
                   this.validIcon = this.showPage.serHandExamination.handResult;
                 }
@@ -1279,9 +1301,40 @@
                   }else{
                     url2 = '/assets/img/u244.jpg';
                   }
-                  
+                  if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
+                    rateWidth = 248 / imageInfo[i].width;
+                    rateHeight = 521 / imageInfo[i].height;
+                    this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
+                    this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
+                    this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
+                    this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
+                    this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
+                    this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
+                    this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
+                    this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
+                  }
+
                 }
-                
+                if(this.showPage.serJudgeGraph!=null) {
+                  rRectInfo = this.showPage.serJudgeGraph.judgeSubmitrects;
+                  rRectInfo = JSON.parse(rRectInfo);
+                  if(rateHeight!==0&&rateWidth!==0) {
+                    for (let i = 0; i < rRectInfo[0].rectsAdded.length; i++) {
+                      this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
+                      this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
+                      this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
+                      this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
+                    }
+                    for (let i = rRectInfo[0].rectsAdded.length; i < rRectInfo[0].rectsDeleted.length + rRectInfo[0].rectsAdded.length; i++) {
+                      this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].x;
+                      this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].y;
+                      this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].width;
+                      this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].height;
+                    }
+                  }
+                }
+                console.log(imageInfo);
+
                 loadImageCanvas(url1, url1, this.imgRect, this.rRects);
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;
@@ -1298,25 +1351,29 @@
                       this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
                       k++;
                     }
-
                   }
                 }
-                k=0;
-                let v=0;
-                for(let i=0; i<handAttached.length; i++){
-                  let iHandAttached = handAttached[i].split(".");
-                  if(iHandAttached[1] === "png" || iHandAttached[1] === "jpg"){
-                    this.thumbs[k].name= iHandAttached[0];
-                    this.thumbs[k].src= handAttached[i];
-                    this.images[k] = handAttached[i];
-                    k++;
-                    }
 
-                  else{
-                    this.videos[k].name= iHandAttached[0];
-                    this.videos[k].src= handAttached[i];
-                    this.nvideos[k] = handAttached[i];
-                    v++;
+                //getting media data from server.
+                for (let i = 0; i < handAttached.length; i++) {
+                  let iHandAttached = handAttached[i].split(".");
+                  if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {
+                    this.thumbs.push({
+                      name:iHandAttached[0],
+                      src:handAttached[i]
+                    });
+                    this.images.push(handAttached[i]);
+                   /* this.thumbs[k].name = iHandAttached[0];
+                    this.thumbs[k].src = handAttached[i];
+                    this.images[k] = handAttached[i];*/
+
+                  }
+                  else {
+                    this.videos.push({
+                      name:iHandAttached[0],
+                      src:handAttached[i],
+                      poster:'',//todo if client need to show different poster for each videos, should get its poster image from server.
+                    });
                   }
 
                 }
