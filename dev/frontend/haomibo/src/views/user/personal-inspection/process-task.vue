@@ -1438,12 +1438,6 @@
 
                 }
 
-                //todo added this data for testing need to remove after checked...
-                this.videos.push({
-                  name:'',
-                  src:'/assets/img/114.mp4',
-                  poster:''
-                });
                 break;// okay
 
             }
