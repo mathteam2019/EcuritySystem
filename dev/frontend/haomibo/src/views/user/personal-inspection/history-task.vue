@@ -114,19 +114,19 @@
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workMode.modeName==='1000001304'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001301'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001302'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+judge')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001303'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+hand')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -155,19 +155,19 @@
               <b-col>
                 <div v-if="showPage.workMode==null"></div>
                 <div v-else>
-                  <div v-if="showPage.workMode.modeName==='1000001304'">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workMode.modeName==='1000001301'">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workMode.modeName==='1000001302'">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan+judge')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workMode.modeName==='1000001303'">
+                  <div v-if="showPage.workMode.modeName===getModeDataCode('scan+hand')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
@@ -261,7 +261,7 @@
                 <div class="switch-wrapper">
                   <div class="separator"></div>
                   <div class="switch">
-                    <switches v-model="power" theme="custom" color="info"/>
+                    <switches v-model="power" :disabled="checkPermItem('history_task_toggle')" theme="custom" color="info"/>
                   </div>
                 </div>
               </b-col>
@@ -362,12 +362,12 @@
                   </div>
                   <div class="top-date">
                     <label
-                      v-if="showPage.judgeStartTime != null">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
+                      v-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
                     <label v-else></label>
                   </div>
                   <div class="bottom-date">
                     <label
-                      v-if="showPage.judgeEndTime != null">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
+                      v-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                     <label v-else></label>
                   </div>
                 </div>
@@ -385,11 +385,11 @@
                   </div>
                   <div class="top-date">
                     <label v-if="showPage.handStartTime == null"></label>
-                    <label v-else>{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
+                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+hand') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.handEndTime == null"></label>
-                    <label v-else>{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
+                    <label v-else-if="showPage.workMode.modeName===getModeDataCode('scan+hand') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.handEndTime)}}</label>
                   </div>
                 </div>
 
@@ -479,19 +479,19 @@
                   </template>
                   <div v-if="showPage.workMode==null"></div>
                   <div v-else>
-                    <div v-if="showPage.workMode.modeName==='1000001304'">
+                    <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workMode.modeName==='1000001301'">
+                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workMode.modeName==='1000001302'">
+                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan+judge')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workMode.modeName==='1000001303'">
+                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan+hand')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -578,7 +578,9 @@
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
                          @click="onVideoClick(video)">
-                    <img src="../../../assets/img/drug-thumb.jpg" style="width: 50px; height: 40px;"/>
+                    <video style=" width: 50px; height: 40px;">
+                      <source :src="video.src" type="video/mp4">
+                    </video>
                   </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
 
@@ -587,7 +589,7 @@
               <b-col style="max-width: 45%;">
                 <b-row>
                   <b-col cols="12" class="align-self-end text-right mt-3">
-
+                    <b-img v-if="showPage.serHandExamination === null" src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
                     <b-img v-if="showPage.handResult !== null && showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
                     <b-img v-if="showPage.handResult !== null && showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
 
@@ -600,7 +602,7 @@
                       {{ $t('personal-inspection.collection') }}
                     </b-button>
                     <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(history_id)">
-                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
+                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
                       <i class="icofont-long-arrow-left"/>
@@ -860,7 +862,6 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {loadImageCanvas, getLoginInfo, imageFilterById} from '../../../utils'
   import VueSlideBar from 'vue-slide-bar'
-  import user from "../../../store/modules/user";
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
 
@@ -889,7 +890,7 @@
           poster: '/assets/img/glock-thumb.jpg', //todo need to set its image data differently if needed
           sources: [{
             type: "video/mp4",
-            src: '/assets/img/113.mp4',
+            src: '/assets/img/114.mp4',
           }],
         },
         selectedVideo: null,
@@ -911,6 +912,7 @@
         },
         isCheckAll: false,
         pageStatus: 'table',
+        currentPage: null,
         apiBaseURL: '',
         filter: {
           taskNumber: null,
@@ -1087,7 +1089,7 @@
         // ],
 
         thumbs: [],
-        images: [0],
+        images: [],
         videos: [],
         photoIndex: null,
         videoIndex: null,
@@ -1109,6 +1111,7 @@
           ],
         rectAdd:[],
         rectDel:[],
+        modal_video_url:"",
       }
     },
     watch: {
@@ -1218,6 +1221,7 @@
       },
       finishVideoShow(){
         this.showVideo = false;
+        this.$refs.videoPlayer.dispose();
       },
       onThumbClick(index) {
 
@@ -1324,7 +1328,19 @@
         };
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
+      },
 
+      getModeDataCode(value){
+        const dictionary = {
+
+          "scan": `1000001301`,
+          "scan+hand": `1000001302`,
+          "scan+judge": `1000001303`,
+          "all": `1000001304`,
+
+        };
+        if (!dictionary.hasOwnProperty(value)) return '';
+        return dictionary[value];
       },
 
       onExportButton() {
