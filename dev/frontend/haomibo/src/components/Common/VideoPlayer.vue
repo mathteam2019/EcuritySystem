@@ -32,8 +32,12 @@ export default {
           let els = document.querySelectorAll(selector);
           els[0].src = this.options.sources.src;
         }
+      },
+      dispose(){
+        if (this.player) {
+          this.player.pause()
+        }
       }
     }
-
 }
 </script>

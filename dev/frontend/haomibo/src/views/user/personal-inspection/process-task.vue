@@ -78,12 +78,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default"
-                        :disabled="checkPermItem('process_task_export')" @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('process_task_export')" @click="onExportButton()">
                 <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default"
-                        :disabled="checkPermItem('process_task_print')" @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('process_task_print')" @click="onPrintButton()">
                 <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -113,19 +111,19 @@
                   <div v-if="props.rowData.workFlow==null"></div>
                   <div v-else-if="props.rowData.workFlow.workMode==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workFlow.workMode.modeName==='1000001304'">
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName==='1000001301'">
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName==='1000001302'">
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workFlow.workMode.modeName==='1000001303'">
+                    <div v-if="props.rowData.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -147,7 +145,6 @@
     </b-card>
 
     <div v-if="pageStatus === 'show'">
-
       <b-row class="fill-main">
         <b-col cols="3">
           <b-card class="pt-4 h-100">
@@ -156,31 +153,28 @@
                 <div v-if="showPage.workFlow==null"></div>
                 <div v-else-if="showPage.workFlow.workMode==null"></div>
                 <div v-else>
-                  <div v-if="showPage.workFlow.workMode.modeName==='1000001304'">
+                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('all')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName==='1000001301'">
+                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName==='1000001302'">
+                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                   </div>
-                  <div v-if="showPage.workFlow.workMode.modeName==='1000001303'">
+                  <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
                     <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                   </div>
                 </div>
               </b-col>
               <b-col class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
-                  class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
-                  class="icofont-search-user"/></span>
-                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
-                  class="icofont-female"/></span>
+                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
+                <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
               </b-col>
             </b-row>
 
@@ -265,7 +259,7 @@
                 <div class="switch-wrapper">
                   <div class="separator"></div>
                   <div class="switch">
-                    <switches v-model="power" theme="custom" color="info"/>
+                    <switches v-model="power" :disabled="checkPermItem('process_task_toggle')" theme="custom" color="info"/>
                   </div>
                 </div>
               </b-col>
@@ -368,11 +362,11 @@
                     <div>diagram</div>
                   </div>
                   <div class="top-date">
-                    <label v-if="showPage.serJudgeGraph != null">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
+                    <label v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
                     <label v-else></label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serJudgeGraph != null">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+                    <label v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
                     <label v-else></label>
                   </div>
                 </div>
@@ -391,11 +385,11 @@
                   </div>
                   <div class="top-date">
                     <label v-if="showPage.serHandExamination == null"></label>
-                    <label v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handStartTime)}}</label>
+                    <label v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serHandExamination == null"></label>
-                    <label v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
+                    <label v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
                   </div>
                 </div>
 
@@ -487,19 +481,19 @@
                   <div v-if="showPage.workFlow==null"></div>
                   <div v-else-if="showPage.workFlow.workMode==null"></div>
                   <div v-else>
-                    <div v-if="showPage.workFlow.workMode.modeName==='1000001304'">
+                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workFlow.workMode.modeName==='1000001301'">
+                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workFlow.workMode.modeName==='1000001302'">
+                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="showPage.workFlow.workMode.modeName==='1000001303'">
+                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -552,32 +546,27 @@
                 <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
                   <b-col>
-                    <div v-if="handGoodExpanded[0]" class="text-center"
-                         style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[0]" class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[0]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[1]" class="text-center"
-                         style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[1]" class="text-center" style="background-color: #ff4e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[1]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[2]" class="text-center"
-                         style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[2]" class="text-center" style="background-color: #ff7e00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[2]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[3]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[3]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[3]].text}}</span>
                     </div>
                   </b-col>
                   <b-col>
-                    <div v-if="handGoodExpanded[4]" class="text-center"
-                         style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
+                    <div v-if="handGoodExpanded[4]" class="text-center" style="background-color: #ffae00; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
                       <span>{{handGoodDataCodeValue[handGoodDataCodeExpanded[4]].text}}</span>
                     </div>
                   </b-col>
@@ -592,7 +581,9 @@
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
                          @click="onVideoClick(video)">
-                    <img src="../../../assets/img/drug-thumb.jpg" style="width: 50px; height: 40px;"/>
+                    <video style=" width: 50px; height: 40px;">
+                      <source :src="video.src" type="video/mp4">
+                    </video>
                   </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
 
@@ -601,18 +592,15 @@
               <b-col style="max-width: 45%;">
                 <b-row>
                   <b-col cols="12" class="align-self-end text-right mt-3">
-                    <b-img v-if="validIcon === null" class="align-self-end" style="width: 100px; height: 95px;"/>
-                    <b-img v-else-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end"
-                           style="width: 100px; height: 95px;"/>
-                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end"
-                           style="width: 100px; height: 95px;"/>
+                    <b-img v-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
 
                   </b-col>
                 </b-row>
                 <b-row style="margin-top: 2rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(history_id)">
-                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
+                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
                       <i class="icofont-long-arrow-left"/>
@@ -853,22 +841,21 @@
           poster: '/assets/img/glock-thumb.jpg', //todo need to set its image data differently if needed
           sources: [{
             type: "video/mp4",
-            src: '/assets/img/113.mp4',
+            src: '/assets/img/114.mp4',
           }],
         },
         selectedVideo: null,
         isExpanded: false,
-        validIcon: null,
-        isSlidebar1Expended: false,
-        isSlidebar2Expended: false,
-        isSlidebar3Expended: false,
-        isSlidebar4Expended: false,
-        slidebar1value: 0,
-        slidebar2value: 0,
-        slidebar3value: 0,
-        slidebar4value: 0,
-        history_id: 0,
-        tmp: 0,
+        validIcon:null,
+        isSlidebar1Expended:false,
+        isSlidebar2Expended:false,
+        isSlidebar3Expended:false,
+        isSlidebar4Expended:false,
+        slidebar1value:0,
+        slidebar2value:0,
+        slidebar3value:0,
+        slidebar4value:0,
+        history_id:0,
         slider: {
           lineHeight: 10,
           processStyle: {
@@ -892,16 +879,16 @@
         siteData: [],
         showPage: [],
 
-        imageUrls: [],
-        handGoodDataCode: ['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
-        handGoodExpanded: [false, false, false, false, false],
-        handGoodDataCodeExpanded: [],
-        handGoodDataCodeValue: {
-          1000001601: {text: '安眠药'},
-          1000001602: {text: '仿真枪'},
-          1000001603: {text: '玩具枪'},
-          1000001604: {text: '气枪'},
-          1000001605: {text: '打火机'},
+        imageUrls : [],
+        handGoodDataCode:['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
+        handGoodExpanded:[false, false, false, false, false],
+        handGoodDataCodeExpanded:[],
+        handGoodDataCodeValue:{
+          1000001601:{text:'安眠药'},
+          1000001602:{text:'仿真枪'},
+          1000001603:{text:'玩具枪'},
+          1000001604:{text:'气枪'},
+          1000001605:{text:'打火机'},
         },
         // TODO: select options
         operationModeOptions: [
@@ -1038,27 +1025,28 @@
         // ],
 
         thumbs: [],
-        images: [0],
+        images: [],
         videos: [],
         photoIndex: null,
         showVideo: false,
 
-        widthRate: [],
-        heightRate: [],
-        imgRect: [
-          {x: 0, y: 0, width: 0, height: 0}
+        widthRate:[],
+        heightRate:[],
+        imgRect:[
+          {x:0, y:0, width:0, height:0}
         ],
-        cartoonRect: [
-          {x: 0, y: 0, width: 0, height: 0}
+        cartoonRect:[
+          {x:0, y:0, width:0, height:0}
         ],
-        rRects: [
-          {x: 0, y: 0, width: 0, height: 0},
-          {x: 0, y: 0, width: 0, height: 0},
-          {x: 0, y: 0, width: 0, height: 0},
-          {x: 0, y: 0, width: 0, height: 0},
-        ],
-        rectAdd: [],
-        rectDel: [],
+        rRects:[
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          {x:0, y:0, width:0, height:0},
+          ],
+        rectAdd:[],
+        rectDel:[],
+        modal_video_url:"",
       }
     },
     watch: {
@@ -1105,59 +1093,59 @@
       },
       slidebar1value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
             this.filterId(5);
           }
         }
         else {
-          for (let i = newsValue; i < oldValue; i++) {
+          for(let i=newsValue; i<oldValue; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar2value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
             this.filterId(7);
           }
         }
         else {
-          for (let i = newsValue; i < oldValue; i++) {
+          for(let i=newsValue; i<oldValue; i++) {
             this.filterId(8);
           }
         }
       },
       slidebar3value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
             this.filterId(5);
           }
         }
         else {
-          for (let i = newsValue; i < oldValue; i++) {
+          for(let i=newsValue; i<oldValue; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar4value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue<newsValue) {
+          for(let i=oldValue; i<newsValue; i++) {
             this.filterId(7);
           }
         }
         else {
-          for (let i = newsValue; i < oldValue; i++) {
+          for(let i=newsValue; i<oldValue; i++) {
             this.filterId(8);
           }
         }
       },
     },
     methods: {
-      checkPermItem(value) {
+    checkPermItem(value) {
         return checkPermissionItem(value);
       },
       onVideoClick(video){
@@ -1167,9 +1155,9 @@
       },
       finishVideoShow(){
         this.showVideo = false;
+        this.$refs.videoPlayer.dispose();
       },
       onThumbClick(index) {
-
         this.photoIndex = index;
         this.isOpen = true;
       },
@@ -1177,16 +1165,7 @@
         this.photoIndex = null;
         this.isOpen = false;
       },
-      onTVideoClick(index) {
-
-        this.videoIndex = index;
-        this.isOpen = true;
-      },
-      videoHide() {
-        this.videoIndex = null;
-        this.autoplay = true;
-      },
-
+      
       onlyOneSlide(value) {
         if (this.power === false) {
           this.isSlidebar3Expended = false;
@@ -1201,8 +1180,8 @@
           }
         }
         else {
-          this.isSlidebar1Expended = false;
-          this.isSlidebar2Expended = false;
+          this.isSlidebar1Expended= false;
+          this.isSlidebar2Expended =false;
           if (value === 1) {
             this.isSlidebar3Expended = !this.isSlidebar3Expended;
             this.isSlidebar4Expended = !this.isSlidebar3Expended;
@@ -1215,7 +1194,7 @@
       },
 
       filterId(id) {
-        if (id < 5 || id > 8) {
+        if(id<5||id>8) {
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
           this.isSlidebar3Expended = false;
@@ -1227,20 +1206,20 @@
           //   loadImageCanvas(this.imageUrls[3], this.imageUrls[4]);
           // }
         }
-        if (this.power === false) {
+        if(this.power===false) {
           imageFilterById(id, this.imgRect, this.rRects);
-        } else {
+        }else {
           imageFilterById(id, this.cartoonRect, this.rRects);
         }
 
       },
 
       loadImage(url1, url2) {
-        if (this.power === false) {
+        if(this.power===false) {
           this.slidebar1value = 0;
           this.slidebar2value = 0;
           loadImageCanvas(url1, url2, this.imgRect, this.rRects);
-        } else {
+        }else {
           this.slidebar3value = 0;
           this.slidebar4value = 0;
           loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
@@ -1269,11 +1248,23 @@
           "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
           "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
-          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
+          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
         };
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
+      },
 
+      getModeDataCode(value){
+        const dictionary = {
+
+          "scan": `1000001301`,
+          "scan+hand": `1000001302`,
+          "scan+judge": `1000001303`,
+          "all": `1000001304`,
+
+        };
+        if (!dictionary.hasOwnProperty(value)) return '';
+        return dictionary[value];
       },
 
       onExportButton() {
@@ -1285,7 +1276,7 @@
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        if (checkedIds.length > 0) {
+        if(checkedIds.length>0) {
           downLoadFileFromServer(link, params, 'Process-Task');
         }
       },
@@ -1299,7 +1290,7 @@
           'idList': checkedIds.join()
         };
         let link = `task/process-task/generate`;
-        if (checkedIds.length > 0) {
+        if(checkedIds.length>0) {
           printFileFromServer(link, params);
         }
       },
@@ -1347,19 +1338,19 @@
                 }
                 imageInfo = this.showPage.serScan.scanDeviceImages;
                 imageInfo = JSON.parse(imageInfo);
-                for (let i = 0; i < imageInfo.length; i++) {
-                  url1 = null;
-                  url2 = null;
+                for(let i=0; i<imageInfo.length; i++){
+                  url1=null;
+                  url2=null;
                   rateWidth = 0;
                   rateHeight = 0;
-                  if (imageInfo[i].image != null) {
+                  if(imageInfo[i].image !=null) {
                     url1 = imageInfo[i].image;
-                  } else {
+                  }else{
                     url1 = '/assets/img/scan-lr.gif';
                   }
-                  if (imageInfo[i].cartoon != null) {
+                  if(imageInfo[i].cartoon !=null) {
                     url2 = imageInfo[i].cartoon;
-                  } else {
+                  }else{
                     url2 = '/assets/img/u244.jpg';
                   }
                   if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
@@ -1393,8 +1384,8 @@
                     }
                   }
                 }
-                console.log(imageInfo);
                 loadImageCanvas(url1, url1, this.imgRect, this.rRects);
+
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;
 
@@ -1402,10 +1393,10 @@
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
                 let handGood = handGoodsStr.split(",");
                 let handAttached = handAttactedStr.split(",");
-                let k = 0;
-                for (let i = 0; i < handGood.length; i++) {
-                  for (let j = 0; j < 5; j++) {
-                    if (handGood[i] === this.handGoodDataCode[j]) {
+                let k=0;
+                for(let i=0; i<handGood.length; i++){
+                  for(let j=0; j<5; j++){
+                    if(handGood[i] === this.handGoodDataCode[j]){
                       this.handGoodExpanded[k] = true;
                       this.handGoodDataCodeExpanded[k] = this.handGoodDataCode[j];
                       k++;
@@ -1438,12 +1429,6 @@
 
                 }
 
-                //todo added this data for testing need to remove after checked...
-                this.videos.push({
-                  name:'',
-                  src:'/assets/img/114.mp4',
-                  poster:''
-                });
                 break;// okay
 
             }
@@ -1509,7 +1494,7 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           filter: this.filter,
-          sort: httpOptions.params.sort,
+          sort:httpOptions.params.sort,
           perPage: this.taskVuetableItems.perPage,
         });
       },
