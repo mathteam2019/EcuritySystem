@@ -394,7 +394,13 @@ var Chobi = function(elem){
 				for(var i=0; i<infoLength; i++) {
           ctx.beginPath();
           ctx.lineWidth = "6";
-          ctx.strokeStyle = "red";
+
+          if(rectInfo[i].colour!=null) {
+            ctx.strokeStyle = rectInfo[i].colour;
+          }else {
+            ctx.strokeStyle = "red";
+          }
+          //console.log(rectInfo);
           ctx.rect(rectInfo[i].x, rectInfo[i].y, rectInfo[i].width, rectInfo[i].height);
           ctx.stroke();
         }

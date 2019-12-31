@@ -1097,18 +1097,9 @@
 
         widthRate:[],
         heightRate:[],
-        imgRect:[
-          {x:0, y:0, width:0, height:0}
-        ],
-        cartoonRect:[
-          {x:0, y:0, width:0, height:0}
-        ],
-        rRects:[
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          {x:0, y:0, width:0, height:0},
-          ],
+        imgRect:[],
+        cartoonRect:[],
+        rRects:[],
         rectAdd:[],
         rectDel:[],
         modal_video_url:"",
@@ -1210,8 +1201,7 @@
       },
     },
     methods: {
-
-      checkPermItem(value) {
+    checkPermItem(value) {
         return checkPermissionItem(value);
       },
       onVideoClick(video){
@@ -1276,7 +1266,7 @@
           this.isSlidebar3Expended = false;
           this.isSlidebar4Expended = false;
           // if(this.power === false){
-          //   (this.imageUrls[0]);
+          //
           //   loadImageCanvas(this.imageUrls[0], this.imageUrls[1]);
           // } else{
           //   loadImageCanvas(this.imageUrls[3], this.imageUrls[4]);
@@ -1411,7 +1401,10 @@
                 this.apiBaseURL = apiBaseUrl;
                 this.thumbs = [];
                 this.videos = [];
-                // colourInfo = this.showPage.platFormCheckParams.handRecogniseColour;
+                this.imgRect = [];
+                this.cartoonRect = [];
+                this.rRects = [];
+                colourInfo = this.showPage.platFormCheckParams;
                 // colourInfo = this.showPage.platFormCheckParams.displayDeleteSuspicionColour;
                 // colourInfo = JSON.parse(colourInfo);
                 imageInfo = this.showPage.serScan.scanDeviceImages;
@@ -1434,14 +1427,33 @@
                   if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
                     rateWidth = 248 / imageInfo[i].width;
                     rateHeight = 521 / imageInfo[i].height;
-                    this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
-                    this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
-                    this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
-                    this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
-                    this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
-                    this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
-                    this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
-                    this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
+                    for(let j=0; j<imageInfo[i].imageRects.length; j++) {
+                      this.imgRect.push({
+                        x: rateWidth * imageInfo[i].imageRects[j].x,
+                        y: rateHeight * imageInfo[i].imageRects[j].y,
+                        width: rateWidth * imageInfo[i].imageRects[j].width,
+                        height: rateHeight * imageInfo[i].imageRects[j].height,
+                        colour: colourInfo.scanRecogniseColour,
+                      });
+                    }
+                    // this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
+                    // this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
+                    // this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
+                    // this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
+                    for(let j=0; j<imageInfo[i].cartoonRects.length; j++){
+                      this.cartoonRect.push({
+                        x: rateWidth * imageInfo[i].cartoonRects[j].x,
+                        y: rateHeight * imageInfo[i].cartoonRects[j].y,
+                        width: rateWidth * imageInfo[i].cartoonRects[j].width,
+                        height: rateHeight * imageInfo[i].cartoonRects[j].height,
+                        colour: colourInfo.scanRecogniseColour,
+                      });
+                    }
+
+                    // this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
+                    // this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
+                    // this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
+                    // this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
                   }
                 }
 
@@ -1450,20 +1462,36 @@
                   rRectInfo = JSON.parse(rRectInfo);
                   if(rateHeight!==0&&rateWidth!==0) {
                     for (let i = 0; i < rRectInfo[0].rectsAdded.length; i++) {
-                      this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
-                      this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
-                      this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
-                      this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
+                      console.log(rRectInfo[0].rectsAdded.length);
+                      this.rRects.push({
+                        x: rateWidth * rRectInfo[0].rectsAdded[i].x,
+                        y: rateHeight * rRectInfo[0].rectsAdded[i].y,
+                        width: rateWidth * rRectInfo[0].rectsAdded[i].width,
+                        height: rateHeight * rRectInfo[0].rectsAdded[i].height,
+                        colour: colourInfo.judgeRecogniseColour,
+                      });
+
+                      // this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
+                      // this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
+                      // this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
+                      // this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
                     }
-                    for (let i = rRectInfo[0].rectsAdded.length; i < rRectInfo[0].rectsDeleted.length + rRectInfo[0].rectsAdded.length; i++) {
-                      this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].x;
-                      this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].y;
-                      this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].width;
-                      this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].height;
+
+                    for (let i = 0; i < rRectInfo[0].rectsDeleted.length; i++) {
+                      this.rRects.push({
+                        x: rateWidth * rRectInfo[0].rectsDeleted[i].x,
+                        y: rateHeight * rRectInfo[0].rectsDeleted[i].y,
+                        width: rateWidth * rRectInfo[0].rectsDeleted[i].width,
+                        height: rateHeight * rRectInfo[0].rectsDeleted[i].height,
+                        colour: colourInfo.displayDeleteSuspicionColour,
+                      });
+                      // this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].x;
+                      // this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].y;
+                      // this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].width;
+                      // this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].height;
                     }
                   }
                 }
-               
                 loadImageCanvas(url1, url1, this.imgRect, this.rRects);
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;
