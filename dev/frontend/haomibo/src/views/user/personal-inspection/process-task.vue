@@ -249,9 +249,9 @@
 
                   <div class="control-btn">
                     <b-img src="/assets/img/reduction_btn.png" v-if="this.power === false"
-                           @click="loadImage(imageUrls[0], imageUrls[0])"/>
+                           @click="loadImage(imageUrl, imageUrl)"/>
                     <b-img src="/assets/img/reduction_btn.png" v-else
-                           @click="loadImage(imageUrls[1], imageUrls[1])"/>
+                           @click="loadImage(cartoonUrl, cartoonUrl)"/>
                     <span class="text-info text-extra-small">{{$t('personal-inspection.reduction')}}</span>
                   </div>
                 </div>
@@ -880,6 +880,8 @@
         showPage: [],
 
         imageUrls : [],
+        imageUrl: null,
+        cartoonUrl: null,
         handGoodDataCode:['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
         handGoodExpanded:[false, false, false, false, false],
         handGoodDataCodeExpanded:[],
@@ -1052,14 +1054,14 @@
         let url1;
         let url2;
         if (newValue === true) {
-          url1 = this.imageUrls[1];
-          url2 = this.imageUrls[1];
-          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
+          url1 = this.cartoonUrl;
+          url2 = this.cartoonUrl;
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects, true);
 
         } else {
-          url1 = this.imageUrls[0];
-          url2 = this.imageUrls[0];
-          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
+          url1 = this.imageUrl;
+          url2 = this.imageUrl;
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects, false);
         }
         this.isSlidebar3Expended = false;
         this.isSlidebar4Expended = false;
@@ -1194,11 +1196,11 @@
         if(this.power===false) {
           this.slidebar1value = 0;
           this.slidebar2value = 0;
-          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects, this.power);
         }else {
           this.slidebar3value = 0;
           this.slidebar4value = 0;
-          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects, this.power);
         }
 
       },
@@ -1336,6 +1338,9 @@
                   }else{
                     url2 = '/assets/img/u244.jpg';
                   }
+                  this.imageUrl = url1;
+                  this.cartoonUrl = url2;
+                  console.log(this.cartoonUrl);
                   if(imageInfo[i].width !== 0 && imageInfo[i].height !== 0) {
                     rateWidth = 248 / imageInfo[i].width;
                     rateHeight = 521 / imageInfo[i].height;
@@ -1403,10 +1408,7 @@
                     }
                   }
                 }
-                loadImageCanvas(url1, url1, this.imgRect, this.rRects);
-
-                this.imageUrls[0] = url1;
-                this.imageUrls[1] = url2;
+                loadImageCanvas(url1, url1, this.imgRect, this.rRects, this.power);
 
                 let handGoodsStr = this.showPage.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;

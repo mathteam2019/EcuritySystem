@@ -811,7 +811,7 @@
           poster: '/assets/img/glock-thumb.jpg', //todo need to set its image data differently if needed
           sources: [{
             type: "video/mp4",
-            src: '/assets/img/114.mp4',
+            src: '/assets/img/113.mp4',
           }],
         },
         selectedVideo: null,
@@ -1019,12 +1019,12 @@
         if (newValue === true) {
           url1 = this.imageUrls[1];
           url2 = this.imageUrls[1];
-          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects, true);
 
         } else {
           url1 = this.imageUrls[0];
           url2 = this.imageUrls[0];
-          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects, false);
         }
         this.isSlidebar3Expended = false;
         this.isSlidebar4Expended = false;
@@ -1169,11 +1169,11 @@
         if(this.power===false) {
           this.slidebar1value = 0;
           this.slidebar2value = 0;
-          loadImageCanvas(url1, url2, this.imgRect, this.rRects);
+          loadImageCanvas(url1, url2, this.imgRect, this.rRects, this.power);
         }else {
           this.slidebar3value = 0;
           this.slidebar4value = 0;
-          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects);
+          loadImageCanvas(url1, url2, this.cartoonRect, this.rRects, this.power);
         }
 
       },
@@ -1378,7 +1378,7 @@
                     }
                   }
                 }
-                loadImageCanvas(url1, url1, this.imgRect, this.rRects);
+                loadImageCanvas(url1, url1, this.imgRect, this.rRects, this.power);
                 this.imageUrls[0] = url1;
                 this.imageUrls[1] = url2;
 

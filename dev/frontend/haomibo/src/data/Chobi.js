@@ -1,6 +1,6 @@
 'use strict';
 
-var Chobi = function(elem){
+var Chobi = function(elem, isToggled){
 			if(elem instanceof(Image)){
 				this.image = elem;
 				this.imageData = this.extractImageData();
@@ -18,7 +18,11 @@ var Chobi = function(elem){
 				img.crossOrigin = "Anonymous";
 				img.src = elem;
         img.onerror = function (evt){
-          img.src = '/assets/img/scan-lr.gif';
+          if(isToggled === false) {
+            img.src = '/assets/img/scan-lr.gif';
+          }else {
+            img.src = '/assets/img/u244.jpg';
+          }
         }
 				img.onload = function(){
 					context.image = img;
