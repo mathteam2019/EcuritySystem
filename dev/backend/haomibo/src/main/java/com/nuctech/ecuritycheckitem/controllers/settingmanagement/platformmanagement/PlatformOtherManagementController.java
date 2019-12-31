@@ -19,9 +19,11 @@ import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import lombok.Getter;
@@ -33,6 +35,7 @@ import org.springframework.validation.BindingResult;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/system-setting/platform-other")
@@ -40,6 +43,14 @@ public class PlatformOtherManagementController extends BaseController {
 
     @Autowired
     PlatformOtherService platformOtherService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.CHINESE;
 
     /**
      * Platform other modify request body.
@@ -112,6 +123,8 @@ public class PlatformOtherManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), "",null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -121,7 +134,8 @@ public class PlatformOtherManagementController extends BaseController {
             serPlatformOtherParams.setId(serPlatformOtherParamsList.get(0).getId());
         }
         platformOtherService.modifyPlatform(serPlatformOtherParams);
-
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", "",null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

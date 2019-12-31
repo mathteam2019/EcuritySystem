@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.logmanagement;
 
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
 import java.util.Date;
@@ -46,4 +47,14 @@ public interface AccessLogService {
      */
     List<SysAccessLog> getExportList(String clientIp, String operateAccount, Date operateStartTime,
                                   Date operateEndTime, boolean isAll, String idList);
+
+    /**
+     *
+     * @param action: 操作
+     * @param result: 操作结果
+     * @param reason: 失败原因代码
+     * @param onlineTime: 在线时长(秒)
+     * @return
+     */
+    boolean saveAccessLog(SysUser user, String action, String result, String reason, Long onlineTime);
 }

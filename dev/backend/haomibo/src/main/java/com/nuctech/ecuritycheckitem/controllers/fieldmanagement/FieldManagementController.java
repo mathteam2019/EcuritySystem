@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.models.db.SysField;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -51,6 +53,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -62,6 +65,14 @@ public class FieldManagementController extends BaseController {
 
     @Autowired
     FieldService fieldService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.CHINESE;
     /**
      * Field create request body.
      */
@@ -232,22 +243,31 @@ public class FieldManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) {// Check if parent field is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), null)) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedFieldSerial", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
         }
         if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), null)) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedFieldDesignation", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
         }
 
         SysField sysField = requestBody.convert2SysField();
         fieldService.createField(sysField);
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getFieldSerial(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -264,33 +284,49 @@ public class FieldManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!fieldService.checkFieldExist(requestBody.getFieldId())) { // Check if field is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (requestBody.getParentFieldId() != 0 && !fieldService.checkFieldExist(requestBody.getParentFieldId())) { // Check if parent field is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(fieldService.checkFieldSerial(requestBody.getFieldSerial(), requestBody.getFieldId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedFieldSerial", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.USED_FIELD_SERIAL);
         }
         if(fieldService.checkFieldDesignation(requestBody.getFieldDesignation(), requestBody.getFieldId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedFieldDesignation", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.USED_FIELD_DESIGNATION);
         }
         if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
             // Can't delete if field has children.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         //check if device use this field
         if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getFieldSerial(),null);
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
         SysField sysField = requestBody.convert2SysField();
         fieldService.modifyField(sysField);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getFieldSerial(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -308,17 +344,25 @@ public class FieldManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getFieldId().toString(),null);
             // Can't delete if field has children.
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
         if(fieldService.checkDeviceExist(requestBody.getFieldId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
         fieldService.removeField(requestBody.getFieldId());
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getFieldId().toString(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -336,22 +380,31 @@ public class FieldManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!fieldService.checkFieldExist(requestBody.getFieldId())) { // Check if field is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (fieldService.checkHasChild(requestBody.getFieldId())) { // Check if field has children.
             // Can't delete if field has children.
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
         if(fieldService.checkDeviceExist(requestBody.getFieldId())) { //check if device use this field
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getFieldId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_DEVICES);
         }
 
         fieldService.updateStatus(requestBody.getFieldId(), requestBody.getStatus());
-
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getFieldId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

@@ -47,6 +47,8 @@ public class Utils {
     @Value("${jwt.secret}")
     public String jwtSecret; // This is loaded from application.properties file.
 
+    public String ipAddress;
+
 
     /**
      * Convert object to json string.

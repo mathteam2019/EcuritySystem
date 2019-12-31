@@ -61,8 +61,8 @@ public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple impleme
     @Column(name = "SCAN_DEVICE_ID", length = 20)
     private Long scanDeviceId;
 
-    @Column(name = "SCAN_IMAGE_ID", length = 20)
-    private Long scanImageId;
+    @Column(name = "SCAN_IMAGE_ID", length = 50)
+    private String scanImageId;
 
     @Column(name = "SCAN_DEVICEIMAGES", length = 1000)
     private String scanDeviceImages;
@@ -101,10 +101,10 @@ public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple impleme
     @NotFound(action = NotFoundAction.IGNORE)
     SysUserSimplifiedOnlyHasName scanPointsman;
 
-    @OneToOne()
-    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SerImageSimplifiedForTaskManagement scanImage;
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    SerImageSimplifiedForTaskManagement scanImage;
 
 
 }

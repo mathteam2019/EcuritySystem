@@ -155,6 +155,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
+        String ipAddress = request.getRemoteAddr();
+
+        utils.ipAddress = ipAddress;
+
 
         // Generate authentication.
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(sysUser, null, roles);
@@ -175,6 +179,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+
+        utils.ipAddress = ipAddress;
 
         // We don't need to check the request which are inside EXCLUDE_URL_PATTERNS.
         return Arrays.stream(Constants.EXCLUDE_URL_PATTERNS).anyMatch(p -> pathMatcher.match(p, request.getServletPath()));
