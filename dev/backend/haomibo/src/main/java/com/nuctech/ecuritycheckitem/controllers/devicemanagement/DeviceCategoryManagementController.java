@@ -25,8 +25,10 @@ import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceCategoryService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -52,6 +54,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RestController
@@ -60,6 +63,14 @@ public class DeviceCategoryManagementController extends BaseController {
 
     @Autowired
     DeviceCategoryService deviceCategoryService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.CHINESE;
 
     /**
      * Device category create request body.
@@ -216,26 +227,35 @@ public class DeviceCategoryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryNumber().toString(),null);
             //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if parent category is existing.
         if (requestBody.getParentCategoryId() != 0 && !deviceCategoryService.checkCategoryExist(requestBody.getParentCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryNumber().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), null)) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedCategoryName", null, currentLocale), requestBody.getCategoryNumber().toString(),null);
             return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
         }
 
         if (deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), null)) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedCategoryNumber", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
         deviceCategoryService.createSysDeviceCategory(sysDeviceCategory);
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getCategoryNumber(), null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -253,36 +273,51 @@ public class DeviceCategoryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {// Check if category is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!deviceCategoryService.checkCategoryExist(requestBody.getParentCategoryId())) {  // Check if parent category is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {//Check if archive template contain this category
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveArchiveTemplate", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
         if (deviceCategoryService.checkCategoryNameExist(requestBody.getCategoryName(), requestBody.getCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedCategoryName", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NAME);
         }
 
         if (deviceCategoryService.checkCategoryNumberExist(requestBody.getCategoryNumber(), requestBody.getCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedCategoryNumber", null, currentLocale), requestBody.getCategoryNumber(),null);
             return new CommonResponseBody(ResponseMessage.USED_CATEGORY_NUMBER);
         }
 
         SysDeviceCategory sysDeviceCategory = requestBody.convert2SysDeviceCategory();
         deviceCategoryService.modifySysDeviceCategory(sysDeviceCategory);
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getCategoryNumber(), null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -299,19 +334,26 @@ public class DeviceCategoryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) { // Check if category has children.
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         if (deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) { //Check if archive template contain this category
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveArchiveTemplate", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
 
         deviceCategoryService.removeSysDeviceCategory(requestBody.getCategoryId());
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getCategoryId().toString(), null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -525,20 +567,29 @@ public class DeviceCategoryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!deviceCategoryService.checkCategoryExist(requestBody.getCategoryId())) {        // Check if category is existing.
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (deviceCategoryService.checkChildernCategoryExist(requestBody.getCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
         if (deviceCategoryService.checkArchiveTemplateExist(requestBody.getCategoryId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveArchiveTemplate", null, currentLocale), requestBody.getCategoryId().toString(),null);
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVE_TEMPLATE);
         }
         deviceCategoryService.updateStatus(requestBody.getCategoryId(), requestBody.getStatus());
-
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getCategoryId().toString(), null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

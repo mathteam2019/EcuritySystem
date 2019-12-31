@@ -141,9 +141,6 @@ public class PermissionServiceImpl implements PermissionService {
             }
         }
 
-        if (hasInvalidResource) {
-            return false;
-        }
         // Delete all relations.
         sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));
 
@@ -298,9 +295,6 @@ public class PermissionServiceImpl implements PermissionService {
             }
         }
 
-        if (hasInvalidResource) {
-            return false;
-        }
 
         // Delete all relations.
         sysRoleResourceRepository.deleteAll(sysRoleResourceRepository.findAll(QSysRoleResource.sysRoleResource.roleId.eq(sysRole.getRoleId())));

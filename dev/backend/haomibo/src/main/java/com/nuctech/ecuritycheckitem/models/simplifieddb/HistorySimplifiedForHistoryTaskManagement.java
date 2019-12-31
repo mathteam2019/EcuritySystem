@@ -67,8 +67,8 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @Column(name = "SCAN_DEVICE_ID", length = 20)
     private Long scanDeviceId;
 
-    @Column(name = "SCAN_IMAGE_ID", length = 20)
-    private Long scanImageId;
+    @Column(name = "SCAN_IMAGE_ID", length = 50)
+    private String scanImageId;
 
     @Column(name = "SCAN_ATR_RESULT", length = 10)
     private String scanAtrResult;
@@ -250,10 +250,10 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @NotFound(action = NotFoundAction.IGNORE)
     private SysUserSimplifiedOnlyHasName handUser;
 
-    @OneToOne()
-    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerImageSimplifiedForTaskManagement scanImage;
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerImageSimplifiedForTaskManagement scanImage;
 
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

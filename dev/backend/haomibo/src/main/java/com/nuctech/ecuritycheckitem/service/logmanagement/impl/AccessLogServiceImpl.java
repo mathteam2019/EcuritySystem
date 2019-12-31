@@ -14,11 +14,15 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
+import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.search.DocValueFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,12 @@ public class AccessLogServiceImpl implements AccessLogService {
 
     @Autowired
     SysAccessLogRepository sysAccessLogRepository;
+
+    @Autowired
+    AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private Utils utils;
 
     /**
      * get predicate from filter parameters
@@ -139,5 +149,30 @@ public class AccessLogServiceImpl implements AccessLogService {
                 .collect(Collectors.toList());
         return getExportList(logList, isAll, idList);
 
+    }
+
+    /**
+     *
+     * @param action: 操作
+     * @param result: 操作结果
+     * @param reason: 失败原因代码
+     * @param onlineTime: 在线时长(秒)
+     * @return
+     */
+    @Override
+    public boolean saveAccessLog(SysUser user, String action, String result, String reason, Long onlineTime) {
+
+        SysAccessLog accessLog = SysAccessLog.builder()
+                .clientIp(utils.ipAddress)
+                .action(action)
+                .operateResult(result)
+                .operateId(user.getUserId())
+                .operateAccount(user.getUserAccount())
+                .onlineTime(onlineTime)
+                .reasonCode(reason)
+                .operateTime(new Date())
+                .build();
+        sysAccessLogRepository.save(accessLog);
+        return true;
     }
 }

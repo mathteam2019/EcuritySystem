@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -36,6 +37,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -54,6 +56,7 @@ import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Assign permission management controller.
@@ -67,6 +70,14 @@ public class AssignPermissionManagementController extends BaseController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.CHINESE;
 
     /**
      * Request body for assigning role and data range to user.
@@ -99,7 +110,6 @@ public class AssignPermissionManagementController extends BaseController {
     private static class UserGroupAssignRoleAndDataRangeRequestBody {
 
         @NotNull
-        @UserId
         Long userGroupId;
         @NotNull
         List<@RoleId Long> roleIdList;
@@ -242,6 +252,8 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserId().toString(), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -254,9 +266,12 @@ public class AssignPermissionManagementController extends BaseController {
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
             value.setFilters(filters);
-
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                    , "", "", requestBody.getUserId().toString(), null);
             return value;
         } else {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserId().toString(), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -275,6 +290,8 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -288,9 +305,12 @@ public class AssignPermissionManagementController extends BaseController {
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
 
             value.setFilters(filters);
-
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
             return value;
         } else {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 

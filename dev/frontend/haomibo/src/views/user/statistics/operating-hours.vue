@@ -118,10 +118,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -288,6 +288,7 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -561,7 +562,7 @@
             },
             {
               name: 'name',
-              title: '时间段',
+              title: '设备名',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -709,6 +710,9 @@
 
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
 
       getCategoryData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-classify/category/get-all`, {
@@ -731,32 +735,52 @@
       },
 
       onExportButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+
+        }else {
         downLoadFileFromServer(link, params, 'Statistics-OperatingHour');
+        }
 
       },
 
       onPrintButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+
+        }else {
         printFileFromServer(link, params);
+        }
       },
 
 
@@ -772,14 +796,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -796,12 +819,11 @@
 
           let keyData = Object.keys(this.graphData.detailedStatistics);
           let xAxisChart = [];
-          console.log(this.graphData.detailedStatistics.length);
-          console.log(keyData);
+
           for (let i = 1; i < keyData.length; i++) {
-            console.log(keyData[i]);
+
             let key = keyData[i];
-            console.log(this.graphData.detailedStatistics[key].name);
+
             xAxisChart[i-1] = this.graphData.detailedStatistics[key].name;
             if(this.graphData.detailedStatistics[key].scanStatistics!=null) {
               this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
@@ -822,7 +844,7 @@
               this.bar3ChartOptions.series[2].data[i]=0;
             }
           }
-          console.log(xAxisChart);
+
           this.bar3ChartOptions.xAxis.data = xAxisChart;
         })
       },
@@ -832,11 +854,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-
-          // this.total = [];
-          // this.scan = [];
-          // this.judge = [];
-          // this.hand = [];
+          
           let totalSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds + this.preViewData.totalStatistics.judgeStatistics.workingSeconds + this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
           let scanSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds;
           let judgeSeconds = this.preViewData.totalStatistics.judgeStatistics.workingSeconds;
@@ -927,7 +945,7 @@
         let temp;
         for (let i = 1; i <= Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i - 1];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

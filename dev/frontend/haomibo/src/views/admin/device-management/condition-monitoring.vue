@@ -420,7 +420,8 @@
                     </div>
                     <div class="img">
                       <img v-if="item.imageUrl" :src="item.imageUrl">
-                      <img v-else src="../../../assets/img/small_device.png">
+                      <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/small_device.png">
+                      <img v-else src="../../../assets/img/small_tablet.png">
                     </div>
                   </b-col>
                   <b-col cols="8" class="right-side d-flex flex-column">
@@ -779,6 +780,8 @@
         let temp;
         for (let i = 0; i < data.data.length; i++) {
           temp = data.data[i];
+          if(temp.device == null)
+            continue;
           temp.deviceNumber = temp.device ? temp.device.deviceSerial : 'Unknown';
           temp.fieldName = temp.device && temp.device.field ? temp.device.field.fieldDesignation : '';
           temp.landTime = getDateTimeWithFormat(temp.loginTime, 'monitor');
@@ -814,7 +817,7 @@
           switch (message) {
             case responseMessages['ok']:
               this.transformData(data);
-
+              this.isLoading = false;
               break;
           }
           this.isLoading = false;

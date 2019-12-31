@@ -412,21 +412,21 @@ export const scheduleRefreshToken = () => {
 
 };
 
-export const loadImageCanvas = (url1, url2) => {
+export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR) => {
   imgObj = new Chobi(url1);
   imgObj.ready(function () {
     this.canvas = document.getElementById("firstcanvas");
-    this.loadImageToCanvas();
+    this.loadImageToCanvas(null, rectInfoL);
   });
 
   imgObj2 = new Chobi(url2);
   imgObj2.ready(function () {
     this.canvas = document.getElementById("secondcanvas");
-    this.loadImageToCanvas();
+    this.loadImageToCanvas(null, rectInfoR);
   });
 };
 
-export const imageFilterById = (id) => {
+export const imageFilterById = (id, rectInfoL, rectInfoR) => {
   if (imgObj == null || imgObj2 == null) {
     alert("Choose an image first!");
     return;
@@ -447,11 +447,11 @@ export const imageFilterById = (id) => {
     imgObj.crossProcess();
     imgObj2.crossProcess();
   } else if (id == 5) {
-    imgObj.brightness(1);
-    imgObj2.brightness(1);
+    imgObj.brightness(0.5);
+    imgObj2.brightness(0.5);
   } else if (id == 6) {
-    imgObj.brightness(-1);
-    imgObj2.brightness(-1);
+    imgObj.brightness(-0.5);
+    imgObj2.brightness(-0.5);
   } else if (id == 7) {
     imgObj.contrast(1);
     imgObj2.contrast(1);
@@ -474,6 +474,6 @@ export const imageFilterById = (id) => {
     imgObj.vignette();
     imgObj2.vignette();
   }
-  imgObj.loadImageToCanvas();
-  imgObj2.loadImageToCanvas();
+  imgObj.loadImageToCanvas(null, rectInfoL);
+  imgObj2.loadImageToCanvas(null, rectInfoR);
 };

@@ -54,8 +54,8 @@ public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple impleme
     @Column(name = "SCAN_DEVICE_ID", length = 20)
     private Long scanDeviceId;
 
-    @Column(name = "SCAN_IMAGE_ID", length = 20)
-    private Long scanImageId;
+    @Column(name = "SCAN_IMAGE_ID", length = 50)
+    private String scanImageId;
 
     @Column(name = "SCAN_DEVICEIMAGES", length = 1000)
     private String scanDeviceImages;

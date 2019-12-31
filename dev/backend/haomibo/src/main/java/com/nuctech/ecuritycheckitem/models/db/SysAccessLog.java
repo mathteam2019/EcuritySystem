@@ -67,7 +67,7 @@ public class SysAccessLog extends BaseEntity implements Serializable {
     private String operateResult;
 
     @Column(name = "REASON_CODE", length = 255)
-    private String womanManualGender;
+    private String reasonCode;
 
     @Column(name = "ONLINE_TIME", length = 11)
     private Long onlineTime;

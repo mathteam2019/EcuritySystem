@@ -17,13 +17,27 @@ export default {
     },
     mounted() {
         this.player = videojs(this.$refs.myPlayer, this.options, () => {
-            // console.log("player mounted")
+
         })
     },
     beforeDestroy() {
         if (this.player) {
             this.player.dispose()
         }
+    },
+    methods: {
+      initialize(){
+        if (this.player) {
+          let selector = '.video-wrapper .video-container .video-js video';
+          let els = document.querySelectorAll(selector);
+          els[0].src = this.options.sources.src;
+        }
+      },
+      dispose(){
+        if (this.player) {
+          this.player.pause()
+        }
+      }
     }
 }
 </script>

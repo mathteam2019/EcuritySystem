@@ -63,10 +63,10 @@
               <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                 <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.reset') }}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('pending_knowledge_export')" @click="onExportButton()">
                 <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export')}}
               </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('pending_knowledge_print')" @click="onPrintButton()">
                 <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
               </b-button>
             </div>
@@ -119,12 +119,14 @@
                     <b-button
                       size="sm"
                       variant="success default btn-square"
+                      :disabled="checkPermItem('pending_knowledge_modify')"
                       @click="onAction('success', props.rowData.caseId)">
                       <i class="icofont-check-alt"/>
                     </b-button>
                     <b-button
                       size="sm"
                       variant="danger default btn-square"
+                      :disabled="checkPermItem('pending_knowledge_delete')"
                       @click="onAction('dismiss', props.rowData.caseId)">
                       <i class="icofont-ban"/>
                     </b-button>
@@ -153,6 +155,7 @@
   import {getApiManager, downLoadFileFromServer, printFileFromServer} from '../../../api';
   import {apiBaseUrl} from "../../../constants/config";
   import {responseMessages} from '../../../constants/response-messages';
+  import {checkPermissionItem} from "../../../utils";
 
   export default {
     components: {
@@ -325,6 +328,9 @@
 
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
 
     getOptionValue(dataCode) {
         const dictionary = {
@@ -389,7 +395,9 @@
           'idList': checkedIds.join()
         };
         let link = `knowledge-base/generate/pending`;
-        downLoadFileFromServer(link, params, 'Knowledge-Pending');
+        if(checkedIds.length>0) {
+          downLoadFileFromServer(link, params, 'Knowledge-Pending');
+        }
       },
 
       onPrintButton() {
@@ -401,7 +409,9 @@
           'idList': checkedIds.join()
         };
         let link = `knowledge-base/generate/pending`;
-        printFileFromServer(link,params);
+        if(checkedIds.length>0) {
+          printFileFromServer(link, params);
+        }
       },
 
 

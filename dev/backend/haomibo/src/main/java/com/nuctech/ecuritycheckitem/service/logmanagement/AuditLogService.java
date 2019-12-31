@@ -47,4 +47,17 @@ public interface AuditLogService {
      */
     List<SysAuditLog> getExportList(String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                      Date operateEndTime, boolean isAll, String idList);
+
+    /**
+     *
+     *
+     * @param action: 操作
+     * @param result: 操作结果
+     * @param content: 操作内容
+     * @param reason: 失败原因代码
+     * @param object: 操作对象
+     * @param onlineTime: 在线时长(秒)
+     * @return
+     */
+    boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime);
 }

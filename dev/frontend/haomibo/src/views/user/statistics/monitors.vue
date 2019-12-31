@@ -310,10 +310,10 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onExportButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('judge_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-          <b-button size="sm" class="ml-2" variant="outline-info default " @click="onPrintButton()">
+              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('judge_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -561,6 +561,7 @@
   import 'vue2-datepicker/locale/zh-cn';
   import {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer} from '../../../api';
 
+  import {checkPermissionItem} from "../../../utils";
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
   export default {
@@ -1076,7 +1077,7 @@
         this.$refs.operatingLogTable.refresh();
       },
       siteData: function (newVal, oldVal) {
-        console.log(newVal);
+
         this.onSiteOption = [];
         this.onSiteOption = newVal.map(site => ({
           text: site.fieldDesignation,
@@ -1094,6 +1095,9 @@
       }
     },
     methods: {
+    checkPermItem(value) {
+        return checkPermissionItem(value);
+      },
       getManualDeviceData() {
         getApiManager().post(`${apiBaseUrl}/device-management/device-config/manual-device/get-all`).then((response) => {
           let message = response.data.message;
@@ -1122,32 +1126,52 @@
       },
 
       onExportButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/judge/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+
+        }else {
         downLoadFileFromServer(link, params, 'Statistics-Judge');
+        }
 
       },
 
       onPrintButton() {
-        let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
-        if (this.pageStatus === 'charts')
+        let checkedAll, checkedIds;
+        if (this.pageStatus === 'charts') {
           checkedAll = true;
-        let checkedIds = this.$refs.taskVuetable.selectedTo;
+          checkedIds = "";
+        }
+        else {
+          checkedAll = this.$refs.taskVuetable.checkedAllStatus;
+          checkedIds = this.$refs.taskVuetable.selectedTo;
+        }
+
         let params = {
-          'isAll': checkedIds.length > 0 ? checkedAll : true,
-            'filter': {'filter': this.filter},
-          'idList': checkedIds.join()
+          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'filter': {'filter': this.filter},
+          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
         };
         let link = `task/statistics/judge/generate`;
+        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+
+        }else {
         printFileFromServer(link, params);
+        }
       },
 
 
@@ -1163,14 +1187,13 @@
           }
           let allFieldStr = "";
           let cnt = this.siteData.length;
-          console.log(this.siteData);
-          console.log(this.siteData[0].fieldDesignation);
+
           allFieldStr = allFieldStr + this.siteData[0].fieldDesignation;
           //for(int i =1 ; i < size; i ++) str = str + "," + value[i];
           for (let i = 1; i < cnt; i++) {
-            //console.log(this.$refs.taskVuetable.selectedTo[i]);
+
             allFieldStr = allFieldStr + ", " + this.siteData[i].fieldDesignation;
-            //console.log(str);
+
           }
           this.allField = allFieldStr;
         })
@@ -1197,7 +1220,7 @@
             this.bar3ChartOptions.xAxis.data = this.xHour;
           } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
-            console.log(this.xDay);
+
             this.barChart1Options.xAxis.data = this.xDay;
             this.barChart2Options.xAxis.data = this.xDay;
             this.barChart3Options.xAxis.data = this.xDay;
@@ -1221,8 +1244,7 @@
       },
 
       onSearchButton() {
-        console.log(this.filter.startTime);
-        console.log(this.filter.endTime);
+
         this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
       },
@@ -1273,7 +1295,7 @@
         let temp;
         for (let i = 0; i < Object.keys(data.detailedStatistics).length; i++) {
           let j = transformed.tKey[i];
-          console.log(j);
+
           temp = data.detailedStatistics[j];
           transformed.data.push(temp)
         }

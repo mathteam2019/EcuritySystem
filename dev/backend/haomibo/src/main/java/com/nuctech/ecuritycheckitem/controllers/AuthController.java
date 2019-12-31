@@ -28,13 +28,16 @@ import com.nuctech.ecuritycheckitem.models.db.ForbiddenToken;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
 import com.nuctech.ecuritycheckitem.models.reusables.User;
+import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +51,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Controller for user authentication.
@@ -56,9 +60,19 @@ import java.util.List;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
+    public static Locale currentLocale = Locale.CHINESE;
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    AccessLogService accessLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    @Autowired
+    AuthenticationFacade authenticationFacade;
 
     /**
      * Login request body.
@@ -142,6 +156,7 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+
         // Find user by his email address.
         SysUser sysUser = authService.getSysUserByUserAccount(requestBody.getUserAccount());
 
@@ -151,22 +166,33 @@ public class AuthController extends BaseController {
         }
 
         if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
+            accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , messageSource.getMessage("Block", null, currentLocale), null);
             return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
         }
 
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
             authService.checkPendingUser(sysUser, requestBody.getCount());
+            accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , messageSource.getMessage("InvalidPassword", null, currentLocale), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
 
         // Generate token for user.
         Token token = utils.generateTokenForSysUser(sysUser);
 
+
+
         List<SysResource> availableSysResourceList = new ArrayList<>();
         sysUser.getRoles().forEach(sysRole -> {
             availableSysResourceList.addAll(sysRole.getResources());
         });
+
+        String ipAddress = utils.ipAddress;
+
+        accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", null);
 
         List<SysDeviceDictionaryData> sysDeviceDictionaryDataList = authService.findAllDeviceDictionary();
         List<SysDictionaryData> sysDictionaryDataList = authService.findAllDictionary();
@@ -207,7 +233,7 @@ public class AuthController extends BaseController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public Object logout(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
-
+        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
         ForbiddenToken forbiddenToken = new ForbiddenToken();
 
         forbiddenToken.setToken(authToken);
@@ -215,6 +241,8 @@ public class AuthController extends BaseController {
         forbiddenTokenRepository.save(forbiddenToken);
         forbiddenTokenRepository.flush();
 
+        accessLogService.saveAccessLog(user, messageSource.getMessage("Logout", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

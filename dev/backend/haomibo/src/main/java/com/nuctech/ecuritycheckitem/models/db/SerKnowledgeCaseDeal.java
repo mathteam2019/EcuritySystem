@@ -70,8 +70,8 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
     @Column(name = "SCAN_DEVICE_ID", length = 20)
     private Long scanDeviceId;
 
-    @Column(name = "SCAN_IMAGE_ID", length = 20)
-    private Long scanImageId;
+    @Column(name = "SCAN_IMAGE_ID", length = 50)
+    private String scanImageId;
 
     @Column(name = "SCAN_ATR_RESULT", length = 10)
     private String scanAtrResult;
@@ -221,10 +221,10 @@ public class SerKnowledgeCaseDeal extends BaseEntity implements Serializable {
 
 
 
-    @OneToOne()
-    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    private SerImage scanImage;
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    private SerImage scanImage;
 
     @OneToOne()
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)

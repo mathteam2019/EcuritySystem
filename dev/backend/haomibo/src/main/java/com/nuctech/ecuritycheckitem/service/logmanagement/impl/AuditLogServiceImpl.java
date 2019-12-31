@@ -14,9 +14,12 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.models.db.QSysAuditLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
+import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
+import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,12 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     SysAuditLogRepository sysAuditLogRepository;
+
+    @Autowired
+    AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    private Utils utils;
 
     /**
      * get predicate from filter parameters
@@ -104,7 +113,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     /**
      * get paginated and filtered audit log list
-     * @param clientIp
+     * @param clientIp,
      * @param operateResult
      * @param operateObject
      * @param operateStartTime
@@ -143,5 +152,33 @@ public class AuditLogServiceImpl implements AuditLogService {
                 .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
         return getExportList(logList, isAll, idList);
+    }
+
+    /**
+     *
+     * @param action: 操作
+     * @param result: 操作结果
+     * @param content: 操作内容
+     * @param reason: 失败原因代码
+     * @param onlineTime: 在线时长(秒)
+     * @return
+     */
+    @Override
+    public boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime) {
+        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        SysAuditLog auditLog = SysAuditLog.builder()
+                .clientIp(utils.ipAddress)
+                .action(action)
+                .operateResult(result)
+                .reasonCode(reason)
+                .operateContent(content)
+                .onlineTime(onlineTime)
+                .operateAccount(user.getUserAccount())
+                .operatorId(user.getUserId())
+                .operateTime(new Date())
+                .operateObject(object)
+                .build();
+        sysAuditLogRepository.save(auditLog);
+        return true;
     }
 }

@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -40,6 +42,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/device-management/device-config")
@@ -47,6 +50,15 @@ public class DeviceConfigManagementController extends BaseController {
 
     @Autowired
     DeviceConfigService deviceConfigService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.CHINESE;
+
     /**
      * Device datatable request body.
      */
@@ -233,6 +245,8 @@ public class DeviceConfigManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -240,6 +254,8 @@ public class DeviceConfigManagementController extends BaseController {
 
         //check if device config is valid.
         if(sysDeviceConfig == null) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         List<Long> manualDeviceIdList = requestBody.getManualDeviceIdList(); //get Manual Device IdList from input paramenter
@@ -257,7 +273,8 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getConfigId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
