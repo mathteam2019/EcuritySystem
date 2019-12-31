@@ -1216,6 +1216,20 @@
         // change page to create
         this.pageStatus = 'create';
       },
+
+      onGetAll(){
+        getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+          type: 'with_org_tree'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.userData = data;
+              break;
+          }
+        })
+      },
       onTableListPage() {
         this.pageStatus = 'table';
       },
@@ -1250,6 +1264,7 @@
                 // back to table
                 this.pageStatus = 'table';
                 this.$refs.vuetable.reload();
+                this.onGetAll();
 
                 break;
               case responseMessages['used-user-account']://duplicated user account
