@@ -68,7 +68,7 @@ public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implem
     @Column(name = "WORKFLOW_ID", length = 20)
     private Long workflowId;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SCENE", referencedColumnName = "FIELD_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysFieldSimplifiedForProcessTaskManagement field;
@@ -88,7 +88,7 @@ public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implem
     @NotFound(action = NotFoundAction.IGNORE)
     private SerHandExaminationSimplifiedForProcessTaskManagement serHandExamination;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "WORKFLOW_ID", referencedColumnName = "WORKFLOW_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysWorkflowSimplifiedForProcessTaskManagement workFlow;

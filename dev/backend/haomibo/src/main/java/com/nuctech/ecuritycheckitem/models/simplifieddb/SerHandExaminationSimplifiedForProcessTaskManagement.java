@@ -23,14 +23,7 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -71,12 +64,12 @@ public class SerHandExaminationSimplifiedForProcessTaskManagement extends BaseEn
     @Column(name = "HAND_USER_ID", length = 20)
     private Long handUserId;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HAND_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDeviceSimplifiedOnlyHasName handDevice;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "HAND_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysUserSimplifiedOnlyHasName handUser;
