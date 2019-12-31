@@ -116,20 +116,7 @@
                     </label>
                   </div>
 
-                  <div>
-                    <b-form-group>
-                      <b-form-radio-group v-model="roleFormFlag">
-                        <b-form-radio value="admin">
-                          {{$t('permission-management.permission-control.system-management')}}
-                        </b-form-radio>
-                        <b-form-radio value="user">
-                          {{$t('permission-management.permission-control.business-operating')}}
-                        </b-form-radio>
-                      </b-form-radio-group>
-                    </b-form-group>
-                  </div>
-
-                  <div class="text-right" v-if="['admin', 'user'].includes(roleFormFlag)">
+                  <div class="text-right">
                     <b-form-group>
                       <b-form-checkbox v-model="isSelectedAllResourcesForRoleForm">
                         {{$t('permission-management.permission-control.select-all')}}
@@ -139,7 +126,7 @@
 
                   <div class="flex-grow-1 overflow-auto" style="height: 0px;">
                     <div>
-                      <v-tree ref='resourceTreeRoleForm' :data='currentResourceTreeDataForRoleForm' :multiple="true"
+                      <v-tree ref='resourceTreeRoleForm' :data='resourceTreeData' :multiple="true"
                               :halfcheck='true'/>
                     </div>
                   </div>
@@ -189,18 +176,7 @@
                   </label>
                 </div>
 
-                <div>
-                  <b-form-group>
-                    <b-form-radio-group v-model="roleCategory">
-                      <b-form-radio value="admin">{{$t('permission-management.permission-control.system-management')}}
-                      </b-form-radio>
-                      <b-form-radio value="user">{{$t('permission-management.permission-control.user-management')}}
-                      </b-form-radio>
-                    </b-form-radio-group>
-                  </b-form-group>
-                </div>
-
-                <div class="text-right" v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
+                <div class="text-right" v-if="selectedRole">
                   <b-form-group>
                     <b-form-checkbox v-model="isSelectedAllResourcesForRole">
                       {{$t('permission-management.permission-control.select-all')}}
@@ -209,14 +185,14 @@
                 </div>
 
                 <div class="flex-grow-1 overflow-auto" style="height: 0;">
-                  <div v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)">
-                    <v-tree ref='resourceTree' :data='currentResourceTreeData' :multiple="true" :halfcheck='true'/>
+                  <div v-if="selectedRole">
+                    <v-tree ref='resourceTree' :data='resourceTreeData' :multiple="true" :halfcheck='true'/>
                   </div>
                 </div>
 
                 <div class="text-right pt-3">
                   <div>
-                    <b-button v-if="selectedRole && ['admin', 'user'].includes(selectedRole.roleFlag)" :disabled="checkPermItem('role_modify')"
+                    <b-button v-if="selectedRole" :disabled="checkPermItem('role_modify')"
                               @click="onClickSaveRole" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"></i>
                       {{$t('permission-management.permission-control.save')}}
@@ -560,17 +536,11 @@
           roleNumber: '',
           roleName: '',
         },
-        roleFormFlag: null,
         isSelectedAllResourcesForRoleForm: false,
         currentResourceTreeDataForRoleForm: [],
         roleKeyword: '',
         resourceList: [],
-        resourceTreeData: {
-          admin: [],
-          user: [],
-        },
-        currentResourceTreeData: [],
-        roleCategory: null,
+        resourceTreeData: [],
         selectedRole: null,
         deletingRole: null,
         isSelectedAllResourcesForRole: false,
@@ -711,17 +681,6 @@
       resourceList(newVal, oldVal) {
         this.refreshResourceTreeData();
       },
-      roleCategory(newVal, oldVal) {
-        if (this.selectedRole) {
-          this.selectedRole.roleFlag = newVal;
-          this.isSelectedAllResourcesForRole = false;
-          this.refreshResourceTreeData();
-        }
-      },
-      roleFormFlag(newVal, oldVal) {
-        this.isSelectedAllResourcesForRoleForm = false;
-        this.refreshResourceTreeData();
-      },
       selectedRole(newVal, oldVal) {
         if (newVal) {
           let roleResourceIds = [];
@@ -731,19 +690,13 @@
           this.resourceList.forEach((resource) => {
             resource.selected = roleResourceIds.includes(resource.resourceId);
           });
-          if (newVal.resources.length > 0) {
-            this.roleCategory = newVal.resources[0].resourceCategory;
-          } else {
-            this.roleCategory = null;
-          }
-          newVal.roleFlag = this.roleCategory;
           this.refreshResourceTreeData();
         }
       },
       isSelectedAllResourcesForRole(newVal, oldVal) {
         if (this.selectedRole) {
           let tempSelectedRole = this.selectedRole;
-          tempSelectedRole.resources = newVal ? this.resourceList.filter(resource => resource.resourceCategory === this.selectedRole.roleFlag) : [];
+          tempSelectedRole.resources = newVal ? this.resourceList : [];
           this.selectedRole = null;
           this.selectedRole = tempSelectedRole;
 
@@ -752,7 +705,7 @@
       },
       isSelectedAllResourcesForRoleForm(newVal, oldVal) {
         this.resourceList.forEach((resource) => {
-          resource.selected = newVal && (resource.resourceCategory === this.roleFormFlag);
+          resource.selected = newVal;
         });
         this.refreshResourceTreeData();
       },
@@ -860,7 +813,6 @@
                 this.$refs.roleVuetable.reload();
                 this.roleForm.roleNumber = '';
                 this.roleForm.roleName = '';
-                this.roleFormFlag = null;
                 break;
               case responseMessages['used-role-name']:
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-role-name`), {
@@ -892,7 +844,6 @@
       onClickCreateRole() {
         this.selectedRole = null;
         this.roleForm.visible = true;
-        this.roleFormFlag = null;
         this.currentResourceTreeDataForRoleForm = [];
         this.resourceList.forEach((resource) => {
           resource.selected = false;
@@ -1001,25 +952,8 @@
               children: nest(resourceList, resource.resourceId),
               checked: resource.selected
             }));
-        let resourceTreeData = nest(this.resourceList, pseudoRootId);
-        this.resourceTreeData.admin = resourceTreeData.filter(rootNode => rootNode.resourceCategory === 'admin');
-        this.resourceTreeData.user = resourceTreeData.filter(rootNode => rootNode.resourceCategory === 'user');
-        if (this.selectedRole) {
-          if (this.selectedRole.roleFlag === 'admin') {
-            this.currentResourceTreeData = this.resourceTreeData.admin;
-          } else if (this.selectedRole.roleFlag === 'user') {
-            this.currentResourceTreeData = this.resourceTreeData.user;
-          } else {
-            this.currentResourceTreeData = [];
-          }
-        }
-        if (this.roleFormFlag === 'admin') {
-          this.currentResourceTreeDataForRoleForm = this.resourceTreeData.admin;
-        } else if (this.roleFormFlag === 'user') {
-          this.currentResourceTreeDataForRoleForm = this.resourceTreeData.user;
-        } else {
-          this.currentResourceTreeDataForRoleForm = [];
-        }
+        this.resourceTreeData = nest(this.resourceList, pseudoRootId);
+
       },
       roleVuetableHttpFetch(apiUrl, httpOptions) {
         return getApiManager().post(apiUrl, {

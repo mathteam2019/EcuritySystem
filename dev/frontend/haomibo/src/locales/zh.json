@@ -800,6 +800,7 @@
     "timelimit": "时间范围",
     "search": "检索",
     "reset": "重置",
+    "refresh" : "刷新",
     "export": "导出",
     "import": "导入",
     "print": "打印",
