@@ -81,6 +81,8 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   var array;
   array=datetime.split(".");
   datetime = array[0];
+  datetime = datetime + "." + "000+1400";
+
 
   //todo need to format datetime with its language value
   let format = 'MM/DD/YYYY HH:mm';
