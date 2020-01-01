@@ -223,6 +223,23 @@ export const checkPermissionItem = (item) => {
   return data.indexOf(item) === -1;
 };
 
+export const savePermissionInfoId = (info) => {
+  let data = [];
+  info.forEach(item => {
+    if (item.resourceId != null)
+      data.push(item.resourceId);
+  });
+  localStorage.setItem('permInfoId', JSON.stringify(data));
+};
+
+export const checkPermissionItemById = (item) => {
+  let data = localStorage.getItem('permInfoId');
+  if (data === null)
+    return true;
+  data = JSON.parse(data);
+  return data.indexOf(item) === -1;
+};
+
 export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
   localStorage.removeItem('permInfo'); //remove permission Info too

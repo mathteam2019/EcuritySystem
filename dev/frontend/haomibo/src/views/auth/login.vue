@@ -244,7 +244,7 @@
     scheduleRefreshToken,
     setDirection,
     setInvalidCount, getInvalidCount, removeCount,
-    saveDicDataGroupByDicId, savePermissionInfo
+    saveDicDataGroupByDicId, savePermissionInfo, savePermissionInfoId
   } from '../../utils'
   import {getApiManager} from "../../api";
   import {responseMessages} from "../../constants/response-messages";
@@ -332,6 +332,7 @@
                 }
                 saveLoginInfo(data);
                 savePermissionInfo(data.permission);
+                savePermissionInfoId(data.permission);
                 scheduleRefreshToken();
                 saveDicDataGroupByDicId(data);
                 removeCount(this.account);

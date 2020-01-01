@@ -396,15 +396,15 @@
               <div class="item-header">
                 <div class="label">{{item.deviceNumber}}</div>
                 <div class="action-list">
-                  <img v-if="item.maxScanCount > item.deviceTrafficHigh"
+                  <img v-if="item.device.deviceType === '1000001901' && item.maxScanCount > item.deviceTrafficHigh"
                        src="../../../assets/img/icon_user_graphic.png">
-                  <img v-else src="../../../assets/img/icon_user_graphic_disabled.png">
-                  <img v-if="item.deviceStorageAlarm === 0" src="../../../assets/img/icon_layout.png">
-                  <img v-else src="../../../assets/img/icon_layout_disabled.png">
+                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_user_graphic_disabled.png">
+                  <img v-if="item.device.deviceType === '1000001901' && item.deviceStorageAlarm === 0" src="../../../assets/img/icon_layout.png">
+                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_layout_disabled.png">
                   <img
-                    v-if="item.plcStatus == '0' && item.slaveCardStatus == '0' && item.masterCardStatus == '0' && item.footWarning == '0' && item.footWarning == '0'"
+                    v-if="item.device.deviceType === '1000001901' && item.plcStatus == '0' && item.slaveCardStatus == '0' && item.masterCardStatus == '0' && item.footWarning == '0' && item.footWarning == '0'"
                     src="../../../assets/img/icon_bell.png">
-                  <img v-else src="../../../assets/img/icon_bell_disabled.png">
+                  <img v-else-if="item.device.deviceType === '1000001901'" src="../../../assets/img/icon_bell_disabled.png">
                   <img v-if="item.deviceOnline === 0" src="../../../assets/img/icon_link.png">
                   <img v-else src="../../../assets/img/icon_link_disabled.png">
                 </div>
@@ -413,8 +413,8 @@
                 <b-row class="h-100">
                   <b-col cols="4" class="left-side d-flex flex-column align-items-center justify-content-between">
                     <div class="action d-flex flex-column">
-                      <b-button variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
-                      <b-button class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
+                      <b-button v-if="item.device.deviceType === '1000001901'" variant="info skyblue default" size="xs">{{item.currentWorkFlowName}}</b-button>
+                      <b-button v-if="item.device.deviceType === '1000001901'" class="default" size="xs" :variant="['0','1'].includes(item.currentStatus)?'info skyblue':
                       ['2','3','4'].includes(item.currentStatus)?'success':
                       ['5','6'].includes(item.currentStatus)?'warning':'danger'">{{item.currentStatusName}}</b-button>
                     </div>
