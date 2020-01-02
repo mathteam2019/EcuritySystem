@@ -13,26 +13,23 @@
 package com.nuctech.ecuritycheckitem.service.auth.impl;
 
 
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
-import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
-import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceDictionaryDataRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Service implement for user authentication.
@@ -53,6 +50,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    SysResourceRepository sysResourceRepository;
+
+    @Autowired
+    SysUserGroupUserDetailRepository sysUserGroupUserDetailRepository;
 
     /**
      * Find user by his user account
@@ -139,6 +142,89 @@ public class AuthServiceImpl implements AuthService {
             sysUserRepository.save(user);
 
         }
+    }
+
+    /**
+     * get all available resource
+     * @param sysUser
+     * @return
+     */
+    @Override
+    public List<SysResource> getAvailableSysResourceList(SysUser sysUser) {
+
+        List<SysResource> allResources = sysResourceRepository.findAll();
+
+
+
+
+        List<SysResource> availableSysResourceListPre = new ArrayList<>();
+        sysUser.getRoles().forEach(sysRole -> {
+            availableSysResourceListPre.addAll(sysRole.getResources());
+        });
+
+        QSysUserGroupUserDetail builder = QSysUserGroupUserDetail.sysUserGroupUserDetail;
+
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+
+        predicate.and(builder.userId.eq(sysUser.getUserId()));
+
+        List<SysUserGroupUserDetail> allGroupUser = StreamSupport
+                .stream(sysUserGroupUserDetailRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
+        if(allGroupUser == null) {
+            allGroupUser = new ArrayList<>();
+        }
+        for(int i = 0; i < allGroupUser.size(); i ++) {
+            List<SysUserGroupSimple> userGroupList = allGroupUser.get(i).getUserGroupList();
+            for(int j = 0; j < userGroupList.size(); j ++) {
+                userGroupList.get(j).getRoles().forEach(sysRole -> {
+                    availableSysResourceListPre.addAll(sysRole.getResources());
+                });
+            }
+        }
+        List<SysResource> availableSysResourceList = new ArrayList<>();
+        for(int i = 0; i < availableSysResourceListPre.size(); i ++) {
+            boolean isExist = false;
+            for(int j = 0; j < availableSysResourceList.size(); j ++) {
+                if(availableSysResourceList.get(j).getResourceId() == availableSysResourceListPre.get(i).getResourceId()) {
+                    isExist = true;
+                    break;
+                }
+            }
+            if(!isExist) {
+                availableSysResourceList.add(availableSysResourceListPre.get(i));
+            }
+        }
+
+        int startIndex = 0;
+        while(startIndex < availableSysResourceList.size()) {
+            long parentId = availableSysResourceList.get(startIndex).getParentResourceId();
+            if(parentId != 0) {
+
+                boolean isExist = false;
+                for(int i = 0; i < availableSysResourceList.size(); i ++) {
+                    SysResource resource = availableSysResourceList.get(i);
+                    if(resource.getResourceId() == parentId) {
+                        isExist = true;
+                        break;
+                    }
+                }
+                if(!isExist) {
+                    SysResource parent;
+                    for(int i = 0; i < allResources.size(); i ++) {
+                        SysResource resource = allResources.get(i);
+                        if(resource.getResourceId() == parentId) {
+                            parent = resource;
+                            availableSysResourceList.add(parent);
+                            break;
+                        }
+                    }
+                }
+            }
+            startIndex ++;
+
+        }
+        return availableSysResourceList;
     }
 
 }

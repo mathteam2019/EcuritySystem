@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.service.auth;
 
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
+import com.nuctech.ecuritycheckitem.models.db.SysResource;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 
 import java.util.List;
@@ -53,4 +54,11 @@ public interface AuthService {
      * @param count
      */
     void checkPendingUser(SysUser user, Integer count);
+
+    /**
+     * get all resource for user
+     * @param sysUser
+     * @return
+     */
+    List<SysResource> getAvailableSysResourceList(SysUser sysUser);
 }

@@ -30,6 +30,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserGroupUserRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -70,6 +71,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     SysUserGroupRoleRepository sysUserGroupRoleRepository;
+
+    @Autowired
+    AuthService authService;
 
     /**
      * check if user exists
@@ -365,7 +369,8 @@ public class UserServiceImpl implements UserService {
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
-        //predicate.and(builder.status.eq(SysUser.Status.ACTIVE));
+        String[] list = {SysUser.Status.ACTIVE, SysUser.Status.PENDING};
+        predicate.and(builder.status.in(list));
 
         return StreamSupport
                 .stream(sysUserRepository.findAll(predicate).spliterator(), false)
@@ -589,10 +594,7 @@ public class UserServiceImpl implements UserService {
         SysUser sysUser = optionalSysUser.get();
 
         // Get all available resources for user.
-        List<SysResource> availableSysResourceList = new ArrayList<>();
-        sysUser.getRoles().forEach(sysRole -> {
-            availableSysResourceList.addAll(sysRole.getResources());
-        });
+        List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
 
         return availableSysResourceList;
     }

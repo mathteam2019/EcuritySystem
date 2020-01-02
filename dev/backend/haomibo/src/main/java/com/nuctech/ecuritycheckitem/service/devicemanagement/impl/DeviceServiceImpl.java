@@ -12,25 +12,10 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
-import com.nuctech.ecuritycheckitem.models.db.SysDeviceConfig;
-import com.nuctech.ecuritycheckitem.models.db.QSysDeviceConfig;
-import com.nuctech.ecuritycheckitem.models.db.SysDevice;
-import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.SerScanParam;
-import com.nuctech.ecuritycheckitem.models.db.SerScanParamsFrom;
-import com.nuctech.ecuritycheckitem.models.db.QSerScanParam;
-import com.nuctech.ecuritycheckitem.models.db.QSerArchive;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceConfigRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysManualGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.SysJudgeGroupRepository;
-import com.nuctech.ecuritycheckitem.repositories.FromConfigIdRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerArchiveRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
-import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
+import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
@@ -72,6 +57,12 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Autowired
     SysJudgeGroupRepository sysJudgeGroupRepository;
+
+    @Autowired
+    SysJudgeDeviceRepository sysJudgeDeviceRepository;
+
+    @Autowired
+    SysManualDeviceRepository sysManualDeviceRepository;
 
     @Autowired
     SerScanParamsFromRepository serScanParamsFromRepository;
@@ -315,11 +306,42 @@ public class DeviceServiceImpl implements DeviceService {
         String fileName = utils.saveImageFile(portraitFile);
         sysDevice.setImageUrl(fileName);
 
+        Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
+                serArchive.archiveId.eq(sysDevice.getArchiveId()));
+        SerArchive archive = optionalSerArchive.get();
+        SysDeviceCategory category = archive.getArchiveTemplate().getDeviceCategory();
+
+        if(category.getCategoryId() == 2) {
+            sysDevice.setDeviceType(SysDevice.DeviceType.JUDGE);
+        } else if(category.getCategoryId() == 3) {
+            sysDevice.setDeviceType(SysDevice.DeviceType.SECURITY);
+        } else if(category.getCategoryId() == 4) {
+            sysDevice.setDeviceType(SysDevice.DeviceType.MANUAL);
+        }
+
 
         // Add created info.
         sysDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+
+        if(category.getCategoryId() == 2) {
+            SysJudgeDevice sysJudgeDevice = SysJudgeDevice.builder()
+                    .judgeDeviceId(sysDevice.getDeviceId())
+                    .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
+                    .build();
+            sysJudgeDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysJudgeDeviceRepository.save(sysJudgeDevice);
+        } else if(category.getCategoryId() == 4) {
+            SysManualDevice sysManualDevice = SysManualDevice.builder()
+                    .manualDeviceId(sysDevice.getDeviceId())
+                    .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
+                    .build();
+            sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysManualDeviceRepository.save(sysManualDevice);
+        }
+
+
         SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
         deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDeviceConfigRepository.save(deviceConfig);
@@ -367,6 +389,20 @@ public class DeviceServiceImpl implements DeviceService {
         SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(deviceId)).orElse(null);
 
+        if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.JUDGE)) {
+            SysJudgeDevice sysJudgeDevice = sysJudgeDeviceRepository.findOne(QSysJudgeDevice.sysJudgeDevice
+                    .judgeDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
+            if(sysJudgeDevice != null) {
+                sysJudgeDeviceRepository.delete(sysJudgeDevice);
+            }
+        } else if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.MANUAL)) {
+            SysManualDevice sysManualDevice = sysManualDeviceRepository.findOne(QSysManualDevice.sysManualDevice
+                    .manualDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
+            if(sysManualDevice != null) {
+                sysManualDeviceRepository.delete(sysManualDevice);
+            }
+        }
+
 
         sysDeviceRepository.deleteById(deviceId);
 
@@ -375,7 +411,6 @@ public class DeviceServiceImpl implements DeviceService {
 
         //check device config exist or not
         if(sysDeviceConfig != null) {
-
             sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
         }
 

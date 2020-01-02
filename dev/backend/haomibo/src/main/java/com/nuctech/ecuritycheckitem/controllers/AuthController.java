@@ -182,14 +182,7 @@ public class AuthController extends BaseController {
         // Generate token for user.
         Token token = utils.generateTokenForSysUser(sysUser);
 
-
-
-        List<SysResource> availableSysResourceList = new ArrayList<>();
-        sysUser.getRoles().forEach(sysRole -> {
-            availableSysResourceList.addAll(sysRole.getResources());
-        });
-
-        String ipAddress = utils.ipAddress;
+        List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
 
         accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", null);

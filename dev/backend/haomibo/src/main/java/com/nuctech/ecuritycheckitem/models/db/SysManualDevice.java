@@ -49,6 +49,9 @@ public class SysManualDevice extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", length = 20, nullable = false)
+    private Long id;
+
     @Column(name = "MANUAL_DEVICE_ID", length = 20, nullable = false)
     private Long manualDeviceId;
 

@@ -67,6 +67,12 @@ public class SysDevice extends BaseEntity implements Serializable {
         public static final String FREE = "1000002102";
     }
 
+    public static class DeviceType {
+        public static final String SECURITY = "1000001901";
+        public static final String MANUAL = "1000001903";
+        public static final String JUDGE = "1000001902";
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DEVICE_ID", length = 20, nullable = false)
