@@ -223,6 +223,23 @@ export const checkPermissionItem = (item) => {
   return data.indexOf(item) === -1;
 };
 
+export const savePermissionInfoId = (info) => {
+  let data = [];
+  info.forEach(item => {
+    if (item.resourceId != null)
+      data.push(item.resourceId);
+  });
+  localStorage.setItem('permInfoId', JSON.stringify(data));
+};
+
+export const checkPermissionItemById = (item) => {
+  let data = localStorage.getItem('permInfoId');
+  if (data === null)
+    return true;
+  data = JSON.parse(data);
+  return data.indexOf(item) === -1;
+};
+
 export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
   localStorage.removeItem('permInfo'); //remove permission Info too
@@ -412,14 +429,14 @@ export const scheduleRefreshToken = () => {
 
 };
 
-export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR) => {
-  imgObj = new Chobi(url1);
+export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => {
+  imgObj = new Chobi(url1, isToggled);
   imgObj.ready(function () {
     this.canvas = document.getElementById("firstcanvas");
     this.loadImageToCanvas(null, rectInfoL);
   });
 
-  imgObj2 = new Chobi(url2);
+  imgObj2 = new Chobi(url2, isToggled);
   imgObj2.ready(function () {
     this.canvas = document.getElementById("secondcanvas");
     this.loadImageToCanvas(null, rectInfoR);

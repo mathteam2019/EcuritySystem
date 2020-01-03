@@ -67,6 +67,7 @@ import menuItems from '../../../constants/menu/user'
 import Vue from 'vue';
 import Tooltip from 'vue-directive-tooltip';
 import 'vue-directive-tooltip/dist/vueDirectiveTooltip.css';
+import {checkPermissionItemById} from "../../../utils";
 Vue.use(Tooltip,{
   delay: 100,
 });
@@ -83,6 +84,7 @@ export default {
     },
     mounted() {
         this.selectMenu()
+        this.checkMenuPermission();
         window.addEventListener('resize', this.handleWindowResize)
         document.addEventListener('click', this.handleDocumentClick)
         this.handleWindowResize()
@@ -95,6 +97,29 @@ export default {
 
     methods: {
         ...mapMutations(['changeSideMenuStatus', 'addMenuClassname', 'changeSelectedMenuHasSubItems']),
+
+        checkMenuPermission() {
+          //console.log(this.menuItems);
+          // var Tmp;
+          // Tmp = this.menuItems;
+          for(let i=0; i<this.menuItems.length; i++){
+            if(this.menuItems[i].permissionId != null){
+              if(checkPermissionItemById(this.menuItems[i].permissionId)){
+                this.menuItems.splice(i, 1);
+              }
+            }
+            if(this.menuItems[i].subs){
+              for(let j=0; j<this.menuItems[i].subs.length; j++){
+                if(this.menuItems[i].subs[j].permissionId!=null){
+                  if(checkPermissionItemById(this.menuItems[i].subs[j].permissionId)){
+                    this.menuItems[i].subs.splice(j, 1);
+                  }
+                }
+              }
+            }
+          }
+        },
+
         selectMenu() {
             const currentParentUrl = this.$route.path.split('/').filter(x => x !== '')[1]
             if (currentParentUrl !== undefined || currentParentUrl !== null) {
