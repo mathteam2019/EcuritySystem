@@ -25,16 +25,10 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -274,6 +268,11 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerKnowledgeCaseSimplifiedForHistoryTaskManagement serKnowledgeCase;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
 
     @javax.persistence.Transient
     private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;

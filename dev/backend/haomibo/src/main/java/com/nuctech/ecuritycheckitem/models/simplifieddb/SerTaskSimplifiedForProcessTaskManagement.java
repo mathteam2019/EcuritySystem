@@ -16,6 +16,7 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
+import com.nuctech.ecuritycheckitem.models.db.SerAssign;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,9 +34,11 @@ import javax.persistence.Column;
 import javax.persistence.OneToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import javax.persistence.GenerationType;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -102,6 +105,16 @@ public class SerTaskSimplifiedForProcessTaskManagement extends BaseEntity implem
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SerCheckResultSimplifiedForProcessTaskManagement serCheckResult;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<SerAssign> serAssignList;
 
     @javax.persistence.Transient
     private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;

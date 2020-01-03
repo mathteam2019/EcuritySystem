@@ -93,6 +93,7 @@ public class TaskServiceImpl implements TaskService {
             predicate.and(builder.createdTime.before(endTime));
         }
 
+
         return predicate;
     }
 
@@ -116,6 +117,7 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.serCheckResultList.size().eq(0));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (order != null && sortBy != null) {
@@ -151,6 +153,7 @@ public class TaskServiceImpl implements TaskService {
         QSerTaskSimplifiedForProcessTaskManagement builder = QSerTaskSimplifiedForProcessTaskManagement.serTaskSimplifiedForProcessTaskManagement;
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime);
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.FALSE));
+        predicate.and(builder.serCheckResultList.size().eq(0));
 
         Sort sort = null;
         if (sortBy != null && order != null) {

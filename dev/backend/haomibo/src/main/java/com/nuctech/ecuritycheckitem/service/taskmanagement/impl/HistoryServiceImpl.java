@@ -87,6 +87,7 @@ public class HistoryServiceImpl implements HistoryService {
         if (endTime != null) { //if end time is input
             predicate.and(builder.createdTime.before(endTime));
         }
+        predicate.and(builder.serCheckResultList.size().ne(0));
 
         return predicate;
     }

@@ -55,6 +55,7 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_PLATFORM_OTHER_PARAMS = "filter_ser_platform_other_params"; //filter to serialize SerPlatformOtherParams
     public final static String FILTER_SER_TASK = "filter_ser_task"; //filter to serialize SerTask
     public final static String FILTER_HISTORY = "filter_history"; //filter to serialize History
+    public final static String FILTER_SER_ASSIGN = "filter_ser_assign"; //filter to serialize History
     public final static String FILTER_SER_IMAGE = "filter_ser_image"; //filter to serialize SerImage
     public final static String FILTER_SER_SCAN = "filter_ser_scan"; //filter to serialize SerScan
     public final static String FILTER_SER_JUDGE_GRAPH = "filter_ser_judge_graph"; //filter to serialize SerJudgeGrarph
