@@ -24,8 +24,15 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
 
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -84,20 +91,20 @@ public class SerScanSimplifiedForTaskManagement extends BaseEntitySimple impleme
     @Column(name = "SCAN_IMAGEGENDER", length = 10)
     private String scanImageGender;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "SCAN_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysDeviceSimplifiedOnlyHasName scanDevice;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "SCAN_POINTSMAN_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     SysUserSimplifiedOnlyHasName scanPointsman;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
-    SerImageSimplifiedForTaskManagement scanImage;
+//    @OneToOne()
+//    @JoinColumn(name = "SCAN_IMAGE_ID", referencedColumnName = "IMAGE_ID", insertable = false, updatable = false)
+//    @NotFound(action = NotFoundAction.IGNORE)
+//    SerImageSimplifiedForTaskManagement scanImage;
 
 
 }

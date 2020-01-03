@@ -24,7 +24,14 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -71,12 +78,12 @@ public class SerJudgeGraphSimplifiedForProcessTaskManagement extends BaseEntityS
     @Column(name = "JUDGE_USER_ID", length = 20)
     private Long judgeUserId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysDeviceSimplifiedOnlyHasName judgeDevice;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "JUDGE_USER_ID", referencedColumnName = "USER_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private SysUserSimplifiedOnlyHasName judgeUser;
