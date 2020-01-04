@@ -834,18 +834,7 @@
             break;
         }
       });
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
-        type: 'with_org_tree'
-      }).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.userData = data;
-            break;
-        }
-      })
-
+      this.getAllUserData();
     },
     data() {
       return {
@@ -1207,6 +1196,19 @@
         printFileFromServer(link, params);
       },
 
+      getAllUserData(){
+        getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+          type: 'with_org_tree'
+        }).then((response) => {
+          let message = response.data.message;
+          let data = response.data.data;
+          switch (message) {
+            case responseMessages['ok']:
+              this.userData = data;
+              break;
+          }
+        })
+      },
       onCreatePage() { // move to create page
         // reset models
         this.onInitialUserData();
@@ -1261,6 +1263,7 @@
                   permanent: false
                 });
                 this.onInitialUserData();
+                this.getAllUserData();
                 // back to table
                 this.pageStatus = 'table';
                 this.$refs.vuetable.reload();

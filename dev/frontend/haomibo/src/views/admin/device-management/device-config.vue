@@ -1082,14 +1082,16 @@
         });
       },
       onSaveDeviceConfig() {
-        if (this.configForm.manualDeviceId.length === 0) {
+
+        let modeValue = this.getModeValueFromId(this.configForm.modeId);
+        if (this.configForm.manualDeviceId.length === 0 && (modeValue === '1000001302' || modeValue === '1000001304') ) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-manual-device-select`), {
             duration: 3000,
             permanent: false
           });
           return;
         }
-        if (this.configForm.judgeDeviceId.length === 0) {
+        if (this.configForm.judgeDeviceId.length === 0 && (modeValue === '1000001303' || modeValue === '1000001304')) {
           this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-config.required-judge-device-select`), {
             duration: 3000,
             permanent: false

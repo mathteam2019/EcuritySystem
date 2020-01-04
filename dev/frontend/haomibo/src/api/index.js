@@ -76,6 +76,7 @@ const getApiManager = function () {
 };
 
 const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
+  console.log(datetime);
   if (datetime === "" || datetime == null)
     return "";
   var array;
@@ -104,7 +105,9 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
       let diff = moment.utc(moment().diff(moment(String(datetime)))).format(`D[${type}] HH:mm:ss`);
       return diff;
   }
-  return moment(String(datetime)).format(format)
+ // datetime = '2019-12-31T18:10:49.000+0000';
+  return moment.parseZone(String(datetime)).format(format) //parse without timezone
+ // return moment.utc(String(datetime)).format(format) //parse with timezone
 };
 
 const downLoadFileFromServer = (link,params, name = 'statics') => {
