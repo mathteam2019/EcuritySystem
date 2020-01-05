@@ -70,4 +70,8 @@ public class Constants {
         public static final String DESC = "desc";
     }
 
+    public static long EXPIRE_TIME = 8 * 60 * 60;
+
+    public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
+
 }

@@ -12,7 +12,9 @@
 
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.platformmanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -21,6 +23,7 @@ import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,6 +51,7 @@ public class PlatformCheckManagementController extends BaseController {
 
     @Autowired
     public MessageSource messageSource;
+
 
     public static Locale currentLocale = Locale.CHINESE;
 
@@ -137,6 +141,7 @@ public class PlatformCheckManagementController extends BaseController {
             isCreate = false;
         }
         platformCheckService.modifyPlatform(serPlatformCheckParams, isCreate);
+
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", "",null);
 
