@@ -6,6 +6,7 @@ const data = [
     to: "/admin/dashboard",
     newWindow: false,
     permissionId: null,
+    subs:null
   },
   {
     id: "permission-management",
@@ -47,8 +48,6 @@ const data = [
         newWindow: false,
         permissionId: 37,
       },
-
-
     ]
   },
   {
@@ -58,6 +57,7 @@ const data = [
     to: "/admin/site-management",
     newWindow: false,
     permissionId: 50,
+    subs:null
   },
   {
     id: "system-setting",
@@ -66,6 +66,7 @@ const data = [
     to: "/admin/system-setting",
     newWindow: false,
     permissionId: 57,
+    subs:null
   },
   {
     id: "device-management",

@@ -3016,7 +3016,10 @@ main {
   @include depth(1);
 
   .card-body {
-    padding: 1.75rem;
+    //padding: 1rem 1.5rem 1rem;
+    padding-left: 32px;
+    padding-top: 20px;
+    padding-right: 32px;
 
     @include respond-below(xs) {
       padding: 1.25rem;

@@ -834,7 +834,18 @@
             break;
         }
       });
-      this.getAllUserData();
+      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
+        type: 'with_org_tree'
+      }).then((response) => {
+        let message = response.data.message;
+        let data = response.data.data;
+        switch (message) {
+          case responseMessages['ok']:
+            this.userData = data;
+            break;
+        }
+      })
+
     },
     data() {
       return {

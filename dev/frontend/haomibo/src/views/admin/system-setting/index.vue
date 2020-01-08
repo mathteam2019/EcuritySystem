@@ -614,7 +614,7 @@
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
   import {getApiManager, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
-  import {apiBaseUrl} from "../../../constants/config";
+  import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
   import {validationMixin} from 'vuelidate';
   import {checkPermissionItem, getDirection} from "../../../utils";
@@ -1074,6 +1074,7 @@
           });
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/modify`, this.platFormData
           ).then((response) => {
+            getApiManager().post(`${apiParamUrl}`, this.platFormData);
             let message = response.data.message;
             let data = response.data.data;
             switch (message) {

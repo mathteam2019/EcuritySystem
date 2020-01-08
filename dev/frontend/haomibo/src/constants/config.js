@@ -16,6 +16,7 @@ export const localeOptions = [
 
  export const apiBaseUrl = 'http://59.110.233.165:9090/ecuritycheck';
 //export const apiBaseUrl = 'http://localhost:4546';
+export const apiParamUrl = 'http://59.110.233.165:8081/api/sys-security/save-checkparam';
 //export const apiBaseUrl = 'http://39.97.175.200:8080/ecuritycheckitem-0.0.1-SNAPSHOT';
 
 export const refreshTokenTimeDiff = 30;

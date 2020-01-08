@@ -102,7 +102,6 @@
 <script>
   import Switches from 'vue-switches'
   import notifications from '../../../data/notifications'
-
   import {mapActions, mapGetters, mapMutations} from 'vuex'
   import {MenuIcon, MobileMenuIcon} from '../../../components/Svg'
   import {apiBaseUrl, defaultColor, localeOptions, menuHiddenBreakpoint} from '../../../constants/config'

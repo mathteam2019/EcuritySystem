@@ -5,7 +5,8 @@ const data = [
     label: "menu.dashboard",
     to: "/user/dashboard",
     newWindow: false,
-    permissionId: null
+    permissionId: null,
+    subs:null
   },
   {
     id: "personal-inspection",
@@ -133,7 +134,6 @@ const data = [
       },
     ]
   },
-
 ];
 
 export default data;

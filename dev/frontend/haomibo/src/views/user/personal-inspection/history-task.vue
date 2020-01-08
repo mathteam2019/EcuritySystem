@@ -99,13 +99,12 @@
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
                 :per-page="taskVuetableItems.perPage"
-                :sort-order="task"
                 pagination-path="pagination"
                 class="table-hover"
                 @vuetable:pagination-data="onTaskVuetablePaginationData"
               >
                 <template slot="task" slot-scope="props">
-                    <span v-if="props.rowData.task!=null" class="cursor-p text-primary"
+                    <span v-if="props.rowData.historyId!=null" class="cursor-p text-primary"
                           @click="onRowClicked(props.rowData.historyId)">
                       {{props.rowData.task.taskNumber}}
                     </span>
@@ -113,6 +112,7 @@
                 </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null"></div>
+                  <div v-else-if="props.rowData.workMode.modeName==null"></div>
                   <div v-else>
                     <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
@@ -149,10 +149,14 @@
 
     <div v-if="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="3">
-          <b-card class="pt-4 h-100">
+        <b-col cols="4" style="padding-left: 13px; padding-right: 8px">
+          <b-card class="h-100">
+            <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
+            <div>
+              <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">{{$t('personal-inspection.scanned-image')}}</div>
+            </div>
             <b-row class="mb-1">
-              <b-col>
+              <b-col style="margin-bottom: 6px;" class="icon-container">
                 <div v-if="showPage.workMode==null"></div>
                 <div v-else>
                   <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
@@ -173,23 +177,21 @@
                   </div>
                 </div>
               </b-col>
-              <b-col class="text-right icon-container">
+              <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
                 <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
               </b-col>
             </b-row>
-
-            <b-row class="mb-4">
-              <b-col>
-                <canvas id="firstcanvas" class="img-fluid w-100"/>
+            <b-row style="margin-bottom: 3.5rem;">
+              <b-col style="padding-right: 0.5rem; padding-left: 1.5rem;" >
+                <canvas id="firstcanvas" style="height: 300px;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col>
-                <canvas id="secondcanvas" class="img-fluid w-100"/>
+              <b-col style="padding-right: 1.5rem; padding-left: 0.5rem;">
+                <canvas id="secondcanvas" style="height: 300px;" class="img-fluid w-100 "/>
               </b-col>
             </b-row>
-
-            <b-row class="mb-2">
+            <b-row>
               <b-col class="control-group">
                 <div class="control-btn-wrapper">
 
@@ -312,11 +314,14 @@
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="9">
+        <b-col cols="8" style="padding-right: 13px">
           <b-card class="h-100 d-flex flex-column right-card">
+            <div style="height: 20px;">
+              <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+              <div style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.history')}}</div>
+            </div>
             <div class="history-chart">
               <div>
-
                 <div class="part">
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
@@ -361,13 +366,15 @@
                     <div>diagram</div>
                   </div>
                   <div class="top-date">
+                    <label v-if="showPage.workMode===null"></label>
                     <label
-                      v-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
+                      v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
                     <label v-else></label>
                   </div>
                   <div class="bottom-date">
+                    <label v-if="showPage.workMode===null"></label>
                     <label
-                      v-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
+                      v-else-if="showPage.workMode.modeName===getModeDataCode('scan+judge') || showPage.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.judgeEndTime)}}</label>
                     <label v-else></label>
                   </div>
                 </div>
@@ -403,9 +410,7 @@
                 </div>
 
               </div>
-
             </div>
-
             <b-row>
               <b-col>
                 <b-form-group>
@@ -413,8 +418,8 @@
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null"></label>
-                  <label v-else>{{showPage.task.taskNumber}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.task == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else v-model="showPage.task.taskNumber"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -423,9 +428,9 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.task == null"></label>
-                  <label v-else-if="showPage.task.field == null"></label>
-                  <label v-else>{{showPage.task.field.fieldDesignation}}</label>
+                  <b-form-input disabled v-if="showPage.task==null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-else-if="showPage.task.field==null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-else v-model="showPage.task.field.fieldDesignation" style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -435,7 +440,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <label v-if="showPage.scanDevice == null"></label>
-                  <label v-else>{{showPage.scanDevice.deviceName}}</label>
+                  <b-form-input disabled v-else v-model="showPage.scanDevice.deviceName" style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -444,8 +449,8 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan == null"></label>
-                  <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.serScan == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getOptionValue(showPage.serScan.scanImageGender)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -457,8 +462,8 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.handDevice == null"></label>
-                  <label v-else>{{showPage.handDevice.deviceName}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.handDevice == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else v-model="showPage.handDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -467,8 +472,8 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.judgeDevice == null"></label>
-                  <label v-else>{{showPage.judgeDevice.deviceName}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.judgeDevice == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else v-model="showPage.judgeDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -477,25 +482,9 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <div v-if="showPage.workMode==null"></div>
-                  <div v-else>
-                    <div v-if="showPage.workMode.modeName===getModeDataCode('all')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan+judge')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workMode.modeName===getModeDataCode('scan+hand')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                    </div>
-                  </div>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.workMode==null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else-if="showPage.workMode==null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getModeName(showPage.workMode.modeName)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -504,8 +493,8 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.judgeResult==null"></label>
-                  <label v-else>{{getOptionValue(showPage.judgeResult)}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.judgeResult == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getOptionValue(showPage.judgeResult)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -516,7 +505,7 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{getOptionValue(showPage.handAppraise)}} </label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" :value="getOptionValue(showPage.handAppraise)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -533,14 +522,15 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.note == null"></label>
-                  <label v-else>{{showPage.note}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-if="showPage.note == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-else v-model="showPage.note"/>
                 </b-form-group>
               </b-col>
             </b-row>
             <b-row>
               <b-col>
-                <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
+                <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+                <label style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -569,11 +559,12 @@
                   </b-col>
                 </b-row>
 
-                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+                <label style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery" style="margin-top: 0.5rem">
                   <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
                          @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
+                    <img :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>
 
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
@@ -583,7 +574,6 @@
                     </video>
                   </b-col>
                   <light-gallery :images="images" :index="photoIndex" :disable-scroll="true" @close="handleHide()"/>
-
                 </b-row>
               </b-col>
               <b-col style="max-width: 45%;">
@@ -595,7 +585,7 @@
 
                   </b-col>
                 </b-row>
-                <b-row style="margin-top: 2rem">
+                <b-row style="margin-top: 0.5rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button size="sm" variant="orange default" :disabled="checkPermItem('history_task_save')" @click="onCollectionClicked(history_id)">
                       <i class="icofont-gift"/>
@@ -646,6 +636,7 @@
   .operation-icon {
     width: 24px;
     height: 24px;
+    margin-right: 8px;
   }
 
   .icon-container {
@@ -678,7 +669,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 5px;
 
         img {
           $size: 40px;
@@ -758,7 +749,6 @@
 
       background: url("/assets/img/history_chart.png") no-repeat;
       background-size: contain;
-
 
       $elements: 5;
       @for $i from 0 to $elements {
@@ -879,6 +869,7 @@
       VueSlideBar
     },
     mounted() {
+      this.$refs.taskVuetable.$parent.transform = this.transform.bind(this);
       this.getSiteOption();
     },
     data() {
@@ -912,7 +903,6 @@
         },
         isCheckAll: false,
         pageStatus: 'table',
-        currentPage: null,
         apiBaseURL: '',
         filter: {
           taskNumber: null,
@@ -956,15 +946,6 @@
         ],
 
         onSiteOption: [],
-
-        sortOrder: [
-          {
-            field: 'historyId',
-            sortField: 'historyId',
-            direction: 'asc'
-          }
-        ],
-
         taskVuetableItems: {
           apiUrl: `${apiBaseUrl}/task/history-task/get-by-filter-and-page`,
           fields: [
@@ -1073,27 +1054,11 @@
         },
         power: false,
 
-        // thumbs: [
-        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-        //   {name: '11.3.mp4', src: '/assets/img/11.3.mp4'}
-        // ],
-        // images: [
-        //   '/assets/img/drug.jpg',
-        //   '/assets/img/drug.jpg',
-        //   '/assets/img/glock.jpg',
-        //   '/assets/img/glock.jpg',
-        //   '/assets/img/11.3.mp4',
-        // ],
-
         thumbs: [],
         images: [],
         videos: [],
         photoIndex: null,
-        videoIndex: null,
-        showVideo:false,
+        showVideo: false,
 
         widthRate:[],
         heightRate:[],
@@ -1222,15 +1187,6 @@
         this.photoIndex = null;
         this.isOpen = false;
       },
-      onTVideoClick(index) {
-
-        this.videoIndex = index;
-        this.isOpen= true;
-      },
-      videoHide() {
-        this.videoIndex = null;
-        this.autoplay=true;
-      },
 
       onlyOneSlide(value){
         if(this.power === false) {
@@ -1333,6 +1289,19 @@
         return dictionary[value];
       },
 
+      getModeName(value){
+        const dictionary = {
+
+          "1000001301": `安检仪+(本地手检)`,
+          "1000001302": `安检仪+手检端`,
+          "1000001303": `安检仪+审图端`,
+          "1000001304": `安检仪+审图端+手检端`,
+
+        };
+        if (!dictionary.hasOwnProperty(value)) return '';
+        return dictionary[value];
+      },
+
       onExportButton() {
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
@@ -1378,8 +1347,10 @@
           });
 
       },
+
       onRowClicked(taskNumber) {
         this.pageStatus = 'show';
+        // this.currentPage = httpOptions.params.page;
         let url1 = this.imageUrls[0];
         let url2 = this.imageUrls[1];
         let rateWidth, rateHeight;
@@ -1463,7 +1434,6 @@
                   rRectInfo = JSON.parse(rRectInfo);
                   if(rateHeight!==0&&rateWidth!==0) {
                     for (let i = 0; i < rRectInfo[0].rectsAdded.length; i++) {
-                      console.log(rRectInfo[0].rectsAdded.length);
                       this.rRects.push({
                         x: rateWidth * rRectInfo[0].rectsAdded[i].x,
                         y: rateHeight * rRectInfo[0].rectsAdded[i].y,
@@ -1574,9 +1544,15 @@
         this.history_id = taskNumber;
       },
       getDateTimeFormat2(dataTime) {
+      if(dataTime==null){
+        return '';
+      }
         return getDateTimeWithFormat(dataTime);
       },
       getDateTimeFormat(dataTime) {
+        if(dataTime==null){
+          return '';
+        }
         return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
@@ -1629,10 +1605,10 @@
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
           filter: this.filter,
-          sort:httpOptions.params.sort,
           perPage: this.taskVuetableItems.perPage,
         });
       },
+      //sort:httpOptions.params.sort,
       onTaskVuetablePaginationData(paginationData) {
         this.$refs.taskVuetablePagination.setPaginationData(paginationData)
       },

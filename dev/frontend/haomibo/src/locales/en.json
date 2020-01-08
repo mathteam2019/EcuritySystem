@@ -2,6 +2,34 @@
   "general": {
     "copyright": "Piaf Vue © 2018 All Rights Reserved."
   },
+  "response-error-message": {
+    "used-category-name": "设备分类名称重复",
+    "used-template-name": "模板名称重复",
+    "used-archive-name": "档案名称重复",
+    "used-device-name": "设备名称重复",
+    "used-org-name": "机构名称重复",
+    "used-user-group-name": "人员组名称重复",
+    "used-data-group-name": "数据组名称重复",
+    "used-role-name": "角色名称重复",
+    "used-category-number": "设备分类编号重复",
+    "used-template-number": "模板编号重复",
+    "used-archive-number": "档案编号重复",
+    "used-device-serial": "设备编号重复",
+    "used-device-designation": "设备名称重复",
+    "used-field-serial": "场地编号重复",
+    "used-field-designation": "场地名称重复",
+    "used-org-number": "机构编号重复",
+    "used-user-group-number": "人员组编号重复",
+    "used-data-group-number": "数据组编号重复",
+    "used-role-number": "角色编号重复",
+    "has-data-groups":"机构已经使用-数据组",
+    "has-roles":"机构已经使用-角色",
+    "has-fields":"机构已经使用-场地",
+    "role-already-used":"角色已经使用",
+    "data-group-already-used":"数据组已经使用",
+    "category-has-archive-template":"设备分类已经使用-档案模板",
+    "category-has-children":"设备分类该有孩子"
+  },
   "user": {
     "login-title": "Login",
     "register": "Register",
@@ -526,7 +554,8 @@
       "added-successfully": "Added successfully.",
       "delete-prompt": "Delete prompt",
       "make-inactive-prompt": "Make inactive prompt",
-      "has-devices": "Has devices."
+      "has-devices": "Has devices.",
+      "required-indicator-value":"有必要设备指标"
     },
     "archive":{
       "technical-indicator":"Technical Indicator",
@@ -594,6 +623,10 @@
     }
   },
   "system-setting": {
+    "required-history-data-storage": "数据存储要选择",
+    "required-history-data-export": "数据导出要选择",
+    "required-from-device-list" : "适用于要选择",
+    "site": "场地",
     "site-list": "Site list",
     "site-architecture": "Site architecture",
     "site-name": "Site name",
@@ -620,7 +653,6 @@
     "prompt": "Prompt",
     "ok": "OK",
     "cancel": "Cancel",
-    "site": "Site",
     "super-site": "Super Site",
     "system-phone": "System Phone",
     "make-inactive-prompt": "Do you want to make inactive this site?",
@@ -1013,6 +1045,9 @@
     }
   },
   "device-config":{
+    "required-manual-device-select":"手检组要选择",
+    "required-judge-device-select":"判图组要选择",
+    "required-from-device-select":"适用于设备要选择",
     "maintenance-config": {
       "applied": "Applied",
       "position": "Position",

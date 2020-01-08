@@ -891,14 +891,19 @@
     "judgement-station-identification": "判图站标识",
     "image": "图像",
     "task-result": "任务结论",
-    "obtained-evidence": "取证",
+    "obtained-evidence": "取证资料",
     "seized-contraband": "查获违禁品",
     "firearms": "枪支",
     "drug": "毒品",
     "dagger": "匕首",
     "cigarette": "香烟",
     "evaluation-chart": "评价判图",
-    "collection": "收藏"
+    "collection": "收藏",
+    "process": "过程任务详情",
+    "history" : "历史任务详情",
+    "invalid" : "无效任务详情",
+    "pending" : "待审批案例详情",
+    "personal" : "人员案例详情"
   },
   "maintenance-management": {
     "maintenance-task": {

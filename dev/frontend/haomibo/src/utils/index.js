@@ -243,6 +243,7 @@ export const checkPermissionItemById = (item) => {
 export const removeLoginInfo = () => {
   localStorage.removeItem('loginInfo');
   localStorage.removeItem('permInfo'); //remove permission Info too
+  localStorage.removeItem('permInfoId');
 };
 
 export const saveDicDataGroupByDicId = (data) => {

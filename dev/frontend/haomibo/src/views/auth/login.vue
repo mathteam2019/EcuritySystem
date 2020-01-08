@@ -184,7 +184,6 @@
 
 </style>
 
-
 <template>
   <b-row class="h-100 auth-login-page">
     <img class="position-absolute logo" src="../../assets/img/logo.png"/>

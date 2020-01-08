@@ -26,7 +26,7 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/admin/auth/login').catch(error => {
+        app.$router.push('/auth/login').catch(error => {
         });
         break;
       case responseMessages['token-expired']:
@@ -37,7 +37,7 @@ const getApiManager = function () {
           permanent: false
         });
 
-        app.$router.push('/admin/auth/login').catch(error => {
+        app.$router.push('/auth/login').catch(error => {
         });
         break;
 
@@ -76,7 +76,6 @@ const getApiManager = function () {
 };
 
 const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
-  console.log(datetime);
   if (datetime === "" || datetime == null)
     return "";
   var array;
@@ -106,7 +105,8 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
       return diff;
   }
  // datetime = '2019-12-31T18:10:49.000+0000';
-  return moment.parseZone(String(datetime)).format(format) //parse without timezone
+  return moment(String(datetime)).format(format)
+ //return moment.parseZone(String(datetime)).format(format) //parse without timezone
  // return moment.utc(String(datetime)).format(format) //parse with timezone
 };
 

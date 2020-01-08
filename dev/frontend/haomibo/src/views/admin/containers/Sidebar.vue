@@ -63,11 +63,12 @@ import {
     menuHiddenBreakpoint,
     subHiddenBreakpoint
 } from '../../../constants/config'
-import menuItems from '../../../constants/menu/admin'
+import _ from 'lodash'
 import Vue from 'vue';
 import Tooltip from 'vue-directive-tooltip';
 import 'vue-directive-tooltip/dist/vueDirectiveTooltip.css';
 import {checkPermissionItemById} from "../../../utils";
+import menuTmp from "../../../constants/menu/admin";
 Vue.use(Tooltip,{
   delay: 100,
 });
@@ -77,17 +78,18 @@ export default {
         return {
             selectedParentMenu: '',
             isMenuOver: false,
-            menuItems,
+            menuTmp,
+            menuItems:null,
             viewingParentMenu: '',
             subMenuIndex:0,
         }
     },
     mounted() {
-        this.selectMenu()
         this.checkMenuPermission();
-        window.addEventListener('resize', this.handleWindowResize)
-        document.addEventListener('click', this.handleDocumentClick)
-        this.handleWindowResize()
+        this.selectMenu();
+        window.addEventListener('resize', this.handleWindowResize);
+        document.addEventListener('click', this.handleDocumentClick);
+        this.handleWindowResize();
 
     },
     beforeDestroy() {
@@ -99,20 +101,21 @@ export default {
         ...mapMutations(['changeSideMenuStatus', 'addMenuClassname', 'changeSelectedMenuHasSubItems']),
 
       checkMenuPermission() {
-        //console.log(this.menuItems);
-        // var Tmp;
-        // Tmp = this.menuItems;
-        for(let i=0; i<this.menuItems.length; i++){
-          if(this.menuItems[i].permissionId != null){
-            if(checkPermissionItemById(this.menuItems[i].permissionId)){
-              this.menuItems.splice(i, 1);
-            }
-          }
-          if(this.menuItems[i].subs){
-            for(let j=0; j<this.menuItems[i].subs.length; j++){
-              if(this.menuItems[i].subs[j].permissionId!=null){
-                if(checkPermissionItemById(this.menuItems[i].subs[j].permissionId)){
-                  this.menuItems[i].subs.splice(j, 1);
+        let tmp = this.menuTmp;
+        for(let i=0; i<tmp.length; i++){
+          if(tmp[i].permissionId != null){
+            if(checkPermissionItemById(tmp[i].permissionId)) {
+              tmp = _.without(tmp, tmp[i]);
+              i--;
+            }else{
+              if (tmp[i].subs != null) {
+                for(let j=0; j<tmp[i].subs.length; j++){
+                  if(tmp[i].subs[j].permissionId!=null){
+                    if(checkPermissionItemById(tmp[i].subs[j].permissionId)){
+                      _.pullAt(tmp[i].subs, j);
+                      j--;
+                    }
+                  }
                 }
               }
             }

@@ -8,7 +8,7 @@
       </b-row>
     </div>
 
-    <b-card class="main-without-tab" v-if="pageStatus === 'table'">
+    <b-card class="main-without-tab" v-show="pageStatus === 'table'">
       <div class="h-100 d-flex flex-column">
         <b-row class="pt-2">
           <b-col cols="8">
@@ -114,12 +114,16 @@
       </div>
     </b-card>
 
-    <div v-if="pageStatus === 'show'">
+    <div v-show="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="3">
-          <b-card class="pt-4 h-100">
+        <b-col cols="4" style="padding-left: 13px; padding-right: 8px">
+          <b-card class="h-100">
+            <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
+            <div>
+              <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">{{$t('personal-inspection.scanned-image')}}</div>
+            </div>
             <b-row class="mb-1">
-              <b-col>
+              <b-col style="margin-bottom: 6px;" class="icon-container">
                 <div v-if="showPage.workFlow==null"></div>
                 <div v-else-if="showPage.workFlow.workMode==null"></div>
                 <div v-else>
@@ -141,23 +145,21 @@
                   </div>
                 </div>
               </b-col>
-              <b-col class="text-right icon-container">
+              <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
               </b-col>
             </b-row>
-
-            <b-row class="mb-4">
-              <b-col>
-                <canvas id="firstcanvas" class="img-fluid w-100"/>
+            <b-row style="margin-bottom: 3.5rem;">
+              <b-col style="padding-right: 0.5rem; padding-left: 1.5rem;" >
+                <canvas id="firstcanvas" style="height: 300px;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col>
-                <canvas id="secondcanvas" class="img-fluid w-100"/>
+              <b-col style="padding-right: 1.5rem; padding-left: 0.5rem;">
+                <canvas id="secondcanvas" style="height: 300px;" class="img-fluid w-100 "/>
               </b-col>
             </b-row>
-
-            <b-row class="mb-2">
+            <b-row>
               <b-col class="control-group">
                 <div class="control-btn-wrapper">
 
@@ -280,11 +282,14 @@
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="9">
+        <b-col cols="8" style="padding-right: 13px">
           <b-card class="h-100 d-flex flex-column right-card">
+            <div style="height: 20px;">
+              <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+              <div style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.invalid')}}</div>
+            </div>
             <div class="history-chart">
               <div>
-
                 <div class="part">
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
@@ -332,11 +337,13 @@
                     <div>diagram</div>
                   </div>
                   <div class="top-date">
-                    <label v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
+                    <label v-if="showPage.serJudgeGraph==null"/>
+                    <label v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
                     <label v-else></label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+                    <label v-if="showPage.serJudgeGraph==null"/>
+                    <label v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
                     <label v-else></label>
                   </div>
                 </div>
@@ -373,9 +380,7 @@
                 </div>
 
               </div>
-
             </div>
-
             <b-row>
               <b-col>
                 <b-form-group>
@@ -383,7 +388,7 @@
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label>{{showPage.taskNumber}}</label>
+                  <b-form-input disabled v-model="showPage.taskNumber" style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -392,8 +397,8 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.field == null"></label>
-                  <label v-else>{{showPage.field.fieldDesignation}}</label>
+                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke;"/>
+                  <b-form-input disabled v-else v-model="showPage.field.fieldDesignation" style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -402,9 +407,9 @@
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan == null"></label>
-                  <label v-else-if="showPage.serScan.scanDevice == null"></label>
-                  <label v-else>{{showPage.serScan.scanDevice.deviceName}}</label>
+                  <b-form-input disabled v-if="showPage.serScan == null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName" style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -413,8 +418,8 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serScan == null"></label>
-                  <label v-else>{{getOptionValue(showPage.serScan.scanImageGender)}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.serScan == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getOptionValue(showPage.serScan.scanImageGender)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -426,9 +431,9 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serHandExamination == null"></label>
-                  <label v-else-if="showPage.serHandExamination.handDevice == null"></label>
-                  <label v-else>{{showPage.serHandExamination.handDevice.deviceName}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.serHandExamination == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else-if="showPage.serHandExamination.handDevice == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else v-model="showPage.serHandExamination.handDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -437,9 +442,9 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serJudgeGraph == null"></label>
-                  <label v-else-if="showPage.serJudgeGraph.judgeDevice == null"></label>
-                  <label v-else>{{showPage.serJudgeGraph.judgeDevice.deviceName}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.serJudgeGraph == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else-if="showPage.serJudgeGraph.judgeDevice == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else v-model="showPage.serJudgeGraph.judgeDevice.deviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -448,26 +453,9 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <div v-if="showPage.workFlow==null"></div>
-                  <div v-else-if="showPage.workFlow.workMode==null"></div>
-                  <div v-else>
-                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('all')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
-                    </div>
-                    <div v-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand')">
-                      <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
-                      <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
-                    </div>
-                  </div>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.workFlow==null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else-if="showPage.workFlow.workMode==null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getModeName(showPage.workFlow.workMode.modeName)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -476,8 +464,8 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.serJudgeGraph == null"></label>
-                  <label v-else>{{getOptionValue(showPage.serJudgeGraph.judgeResult)}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.serJudgeGraph == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getOptionValue(showPage.serJudgeGraph.judgeResult)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -488,8 +476,8 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.history == null"></label>
-                  <label v-else>{{getOptionValue(showPage.history.handAppraise)}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-if="showPage.history == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else :value="getOptionValue(showPage.history.handAppraise)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -506,14 +494,15 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <label v-if="showPage.note == null"></label>
-                  <label v-else>{{showPage.note}}</label>
+                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-if="showPage.note == null"/>
+                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-else v-model="showPage.note"/>
                 </b-form-group>
               </b-col>
             </b-row>
             <b-row>
               <b-col>
-                <label class="font-weight-bold">{{$t('personal-inspection.seized-contraband')}}</label>
+                <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+                <label style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
                 <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"  style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -542,11 +531,12 @@
                   </b-col>
                 </b-row>
 
-                <label class="font-weight-bold">{{$t('personal-inspection.obtained-evidence')}}</label>
+                <div style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
+                <label style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.obtained-evidence')}}</label>
                 <b-row class="evidence-gallery" style="margin-top: 0.5rem">
                   <b-col cols="auto" v-for="(thumb, thumbIndex) in thumbs" :key="`thumb_${thumbIndex}`"
                          @click="onThumbClick(thumbIndex)">
-                    <img :src="thumb.src" style="width: 50px; height: 40px;" :alt="thumb.name"/>
+                    <img :src="thumb.src" style="width: 60px; height: 45px;" :alt="thumb.name"/>
 
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
@@ -560,13 +550,13 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col cols="12" class="align-self-end text-right mt-3">
-                    <b-img v-if="validIcon === 'TRUE'" src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
-                    <b-img v-else src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                  <b-col cols="12" class="align-self-end text-right mt-3" style="width: 100px; height: 95px;">
+                    <b-img v-if="validIcon === 'TRUE'" hidden src="/assets/img/icon_invalid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
+                    <b-img v-else hidden src="/assets/img/icon_valid.png" class="align-self-end" style="width: 100px; height: 95px;"/>
 
                   </b-col>
                 </b-row>
-                <b-row style="margin-top: 2rem">
+                <b-row style="margin-top: 0.5rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(history_id)">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
@@ -592,7 +582,6 @@
     </div>
   </div>
 </template>
-
 <style lang="scss">
   span.cursor-p {
     cursor: pointer !important;
@@ -613,6 +602,7 @@
   .operation-icon {
     width: 24px;
     height: 24px;
+    margin-right: 8px;
   }
 
   .icon-container {
@@ -645,7 +635,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 5px;
 
         img {
           $size: 40px;
@@ -726,7 +716,6 @@
       background: url("/assets/img/history_chart.png") no-repeat;
       background-size: contain;
 
-
       $elements: 5;
       @for $i from 0 to $elements {
         .part:nth-child(#{$i + 1}) {
@@ -767,7 +756,6 @@
   }
 
 </style>
-
 <script>
 
   import {apiBaseUrl} from "../../../constants/config";
@@ -803,7 +791,6 @@
       this.getSiteOption();
     },
     data() {
-
       return {
         videoOptions: {
           autoplay: true,
@@ -958,27 +945,11 @@
         },
         power: false,
 
-        // thumbs: [
-        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/drug-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-        //   {name: '001.jpg', src: '/assets/img/glock-thumb.jpg'},
-        //   {name: '11.3.mp4', src: '/assets/img/11.3.mp4'}
-        // ],
-        // images: [
-        //   '/assets/img/drug.jpg',
-        //   '/assets/img/drug.jpg',
-        //   '/assets/img/glock.jpg',
-        //   '/assets/img/glock.jpg',
-        //   '/assets/img/11.3.mp4',
-        // ],
-
         thumbs: [],
         images: [],
         videos: [],
         photoIndex: null,
-        videoIndex: null,
-        showVideo:false,
+        showVideo: false,
 
         widthRate:[],
         heightRate:[],
@@ -1107,15 +1078,6 @@
         this.photoIndex = null;
         this.isOpen = false;
       },
-      onTVideoClick(index) {
-
-        this.videoIndex = index;
-        this.isOpen= true;
-      },
-      videoHide() {
-        this.videoIndex = null;
-        this.autoplay=true;
-      },
 
       onlyOneSlide(value){
         if(this.power === false) {
@@ -1151,7 +1113,7 @@
           this.isSlidebar3Expended = false;
           this.isSlidebar4Expended = false;
           // if(this.power === false){
-          //
+
           //   loadImageCanvas(this.imageUrls[0], this.imageUrls[1]);
           // } else{
           //   loadImageCanvas(this.imageUrls[3], this.imageUrls[4]);
@@ -1199,7 +1161,7 @@
           "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
           "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
-          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`,
+          "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
         };
         if (!dictionary.hasOwnProperty(dataCode)) return '';
         return dictionary[dataCode];
@@ -1212,6 +1174,19 @@
           "scan+hand": `1000001302`,
           "scan+judge": `1000001303`,
           "all": `1000001304`,
+
+        };
+        if (!dictionary.hasOwnProperty(value)) return '';
+        return dictionary[value];
+      },
+
+      getModeName(value){
+        const dictionary = {
+
+          "1000001301": `安检仪+(本地手检)`,
+          "1000001302": `安检仪+手检端`,
+          "1000001303": `安检仪+审图端`,
+          "1000001304": `安检仪+审图端+手检端`,
 
         };
         if (!dictionary.hasOwnProperty(value)) return '';
@@ -1323,10 +1298,7 @@
                         colour: colourInfo.scanRecogniseColour,
                       });
                     }
-                    // this.imgRect[i].x = rateWidth * imageInfo[i].imageRects[0].x;
-                    // this.imgRect[i].y = rateHeight * imageInfo[i].imageRects[0].y;
-                    // this.imgRect[i].width = rateWidth * imageInfo[i].imageRects[0].width;
-                    // this.imgRect[i].height = rateHeight * imageInfo[i].imageRects[0].height;
+            
                     for(let j=0; j<imageInfo[i].cartoonRects.length; j++){
                       this.cartoonRect.push({
                         x: rateWidth * imageInfo[i].cartoonRects[j].x,
@@ -1337,10 +1309,6 @@
                       });
                     }
 
-                    // this.cartoonRect[i].x = rateWidth * imageInfo[i].cartoonRects[0].x;
-                    // this.cartoonRect[i].y = rateHeight * imageInfo[i].cartoonRects[0].y;
-                    // this.cartoonRect[i].width = rateWidth * imageInfo[i].cartoonRects[0].width;
-                    // this.cartoonRect[i].height = rateHeight * imageInfo[i].cartoonRects[0].height;
                   }
                 }
                 if(this.showPage.serJudgeGraph!=null) {
@@ -1348,7 +1316,6 @@
                   rRectInfo = JSON.parse(rRectInfo);
                   if(rateHeight!==0&&rateWidth!==0) {
                     for (let i = 0; i < rRectInfo[0].rectsAdded.length; i++) {
-                      console.log(rRectInfo[0].rectsAdded.length);
                       this.rRects.push({
                         x: rateWidth * rRectInfo[0].rectsAdded[i].x,
                         y: rateHeight * rRectInfo[0].rectsAdded[i].y,
@@ -1357,11 +1324,7 @@
                         colour: colourInfo.judgeRecogniseColour,
                       });
 
-                      // this.rRects[i].x = rateWidth * rRectInfo[0].rectsAdded[i].x;
-                      // this.rRects[i].y = rateHeight * rRectInfo[0].rectsAdded[i].y;
-                      // this.rRects[i].width = rateWidth * rRectInfo[0].rectsAdded[i].width;
-                      // this.rRects[i].height = rateHeight * rRectInfo[0].rectsAdded[i].height;
-                    }
+            }
 
                     for (let i = 0; i < rRectInfo[0].rectsDeleted.length; i++) {
                       this.rRects.push({
@@ -1371,10 +1334,7 @@
                         height: rateHeight * rRectInfo[0].rectsDeleted[i].height,
                         colour: colourInfo.displayDeleteSuspicionColour,
                       });
-                      // this.rRects[i].x = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].x;
-                      // this.rRects[i].y = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].y;
-                      // this.rRects[i].width = rateWidth * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].width;
-                      // this.rRects[i].height = rateHeight * rRectInfo[0].rectsDeleted[i - rRectInfo[0].rectsAdded.length].height;
+              
                     }
                   }
                 }
@@ -1431,9 +1391,15 @@
         this.history_id = taskNumber;
       },
       getDateTimeFormat2(dataTime) {
+        if(dataTime==null){
+          return '';
+        }
         return getDateTimeWithFormat(dataTime);
       },
       getDateTimeFormat(dataTime) {
+        if(dataTime==null){
+          return '';
+        }
         return getDateTimeWithFormat(dataTime, 'monitor');
       },
 
@@ -1482,7 +1448,6 @@
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,
-
           filter: this.filter,
 
           perPage: this.taskVuetableItems.perPage,
