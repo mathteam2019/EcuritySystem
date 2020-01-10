@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerPlatformCheckParams;
+import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
+import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultType;
 import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceType;
+import com.nuctech.securitycheck.backgroundservice.common.models.DeviceOvertimeModel;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
@@ -12,6 +15,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.MonitoringVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.SysMonitoringDeviceStatusInfoVO;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
+import com.nuctech.securitycheck.backgroundservice.service.ISerMqMessageService;
 import com.nuctech.securitycheck.backgroundservice.service.ISerPlatformCheckParamsService;
 import io.github.hengyunabc.zabbix.api.DefaultZabbixApi;
 import io.github.hengyunabc.zabbix.api.Request;
@@ -53,19 +57,22 @@ public class SchedulerController {
     @Autowired
     private ISerPlatformCheckParamsService iSerPlatformCheckParamsService;
 
+    @Autowired
+    private ISerMqMessageService serMqMessageService;
+
     private ZabbixApi zabbixApi;
 
     /**
      * 后台服务向安检仪推送工作超时提醒
      */
-    @Scheduled(cron = "0 * * * * ?")
+//    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.1.17 后台服务向安检仪推送工作超时提醒")
     @PostMapping("monitor-security-overtime")
     public void monitorSecurityOvertime() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.dev.overtime"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.dev.overtime"));
 
-        MonitoringVO result = new MonitoringVO();
+        DeviceOvertimeModel result = new DeviceOvertimeModel();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -98,10 +105,15 @@ public class SchedulerController {
             if (deviceListToRest.size() > 0) {
 
                 // 将结果发送到rabbitmq
-                result.setMsgContent(BackgroundServiceUtil.getConfig("notify.message.overtime"));
-                result.setDeviceListToRest(deviceListToRest);
-                resultMessageVO.setContent(result);
-                messageSender.cronJobSecurityOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                for(int i = 0; i < deviceListToRest.size(); i ++) {
+                    result.setGuid(deviceListToRest.get(i).getGuid());
+                    result.setRemind(DeviceDefaultType.TRUE.getValue());
+                    resultMessageVO.setContent(result);
+                    messageSender.cronJobSecurityOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.toString());
+                }
+
             }
         } catch (Exception e) {
             log.error("随着时间的推移未能监控安全性");
@@ -112,14 +124,14 @@ public class SchedulerController {
     /**
      * 后台服务向判图站推送工作超时提醒
      */
-    @Scheduled(cron = "0 * * * * ?")
+//    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.2.12 后台服务向判图站推送工作超时提醒")
     @PostMapping("monitor-judge-overtime")
     public void monitorJudgeOvertime() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.rem.overtime"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"));
 
-        MonitoringVO result = new MonitoringVO();
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -150,10 +162,15 @@ public class SchedulerController {
             }
             if (deviceListToRest.size() > 0) {
                 // 将结果发送到rabbitmq
-                result.setMsgContent(BackgroundServiceUtil.getConfig("notify.message.overtime"));
-                result.setDeviceListToRest(deviceListToRest);
-                resultMessageVO.setContent(result);
-                messageSender.cronJobJudgeOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                for(int i = 0; i < deviceListToRest.size(); i ++) {
+                    DeviceOvertimeModel result = new DeviceOvertimeModel();
+                    result.setGuid(deviceListToRest.get(i).getGuid());
+                    result.setRemind(DeviceDefaultType.TRUE.getValue());
+                    resultMessageVO.setContent(result);
+                    messageSender.cronJobJudgeOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.toString());
+                }
             }
         } catch (Exception e) {
             log.error("随着时间的推移未能监督法官");
@@ -164,14 +181,13 @@ public class SchedulerController {
     /**
      * 后台服务向手检端推送工作超时提醒
      */
-    @Scheduled(cron = "0 * * * * ?")
+//    @Scheduled(cron = "0 * * * * ?")
     @ApiOperation("4.3.3.13 后台服务向手检端推送工作超时提醒")
     @PostMapping("monitor-manual-overtime")
     public void monitorManualOvertime() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.man.overtime"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"));
 
-        MonitoringVO result = new MonitoringVO();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -204,10 +220,15 @@ public class SchedulerController {
             if (deviceListToRest.size() > 0) {
 
                 // 将结果发送到rabbitmq
-                result.setMsgContent(BackgroundServiceUtil.getConfig("notify.message.overtime"));
-                result.setDeviceListToRest(deviceListToRest);
-                resultMessageVO.setContent(result);
-                messageSender.cronJobHandOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                for(int i = 0; i < deviceListToRest.size(); i ++) {
+                    DeviceOvertimeModel result = new DeviceOvertimeModel();
+                    result.setGuid(deviceListToRest.get(i).getGuid());
+                    result.setRemind(DeviceDefaultType.TRUE.getValue());
+                    resultMessageVO.setContent(result);
+                    messageSender.cronJobHandOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.toString());
+                }
             }
         } catch (Exception e) {
             log.error("随着时间的推移未能监控手检端");
@@ -218,7 +239,7 @@ public class SchedulerController {
     /**
      * Monitor Server Free Disk Space from Zabbix
      */
-    @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(cron = "0 0/5 * * * ?")
     public void monitorServerFreeSpace() {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.zabbix"));

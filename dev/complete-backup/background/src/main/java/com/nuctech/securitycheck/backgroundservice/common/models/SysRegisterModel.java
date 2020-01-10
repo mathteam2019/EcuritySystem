@@ -1,14 +1,18 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.jboss.netty.util.internal.StringUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -23,27 +27,30 @@ import java.util.Date;
 public class SysRegisterModel {
 
     @ApiModelProperty(value = "安检仪GUID")
-    @NotBlank
-    @Length(min = 1, max = 36)
     private String guid;
 
     @ApiModelProperty(value = "时间")
-    @NotNull
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date time;
+    private String Time;
 
     @ApiModelProperty(value = "安检仪IP")
-    @NotBlank
-    @Length(min = 1, max = 15)
     private String ip;
 
     @ApiModelProperty(value = "软件版本号")
-    @Length(max = 30)
     private String softwareVersion;
 
     @ApiModelProperty(value = "算法版本号")
-    @Length(max = 30)
     private String algorithmVersion;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || StringUtils.isBlank(ip) || StringUtils.isBlank(Time)) {
+            return 1;
+        }
+        if(DateUtil.stringDateToDate(Time) == null) {
+            return 2;
+        }
+        return 0;
+    }
+
+
 
 }

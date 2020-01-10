@@ -86,7 +86,7 @@ public class SerPlatformCheckParams extends BaseEntity implements Serializable {
     private String historyDataExport;
 
     @Column(name = "DISPLAY_DELETE_SUSPICION", length = 10)
-    private Long displayDeleteSuspicion;
+    private String displayDeleteSuspicion;
 
     @Column(name = "DISPLAY_DELETE_SUSPICION_COLOUR", length = 255)
     private String displayDeleteSuspicionColour;

@@ -1,9 +1,11 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,24 +25,25 @@ import java.util.Date;
 public class SysLoginModel {
 
     @ApiModelProperty(value = "安检仪GUID")
-    @NotBlank
-    @Length(min = 1, max = 36)
     private String guid;
 
     @ApiModelProperty(value = "用户名")
-    @NotBlank
-    @Length(min = 1, max = 50)
     private String userName;
 
     @ApiModelProperty(value = "密码")
-    @NotBlank
-    @Length(min = 1, max = 64)
     private String password;
 
     @ApiModelProperty(value = "登录时间")
-    @NotNull
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date loginTime;
+    private String loginTime;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || StringUtils.isBlank(userName) || StringUtils.isBlank(password) || StringUtils.isBlank(loginTime)) {
+            return 1;
+        }
+        if(DateUtil.stringDateToDate(loginTime) == null) {
+            return 2;
+        }
+        return 0;
+    }
 
 }

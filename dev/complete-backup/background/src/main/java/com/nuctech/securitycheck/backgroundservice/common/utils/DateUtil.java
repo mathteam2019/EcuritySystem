@@ -7,7 +7,7 @@ import java.util.TimeZone;
 public class DateUtil {
     static final String DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static String GetUTCdatetimeAsString()
+    public static String getUTCdatetimeAsString()
     {
         final SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -16,7 +16,14 @@ public class DateUtil {
         return utcTime;
     }
 
-    public static Date StringDateToDate(String StrDate)
+    public static String getDateTmeAsString(Date date)
+    {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DATEFORMAT);
+        final String strTime = sdf.format(date);
+        return strTime;
+    }
+
+    public static Date stringDateToDate(String StrDate)
     {
         Date dateToReturn = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat(DATEFORMAT);

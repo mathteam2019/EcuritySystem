@@ -3,6 +3,7 @@ package com.nuctech.securitycheck.backgroundservice.common.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * DispatchManualDeviceInfo
@@ -25,5 +26,12 @@ public class DispatchManualDeviceInfoVO {
     private Boolean localRecheck;
 
     private Long assignId;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || StringUtils.isBlank(imageGuid)) {
+            return 1;
+        }
+        return 0;
+    }
 
 }

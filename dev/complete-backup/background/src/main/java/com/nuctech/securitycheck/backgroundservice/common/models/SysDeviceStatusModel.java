@@ -3,6 +3,7 @@ package com.nuctech.securitycheck.backgroundservice.common.models;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -16,12 +17,17 @@ import org.hibernate.validator.constraints.NotBlank;
 @ApiModel(value = "SysDeviceStatusModel", description = "设备状态信息")
 public class SysDeviceStatusModel {
 
-    @NotBlank
     @ApiModelProperty(value = "设备 GUID")
     String guid;
 
-    @NotBlank
     @ApiModelProperty("用户")
     String loginName;
+
+    public int checkValid() {
+        if (StringUtils.isBlank(guid) || StringUtils.isBlank(loginName)) {
+            return 1;
+        }
+        return 0;
+    }
 
 }

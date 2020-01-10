@@ -1,8 +1,10 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -17,11 +19,19 @@ import org.hibernate.validator.constraints.NotBlank;
 public class HeartBeatModel {
 
     @NotBlank
-    @ApiModelProperty(value = "Guid")
     private String guid;
 
     @NotBlank
-    @ApiModelProperty(value = "发出心跳时间")
     private String heartbeatTime;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || StringUtils.isBlank(heartbeatTime)) {
+            return 1;
+        }
+        if(DateUtil.stringDateToDate(heartbeatTime) == null) {
+            return 2;
+        }
+        return 0;
+    }
     
 }

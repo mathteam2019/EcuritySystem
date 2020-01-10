@@ -64,6 +64,8 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_KNOWLEDGE_CASE_DEAL = "filter_ser_knowledge_case_deal"; //filter to SerKnowledgeCaseDeal
     public final static String FILTER_SER_KNOWLEDGE_CASE = "filter_ser_knowledge_case"; //filter to serialize SerKnowledgeCase
     public final static String FILTER_SER_CHECK_RESULT = "fitler_ser_check_result"; //filter to serialize SerImage
+    public final static String FILTER_SER_SEIZED_GOOD = "fitler_ser_seized_good"; //filter to serialize SerSeizedGood
+    public final static String FILTER_SER_TASK_TAG = "filter_ser_task_tag"; //filter to serialize SerTaskTag
 
     /**
      * Used to get default filter

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -21,26 +22,46 @@ import org.hibernate.validator.constraints.NotBlank;
 @Builder(toBuilder = true)
 @ApiModel(value = "PersonDataModel", description = "安检仪产生的数据，预留")
 public class PersonDataModel {
-    @NotBlank
     @ApiModelProperty(value = "证件类型*", example = "0")
-    private Integer type;
+    private String type;
 
-    @NotBlank
     @ApiModelProperty(value = "证件号")
     private String number;
 
-    @NotBlank
     @ApiModelProperty(value = "姓名")
     private String name;
 
-    @NotBlank
     @ApiModelProperty(value = "地址")
     private String address;
 
-    @NotBlank
     @ApiModelProperty(value = "人脸")
     private String face;
 
     @ApiModelProperty(value = "性别", example = "0")
-    private Integer sex;
+    private String sex;
+
+    private boolean checkValidValue(String str, boolean isSex) {
+        try {
+            long value = Long.valueOf(str);
+            if(isSex) {
+                if(value != 0 && value != 1) {
+                    return false;
+                }
+            }
+            return true;
+        } catch(Exception ex) {
+            return false;
+        }
+    }
+
+    public int checkValid() {
+        if(StringUtils.isBlank(type) || StringUtils.isBlank(number) || StringUtils.isBlank(name) || StringUtils.isBlank(address)
+                || StringUtils.isBlank(face) || StringUtils.isBlank(face)) {
+            return 1;
+        }
+        if(!checkValidValue(type, false) || !checkValidValue(sex, true)) {
+            return 2;
+        }
+        return 0;
+    }
 }

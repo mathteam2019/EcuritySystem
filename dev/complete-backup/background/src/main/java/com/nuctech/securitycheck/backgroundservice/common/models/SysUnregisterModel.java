@@ -1,9 +1,11 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,14 +25,19 @@ import java.util.Date;
 public class SysUnregisterModel {
 
     @ApiModelProperty(value = "安检仪GUID")
-    @NotBlank
-    @Length(min = 1, max = 36)
     private String guid;
 
     @ApiModelProperty(value = "时间")
-    @NotNull
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date time;
+    private String Time;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || StringUtils.isBlank(Time)) {
+            return 1;
+        }
+        if(DateUtil.stringDateToDate(Time) == null) {
+            return 2;
+        }
+        return 0;
+    }
 
 }

@@ -35,4 +35,6 @@ public class SerPlatformCheckParamsSimplifiedForTaskManagement {
 
     private String displayDeleteSuspicionColour;
 
+    private String displayDeleteSuspicion;
+
 }

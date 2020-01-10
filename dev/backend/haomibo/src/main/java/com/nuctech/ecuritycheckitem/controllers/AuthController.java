@@ -122,6 +122,8 @@ public class AuthController extends BaseController {
     @ToString
     public static class ChangePasswordRequestBody {
         @NotNull
+        String oldPassword;
+        @NotNull
         String password;
 
     }
@@ -249,6 +251,10 @@ public class AuthController extends BaseController {
         }
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+
+        if(!sysUser.getPassword().equals(requestBody.getOldPassword())) {
+            return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
+        }
 
         boolean result = authService.modifyPassword(sysUser.getUserId(), requestBody.getPassword());
         if(result == false) {

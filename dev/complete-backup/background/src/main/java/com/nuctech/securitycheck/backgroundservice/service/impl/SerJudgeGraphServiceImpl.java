@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -117,7 +118,6 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
             SysDevice deviceModel = new SysDevice();
             deviceModel.setGuid(securityGuid);
             Example<SysDevice> serDeviceEx = Example.of(deviceModel);
-            serDeviceEx = Example.of(deviceModel);
             SysDevice securityDevice = sysDeviceRepository.findOne(serDeviceEx);
 
 
@@ -158,7 +158,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                         .sysWorkflow(sysWorkflow)
                         .judgeDevice(judgeDevice)
                         .judgeResult(BackgroundServiceUtil.judgeConvert(judgeSerResult.getImageResult().getResult()))
-                        .judgeStartTime(judgeSerResult.getImageResult().getTime())
+                        .judgeStartTime(DateUtil.stringDateToDate(judgeSerResult.getImageResult().getTime()))
                         .judgeUser(sysUser)
                         .judgeEndTime(DateUtil.getCurrentDate())
                         .judgeSubmitRects(judgeSubmitRectsStr)
@@ -595,7 +595,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
 
                 JudgeSerResultModel judgeSerResultModel = new JudgeSerResultModel();
                 judgeSerResultModel.setImageResult(new ImageResultModel());
-                judgeSerResultModel.getImageResult().setTime(DateUtil.getCurrentDate());
+                judgeSerResultModel.getImageResult().setTime(DateUtil.getDateTmeAsString(DateUtil.getCurrentDate()));
                 judgeSerResultModel.getImageResult().setImageGuid(serTask.getTaskNumber());
                 judgeSerResultModel.getImageResult().setResult(devSerImageInfo.getImageData().getAtrResult());
                 judgeSerResultModel.getImageResult().setUserName(BackgroundServiceUtil.getConfig("default.user"));      // 默认用户

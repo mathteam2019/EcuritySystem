@@ -28,6 +28,8 @@ public interface ISysDeviceService {
 
     DispatchManualDeviceInfoVO isManualDeviceDispatched(String taskNumber);
 
+    boolean checkSecurityHandDevice(String guid);
+
     boolean register(SysDevice sysDevice, SysRegisterModel sysRegisterModel);
 
     boolean unRegister(SysDevice sysDevice, SysUnregisterModel sysUnregisterModel);

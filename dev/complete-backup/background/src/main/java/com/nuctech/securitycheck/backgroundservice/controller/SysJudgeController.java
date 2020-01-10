@@ -59,6 +59,9 @@ public class SysJudgeController {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ISerMqMessageService serMqMessageService;
+
     /**
      * 后台服务向远程短下发配置信息
      *
@@ -69,8 +72,8 @@ public class SysJudgeController {
     @PostMapping("send-dev-config")
     public void sendDeviceConfig(@ApiParam("设备guid") @RequestParam("guid") String guid) {
         //设置Rabbitmq的主题密钥和路由密钥
-        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.rem");
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.config");
+        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.userlist");
 
         try {
             // 从数据库获取设备(get device data from database)
@@ -133,6 +136,8 @@ public class SysJudgeController {
                 resultMessageVO.setKey(routingKey);
                 resultMessageVO.setContent(serDeviceConfigModel);
                 messageSender.sendDeviceConfigMessage(resultMessageVO, exchangeName, routingKey);
+                serMqMessageService.save(resultMessageVO, 0, serDeviceConfigModel.getGuid(), null,
+                        CommonConstant.RESULT_SUCCESS.toString());
             }
         } catch (Exception e) {
             log.error("无法发送设备配置");
@@ -143,57 +148,38 @@ public class SysJudgeController {
             model.setGuid(guid);
             resultMsg.setContent(model);
             messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
+            serMqMessageService.save(resultMsg, 0, model.getGuid(), null,
+                    CommonConstant.RESULT_FAIL.toString());
         }
     }
 
-    @ApiOperation("4.3.2.12 后台服务向安检仪推送工作超时提醒")
-    @PostMapping("monitor-judge-overtime")
-    public void monitorJudgeOvertime(DeviceOvertimeModel checkOvertimeModel) {
-        ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.rem.overtime"));
-
-        CommonResultVO result = new CommonResultVO();
-        ObjectMapper objectMapper = new ObjectMapper();
-        result.setGuid(checkOvertimeModel.getGuid());
-        if(checkOvertimeModel.getRemind() == true) {
-            result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-        } else {
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
-        }
-        try {
-            resultMessageVO.setContent(result);
-            messageSender.cronJobJudgeOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
-        } catch (Exception e) {
-            log.error("随着时间的推移未能监控安全性");
-            log.error(e.getMessage());
-        }
-    }
 
     /**
      * 后台服务向判图站推送待判图图像信息
      *
-     * @param taskNumber
+     * @param devSerImageInfoModel
      * @return
      */
     @Async
     @ApiOperation("4.3.2.11 后台服务向判图站推送待判图图像信息")
     @PostMapping("send-judge-image-info")
-    public void sendJudgeImageInfo(@RequestBody @ApiParam("请求报文定义") String taskNumber) {
-        SerJudgeImageInfoModel serJudgeImageInfoModel = serJudgeGraphService.sendJudgeImageInfo(taskNumber);
+    public void sendJudgeImageInfo(@RequestBody @ApiParam("请求报文定义") DevSerImageInfoModel devSerImageInfoModel) {
+        String taskNumber = devSerImageInfoModel.getImageData().getImageGuid();
         log.debug("4.3.2.11 后台服务向判图站推送待判图图像信息  service started at" + System.currentTimeMillis()
-                + "params:taskNumber" + serJudgeImageInfoModel.getImageData().getImageGuid());
+                + "params:taskNumber" + devSerImageInfoModel.getImageData().getImageGuid());
+        SerJudgeImageInfoModel serJudgeImageInfoModel = serJudgeGraphService.sendJudgeImageInfo(taskNumber);
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.rem.image"));
-        SendMessageModel sendMessageModel = SendMessageModel.builder()
-                .guid(serJudgeImageInfoModel.getGuid())
-                .imageGuid(serJudgeImageInfoModel.getImageData().getImageGuid())
-                .result(CommonConstant.RESULT_SUCCESS.getValue())
-                .build();
-        resultMessageVO.setContent(sendMessageModel);
-        messageSender.sendImageInfoToJudge(resultMessageVO);
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.imageinfo"));
 
         // 判断 是否超时
         if (serJudgeImageInfoModel.getGuid() != null) {         // 判图站分派超时-false
+
+            devSerImageInfoModel.setGuid(serJudgeImageInfoModel.getGuid());
+            resultMessageVO.setContent(devSerImageInfoModel);
+            messageSender.sendImageInfoToJudge(resultMessageVO);
+            serMqMessageService.save(resultMessageVO, 0, devSerImageInfoModel.getGuid(), devSerImageInfoModel.getImageData().getImageGuid(),
+                    CommonConstant.RESULT_SUCCESS.toString());
             boolean isProcessTimeout = false;
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -238,7 +224,7 @@ public class SysJudgeController {
                 imageResult.setImageGuid(serJudgeImageInfoModel.getImageData().getImageGuid());
                 imageResult.setResult(serJudgeImageInfoModel.getImageData().getAtrResult());
                 imageResult.setUserName(BackgroundServiceUtil.getConfig("default.user"));
-                imageResult.setTime(DateUtil.getCurrentDate());
+                imageResult.setTime(DateUtil.getDateTmeAsString(DateUtil.getCurrentDate()));
                 judgeSerResultModel.setImageResult(imageResult);
                 judgeSerResultModel.setGuid(serJudgeImageInfoModel.getGuid());
                 // 4.3.2.9 判图站向后台服务提交判图结论(提交超时结论)

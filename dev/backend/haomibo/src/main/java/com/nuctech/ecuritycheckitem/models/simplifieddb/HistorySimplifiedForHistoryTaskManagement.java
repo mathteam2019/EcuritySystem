@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.models.simplifieddb;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.BaseEntity;
+import com.nuctech.ecuritycheckitem.models.db.SerTaskTag;
 import com.nuctech.ecuritycheckitem.models.db.SysWorkMode;
 import lombok.Getter;
 import lombok.Setter;
@@ -273,6 +274,11 @@ public class HistorySimplifiedForHistoryTaskManagement extends BaseEntity implem
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private List<SerCheckResultSimplifiedForProcessTaskManagement> serCheckResultList;
+
+    @OneToMany()
+    @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private List<SerTaskTag> tagList;
 
     @javax.persistence.Transient
     private SerPlatformCheckParamsSimplifiedForTaskManagement platFormCheckParams;

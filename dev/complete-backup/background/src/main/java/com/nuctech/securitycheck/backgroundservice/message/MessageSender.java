@@ -84,6 +84,20 @@ public class MessageSender {
     }
 
     /**
+     * sendSysRemMessage
+     *
+     * @param encryptMsg encryptMessage
+     * @param routingKey routingKey
+     */
+    public void sendDevSysMessage(String encryptMsg, String routingKey) {
+        rabbitTemplate.convertAndSend(
+                BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
+                BackgroundServiceUtil.getConfig(routingKey),
+                encryptMsg
+        );
+    }
+
+    /**
      * sendRemUnregisterMessage
      *
      * @param encryptMsg Message
@@ -265,7 +279,21 @@ public class MessageSender {
      */
     public void cronJobSecurityOvertime(String encryptedContent) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.dev.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.dev.overtime"), encryptedContent);
+    }
+
+    /**
+     * sendSysRemMessage
+     *
+     * @param encryptMsg encryptMessage
+     * @param routingKey routingKey
+     */
+    public void sendSysDevMessage(String encryptMsg, String routingKey) {
+        rabbitTemplate.convertAndSend(
+                BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
+                BackgroundServiceUtil.getConfig(routingKey),
+                encryptMsg
+        );
     }
 
     /**
@@ -275,7 +303,7 @@ public class MessageSender {
      */
     public void cronJobHandOvertime(String encryptedContent) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.man"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.man.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"), encryptedContent);
     }
 
     /**
@@ -285,7 +313,7 @@ public class MessageSender {
      */
     public void cronJobJudgeOvertime(String encryptedContent) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.rem"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.rem.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"), encryptedContent);
     }
 
     /**
@@ -308,7 +336,7 @@ public class MessageSender {
     public void sendDispatchManual(String encryptedContent) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.dev.dispatch.manual"),
+                BackgroundServiceUtil.getConfig("routingKey.dev.dispatch.manual"),
                 encryptedContent);
     }
 
@@ -405,8 +433,8 @@ public class MessageSender {
      */
     public void sendSysDeviceSecurityInfoSynchronizeReplyMessage(String encryptMsg) {
         rabbitTemplate.convertAndSend(
-                BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.sys.synchronization"),
+                BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data"),
+                BackgroundServiceUtil.getConfig("routingKey.reply.data.synchronization"),
                 encryptMsg);
     }
 

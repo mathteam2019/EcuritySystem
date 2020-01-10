@@ -28,6 +28,6 @@ public class DeviceOvertimeModel {
     private String guid;
 
     @ApiModelProperty(value = "提醒")
-    private Boolean remind;
+    private String remind;
 
 }

@@ -3,6 +3,7 @@ package com.nuctech.securitycheck.backgroundservice.common.models;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
@@ -24,6 +25,16 @@ public class JudgeSerResultModel {
 
     @ApiModelProperty(value = "判图结论数据")
     private ImageResultModel imageResult;
+
+    public int checkValid() {
+        if (StringUtils.isBlank(guid) || imageResult.checkValid() == 1) {
+            return 1;
+        }
+        if(imageResult.checkValid() == 2) {
+            return 2;
+        }
+        return 0;
+    }
 
 //    @NotBlank
 //    @ApiModelProperty(value = "判图站用户")

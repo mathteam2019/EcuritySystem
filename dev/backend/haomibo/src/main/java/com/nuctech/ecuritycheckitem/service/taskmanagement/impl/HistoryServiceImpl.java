@@ -193,6 +193,7 @@ public class HistoryServiceImpl implements HistoryService {
             platformCheckParams.setJudgeRecogniseColour(checkParams.getJudgeRecogniseColour());
             platformCheckParams.setHandRecogniseColour(checkParams.getHandRecogniseColour());
             platformCheckParams.setDisplayDeleteSuspicionColour(checkParams.getDisplayDeleteSuspicionColour());
+            platformCheckParams.setDisplayDeleteSuspicion(checkParams.getDisplayDeleteSuspicion());
         }
 
         HistorySimplifiedForHistoryTaskManagement history = data.get();

@@ -158,6 +158,8 @@ public class KnowledgeDealManagementController extends BaseController {
         Long historyId;
         @NotNull
         Long userId;
+
+        List<String> tagList;
     }
 
     //@PreAuthorize(Role.Authority.HAS_KNOWLEDGECASE_CREATE)
@@ -184,7 +186,7 @@ public class KnowledgeDealManagementController extends BaseController {
         knowledgeCase.setCaseCollectUserId(requestBody.getUserId());
 
         //insert new knowledge case and get new id
-        Long knowledgeId = knowledgeService.insertNewKnowledgeCase(knowledgeCase);
+        Long knowledgeId = knowledgeService.insertNewKnowledgeCase(knowledgeCase, requestBody.getTagList());
         if (knowledgeId == null) { //failed inserting
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);

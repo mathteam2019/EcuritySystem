@@ -74,7 +74,7 @@ public class PlatformCheckManagementController extends BaseController {
         String handRecogniseColour; //hand Recognise Colour
         List<String> historyDataStorageList; //history Data Storage List
         List<String> historyDataExportList; //history Data Export List
-        Long displayDeleteSuspicion; //display Delete Suspicion
+        String displayDeleteSuspicion; //display Delete Suspicion
         String displayDeleteSuspicionColour; //display Delete Suspicion Colour
 
         SerPlatformCheckParams convert2SerPlatformCheckParams() { //create new object from input parameters

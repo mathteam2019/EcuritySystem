@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
@@ -48,7 +49,13 @@ public class CheckResultModel {
     @ApiModelProperty(value = "图片、视频")
     private String files;
 
-    @NotBlank
     @ApiModelProperty(value = "手检提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitRects;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(imageGuid) || submitRects == null) {
+            return 1;
+        }
+        return 0;
+    }
 }

@@ -8,6 +8,7 @@ import com.nuctech.securitycheck.backgroundservice.common.enums.*;
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.BackgroundServiceUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.CryptUtil;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
 import com.nuctech.securitycheck.backgroundservice.common.vo.*;
 import com.nuctech.securitycheck.backgroundservice.message.MessageSender;
@@ -83,6 +84,9 @@ public class SecuritySysController {
     @Autowired
     private ISerHandResultService serHandResultService;
 
+    @Autowired
+    private ISerMqMessageService serMqMessageService;
+
     /**
      *写输出日志
      * @param output
@@ -113,6 +117,7 @@ public class SecuritySysController {
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendSysDeviceSecurityInfoSaveReplyMessage(encryptMsg);
         writeResult(output, resultMessageVO);
+        serMqMessageService.save(resultMessageVO, 1, result.getGuid(), result.getImageGuid(), String.valueOf(result.getResult()));
         return resultMessageVO;
     }
 
@@ -131,48 +136,58 @@ public class SecuritySysController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"));
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysRegisterModel.getGuid());
-        try {
-            SysDevice sysDevice = new SysDevice();
-            sysDevice.setGuid(sysRegisterModel.getGuid());
-            sysDevice.setStatus(DefaultType.TRUE.getValue());
-            sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
-            // 从数据库获取设备(get device data from database)
-            sysDevice = sysDeviceService.find(sysDevice);
-            if (sysDevice == null) {
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
-            } else {
-                //注册设备(register device)
-                boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
-                if (isSuccess) {
-
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-
-                    // 将设备配置上传到Redis
-                    judgeSysController.uploadDeviceConfig();
-                    judgeSysController.uploadDeviceStatus();
-
-                    //发送字典给rabbitmq
-                    sysSecurityController.sendDictData(sysRegisterModel.getGuid());
-
-                    //发送设备配置信息到rabbitmq
-                    sysSecurityController.sendDeviceConfig(sysRegisterModel.getGuid());
-
-                    //后台服务向安检仪下发用户列表
-                    sysSecurityController.sendUserList(sysRegisterModel.getGuid());
+        int checkResult = sysRegisterModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysRegisterModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    //注册设备(register device)
+                    boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
+                    if (isSuccess) {
+
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                        // 将设备配置上传到Redis
+                        judgeSysController.uploadDeviceConfig();
+                        judgeSysController.uploadDeviceStatus();
+
+                        //4.3.1.6 后台服务向安检仪下发用户列表
+                        sysSecurityController.sendUserList(sysRegisterModel.getGuid());
+
+                        //4.3.1.5 发送设备配置信息到rabbitmq
+                        sysSecurityController.sendDeviceConfig(sysRegisterModel.getGuid());
+
+                        //4.3.1.7 发送字典给rabbitmq
+                        sysSecurityController.sendDictData(sysRegisterModel.getGuid());
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    }
                 }
+            } catch (Exception e) {
+                log.error("注册失败");
+                log.error(e.getMessage());
+                result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } catch (Exception e) {
-            log.error("注册失败");
-            log.error(e.getMessage());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendDevRegisterMessage(encryptMsg);
+
+        serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null, result.getResult().toString());
 
         return resultMessageVO;
     }
@@ -190,39 +205,47 @@ public class SecuritySysController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"));
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysLoginModel.getGuid());
-        try {
-            SysDevice sysDevice = new SysDevice();
-            sysDevice.setGuid(sysLoginModel.getGuid());
-            sysDevice.setStatus(DefaultType.TRUE.getValue());
-            sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
-            // 从数据库获取设备(get device data from database)
-            sysDevice = sysDeviceService.find(sysDevice);
-            if (sysDevice == null) {
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
-            } else {
-                boolean isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
-                if (isSuccess) {
-
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-
-                    //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
-                    judgeSysController.uploadDeviceStatus();
-                    judgeSysController.uploadDeviceConfig();
+        int checkResult = sysLoginModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysLoginModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    boolean isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
+                    if (isSuccess) {
+
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                        //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
+                        judgeSysController.uploadDeviceStatus();
+                        judgeSysController.uploadDeviceConfig();
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    }
                 }
+            } catch (Exception e) {
+                log.error("登录失败");
+                log.error(e.getMessage());
+                result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } catch (Exception e) {
-            log.error("登录失败");
-            log.error(e.getMessage());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendDevLoginMessage(encryptMsg);
-
+        serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -239,40 +262,48 @@ public class SecuritySysController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"));
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysLogoutModel.getGuid());
-        try {
-            SysDevice sysDevice = new SysDevice();
-            sysDevice.setGuid(sysLogoutModel.getGuid());
-            sysDevice.setStatus(DefaultType.TRUE.getValue());
-            sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
-            // 从数据库获取设备(get device data from database)
-            sysDevice = sysDeviceService.find(sysDevice);
-            if (sysDevice == null) {
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
-            } else {
-                // 注销设备
-                boolean isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
-                if (isSuccess) {
-
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-
-                    //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
-                    judgeSysController.uploadDeviceStatus();
-                    judgeSysController.uploadDeviceConfig();
+        int checkResult = sysLogoutModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysLogoutModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    // 注销设备
+                    boolean isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
+                    if (isSuccess) {
+
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+                        //将设备状态和设备配置上传到Redis( upload device status and device config to redis)
+                        judgeSysController.uploadDeviceStatus();
+                        judgeSysController.uploadDeviceConfig();
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    }
                 }
+            } catch (Exception e) {
+                log.error("登出失败");
+                log.error(e.getMessage());
+                result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } catch (Exception e) {
-            log.error("登出失败");
-            log.error(e.getMessage());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendDevLogoutMessage(encryptMsg);
-
+        serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -289,38 +320,46 @@ public class SecuritySysController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"));
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysUnregisterModel.getGuid());
-        try {
-            SysDevice sysDevice = new SysDevice();
-            sysDevice.setGuid(sysUnregisterModel.getGuid());
-            sysDevice.setStatus(DefaultType.TRUE.getValue());
-            sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
-            // 从数据库获取设备(get device data from database)
-            sysDevice = sysDeviceService.find(sysDevice);
-            if (sysDevice == null) {
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
-            } else {
-                // 取消注册设备
-                boolean isSuccess = sysDeviceService.unRegister(sysDevice, sysUnregisterModel);
-                if (isSuccess) {
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-                    //将设备配置上传到Redis
-                    judgeSysController.uploadDeviceConfig();
-                    judgeSysController.uploadDeviceStatus();
+        int checkResult = sysUnregisterModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = new SysDevice();
+                sysDevice.setGuid(sysUnregisterModel.getGuid());
+                sysDevice.setStatus(DefaultType.TRUE.getValue());
+                sysDevice.setDeviceType(DeviceType.SECURITY.getValue());
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                if (sysDevice == null) {
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    // 取消注册设备
+                    boolean isSuccess = sysDeviceService.unRegister(sysDevice, sysUnregisterModel);
+                    if (isSuccess) {
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                        //将设备配置上传到Redis
+                        judgeSysController.uploadDeviceConfig();
+                        judgeSysController.uploadDeviceStatus();
+                    } else {
+                        result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    }
                 }
+            } catch (Exception e) {
+                log.error("取消注册失败");
+                log.error(e.getMessage());
+                result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } catch (Exception e) {
-            log.error("取消注册失败");
-            log.error(e.getMessage());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendDevUnregisterMessage(encryptMsg);
-
+        serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -338,44 +377,51 @@ public class SecuritySysController {
         HeartBeatReplyModel heartBeatReplyModel = new HeartBeatReplyModel();
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         //设置Rabbitmq的主题密钥和路由密钥
-        exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys");
+        exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys.status");
         routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.heartbeat");
+        int checkResult = heartBeatModel.checkValid();
+        if(checkResult == 1) {
+            heartBeatReplyModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                // 从数据库获取设备(get device data from database)
+                SysDevice sysDevice = SysDevice.builder().guid(heartBeatModel.getGuid()).build();
+                sysDevice = sysDeviceService.find(sysDevice);
 
-        try {
-            // 从数据库获取设备(get device data from database)
-            SysDevice sysDevice = SysDevice.builder().guid(heartBeatModel.getGuid()).build();
-            sysDevice = sysDeviceService.find(sysDevice);
-
-            // 检查设备是否开启( check device is on)
-            if(sysDeviceService.checkDeviceLogin(sysDevice)) {
-                SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
-                SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                if (oldSerHeartBeat == null) {
-                    //insert
-                    serHeartBeat.setHeartBeatTime(sdf.parse(heartBeatModel.getHeartbeatTime()));
-                    serHeartBeatService.save(serHeartBeat);
+                // 检查设备是否开启( check device is on)
+                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                    SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
+                    SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
+                    if (oldSerHeartBeat == null) {
+                        //insert
+                        serHeartBeat.setHeartBeatTime(DateUtil.stringDateToDate(heartBeatModel.getHeartbeatTime()));
+                        serHeartBeatService.save(serHeartBeat);
+                    } else {
+                        //update
+                        oldSerHeartBeat.setHeartBeatTime(DateUtil.stringDateToDate(heartBeatModel.getHeartbeatTime()));
+                        serHeartBeatService.save(oldSerHeartBeat);
+                    }
+                    heartBeatReplyModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
                 } else {
-                    //update
-                    oldSerHeartBeat.setHeartBeatTime(sdf.parse(heartBeatModel.getHeartbeatTime()));
-                    serHeartBeatService.save(oldSerHeartBeat);
+                    log.error("设备已关闭");
+                    heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 }
-                heartBeatReplyModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-            } else {
-                log.error("设备已关闭");
+            } catch (Exception e) {
+                log.error("无法保存心跳");
+                log.error(e.getMessage());
                 heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } catch (Exception e) {
-            log.error("无法保存心跳");
-            log.error(e.getMessage());
-            heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
         heartBeatReplyModel.setGuid(heartBeatModel.getGuid());
         heartBeatReplyModel.setHeartbeatTime(heartBeatModel.getHeartbeatTime());
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(heartBeatModel);
         messageSender.sendHeartBeatReplyMessage(resultMessageVO, exchangeName, routingKey);
+        serMqMessageService.save(resultMessageVO, 1, heartBeatModel.getGuid(), null, heartBeatReplyModel.getResult().toString());
     }
 
     /**
@@ -390,44 +436,44 @@ public class SecuritySysController {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         CommonResultVO result = new CommonResultVO();
         result.setGuid(sysDeviceVersionModel.getGuid());
-        try {
-            resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.updateversion"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.updateversion"));
+        int checkResult = sysDeviceVersionModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else {
+            try {
 
-            // 从数据库获取设备(get device data from database)
-            SysDevice sysDevice = SysDevice.builder().guid(sysDeviceVersionModel.getGuid()).build();
-            sysDevice = sysDeviceService.find(sysDevice);
-            // 检查设备是否开启( check device is on)
-            if(sysDeviceService.checkDeviceLogin(sysDevice)) {
-                if (sysDevice == null) {
-                    sysDevice = new SysDevice();
-                    sysDevice.setGuid(sysDeviceVersionModel.getGuid());
+                // 从数据库获取设备(get device data from database)
+                SysDevice sysDevice = SysDevice.builder().guid(sysDeviceVersionModel.getGuid()).build();
+                sysDevice = sysDeviceService.find(sysDevice);
+                // 检查设备是否开启( check device is on)
+                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                    //更新设备信息
+                    sysDevice.setSoftwareVersion(sysDeviceVersionModel.getSoftwareVersion());
+                    sysDevice.setAlgorithmVersion(sysDeviceVersionModel.getAlgorithmVersion());
+                    sysDeviceService.save(sysDevice);
+
+                    //将设备配置上传到Redis
+                    judgeSysController.uploadDeviceConfig();
+                    judgeSysController.uploadDeviceStatus();
+
+                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                } else {
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
                 }
-
-                //更新设备信息
-                sysDevice.setSoftwareVersion(sysDeviceVersionModel.getSoftwareVersion());
-                sysDevice.setAlgorithmVersion(sysDeviceVersionModel.getAlgorithmVersion());
-                sysDeviceService.save(sysDevice);
-
-                //将设备配置上传到Redis
-                judgeSysController.uploadDeviceConfig();
-                judgeSysController.uploadDeviceStatus();
-
-                result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-            } else {
+            } catch (Exception e) {
+                log.error("发送设备版本失败");
+                log.error(e.toString());
                 result.setResult(CommonConstant.RESULT_FAIL.getValue());
-                log.error("设备已关闭");
             }
-        } catch (Exception e) {
-            log.error("发送设备版本失败");
-            log.error(e.toString());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
 
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendSysDeviceVersionReplyMessage(encryptMsg);
-
+        serMqMessageService.save(resultMessageVO, 1, sysDeviceVersionModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -443,56 +489,56 @@ public class SecuritySysController {
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         CommonResultVO result = new CommonResultVO();
         result.setGuid(serDeviceStatusModel.getGuid());
-        try {
-            resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.currentstatus"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.currentstatus"));
+        int checkResult = serDeviceStatusModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = SysDevice.builder()
+                        .guid(serDeviceStatusModel.getGuid())
+                        .build();
 
-            SysDevice sysDevice = SysDevice.builder()
-                    .guid(serDeviceStatusModel.getGuid())
-                    .build();
-
-            // 从数据库获取设备(get device data from database)
-            sysDevice = sysDeviceService.find(sysDevice);
-            // 检查设备是否开启( check device is on)
-            if(sysDeviceService.checkDeviceLogin(sysDevice)) {
-                if (sysDevice == null) {
-                    resultMessageVO.setContent(null);
-                    return resultMessageVO;
-                }
-
-                //更新或创建设备状态(update or create device stauts)
-                SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
-                serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
-
-                Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
-                serDeviceStatus = devStatusRepo.findOne(devStatusEx);
-
-                if (serDeviceStatus == null) {
-                    serDeviceStatus = new SerDeviceStatus();
+                // 从数据库获取设备(get device data from database)
+                sysDevice = sysDeviceService.find(sysDevice);
+                // 检查设备是否开启( check device is on)
+                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                    //更新或创建设备状态(update or create device stauts)
+                    SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
                     serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
-                }
-                serDeviceStatus.setCurrentWorkflow(serDeviceStatusModel.getFlowName());
-                serDeviceStatus.setCurrentStatus(serDeviceStatusModel.getFlowStatus());
-                serDeviceStatus.setDiskSpace(serDeviceStatusModel.getDiskSpace());
 
-                serDeviceStatusService.save(serDeviceStatus);
-                result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-            } else {
-                log.error("设备已关闭");
+                    Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
+                    serDeviceStatus = devStatusRepo.findOne(devStatusEx);
+
+                    if (serDeviceStatus == null) {
+                        serDeviceStatus = new SerDeviceStatus();
+                        serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+                    }
+                    serDeviceStatus.setCurrentWorkflow(serDeviceStatusModel.getFlowName());
+                    serDeviceStatus.setCurrentStatus(serDeviceStatusModel.getFlowStatus());
+                    serDeviceStatus.setDiskSpace(serDeviceStatusModel.getDiskSpace());
+
+                    serDeviceStatusService.save(serDeviceStatus);
+                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                } else {
+                    log.error("设备已关闭");
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                }
+
+            } catch (Exception e) {
+                log.error("无法发送设备状态");
+                log.error(e.toString());
                 result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-
-        } catch (Exception e) {
-            log.error("无法发送设备状态");
-            log.error(e.toString());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
 
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendSerDeviceStatusReplyMessage(encryptMsg);
-
+        serMqMessageService.save(resultMessageVO, 1, serDeviceStatusModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -513,51 +559,58 @@ public class SecuritySysController {
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.hardwarestatus"));
+        int checkResult = hardwareStatusModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                // 从数据库获取设备(get device data from database)
+                SysDevice sysDevice = SysDevice.builder()
+                        .guid(hardwareStatusModel.getGuid())
+                        .build();
+                // get SysDevice by guid if exist
+                sysDevice = sysDeviceService.find(sysDevice);
+                // 检查设备是否开启( check device is on)
+                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                    log.error("设备已关闭");
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
 
-        try {
-            // 从数据库获取设备(get device data from database)
-            SysDevice sysDevice = SysDevice.builder()
-                    .guid(hardwareStatusModel.getGuid())
-                    .build();
-            // get SysDevice by guid if exist
-            sysDevice = sysDeviceService.find(sysDevice);
-            // 检查设备是否开启( check device is on)
-            if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
-                log.error("设备已关闭");
+                } else {
+                    //更新或创建设备状态(update or create device stauts)
+                    SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
+                    serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+
+                    Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
+                    serDeviceStatus = devStatusRepo.findOne(devStatusEx);
+
+                    if (serDeviceStatus == null) {
+                        serDeviceStatus = new SerDeviceStatus();
+                        serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
+                    }
+
+                    serDeviceStatus.setPlcStatus(hardwareStatusModel.getPLC());
+                    serDeviceStatus.setMasterCardStatus(hardwareStatusModel.getCaptureCardMainStatus());
+                    serDeviceStatus.setSlaveCardStatus(hardwareStatusModel.getCaptureCardSecondStatus());
+                    serDeviceStatus.setSerVo(hardwareStatusModel.getServoStatus());
+                    serDeviceStatus.setEmergencyStop(hardwareStatusModel.getEmergencyStop());
+                    serDeviceStatus.setFootWarning(hardwareStatusModel.getFootAlarmOnLine());
+
+                    devStatusRepo.save(serDeviceStatus);
+                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                }
+
+            } catch (Exception e) {
+                log.error("无法发送硬件状态");
+                log.error(e.getMessage());
                 result.setResult(CommonConstant.RESULT_FAIL.getValue());
-                resultMessageVO.setContent(result);
-                messageSender.sendHardwareStatusReplyMessage(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
-                return resultMessageVO;
             }
-
-            //更新或创建设备状态(update or create device stauts)
-            SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
-            serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
-
-            Example<SerDeviceStatus> devStatusEx = Example.of(serDeviceStatus);
-            serDeviceStatus = devStatusRepo.findOne(devStatusEx);
-
-            if (serDeviceStatus == null) {
-                serDeviceStatus = new SerDeviceStatus();
-                serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
-            }
-
-            serDeviceStatus.setPlcStatus(hardwareStatusModel.getPLC());
-            serDeviceStatus.setMasterCardStatus(hardwareStatusModel.getCaptureCardMainStatus());
-            serDeviceStatus.setSlaveCardStatus(hardwareStatusModel.getCaptureCardSecondStatus());
-            serDeviceStatus.setSerVo(hardwareStatusModel.getServoStatus());
-            serDeviceStatus.setEmergencyStop(hardwareStatusModel.getEmergencyStop());
-            serDeviceStatus.setFootWarning(hardwareStatusModel.getFootAlarmOnLine());
-
-            devStatusRepo.save(serDeviceStatus);
-            result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-        } catch (Exception e) {
-            log.error("无法发送硬件状态");
-            log.error(e.getMessage());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
         resultMessageVO.setContent(result);
         messageSender.sendHardwareStatusReplyMessage(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+        serMqMessageService.save(resultMessageVO, 1, hardwareStatusModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
 
@@ -576,41 +629,49 @@ public class SecuritySysController {
         result.setGuid(serDevLogModel.getGuid());
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         //设置Rabbitmq的主题密钥和路由密钥
-        exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys");
+        exchangeName = BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data");
         routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.log");
 
+        int checkResult = serDevLogModel.checkValid();
+        if(checkResult == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            try {
+                SysDevice sysDevice = SysDevice.builder().guid(serDevLogModel.getGuid()).build();
+                sysDevice = sysDeviceService.find(sysDevice);
 
-        try {
-            SysDevice sysDevice = SysDevice.builder().guid(serDevLogModel.getGuid()).build();
-            sysDevice = sysDeviceService.find(sysDevice);
+                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                    log.error("设备已关闭");
+                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
 
-            if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
-                log.error("设备已关闭");
+                } else {
+                    // 将设备日志添加到数据库
+                    SerDevLog serDevLog = SerDevLog.builder()
+                            .guid(serDevLogModel.getGuid())
+                            .loginName(serDevLogModel.getLoginName())
+                            .category(Integer.valueOf(serDevLogModel.getCategory()))
+                            .level(Integer.valueOf(serDevLogModel.getLevel()))
+                            .content(serDevLogModel.getContent())
+                            .time(serDevLogModel.getTime())
+                            .devType(sysDevice.getDeviceType())
+                            .build();
+                    serDevLogService.save(serDevLog);
+
+                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                }
+            } catch (Exception e) {
+                log.error("无法保存设备日志");
+                log.error(e.toString());
                 result.setResult(CommonConstant.RESULT_FAIL.getValue());
-
-            } else {
-                // 将设备日志添加到数据库
-                SerDevLog serDevLog = SerDevLog.builder()
-                        .guid(serDevLogModel.getGuid())
-                        .loginName(serDevLogModel.getLoginName())
-                        .category(serDevLogModel.getCategory())
-                        .level(serDevLogModel.getLevel())
-                        .content(serDevLogModel.getContent())
-                        .time(serDevLogModel.getTime())
-                        .devType(sysDevice.getDeviceType())
-                        .build();
-                serDevLogService.save(serDevLog);
-
-                result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
             }
-        } catch (Exception e) {
-            log.error("无法保存设备日志");
-            log.error(e.toString());
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
+
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(result);
         messageSender.sendSerDevLogReplyMessage(resultMessageVO, exchangeName, routingKey);
+        serMqMessageService.save(resultMessageVO, 1, serDevLogModel.getGuid(), null, result.getResult().toString());
     }
 
 
@@ -640,6 +701,13 @@ public class SecuritySysController {
         result.setGuid(guid);
         result.setImageGuid(devSerImageInfoModel.getImageData().getImageGuid());
         resultMessageVO.setKey(routingKey);
+
+        if(devSerImageInfoModel.getImageData().checkValid() == 1 || devSerImageInfoModel.getPersonData().checkValid() == 1) {
+            return sendResult(CommonConstant.RESULT_EMPTY.getValue(), logEnd, result, resultMessageVO);
+        }
+        if(devSerImageInfoModel.getImageData().checkValid() == 2 || devSerImageInfoModel.getPersonData().checkValid() == 2) {
+            return sendResult(CommonConstant.RESULT_INVALID_DATA.getValue(), logEnd, result, resultMessageVO);
+        }
         // 判断 GUID有效
         boolean isAvailable = sysDeviceService.checkGuid(guid);
         if(!isAvailable) {
@@ -668,13 +736,13 @@ public class SecuritySysController {
             return sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
         }
 
-
+        sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
 
         // 安检仪+审图端 和 安检仪+审图端+手检端
         if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE.getValue())
                 || saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
             // 4.3.2.11 后台服务向判图站推送待判图图像信息
-            sysJudgeController.sendJudgeImageInfo(saveScanResult.getTaskNumber());
+            sysJudgeController.sendJudgeImageInfo(devSerImageInfoModel);
         }
 
         // 安检仪+手检端 和 安检仪+审图端+手检端
@@ -711,13 +779,22 @@ public class SecuritySysController {
 
         // 安检仪+手检端
         if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY_MANUAL.getValue())) {
-
+            //check assigned hand device or not
+            DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = sysDeviceService.isManualDeviceDispatched(saveScanResult.getTaskNumber());
+            if(dispatchManualDeviceInfoVO == null) {
+                //4.3.1.20 后台服务向安检仪推送手检结论
+                dispatchManualDeviceInfoVO = new DispatchManualDeviceInfoVO();
+                dispatchManualDeviceInfoVO.setGuid(guid);
+                dispatchManualDeviceInfoVO.setImageGuid(saveScanResult.getTaskNumber());
+                assignSecurityDevice(dispatchManualDeviceInfoVO);
+            }
         }
 
         if (saveScanResult.getWorkModeName().equals(WorkModeType.SECURITY.getValue())) {
             securityImageInfoService.sendInvalidResult(saveScanResult);
         }
-        return sendResult(CommonConstant.RESULT_SUCCESS.getValue(), logEnd, result, resultMessageVO);
+
+        return resultMessageVO;
     }
 
     /**
@@ -733,29 +810,183 @@ public class SecuritySysController {
         CommonResultVO result = new CommonResultVO();
         String guid = devSerDataSyncModel.getGuid();
         result.setGuid(guid);
-        // 判断 GUID有效
-        boolean isAvailable = sysDeviceService.checkGuid(guid);
-        // 接收数据以后保存
-        boolean isSucceed = securityImageInfoService.synchronizeScanResult(devSerDataSyncModel);
-        if (isAvailable) {      // GUID有效
-            if (devSerDataSyncModel.getImageData().getInvalidScan().equals(DeviceDefaultType.FALSE.getValue())) {
-                if (isSucceed) {
-                    result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+        if(devSerDataSyncModel.getImageData().checkValid() == 1 || devSerDataSyncModel.getPersonData().checkValid() == 1) {
+            result.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(devSerDataSyncModel.getImageData().checkValid() == 2 || devSerDataSyncModel.getPersonData().checkValid() == 2) {
+            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            // 判断 GUID有效
+            boolean isAvailable = sysDeviceService.checkGuid(guid);
+            // 接收数据以后保存
+            boolean isSucceed = securityImageInfoService.synchronizeScanResult(devSerDataSyncModel);
+            if (isAvailable) {      // GUID有效
+                if (devSerDataSyncModel.getImageData().getInvalidScan().equals(DeviceDefaultType.FALSE.getValue())) {
+                    if (isSucceed) {
+                        result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+                    } else {
+                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    }
                 } else {
                     result.setResult(CommonConstant.RESULT_FAIL.getValue());
                 }
             } else {
                 result.setResult(CommonConstant.RESULT_FAIL.getValue());
             }
-        } else {
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
         }
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.synchronization");
+
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.data.synchronization");
 
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(result);
         String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
         messageSender.sendSysDeviceSecurityInfoSynchronizeReplyMessage(encryptMsg);
+        serMqMessageService.save(resultMessageVO, 1, devSerDataSyncModel.getGuid(), null, result.getResult().toString());
+        return resultMessageVO;
+    }
+
+
+
+
+
+    /**
+     * 后台服务向安检仪推送手检结论
+     *
+     * @param handSerResultModel
+     * @return resultMessage
+     */
+    @ApiOperation("4.3.1.19 后台服务向安检仪推送手检结论")
+    @PostMapping("save-hand-result")
+    public ResultMessageVO saveHandResult(@RequestBody @ApiParam("请求报文定义") HandSerResultModel handSerResultModel) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+//        SendMessageModel sendMessageModel = new SendMessageModel();
+//        sendMessageModel.setGuid(handSerResultModel.getGuid());
+//        sendMessageModel.setImageGuid(handSerResultModel.getCheckResult().getImageGuid());
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.manual.result");
+        //sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+
+        // 将结果发送到rabbitmq
+        resultMessageVO.setKey(routingKey);
+        resultMessageVO.setContent(handSerResultModel);
+        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        messageSender.sendSysDevMessage(encryptMsg, routingKey);
+        serMqMessageService.save(resultMessageVO, 0, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
+                handSerResultModel.getCheckResult().getResult());
+        return resultMessageVO;
+    }
+
+    /**
+     * 后台服务向安检仪推送手检结论
+     *
+     * @param dispatchManualDeviceInfoVO
+     * @return resultMessage
+     */
+    @ApiOperation("4.3.1.20 后台服务向安检仪推送手检结论")
+    @PostMapping("assign-security-device")
+    public ResultMessageVO assignSecurityDevice(@RequestBody @ApiParam("请求报文定义") DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+//        SendMessageModel sendMessageModel = new SendMessageModel();
+//        sendMessageModel.setGuid(dispatchManualDeviceInfoVO.getGuid());
+//        sendMessageModel.setImageGuid(dispatchManualDeviceInfoVO.getImageGuid());
+
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.manual.notice");
+
+//        boolean isSucceed = sysDeviceService.checkSecurityHandDevice(dispatchManualDeviceInfoVO.getGuid());
+//        if (isSucceed) {
+//            sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+//        } else {
+//            sendMessageModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+//        }
+
+        // 将结果发送到rabbitmq
+        resultMessageVO.setKey(routingKey);
+        resultMessageVO.setContent(dispatchManualDeviceInfoVO);
+        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        messageSender.sendSysDevMessage(encryptMsg, routingKey);
+        serMqMessageService.save(resultMessageVO, 0, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.toString());
+        return resultMessageVO;
+    }
+
+
+    /**
+     * 安检仪向后台服务请求本机手检
+     *
+     * @param dispatchManualDeviceInfoVO
+     * @return resultMessage
+     */
+    @ApiOperation("4.3.1.21 安检仪向后台服务请求本机手检")
+    @PostMapping("available-hand")
+    public ResultMessageVO availableCheckHand(@RequestBody @ApiParam("请求报文定义") DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+        SendMessageModel sendMessageModel = new SendMessageModel();
+        sendMessageModel.setGuid(dispatchManualDeviceInfoVO.getGuid());
+        sendMessageModel.setImageGuid(dispatchManualDeviceInfoVO.getImageGuid());
+
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.manual.task");
+
+        if(dispatchManualDeviceInfoVO.checkValid() == 1) {
+            sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else {
+            boolean isSucceed = securityImageInfoService.checkAssignHand(dispatchManualDeviceInfoVO);
+            if (isSucceed) {
+                sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+            } else {
+                sendMessageModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+            }
+        }
+
+
+        // 将结果发送到rabbitmq
+        resultMessageVO.setKey(routingKey);
+        resultMessageVO.setContent(sendMessageModel);
+        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        messageSender.sendDevSysMessage(encryptMsg, routingKey);
+        serMqMessageService.save(resultMessageVO, 1, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.toString());
+        return resultMessageVO;
+    }
+
+    /**
+     * 安检仪本地手检站后台服务请求提交手检结论
+     *
+     * @param handSerResultModel
+     * @return resultMessage
+     */
+    @ApiOperation("4.3.1.22 安检仪本地手检站后台服务请求提交手检结论")
+    @PostMapping("save-hand-result-security")
+    public ResultMessageVO saveHandResultFromSecurity(@RequestBody @ApiParam("请求报文定义") HandSerResultModel handSerResultModel) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+        SendMessageModel sendMessageModel = new SendMessageModel();
+        sendMessageModel.setGuid(handSerResultModel.getGuid());
+        sendMessageModel.setImageGuid(handSerResultModel.getCheckResult().getImageGuid());
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.sys.manual.conclusion");
+        int checkResult = handSerResultModel.checkValid();
+        if(checkResult == 1) {
+            sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
+        } else if(checkResult == 2) {
+            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+        } else {
+            boolean isSucceed = serHandResultService.saveHandResult(handSerResultModel);
+
+            if (isSucceed) {
+                // 4.3.1.19 后台服务向设备推送安检仪结论
+                saveHandResult(handSerResultModel);
+                sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+            } else {
+                sendMessageModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            }
+        }
+
+
+
+        // 将结果发送到rabbitmq
+        resultMessageVO.setKey(routingKey);
+        resultMessageVO.setContent(sendMessageModel);
+        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        messageSender.sendDevSysMessage(encryptMsg, routingKey);
+        serMqMessageService.save(resultMessageVO, 1, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.toString());
+
         return resultMessageVO;
     }
 

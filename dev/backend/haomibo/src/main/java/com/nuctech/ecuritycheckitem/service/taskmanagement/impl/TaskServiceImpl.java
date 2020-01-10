@@ -202,6 +202,7 @@ public class TaskServiceImpl implements TaskService {
             platformCheckParams.setJudgeRecogniseColour(checkParams.getJudgeRecogniseColour());
             platformCheckParams.setHandRecogniseColour(checkParams.getHandRecogniseColour());
             platformCheckParams.setDisplayDeleteSuspicionColour(checkParams.getDisplayDeleteSuspicionColour());
+            platformCheckParams.setDisplayDeleteSuspicion(checkParams.getDisplayDeleteSuspicion());
         }
 
         SerTaskSimplifiedForProcessTaskManagement serTask = data.get();

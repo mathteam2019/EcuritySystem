@@ -12,6 +12,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.TaskInfoVO;
 import com.nuctech.securitycheck.backgroundservice.controller.JudgeSysController;
 import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.ISecurityImageInfoService;
+import com.nuctech.securitycheck.backgroundservice.service.ISysDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,15 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ISysDeviceService sysDeviceService;
+
+    @Autowired
+    private SerLoginInfoRepository serLoginInfoRepository;
+
+    @Autowired
+    private SerAssignRepository serAssignRepository;
+
     /**
      * 4.3.1.13 发送无效的结果
      *
@@ -86,7 +96,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             JudgeSerResultModel judgeSerResultModel = new JudgeSerResultModel();
             judgeSerResultModel.setImageResult(new ImageResultModel());
             judgeSerResultModel.getImageResult().setImageGuid(taskNumber);
-            judgeSerResultModel.getImageResult().setTime(DateUtil.getCurrentDate());
+            judgeSerResultModel.getImageResult().setTime(DateUtil.getDateTmeAsString(DateUtil.getCurrentDate()));
             judgeSerResultModel.getImageResult().setResult(DeviceDefaultType.FALSE.getValue());
             judgeSerResultModel.getImageResult().setUserName(BackgroundServiceUtil.getConfig("default.user"));      // 默认用户
 
@@ -177,7 +187,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     .scanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()))
                     .scanPointsman(sysUser)
                     .scanAssignTimeout(TimeDefaultType.FALSE.getValue())
-                    .scanOffline(devSerImageInfo.getImageData().getOffline())
+                    .scanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()))
                     .scanImageGender(BackgroundServiceUtil.genderConvert(devSerImageInfo.getImageData().getImageGender()))
                     .scanData(devSerImageInfo.getImageData().getData())
                     .scanRandomAlarm(devSerImageInfo.getImageData().getRandomAlarm())
@@ -450,7 +460,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .scanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()))
                         .scanPointsman(sysUser)
                         .scanAssignTimeout(TimeDefaultType.FALSE.getValue())
-                        .scanOffline(devSerImageInfo.getImageData().getOffline())
+                        .scanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()))
                         .scanImageGender(BackgroundServiceUtil.genderConvert(devSerImageInfo.getImageData().getImageGender()))
                         .scanData(devSerImageInfo.getImageData().getData())
                         .scanRandomAlarm((devSerImageInfo.getImageData().getRandomAlarm()))                       .build();
@@ -467,7 +477,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 serScan.setScanEndTime(sdf.parse(devSerImageInfo.getImageData().getScanEndTime()));
                 serScan.setScanPointsman(sysUser);
                 serScan.setScanAssignTimeout(TimeDefaultType.FALSE.getValue());
-                serScan.setScanOffline(devSerImageInfo.getImageData().getOffline());
+                serScan.setScanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()));
                 serScan.setScanImageGender(BackgroundServiceUtil.genderConvert(devSerImageInfo.getImageData().getImageGender()));
                 serScan.setScanData(devSerImageInfo.getImageData().getData());
                 serScan.setScanRandomAlarm((devSerImageInfo.getImageData().getRandomAlarm()));
@@ -720,5 +730,94 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             SerDevJudgeGraphResultModel serDevJudgeGraphResult = SerDevJudgeGraphResultModel.builder().build();
             return serDevJudgeGraphResult;
         }
+    }
+
+    @Override
+    public boolean checkAssignHand(DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO) {
+        String taskNumber = dispatchManualDeviceInfoVO.getImageGuid();
+        String identityKey = "";
+        try {
+            SerTask serTaskModel = SerTask.builder()
+                    .taskNumber(taskNumber)
+                    .build();
+            Example<SerTask> serTaskEx = Example.of(serTaskModel);
+            SerTask serTask = serTaskRepository.findOne(serTaskEx);
+
+            // 对应的安检仪
+            SysDevice securityDevice = serTask.getDevice();
+
+
+
+            if(securityDevice.getFieldId() != null) {
+                identityKey = securityDevice.getFieldId().toString();
+            } else {
+                identityKey = securityDevice.getGuid();
+            }
+            while (true) {
+                log.info("任务" + taskNumber + "正在等待分配手检站");
+
+                //check locked or not.
+                boolean lockResult = redisUtil.aquirePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+                        taskNumber + identityKey, CommonConstant.MAX_MANUAL_REDIS_LOCK.getValue());
+
+                if (!lockResult) {
+                    log.error("任务" + taskNumber + "无法检查手检站");
+                    Thread.sleep(100);
+                    continue;
+                }
+                DispatchManualDeviceInfoVO oldDispatchManualDeviceInfoVO = sysDeviceService.isManualDeviceDispatched(taskNumber);
+                if(oldDispatchManualDeviceInfoVO != null) {
+                    log.error("Already assigned hand device");
+                    redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+                            taskNumber + identityKey);
+                    return false;
+                }
+
+                SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findLatestConfig(serTask.getDevice().getDeviceId());
+                SysWorkMode sysWorkMode = sysDeviceConfig.getSysWorkMode();
+                SysWorkflow sysWorkflowModel = new SysWorkflow();
+                sysWorkflowModel.setSysWorkMode(sysWorkMode);
+                sysWorkflowModel.setTaskType(TaskType.HAND.getValue());
+                Example<SysWorkflow> sysWorkflowEx = Example.of(sysWorkflowModel);
+                SysWorkflow sysWorkflow = sysWorkflowRepository.findOne(sysWorkflowEx);
+
+
+                SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(securityDevice.getDeviceId());
+                SysUser logInedUser = SysUser.builder()
+                        .userId(serLoginInfo.getUserId()).build();
+
+                SerAssign assign = new SerAssign();
+                assign.setSerTask(serTask);
+                assign.setSysWorkflow(sysWorkflow);
+                assign.setSysWorkMode(sysWorkMode);
+                assign.setAssignUser(logInedUser);
+                assign.setAssignHandDevice(securityDevice);
+                assign.setAssignEndTime(DateUtil.getCurrentDate());
+                assign.setAssignStartTime(DateUtil.getCurrentDate());
+
+                serAssignRepository.save(assign);
+                dispatchManualDeviceInfoVO = new DispatchManualDeviceInfoVO();
+                dispatchManualDeviceInfoVO.setAssignId(assign.getAssignId());
+                dispatchManualDeviceInfoVO.setImageGuid(taskNumber);
+                dispatchManualDeviceInfoVO.setLocalRecheck(false);
+                dispatchManualDeviceInfoVO.setRecheckNumber(securityDevice.getDeviceSerial());
+                dispatchManualDeviceInfoVO.setGuid(securityDevice.getGuid());
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.manual.assign.task.info") + taskNumber,
+                        CryptUtil.encrypt(objectMapper.writeValueAsString(dispatchManualDeviceInfoVO)), CommonConstant.EXPIRE_TIME.getValue());
+                redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+                        taskNumber + identityKey);
+                break;
+            }
+        }catch (Exception ex) {
+            log.error("Failed to assign security device to hand device");
+            log.error(ex.getMessage());
+            redisUtil.releasePessimisticLockWithTimeout(BackgroundServiceUtil.getConfig("redisKey.sys.manual.process.running.info") + identityKey,
+                    taskNumber + identityKey);
+            return false;
+        }
+
+        return true;
     }
 }

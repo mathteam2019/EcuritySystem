@@ -64,17 +64,19 @@ public class SysManualController {
     @Autowired
     private SysSecurityController sysSecurityController;
 
+    @Autowired
+    private ISerMqMessageService serMqMessageService;
+
     /**
      * 后台服务向远程短下发配置信息
      *
      * @param guid 设备guid
      */
-    @Async
     @ApiOperation("4.3.3.10 后台服务向手检站下发配置信息")
     @PostMapping("send-dev-config")
     public void sendDeviceConfig(@ApiParam("设备guid") @RequestParam("guid") String guid) {
-        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.man");
-        String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.config");
+        String exchangeName = BackgroundServiceUtil.getConfig("topic.inter.sys.dev");
+        String routingKey = BackgroundServiceUtil.getConfig("routingKey.dev.userlist");
 
         try {
             SysDevice sysDevice = SysDevice.builder().guid(guid).build();
@@ -89,6 +91,8 @@ public class SysManualController {
                 model.setGuid(guid);
                 resultMsg.setContent(model);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
+                serMqMessageService.save(resultMsg, 0, guid, null,
+                        CommonConstant.RESULT_SUCCESS.toString());
             } else {
                 Long deviceId = sysDevice.getDeviceId();
                 SysManualGroup sysManualGroup = sysManualGroupService.findLastManualConfig(deviceId);
@@ -135,6 +139,8 @@ public class SysManualController {
                 resultMessageVO.setKey(routingKey);
                 resultMessageVO.setContent(serDeviceConfigModel);
                 messageSender.sendDeviceConfigMessage(resultMessageVO, exchangeName, routingKey);
+                serMqMessageService.save(resultMessageVO, 0, guid, null,
+                        CommonConstant.RESULT_SUCCESS.toString());
             }
         } catch (Exception e) {
             log.error("无法发送设备配置");
@@ -145,6 +151,8 @@ public class SysManualController {
             model.setGuid(guid);
             resultMsg.setContent(model);
             messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
+            serMqMessageService.save(resultMsg, 0, guid, null,
+                    CommonConstant.RESULT_SUCCESS.toString());
         }
     }
 
@@ -172,7 +180,7 @@ public class SysManualController {
         log.debug("4.3.3.12 后台服务向手检站推送业务数据-------------start-----------timeLine------"
                 + System.currentTimeMillis() + "param:taskNumber=" + serManImageInfoModel.getImageData().getImageGuid());
         ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.man.image"));
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.image"));
         SendMessageModel sendMessageModel = SendMessageModel.builder()
                 .guid(serManImageInfoModel.getGuid())
                 .imageGuid(serManImageInfoModel.getImageResult().getImageGuid())
@@ -180,31 +188,10 @@ public class SysManualController {
                 .build();
         resultMessageVO.setContent(sendMessageModel);
         messageSender.sendJudgeInfoToHandDevice(resultMessageVO);
+        serMqMessageService.save(resultMessageVO, 0, serManImageInfoModel.getGuid(), serManImageInfoModel.getImageData().getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.toString());
         log.debug("4.3.3.12 后台服务向手检站推送业务数据-------------end-----------timeLine--------"
                 + System.currentTimeMillis() + "param:taskNumber=" + serManImageInfoModel.getImageData().getImageGuid());
-    }
-
-    @ApiOperation("4.3.3.13 后台服务向手检端推送工作超时提醒")
-    @PostMapping("monitor-manual-overtime")
-    public void monitorManualOvertime(DeviceOvertimeModel checkOvertimeModel) {
-        ResultMessageVO resultMessageVO = new ResultMessageVO();
-        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.man.overtime"));
-
-        CommonResultVO result = new CommonResultVO();
-        ObjectMapper objectMapper = new ObjectMapper();
-        result.setGuid(checkOvertimeModel.getGuid());
-        if(checkOvertimeModel.getRemind() == true) {
-            result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
-        } else {
-            result.setResult(CommonConstant.RESULT_FAIL.getValue());
-        }
-        try {
-            resultMessageVO.setContent(result);
-            messageSender.cronJobHandOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
-        } catch (Exception e) {
-            log.error("随着时间的推移未能监控安全性");
-            log.error(e.getMessage());
-        }
     }
 
 }

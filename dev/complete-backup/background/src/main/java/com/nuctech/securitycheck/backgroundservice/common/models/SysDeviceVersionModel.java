@@ -1,8 +1,10 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -16,7 +18,6 @@ import org.hibernate.validator.constraints.NotBlank;
 @ApiModel(value = "SysDeviceVersionModel")
 public class SysDeviceVersionModel {
 
-    @NotBlank
     @ApiModelProperty(value = "安检仪GUID")
     private String guid;
 
@@ -25,5 +26,13 @@ public class SysDeviceVersionModel {
 
     @ApiModelProperty(value = "算法版本号")
     private String algorithmVersion;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid)) {
+            return 1;
+        }
+
+        return 0;
+    }
 
 }

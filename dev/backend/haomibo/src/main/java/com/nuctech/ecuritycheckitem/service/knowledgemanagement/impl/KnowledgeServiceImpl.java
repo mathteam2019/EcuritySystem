@@ -12,14 +12,11 @@
 
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement.impl;
 
-import com.nuctech.ecuritycheckitem.models.db.QSerKnowledgeCaseDeal;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCaseDeal;
-import com.nuctech.ecuritycheckitem.models.db.SerKnowledgeCase;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSerKnowledgeCase;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerTaskTagRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
@@ -45,6 +42,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     SerKnowledgeCaseRepository serKnowledgeCaseRepository;
+
+    @Autowired
+    SerTaskTagRepository serTaskTagRepository;
 
     @Autowired
     AuthenticationFacade authenticationFacade;
@@ -200,7 +200,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @param knowledgeCase
      * @return
      */
-    public Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase) {
+    @Override
+    @Transactional
+    public Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase, List<String> tagList) {
 
         SerKnowledgeCase existKnowledgeCase = checkIfTaskAlreadyExistInKnowledgeCase(knowledgeCase);
 
@@ -215,7 +217,22 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             knowledgeCase.setCaseId(knowledgeCaseId);
             existKnowledgeCase = knowledgeCase;
             existKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            Iterable<SerTaskTag> taskTagList = serTaskTagRepository.findAll(QSerTaskTag.serTaskTag.taskId.eq(knowledgeCase.getTaskId()));
+            serTaskTagRepository.deleteAll(taskTagList);
         }
+        if(tagList != null && tagList.size() > 0) {
+            List<SerTaskTag> taskTagList = new ArrayList<>();
+            for(int i = 0; i < tagList.size(); i ++) {
+                SerTaskTag taskTag = new SerTaskTag();
+                taskTag.setTaskId(knowledgeCase.getTaskId());
+                taskTag.setTagId(tagList.get(i));
+                taskTag.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+                taskTagList.add(taskTag);
+            }
+            serTaskTagRepository.saveAll(taskTagList);
+        }
+
+
 
         SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(existKnowledgeCase);
         if (serKnowledgeCase != null) {

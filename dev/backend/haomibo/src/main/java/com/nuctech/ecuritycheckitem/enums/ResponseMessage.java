@@ -65,6 +65,7 @@ public enum ResponseMessage {
     USED_DATA_GROUP_NUMBER("used_data_group_number"),  //response message in case of used data group_number
     USED_ROLE_NAME("used_role_name"),  //response message in case of used role name
     USED_ROLE_NUMBER("used_role_number"), //response message in case of used role number
+    USED_SEIZED_GOOD("used_field_designation"),  //response message in case of used seized goods
     FAILED_INSERT_KNOWLEDGECASE("failed_insert_knowledgecase"), //response message in case of failed inserting new knowledgecase
     FAILED_UPDATE_KNOWLEDGECASE("failed_update_knowledgecase"), //response message in case of failed updating new knowledgecase
     FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"); //response message in case of failed inserting new knowledgecasedeal

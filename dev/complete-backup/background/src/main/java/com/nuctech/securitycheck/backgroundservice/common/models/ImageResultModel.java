@@ -1,12 +1,14 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,29 +29,31 @@ import java.util.List;
 @ApiModel(value = "ImageResultModel", description = "主要为判图站产生的数据")
 public class ImageResultModel {
 
-    @NotBlank
     @ApiModelProperty(value = "图片 guid")
     private String imageGuid;
 
-    @NotBlank
     @ApiModelProperty(value = "判图站用户")
     private String userName;
 
-    @NotBlank
     @ApiModelProperty(value = "判图结果")
     private String result;
 
-    @NotBlank
     @ApiModelProperty(value = "提交结论时间")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date time;
+    private String time;
 
-    @NotBlank
     @ApiModelProperty(value = "是否超时")
     private String isTimeout;
 
-    @NotBlank
     @ApiModelProperty(value = "提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitRects;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(userName) || StringUtils.isBlank(result) || StringUtils.isBlank(time) || StringUtils.isBlank(isTimeout)) {
+            return 1;
+        }
+        if(DateUtil.stringDateToDate(time) == null || submitRects == null) {
+            return 2;
+        }
+        return 0;
+    }
 }

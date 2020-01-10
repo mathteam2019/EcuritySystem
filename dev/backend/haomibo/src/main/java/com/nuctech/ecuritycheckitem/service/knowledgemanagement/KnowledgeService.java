@@ -29,7 +29,7 @@ public interface KnowledgeService {
 
     void updateStatus(Long caseId, String status);
 
-    Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase);
+    Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase, List<String> tagList);
 
     Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal);
 

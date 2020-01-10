@@ -3,6 +3,7 @@ package com.nuctech.securitycheck.backgroundservice.common.models;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
@@ -24,6 +25,16 @@ public class HandSerResultModel {
 
     @ApiModelProperty(value = "手检业务数据")
     private CheckResultModel checkResult;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(guid) || checkResult.checkValid() == 1) {
+            return 1;
+        }
+        if(checkResult.checkValid() == 2) {
+            return 2;
+        }
+        return 0;
+    }
 
 //    @ApiModelProperty(value = "手检结论")
 //    private String result;

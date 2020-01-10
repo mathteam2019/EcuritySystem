@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
 public class ImageDataModel {
 
     @ApiModelProperty(value = "离线标记", example = "0")
-    private Integer offline;
+    private String offline;
 
     @ApiModelProperty(value = "图片 guid")
     private String imageGuid;
@@ -58,4 +59,14 @@ public class ImageDataModel {
 
     @ApiModelProperty(value = "随机报警标记")
     private String randomAlarm;
+
+    public int checkValid() {
+        if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(offline)) {
+            return 1;
+        }
+        if(!offline.equals("0")) {
+            return 2;
+        }
+        return 0;
+    }
 }
