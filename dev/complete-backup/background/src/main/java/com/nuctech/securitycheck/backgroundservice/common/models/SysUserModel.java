@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,5 +21,11 @@ public class SysUserModel {
 
     @ApiModelProperty(value = "密码")
     private String password;
+
+    @JsonProperty("LoginName")
+    public void setLoginName(String LoginName) {
+        this.LoginName = LoginName;
+    }
+
     
 }

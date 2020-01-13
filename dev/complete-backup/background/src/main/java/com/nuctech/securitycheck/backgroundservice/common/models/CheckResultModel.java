@@ -37,8 +37,11 @@ public class CheckResultModel {
     @ApiModelProperty(value = "查获物品")
     private String checklist;
 
-    @ApiModelProperty(value = "评价判图")
-    private String imageJudge;
+    @ApiModelProperty(value = "评价判图1")
+    private String imageJudge1;
+
+    @ApiModelProperty(value = "评价判图2")
+    private String imageJudge2;
 
     @ApiModelProperty(value = "收藏")
     private String imageKeep;
@@ -51,6 +54,9 @@ public class CheckResultModel {
 
     @ApiModelProperty(value = "手检提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitRects;
+
+    @ApiModelProperty(value = "手检提交的嫌疑框信息")
+    private List<SubmitRectInfoModel> submitCartoonRects;
 
     public int checkValid() {
         if(StringUtils.isBlank(imageGuid) || submitRects == null) {

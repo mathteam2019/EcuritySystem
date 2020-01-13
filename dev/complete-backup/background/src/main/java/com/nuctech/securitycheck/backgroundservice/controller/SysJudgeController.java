@@ -127,7 +127,6 @@ public class SysJudgeController {
                 SerDeviceConfigModel serDeviceConfigModel = new SerDeviceConfigModel();
                 serDeviceConfigModel.setGuid(guid);
                 serDeviceConfigModel.setDeviceNumber(sysDevice.getDeviceSerial());
-                serDeviceConfigModel.setMode(sysDeviceConfig.getSysWorkMode().getModeId());
                 serDeviceConfigModel.setATRColor(serPlatformCheckParams.getScanRecogniseColour());
                 serDeviceConfigModel.setManualColor(serPlatformCheckParams.getHandRecogniseColour());
                 serDeviceConfigModel.setDeleteColor(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
@@ -136,8 +135,8 @@ public class SysJudgeController {
                 resultMessageVO.setKey(routingKey);
                 resultMessageVO.setContent(serDeviceConfigModel);
                 messageSender.sendDeviceConfigMessage(resultMessageVO, exchangeName, routingKey);
-                serMqMessageService.save(resultMessageVO, 0, serDeviceConfigModel.getGuid(), null,
-                        CommonConstant.RESULT_SUCCESS.toString());
+                serMqMessageService.save(resultMessageVO, 1, serDeviceConfigModel.getGuid(), null,
+                        CommonConstant.RESULT_SUCCESS.getValue().toString());
             }
         } catch (Exception e) {
             log.error("无法发送设备配置");
@@ -148,8 +147,8 @@ public class SysJudgeController {
             model.setGuid(guid);
             resultMsg.setContent(model);
             messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-            serMqMessageService.save(resultMsg, 0, model.getGuid(), null,
-                    CommonConstant.RESULT_FAIL.toString());
+            serMqMessageService.save(resultMsg, 1, model.getGuid(), null,
+                    CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
         }
     }
 
@@ -171,15 +170,13 @@ public class SysJudgeController {
 
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.rem.imageinfo"));
-
+        devSerImageInfoModel.setGuid(serJudgeImageInfoModel.getGuid());
+        resultMessageVO.setContent(devSerImageInfoModel);
+        messageSender.sendImageInfoToJudge(resultMessageVO);
+        serMqMessageService.save(resultMessageVO, 1, devSerImageInfoModel.getGuid(), devSerImageInfoModel.getImageData().getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
         // 判断 是否超时
         if (serJudgeImageInfoModel.getGuid() != null) {         // 判图站分派超时-false
-
-            devSerImageInfoModel.setGuid(serJudgeImageInfoModel.getGuid());
-            resultMessageVO.setContent(devSerImageInfoModel);
-            messageSender.sendImageInfoToJudge(resultMessageVO);
-            serMqMessageService.save(resultMessageVO, 0, devSerImageInfoModel.getGuid(), devSerImageInfoModel.getImageData().getImageGuid(),
-                    CommonConstant.RESULT_SUCCESS.toString());
             boolean isProcessTimeout = false;
 
             ObjectMapper objectMapper = new ObjectMapper();

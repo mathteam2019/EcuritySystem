@@ -192,6 +192,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                     .scanData(devSerImageInfo.getImageData().getData())
                     .scanRandomAlarm(devSerImageInfo.getImageData().getRandomAlarm())
                     .scanImageId(taskNumber)
+                    .scanKeyPoint(objectMapper.writeValueAsString(devSerImageInfo.getImageData().getKeyPoint()))
                     .build();
             serScan = serScanRepository.save(serScan);
 
@@ -463,7 +464,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                         .scanOffline(Integer.valueOf(devSerImageInfo.getImageData().getOffline()))
                         .scanImageGender(BackgroundServiceUtil.genderConvert(devSerImageInfo.getImageData().getImageGender()))
                         .scanData(devSerImageInfo.getImageData().getData())
-                        .scanRandomAlarm((devSerImageInfo.getImageData().getRandomAlarm()))                       .build();
+                        .scanRandomAlarm((devSerImageInfo.getImageData().getRandomAlarm()))
+                        .scanKeyPoint(objectMapper.writeValueAsString(devSerImageInfo.getImageData().getKeyPoint()))
+                        .build();
             } else {
                 // update serScan
                 serScan.setSerTask(serTask);
@@ -481,6 +484,7 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
                 serScan.setScanImageGender(BackgroundServiceUtil.genderConvert(devSerImageInfo.getImageData().getImageGender()));
                 serScan.setScanData(devSerImageInfo.getImageData().getData());
                 serScan.setScanRandomAlarm((devSerImageInfo.getImageData().getRandomAlarm()));
+                serScan.setScanKeyPoint(objectMapper.writeValueAsString(devSerImageInfo.getImageData().getKeyPoint()));
                 serScan.setScanImageId(taskNumber);
             }
             serScan = serScanRepository.save(serScan);

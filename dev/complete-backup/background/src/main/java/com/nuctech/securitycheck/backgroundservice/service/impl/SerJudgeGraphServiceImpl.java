@@ -162,6 +162,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                         .judgeUser(sysUser)
                         .judgeEndTime(DateUtil.getCurrentDate())
                         .judgeSubmitRects(judgeSubmitRectsStr)
+                        .judgeCartoonRects(objectMapper.writeValueAsString(judgeSerResult.getImageResult().getSubmitCartoonRects()))
                         .build();
                 if(serAssign != null) {
                     serJudgeGraph.setJudgeStartTime(serAssign.getAssignEndTime());
@@ -309,6 +310,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                                 .deviceImages(devSerImageInfo.getImageData().getDeviceImages())
                                 .data(devSerImageInfo.getImageData().getData())
                                 .randomAlarm(devSerImageInfo.getImageData().getRandomAlarm())
+                                .KeyPoint(devSerImageInfo.getImageData().getKeyPoint())
                                 .build())
                         .imageResult(ImageResultModel.builder()
                                 .userName(sysUser.getUserAccount())
@@ -617,6 +619,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                                 .deviceImages(devSerImageInfo.getImageData().getDeviceImages())
                                 .data(devSerImageInfo.getImageData().getData())
                                 .randomAlarm(devSerImageInfo.getImageData().getRandomAlarm())
+                                .KeyPoint(devSerImageInfo.getImageData().getKeyPoint())
                                 .build())
                         .personData(PersonDataModel.builder()
                                 .type(devSerImageInfo.getPersonData().getType())
@@ -705,6 +708,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                                 .deviceImages(devSerImageInfo.getImageData().getDeviceImages())
                                 .data(devSerImageInfo.getImageData().getData())
                                 .randomAlarm(devSerImageInfo.getImageData().getRandomAlarm())
+                                .KeyPoint(devSerImageInfo.getImageData().getKeyPoint())
                                 .build())
                         .personData(PersonDataModel.builder()
                                 .type(devSerImageInfo.getPersonData().getType())

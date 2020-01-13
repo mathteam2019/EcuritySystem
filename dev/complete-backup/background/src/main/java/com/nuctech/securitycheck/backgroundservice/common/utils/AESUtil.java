@@ -74,7 +74,7 @@ public class AESUtil {
         Map map = new HashMap<String, String>();
         map.put("key", "value");
         map.put("中文", "汉字");
-        String content = JSONObject.toJSONString(map);
+        String content = CryptUtil.getJSONString(map);
         System.out.println("加密前：" + content);
 
         String encrypt = encrypt(content, KEY);

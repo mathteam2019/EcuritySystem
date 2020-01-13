@@ -63,35 +63,35 @@ public class MessageListener {
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.register"))) {
                 // 4.3.1.1 安检仪向后台服务发送注册信息
-                SysRegisterModel sysRegisterModel = (SysRegisterModel) result.getContent();
+                SysRegisterModel sysRegisterModel = objectMapper.convertValue(result.getContent(), SysRegisterModel.class);//(SysRegisterModel) result.getContent();
                 securitySysController.sendRegister(sysRegisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.login"))) {
                 // 4.3.1.2 安检仪向后台服务发送登录信息
-                SysLoginModel sysLoginModel = (SysLoginModel) result.getContent();
+                SysLoginModel sysLoginModel = objectMapper.convertValue(result.getContent(), SysLoginModel.class);
                 securitySysController.sendLogin(sysLoginModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.logout"))) {
                 // 4.3.1.3 安检仪向后台服务发送登出信息
-                SysLogoutModel sysLogoutModel = (SysLogoutModel) result.getContent();
+                SysLogoutModel sysLogoutModel = objectMapper.convertValue(result.getContent(), SysLogoutModel.class);
                 securitySysController.sendLogout(sysLogoutModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.unregister"))) {
                 // 4.3.1.4 安检仪向后台服务发送注销信息
-                SysUnregisterModel sysUnregisterModel = (SysUnregisterModel) result.getContent();
+                SysUnregisterModel sysUnregisterModel = objectMapper.convertValue(result.getContent(), SysUnregisterModel.class);
                 securitySysController.sendUnregister(sysUnregisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.updateversion"))) {
                 // 4.3.1.9 安检仪向后台服务更新版本号信息（算法切换后更新）-返回
-                SysDeviceVersionModel sysDeviceVersionModel = (SysDeviceVersionModel) result.getContent();
+                SysDeviceVersionModel sysDeviceVersionModel = objectMapper.convertValue(result.getContent(), SysDeviceVersionModel.class);
                 result = securitySysController.sendDeviceVersion(sysDeviceVersionModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.imageinfo"))) {
                 // 4.3.1.13 安检仪向后台服务发送扫描图像信息-返回
-                DevSerImageInfoModel devSerImageInfoModel = (DevSerImageInfoModel) result.getContent();
+                DevSerImageInfoModel devSerImageInfoModel = objectMapper.convertValue(result.getContent(), DevSerImageInfoModel.class);
                 result = securitySysController.saveScanResult(devSerImageInfoModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.manual.task"))) {
                 // 4.3.1.21 安检仪向后台服务请求本机手检-返回
-                DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = (DispatchManualDeviceInfoVO) result.getContent();
+                DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.convertValue(result.getContent(), DispatchManualDeviceInfoVO.class);
                 result = securitySysController.availableCheckHand(dispatchManualDeviceInfoVO);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.manual.conclusion"))) {
                 // 4.3.1.22 安检仪本地手检站后台服务请求提交手检结论-返回
-                HandSerResultModel handSerResultModel = (HandSerResultModel) result.getContent();
+                HandSerResultModel handSerResultModel = objectMapper.convertValue(result.getContent(), HandSerResultModel.class);
                 result = securitySysController.saveHandResultFromSecurity(handSerResultModel);
             }
         } catch (Exception e) {
@@ -159,31 +159,31 @@ public class MessageListener {
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.register"))) {
                 // 4.3.2.1 判图站向后台服务发送注册信息
-                SysRegisterModel sysRegisterModel = (SysRegisterModel) result.getContent();
+                SysRegisterModel sysRegisterModel = objectMapper.convertValue(result.getContent(), SysRegisterModel.class);
                 judgeSysController.sendRegister(sysRegisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.login"))) {
                 // 4.3.2.2 判图站向后台服务发送登录信息
-                SysLoginModel sysLoginModel = (SysLoginModel) result.getContent();
+                SysLoginModel sysLoginModel = objectMapper.convertValue(result.getContent(), SysLoginModel.class);
                 judgeSysController.sendLogin(sysLoginModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.logout"))) {
                 // 4.3.2.3 判图站向后台服务发送登出信息
-                SysLogoutModel sysLogoutModel = (SysLogoutModel) result.getContent();
+                SysLogoutModel sysLogoutModel = objectMapper.convertValue(result.getContent(), SysLogoutModel.class);
                 judgeSysController.sendLogout(sysLogoutModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.unregister"))) {
                 // 4.3.2.4 判图站向后台服务发送注销信息
-                SysUnregisterModel sysUnregisterModel = (SysUnregisterModel) result.getContent();
+                SysUnregisterModel sysUnregisterModel = objectMapper.convertValue(result.getContent(), SysUnregisterModel.class);
                 judgeSysController.sendUnregister(sysUnregisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.start"))) {
                 // 4.3.2.7 判图站向后台服务发送开始工作通知
-                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.readValue(JSONObject.toJSONString(result.getContent()), SysDeviceStatusModel.class);
+                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 judgeSysController.deviceStart(sysDeviceStatusModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.suspend"))) {
                 // 4.3.2.8 判图站向后台服务发送暂停工作通知
-                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.readValue(JSONObject.toJSONString(result.getContent()), SysDeviceStatusModel.class);
+                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 judgeSysController.deviceStop(sysDeviceStatusModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.result"))) {
                 // 4.3.2.9 判图站向后台服务提交判图结论
-                JudgeSerResultModel judgeSerResultModel = objectMapper.readValue(JSONObject.toJSONString(result.getContent()), JudgeSerResultModel.class);
+                JudgeSerResultModel judgeSerResultModel = objectMapper.convertValue(result.getContent(), JudgeSerResultModel.class);
                 judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
             }
         } catch (Exception e) {
@@ -224,31 +224,31 @@ public class MessageListener {
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.register"))) {
                 // 4.3.3.1 手检站向后台服务发送注册信息
-                SysRegisterModel sysRegisterModel = (SysRegisterModel) result.getContent();
+                SysRegisterModel sysRegisterModel = objectMapper.convertValue(result.getContent(), SysRegisterModel.class);
                 manualSysController.sendRegister(sysRegisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.login"))) {
                 // 4.3.3.2 手检站向后台服务发送登录信息
-                SysLoginModel sysLoginModel = (SysLoginModel) result.getContent();
+                SysLoginModel sysLoginModel = objectMapper.convertValue(result.getContent(), SysLoginModel.class);
                 manualSysController.sendLogin(sysLoginModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.logout"))) {
                 // 4.3.3.3 手检站向后台服务发送登出信息
-                SysLogoutModel sysLogoutModel = (SysLogoutModel) result.getContent();
+                SysLogoutModel sysLogoutModel = objectMapper.convertValue(result.getContent(), SysLogoutModel.class);
                 manualSysController.sendLogout(sysLogoutModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.start"))) {
                 // 4.3.3.4 手检站向后台服务发送开始工作通知
-                SysDeviceStatusModel sysDeviceStatusModel = (SysDeviceStatusModel) result.getContent();
+                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 manualSysController.deviceStart(sysDeviceStatusModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.stop"))) {
                 // 4.3.3.5 手检站向后台服务发送暂停工作通知
-                SysDeviceStatusModel sysDeviceStatusModel = (SysDeviceStatusModel) result.getContent();
+                SysDeviceStatusModel sysDeviceStatusModel = objectMapper.convertValue(result.getContent(), SysDeviceStatusModel.class);
                 manualSysController.deviceStop(sysDeviceStatusModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.unregister"))) {
                 // 4.3.3.6 手检战向后台服务发送注销信息
-                SysUnregisterModel sysUnregisterModel = (SysUnregisterModel) result.getContent();
+                SysUnregisterModel sysUnregisterModel = objectMapper.convertValue(result.getContent(), SysUnregisterModel.class);
                 manualSysController.sendUnregister(sysUnregisterModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.man.sys.manual.conclusion"))) {
                 // 4.3.3.9 手检站后台服务请求提交手检结论
-                HandSerResultModel handSerResultModel = (HandSerResultModel) result.getContent();
+                HandSerResultModel handSerResultModel = objectMapper.convertValue(result.getContent(), HandSerResultModel.class);
                 manualSysController.saveHandResult(handSerResultModel);
             }
         } catch (Exception e) {
@@ -305,19 +305,19 @@ public class MessageListener {
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.log"))) {
                 // 4.3.1.12 安检仪向后台服务发送日志信息
-                SerDevLogModel serDevLogModel = (SerDevLogModel) result.getContent();
+                SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 securitySysController.saveSerDevLog(serDevLogModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.data.synchronization"))) {
                 // 4.3.1.14 安检仪向后台服务同步数据
-                DevSerDataSyncModel devSerDataSyncModel = (DevSerDataSyncModel) result.getContent();
+                DevSerDataSyncModel devSerDataSyncModel = objectMapper.convertValue(result.getContent(), DevSerDataSyncModel.class);
                 securitySysController.synchronizeScanResult(devSerDataSyncModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.log"))) {
                 // 4.3.2.5 判图站向后台服务发送日志信息
-                SerDevLogModel serDevLogModel = (SerDevLogModel) result.getContent();
+                SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 judgeSysController.saveSerDevLog(serDevLogModel);
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.log"))) {
                 // 4.3.3.7 手检站向后台服务发送日志信息
-                SerDevLogModel serDevLogModel = (SerDevLogModel) result.getContent();
+                SerDevLogModel serDevLogModel = objectMapper.convertValue(result.getContent(), SerDevLogModel.class);
                 manualSysController.saveSerDevLog(serDevLogModel);
             }
         } catch (Exception e) {
@@ -339,23 +339,23 @@ public class MessageListener {
             String key = result.getKey();
             if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.currentstatus"))) {
                 // 4.3.1.10 安检仪向后台服务发送 flow 信息（即时状态）-返回
-                SerDeviceStatusModel serDeviceStatusModel = (SerDeviceStatusModel) result.getContent();
+                SerDeviceStatusModel serDeviceStatusModel = objectMapper.convertValue(result.getContent(), SerDeviceStatusModel.class);
                 securitySysController.sendSerDeviceStatus(serDeviceStatusModel);
             } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.heartbeat"))) {
                 //4.3.1.8 安检仪向后台服务发送心跳信息
-                HeartBeatModel heartBeatModel = (HeartBeatModel) result.getContent();
+                HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 securitySysController.saveHeartBeatTime(heartBeatModel);
             } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.hardwarestatus"))) {
-                HardwareStatusModel hardwareStatusModel = (HardwareStatusModel) result.getContent();
+                HardwareStatusModel hardwareStatusModel = objectMapper.convertValue(result.getContent(), HardwareStatusModel.class);
                 //4.3.1.11 安检仪向后台服务发送硬件状态（即时状态）
                 securitySysController.sendHardwareStatus(hardwareStatusModel);
             } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.rem.sys.heartbeat"))) {
                 //4.3.2.6 判图站向后台服务发送心跳信息
-                HeartBeatModel heartBeatModel = (HeartBeatModel) result.getContent();
+                HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 judgeSysController.saveHeartBeatTime(heartBeatModel);
             } else if (key.equals(BackgroundServiceUtil.getConfig("routingKey.sys.man.heartbeat"))) {
                 //4.3.3.8 手检端向后台服务发送心跳信息
-                HeartBeatModel heartBeatModel = (HeartBeatModel) result.getContent();
+                HeartBeatModel heartBeatModel = objectMapper.convertValue(result.getContent(), HeartBeatModel.class);
                 manualSysController.saveHeartBeatTime(heartBeatModel);
             }
         } catch (Exception e) {

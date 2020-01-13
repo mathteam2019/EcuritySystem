@@ -81,4 +81,7 @@ public class SerScan extends BaseEntity implements Serializable {
     @Column(name = "SCAN_RANDOMALARM", length = 10)
     private String scanRandomAlarm;
 
+    @Column(name = "SCAN_KEY_POINT", length = 600)
+    private String scanKeyPoint;
+
 }

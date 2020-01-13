@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -47,6 +48,15 @@ public class CryptUtil {
             log.error("返回数据进行解密出现异常：" + e.getMessage());
         }*/
         return plainText;
+    }
+
+    public static String getJSONString(Object object) {
+        String str = "";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            str = objectMapper.writeValueAsString(object);
+        } catch (Exception ex) {}
+        return str;
     }
 
     /**

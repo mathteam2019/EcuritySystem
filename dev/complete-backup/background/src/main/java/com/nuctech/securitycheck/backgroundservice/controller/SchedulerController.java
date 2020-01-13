@@ -110,8 +110,8 @@ public class SchedulerController {
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
                     messageSender.cronJobSecurityOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
-                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
-                            CommonConstant.RESULT_SUCCESS.toString());
+                    serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
 
             }
@@ -168,8 +168,8 @@ public class SchedulerController {
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
                     messageSender.cronJobJudgeOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
-                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
-                            CommonConstant.RESULT_SUCCESS.toString());
+                    serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
             }
         } catch (Exception e) {
@@ -226,8 +226,8 @@ public class SchedulerController {
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
                     messageSender.cronJobHandOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
-                    serMqMessageService.save(resultMessageVO, 0, result.getGuid(), null,
-                            CommonConstant.RESULT_SUCCESS.toString());
+                    serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
+                            CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
             }
         } catch (Exception e) {

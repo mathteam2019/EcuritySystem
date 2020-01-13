@@ -206,10 +206,17 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
             //将数据保存到ser_check_result
             String handSubmitRectsStr = objectMapper.writeValueAsString(handSerResult.getCheckResult().getSubmitRects());
             String imageJudgeType = "";
-            if (handSerResult.getCheckResult().getImageJudge().equals(DeviceImageJudgeType.MISJUDGE.getValue())) {
+            if (handSerResult.getCheckResult().getImageJudge1().equals(DeviceImageJudgeType.MISJUDGE.getValue())) {
                 imageJudgeType = ImageJudgeType.MISJUDGE.getValue();
-            } else if (handSerResult.getCheckResult().getImageJudge().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
+            } else if (handSerResult.getCheckResult().getImageJudge1().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
                 imageJudgeType = ImageJudgeType.LEAKJUDGE.getValue();
+            }
+
+            String imageJudgeTypeSecond = "";
+            if (handSerResult.getCheckResult().getImageJudge2().equals(DeviceImageJudgeType.MISJUDGE.getValue())) {
+                imageJudgeTypeSecond = ImageJudgeType.MISJUDGE.getValue();
+            } else if (handSerResult.getCheckResult().getImageJudge2().equals(DeviceImageJudgeType.LEAKJUDGE.getValue())) {
+                imageJudgeTypeSecond = ImageJudgeType.LEAKJUDGE.getValue();
             }
             SerCheckResult serCheckResult = SerCheckResult.builder()
                     .serTask(serTask)
@@ -219,8 +226,10 @@ public class SerHandResultServiceImpl implements ISerHandResultService {
                     .handGoods(handSerResult.getCheckResult().getChecklist())
                     .handCollectSign((handSerResult.getCheckResult().getImageKeep()))
                     .handAppraise(imageJudgeType)
+                    .handAppraiseSecond(imageJudgeTypeSecond)
                     .handAttached(handSerResult.getCheckResult().getFiles())
                     .handSubmitRects(handSubmitRectsStr)
+                    .handCartoonRects(objectMapper.writeValueAsString(handSerResult.getCheckResult().getSubmitCartoonRects()))
                     .build();
             serCheckResult.setNote(handSerResult.getCheckResult().getNote());
             serCheckResultRepository.save(serCheckResult);

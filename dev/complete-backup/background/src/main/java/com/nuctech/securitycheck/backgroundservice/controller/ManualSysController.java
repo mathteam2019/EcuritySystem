@@ -89,6 +89,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.1 手检站向后台服务发送注册信息")
     @PostMapping("send-register")
     public ResultMessageVO sendRegister(@ApiParam("注册信息") @RequestBody SysRegisterModel sysRegisterModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.register"));
+        receivceMessageVO.setContent(sysRegisterModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysRegisterModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"));
         CommonResultVO result = new CommonResultVO();
@@ -97,7 +103,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -108,7 +114,7 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     //注册设备(register device)
                     boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
@@ -125,20 +131,20 @@ public class ManualSysController {
                         sysManualController.sendDictData(sysRegisterModel.getGuid());
 
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("注册失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendManRegisterMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null,
                 result.getResult().toString());
@@ -154,6 +160,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.2 手检站向后台服务发送登录信息")
     @PostMapping("send-login")
     public ResultMessageVO sendLogin(@ApiParam("登录信息") @RequestBody SysLoginModel sysLoginModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.login"));
+        receivceMessageVO.setContent(sysLoginModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysLoginModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"));
         CommonResultVO result = new CommonResultVO();
@@ -162,7 +174,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -172,7 +184,7 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     boolean isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
                     if (isSuccess) {
@@ -183,20 +195,20 @@ public class ManualSysController {
                         judgeSysController.uploadDeviceConfig();
                         judgeSysController.uploadDeviceStatus();
                     } else {
-                        result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("登录失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendManLoginMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null,
                 result.getResult().toString());
@@ -212,6 +224,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.3 手检站向后台服务发送登出信息")
     @PostMapping("send-logout")
     public ResultMessageVO sendLogout(@ApiParam("登出信息") @RequestBody SysLogoutModel sysLogoutModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.logout"));
+        receivceMessageVO.setContent(sysLogoutModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysLogoutModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"));
         CommonResultVO result = new CommonResultVO();
@@ -220,7 +238,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -230,7 +248,7 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     boolean isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
                     if (isSuccess) {
@@ -240,20 +258,20 @@ public class ManualSysController {
                         judgeSysController.uploadDeviceConfig();
                         judgeSysController.uploadDeviceStatus();
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("登出失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendManLogoutMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null,
                 result.getResult().toString());
@@ -271,6 +289,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.4 手检站向后台服务发送开始工作通知")
     @PostMapping("device-start")
     public ResultMessageVO deviceStart(@ApiParam("开始工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.start"));
+        receivceMessageVO.setContent(sysDeviceStatusModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.sys.start");
         resultMessageVO.setKey(routingKey);
@@ -289,20 +313,20 @@ public class ManualSysController {
                     judgeSysController.uploadDeviceConfig();
                     judgeSysController.uploadDeviceStatus();
                 } else {
-                    result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
                 resultMessageVO.setContent(result);
             } catch (Exception e) {
                 log.error("操作失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 resultMessageVO.setContent(result);
             }
         }
 
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(result));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
         messageSender.sendSysManReplyMessage(encryptMsg, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
@@ -320,6 +344,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.5 手检站向后台服务发送暂停工作通知")
     @PostMapping("device-stop")
     public ResultMessageVO deviceStop(@ApiParam("暂停工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.stop"));
+        receivceMessageVO.setContent(sysDeviceStatusModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.man.sys.stop");
         resultMessageVO.setKey(routingKey);
@@ -338,20 +368,20 @@ public class ManualSysController {
                     judgeSysController.uploadDeviceConfig();
                     judgeSysController.uploadDeviceStatus();
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
                 resultMessageVO.setContent(result);
             } catch (Exception e) {
                 log.error("操作失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 resultMessageVO.setContent(result);
             }
         }
 
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(result));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
         messageSender.sendSysManReplyMessage(encryptMsg, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
@@ -367,6 +397,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.6 手检战向后台服务发送注销信息")
     @PostMapping("send-unregister")
     public ResultMessageVO sendUnregister(@ApiParam("登录信息") @RequestBody SysUnregisterModel sysUnregisterModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.unregister"));
+        receivceMessageVO.setContent(sysUnregisterModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysUnregisterModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"));
         CommonResultVO result = new CommonResultVO();
@@ -375,7 +411,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -385,7 +421,7 @@ public class ManualSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     // 取消注册设备
                     boolean isSuccess = sysDeviceService.unRegister(sysDevice, sysUnregisterModel);
@@ -394,20 +430,20 @@ public class ManualSysController {
                         judgeSysController.uploadDeviceConfig();
                         judgeSysController.uploadDeviceStatus();
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("取消注册失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendManUnregisterMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null,
                 result.getResult().toString());
@@ -423,6 +459,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.7 手检站向后台服务发送日志信息")
     @PostMapping("save-dev-log")
     public ResultMessageVO saveSerDevLog(@ApiParam("设备向后台服务发送日志信息") @RequestBody SerDevLogModel serDevLogModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.log"));
+        receivceMessageVO.setContent(serDevLogModel);
+        serMqMessageService.save(receivceMessageVO, 0, serDevLogModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         String exchangeName = null;
         String routingKey = null;
         CommonResultVO result = new CommonResultVO();
@@ -437,7 +479,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = SysDevice.builder().guid(serDevLogModel.getGuid()).build();
@@ -446,7 +488,7 @@ public class ManualSysController {
                 // 检查设备是否开启( check device is on)
                 if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
                     log.error("设备已关闭");
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
                 } else {
 
@@ -467,7 +509,7 @@ public class ManualSysController {
             } catch (Exception e) {
                 log.error("无法保存设备日志");
                 log.error(e.toString());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -489,6 +531,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.8 手检端向后台服务发送心跳信息")
     @PostMapping("save-heartbeat")
     public ResultMessageVO saveHeartBeatTime(@ApiParam(value = "心跳信息") @RequestBody HeartBeatModel heartBeatModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.man.heartbeat"));
+        receivceMessageVO.setContent(heartBeatModel);
+        serMqMessageService.save(receivceMessageVO, 0, heartBeatModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         String exchangeName = null;
         String routingKey = null;
         HeartBeatReplyModel heartBeatReplyModel = new HeartBeatReplyModel();
@@ -501,7 +549,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             heartBeatReplyModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = SysDevice.builder().guid(heartBeatModel.getGuid()).build();
@@ -527,10 +575,10 @@ public class ManualSysController {
 
                 } else {
                     log.error("设备已关闭");
-                    heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
             } catch (Exception e) {
-                heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 log.error("无法保存心跳");
                 log.error(e.getMessage());
 
@@ -558,6 +606,12 @@ public class ManualSysController {
     @ApiOperation("4.3.3.9 手检站后台服务请求提交手检结论")
     @PostMapping("save-hand-result")
     public ResultMessageVO saveHandResult(@RequestBody @ApiParam("请求报文定义") HandSerResultModel handSerResultModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.man.sys.manual.conclusion"));
+        receivceMessageVO.setContent(handSerResultModel);
+        serMqMessageService.save(receivceMessageVO, 0, handSerResultModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         SendMessageModel sendMessageModel = new SendMessageModel();
         sendMessageModel.setGuid(handSerResultModel.getGuid());
@@ -567,7 +621,7 @@ public class ManualSysController {
         if(checkResult == 1) {
             sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             boolean isSucceed = serHandResultService.saveHandResult(handSerResultModel);
             if (isSucceed) {
@@ -576,7 +630,7 @@ public class ManualSysController {
                 sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
 
             } else {
-                sendMessageModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -585,7 +639,7 @@ public class ManualSysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendSaveHandResultReplyMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
                 String.valueOf(sendMessageModel.getResult()));

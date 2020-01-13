@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,9 +21,6 @@ public class SerDeviceConfigModel {
     @ApiModelProperty(value = "安检仪 GUID")
     private String guid;
 
-    @ApiModelProperty(value = "运行模式", example = "0")
-    private Long mode;
-
     @ApiModelProperty(value = "设备编号")
     private String deviceNumber;
 
@@ -37,5 +35,20 @@ public class SerDeviceConfigModel {
 
     @ApiModelProperty(value = "系统参数-安检仪 params")
     private List<SerScanParamModel> params;
+
+    @JsonProperty("ATRColor")
+    public void setATRColor(String ATRColor) {
+        this.ATRColor = ATRColor;
+    }
+
+    @JsonProperty("ManualColor")
+    public void setManualColor(String ManualColor) {
+        this.ManualColor = ManualColor;
+    }
+
+    @JsonProperty("DeleteColor")
+    public void setDeleteColor(String DeleteColor) {
+        this.DeleteColor = DeleteColor;
+    }
 
 }

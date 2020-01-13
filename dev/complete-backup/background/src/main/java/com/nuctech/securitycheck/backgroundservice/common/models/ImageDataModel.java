@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -59,6 +60,14 @@ public class ImageDataModel {
 
     @ApiModelProperty(value = "随机报警标记")
     private String randomAlarm;
+
+    @ApiModelProperty(value = "关键点信息")
+    private KeyPointModel KeyPoint;
+
+    @JsonProperty("KeyPoint")
+    public void setKeyPoint(KeyPointModel KeyPoint) {
+        this.KeyPoint = KeyPoint;
+    }
 
     public int checkValid() {
         if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(offline)) {

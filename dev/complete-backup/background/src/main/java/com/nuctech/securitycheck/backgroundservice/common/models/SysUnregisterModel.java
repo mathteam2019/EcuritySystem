@@ -1,6 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -29,6 +30,11 @@ public class SysUnregisterModel {
 
     @ApiModelProperty(value = "时间")
     private String Time;
+
+    @JsonProperty("Time")
+    public void setTime(String Time) {
+        this.Time = Time;
+    }
 
     public int checkValid() {
         if(StringUtils.isBlank(guid) || StringUtils.isBlank(Time)) {

@@ -16,7 +16,8 @@ public enum CommonConstant {
     RESULT_SUCCESS(1),
     RESULT_FAIL(0),
     RESULT_EMPTY(502),
-    RESULT_INVALID_DATA(501),
+    RESULT_INVALID_PARAM_DATA(501),
+    RESULT_INVALID_LOGIC_DATA(503),
     EXPIRE_TIME(8 * 60 * 60),
     MAX_PROCESS(10),
     MAX_MANUAL_REDIS_LOCK(60),
@@ -27,10 +28,10 @@ public enum CommonConstant {
         this.value = value;
     }
 
-    public int getValue() {
+    public Integer getValue() {
         return value;
     }
 
-    private final int value;
+    private final Integer value;
 
 }

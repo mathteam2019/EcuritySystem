@@ -96,7 +96,7 @@ public class JudgeSysController {
     public void uploadDeviceStatus() {
         List<SysMonitoringDeviceStatusInfoVO> monitoringList = new ArrayList<SysMonitoringDeviceStatusInfoVO>();
         monitoringList = sysDeviceService.findMonitoringInfoList();
-        String jsonStr = JSONObject.toJSONString(monitoringList);
+        String jsonStr = CryptUtil.getJSONString(monitoringList);
         redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.monitoring.device.status.info"), CryptUtil.encrypt(jsonStr));
         redisUtil.expire(BackgroundServiceUtil.getConfig("redisKey.sys.monitoring.device.status.info"), CommonConstant.EXPIRE_TIME.getValue());
     }
@@ -107,7 +107,7 @@ public class JudgeSysController {
     public void uploadDeviceConfig() {
         List<SysSecurityInfoVO> sysSecurityInfoVOList = new ArrayList<SysSecurityInfoVO>();
         sysSecurityInfoVOList = sysDeviceService.findSecurityInfoList();
-        String jsonStr = JSONObject.toJSONString(sysSecurityInfoVOList);
+        String jsonStr = CryptUtil.getJSONString(sysSecurityInfoVOList);
         redisUtil.set(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"), CryptUtil.encrypt(jsonStr));
         redisUtil.expire(BackgroundServiceUtil.getConfig("redisKey.sys.security.info"), CommonConstant.EXPIRE_TIME.getValue());
     }
@@ -121,6 +121,11 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.1 判图站向后台服务发送注册信息")
     @PostMapping("send-register")
     public ResultMessageVO sendRegister(@ApiParam("注册信息") @RequestBody SysRegisterModel sysRegisterModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.register"));
+        receivceMessageVO.setContent(sysRegisterModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysRegisterModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"));
         CommonResultVO result = new CommonResultVO();
@@ -129,7 +134,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -140,7 +145,7 @@ public class JudgeSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
                 // 检查设备是否存在(check device exist or not)
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     //注册设备(register device)
                     boolean isSuccess = sysDeviceService.register(sysDevice, sysRegisterModel);
@@ -154,20 +159,20 @@ public class JudgeSysController {
                         // 4.3.2.10 后台服务向远程短下发配置信息
                         sysJudgeController.sendDeviceConfig(sysRegisterModel.getGuid());
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("注册失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendRemRegisterMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null,
                 result.getResult().toString());
@@ -184,6 +189,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.2 判图站向后台服务发送登录信息")
     @PostMapping("send-login")
     public ResultMessageVO sendLogin(@ApiParam("登录信息") @RequestBody SysLoginModel sysLoginModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.login"));
+        receivceMessageVO.setContent(sysLoginModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysLoginModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"));
         CommonResultVO result = new CommonResultVO();
@@ -192,7 +203,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -202,7 +213,7 @@ public class JudgeSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     // 登录设备(login device)
                     boolean isSuccess = sysDeviceService.login(sysDevice, sysLoginModel);
@@ -213,13 +224,13 @@ public class JudgeSysController {
                         uploadDeviceConfig();
 
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("登录失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -227,7 +238,7 @@ public class JudgeSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendRemLoginMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null,
                 result.getResult().toString());
@@ -242,6 +253,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.3 判图站向后台服务发送登出信息")
     @PostMapping("send-logout")
     public ResultMessageVO sendLogout(@ApiParam("登出信息") @RequestBody SysLogoutModel sysLogoutModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.logout"));
+        receivceMessageVO.setContent(sysLogoutModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysLogoutModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"));
         CommonResultVO result = new CommonResultVO();
@@ -250,7 +267,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -260,7 +277,7 @@ public class JudgeSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     // 注销设备
                     boolean isSuccess = sysDeviceService.logout(sysDevice, sysLogoutModel);
@@ -271,20 +288,20 @@ public class JudgeSysController {
                         uploadDeviceStatus();
                         uploadDeviceConfig();
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("登出失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendRemLogoutMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null,
                 result.getResult().toString());
@@ -299,6 +316,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.4 判图站向后台服务发送注销信息")
     @PostMapping("send-unregister")
     public ResultMessageVO sendUnregister(@ApiParam("登录信息") @RequestBody SysUnregisterModel sysUnregisterModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.unregister"));
+        receivceMessageVO.setContent(sysUnregisterModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysUnregisterModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"));
         CommonResultVO result = new CommonResultVO();
@@ -307,7 +330,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 SysDevice sysDevice = new SysDevice();
@@ -317,7 +340,7 @@ public class JudgeSysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 if (sysDevice == null) {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 } else {
                     // 取消注册设备
                     boolean isSuccess = sysDeviceService.unRegister(sysDevice, sysUnregisterModel);
@@ -325,19 +348,19 @@ public class JudgeSysController {
                         result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
                         uploadDeviceConfig();
                     } else {
-                        result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                        result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                     }
                 }
             } catch (Exception e) {
                 log.error("取消注册失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendRemUnregisterMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null,
                 result.getResult().toString());
@@ -353,6 +376,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.5 判图站向后台服务发送日志信息")
     @PostMapping("save-dev-log")
     public void saveSerDevLog(@ApiParam("设备向后台服务发送日志信息") @RequestBody SerDevLogModel serDevLogModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.log"));
+        receivceMessageVO.setContent(serDevLogModel);
+        serMqMessageService.save(receivceMessageVO, 0, serDevLogModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         String exchangeName = null;
         String routingKey = null;
         CommonResultVO result = new CommonResultVO();
@@ -365,7 +394,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             result.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            result.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            result.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 // 从数据库获取设备(get device data from database)
@@ -375,7 +404,7 @@ public class JudgeSysController {
                 // 检查设备是否开启( check device is on)
                 if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
                     log.error("设备已关闭");
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
                 } else {
 
@@ -396,7 +425,7 @@ public class JudgeSysController {
             } catch (Exception e) {
                 log.error("无法保存设备日志");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -418,6 +447,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.6 判图站向后台服务发送心跳信息")
     @PostMapping("save-heartbeat")
     public void saveHeartBeatTime(@ApiParam(value = "心跳信息") @RequestBody HeartBeatModel heartBeatModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.heartbeat"));
+        receivceMessageVO.setContent(heartBeatModel);
+        serMqMessageService.save(receivceMessageVO, 0, heartBeatModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         String exchangeName = null;
         String routingKey = null;
         HeartBeatReplyModel heartBeatReplyModel = new HeartBeatReplyModel();
@@ -431,7 +466,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             heartBeatReplyModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             try {
                 // 从数据库获取设备(get device data from database)
@@ -458,12 +493,12 @@ public class JudgeSysController {
                     heartBeatReplyModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
                 } else {
                     log.error("设备已关闭");
-                    heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
             } catch (Exception e) {
                 log.error("无法保存心跳");
                 log.error(e.getMessage());
-                heartBeatReplyModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                heartBeatReplyModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -487,6 +522,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.7 判图站向后台服务发送开始工作通知")
     @PostMapping("device-start")
     public ResultMessageVO deviceStart(@ApiParam("工作状态通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.start"));
+        receivceMessageVO.setContent(sysDeviceStatusModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.start");
         CommonResultVO result = new CommonResultVO();
@@ -502,13 +543,13 @@ public class JudgeSysController {
                     // redis
                     uploadDeviceConfig();
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
 
             } catch (Exception e) {
                 log.error("操作失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
@@ -516,7 +557,7 @@ public class JudgeSysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         resultMessageVO.setKey(routingKey);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(result));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
         messageSender.sendSysRemReplyMessage(encryptMsg, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
@@ -534,6 +575,12 @@ public class JudgeSysController {
     @ApiOperation("4.3.2.8 判图站向后台服务发送停止工作通知")
     @PostMapping("device-stop")
     public ResultMessageVO deviceStop(@ApiParam("停止工作通知") @RequestBody SysDeviceStatusModel sysDeviceStatusModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.suspend"));
+        receivceMessageVO.setContent(sysDeviceStatusModel);
+        serMqMessageService.save(receivceMessageVO, 0, sysDeviceStatusModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.suspend");
         resultMessageVO.setKey(routingKey);
@@ -550,19 +597,19 @@ public class JudgeSysController {
 
                     uploadDeviceConfig();
                 } else {
-                    result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                    result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 }
                 resultMessageVO.setContent(result);
             } catch (Exception e) {
                 log.error("操作失败");
                 log.error(e.getMessage());
-                result.setResult(CommonConstant.RESULT_FAIL.getValue());
+                result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
                 resultMessageVO.setContent(result);
             }
         }
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(result));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
         messageSender.sendSysRemReplyMessage(encryptMsg, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
@@ -579,6 +626,12 @@ public class JudgeSysController {
     @PostMapping("save-judge-graph-result")
     @Async
     public ResultMessageVO saveJudgeGraphResult(@RequestBody @ApiParam("请求报文定义") JudgeSerResultModel judgeSerResultModel) {
+        ResultMessageVO receivceMessageVO = new ResultMessageVO();
+        receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.rem.sys.result"));
+        receivceMessageVO.setContent(judgeSerResultModel);
+        serMqMessageService.save(receivceMessageVO, 0, judgeSerResultModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
+
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         SendMessageModel sendMessageModel = new SendMessageModel();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -593,7 +646,7 @@ public class JudgeSysController {
         if(checkResult == 1) {
             sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
         } else if(checkResult == 2) {
-            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_DATA.getValue());
+            sendMessageModel.setResult(CommonConstant.RESULT_INVALID_PARAM_DATA.getValue());
         } else {
             JudgeInfoSaveResultVO saveResult = serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
             if (saveResult.getIsSucceed()) {
@@ -630,14 +683,14 @@ public class JudgeSysController {
                 }
 
             } else {
-                sendMessageModel.setResult(CommonConstant.RESULT_FAIL.getValue());
+                sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(JSONObject.toJSONString(resultMessageVO));
+        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
         messageSender.sendJudgeGraphResultReplyMessage(encryptMsg);
         serMqMessageService.save(resultMessageVO, 1, judgeSerResultModel.getGuid(), judgeSerResultModel.getImageResult().getImageGuid(),
                 String.valueOf(sendMessageModel.getResult()));

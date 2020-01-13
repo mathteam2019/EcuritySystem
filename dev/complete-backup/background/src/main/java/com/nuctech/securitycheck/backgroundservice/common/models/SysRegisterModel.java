@@ -1,6 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nuctech.securitycheck.backgroundservice.common.utils.DateUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -40,6 +41,12 @@ public class SysRegisterModel {
 
     @ApiModelProperty(value = "算法版本号")
     private String algorithmVersion;
+
+
+    @JsonProperty("Time")
+    public void setTime(String Time) {
+        this.Time = Time;
+    }
 
     public int checkValid() {
         if(StringUtils.isBlank(guid) || StringUtils.isBlank(ip) || StringUtils.isBlank(Time)) {

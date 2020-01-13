@@ -377,7 +377,19 @@ public class MessageSender {
     public void sendDevUserList(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+            String encryptMsg = CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO));
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, encryptMsg);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public void allSysRegister(ResultMessageVO resultMessageVO) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            rabbitTemplate.convertAndSend(
+                    BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
+                    resultMessageVO.getKey(), CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
         } catch (Exception e) {
             log.error(e.getMessage());
         }

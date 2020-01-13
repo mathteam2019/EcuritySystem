@@ -47,6 +47,9 @@ public class ImageResultModel {
     @ApiModelProperty(value = "提交的嫌疑框信息")
     private List<SubmitRectInfoModel> submitRects;
 
+    @ApiModelProperty(value = "提交的卡通图嫌疑框信息")
+    private List<SubmitRectInfoModel> submitCartoonRects;
+
     public int checkValid() {
         if(StringUtils.isBlank(imageGuid) || StringUtils.isBlank(userName) || StringUtils.isBlank(result) || StringUtils.isBlank(time) || StringUtils.isBlank(isTimeout)) {
             return 1;

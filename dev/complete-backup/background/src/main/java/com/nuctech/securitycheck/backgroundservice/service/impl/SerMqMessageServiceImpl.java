@@ -1,6 +1,7 @@
 package com.nuctech.securitycheck.backgroundservice.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerDevLog;
 import com.nuctech.securitycheck.backgroundservice.common.entity.SerMqMessage;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
@@ -35,13 +36,20 @@ public class SerMqMessageServiceImpl implements ISerMqMessageService {
      */
     @Override
     public SerMqMessage save(ResultMessageVO resultMessageVO, int type, String guid, String imageGuid, String resultCode){
+        ObjectMapper objectMapper = new ObjectMapper();
+        String str = "";
+        try {
+            str = objectMapper.writeValueAsString(resultMessageVO);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         SerMqMessage serMqMessage = SerMqMessage.builder()
                 .guid(guid)
                 .imageGuid(imageGuid)
                 .resultCode(resultCode)
                 .type(type)
                 .mqKey(resultMessageVO.getKey())
-                .mqContent(JSONObject.toJSONString(resultMessageVO))
+                .mqContent(str)
                 .build();
         return serMqMessageRepository.save(serMqMessage);
     }

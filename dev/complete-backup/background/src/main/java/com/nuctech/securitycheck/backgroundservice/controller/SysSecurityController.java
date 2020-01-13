@@ -115,8 +115,8 @@ public class SysSecurityController {
                 model.setGuid(guid);
                 resultMsg.setContent(model);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-                serMqMessageService.save(resultMsg, 0, model.getGuid(), null,
-                        CommonConstant.RESULT_FAIL.toString());
+                serMqMessageService.save(resultMsg, 1, model.getGuid(), null,
+                        CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
             } else {
                 Long deviceId = sysDevice.getDeviceId();
                 SysDeviceConfig sysDeviceConfig = sysDeviceConfigService.findLastConfig(deviceId);
@@ -152,7 +152,6 @@ public class SysSecurityController {
                 SerDeviceConfigModel serDeviceConfigModel = new SerDeviceConfigModel();
                 serDeviceConfigModel.setGuid(guid);
                 serDeviceConfigModel.setDeviceNumber(sysDevice.getDeviceSerial());
-                serDeviceConfigModel.setMode(sysDeviceConfig.getSysWorkMode().getModeId());
                 serDeviceConfigModel.setATRColor(serPlatformCheckParams.getScanRecogniseColour());
                 serDeviceConfigModel.setManualColor(serPlatformCheckParams.getHandRecogniseColour());
                 serDeviceConfigModel.setDeleteColor(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
@@ -160,8 +159,8 @@ public class SysSecurityController {
                 resultMsg.setKey(routingKey);
                 resultMsg.setContent(serDeviceConfigModel);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-                serMqMessageService.save(resultMsg, 0, serDeviceConfigModel.getGuid(), null,
-                        CommonConstant.RESULT_SUCCESS.toString());
+                serMqMessageService.save(resultMsg, 1, serDeviceConfigModel.getGuid(), null,
+                        CommonConstant.RESULT_SUCCESS.getValue().toString());
             }
         } catch (Exception e) {
             log.error("无法发送设备配置");
@@ -172,8 +171,8 @@ public class SysSecurityController {
             model.setGuid(guid);
             resultMsg.setContent(model);
             messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-            serMqMessageService.save(resultMsg, 0, model.getGuid(), null,
-                    CommonConstant.RESULT_FAIL.toString());
+            serMqMessageService.save(resultMsg, 1, model.getGuid(), null,
+                    CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
             return resultMsg;
         }
         return resultMsg;
@@ -207,8 +206,8 @@ public class SysSecurityController {
 
                 resultMessageVO.setContent(content);
                 messageSender.sendDevUserList(resultMessageVO, exchangeName, routingKey);
-                serMqMessageService.save(resultMessageVO, 0, guid, null,
-                        CommonConstant.RESULT_FAIL.toString());
+                serMqMessageService.save(resultMessageVO, 1, guid, null,
+                        CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
             } else {
 
                 //检查谁可以访问当前设备的角色(role id to access to current device)
@@ -238,8 +237,8 @@ public class SysSecurityController {
                 content.setUsers(userModelList);
                 resultMessageVO.setContent(content);
                 messageSender.sendDevUserList(resultMessageVO, exchangeName, routingKey);
-                serMqMessageService.save(resultMessageVO, 0, guid, null,
-                        CommonConstant.RESULT_SUCCESS.toString());
+                serMqMessageService.save(resultMessageVO, 1, guid, null,
+                        CommonConstant.RESULT_SUCCESS.getValue().toString());
             }
         } catch (Exception e) {
             log.error("无法发送用户列表");
@@ -249,8 +248,8 @@ public class SysSecurityController {
             content.setUsers(userModelList);
             resultMessageVO.setContent(content);
             messageSender.sendDevUserList(resultMessageVO, exchangeName, routingKey);
-            serMqMessageService.save(resultMessageVO, 0, guid, null,
-                    CommonConstant.RESULT_FAIL.toString());
+            serMqMessageService.save(resultMessageVO, 1, guid, null,
+                    CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
         }
         return resultMessageVO;
     }
@@ -308,8 +307,8 @@ public class SysSecurityController {
             resultMessageVO.setContent(dictDataModel);
 
             messageSender.sendDevDictionary(resultMessageVO, exchangeName, routingKey);
-            serMqMessageService.save(resultMessageVO, 0, guid, null,
-                    CommonConstant.RESULT_SUCCESS.toString());
+            serMqMessageService.save(resultMessageVO, 1, guid, null,
+                    CommonConstant.RESULT_SUCCESS.getValue().toString());
         } catch (Exception e) {
             log.error("无法发送字典数据");
             log.error(e.getMessage());
@@ -320,8 +319,8 @@ public class SysSecurityController {
             resultMessageVO.setKey(routingKey);
             resultMessageVO.setContent(dictDataModel);
             messageSender.sendDevDictionary(resultMessageVO, exchangeName, routingKey);
-            serMqMessageService.save(resultMessageVO, 0, guid, null,
-                    CommonConstant.RESULT_FAIL.toString());
+            serMqMessageService.save(resultMessageVO, 1, guid, null,
+                    CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue().toString());
         }
         return resultMessageVO;
     }
@@ -360,8 +359,8 @@ public class SysSecurityController {
                 .build();
         resultMessageVO.setContent(sendMessageModel);
         messageSender.sendJudgeInfoToSecurity(resultMessageVO);
-        serMqMessageService.save(resultMessageVO, 0, sendMessageModel.getGuid(), sendMessageModel.getImageGuid(),
-                CommonConstant.RESULT_SUCCESS.toString());
+        serMqMessageService.save(resultMessageVO, 1, sendMessageModel.getGuid(), sendMessageModel.getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
         log.debug("4.3.1.15 后台服务向安检仪推送判图结论 service finished at" + System.currentTimeMillis() + "params:" +
                 "taskNumber:" + serDevJudgeGraphResultModel.getImageResult().getImageGuid() + "guid:" + serDevJudgeGraphResultModel.getGuid());
     }
@@ -385,8 +384,8 @@ public class SysSecurityController {
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.dev.dispatch.manual"));
         resultMessageVO.setContent(ret);
         messageSender.sendDispatchManual(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
-        serMqMessageService.save(resultMessageVO, 0, guid, taskInfoVO.getTaskNumber(),
-                CommonConstant.RESULT_SUCCESS.toString());
+        serMqMessageService.save(resultMessageVO, 1, guid, taskInfoVO.getTaskNumber(),
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;
     }
 
@@ -400,8 +399,8 @@ public class SysSecurityController {
 
         resultMessageVO.setContent(securityRemoteModel);
         messageSender.sendJudgeInfoToSecurity(resultMessageVO);
-        serMqMessageService.save(resultMessageVO, 0, securityRemoteModel.getGuid(), null,
-                CommonConstant.RESULT_SUCCESS.toString());
+        serMqMessageService.save(resultMessageVO, 1, securityRemoteModel.getGuid(), null,
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
     }
 
 
@@ -457,5 +456,20 @@ public class SysSecurityController {
             ex.printStackTrace();
         }
     }
+
+
+    @ApiOperation("测试注册sys-register")
+    @PostMapping("all-sys-register")
+    public void allSysRegister(SysRegisterModel SysRegisterModel) {
+        ResultMessageVO resultMessageVO = new ResultMessageVO();
+        resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.register"));
+
+        //CommonResultVO result = new CommonResultVO();
+        //result.setGuid(SysRegisterModel.getGuid());
+        //result.setResult(CommonConstant.RESULT_SUCCESS.getValue());
+        resultMessageVO.setContent(SysRegisterModel);
+        messageSender.allSysRegister(resultMessageVO);
+    }
+
 
 }

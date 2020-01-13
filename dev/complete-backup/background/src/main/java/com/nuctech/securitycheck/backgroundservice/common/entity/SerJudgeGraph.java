@@ -47,8 +47,13 @@ public class SerJudgeGraph extends BaseEntity implements Serializable {
     @Column(name = "JUDGE_TIMEOUT", length = 10)
     private String judgeTimeout;
 
-    @Column(name = "JUDGE_SUBMITRECTS", length = 255)
+    @Column(name = "JUDGE_SUBMITRECTS", length = 1000)
     private String judgeSubmitRects;
+
+    @Column(name = "JUDGE_CARTOONRECTS", length = 1000)
+    private String judgeCartoonRects;
+
+
 
     @Column(name = "JUDGE_TIME", length = 255)
     private String judgeTime;

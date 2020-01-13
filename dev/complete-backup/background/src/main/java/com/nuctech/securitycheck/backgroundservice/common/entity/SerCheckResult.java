@@ -63,7 +63,15 @@ public class SerCheckResult extends BaseEntity implements Serializable {
     @Column(name = "HAND_APPRAISE", length = 10)
     private String handAppraise;
 
-    @Column(name = "HAND_SUBMITRECTS", length = 10)
+    @Column(name = "HAND_APPRAISE2", length = 10)
+    private String handAppraiseSecond;
+
+    @Column(name = "HAND_SUBMITRECTS", length = 1000)
     private String handSubmitRects;
+
+    @Column(name = "HAND_CARTOONRECTS", length = 1000)
+    private String handCartoonRects;
+
+
 
 }

@@ -91,8 +91,8 @@ public class SysManualController {
                 model.setGuid(guid);
                 resultMsg.setContent(model);
                 messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-                serMqMessageService.save(resultMsg, 0, guid, null,
-                        CommonConstant.RESULT_SUCCESS.toString());
+                serMqMessageService.save(resultMsg, 1, guid, null,
+                        CommonConstant.RESULT_SUCCESS.getValue().toString());
             } else {
                 Long deviceId = sysDevice.getDeviceId();
                 SysManualGroup sysManualGroup = sysManualGroupService.findLastManualConfig(deviceId);
@@ -130,7 +130,6 @@ public class SysManualController {
                 SerDeviceConfigModel serDeviceConfigModel = new SerDeviceConfigModel();
                 serDeviceConfigModel.setGuid(guid);
                 serDeviceConfigModel.setDeviceNumber(sysDevice.getDeviceSerial());
-                serDeviceConfigModel.setMode(sysDeviceConfig.getSysWorkMode().getModeId());
                 serDeviceConfigModel.setATRColor(serPlatformCheckParams.getScanRecogniseColour());
                 serDeviceConfigModel.setManualColor(serPlatformCheckParams.getHandRecogniseColour());
                 serDeviceConfigModel.setDeleteColor(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
@@ -139,8 +138,8 @@ public class SysManualController {
                 resultMessageVO.setKey(routingKey);
                 resultMessageVO.setContent(serDeviceConfigModel);
                 messageSender.sendDeviceConfigMessage(resultMessageVO, exchangeName, routingKey);
-                serMqMessageService.save(resultMessageVO, 0, guid, null,
-                        CommonConstant.RESULT_SUCCESS.toString());
+                serMqMessageService.save(resultMessageVO, 1, guid, null,
+                        CommonConstant.RESULT_SUCCESS.getValue().toString());
             }
         } catch (Exception e) {
             log.error("无法发送设备配置");
@@ -151,8 +150,8 @@ public class SysManualController {
             model.setGuid(guid);
             resultMsg.setContent(model);
             messageSender.sendDeviceConfigMessage(resultMsg, exchangeName, routingKey);
-            serMqMessageService.save(resultMsg, 0, guid, null,
-                    CommonConstant.RESULT_SUCCESS.toString());
+            serMqMessageService.save(resultMsg, 1, guid, null,
+                    CommonConstant.RESULT_SUCCESS.getValue().toString());
         }
     }
 
@@ -188,8 +187,8 @@ public class SysManualController {
                 .build();
         resultMessageVO.setContent(sendMessageModel);
         messageSender.sendJudgeInfoToHandDevice(resultMessageVO);
-        serMqMessageService.save(resultMessageVO, 0, serManImageInfoModel.getGuid(), serManImageInfoModel.getImageData().getImageGuid(),
-                CommonConstant.RESULT_SUCCESS.toString());
+        serMqMessageService.save(resultMessageVO, 1, serManImageInfoModel.getGuid(), serManImageInfoModel.getImageData().getImageGuid(),
+                CommonConstant.RESULT_SUCCESS.getValue().toString());
         log.debug("4.3.3.12 后台服务向手检站推送业务数据-------------end-----------timeLine--------"
                 + System.currentTimeMillis() + "param:taskNumber=" + serManImageInfoModel.getImageData().getImageGuid());
     }

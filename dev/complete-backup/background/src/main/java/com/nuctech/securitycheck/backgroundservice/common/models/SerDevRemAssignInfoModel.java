@@ -1,5 +1,6 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,5 +37,20 @@ public class SerDevRemAssignInfoModel {
 
     @ApiModelProperty(value = "删除嫌疑框颜色")
     private String DeleteColor;
+
+    @JsonProperty("ATRColor")
+    public void setATRColor(String ATRColor) {
+        this.ATRColor = ATRColor;
+    }
+
+    @JsonProperty("ManualColor")
+    public void setManualColor(String ManualColor) {
+        this.ManualColor = ManualColor;
+    }
+
+    @JsonProperty("DeleteColor")
+    public void setDeleteColor(String DeleteColor) {
+        this.DeleteColor = DeleteColor;
+    }
     
 }
