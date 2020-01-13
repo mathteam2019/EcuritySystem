@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.fieldmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
 import com.nuctech.ecuritycheckitem.models.db.QSysField;
 import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
@@ -27,6 +28,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -241,10 +243,18 @@ public class FieldServiceImpl implements FieldService {
      * @return
      */
     @Override
-    public PageResult<SysField> getDeviceListByFilter(String designation, String status, String parentDesignation, int currentPage, int perPage) {
+    public PageResult<SysField> getDeviceListByFilter(String sortBy, String order, String designation, String status, String parentDesignation, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(designation, status, parentDesignation);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = sysFieldRepository.count(predicate);
         List<SysField> data = sysFieldRepository.findAll(predicate, pageRequest).getContent();
@@ -300,13 +310,27 @@ public class FieldServiceImpl implements FieldService {
      * @return
      */
     @Override
-    public List<SysField> getExportList(String designation, String status, String parentDesignation, boolean isAll, String idList) {
+    public List<SysField> getExportList(String sortBy, String order, String designation, String status, String parentDesignation, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(designation, status, parentDesignation);
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
         //get all field list
-        List<SysField> fieldList = StreamSupport
-                .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysField> fieldList;
+        if(sort != null) {
+            fieldList = StreamSupport
+                    .stream(sysFieldRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            fieldList = StreamSupport
+                    .stream(sysFieldRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
 
         List<SysField> exportList = getExportList(fieldList, isAll, idList);
         return exportList;

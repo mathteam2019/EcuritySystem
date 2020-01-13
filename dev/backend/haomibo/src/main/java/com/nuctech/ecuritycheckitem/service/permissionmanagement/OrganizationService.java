@@ -125,7 +125,7 @@ public interface OrganizationService {
      * @param perPage
      * @return
      */
-    PageResult<SysOrg> getOrganizationByFilterAndPage(String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage);
+    PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage);
 
     /**
      * get filtered organization list
@@ -134,6 +134,6 @@ public interface OrganizationService {
      * @param parentOrgName
      * @return
      */
-    List<SysOrg> getOrganizationByFilter(String orgName, String status, String parentOrgName);
+    List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, String parentOrgName);
 
 }

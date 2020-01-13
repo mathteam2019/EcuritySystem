@@ -27,6 +27,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceCategoryService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
@@ -53,9 +54,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/device-management/device-classify")
@@ -142,6 +141,7 @@ public class DeviceCategoryManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -158,6 +158,7 @@ public class DeviceCategoryManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
+        String sort;
         DeviceCategoryGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -403,11 +404,21 @@ public class DeviceCategoryManagementController extends BaseController {
             status = requestBody.getFilter().getStatus(); //get status from from input parameter
             parentCategoryName = requestBody.getFilter().getParentCategoryName(); //get category name from input parameter
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         int currentPage = requestBody.getCurrentPage();
         int perPage = requestBody.getPerPage();
         currentPage--;
 
-        PageResult<SysDeviceCategory> result = deviceCategoryService.getDeviceCategoryListByPage(categoryName, status, parentCategoryName,
+        PageResult<SysDeviceCategory> result = deviceCategoryService.getDeviceCategoryListByPage(sortBy, order, categoryName, status, parentCategoryName,
                 currentPage, perPage); //get list of SysDeviceCategory from database through deviceCategoryService
         long total = result.getTotal();
         List<SysDeviceCategory> data = result.getDataList();
@@ -456,7 +467,18 @@ public class DeviceCategoryManagementController extends BaseController {
             parentCategoryName = requestBody.getFilter().getParentCategoryName();//get category name from input parameter
         }
 
-        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         setDictionary(); //set dictionary data
         DeviceCategoryExcelView.setMessageSource(messageSource);
@@ -495,7 +517,18 @@ public class DeviceCategoryManagementController extends BaseController {
             parentCategoryName = requestBody.getFilter().getParentCategoryName();//get category name from input parameter
         }
 
-        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         setDictionary(); //set dictionary data
         DeviceCategoryWordView.setMessageSource(messageSource);
@@ -537,7 +570,18 @@ public class DeviceCategoryManagementController extends BaseController {
             parentCategoryName = requestBody.getFilter().getParentCategoryName();//get category name from input parameter
         }
 
-        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(categoryName, status, parentCategoryName,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDeviceCategory> exportList = deviceCategoryService.getExportListByFilter(sortBy, order, categoryName, status, parentCategoryName,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of SysDeviceCategory from database through deviceCategoryService
         DeviceCategoryPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data

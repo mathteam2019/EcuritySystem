@@ -55,7 +55,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(Long modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 

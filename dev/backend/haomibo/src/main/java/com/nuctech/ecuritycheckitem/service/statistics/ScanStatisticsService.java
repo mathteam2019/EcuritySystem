@@ -31,6 +31,6 @@ public interface ScanStatisticsService {
      * @param perPage
      * @return
      */
-    ScanStatisticsResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+    ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
 
 }

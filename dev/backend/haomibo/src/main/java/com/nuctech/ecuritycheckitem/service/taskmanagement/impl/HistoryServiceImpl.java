@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.service.taskmanagement.HistoryService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -112,8 +113,10 @@ public class HistoryServiceImpl implements HistoryService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get predicate from input parameters
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
-            sortBy = "task.taskNumber";
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "task.taskNumber";
+            }
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             }
@@ -147,8 +150,11 @@ public class HistoryServiceImpl implements HistoryService {
         BooleanBuilder predicate = getPredicate(taskNumber, modeId, taskStatus, fieldId, userName, startTime, endTime); //get filter from input parameters
 
         Sort sort = null;
-        if (sortBy != null && order != null) {
-            sortBy = "task.taskNumber";
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("taskNumber")) {
+                sortBy = "task.taskNumber";
+            }
+
             sort = new Sort(Sort.Direction.ASC, sortBy);
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = new Sort(Sort.Direction.DESC, sortBy);

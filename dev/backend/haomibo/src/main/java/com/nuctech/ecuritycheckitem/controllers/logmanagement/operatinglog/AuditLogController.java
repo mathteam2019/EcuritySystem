@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/log-management/operating-log/audit")
@@ -85,7 +88,7 @@ public class AuditLogController extends BaseController {
 
         @NotNull
         int perPage;
-
+        String sort;
         Filter filter;
     }
 
@@ -102,7 +105,7 @@ public class AuditLogController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         AuditLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -113,7 +116,7 @@ public class AuditLogController extends BaseController {
      * @param perPage
      * @return
      */
-    private PageResult<SysAuditLog> getPageResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+    private PageResult<SysAuditLog> getPageResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
         String operateResult = "";
         String operateObject = "";
@@ -128,7 +131,7 @@ public class AuditLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(clientIp, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAuditLog> result = auditLogService.getAuditLogListByFilter(sortBy, order, clientIp, operateResult, operateObject, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -139,7 +142,7 @@ public class AuditLogController extends BaseController {
      * @param idList
      * @return
      */
-    private List<SysAuditLog> getExportResult(AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SysAuditLog> getExportResult(String sortBy, String order, AuditLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
         String operateResult = "";
         String operateObject = "";
@@ -154,7 +157,7 @@ public class AuditLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<SysAuditLog> result = auditLogService.getExportList(clientIp, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAuditLog> result = auditLogService.getExportList(sortBy, order, clientIp, operateResult, operateObject, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 
@@ -176,8 +179,17 @@ public class AuditLogController extends BaseController {
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
-
-        PageResult<SysAuditLog> result = getPageResult(requestBody.getFilter(), currentPage, perPage);
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysAuditLog> result = getPageResult(sortBy, order, requestBody.getFilter(), currentPage, perPage);
 
         long total = result.getTotal();
         List<SysAuditLog> data = result.getDataList();
@@ -216,8 +228,17 @@ public class AuditLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AuditLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -245,8 +266,17 @@ public class AuditLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AuditLogWordView.setMessageSource(messageSource);
         InputStream inputStream = AuditLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -275,8 +305,17 @@ public class AuditLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAuditLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAuditLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         AuditLogPdfView.setResource(getFontResource()); // set font resource
         setDictionary(); //set dictionary data
         AuditLogPdfView.setMessageSource(messageSource);

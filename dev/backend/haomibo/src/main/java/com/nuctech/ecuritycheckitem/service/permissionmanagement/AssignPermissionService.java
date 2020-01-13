@@ -62,7 +62,7 @@ public interface AssignPermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysUser> userGetByFilterAndPage(String userName, Long orgId, String roleName, Integer currentPage, Integer perPage);
+    PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, Integer currentPage, Integer perPage);
 
     /**
      * Get user list by filter
@@ -71,7 +71,7 @@ public interface AssignPermissionService {
      * @param roleName
      * @return
      */
-    List<SysUser> userGetByFilter(String userName, Long orgId, String roleName);
+    List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName);
 
     /**
      * Get paginated user group by filter and page
@@ -82,7 +82,7 @@ public interface AssignPermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysUserGroup> userGroupGetByFilterAndPage(String groupName, String userName, String roleName, Integer currentPage, Integer perPage);
+    PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, Integer currentPage, Integer perPage);
 
     /**
      * Get user group by filter
@@ -91,6 +91,6 @@ public interface AssignPermissionService {
      * @param roleName
      * @return
      */
-    List<SysUserGroup> userGroupGetByFilter(String groupName, String userName, String roleName);
+    List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName);
 
 }

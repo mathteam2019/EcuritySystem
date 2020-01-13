@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.search.DocValueFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -119,12 +121,19 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public PageResult<SysAccessLog> getAccessLogListByFilter(String clientIp, String operateAccount, Date operateStartTime,
+    public PageResult<SysAccessLog> getAccessLogListByFilter(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
 
         BooleanBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysAccessLogRepository.count(predicate);
         List<SysAccessLog> data = sysAccessLogRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -141,12 +150,27 @@ public class AccessLogServiceImpl implements AccessLogService {
      * @return
      */
     @Override
-    public List<SysAccessLog> getExportList(String clientIp, String operateAccount, Date operateStartTime,
+    public List<SysAccessLog> getExportList(String sortBy, String order, String clientIp, String operateAccount, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(clientIp, operateAccount, operateStartTime, operateEndTime);
-        List<SysAccessLog> logList = StreamSupport
-                .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        List<SysAccessLog> logList;
+        if(sort != null) {
+            logList = StreamSupport
+                    .stream(sysAccessLogRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            logList = StreamSupport
+                    .stream(sysAccessLogRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
         return getExportList(logList, isAll, idList);
 
     }

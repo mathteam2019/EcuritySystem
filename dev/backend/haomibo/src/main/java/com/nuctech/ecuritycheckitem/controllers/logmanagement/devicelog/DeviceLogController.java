@@ -29,6 +29,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.DeviceLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -49,7 +50,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/log-management/device-log")
@@ -85,6 +88,7 @@ public class DeviceLogController extends BaseController {
         @NotNull
         @Min(1)
         int currentPage;
+        String sort;
         @NotNull
         int perPage;
         Filter filter;
@@ -103,7 +107,7 @@ public class DeviceLogController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         DeviceLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -114,7 +118,7 @@ public class DeviceLogController extends BaseController {
      * @param perPage
      * @return
      */
-    private PageResult<SerDevLog> getPageResult(DeviceLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+    private PageResult<SerDevLog> getPageResult(String sortBy, String order, DeviceLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String deviceType = "";
         String deviceName = "";
         String userName = "";
@@ -133,12 +137,12 @@ public class DeviceLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime(); //get operate end time from input parameter
         }
 
-        PageResult<SerDevLog> result = deviceLogService.getDeviceLogListByFilter(deviceType, deviceName, userName, category, level,
+        PageResult<SerDevLog> result = deviceLogService.getDeviceLogListByFilter(sortBy, order, deviceType, deviceName, userName, category, level,
                 operateStartTime, operateEndTime, currentPage, perPage); //get result through service
         return result;
     }
 
-    private List<SerDevLog> getExportResult(DeviceLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SerDevLog> getExportResult(String sortBy, String order, DeviceLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String deviceType = "";
         String deviceName = "";
         String userName = "";
@@ -157,7 +161,7 @@ public class DeviceLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime(); //get operate end time from input parameter
         }
 
-        List<SerDevLog> result = deviceLogService.getExportList(deviceType, deviceName, userName, category, level,
+        List<SerDevLog> result = deviceLogService.getExportList(sortBy, order, deviceType, deviceName, userName, category, level,
                 operateStartTime, operateEndTime, isAll, idList); //get export list from service
         return result;
     }
@@ -179,7 +183,17 @@ public class DeviceLogController extends BaseController {
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
-        PageResult<SerDevLog> result = getPageResult(requestBody.getFilter(), currentPage, perPage);
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SerDevLog> result = getPageResult(sortBy, order, requestBody.getFilter(), currentPage, perPage);
 
         long total = result.getTotal();
         List<SerDevLog> data = result.getDataList();
@@ -223,8 +237,17 @@ public class DeviceLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
         DeviceLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -252,8 +275,17 @@ public class DeviceLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //set list to be exported
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //set list to be exported
         setDictionary(); //set dictionary data
         DeviceLogWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -282,8 +314,17 @@ public class DeviceLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SerDevLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerDevLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
         DeviceLogPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
         DeviceLogPdfView.setMessageSource(messageSource);

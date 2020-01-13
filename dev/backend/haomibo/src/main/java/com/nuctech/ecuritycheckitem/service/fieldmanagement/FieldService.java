@@ -97,7 +97,7 @@ public interface FieldService {
      * @param perPage
      * @return
      */
-    PageResult<SysField> getDeviceListByFilter(String designation, String status, String parentDesignation, int currentPage, int perPage);
+    PageResult<SysField> getDeviceListByFilter(String sortBy, String order, String designation, String status, String parentDesignation, int currentPage, int perPage);
 
     /**
      * get filtered export field list
@@ -108,5 +108,5 @@ public interface FieldService {
      * @param idList
      * @return
      */
-    List<SysField> getExportList(String designation, String status, String parentDesignation, boolean isAll, String idList);
+    List<SysField> getExportList(String sortBy, String order, String designation, String status, String parentDesignation, boolean isAll, String idList);
 }

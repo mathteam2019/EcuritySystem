@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 import net.bytebuddy.asm.Advice;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -120,7 +121,12 @@ public class TaskServiceImpl implements TaskService {
         predicate.and(builder.serCheckResultList.size().eq(0));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             } else {
@@ -156,7 +162,12 @@ public class TaskServiceImpl implements TaskService {
         predicate.and(builder.serCheckResultList.size().eq(0));
 
         Sort sort = null;
-        if (sortBy != null && order != null) {
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
             sort = new Sort(Sort.Direction.ASC, sortBy);
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = new Sort(Sort.Direction.DESC, sortBy);
@@ -232,7 +243,12 @@ public class TaskServiceImpl implements TaskService {
         predicate.and(builder.serScan.scanInvalid.eq(SerScan.Invalid.TRUE));
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-        if (order != null && sortBy != null) {
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
             if (order.equals(Constants.SortOrder.ASC)) {
                 pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
             } else {
@@ -268,7 +284,12 @@ public class TaskServiceImpl implements TaskService {
 
         Sort sort = null;
 
-        if (sortBy != null && order != null) {
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(sortBy.equals("scanStartTime")) {
+                sortBy = "serScan.scanStartTime";
+            } else if(sortBy.equals("scanEndTime")) {
+                sortBy = "serScan.scanEndTime";
+            }
             sort = new Sort(Sort.Direction.ASC, sortBy);
             if (order.equals(Constants.SortOrder.DESC)) {
                 sort = new Sort(Sort.Direction.DESC, sortBy);

@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
 import com.nuctech.ecuritycheckitem.repositories.SerDevLogRepository;
@@ -21,6 +22,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -125,11 +127,22 @@ public class DeviceLogServiceImpl implements DeviceLogService {
      * @return
      */
     @Override
-    public PageResult<SerDevLog> getDeviceLogListByFilter(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
+    public PageResult<SerDevLog> getDeviceLogListByFilter(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                                           Date operateEndTime, int currentPage, int perPage) {
 
         BooleanBuilder predicate = getPredicate(deviceType, deviceName, userName, category, level, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(!sortBy.equals("time")) {
+                sortBy = "device.deviceSerial";
+            }
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = serDevLogRepository.count(predicate);
         List<SerDevLog> data = serDevLogRepository.findAll(predicate, pageRequest).getContent();
@@ -150,12 +163,30 @@ public class DeviceLogServiceImpl implements DeviceLogService {
      * @return
      */
     @Override
-    public List<SerDevLog> getExportList(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
+    public List<SerDevLog> getExportList(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                          Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(deviceType, deviceName, userName, category, level, operateStartTime, operateEndTime);
-        List<SerDevLog> logList = StreamSupport
-                .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if(!sortBy.equals("time")) {
+                sortBy = "device.deviceSerial";
+            }
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        List<SerDevLog> logList;
+        if(sort != null) {
+            logList = StreamSupport
+                    .stream(serDevLogRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            logList = StreamSupport
+                    .stream(serDevLogRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
         return getExportList(logList, isAll, idList);
 
     }

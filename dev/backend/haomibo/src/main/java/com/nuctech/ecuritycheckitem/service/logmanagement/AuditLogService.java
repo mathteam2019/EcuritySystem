@@ -31,7 +31,7 @@ public interface AuditLogService {
      * @param perPage
      * @return
      */
-    PageResult<SysAuditLog> getAuditLogListByFilter(String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                                      Date operateEndTime, int currentPage, int perPage);
 
     /**
@@ -45,7 +45,7 @@ public interface AuditLogService {
      * @param idList
      * @return
      */
-    List<SysAuditLog> getExportList(String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    List<SysAuditLog> getExportList(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                      Date operateEndTime, boolean isAll, String idList);
 
     /**

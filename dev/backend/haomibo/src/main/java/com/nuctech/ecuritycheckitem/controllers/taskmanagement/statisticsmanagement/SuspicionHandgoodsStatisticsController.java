@@ -19,6 +19,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.*;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.SuspicionHandGoodsPaginationResponse;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -38,11 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Arrays;
+import java.util.*;
 
 @RestController
 @RequestMapping("/task/statistics/")
@@ -78,7 +75,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
 
         Integer currentPage; //current page no
         Integer perPage; //record count per page
-
+        String sort;
         StatisticsRequestBody.Filter filter;
 
     }
@@ -107,7 +104,7 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         String idList; //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
-
+        String sort;
         StatisticsRequestBody filter;
     }
 
@@ -128,8 +125,17 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
         }
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
-
-        response = suspictionHandgoodsStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        response = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFieldId(), //get field if from input parameter
                 requestBody.getFilter().getDeviceId(), //get device id from input parameter
                 requestBody.getFilter().getUserCategory(), //get user category id from input parameter
@@ -155,8 +161,17 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field if from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -194,8 +209,18 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         //get statistics from database through suspictionHandgoodsStatisticsService
-        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -232,8 +257,17 @@ public class SuspicionHandgoodsStatisticsController extends BaseController {
             //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        TreeMap<Integer, TreeMap<String, Long>> totalStatistics = suspictionHandgoodsStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter

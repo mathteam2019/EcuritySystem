@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceCategory;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
@@ -26,6 +27,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,10 +83,18 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
      * @return
      */
     @Override
-    public PageResult<SysDeviceCategory> getDeviceCategoryListByPage(String categoryName, String status, String parentCategoryName, int currentPage, int perPage) {
+    public PageResult<SysDeviceCategory> getDeviceCategoryListByPage(String sortBy, String order, String categoryName, String status, String parentCategoryName, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(categoryName, status, parentCategoryName);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "archivesTemplateNumber";
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysDeviceCategoryRepository.count(predicate);
         List<SysDeviceCategory> data = sysDeviceCategoryRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<SysDeviceCategory>(total, data);
@@ -273,7 +283,7 @@ public class DeviceCategoryServiceImpl implements DeviceCategoryService {
      * @return
      */
     @Override
-    public List<SysDeviceCategory> getExportListByFilter(String categoryName, String status, String parentCategoryName, boolean isAll, String idList) {
+    public List<SysDeviceCategory> getExportListByFilter(String sortBy, String order, String categoryName, String status, String parentCategoryName, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(categoryName, status, parentCategoryName);
 
         //get all archive list

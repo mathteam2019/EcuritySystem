@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.AssignPermissionService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.nuctech.ecuritycheckitem.validation.annotations.RoleId;
 import com.nuctech.ecuritycheckitem.validation.annotations.UserDataRangeCategory;
 import com.nuctech.ecuritycheckitem.validation.annotations.UserId;
@@ -54,9 +55,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Assign permission management controller.
@@ -144,6 +143,7 @@ public class AssignPermissionManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -160,6 +160,7 @@ public class AssignPermissionManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
+        String sort;
         UserGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -188,6 +189,7 @@ public class AssignPermissionManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -204,6 +206,7 @@ public class AssignPermissionManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
+        String sort;
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -373,7 +376,17 @@ public class AssignPermissionManagementController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage--;
-        PageResult<SysUser> result = assignPermissionService.userGetByFilterAndPage(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysUser> result = assignPermissionService.userGetByFilterAndPage(sortBy, order,
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getOrgId(), //get ord id  from input parameter
                 requestBody.getFilter().getRoleName(), //get role name from input parameter
@@ -423,11 +436,23 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user list from service
-        List<SysUser> userList = assignPermissionService.userGetByFilter(
+        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName());
+
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
@@ -459,8 +484,19 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user list
-        List<SysUser> userList = assignPermissionService.userGetByFilter(
+        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName());
@@ -496,8 +532,19 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user list
-        List<SysUser> userList = assignPermissionService.userGetByFilter(
+        List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
                 requestBody.getFilter().getRoleName());
@@ -534,10 +581,21 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage--;
-        PageResult<SysUserGroup> result = assignPermissionService.userGroupGetByFilterAndPage(
+        PageResult<SysUserGroup> result = assignPermissionService.userGroupGetByFilterAndPage(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getRoleName(), //get role name from input parameter
@@ -616,8 +674,19 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user group list
-        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getRoleName() //get role name from input parameter
@@ -653,8 +722,19 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user group list
-        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getRoleName() //get role name from input parameter
@@ -691,8 +771,19 @@ public class AssignPermissionManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all user group list
-        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(
+        List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getRoleName() //get role name from input parameter

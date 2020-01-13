@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysUser;
 import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
@@ -38,6 +39,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -271,13 +273,21 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public PageResult<SysUser> getUserListByPage(String userName, String status, String gender, Long orgId, int currentPage, int perPage) {
+    public PageResult<SysUser> getUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, int currentPage, int perPage) {
         // Build query.
 
         BooleanBuilder predicate = getPredicate(userName, status, gender, orgId);
 
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = sysUserRepository.count(predicate);
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
@@ -325,12 +335,27 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<SysUser> getExportUserListByPage(String userName, String status, String gender, Long orgId, boolean isAll, String idList) {
+    public List<SysUser> getExportUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(userName, status, gender, orgId);
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
         //get all user list
-        List<SysUser> userList = StreamSupport
-                .stream(sysUserRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysUser> userList;
+        if(sort != null) {
+            userList = StreamSupport
+                    .stream(sysUserRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            userList = StreamSupport
+                    .stream(sysUserRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
 
 
         List<SysUser> exportList = getExportList(userList, isAll, idList);
@@ -431,11 +456,18 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public PageResult<SysUserGroup> getUserGroupListByPage(String groupName, int currentPage, int perPage) {
+    public PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, int currentPage, int perPage) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysUserGroupRepository.count(predicate);
         List<SysUserGroup> data = sysUserGroupRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -479,12 +511,27 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public List<SysUserGroup> getExportUserGroupListByPage(String groupName, boolean isAll, String idList) {
+    public List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, boolean isAll, String idList) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName);
-        //get all user group list
-        List<SysUserGroup> userGroupList = StreamSupport
-                .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        //get all user group list;
+        List<SysUserGroup> userGroupList;
+        if(sort != null) {
+            userGroupList = StreamSupport
+                    .stream(sysUserGroupRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            userGroupList = StreamSupport
+                    .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
 
         List<SysUserGroup> exportList = getExportUserGroupList(userGroupList, isAll, idList);
         return exportList;

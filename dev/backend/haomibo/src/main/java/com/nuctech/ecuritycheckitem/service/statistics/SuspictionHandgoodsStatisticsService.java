@@ -31,6 +31,6 @@ public interface SuspictionHandgoodsStatisticsService {
      * @param perPage
      * @return
      */
-    SuspicionHandGoodsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+    SuspicionHandGoodsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
 
 }

@@ -54,7 +54,7 @@ public class HandExaminationStatisticsServiceImpl implements HandExaminationStat
      * @return
      */
     @Override
-    public HandExaminationStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public HandExaminationStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         List<String> whereCause = new ArrayList<String>();
 

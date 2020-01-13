@@ -58,7 +58,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 

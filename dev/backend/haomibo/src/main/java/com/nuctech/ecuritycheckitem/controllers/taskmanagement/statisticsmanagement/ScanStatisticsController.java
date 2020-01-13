@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsWo
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatistics;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.ScanStatisticsResponse;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
 
@@ -78,7 +80,7 @@ public class ScanStatisticsController extends BaseController {
             String statWidth; //statistics width (possible values: hour, day, week, month, quarter, year)
 
         }
-
+        String sort;
         Integer currentPage; //current page no
         Integer perPage; //record count per page
         StatisticsRequestBody.Filter filter;
@@ -98,7 +100,7 @@ public class ScanStatisticsController extends BaseController {
         String idList; //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data
-
+        String sort;
         StatisticsRequestBody filter;
     }
 
@@ -117,12 +119,21 @@ public class ScanStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         //get Scan statistics
         ScanStatisticsResponse scanStatistics = new ScanStatisticsResponse();
 
         //get statistics from database through scanStatisticsService
-        scanStatistics = scanStatisticsService.getStatistics(
+        scanStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getUserCategory(),//get user category id from input parameter
@@ -150,8 +161,17 @@ public class ScanStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -188,9 +208,18 @@ public class ScanStatisticsController extends BaseController {
             //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         //get statistics fromd database through scanStatisticsService
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -228,9 +257,18 @@ public class ScanStatisticsController extends BaseController {
             //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         //get statistics from database through scanStatisticsService
-        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(
+        TreeMap<Integer, ScanStatistics> totalStatistics = scanStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter

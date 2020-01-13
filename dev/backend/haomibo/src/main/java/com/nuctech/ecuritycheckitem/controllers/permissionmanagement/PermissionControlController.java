@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.PermissionService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.nuctech.ecuritycheckitem.validation.annotations.ResourceId;
 import com.nuctech.ecuritycheckitem.validation.annotations.RoleId;
 import lombok.Getter;
@@ -54,8 +55,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Permission control controller.
@@ -146,6 +149,7 @@ public class PermissionControlController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -162,7 +166,7 @@ public class PermissionControlController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         RoleGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -204,6 +208,7 @@ public class PermissionControlController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -220,7 +225,7 @@ public class PermissionControlController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         DataGroupGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -358,6 +363,16 @@ public class PermissionControlController extends BaseController {
             return null;
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
         String roleName = "";
@@ -365,7 +380,7 @@ public class PermissionControlController extends BaseController {
             roleName = requestBody.getFilter().getRoleName();
         }
 
-        PageResult<SysRole> result = permissionService.getRoleListByPage(roleName, currentPage, perPage);
+        PageResult<SysRole> result = permissionService.getRoleListByPage(sortBy, order, roleName, currentPage, perPage);
 
         long total = result.getTotal();
         List<SysRole> data = result.getDataList();
@@ -410,7 +425,17 @@ public class PermissionControlController extends BaseController {
             roleName = requestBody.getFilter().getRoleName();
         }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         RoleExcelView.setMessageSource(messageSource);
         InputStream inputStream = RoleExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -443,8 +468,18 @@ public class PermissionControlController extends BaseController {
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         RoleWordView.setMessageSource(messageSource);
         InputStream inputStream = RoleWordView.buildWordDocument(exportList);//create inputstream of result to be exported
@@ -479,8 +514,18 @@ public class PermissionControlController extends BaseController {
         if(requestBody.getFilter() != null) {
             roleName = requestBody.getFilter().getRoleName();
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
-        List<SysRole> exportList = permissionService.getExportListByFilter(roleName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysRole> exportList = permissionService.getExportListByFilter(sortBy, order, roleName, requestBody.getIsAll(), requestBody.getIdList());
         RolePdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         RolePdfView.setMessageSource(messageSource);
@@ -638,6 +683,16 @@ public class PermissionControlController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
@@ -647,7 +702,7 @@ public class PermissionControlController extends BaseController {
             dataGroupName = requestBody.getFilter().getDataGroupName();
         }
 
-        PageResult<SysDataGroup> result = permissionService.getDataGroupListByPage(dataGroupName, currentPage, perPage);
+        PageResult<SysDataGroup> result = permissionService.getDataGroupListByPage(sortBy, order, dataGroupName, currentPage, perPage);
         long total = result.getTotal();
         List<SysDataGroup> data = result.getDataList();
 
@@ -692,8 +747,18 @@ public class PermissionControlController extends BaseController {
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         DataGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -726,8 +791,18 @@ public class PermissionControlController extends BaseController {
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
         DataGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = DataGroupWordView.buildWordDocument(exportList);//create inputstream of result to be exported
@@ -757,8 +832,18 @@ public class PermissionControlController extends BaseController {
         if(requestBody.getFilter() != null) {
             dataGroupName = requestBody.getFilter().getDataGroupName();
         }
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
 
-        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
+        List<SysDataGroup> exportList = permissionService.getExportGroupListByFilter(sortBy, order, dataGroupName, requestBody.getIsAll(), requestBody.getIdList());
         DataGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         DataGroupPdfView.setMessageSource(messageSource);

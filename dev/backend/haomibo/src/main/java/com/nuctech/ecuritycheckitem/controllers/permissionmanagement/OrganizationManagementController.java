@@ -29,6 +29,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -53,10 +54,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Organization management controller.
@@ -149,6 +147,7 @@ public class OrganizationManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -165,7 +164,7 @@ public class OrganizationManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         OrganizationGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -524,7 +523,19 @@ public class OrganizationManagementController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage--;
-        PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        PageResult<SysOrg> result = organizationService.getOrganizationByFilterAndPage(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
                 requestBody.getFilter().getParentOrgName(), //get parent org name from input parameter
@@ -601,8 +612,19 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all org list
-        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
                 requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
@@ -637,8 +659,19 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all org list
-        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
                 requestBody.getFilter().getParentOrgName() //get parent org name from input parameter
@@ -671,8 +704,19 @@ public class OrganizationManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get all org list
-        List<SysOrg> orgList = organizationService.getOrganizationByFilter(
+        List<SysOrg> orgList = organizationService.getOrganizationByFilter(sortBy, order,
                 requestBody.getFilter().getOrgName(), //get org name from input parameter
                 requestBody.getFilter().getStatus(), //get status from input parameter
                 requestBody.getFilter().getParentOrgName() //get parent org name from input parameter

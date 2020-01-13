@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -37,8 +38,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Seized Goods management controller.
@@ -77,6 +80,7 @@ public class SeizedGoodsManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -156,7 +160,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
+//    @PreAuthorize(Role.Authority.HAS_FIELD_CREATE)
     @RequestMapping(value = "/seized/create", method = RequestMethod.POST)
     public Object goodsCreate(
             @RequestBody @Valid SeizedCreateRequestBody requestBody,
@@ -170,7 +174,7 @@ public class SeizedGoodsManagementController extends BaseController {
 
         if(serSeizedGoodService.checkGood(requestBody.getSeizedGoods(), null)) {
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedFieldDesignation", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoods(),null);
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
@@ -188,7 +192,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
+//    @PreAuthorize(Role.Authority.HAS_FIELD_MODIFY)
     @RequestMapping(value = "/seized/modify", method = RequestMethod.POST)
     public Object goodsModify(
             @RequestBody @Valid SeizedModifyRequestBody requestBody,
@@ -208,7 +212,7 @@ public class SeizedGoodsManagementController extends BaseController {
 
         if(serSeizedGoodService.checkGood(requestBody.getSeizedGoods(), requestBody.getGoodsId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedFieldDesignation", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoods(),null);
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
@@ -228,7 +232,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
+//    @PreAuthorize(Role.Authority.HAS_FIELD_DELETE)
     @RequestMapping(value = "/seized/delete", method = RequestMethod.POST)
     public Object goodsDelete(
             @RequestBody @Valid SeizedDeleteRequestBody requestBody,
@@ -254,7 +258,7 @@ public class SeizedGoodsManagementController extends BaseController {
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/field/get-by-filter-and-page", method = RequestMethod.POST)
+    @RequestMapping(value = "/seized/get-by-filter-and-page", method = RequestMethod.POST)
     public Object goodsGetByFilterAndPage(
             @RequestBody @Valid SeizedGetByFilterAndPageRequestBody requestBody,
             BindingResult bindingResult) {
@@ -267,10 +271,22 @@ public class SeizedGoodsManagementController extends BaseController {
         if(requestBody.getFilter() != null) {
             goods = requestBody.getFilter().getGoods();
         }
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SerSeizedGood> result = serSeizedGoodService.getGoodsListByFilter(goods, currentPage, perPage); //get list of field from database through fieldService
+        PageResult<SerSeizedGood> result = serSeizedGoodService.getGoodsListByFilter(sortBy, order, goods, currentPage, perPage); //get list of field from database through fieldService
         long total = result.getTotal(); //get total count
         List<SerSeizedGood> data = result.getDataList();
 

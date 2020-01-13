@@ -36,7 +36,7 @@ public interface PermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysRole> getRoleListByPage(String roleName, int currentPage, int perPage);
+    PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, int currentPage, int perPage);
 
     /**
      * get export role list
@@ -45,7 +45,7 @@ public interface PermissionService {
      * @param idList
      * @return
      */
-    List<SysRole> getExportListByFilter(String roleName, boolean isAll, String idList);
+    List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, boolean isAll, String idList);
 
     /**
      * check if role exists
@@ -134,7 +134,7 @@ public interface PermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysDataGroup> getDataGroupListByPage(String dataGroupName, int currentPage, int perPage);
+    PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, int currentPage, int perPage);
 
     /**
      * get datagroup export list
@@ -143,7 +143,7 @@ public interface PermissionService {
      * @param idList
      * @return
      */
-    List<SysDataGroup> getExportGroupListByFilter(String dataGroupName, boolean isAll, String idList);
+    List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, boolean isAll, String idList);
 
     /**
      * find all resources

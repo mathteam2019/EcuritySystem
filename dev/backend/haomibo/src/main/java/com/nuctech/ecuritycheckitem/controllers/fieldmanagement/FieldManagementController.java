@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -52,9 +53,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Field management controller.
@@ -154,6 +153,7 @@ public class FieldManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -170,7 +170,7 @@ public class FieldManagementController extends BaseController {
         String idList;
         @NotNull
         Boolean isAll;
-
+        String sort;
         FieldGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -461,10 +461,21 @@ public class FieldManagementController extends BaseController {
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SysField> result = fieldService.getDeviceListByFilter(designation, status, parentDesignation, currentPage, perPage); //get list of field from database through fieldService
+        PageResult<SysField> result = fieldService.getDeviceListByFilter(sortBy, order, designation, status, parentDesignation, currentPage, perPage); //get list of field from database through fieldService
         long total = result.getTotal(); //get total count
         List<SysField> data = result.getDataList();
 
@@ -512,7 +523,18 @@ public class FieldManagementController extends BaseController {
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
         FieldManagementExcelView.setMessageSource(messageSource);
         InputStream inputStream = FieldManagementExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -549,7 +571,18 @@ public class FieldManagementController extends BaseController {
             status = requestBody.getFilter().getStatus();
             parentDesignation = requestBody.getFilter().getParentFieldDesignation();
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
         FieldManagementWordView.setMessageSource(messageSource);
         InputStream inputStream = FieldManagementWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -587,7 +620,18 @@ public class FieldManagementController extends BaseController {
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             parentDesignation = requestBody.getFilter().getParentFieldDesignation(); //get parent field name from input parameter
         }
-        List<SysField> exportList = fieldService.getExportList(designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysField> exportList = fieldService.getExportList(sortBy, order, designation, status, parentDesignation, requestBody.getIsAll(), requestBody.getIdList()); //get list to be printed
 
         FieldManagementPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data

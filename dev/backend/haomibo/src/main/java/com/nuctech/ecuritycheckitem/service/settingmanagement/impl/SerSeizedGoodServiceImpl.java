@@ -11,6 +11,7 @@
  */
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerSeizedGood;
 import com.nuctech.ecuritycheckitem.models.db.SerSeizedGood;
 import com.nuctech.ecuritycheckitem.models.db.SysField;
@@ -23,6 +24,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -107,7 +109,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
      * @return
      */
     @Override
-    public PageResult<SerSeizedGood> getGoodsListByFilter(String goods, int currentPage, int perPage) {
+    public PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goods, int currentPage, int perPage) {
         QSerSeizedGood builder = QSerSeizedGood.serSeizedGood;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -117,7 +119,14 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
             predicate.and(builder.seizedGoods.contains(goods));
         }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = serSeizedGoodRepository.count(predicate);
         List<SerSeizedGood> data = serSeizedGoodRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);

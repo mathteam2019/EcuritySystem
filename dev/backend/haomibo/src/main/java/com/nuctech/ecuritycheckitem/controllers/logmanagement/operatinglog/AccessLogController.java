@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/log-management/operating-log/access")
@@ -85,7 +88,7 @@ public class AccessLogController extends BaseController {
 
         @NotNull
         int perPage;
-
+        String sort;
         Filter filter;
     }
 
@@ -102,7 +105,7 @@ public class AccessLogController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         AccessLogGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -113,7 +116,7 @@ public class AccessLogController extends BaseController {
      * @param perPage
      * @return
      */
-    private PageResult<SysAccessLog> getPageResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
+    private PageResult<SysAccessLog> getPageResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, int currentPage, int perPage) {
         String clientIp = "";
         String operateAccount = "";
         Date operateStartTime = null;
@@ -126,7 +129,7 @@ public class AccessLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
+        PageResult<SysAccessLog> result = accessLogService.getAccessLogListByFilter(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, currentPage, perPage);
         return result;
     }
 
@@ -137,7 +140,7 @@ public class AccessLogController extends BaseController {
      * @param idList
      * @return
      */
-    private List<SysAccessLog> getExportResult(AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SysAccessLog> getExportResult(String sortBy, String order, AccessLogGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String clientIp = "";
         String operateAccount = "";
         Date operateStartTime = null;
@@ -150,7 +153,7 @@ public class AccessLogController extends BaseController {
             operateEndTime = filter.getOperateEndTime();
         }
 
-        List<SysAccessLog> result = accessLogService.getExportList(clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
+        List<SysAccessLog> result = accessLogService.getExportList(sortBy, order, clientIp, operateAccount, operateStartTime, operateEndTime, isAll, idList);
         return result;
     }
 
@@ -171,7 +174,17 @@ public class AccessLogController extends BaseController {
 
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
-        PageResult<SysAccessLog> result = getPageResult(requestBody.getFilter(), currentPage, perPage);
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysAccessLog> result = getPageResult(sortBy, order, requestBody.getFilter(), currentPage, perPage);
 
         long total = result.getTotal();
         List<SysAccessLog> data = result.getDataList();
@@ -209,8 +222,17 @@ public class AccessLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get list to be exported
         setDictionary(); //set dictionary data
         AccessLogExcelView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -238,8 +260,17 @@ public class AccessLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AccessLogWordView.setMessageSource(messageSource);
         InputStream inputStream = AccessLogWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -268,8 +299,17 @@ public class AccessLogController extends BaseController {
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        List<SysAccessLog> exportList = getExportResult(requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysAccessLog> exportList = getExportResult(sortBy, order, requestBody.getFilter(), requestBody.getIsAll(), requestBody.getIdList()); //get export list
         setDictionary(); //set dictionary data
         AccessLogPdfView.setResource(getFontResource()); //set font resource
         AccessLogPdfView.setMessageSource(messageSource);

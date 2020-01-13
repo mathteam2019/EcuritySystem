@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseDealRepository;
@@ -24,6 +25,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -129,12 +131,20 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @return
      */
     @Override
-    public PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String caseStatus, String taskNumber, String modeName, String taskResult,
+    public PageResult<SerKnowledgeCaseDeal> getDealListByFilter(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                                 String fieldDesignation, String handGoods, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldDesignation, handGoods);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "task.taskNumber";
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = serKnowledgeCaseDealRepository.count(predicate);
         List<SerKnowledgeCaseDeal> data = serKnowledgeCaseDealRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -153,12 +163,27 @@ public class KnowledgeServiceImpl implements KnowledgeService {
      * @return
      */
     @Override
-    public List<SerKnowledgeCaseDeal> getDealExportList(String caseStatus, String taskNumber, String modeName, String taskResult,
+    public List<SerKnowledgeCaseDeal> getDealExportList(String sortBy, String order, String caseStatus, String taskNumber, String modeName, String taskResult,
                                                         String fieldDesignation, String handGoods, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(caseStatus, taskNumber, modeName, taskResult, fieldDesignation, handGoods);
-        List<SerKnowledgeCaseDeal> dealList = StreamSupport
-                .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "task.taskNumber";
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        List<SerKnowledgeCaseDeal> dealList;
+        if(sort != null) {
+            dealList = StreamSupport
+                    .stream(serKnowledgeCaseDealRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            dealList = StreamSupport
+                    .stream(serKnowledgeCaseDealRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
         List<SerKnowledgeCaseDeal> exportList = getExportList(dealList, isAll, idList);
         return exportList;

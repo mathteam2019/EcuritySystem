@@ -56,7 +56,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      * @return
      */
     @Override
-    public JudgeStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public JudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         StringBuilder queryBuilder = new StringBuilder();
 

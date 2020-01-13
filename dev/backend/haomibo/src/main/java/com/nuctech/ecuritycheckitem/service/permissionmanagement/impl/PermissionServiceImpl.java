@@ -14,6 +14,7 @@ package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
 import com.google.common.collect.Lists;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.QSysUser;
@@ -51,6 +52,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -184,11 +186,18 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public PageResult<SysRole> getRoleListByPage(String roleName, int currentPage, int perPage) {
+    public PageResult<SysRole> getRoleListByPage(String sortBy, String order, String roleName, int currentPage, int perPage) {
         BooleanBuilder predicate = getRolePredicate(roleName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysRoleRepository.count(predicate);
         List<SysRole> data = sysRoleRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -232,14 +241,27 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public List<SysRole> getExportListByFilter(String roleName, boolean isAll, String idList) {
+    public List<SysRole> getExportListByFilter(String sortBy, String order, String roleName, boolean isAll, String idList) {
         BooleanBuilder predicate = getRolePredicate(roleName);
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
 
         //get all role list
-        List<SysRole> roleList = StreamSupport
-                .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysRole> roleList;
+        if(sort != null) {
+            roleList = StreamSupport
+                    .stream(sysRoleRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            roleList = StreamSupport
+                    .stream(sysRoleRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
 
         List<SysRole> exportList = getRoleExportList(roleList, isAll, idList);
@@ -476,10 +498,18 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public PageResult<SysDataGroup> getDataGroupListByPage(String dataGroupName, int currentPage, int perPage) {
+    public PageResult<SysDataGroup> getDataGroupListByPage(String sortBy, String order, String dataGroupName, int currentPage, int perPage) {
         BooleanBuilder predicate = getDataGroupPredicate(dataGroupName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = sysDataGroupRepository.count(predicate);
         List<SysDataGroup> data = sysDataGroupRepository.findAll(predicate, pageRequest).getContent();
@@ -524,14 +554,28 @@ public class PermissionServiceImpl implements PermissionService {
      * @return
      */
     @Override
-    public List<SysDataGroup> getExportGroupListByFilter(String dataGroupName, boolean isAll, String idList) {
+    public List<SysDataGroup> getExportGroupListByFilter(String sortBy, String order, String dataGroupName, boolean isAll, String idList) {
         BooleanBuilder predicate = getDataGroupPredicate(dataGroupName);
 
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
         //get all data group list
-        List<SysDataGroup> dataGroupList = StreamSupport
-                .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysDataGroup> dataGroupList;
+        if(sort != null) {
+            dataGroupList = StreamSupport
+                    .stream(sysDataGroupRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            dataGroupList = StreamSupport
+                    .stream(sysDataGroupRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
 
         List<SysDataGroup> exportList = getDataGroupExportList(dataGroupList, isAll, idList);
         return exportList;

@@ -50,7 +50,7 @@ public class ScanStatisticsServiceImpl implements ScanStatisticsService {
      * @return
      */
     @Override
-    public ScanStatisticsResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public ScanStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         StringBuilder queryBuilder = new StringBuilder();
 

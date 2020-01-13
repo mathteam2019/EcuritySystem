@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysAuditLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -24,6 +25,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -123,11 +125,18 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @return
      */
     @Override
-    public PageResult<SysAuditLog> getAuditLogListByFilter(String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    public PageResult<SysAuditLog> getAuditLogListByFilter(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                                     Date operateEndTime, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(clientIp, operateResult, operateObject, operateStartTime, operateEndTime);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysAuditLogRepository.count(predicate);
         List<SysAuditLog> data = sysAuditLogRepository.findAll(predicate, pageRequest).getContent();
         return new PageResult<>(total, data);
@@ -145,12 +154,27 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @return
      */
     @Override
-    public List<SysAuditLog> getExportList(String clientIp, String operateResult, String operateObject, Date operateStartTime,
+    public List<SysAuditLog> getExportList(String sortBy, String order, String clientIp, String operateResult, String operateObject, Date operateStartTime,
                                     Date operateEndTime, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(clientIp, operateResult, operateObject, operateStartTime, operateEndTime);
-        List<SysAuditLog> logList = StreamSupport
-                .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        List<SysAuditLog> logList;
+        if(sort != null) {
+            logList = StreamSupport
+                    .stream(sysAuditLogRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            logList = StreamSupport
+                    .stream(sysAuditLogRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
         return getExportList(logList, isAll, idList);
     }
 

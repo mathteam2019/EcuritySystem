@@ -55,5 +55,11 @@ public class SerCheckResultSimplifiedForProcessTaskManagement extends BaseEntity
     @Column(name = "HAND_ATTACHED", length = 10)
     private String handAttached;
 
+    @Column(name = "JUDGE_RESULT", length = 10)
+    private String judgeResult;
+
+    @Column(name = "HAND_TASK_RESULT", length = 10)
+    private String handTaskResult;
+
 
 }

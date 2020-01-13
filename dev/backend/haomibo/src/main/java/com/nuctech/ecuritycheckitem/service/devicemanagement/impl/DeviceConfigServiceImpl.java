@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SysDeviceConfig;
 import com.nuctech.ecuritycheckitem.models.db.QSysDeviceConfig;
 import com.nuctech.ecuritycheckitem.models.db.SysDevice;
@@ -39,6 +40,8 @@ import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,7 +101,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
      * @return
      */
     @Override
-    public PageResult<SysDeviceConfig> findConfigByFilter(String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage) {
+    public PageResult<SysDeviceConfig> findConfigByFilter(String sortBy, String order, String deviceName, Long fieldId, Long categoryId, int currentPage, int perPage) {
         QSysDeviceConfig builder = QSysDeviceConfig.sysDeviceConfig;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -109,6 +112,16 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (fieldId != null) {
             predicate.and(builder.device.field.fieldId.eq(fieldId));
         }
+
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "device.deviceSerial";
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+
         /*
         * Todo
         *  strange category
@@ -122,9 +135,17 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         int endIndex = perPage * (currentPage + 1);
 
         long total = 0;
-        List<SysDeviceConfig> allData = StreamSupport
-                .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SysDeviceConfig> allData;
+        if(sort != null) {
+            allData = StreamSupport
+                    .stream(sysDeviceConfigRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            allData = StreamSupport
+                    .stream(sysDeviceConfigRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
         List<SysDeviceConfig> data = new ArrayList<>();
 
         for (int i = 0; i < allData.size(); i++) {

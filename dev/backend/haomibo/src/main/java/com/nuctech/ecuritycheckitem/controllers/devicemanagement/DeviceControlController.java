@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
@@ -50,10 +51,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/device-management/device-table")
@@ -97,6 +95,7 @@ public class DeviceControlController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -113,7 +112,7 @@ public class DeviceControlController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         DeviceGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -352,7 +351,18 @@ public class DeviceControlController extends BaseController {
             fieldId = filter.getFieldId(); //get field id from input parameter
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
-        PageResult<SysDevice> result = deviceService.getFilterDeviceList(archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex); //get list of devices from database through deviceService
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysDevice> result = deviceService.getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, startIndex, endIndex); //get list of devices from database through deviceService
         List<SysDevice> data = result.getDataList();
         long total = result.getTotal();
 
@@ -408,7 +418,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
         DeviceExcelView.setMessageSource(messageSource);
@@ -452,7 +473,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
         DeviceWordView.setMessageSource(messageSource);
@@ -497,7 +529,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList());  //get list of device to be exported
         DevicePdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
@@ -543,7 +586,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
         DeviceFieldExcelView.setMessageSource(messageSource);
@@ -589,7 +643,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         setDictionary(); //set dictionary data
         DeviceFieldWordView.setMessageSource(messageSource);
@@ -634,7 +699,18 @@ public class DeviceControlController extends BaseController {
             categoryId = filter.getCategoryId(); //get category id from input parameter
         }
 
-        List<SysDevice> exportList = deviceService.getExportDataList(archiveName, deviceName, status, fieldId, categoryId,
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysDevice> exportList = deviceService.getExportDataList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId,
                 requestBody.getIsAll(), requestBody.getIdList()); //get list of device to be exported
         DeviceFieldPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data

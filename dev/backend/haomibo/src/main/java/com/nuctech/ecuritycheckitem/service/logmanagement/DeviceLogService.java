@@ -33,7 +33,7 @@ public interface DeviceLogService {
      * @param perPage
      * @return
      */
-    PageResult<SerDevLog> getDeviceLogListByFilter(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
+    PageResult<SerDevLog> getDeviceLogListByFilter(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                                    Date operateEndTime, int currentPage, int perPage);
 
     /**
@@ -49,6 +49,6 @@ public interface DeviceLogService {
      * @param idList
      * @return
      */
-    List<SerDevLog> getExportList(String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
+    List<SerDevLog> getExportList(String sortBy, String order, String deviceType, String deviceName, String userName, Long category, Long level, Date operateStartTime,
                                   Date operateEndTime, boolean isAll, String idList);
 }

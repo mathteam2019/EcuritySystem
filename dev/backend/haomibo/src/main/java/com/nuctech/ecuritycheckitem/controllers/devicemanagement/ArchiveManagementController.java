@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.InputStreamResource;
@@ -56,9 +57,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/device-management/document-management")
@@ -101,6 +100,7 @@ public class ArchiveManagementController extends BaseController {
         @NotNull
         int perPage; //record count per page
         Filter filter;
+        String sort;
     }
 
     /**
@@ -215,7 +215,7 @@ public class ArchiveManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         ArchiveGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -238,10 +238,22 @@ public class ArchiveManagementController extends BaseController {
         String archiveName = "";
         String status = "";
         Long categoryId = null;
+
         if (requestBody.getFilter() != null) {
             archiveName = requestBody.getFilter().getArchivesName(); //get archive name from input paramter
             status = requestBody.getFilter().getStatus(); //get status from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get category id from input parameter
+        }
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
         }
 
         int currentPage = requestBody.getCurrentPage(); //get current page no from input parameter
@@ -249,7 +261,7 @@ public class ArchiveManagementController extends BaseController {
         currentPage--;
 
         //get archive list from database through service
-        PageResult<SerArchive> result = archiveService.getArchiveListByPage(archiveName, status, categoryId,
+        PageResult<SerArchive> result = archiveService.getArchiveListByPage(sortBy, order, archiveName, status, categoryId,
                 currentPage, perPage);
 
         long total = result.getTotal(); //get total count of result
@@ -504,8 +516,19 @@ public class ArchiveManagementController extends BaseController {
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
         DeviceArchiveExcelView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -545,8 +568,19 @@ public class ArchiveManagementController extends BaseController {
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();
         DeviceArchiveWordView.setMessageSource(messageSource);
         InputStream inputStream = DeviceArchiveWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -587,8 +621,19 @@ public class ArchiveManagementController extends BaseController {
             categoryId = requestBody.getFilter().getCategoryId(); //get category id  from input parameter
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         //get list of archives from database through archiveService
-        List<SerArchive> exportList = archiveService.getExportListByFilter(archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
+        List<SerArchive> exportList = archiveService.getExportListByFilter(sortBy, order, archiveName, status, categoryId, requestBody.getIsAll(), requestBody.getIdList());
         DeviceArchivePdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
         DeviceArchivePdfView.setMessageSource(messageSource);

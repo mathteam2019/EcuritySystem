@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.ScanParamService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,8 +41,10 @@ import org.springframework.validation.BindingResult;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/system-setting/scan-param")
@@ -96,6 +99,7 @@ public class ScanParamManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -199,7 +203,19 @@ public class ScanParamManagementController extends BaseController {
         Integer currentPage = requestBody.getCurrentPage();
         Integer perPage = requestBody.getPerPage();
         currentPage--;
-        PageResult<SerScanParam> result = scanParamService.getScanParamListByFilter(
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        PageResult<SerScanParam> result = scanParamService.getScanParamListByFilter(sortBy, order,
                 requestBody.getFilter().getDeviceName(), //get device name from input parameters
                 requestBody.getFilter().getStatus(), //get status from input parameters
                 currentPage,

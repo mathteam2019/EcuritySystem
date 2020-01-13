@@ -102,7 +102,7 @@ public interface UserService {
      * @param perPage
      * @return
      */
-    PageResult<SysUser> getUserListByPage(String userName, String status, String gender, Long orgId, int currentPage, int perPage);
+    PageResult<SysUser> getUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, int currentPage, int perPage);
 
     /**
      * get export user list
@@ -114,7 +114,7 @@ public interface UserService {
      * @param idList
      * @return
      */
-    List<SysUser> getExportUserListByPage(String userName, String status, String gender, Long orgId, boolean isAll, String idList);
+    List<SysUser> getExportUserListByPage(String sortBy, String order, String userName, String status, String gender, Long orgId, boolean isAll, String idList);
 
     /**
      * update user status
@@ -145,7 +145,7 @@ public interface UserService {
      * @param perPage
      * @return
      */
-    PageResult<SysUserGroup> getUserGroupListByPage(String groupName, int currentPage, int perPage);
+    PageResult<SysUserGroup> getUserGroupListByPage(String sortBy, String order, String groupName, int currentPage, int perPage);
 
     /**
      * get export usergroup list
@@ -154,7 +154,7 @@ public interface UserService {
      * @param idList
      * @return
      */
-    List<SysUserGroup> getExportUserGroupListByPage(String groupName, boolean isAll, String idList);
+    List<SysUserGroup> getExportUserGroupListByPage(String sortBy, String order, String groupName, boolean isAll, String idList);
 
     /**
      * check if usergroup exists

@@ -28,7 +28,7 @@ public interface DeviceCategoryService {
      * @param perPage
      * @return
      */
-    PageResult<SysDeviceCategory> getDeviceCategoryListByPage(String categoryName, String status, String parentCategoryName, int currentPage, int perPage);
+    PageResult<SysDeviceCategory> getDeviceCategoryListByPage(String sortBy, String order, String categoryName, String status, String parentCategoryName, int currentPage, int perPage);
 
     /**
      * check if archive template exists
@@ -107,6 +107,6 @@ public interface DeviceCategoryService {
      * @param idList
      * @return
      */
-    List<SysDeviceCategory> getExportListByFilter(String categoryName, String status, String parentCategoryName, boolean isAll, String idList);
+    List<SysDeviceCategory> getExportListByFilter(String sortBy, String order, String categoryName, String status, String parentCategoryName, boolean isAll, String idList);
 
 }

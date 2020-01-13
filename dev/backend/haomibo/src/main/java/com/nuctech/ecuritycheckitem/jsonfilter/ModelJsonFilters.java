@@ -35,6 +35,7 @@ public class ModelJsonFilters {
     public final static String FILTER_SER_ARCHIVE_INDICATORS = "filter_ser_archive_indicators"; //filter to serialize SerArchiveIndicator
     public final static String FILTER_SYS_DEVICE = "filter_sys_device"; //filter to serialize SysDevice
     public final static String FILTER_SYS_DICTONARY_DATA = "filter_sys_dictionary_data"; //filter to serialize SysDictionaryData
+    public final static String FILTER_SYS_DICTONARY = "filter_sys_dictionary"; //filter to serialize SysDictionaryData
     public final static String FILTER_SYS_DEVICE_DICTIONARY_DATA = "filter_sys_dictionary_data"; //filter to serialize SysDeviceDictionaryData
     public final static String FILTER_SYS_MANUAL_DEVICE = "filter_sys_manual_device"; //filter to serialize SysManualDevice
     public final static String FILTER_SYS_MANUAL_GROUP = "filter_sys_manual_group"; //filter to serialize SysManualGroup

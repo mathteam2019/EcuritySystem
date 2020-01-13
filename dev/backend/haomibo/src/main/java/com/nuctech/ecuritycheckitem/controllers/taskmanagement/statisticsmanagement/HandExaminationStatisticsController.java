@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.export.statisticsmanagement.HandExaminationS
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.HandExaminationStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Map;
 
@@ -80,6 +82,7 @@ public class HandExaminationStatisticsController extends BaseController {
 
         Integer currentPage; //current page no
         Integer perPage; //record count per page
+        String sort;
         StatisticsRequestBody.Filter filter;
 
     }
@@ -97,7 +100,7 @@ public class HandExaminationStatisticsController extends BaseController {
         String idList; //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         StatisticsRequestBody filter;
     }
 
@@ -117,11 +120,20 @@ public class HandExaminationStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         HandExaminationStatisticsPaginationResponse response = new HandExaminationStatisticsPaginationResponse();
 
         //get statistics from database through handExaminationStatisticsService
-        response = handExaminationStatisticsService.getStatistics(
+        response = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getUserCategory(), //get user category id from input parameter
@@ -147,8 +159,17 @@ public class HandExaminationStatisticsController extends BaseController {
             //check validation and return invalid_parameter in case of invalid parameters are input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(), //get user category id from input parameter
@@ -187,9 +208,18 @@ public class HandExaminationStatisticsController extends BaseController {
             //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
         //get statistics fromd database through handExaminationStatisticsService
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter
@@ -226,8 +256,17 @@ public class HandExaminationStatisticsController extends BaseController {
             //return invalid_parameter message when invalid parameters were input
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
-        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        TreeMap<Integer, HandExaminationResponseModel> totalStatistics = handExaminationStatisticsService.getStatistics(sortBy, order,
                 requestBody.getFilter().getFilter().getFieldId(),//get field id from input parameter
                 requestBody.getFilter().getFilter().getDeviceId(),//get device id from input parameter
                 requestBody.getFilter().getFilter().getUserCategory(),//get user category id from input parameter

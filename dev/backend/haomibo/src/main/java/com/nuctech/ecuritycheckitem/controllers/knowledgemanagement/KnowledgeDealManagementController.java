@@ -31,6 +31,7 @@ import com.nuctech.ecuritycheckitem.models.simplifieddb.HistorySimplifiedForHist
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -55,8 +56,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/knowledge-base")
@@ -103,7 +106,7 @@ public class KnowledgeDealManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
-
+        String sort;
         Filter filter;
     }
 
@@ -140,7 +143,7 @@ public class KnowledgeDealManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -158,7 +161,7 @@ public class KnowledgeDealManagementController extends BaseController {
         Long historyId;
         @NotNull
         Long userId;
-
+        String sort;
         List<String> tagList;
     }
 
@@ -302,7 +305,18 @@ public class KnowledgeDealManagementController extends BaseController {
             fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
-        PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(caseStatus, taskNumber, modeName, taskResult,
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SerKnowledgeCaseDeal> result = knowledgeService.getDealListByFilter(sortBy, order, caseStatus, taskNumber, modeName, taskResult,
                 fieldDesignation, handGoods, currentPage, perPage); //get result from database through service
         long total = result.getTotal();
         List<SerKnowledgeCaseDeal> data = result.getDataList();
@@ -371,7 +385,7 @@ public class KnowledgeDealManagementController extends BaseController {
      * @param idList
      * @return
      */
-    private List<SerKnowledgeCaseDeal> getExportList(KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
+    private List<SerKnowledgeCaseDeal> getExportList(String sortBy, String order, KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter, boolean isAll, String idList) {
         String caseStatus = "";
         String modeName = "";
         String taskNumber = "";
@@ -386,7 +400,7 @@ public class KnowledgeDealManagementController extends BaseController {
             fieldDesignation = filter.getFieldDesignation(); //get field name from input parameter
             handGoods = filter.getHandGoods(); //get handgoods from input parameter
         }
-        List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(caseStatus, modeName, taskNumber, taskResult,
+        List<SerKnowledgeCaseDeal> exportList = knowledgeService.getDealExportList(sortBy, order, caseStatus, modeName, taskNumber, taskResult,
                 fieldDesignation, handGoods, isAll, idList); //get export list from service
         return exportList;
     }
@@ -407,7 +421,18 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(); //set dictionary data
         KnowledgeDealPendingExcelView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPendingExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -438,7 +463,17 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be exported
         setDictionary(); //set dictionary data
         KnowledgeDealPendingWordView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPendingWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -469,7 +504,17 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list to be printed
         KnowledgeDealPendingPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         KnowledgeDealPendingPdfView.setMessageSource(messageSource);
@@ -501,7 +546,17 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(); //set dictionary data
         KnowledgeDealPersonalExcelView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPersonalExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -532,8 +587,17 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         setDictionary(); //set dictionary data
         KnowledgeDealPersonalWordView.setMessageSource(messageSource);
         InputStream inputStream = KnowledgeDealPersonalWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -564,8 +628,17 @@ public class KnowledgeDealManagementController extends BaseController {
         }
 
         KnowLedgeDealGetByFilterAndPageRequestBody.Filter filter = requestBody.getFilter();
-
-        List<SerKnowledgeCaseDeal> exportList = getExportList(filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SerKnowledgeCaseDeal> exportList = getExportList(sortBy, order, filter, requestBody.getIsAll(), requestBody.getIdList()); //get export list from service
         KnowledgeDealPersonalPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
         KnowledgeDealPersonalPdfView.setMessageSource(messageSource);

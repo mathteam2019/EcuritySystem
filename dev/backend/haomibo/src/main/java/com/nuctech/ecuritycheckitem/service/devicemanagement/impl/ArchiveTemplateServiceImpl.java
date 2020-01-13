@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchive;
@@ -33,6 +34,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,9 +97,18 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
      * @return
      */
     @Override
-    public PageResult<SerArchiveTemplate> getArchiveTemplateListByPage(String templateName, String status, Long categoryId, int currentPage, int perPage) {
+    public PageResult<SerArchiveTemplate> getArchiveTemplateListByPage(String sortBy, String order, String templateName, String status, Long categoryId, int currentPage, int perPage) {
         BooleanBuilder predicate = getPredicate(templateName, status, categoryId);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = serArchiveTemplateRepository.count(predicate);
         List<SerArchiveTemplate> data = serArchiveTemplateRepository.findAll(predicate, pageRequest).getContent();
@@ -401,13 +412,26 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
      * @return
      */
     @Override
-    public List<SerArchiveTemplate> getExportListByFilter(String templateName, String status, Long categoryId, boolean isAll, String idList) {
+    public List<SerArchiveTemplate> getExportListByFilter(String sortBy, String order, String templateName, String status, Long categoryId, boolean isAll, String idList) {
         BooleanBuilder predicate = getPredicate(templateName, status, categoryId);
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
         //get all archive list
-        List<SerArchiveTemplate> archiveTemplateList = StreamSupport
-                .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
-                .collect(Collectors.toList());
+        List<SerArchiveTemplate> archiveTemplateList;
+        if(sort != null) {
+            archiveTemplateList = StreamSupport
+                    .stream(serArchiveTemplateRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        } else {
+            archiveTemplateList = StreamSupport
+                    .stream(serArchiveTemplateRepository.findAll(predicate).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
 
         List<SerArchiveTemplate> exportList = getExportList(archiveTemplateList, isAll, idList);
         return exportList;

@@ -31,6 +31,6 @@ public interface PreviewStatisticsService {
      * @param perPage
      * @return
      */
-    TotalStatisticsResponse getStatistics( Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage);
 
 }

@@ -31,6 +31,6 @@ public interface EvaluateJudgeStatisticsService {
      * @param perpage
      * @return
      */
-    EvaluateJudgeStatisticsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perpage);
+    EvaluateJudgeStatisticsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perpage);
 
 }

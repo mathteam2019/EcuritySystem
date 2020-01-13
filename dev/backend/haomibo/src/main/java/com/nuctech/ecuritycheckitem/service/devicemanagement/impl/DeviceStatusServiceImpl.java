@@ -93,7 +93,7 @@ public class DeviceStatusServiceImpl implements DeviceStatusService {
             SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
             String strTime = formatter.format(rangeDate[i + 1]);
             timeList.add(strTime);
-            countList.add(countArray[i]);
+            countList.add(countArray[i] * 10);
         }
         result.setTimeList(timeList);
         result.setCountList(countList);

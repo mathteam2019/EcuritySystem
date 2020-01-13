@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
 import com.nuctech.ecuritycheckitem.models.db.QSysRole;
 import com.nuctech.ecuritycheckitem.models.db.QSysUser;
@@ -33,8 +34,10 @@ import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationSer
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -281,11 +284,19 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param perPage
      * @return
      */
-    public PageResult<SysOrg> getOrganizationByFilterAndPage(String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage) {
+    public PageResult<SysOrg> getOrganizationByFilterAndPage(String sortBy, String order, String orgName, String status, String parentOrgName, Integer currentPage, Integer perPage) {
 
         BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
 
         long total = sysOrgRepository.count(predicate);
         List<SysOrg> data = sysOrgRepository.findAll(predicate, pageRequest).getContent();
@@ -301,13 +312,25 @@ public class OrganizationServiceImpl implements OrganizationService {
      * @param parentOrgName
      * @return
      */
-    public List<SysOrg> getOrganizationByFilter(String orgName, String status, String parentOrgName) {
+    public List<SysOrg> getOrganizationByFilter(String sortBy, String order, String orgName, String status, String parentOrgName) {
 
         BooleanBuilder predicate = getPredicate(orgName, status, parentOrgName);
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        if(sort != null) {
+            return StreamSupport
+                    .stream(sysOrgRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+
         return StreamSupport
                 .stream(sysOrgRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
-
     }
 
     /**

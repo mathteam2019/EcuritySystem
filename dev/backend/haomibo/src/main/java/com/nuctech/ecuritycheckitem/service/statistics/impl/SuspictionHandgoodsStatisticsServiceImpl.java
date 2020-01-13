@@ -50,7 +50,7 @@ public class SuspictionHandgoodsStatisticsServiceImpl implements SuspictionHandg
      * @param perPage
      * @return
      */
-    public SuspicionHandGoodsPaginationResponse getStatistics(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public SuspicionHandGoodsPaginationResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         SuspicionHandGoodsPaginationResponse response = new SuspicionHandGoodsPaginationResponse();
 

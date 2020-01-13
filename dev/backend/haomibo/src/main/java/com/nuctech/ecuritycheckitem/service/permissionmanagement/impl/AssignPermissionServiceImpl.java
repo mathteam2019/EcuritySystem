@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.db.QSysUser;
 import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
@@ -47,6 +48,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -249,12 +251,19 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param perPage
      * @return
      */
-    public PageResult<SysUser> userGetByFilterAndPage(String userName, Long orgId, String roleName, Integer currentPage, Integer perPage) {
+    public PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, Integer currentPage, Integer perPage) {
 
         BooleanBuilder predicate = getPredicate(userName, orgId, roleName);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = sysUserRepository.count(predicate);
         List<SysUser> data = sysUserRepository.findAll(predicate, pageRequest).getContent();
 
@@ -270,9 +279,20 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    public List<SysUser> userGetByFilter(String userName, Long orgId, String roleName) {
+    public List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName) {
         BooleanBuilder predicate = getPredicate(userName, orgId, roleName);
-
+        Sort sort = null;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+        }
+        if(sort != null) {
+            return StreamSupport
+                    .stream(sysUserRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
         return StreamSupport
                 .stream(sysUserRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
@@ -288,7 +308,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param perPage
      * @return
      */
-    public PageResult<SysUserGroup> userGroupGetByFilterAndPage(String groupName, String userName, String roleName, Integer currentPage, Integer perPage) {
+    public PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, Integer currentPage, Integer perPage) {
 
         BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
@@ -308,7 +328,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    public List<SysUserGroup> userGroupGetByFilter(String groupName, String userName, String roleName) {
+    public List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName) {
         BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName);
 
         return StreamSupport

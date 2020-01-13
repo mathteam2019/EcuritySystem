@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -41,8 +42,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/device-management/device-config")
@@ -84,6 +87,7 @@ public class DeviceConfigManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -206,7 +210,18 @@ public class DeviceConfigManagementController extends BaseController {
             fieldId = requestBody.getFilter().getFieldId(); //get field id from input parameter
             categoryId = requestBody.getFilter().getCategoryId(); //get device category id from input parameter
         }
-        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(deviceName, fieldId, categoryId, currentPage, perPage); //get result from database through deviceConfigService
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysDeviceConfig> result = deviceConfigService.findConfigByFilter(sortBy, order, deviceName, fieldId, categoryId, currentPage, perPage); //get result from database through deviceConfigService
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK

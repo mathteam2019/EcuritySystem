@@ -54,7 +54,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 

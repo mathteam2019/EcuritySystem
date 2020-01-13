@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerScanParam;
 import com.nuctech.ecuritycheckitem.models.db.SerScanParam;
 import com.nuctech.ecuritycheckitem.models.db.SerScanParamsFrom;
@@ -26,6 +27,7 @@ import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -91,12 +93,20 @@ public class ScanParamServiceImpl implements ScanParamService {
      * @param perPage
      * @return
      */
-    public PageResult<SerScanParam> getScanParamListByFilter(String deviceName, String status, Integer currentPage, Integer perPage) {
+    public PageResult<SerScanParam> getScanParamListByFilter(String sortBy, String order, String deviceName, String status, Integer currentPage, Integer perPage) {
 
         BooleanBuilder predicate = getPredicate(deviceName, status);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
-
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sortBy = "device.deviceSerial";
+            if (order.equals(Constants.SortOrder.ASC)) {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).ascending());
+            }
+            else {
+                pageRequest = PageRequest.of(currentPage, perPage, Sort.by(sortBy).descending());
+            }
+        }
         long total = serScanParamRepository.count(predicate);
         List<SerScanParam> data = serScanParamRepository.findAll(predicate, pageRequest).getContent();
 

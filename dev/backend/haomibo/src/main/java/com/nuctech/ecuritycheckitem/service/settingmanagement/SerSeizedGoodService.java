@@ -29,6 +29,6 @@ public interface SerSeizedGoodService {
 
     boolean checkSeizedExist(Long goodsId);
 
-    PageResult<SerSeizedGood> getGoodsListByFilter(String goods, int currentPage, int perPage);
+    PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goods, int currentPage, int perPage);
 
 }

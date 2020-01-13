@@ -3,11 +3,11 @@
  *
  * 本系统是商用软件，未经授权不得擅自复制或传播本程序的部分或全部
  *
- * 项目：	Haomibo V1.0（SerSeizedGood）
- * 文件名：	SerSeizedGood.java
- * 描述：	SerSeizedGood Model
+ * 项目：	Haomibo V1.0（SysDictionary）
+ * 文件名：	SysDictionary.java
+ * 描述：	SysDictionary Model
  * 作者名：	Choe
- * 日期：	2020/01/09
+ * 日期：	2020/01/10
  */
 
 
@@ -28,21 +28,15 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@JsonFilter(ModelJsonFilters.FILTER_SER_SEIZED_GOOD)
-@Table(name = "ser_seized_goods")
-public class SerSeizedGood extends BaseEntity implements Serializable {
+@JsonFilter(ModelJsonFilters.FILTER_SYS_DICTONARY)
+@Table(name = "sys_dictionary")
+public class SysDictionary extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "GOODS_ID", length = 20, nullable = false)
-    private Long goodsId;
+    @Column(name = "DICTIONARY_ID", length = 20, nullable = false)
+    private Long dictionaryId;
 
-    @Column(name = "SEIZED_GOODS", length = 255)
-    private String seizedGoods;
+    @Column(name = "DICTIONARY_NAME", length = 50)
+    private String dictionaryName;
 
-    @Column(name = "SEIZED_GOODS_TYPE", length = 10)
-    private String seizedGoodType;
-
-    @Column(name = "SEIZED_GOODS_LEVEL", length = 10)
-    private String seizedGoodsLevel;
-    
 }

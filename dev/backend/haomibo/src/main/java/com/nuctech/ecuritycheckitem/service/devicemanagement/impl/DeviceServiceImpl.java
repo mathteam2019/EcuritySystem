@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 
@@ -24,6 +25,7 @@ import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -194,7 +196,7 @@ public class DeviceServiceImpl implements DeviceService {
      * @return
      */
     @Override
-    public PageResult<SysDevice> getFilterDeviceList(String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
+    public PageResult<SysDevice> getFilterDeviceList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                                int startIndex, int endIndex) {
         QSysDevice builder = QSysDevice.sysDevice;
 
@@ -220,10 +222,24 @@ public class DeviceServiceImpl implements DeviceService {
         }
         * */
 
+        Sort sort;
+        if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
+            sort = new Sort(Sort.Direction.ASC, sortBy);
+            if (order.equals(Constants.SortOrder.DESC)) {
+                sort = new Sort(Sort.Direction.DESC, sortBy);
+            }
+            List<SysDevice> allData = StreamSupport
+                    .stream(sysDeviceRepository.findAll(predicate, sort).spliterator(), false)
+                    .collect(Collectors.toList());
+            return getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
+        }
         List<SysDevice> allData = StreamSupport
                 .stream(sysDeviceRepository.findAll(predicate).spliterator(), false)
                 .collect(Collectors.toList());
         return getFilterDeviceByCategory(allData, categoryId, startIndex, endIndex);
+
+
+
     }
 
     /**
@@ -268,9 +284,9 @@ public class DeviceServiceImpl implements DeviceService {
      * @return
      */
     @Override
-    public List<SysDevice> getExportDataList(String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
+    public List<SysDevice> getExportDataList(String sortBy, String order, String archiveName, String deviceName, String status, Long fieldId, Long categoryId,
                                              boolean isAll, String idList) {
-        List<SysDevice> preList = getFilterDeviceList(archiveName, deviceName, status, fieldId, categoryId, 0, -1).getDataList();
+        List<SysDevice> preList = getFilterDeviceList(sortBy, order, archiveName, deviceName, status, fieldId, categoryId, 0, -1).getDataList();
         return getExportList(preList, isAll, idList);
     }
 
@@ -339,6 +355,8 @@ public class DeviceServiceImpl implements DeviceService {
                     .build();
             sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysManualDeviceRepository.save(sysManualDevice);
+        } else if(category.getCategoryId() == 3) {
+
         }
 
 

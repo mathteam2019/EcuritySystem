@@ -29,7 +29,7 @@ public interface ArchiveService {
      * @param perPage
      * @return
      */
-    PageResult<SerArchive> getArchiveListByPage(String archiveName, String status, Long categoryId, int currentPage, int perPage);
+    PageResult<SerArchive> getArchiveListByPage(String sortBy, String order, String archiveName, String status, Long categoryId, int currentPage, int perPage);
 
     /**
      * check if archive exist
@@ -112,7 +112,7 @@ public interface ArchiveService {
      * @param idList
      * @return
      */
-    List<SerArchive> getExportListByFilter(String archiveName, String status, Long categoryId, boolean isAll, String idList);
+    List<SerArchive> getExportListByFilter(String sortBy, String order, String archiveName, String status, Long categoryId, boolean isAll, String idList);
 
 
 

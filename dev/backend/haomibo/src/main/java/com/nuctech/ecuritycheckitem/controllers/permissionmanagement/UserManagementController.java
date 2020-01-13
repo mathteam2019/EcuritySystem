@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResul
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -51,8 +52,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/permission-management/user-management")
@@ -245,6 +248,7 @@ public class UserManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -261,7 +265,7 @@ public class UserManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         UserGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -341,6 +345,7 @@ public class UserManagementController extends BaseController {
         int currentPage;
         @NotNull
         int perPage;
+        String sort;
         Filter filter;
     }
 
@@ -357,7 +362,7 @@ public class UserManagementController extends BaseController {
         String idList;  //id list of tasks which is combined with comma. ex: "1,2,3"
         @NotNull
         Boolean isAll; //true or false. is isAll is true, ignore idList and print all data.
-
+        String sort;
         UserGroupGetByFilterAndPageRequestBody.Filter filter;
     }
 
@@ -500,10 +505,21 @@ public class UserManagementController extends BaseController {
             orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
 
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SysUser> result = userService.getUserListByPage(userName, status, gender, orgId, currentPage, perPage);
+        PageResult<SysUser> result = userService.getUserListByPage(sortBy, order, userName, status, gender, orgId, currentPage, perPage);
         long total = result.getTotal();
         List<SysUser> data = result.getDataList();
 
@@ -553,7 +569,18 @@ public class UserManagementController extends BaseController {
             gender = requestBody.getFilter().getGender(); //get gender from input parameters
             orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
-        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         InputStream inputStream = UserExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
 
@@ -592,7 +619,18 @@ public class UserManagementController extends BaseController {
             gender = requestBody.getFilter().getGender(); //get gender from input parameters
             orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
-        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary();//set dictionary data
         UserWordView.setMessageSource(messageSource);
         InputStream inputStream = UserWordView.buildWordDocument(exportList);//create inputstream of result to be exported
@@ -629,7 +667,18 @@ public class UserManagementController extends BaseController {
             gender = requestBody.getFilter().getGender(); //get gender from input parameters
             orgId = requestBody.getFilter().getOrgId(); //get org id  from input parameters
         }
-        List<SysUser> exportList = userService.getExportUserListByPage(userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        List<SysUser> exportList = userService.getExportUserListByPage(sortBy, order, userName, status, gender, orgId, requestBody.getIsAll(), requestBody.getIdList());
         UserPdfView.setResource(getFontResource()); //set font resource
         setDictionary(); //set dictionary data
         UserPdfView.setMessageSource(messageSource);
@@ -777,7 +826,18 @@ public class UserManagementController extends BaseController {
         if (requestBody.getFilter() != null) {
             groupName = requestBody.getFilter().getGroupName();
         }
-        PageResult<SysUserGroup> result = userService.getUserGroupListByPage(groupName, currentPage, perPage);
+
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+        PageResult<SysUserGroup> result = userService.getUserGroupListByPage(sortBy, order, groupName, currentPage, perPage);
         long total = result.getTotal();
         List<SysUserGroup> data = result.getDataList();
 
@@ -825,7 +885,18 @@ public class UserManagementController extends BaseController {
             groupName = requestBody.getFilter().getGroupName();
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         UserGroupExcelView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupExcelView.buildExcelDocument(exportList); //create inputstream of result to be exported
@@ -857,7 +928,18 @@ public class UserManagementController extends BaseController {
             groupName = requestBody.getFilter().getGroupName();
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
         UserGroupWordView.setMessageSource(messageSource);
         InputStream inputStream = UserGroupWordView.buildWordDocument(exportList); //create inputstream of result to be exported
@@ -892,7 +974,18 @@ public class UserManagementController extends BaseController {
             groupName = requestBody.getFilter().getGroupName();
         }
 
-        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(groupName, requestBody.getIsAll(), requestBody.getIdList());
+        String sortBy = "";
+        String order = "";
+        Map<String, String> sortParams = new HashMap<String, String>();
+        if (requestBody.getSort() != null && !requestBody.getSort().isEmpty()) {
+            sortParams = Utils.getSortParams(requestBody.getSort());
+            if (!sortParams.isEmpty()) {
+                sortBy = sortParams.get("sortBy");
+                order = sortParams.get("order");
+            }
+        }
+
+        List<SysUserGroup> exportList = userService.getExportUserGroupListByPage(sortBy, order, groupName, requestBody.getIsAll(), requestBody.getIdList());
         UserGroupPdfView.setResource(getFontResource()); //set font resource
         setDictionary();  //set dictionary data
         InputStream inputStream = UserGroupPdfView.buildPDFDocument(exportList); //create inputstream of result to be exported
