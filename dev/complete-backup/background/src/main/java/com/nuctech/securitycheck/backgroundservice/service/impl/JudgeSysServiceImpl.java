@@ -60,7 +60,7 @@ public class JudgeSysServiceImpl implements IJudgeSysService {
 
         // 状态必须为停止或登录才能开始
         if(deviceStatus.equals(DeviceStatusType.START.getValue())) {
-            if(!sysDevice.getStatus().equals(DeviceStatusType.LOGIN) && !sysDevice.getStatus().equals(DeviceStatusType.STOP)) {
+            if(!sysDevice.getStatus().equals(DeviceStatusType.LOGIN.getValue()) && !sysDevice.getStatus().equals(DeviceStatusType.STOP.getValue())) {
                 return false;
             }
         } else if(deviceStatus.equals(DeviceStatusType.STOP.getValue())) { //必须先启动停止状态

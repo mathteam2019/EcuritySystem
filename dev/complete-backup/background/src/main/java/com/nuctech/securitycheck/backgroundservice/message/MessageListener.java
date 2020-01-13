@@ -363,6 +363,67 @@ public class MessageListener {
         }
     }
 
+    @RabbitListener(queues = "${sys.dev.reply.queue}")
+    public void listenSysDevReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @RabbitListener(queues = "${dev.sys.reply.queue}")
+    public void listenDevSysReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @RabbitListener(queues = "${sys.rem.reply.queue}")
+    public void listenSysRemReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @RabbitListener(queues = "${rem.sys.reply.queue}")
+    public void listenRemSysReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @RabbitListener(queues = "${sys.man.reply.queue}")
+    public void listenSysManReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+    @RabbitListener(queues = "${man.sys.reply.queue}")
+    public void listenManSysReplyMessage(String msg) {
+        try {
+            msg = CryptUtil.decrypt(msg);
+            log.info(msg);
+        } catch (Exception e) {
+
+        }
+    }
+
+
 
     /**
      * listenZabbixQueue

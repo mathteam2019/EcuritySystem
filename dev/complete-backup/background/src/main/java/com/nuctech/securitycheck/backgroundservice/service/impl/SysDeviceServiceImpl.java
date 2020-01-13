@@ -558,7 +558,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     @Override
     public boolean register(SysDevice sysDevice, SysRegisterModel sysRegisterModel) {
         try {
-            if(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER) || sysDevice.getCurrentStatus().equals(DeviceStatusType.LOGOUT)) {
+            if(!(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue()))) {
                 return false;
             }
             // sys_device
@@ -587,6 +587,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
             }
             serDeviceStatus.setIpAddress(sysRegisterModel.getIp());
+            serDeviceStatus.setAccount(null);
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_LOGIN_WAIT.getValue());
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
             serDeviceStatusRepository.save(serDeviceStatus);
@@ -630,7 +631,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
     public boolean unRegister(SysDevice sysDevice, SysUnregisterModel sysUnregisterModel) {
         try {
             // sys_device
-            if(!sysDevice.getCurrentStatus().equals(DeviceStatusType.REGISTER) && !sysDevice.getCurrentStatus().equals(DeviceStatusType.LOGOUT)) {
+            if(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue())) {
                 return false;
             }
             sysDevice.setCurrentStatus(DeviceStatusType.UNREGISTER.getValue());
@@ -664,6 +665,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             if (serDeviceStatus == null) {
                 return false;
             }
+            serDeviceStatus.setAccount(null);
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_EXIT.getValue());
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowStatusType.WAIT_TO_START.getValue());
             serDeviceStatusRepository.save(serDeviceStatus);
@@ -846,6 +848,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             }
             serDeviceStatus.setCurrentWorkflow(DeviceCurrentFlowNameType.LIFE_LOGOUT.getValue());
             serDeviceStatus.setCurrentStatus(DeviceCurrentFlowStatusType.CANCELLED.getValue());
+            serDeviceStatus.setAccount(null);
             serDeviceStatusRepository.save(serDeviceStatus);
 
             return true;
