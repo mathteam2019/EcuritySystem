@@ -71,7 +71,7 @@ public class FieldManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
     /**
      * Field create request body.
      */

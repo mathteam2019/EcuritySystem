@@ -71,7 +71,7 @@ public class ArchiveTemplateManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Archive Template datatable request body.

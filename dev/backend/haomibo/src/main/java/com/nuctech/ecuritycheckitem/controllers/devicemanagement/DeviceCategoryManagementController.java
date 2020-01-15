@@ -69,7 +69,7 @@ public class DeviceCategoryManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Device category create request body.

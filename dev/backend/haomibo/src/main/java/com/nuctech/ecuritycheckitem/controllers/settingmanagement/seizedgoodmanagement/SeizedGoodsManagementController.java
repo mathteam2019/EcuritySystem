@@ -55,7 +55,7 @@ public class SeizedGoodsManagementController extends BaseController {
     @Autowired
     AuditLogService auditLogService;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Field datatable request body.

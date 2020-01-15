@@ -59,7 +59,7 @@ public class ScanParamManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Scan Param datatable request body.

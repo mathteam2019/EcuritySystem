@@ -72,7 +72,7 @@ public class OrganizationManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Organization create request body.

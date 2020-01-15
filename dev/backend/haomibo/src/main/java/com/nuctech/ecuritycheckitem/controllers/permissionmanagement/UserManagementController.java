@@ -70,7 +70,7 @@ public class UserManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * User create request body.

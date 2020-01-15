@@ -56,7 +56,7 @@ public class DictionaryManagementController extends BaseController {
     @Autowired
     AuditLogService auditLogService;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Dictionary datatable request body.

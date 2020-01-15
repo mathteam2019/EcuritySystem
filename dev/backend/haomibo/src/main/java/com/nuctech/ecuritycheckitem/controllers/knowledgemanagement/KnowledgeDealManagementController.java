@@ -74,7 +74,7 @@ public class KnowledgeDealManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Knowledge datatable request body.

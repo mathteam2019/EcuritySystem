@@ -53,7 +53,7 @@ public class PlatformCheckManagementController extends BaseController {
     public MessageSource messageSource;
 
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Platform check modify request body.

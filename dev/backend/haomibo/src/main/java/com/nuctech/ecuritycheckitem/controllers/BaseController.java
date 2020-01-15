@@ -30,11 +30,14 @@ import org.springframework.context.MessageSource;
 import javax.persistence.EntityManager;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
  */
 public class BaseController {
+
+    public static Locale currentLocale = Locale.ENGLISH;
 
     @Autowired
     public EntityManager entityManager;

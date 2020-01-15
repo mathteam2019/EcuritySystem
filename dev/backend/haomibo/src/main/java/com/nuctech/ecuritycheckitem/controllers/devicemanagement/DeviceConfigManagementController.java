@@ -60,7 +60,7 @@ public class DeviceConfigManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Device datatable request body.

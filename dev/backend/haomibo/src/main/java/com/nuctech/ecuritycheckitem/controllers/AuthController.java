@@ -60,7 +60,7 @@ import java.util.Locale;
 @RequestMapping("/auth")
 public class AuthController extends BaseController {
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     @Autowired
     AuthService authService;

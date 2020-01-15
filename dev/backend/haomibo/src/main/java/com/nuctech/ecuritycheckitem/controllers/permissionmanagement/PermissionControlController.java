@@ -79,7 +79,7 @@ public class PermissionControlController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Role create request body.

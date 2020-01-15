@@ -50,7 +50,7 @@ public class PlatformOtherManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Platform other modify request body.

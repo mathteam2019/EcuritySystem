@@ -76,7 +76,7 @@ public class AssignPermissionManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Request body for assigning role and data range to user.

@@ -72,7 +72,7 @@ public class ArchiveManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
-    public static Locale currentLocale = Locale.CHINESE;
+
 
     /**
      * Archive datatable request body.
