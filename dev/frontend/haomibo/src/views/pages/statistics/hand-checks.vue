@@ -1073,8 +1073,8 @@
       },
 
       onExportButton(value) {
-        this.fileSelection = [];
-        this.$refs['model-export'].show();
+        // this.fileSelection = [];
+        // this.$refs['model-export'].show();
         this.button = value;
         if (this.button === 'hand') {
           this.onExportButton1();
@@ -1082,6 +1082,7 @@
         if (this.button === 'statistics') {
           this.onExportButton2();
         }
+        this.isModalVisible = true;
       },
       onExport() {
         if (this.button === 'hand') {

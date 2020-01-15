@@ -417,7 +417,7 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke;"/>
+                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke; border: none;"/>
                   <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
                                 style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
