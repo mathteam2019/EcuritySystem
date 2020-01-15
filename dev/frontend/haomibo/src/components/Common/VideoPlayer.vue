@@ -1,6 +1,6 @@
 <template>
 <div data-vjs-player>
-    <video ref="myPlayer" :poster="options.poster" :class="`video-js vjs-default-skin ${options.class}`"></video>
+    <video ref="myPlayer" :poster="options.poster" :class="`video-js vjs-default-skin ${options.class}`"/>
 </div>
 </template>
 
@@ -17,7 +17,6 @@ export default {
     },
     mounted() {
         this.player = videojs(this.$refs.myPlayer, this.options, () => {
-
         })
     },
     beforeDestroy() {

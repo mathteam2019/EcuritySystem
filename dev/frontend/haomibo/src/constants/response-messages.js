@@ -39,4 +39,8 @@ export const responseMessages = {
   'has-roles':'has_roles',
   'has-fields':'has_fields',
   'user_pending_status':'user_pending_status',
+  'used-seized-good' : 'used_seized_good',
+  'used-dictionary-name' : 'used_dictionary_name',
+  'used-dictionary-code' : 'used_dictionary_code',
+  'used-dictionary-value' : 'used_dictionary_value'
 };

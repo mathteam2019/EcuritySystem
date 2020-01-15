@@ -110,9 +110,20 @@ const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
  // return moment.utc(String(datetime)).format(format) //parse with timezone
 };
 
-const downLoadFileFromServer = (link,params, name = 'statics') => {
-  let ext1 =  ['docx','pdf','xlsx'];
-  for(let i=0; i<3; i++) {
+const downLoadFileFromServer = (link,params, name = 'statics', ext) => {
+  let ext2 =  ['docx','pdf','xlsx'];
+  let ext1 = [];
+
+  if(ext !== null){
+    for(let i=0; i<ext.length; i++){
+      ext1[i] = ext[i].value;
+    }
+  }else {
+    ext1=ext2;
+  }
+
+  console.log(ext1);
+  for(let i=0; i<ext1.length; i++) {
   getApiManager()
       .post(`${apiBaseUrl}/` + link + '/' + ext1[i], params, {
       responseType: 'blob'
@@ -187,4 +198,17 @@ function isPhoneValid(value) {
 
 }
 
-export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid};
+function isAccountValid(value) {
+  if(value === "")
+    return true;
+  let accountReg = /^[A-Za-z0-9._-]+$/;
+  if(accountReg.test(value)){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+}
+
+export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid};

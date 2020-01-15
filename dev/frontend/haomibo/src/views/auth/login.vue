@@ -347,12 +347,12 @@
                 });
 
                 if(data.user.category === 'normal') {
-                  this.$router.push('/user/dashboard');
+                  this.$router.push('/pages/dashboard');
                   break;
                 }
 
                 if(data.user.category === 'admin'){
-                  this.$router.push('/admin/dashboard');
+                  this.$router.push('/pages/dashboard');
                   break;
                 }
 
