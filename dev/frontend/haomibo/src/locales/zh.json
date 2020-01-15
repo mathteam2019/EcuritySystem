@@ -28,7 +28,11 @@
     "role-already-used":"角色已经使用",
     "data-group-already-used":"数据组已经使用",
     "category-has-archive-template":"设备分类已经使用-档案模板",
-    "category-has-children":"设备分类该有孩子"
+    "category-has-children":"设备分类该有孩子",
+    "used-seized-good" : "物品名称已被使用",
+    "used-dictionary-name" : "物品名称已被使用",
+    "used-dictionary-code" : "物品名称已被使用",
+    "used-dictionary-value" : "物品名称已被使用"
   },
   "user": {
     "login-title": "登录",
@@ -113,6 +117,8 @@
     "device-config": "设备配置",
     "condition-monitoring": "状态监控",
     "system-setting": "系统设置",
+    "goods-management" : "物品管理",
+    "dictionary-table" : "词典表",
     "parameter-setting": "参数设置",
     "site-management": "场地管理",
     "log-management": "日志管理",
@@ -157,12 +163,14 @@
     "register-desc": "如果你是会员，请登录"
   },
   "password-reset": {
-    "password-change": "密码变更",
+    "password-change": "修改密码",
     "user-account": "用户姓名",
+    "old-password": "旧密码",
     "new-password": "新密码",
     "confirm-password": "确认密码",
     "confirm": "确认",
-    "update-password-successful": "密码变更成功"
+    "update-password-successful": "密码变更成功",
+    "invalid-password" : "旧密码不正确"
   },
   "dashboard": {
     "article-title-1": "2秒完成扫描",
@@ -701,6 +709,20 @@
     "level-low": "低",
     "level-middle": "中",
     "level-high": "高",
+    "goods" : "物品",
+    "enter-goods" : "请输入物品",
+    "goods-grade" : "物品级别",
+    "goods-category" : "物品分类",
+    "seized-grade" : "查获物等级",
+    "seized-category" : "查获物分类",
+    "dictionary-name" : "词典名称",
+    "time" : "时间",
+    "seized-create" : "物品已创建",
+    "seized-modify" : "物品被修改",
+    "seized-delete" : "物品被删除",
+    "dictionary-create" : "字典已创建",
+    "dictionary-modify" : "字典已修改",
+    "dictionary-delete" : "字典被删除",
     "parameter-setting": {
       "platform-parameter": "平台参数",
       "security-instrument": "安检仪",
@@ -840,7 +862,9 @@
     "land-border": "陆路边境",
     "no-seized": "无查获",
     "security-instrument-and-hand-test": "安检仪+手检",
-    "security-instrument-and-hand-test-and-device": "安检仪+手检+设备端"
+    "security-instrument-and-hand-test-and-device": "安检仪+手检+设备端",
+    "activate": "待审批案例已激活",
+    "dismiss" : "待审批案例被拒绝"
   },
   "personal-inspection": {
     "return": "返回",
@@ -903,7 +927,9 @@
     "history" : "历史任务详情",
     "invalid" : "无效任务详情",
     "pending" : "待审批案例详情",
-    "personal" : "人员案例详情"
+    "personal" : "人员案例详情",
+    "activate" : "知识案例已激活",
+    "dismiss" : "知识案例被拒绝"
   },
   "maintenance-management": {
     "maintenance-task": {

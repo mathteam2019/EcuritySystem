@@ -16,6 +16,13 @@ var Chobi = function(elem, isToggled){
 				this.debugger('Not instanceof(Image). Trying as URL');
 				var img = new Image();
 				img.crossOrigin = "Anonymous";
+				if(elem===''){
+          if(isToggled === false) {
+            elem = '/assets/img/scan-lr.gif';
+          }else {
+            elem = '/assets/img/u244.jpg';
+          }
+        }
 				img.src = elem;
         img.onerror = function (evt){
           if(isToggled === false) {
@@ -383,21 +390,35 @@ var Chobi = function(elem, isToggled){
 		    return this;
 		}
 		Chobi.prototype.canvas = null;
-		Chobi.prototype.loadImageToCanvas = function(drawArea, rectInfo){
+		Chobi.prototype.loadImageToCanvas = function(drawArea, rectInfo, isToggled, left){
 			if(drawArea==null&&this.canvas!=null){
 				drawArea = this.canvas;
 			}
 			try{
+
 				var imageData = this.imageData;
 				var ctx = drawArea.getContext("2d");
 				drawArea.width = imageData.width;
 				drawArea.height = imageData.height;
 				ctx.putImageData(imageData,0,0);
 				var infoLength = rectInfo.length;
+        if(isToggled === false) {
+          ctx.fillStyle = "white";
+          ctx.textAlign = "center";
+          ctx.font = "18px Arial";
+          if(left){
+            ctx.fillText("R",10,350);
+            ctx.fillText("L",240,350);
+          }else {
+            ctx.fillText("L",9,350);
+            ctx.fillText("R",240,350);
+          }
+
+        }
 
 				for(var i=0; i<infoLength; i++) {
           ctx.beginPath();
-          ctx.lineWidth = "6";
+          ctx.lineWidth = "2";
 
           if(rectInfo[i].colour!=null) {
             ctx.strokeStyle = rectInfo[i].colour;

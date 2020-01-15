@@ -1,19 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import {adminRoutes} from "./admin";
+import {Routes} from "./routes";
 import {authRoutes} from "./auth";
-import {userRoutes} from "./user";
 
 Vue.use(Router);
 
 const routes = [
   {
     path: '/',
-    redirect: '/user/dashboard'
+    redirect: '/pages/dashboard'
   },
 
-  adminRoutes,
-  userRoutes,
+  Routes,
 
   {
     path: '/error',

@@ -33,25 +33,25 @@ import 'firebase/auth'
 import {scheduleRefreshToken} from "./utils";
 
 
-Vue.use(BootstrapVue)
-Vue.use(VueI18n)
+Vue.use(BootstrapVue);
+Vue.use(VueI18n);
 
-const messages = { en: en, es: es, zh: zh }
-const locale = (localStorage.getItem('currentLanguage') && localeOptions.filter(x => x.id === localStorage.getItem('currentLanguage')).length > 0) ? localStorage.getItem('currentLanguage') : defaultLocale
+const messages = { en: en, es: es, zh: zh };
+const locale = (localStorage.getItem('currentLanguage') && localeOptions.filter(x => x.id === localStorage.getItem('currentLanguage')).length > 0) ? localStorage.getItem('currentLanguage') : defaultLocale;
 const i18n = new VueI18n({
   locale: locale,
   fallbackLocale: 'en',
   messages
-})
+});
 
-Vue.use(Notifications)
-Vue.component('piaf-breadcrumb', Breadcrumb)
-Vue.component('b-refresh-button', RefreshButton)
-Vue.component('b-colxx', Colxx)
-Vue.component('vue-perfect-scrollbar', vuePerfectScrollbar)
-Vue.use(require('vue-shortkey'))
-Vue.use(contentmenu)
-Vue.use(lineClamp, { /* plugin options */ })
+Vue.use(Notifications);
+Vue.component('piaf-breadcrumb', Breadcrumb);
+Vue.component('b-refresh-button', RefreshButton);
+Vue.component('b-colxx', Colxx);
+Vue.component('vue-perfect-scrollbar', vuePerfectScrollbar);
+Vue.use(require('vue-shortkey'));
+Vue.use(contentmenu);
+Vue.use(lineClamp, { /* plugin options */ });
 Vue.use(VCalendar, {
   firstDayOfWeek: 2, // ...other defaults,
   formats: {
@@ -64,8 +64,8 @@ Vue.use(VCalendar, {
   datePickerShowDayPopover: false,
   popoverExpanded: true,
   popoverDirection: 'bottom'
-})
-Vue.use(VueScrollTo)
+});
+Vue.use(VueScrollTo);
 
 
 

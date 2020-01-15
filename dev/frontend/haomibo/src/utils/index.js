@@ -176,6 +176,11 @@ export const setDirection = localValue => {
   localStorage.setItem('direction', direction)
 };
 
+export const getLocale = () => {
+  return localStorage.getItem('currentLanguage');
+};
+
+
 export const saveLoginInfo = (loginInfo) => {
   localStorage.setItem('loginInfo', JSON.stringify(loginInfo));
 };
@@ -339,40 +344,6 @@ export const isLoggedIn = () => {
   return false;
 };
 
-
-export const isLoggedInAsAdmin = () => {
-  let loginInfo = getLoginInfo();
-
-  let now = Math.floor(Date.now() / 1000);
-
-  if (loginInfo.user
-    && loginInfo.user.category === 'admin'
-    && loginInfo.token
-    && loginInfo.token.expirationTimestamp
-    && loginInfo.token.expirationTimestamp > now) {
-    return true;
-  }
-
-  return false;
-};
-
-export const isLoggedInAsUser = () => {
-  let loginInfo = getLoginInfo();
-
-  let now = Math.floor(Date.now() / 1000);
-
-  if (loginInfo.user
-    && loginInfo.user.category === 'normal'
-    && loginInfo.token
-    && loginInfo.token.expirationTimestamp
-    && loginInfo.token.expirationTimestamp > now) {
-    return true;
-  }
-
-  return false;
-};
-
-
 export const doRefreshToken = () => {
 
   if (!isLoggedIn()) {
@@ -431,16 +402,23 @@ export const scheduleRefreshToken = () => {
 };
 
 export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => {
+  if(url1==null){
+    url1 = '';
+  }
+  if(url2==null){
+    url2 = '';
+  }
+
   imgObj = new Chobi(url1, isToggled);
   imgObj.ready(function () {
     this.canvas = document.getElementById("firstcanvas");
-    this.loadImageToCanvas(null, rectInfoL);
+    this.loadImageToCanvas(null, rectInfoL, isToggled, true);
   });
 
   imgObj2 = new Chobi(url2, isToggled);
   imgObj2.ready(function () {
     this.canvas = document.getElementById("secondcanvas");
-    this.loadImageToCanvas(null, rectInfoR);
+    this.loadImageToCanvas(null, rectInfoR, isToggled, false);
   });
 };
 
