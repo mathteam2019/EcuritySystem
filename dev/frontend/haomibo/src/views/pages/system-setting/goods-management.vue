@@ -234,43 +234,6 @@
     },
     mounted() {
       this.tableData = staticUserTableData;
-
-      getApiManager().post(`${apiBaseUrl}/permission-management/permission-control/resource/get-all`, {}).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.resourceList = data;
-            break;
-
-          default:
-
-        }
-      });
-
-      getApiManager().post(`${apiBaseUrl}/permission-management/organization-management/organization/get-all`, {}).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.orgList = data;
-            break;
-          default:
-
-        }
-      });
-
-      getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {}).then((response) => {
-        let message = response.data.message;
-        let data = response.data.data;
-        switch (message) {
-          case responseMessages['ok']:
-            this.userList = data;
-            break;
-          default:
-
-        }
-      });
     },
     mixins: [validationMixin],
     data() {
@@ -371,9 +334,6 @@
         this.$refs.vuetable.refresh();
         this.selectedGoods =false;
         this.goodsForm.visible =false;
-      },
-      'dataGroupVuetableItems.perPage': function (newVal) {
-        this.$refs.dataGroupVuetable.refresh();
       },
     },
     methods: {

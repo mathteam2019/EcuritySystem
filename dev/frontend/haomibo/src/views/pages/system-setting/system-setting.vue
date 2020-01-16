@@ -1076,10 +1076,10 @@
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']:
-                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`system-setting.setting-updated-successful`), {
-                  duration: 3000,
-                  permanent: false
-                });
+                // this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`system-setting.setting-updated-successful`), {
+                //   duration: 3000,
+                //   permanent: false
+                // });
                 break;
             }
           });
