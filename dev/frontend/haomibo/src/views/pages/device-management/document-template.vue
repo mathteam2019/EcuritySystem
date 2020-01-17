@@ -197,12 +197,12 @@
                       <span class="cursor-p text-primary">{{ props.rowData.indicatorsName }}</span>
                     </div>
                     <div slot="required" slot-scope="props">
-                      <b-button v-if="props.rowData.isNull === 'yes'" :disabled="checkPermItem('device_indicator_update_is_null')"
+                      <b-button v-if="props.rowData.isNull === '1000000601'" :disabled="checkPermItem('device_indicator_update_is_null')"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="success default">
                         <i class="icofont-check-alt"/>&nbsp;{{$t('device-management.document-template.yes')}}
                       </b-button>
-                      <b-button v-if="props.rowData.isNull === 'no'" :disabled="checkPermItem('device_indicator_update_is_null')"
+                      <b-button v-if="props.rowData.isNull === '1000000602'" :disabled="checkPermItem('device_indicator_update_is_null')"
                                 size="xs" @click="onSwitchIsNull(props.rowData,props.rowIndex)"
                                 variant="light default">
                         <i class="icofont-close-line"/>&nbsp;{{$t('device-management.document-template.no')}}

@@ -554,6 +554,7 @@
             {
               name: 'deviceSerial',
               title: this.$t('log-management.device-log.device-number'),
+              sortField : 'deviceSerial',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },
@@ -615,6 +616,7 @@
             {
               name: 'deviceSerial',
               title: this.$t('log-management.device-log.device-number'),
+              sortField : 'deviceSerial',
               titleClass: 'text-center',
               dataClass: 'text-center',
             },

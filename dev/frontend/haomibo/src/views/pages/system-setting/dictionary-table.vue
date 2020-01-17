@@ -409,7 +409,7 @@
             {
               name: '__slot:dictionaryName',
               title: '字典名称',
-              sortField: 'seizedGoods',
+              sortField: 'dictionaryName',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '19%'
@@ -459,7 +459,8 @@
             },
             {
               name: '__slot:dataCode',
-              title: '字典名称',
+              title: '字典编号',
+              sortField : 'dataCode',
               titleClass: 'text-center',
               dataClass: 'text-center',
               width: '11%'

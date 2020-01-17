@@ -10,7 +10,6 @@
   export default {
     name: 'modal',
     props: {
-
       link: {
         type: String
       },

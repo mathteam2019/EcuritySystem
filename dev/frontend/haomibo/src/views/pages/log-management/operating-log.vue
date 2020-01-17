@@ -434,7 +434,7 @@
         if(this.tabStatus==='access'){
           this.onExportAccess();
         }
-        if(this.tabStatus==='group'){
+        if(this.tabStatus==='operating'){
           this.onExportOperating();
         }
         this.isModalVisible = true;
@@ -443,7 +443,7 @@
         if(this.tabStatus==='access'){
           this.onExportAccess();
         }
-        if(this.tabStatus==='group'){
+        if(this.tabStatus==='operating'){
           this.onExportOperating();
         }
 
