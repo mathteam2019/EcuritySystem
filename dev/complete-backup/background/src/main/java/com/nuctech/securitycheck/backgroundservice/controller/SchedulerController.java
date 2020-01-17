@@ -109,7 +109,7 @@ public class SchedulerController {
                     result.setGuid(deviceListToRest.get(i).getGuid());
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
-                    messageSender.cronJobSecurityOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    messageSender.cronJobSecurityOvertime(resultMessageVO);
                     serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
                             CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
@@ -167,7 +167,7 @@ public class SchedulerController {
                     result.setGuid(deviceListToRest.get(i).getGuid());
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
-                    messageSender.cronJobJudgeOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    messageSender.cronJobJudgeOvertime(resultMessageVO);
                     serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
                             CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
@@ -225,7 +225,7 @@ public class SchedulerController {
                     result.setGuid(deviceListToRest.get(i).getGuid());
                     result.setRemind(DeviceDefaultType.TRUE.getValue());
                     resultMessageVO.setContent(result);
-                    messageSender.cronJobHandOvertime(CryptUtil.encrypt(objectMapper.writeValueAsString(result)));
+                    messageSender.cronJobHandOvertime(resultMessageVO);
                     serMqMessageService.save(resultMessageVO, 1, result.getGuid(), null,
                             CommonConstant.RESULT_SUCCESS.getValue().toString());
                 }
@@ -279,7 +279,7 @@ public class SchedulerController {
             if (setting.compareTo(curFreeSpacePercentage) > 0) {
                 msg = BackgroundServiceUtil.getConfig("notify.message.lowdiskspace");
                 resultMessageVO.setContent(msg);
-                messageSender.cronJobLowDiskSpace(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+                messageSender.cronJobLowDiskSpace(resultMessageVO);
             }
             zabbixApi.destroy();
         } catch (Exception e) {

@@ -15,8 +15,8 @@ import lombok.Getter;
 @Getter
 public enum JudgeResultType {
 
-    TRUE("1000001201"),
-    FALSE("1000001202");
+    TRUE("1000001202"),
+    FALSE("1000001201");
 
     private final String value;
     

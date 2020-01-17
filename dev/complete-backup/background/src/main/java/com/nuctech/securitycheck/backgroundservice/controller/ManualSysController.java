@@ -144,8 +144,7 @@ public class ManualSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendManRegisterMessage(encryptMsg);
+        messageSender.sendManRegisterMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -208,8 +207,7 @@ public class ManualSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendManLoginMessage(encryptMsg);
+        messageSender.sendManLoginMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -271,8 +269,7 @@ public class ManualSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendManLogoutMessage(encryptMsg);
+        messageSender.sendManLogoutMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -326,8 +323,7 @@ public class ManualSysController {
 
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
-        messageSender.sendSysManReplyMessage(encryptMsg, routingKey);
+        messageSender.sendSysManReplyMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -381,8 +377,7 @@ public class ManualSysController {
 
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
-        messageSender.sendSysManReplyMessage(encryptMsg, routingKey);
+        messageSender.sendSysManReplyMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -443,8 +438,7 @@ public class ManualSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendManUnregisterMessage(encryptMsg);
+        messageSender.sendManUnregisterMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -486,7 +480,7 @@ public class ManualSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
                     log.error("设备已关闭");
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
@@ -556,7 +550,7 @@ public class ManualSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     //从数据库获取心跳
                     SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
                     SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
@@ -590,7 +584,7 @@ public class ManualSysController {
         heartBeatReplyModel.setGuid(heartBeatModel.getGuid());
         heartBeatReplyModel.setHeartbeatTime(heartBeatModel.getHeartbeatTime());
         resultMessageVO.setKey(routingKey);
-        resultMessageVO.setContent(heartBeatModel);
+        resultMessageVO.setContent(heartBeatReplyModel);
         messageSender.sendHeartBeatReplyMessage(resultMessageVO, exchangeName, routingKey);
         serMqMessageService.save(resultMessageVO, 1, heartBeatModel.getGuid(), null,
                 heartBeatReplyModel.getResult().toString());
@@ -639,8 +633,7 @@ public class ManualSysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSaveHandResultReplyMessage(encryptMsg);
+        messageSender.sendSaveHandResultReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
                 String.valueOf(sendMessageModel.getResult()));
         return resultMessageVO;

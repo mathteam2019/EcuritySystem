@@ -272,7 +272,7 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 devSerImageInfoStr = CryptUtil.decrypt(devSerImageInfoStr);
                 DevSerImageInfoModel devSerImageInfo = objectMapper.readValue(devSerImageInfoStr, DevSerImageInfoModel.class);
 
-                if(!sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+                if(!(sysWorkMode.getModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue()))) {
                     //将数据保存到ser_check_result
 
                     serTask.setTaskStatus(TaskStatusType.ALL.getValue());
@@ -600,11 +600,13 @@ public class SerJudgeGraphServiceImpl implements ISerJudgeGraphService {
                 judgeSerResultModel.getImageResult().setTime(DateUtil.getDateTmeAsString(DateUtil.getCurrentDate()));
                 judgeSerResultModel.getImageResult().setImageGuid(serTask.getTaskNumber());
                 judgeSerResultModel.getImageResult().setResult(devSerImageInfo.getImageData().getAtrResult());
+                judgeSerResultModel.getImageResult().setIsTimeout(DeviceDefaultType.TRUE.getValue());
                 judgeSerResultModel.getImageResult().setUserName(BackgroundServiceUtil.getConfig("default.user"));      // 默认用户
 
                 // 4.3.2.9 判图站向后台服务提交判图结论(超时结论)
-                JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
-                judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
+                saveJudgeGraphResult(judgeSerResultModel);
+                //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
+                //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
 
                 SerJudgeImageInfoModel serJudgeImageInfo = SerJudgeImageInfoModel.builder()
                         .imageData(ImageDataModel.builder()

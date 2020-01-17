@@ -44,5 +44,5 @@ public interface ISysDeviceService {
 
     boolean checkGuid(String guid);
 
-    boolean checkDeviceLogin(SysDevice sysDevice);
+    int checkDeviceLogin(SysDevice sysDevice);
 }

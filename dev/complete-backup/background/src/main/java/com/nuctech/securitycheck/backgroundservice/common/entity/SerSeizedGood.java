@@ -37,4 +37,7 @@ public class SerSeizedGood extends BaseEntity implements Serializable {
     @Column(name = "SEIZED_GOODS_LEVEL", length = 10)
     private String seizedGoodsLevel;
 
+    @Column(name = "GOOD_CODE", length = 10)
+    private String goodCode;
+
 }

@@ -114,8 +114,7 @@ public class SecuritySysController {
     private ResultMessageVO sendResult(Integer resultValue, String output, SendMessageModel result, ResultMessageVO resultMessageVO) {
         result.setResult(resultValue);
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSysDeviceSecurityInfoSaveReplyMessage(encryptMsg);
+        messageSender.sendSysDeviceSecurityInfoSaveReplyMessage(resultMessageVO);
         writeResult(output, resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, result.getGuid(), result.getImageGuid(), String.valueOf(result.getResult()));
         return resultMessageVO;
@@ -190,8 +189,7 @@ public class SecuritySysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevRegisterMessage(encryptMsg);
+        messageSender.sendDevRegisterMessage(resultMessageVO);
 
         serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null, result.getResult().toString());
 
@@ -254,8 +252,7 @@ public class SecuritySysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevLoginMessage(encryptMsg);
+        messageSender.sendDevLoginMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -317,8 +314,7 @@ public class SecuritySysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevLogoutMessage(encryptMsg);
+        messageSender.sendDevLogoutMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -379,8 +375,7 @@ public class SecuritySysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevUnregisterMessage(encryptMsg);
+        messageSender.sendDevUnregisterMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -419,7 +414,7 @@ public class SecuritySysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
                     SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
                     if (oldSerHeartBeat == null) {
@@ -447,7 +442,7 @@ public class SecuritySysController {
         heartBeatReplyModel.setHeartbeatTime(heartBeatModel.getHeartbeatTime());
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
-        resultMessageVO.setContent(heartBeatModel);
+        resultMessageVO.setContent(heartBeatReplyModel);
         messageSender.sendHeartBeatReplyMessage(resultMessageVO, exchangeName, routingKey);
         serMqMessageService.save(resultMessageVO, 1, heartBeatModel.getGuid(), null, heartBeatReplyModel.getResult().toString());
     }
@@ -481,7 +476,7 @@ public class SecuritySysController {
                 SysDevice sysDevice = SysDevice.builder().guid(sysDeviceVersionModel.getGuid()).build();
                 sysDevice = sysDeviceService.find(sysDevice);
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     //更新设备信息
                     sysDevice.setSoftwareVersion(sysDeviceVersionModel.getSoftwareVersion());
                     sysDevice.setAlgorithmVersion(sysDeviceVersionModel.getAlgorithmVersion());
@@ -505,8 +500,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
 
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSysDeviceVersionReplyMessage(encryptMsg);
+        messageSender.sendSysDeviceVersionReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceVersionModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -542,7 +536,7 @@ public class SecuritySysController {
                 // 从数据库获取设备(get device data from database)
                 sysDevice = sysDeviceService.find(sysDevice);
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     //更新或创建设备状态(update or create device stauts)
                     SerDeviceStatus serDeviceStatus = new SerDeviceStatus();
                     serDeviceStatus.setDeviceId(sysDevice.getDeviceId());
@@ -576,8 +570,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
 
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSerDeviceStatusReplyMessage(encryptMsg);
+        messageSender.sendSerDeviceStatusReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, serDeviceStatusModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -619,7 +612,7 @@ public class SecuritySysController {
                 // get SysDevice by guid if exist
                 sysDevice = sysDeviceService.find(sysDevice);
                 // 检查设备是否开启( check device is on)
-                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
                     log.error("设备已关闭");
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
@@ -655,7 +648,7 @@ public class SecuritySysController {
         }
 
         resultMessageVO.setContent(result);
-        messageSender.sendHardwareStatusReplyMessage(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+        messageSender.sendHardwareStatusReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, hardwareStatusModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -694,7 +687,7 @@ public class SecuritySysController {
                 SysDevice sysDevice = SysDevice.builder().guid(serDevLogModel.getGuid()).build();
                 sysDevice = sysDeviceService.find(sysDevice);
 
-                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
                     log.error("设备已关闭");
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
@@ -743,6 +736,7 @@ public class SecuritySysController {
         ResultMessageVO receivceMessageVO = new ResultMessageVO();
         receivceMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.sys.imageinfo"));
         receivceMessageVO.setContent(devSerImageInfoModel);
+
         serMqMessageService.save(receivceMessageVO, 0, devSerImageInfoModel.getGuid(), null,
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 
@@ -902,8 +896,7 @@ public class SecuritySysController {
 
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSysDeviceSecurityInfoSynchronizeReplyMessage(encryptMsg);
+        messageSender.sendSysDeviceSecurityInfoSynchronizeReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, devSerDataSyncModel.getGuid(), null, result.getResult().toString());
         return resultMessageVO;
     }
@@ -931,8 +924,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(handSerResultModel);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSysDevMessage(encryptMsg, routingKey);
+        messageSender.sendSysDevMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
                 handSerResultModel.getCheckResult().getResult());
         return resultMessageVO;
@@ -964,8 +956,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(dispatchManualDeviceInfoVO);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendSysDevMessage(encryptMsg, routingKey);
+        messageSender.sendSysDevMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;
@@ -1009,8 +1000,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevSysMessage(encryptMsg, routingKey);
+        messageSender.sendDevSysMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, dispatchManualDeviceInfoVO.getGuid(), dispatchManualDeviceInfoVO.getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;
@@ -1058,8 +1048,7 @@ public class SecuritySysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendDevSysMessage(encryptMsg, routingKey);
+        messageSender.sendDevSysMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, handSerResultModel.getGuid(), handSerResultModel.getCheckResult().getImageGuid(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
 

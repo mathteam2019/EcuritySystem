@@ -172,8 +172,7 @@ public class JudgeSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendRemRegisterMessage(encryptMsg);
+        messageSender.sendRemRegisterMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysRegisterModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -238,8 +237,7 @@ public class JudgeSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendRemLoginMessage(encryptMsg);
+        messageSender.sendRemLoginMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLoginModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -301,8 +299,7 @@ public class JudgeSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendRemLogoutMessage(encryptMsg);
+        messageSender.sendRemLogoutMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysLogoutModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -360,8 +357,7 @@ public class JudgeSysController {
 
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendRemUnregisterMessage(encryptMsg);
+        messageSender.sendRemUnregisterMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, sysUnregisterModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -402,7 +398,7 @@ public class JudgeSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if (!sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if (sysDeviceService.checkDeviceLogin(sysDevice) == 0) {
                     log.error("设备已关闭");
                     result.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
 
@@ -474,7 +470,7 @@ public class JudgeSysController {
                 sysDevice = sysDeviceService.find(sysDevice);
 
                 // 检查设备是否开启( check device is on)
-                if(sysDeviceService.checkDeviceLogin(sysDevice)) {
+                if(sysDeviceService.checkDeviceLogin(sysDevice) > 0) {
                     //从数据库获取心跳
                     SerHeartBeat serHeartBeat = SerHeartBeat.builder().deviceId(sysDevice.getDeviceId()).deviceType(sysDevice.getDeviceType()).build();
                     SerHeartBeat oldSerHeartBeat = serHeartBeatService.find(serHeartBeat);
@@ -507,7 +503,7 @@ public class JudgeSysController {
         heartBeatReplyModel.setHeartbeatTime(heartBeatModel.getHeartbeatTime());
         // 将结果发送到rabbitmq
         resultMessageVO.setKey(routingKey);
-        resultMessageVO.setContent(heartBeatModel);
+        resultMessageVO.setContent(heartBeatReplyModel);
         messageSender.sendHeartBeatReplyMessage(resultMessageVO, exchangeName, routingKey);
         serMqMessageService.save(resultMessageVO, 1, heartBeatModel.getGuid(), null,
                 heartBeatReplyModel.getResult().toString());
@@ -557,8 +553,7 @@ public class JudgeSysController {
         // 将结果发送到rabbitmq
         resultMessageVO.setContent(result);
         resultMessageVO.setKey(routingKey);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
-        messageSender.sendSysRemReplyMessage(encryptMsg, routingKey);
+        messageSender.sendSysRemReplyMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -609,8 +604,7 @@ public class JudgeSysController {
         }
 
         // 将结果发送到rabbitmq
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(result));
-        messageSender.sendSysRemReplyMessage(encryptMsg, routingKey);
+        messageSender.sendSysRemReplyMessage(resultMessageVO, routingKey);
         serMqMessageService.save(resultMessageVO, 1, sysDeviceStatusModel.getGuid(), null,
                 result.getResult().toString());
         return resultMessageVO;
@@ -641,7 +635,7 @@ public class JudgeSysController {
         sendMessageModel.setGuid(judgeSerResultModel.getGuid());
         sendMessageModel.setImageGuid(judgeSerResultModel.getImageResult().getImageGuid());
         String routingKey = BackgroundServiceUtil.getConfig("routingKey.reply.rem.sys.result");
-
+        resultMessageVO.setKey(routingKey);
         int checkResult = judgeSerResultModel.checkValid();
         if(checkResult == 1) {
             sendMessageModel.setResult(CommonConstant.RESULT_EMPTY.getValue());
@@ -652,46 +646,51 @@ public class JudgeSysController {
             if (saveResult.getIsSucceed()) {
                 sendMessageModel.setResult(CommonConstant.RESULT_SUCCESS.getValue());
                 String dispatchManualDeviceInfoStr = "";
-                while (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
-                    dispatchManualDeviceInfoStr = redisUtil.get(BackgroundServiceUtil
-                            .getConfig("redisKey.sys.manual.assign.task.info") + saveResult.getTaskNumber());
-                    if (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
+                if(saveResult.getWorkModeName().equals(WorkModeType.SECURITY_JUDGE_MANUAL.getValue())) {
+                    resultMessageVO.setContent(sendMessageModel);
+                    messageSender.sendJudgeGraphResultReplyMessage(resultMessageVO);
+                    serMqMessageService.save(resultMessageVO, 1, judgeSerResultModel.getGuid(), judgeSerResultModel.getImageResult().getImageGuid(),
+                            String.valueOf(sendMessageModel.getResult()));
+                    while (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
+                        dispatchManualDeviceInfoStr = redisUtil.get(BackgroundServiceUtil
+                                .getConfig("redisKey.sys.manual.assign.task.info") + saveResult.getTaskNumber());
+                        if (StringUtils.isBlank(dispatchManualDeviceInfoStr)) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                            }
                         }
                     }
-                }
-                try {
-                    DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.readValue(dispatchManualDeviceInfoStr,
-                            DispatchManualDeviceInfoVO.class);
-                    if (dispatchManualDeviceInfoVO.getLocalRecheck()) {     // 分派手检端 安检仪
-                        // // 4.3.1.15 后台服务向安检仪推送判图结论
-                        SerDevJudgeGraphResultModel serDevJudgeGraphResultModel = new SerDevJudgeGraphResultModel();
-                        serDevJudgeGraphResultModel.setImageResult(judgeSerResultModel.getImageResult());
-                        serDevJudgeGraphResultModel.setGuid(saveResult.getGuid());
-                        sysSecurityController.sendJudgeResultToSecurityDevice(serDevJudgeGraphResultModel);
-                    } else {                                                // 分派手检端 手检端
-                        // // 4.3.3.12 后台服务向手检站推送业务数据
-                        SerManImageInfoModel serManImageInfoModel = serHandResultService.sendScanInfoToHand(judgeSerResultModel.getImageResult().getImageGuid());
-                        sysManualController.sendJudgeResultToHandDevice(serManImageInfoModel);
+                    try {
+                        DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.readValue(dispatchManualDeviceInfoStr,
+                                DispatchManualDeviceInfoVO.class);
+                        if (dispatchManualDeviceInfoVO.getLocalRecheck()) {     // 分派手检端 安检仪
+                            // // 4.3.1.15 后台服务向安检仪推送判图结论
+                            SerDevJudgeGraphResultModel serDevJudgeGraphResultModel = new SerDevJudgeGraphResultModel();
+                            serDevJudgeGraphResultModel.setImageResult(judgeSerResultModel.getImageResult());
+                            serDevJudgeGraphResultModel.setGuid(saveResult.getGuid());
+                            sysSecurityController.sendJudgeResultToSecurityDevice(serDevJudgeGraphResultModel);
+                        } else {                                                // 分派手检端 手检端
+                            // // 4.3.3.12 后台服务向手检站推送业务数据
+                            SerManImageInfoModel serManImageInfoModel = serHandResultService.sendScanInfoToHand(judgeSerResultModel.getImageResult().getImageGuid());
+                            sysManualController.sendJudgeResultToHandDevice(serManImageInfoModel);
+                        }
+
+
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
                     }
-
-
-                } catch (IOException e) {
-                    log.error(e.getMessage());
+                    return resultMessageVO;
                 }
-
             } else {
                 sendMessageModel.setResult(CommonConstant.RESULT_INVALID_LOGIC_DATA.getValue());
             }
         }
 
         // 将结果发送到rabbitmq
-        resultMessageVO.setKey(routingKey);
+
         resultMessageVO.setContent(sendMessageModel);
-        String encryptMsg = CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
-        messageSender.sendJudgeGraphResultReplyMessage(encryptMsg);
+        messageSender.sendJudgeGraphResultReplyMessage(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, judgeSerResultModel.getGuid(), judgeSerResultModel.getImageResult().getImageGuid(),
                 String.valueOf(sendMessageModel.getResult()));
         //databaseRecord.save(key, message);

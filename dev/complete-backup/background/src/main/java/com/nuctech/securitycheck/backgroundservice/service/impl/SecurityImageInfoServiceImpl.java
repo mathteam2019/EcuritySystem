@@ -12,6 +12,7 @@ import com.nuctech.securitycheck.backgroundservice.common.vo.TaskInfoVO;
 import com.nuctech.securitycheck.backgroundservice.controller.JudgeSysController;
 import com.nuctech.securitycheck.backgroundservice.repositories.*;
 import com.nuctech.securitycheck.backgroundservice.service.ISecurityImageInfoService;
+import com.nuctech.securitycheck.backgroundservice.service.ISerJudgeGraphService;
 import com.nuctech.securitycheck.backgroundservice.service.ISysDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -80,6 +81,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
     @Autowired
     private SerAssignRepository serAssignRepository;
 
+    @Autowired
+    private ISerJudgeGraphService serJudgeGraphService;
+
     /**
      * 4.3.1.13 发送无效的结果
      *
@@ -101,8 +105,9 @@ public class SecurityImageInfoServiceImpl implements ISecurityImageInfoService {
             judgeSerResultModel.getImageResult().setUserName(BackgroundServiceUtil.getConfig("default.user"));      // 默认用户
 
             // 4.3.2.9 判图站向后台服务提交判图结论(超时结论)
-            JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
-            judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
+            serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
+            //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
+            //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
         } catch (Exception ex) {
             log.error("无法获取图像信息");
             log.error(ex.getMessage());

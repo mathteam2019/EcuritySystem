@@ -1,8 +1,11 @@
 package com.nuctech.securitycheck.backgroundservice.common.models;
 
+import com.nuctech.securitycheck.backgroundservice.common.entity.SerSeizedGood;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * 字典信息
@@ -19,7 +22,7 @@ public class DictDataModel {
     private String guid;
 
     @ApiModelProperty(value = "查获物列表")
-    private String checklist;
+    private List<SeizedGoodModel> checklist;
 
     @ApiModelProperty(value = "评价判图列表")
     private String imageJudge;

@@ -28,175 +28,180 @@ public class MessageSender {
     @Autowired
     private RedisUtil redisUtil;
 
+    private Object getSendMqObject(ResultMessageVO resultMessageVO) {
+        //return CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO));
+        return resultMessageVO;
+    }
+
     /**
      * sendDevRegisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendDevRegisterMessage(String encryptMsg) {
+    public void sendDevRegisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendDevUnregisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendDevUnregisterMessage(String encryptMsg) {
+    public void sendDevUnregisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendDevLoginMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendDevLoginMessage(String encryptMsg) {
+    public void sendDevLoginMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendDevLogoutMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendDevLogoutMessage(String encryptMsg) {
+    public void sendDevLogoutMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendRemRegisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendRemRegisterMessage(String encryptMsg) {
+    public void sendRemRegisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendSysRemMessage
      *
-     * @param encryptMsg encryptMessage
+     * @param resultMessageVO encryptMessage
      * @param routingKey routingKey
      */
-    public void sendDevSysMessage(String encryptMsg, String routingKey) {
+    public void sendDevSysMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig(routingKey),
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
     /**
      * sendRemUnregisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendRemUnregisterMessage(String encryptMsg) {
+    public void sendRemUnregisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendRemLoginMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendRemLoginMessage(String encryptMsg) {
+    public void sendRemLoginMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendRemLogoutMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendRemLogoutMessage(String encryptMsg) {
+    public void sendRemLogoutMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendManRegisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendManRegisterMessage(String encryptMsg) {
+    public void sendManRegisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.register"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendManUnregisterMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendManUnregisterMessage(String encryptMsg) {
+    public void sendManUnregisterMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.unregister"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendManLoginMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendManLoginMessage(String encryptMsg) {
+    public void sendManLoginMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.login"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendManLogoutMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendManLogoutMessage(String encryptMsg) {
+    public void sendManLogoutMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.logout"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendSysDeviceVersionReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendSysDeviceVersionReplyMessage(String encryptMsg) {
+    public void sendSysDeviceVersionReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.updateversion"),
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
     /**
      * sendSerDeviceStatusReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendSerDeviceStatusReplyMessage(String encryptMsg) {
+    public void sendSerDeviceStatusReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys.status"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.currentstatus"),
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
@@ -208,9 +213,8 @@ public class MessageSender {
      * @param routingKey
      */
     public void sendSerDevLogReplyMessage(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, getSendMqObject(resultMessageVO));
         } catch (Exception ex) {
             log.error(ex.getMessage());
         }
@@ -219,28 +223,28 @@ public class MessageSender {
     /**
      * sendSysRemMessage
      *
-     * @param encryptMsg encryptMessage
+     * @param resultMessageVO encryptMessage
      * @param routingKey routingKey
      */
-    public void sendSysRemMessage(String encryptMsg, String routingKey) {
+    public void sendSysRemMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig(routingKey),
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
     /**
      * sendSysRemReplyMessage
      *
-     * @param encryptMsg
+     * @param resultMessageVO
      * @param routingKey
      */
-    public void sendSysRemReplyMessage(String encryptMsg, String routingKey) {
+    public void sendSysRemReplyMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 routingKey,
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
@@ -248,96 +252,95 @@ public class MessageSender {
     /**
      * sendSysManReplyMessage
      *
-     * @param encryptMsg
+     * @param resultMessageVO
      * @param routingKey
      */
-    public void sendSysManReplyMessage(String encryptMsg, String routingKey) {
+    public void sendSysManReplyMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
                 routingKey,
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
     /**
      * sendHardwareStatusReplyMessage
      *
-     * @param encryptedContent Message
+     * @param resultMessageVO Message
      */
-    public void sendHardwareStatusReplyMessage(String encryptedContent) {
-        ObjectMapper objMapper = new ObjectMapper();
+    public void sendHardwareStatusReplyMessage(ResultMessageVO resultMessageVO) {
         redisUtil.set(BackgroundServiceUtil.getConfig("routingKey.sys.hardwarestatus"),
-                encryptedContent, CommonConstant.EXPIRE_TIME.getValue());
-        rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.sys.hardwarestatus"), encryptedContent);
+                CryptUtil.encrypt(CryptUtil.getJSONString(resultMessageVO)), CommonConstant.EXPIRE_TIME.getValue());
+        rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.dev.sys.status"),
+                BackgroundServiceUtil.getConfig("routingKey.reply.sys.hardwarestatus"), getSendMqObject(resultMessageVO));
     }
 
     /**
      * cronJobSecurityOvertime
      *
-     * @param encryptedContent encryptedMessage
+     * @param resultMessageVO encryptedMessage
      */
-    public void cronJobSecurityOvertime(String encryptedContent) {
+    public void cronJobSecurityOvertime(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
-                BackgroundServiceUtil.getConfig("routingKey.dev.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.dev.overtime"), getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendSysRemMessage
      *
-     * @param encryptMsg encryptMessage
+     * @param resultMessageVO encryptMessage
      * @param routingKey routingKey
      */
-    public void sendSysDevMessage(String encryptMsg, String routingKey) {
+    public void sendSysDevMessage(ResultMessageVO resultMessageVO, String routingKey) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
                 BackgroundServiceUtil.getConfig(routingKey),
-                encryptMsg
+                getSendMqObject(resultMessageVO)
         );
     }
 
     /**
      * cronJobHandOvertime
      *
-     * @param encryptedContent encryptedMessage
+     * @param resultMessageVO encryptedMessage
      */
-    public void cronJobHandOvertime(String encryptedContent) {
+    public void cronJobHandOvertime(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.man"),
-                BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.sys.man.overtime"), getSendMqObject(resultMessageVO));
     }
 
     /**
      * cronJobJudgeOvertime
      *
-     * @param encryptedContent encryptedMessage
+     * @param resultMessageVO encryptedMessage
      */
-    public void cronJobJudgeOvertime(String encryptedContent) {
+    public void cronJobJudgeOvertime(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(BackgroundServiceUtil.getConfig("topic.inter.sys.rem"),
-                BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"), encryptedContent);
+                BackgroundServiceUtil.getConfig("routingKey.sys.rem.overtime"), getSendMqObject(resultMessageVO));
     }
 
     /**
      * cronJobLowDiskSpace
      *
-     * @param encryptedContent encryptedMessage
+     * @param resultMessageVO encryptedMessage
      */
-    public void cronJobLowDiskSpace(String encryptedContent) {
+    public void cronJobLowDiskSpace(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.zabbix"),
                 BackgroundServiceUtil.getConfig("routingKey.zabbix"),
-                encryptedContent);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendDispatchManual
      *
-     * @param encryptedContent encryptedMessage
+     * @param resultMessageVO encryptedMessage
      */
-    public void sendDispatchManual(String encryptedContent) {
+    public void sendDispatchManual(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
                 BackgroundServiceUtil.getConfig("routingKey.dev.dispatch.manual"),
-                encryptedContent);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
@@ -345,10 +348,10 @@ public class MessageSender {
      *
      * @param topicExchange topicExchange
      * @param routingKey    routingKey
-     * @param obj           Object
+     * @param resultMessageVO           ResultMessageVO
      */
-    public void sendSysDeviceVersionMessage(String topicExchange, String routingKey, Object obj) {
-        rabbitTemplate.convertAndSend(topicExchange, routingKey, obj);
+    public void sendSysDeviceVersionMessage(String topicExchange, String routingKey, ResultMessageVO resultMessageVO) {
+        rabbitTemplate.convertAndSend(topicExchange, routingKey, getSendMqObject(resultMessageVO));
     }
 
     /**
@@ -359,9 +362,8 @@ public class MessageSender {
      * @param routingKey    routingKey
      */
     public void sendDeviceConfigMessage(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -375,21 +377,18 @@ public class MessageSender {
      * @param routingKey    routingKey
      */
     public void sendDevUserList(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String encryptMsg = CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO));
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, encryptMsg);
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
     public void allSysRegister(ResultMessageVO resultMessageVO) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             rabbitTemplate.convertAndSend(
                     BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
-                    resultMessageVO.getKey(), CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+                    resultMessageVO.getKey(), getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -403,9 +402,8 @@ public class MessageSender {
      * @param routingKey    routingKey
      */
     public void sendDevDictionary(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -421,7 +419,7 @@ public class MessageSender {
     public void sendHeartBeatReplyMessage(ResultMessageVO resultMessageVO, String exchangeName, String routingKey) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            rabbitTemplate.convertAndSend(exchangeName, routingKey, CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+            rabbitTemplate.convertAndSend(exchangeName, routingKey, getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -430,47 +428,47 @@ public class MessageSender {
     /**
      * sendSysDeviceSecurityInfoSaveReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendSysDeviceSecurityInfoSaveReplyMessage(String encryptMsg) {
+    public void sendSysDeviceSecurityInfoSaveReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.sys.imageinfo"), encryptMsg);
+                BackgroundServiceUtil.getConfig("routingKey.reply.sys.imageinfo"), getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendSysDeviceSecurityInfoSynchronizeReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendSysDeviceSecurityInfoSynchronizeReplyMessage(String encryptMsg) {
+    public void sendSysDeviceSecurityInfoSynchronizeReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.dev.sys.data"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.data.synchronization"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendJudgeGraphResultReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendJudgeGraphResultReplyMessage(String encryptMsg) {
+    public void sendJudgeGraphResultReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.rem.sys"),
                 BackgroundServiceUtil.getConfig("routingKey.reply.sys.result"),
-                encryptMsg);
+                getSendMqObject(resultMessageVO));
     }
 
     /**
      * sendSaveHandResultReplyMessage
      *
-     * @param encryptMsg Message
+     * @param resultMessageVO Message
      */
-    public void sendSaveHandResultReplyMessage(String encryptMsg) {
+    public void sendSaveHandResultReplyMessage(ResultMessageVO resultMessageVO) {
         rabbitTemplate.convertAndSend(
                 BackgroundServiceUtil.getConfig("topic.inter.man.sys"),
-                BackgroundServiceUtil.getConfig("routingKey.reply.sys.result"), encryptMsg);
+                BackgroundServiceUtil.getConfig("routingKey.reply.sys.result"), getSendMqObject(resultMessageVO));
     }
 
     /**
@@ -479,12 +477,11 @@ public class MessageSender {
      * @param resultMessageVO ResultMessage
      */
     public void sendImageInfoToJudge(ResultMessageVO resultMessageVO) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             rabbitTemplate.convertAndSend(
                     BackgroundServiceUtil.getConfig("topic.inter.sys.rem"),
                     resultMessageVO.getKey(),
-                    CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+                    getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -496,11 +493,10 @@ public class MessageSender {
      * @param resultMessageVO ResultMessage
      */
     public void sendJudgeInfoToSecurity(ResultMessageVO resultMessageVO) {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
             rabbitTemplate.convertAndSend(
                     BackgroundServiceUtil.getConfig("topic.inter.sys.dev"),
-                    resultMessageVO.getKey(), CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+                    resultMessageVO.getKey(), getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -517,7 +513,7 @@ public class MessageSender {
             rabbitTemplate.convertAndSend(
                     BackgroundServiceUtil.getConfig("topic.inter.sys.man"),
                     resultMessageVO.getKey(),
-                    CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+                    getSendMqObject(resultMessageVO));
         } catch (Exception e) {
             log.error(e.getMessage());
         }

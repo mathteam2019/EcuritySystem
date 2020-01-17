@@ -45,6 +45,6 @@ public class SecuritycheckBackgroundServiceApplicationTests {
 		Object obj = new Object();
 		obj = (Object) sysDeviceVersionModel;
 
-		messageSender.sendSysDeviceVersionMessage(topicExchange, routingKey, obj);
+		//messageSender.sendSysDeviceVersionMessage(topicExchange, routingKey, obj);
 	}
 }

@@ -31,7 +31,7 @@ public class CryptUtil {
      * @param plainText
      * @return String
      */
-    public static String encrypt(String plainText) {
+    public static String encrypt(Object plainText) {
 /*        try {
             // 生成aes秘钥
             String aseKey = getRandomString(16);
@@ -47,7 +47,7 @@ public class CryptUtil {
             e.printStackTrace();
             log.error("返回数据进行解密出现异常：" + e.getMessage());
         }*/
-        return plainText;
+        return plainText.toString();
     }
 
     public static String getJSONString(Object object) {
@@ -56,6 +56,17 @@ public class CryptUtil {
         try {
             str = objectMapper.writeValueAsString(object);
         } catch (Exception ex) {}
+        str = str.replace("\r\n", "");
+        return str;
+    }
+
+    public static Object getJSONObject(Object object) {
+        String str = "";
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            str = objectMapper.writeValueAsString(object);
+        } catch (Exception ex) {}
+        //str = str.replace('"', '\'');
         return str;
     }
 

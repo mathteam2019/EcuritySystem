@@ -711,7 +711,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
                 return false;
             }
 
-            if(checkDeviceLogin(sysDevice)) {
+            if(checkDeviceLogin(sysDevice) == 2) {
                 SerLoginInfo serLoginInfo = serLoginInfoRepository.findLatestLoginInfo(sysDevice.getDeviceId());
                 if(serLoginInfo != null) {
                     if(serLoginInfo.getUserId() != sysUser.getUserId()) {
@@ -795,7 +795,7 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
             if (sysUser == null) {
                 return false;
             }
-            if(checkDeviceLogin(sysDevice) == false) {
+            if(checkDeviceLogin(sysDevice) != 2) {
                 return false;
             }
 
@@ -966,19 +966,19 @@ public class SysDeviceServiceImpl implements ISysDeviceService {
      * @return
      */
     @Override
-    public boolean checkDeviceLogin(SysDevice sysDevice) {
+    public int checkDeviceLogin(SysDevice sysDevice) {
         if(sysDevice == null) {
-            return false;
+            return 0;
         }
 
         if(sysDevice.getCurrentStatus().equals(DeviceStatusType.UNREGISTER.getValue())) {
-            return false;
+            return 0;
         } else if(sysDevice.getCurrentStatus().equals(DeviceStatusType.REGISTER.getValue())) {
-            return false;
+            return 1;
         } else if(sysDevice.getCurrentStatus().equals(DeviceStatusType.LOGOUT.getValue())) {
-            return false;
+            return 0;
         }
-        return true;
+        return 2;
     }
 
 }

@@ -3,6 +3,7 @@ package com.nuctech.securitycheck.backgroundservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.securitycheck.backgroundservice.common.enums.CommonConstant;
 import com.nuctech.securitycheck.backgroundservice.common.entity.*;
+import com.nuctech.securitycheck.backgroundservice.common.enums.DeviceDefaultType;
 import com.nuctech.securitycheck.backgroundservice.common.models.*;
 import com.nuctech.securitycheck.backgroundservice.common.utils.*;
 import com.nuctech.securitycheck.backgroundservice.common.vo.CommonResultVO;
@@ -182,7 +183,7 @@ public class SysJudgeController {
             ObjectMapper objectMapper = new ObjectMapper();
             long start = System.currentTimeMillis();        // 判图计时
             SerManImageInfoModel serManImageInfo = null;
-            while (serManImageInfo == null) {                      // 是否收到判图结论
+            while (serManImageInfo == null) {                      // 是否收到判图结论F
                 String manImageInfoKey = "dev.service.image.result.info" + serJudgeImageInfoModel.getImageData().getImageGuid();
                 String serManImageInfoStr = redisUtil.get(manImageInfoKey);
                 serManImageInfoStr = CryptUtil.decrypt(serManImageInfoStr);
@@ -222,11 +223,13 @@ public class SysJudgeController {
                 imageResult.setResult(serJudgeImageInfoModel.getImageData().getAtrResult());
                 imageResult.setUserName(BackgroundServiceUtil.getConfig("default.user"));
                 imageResult.setTime(DateUtil.getDateTmeAsString(DateUtil.getCurrentDate()));
+                imageResult.setIsTimeout(DeviceDefaultType.FALSE.getValue());
                 judgeSerResultModel.setImageResult(imageResult);
                 judgeSerResultModel.setGuid(serJudgeImageInfoModel.getGuid());
                 // 4.3.2.9 判图站向后台服务提交判图结论(提交超时结论)
-                JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
-                judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
+                serJudgeGraphService.saveJudgeGraphResult(judgeSerResultModel);
+                //JudgeSysController judgeSysController = SpringContextHolder.getBean(JudgeSysController.class);
+                //judgeSysController.saveJudgeGraphResult(judgeSerResultModel);
             }
         }
 

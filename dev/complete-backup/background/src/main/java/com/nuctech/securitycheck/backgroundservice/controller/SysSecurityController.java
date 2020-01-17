@@ -286,22 +286,25 @@ public class SysSecurityController {
             List<SysDictionaryData> imageJudgeList = sysDictionaryDataService.findAll(imageJudgeTemp);
 
             // 从每个字典数据中获取数据代码
-            List<Long> checkStrList = checkList.stream().map(x -> x.getDataCode()).collect(Collectors.toList());
-            List<Long> imageJudgeStrList = imageJudgeList.stream().map(x -> x.getDataCode()).collect(Collectors.toList());
-            String checklist = "";
-            for (Long checkDataCode : checkStrList) {
-                checklist += String.valueOf(checkDataCode) + ",";
+            List<SeizedGoodModel> checkDataList = new ArrayList<>();
+            for(int i = 0; i < checkList.size(); i ++) {
+                SeizedGoodModel goodModel = new SeizedGoodModel();
+                goodModel.setGoodCode(checkList.get(i).getDataCode());
+                goodModel.setGoodName(checkList.get(i).getDataValue());
+                checkDataList.add(goodModel);
             }
+            List<Long> imageJudgeStrList = imageJudgeList.stream().map(x -> x.getDataCode()).collect(Collectors.toList());
+
 
             String imageJudge = "";
             for (Long imageDataCode : imageJudgeStrList) {
-                imageJudge += String.valueOf(imageDataCode) + ",";
+                imageJudge += (imageDataCode) + ",";
             }
 
             // 制作 DictDataModel
             DictDataModel dictDataModel = new DictDataModel();
             dictDataModel.setGuid(guid);
-            dictDataModel.setChecklist(StringUtils.stripEnd(checklist, ","));
+            dictDataModel.setChecklist(checkDataList);
             dictDataModel.setImageJudge(StringUtils.stripEnd(imageJudge, ","));
             resultMessageVO.setKey(routingKey);
             resultMessageVO.setContent(dictDataModel);
@@ -379,11 +382,10 @@ public class SysSecurityController {
     @PostMapping("dispatch-manual")
     public ResultMessageVO dispatchManual(String guid, TaskInfoVO taskInfoVO) throws Exception {
         DispatchManualDeviceInfoVO ret = sysDeviceService.dispatchManual(guid, taskInfoVO);
-        ObjectMapper objectMapper = new ObjectMapper();
         ResultMessageVO resultMessageVO = new ResultMessageVO();
         resultMessageVO.setKey(BackgroundServiceUtil.getConfig("routingKey.dev.dispatch.manual"));
         resultMessageVO.setContent(ret);
-        messageSender.sendDispatchManual(CryptUtil.encrypt(objectMapper.writeValueAsString(resultMessageVO)));
+        messageSender.sendDispatchManual(resultMessageVO);
         serMqMessageService.save(resultMessageVO, 1, guid, taskInfoVO.getTaskNumber(),
                 CommonConstant.RESULT_SUCCESS.getValue().toString());
         return resultMessageVO;

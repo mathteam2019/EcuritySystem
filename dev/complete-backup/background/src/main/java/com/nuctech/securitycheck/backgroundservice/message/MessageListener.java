@@ -10,7 +10,10 @@ import com.nuctech.securitycheck.backgroundservice.common.utils.RedisUtil;
 import com.nuctech.securitycheck.backgroundservice.common.vo.DispatchManualDeviceInfoVO;
 import com.nuctech.securitycheck.backgroundservice.common.vo.ResultMessageVO;
 import com.nuctech.securitycheck.backgroundservice.controller.*;
+import com.nuctech.securitycheck.backgroundservice.service.ISerMqMessageService;
+import com.rabbitmq.client.QueueingConsumer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,15 +53,23 @@ public class MessageListener {
     @Autowired
     private SysManualController sysManualController;
 
+    @Autowired
+    private ISerMqMessageService serMqMessageService;
+
+
+
     /**
      * listenDevSysMessage
      *
-     * @param msg message
+     * @param receiver message
      */
     @RabbitListener(queues = "${dev.sys.queue}")
-    public void listenDevSysMessage(String msg) {
+    public void listenDevSysMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
+
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
             if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.register"))) {
@@ -85,6 +96,7 @@ public class MessageListener {
                 // 4.3.1.13 安检仪向后台服务发送扫描图像信息-返回
                 DevSerImageInfoModel devSerImageInfoModel = objectMapper.convertValue(result.getContent(), DevSerImageInfoModel.class);
                 result = securitySysController.saveScanResult(devSerImageInfoModel);
+
             } else if (result.getKey().equals(BackgroundServiceUtil.getConfig("routingKey.sys.manual.task"))) {
                 // 4.3.1.21 安检仪向后台服务请求本机手检-返回
                 DispatchManualDeviceInfoVO dispatchManualDeviceInfoVO = objectMapper.convertValue(result.getContent(), DispatchManualDeviceInfoVO.class);
@@ -103,11 +115,13 @@ public class MessageListener {
     /**
      * listenSysDevMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${sys.dev.queue}")
-    public void listenSysDevMessage(String msg) {
+    public void listenSysDevMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
@@ -149,11 +163,13 @@ public class MessageListener {
     /**
      * listenRemSysMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${rem.sys.queue}")
-    public void listenRemSysMessage(String msg) {
+    public void listenRemSysMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
@@ -195,11 +211,13 @@ public class MessageListener {
     /**
      * listenSysRemMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${sys.rem.queue}")
-    public void listenSysRemMessage(String msg) {
+    public void listenSysRemMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
 
         try {
             msg = CryptUtil.decrypt(msg);
@@ -214,11 +232,13 @@ public class MessageListener {
     /**
      * listenManSysMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${man.sys.queue}")
-    public void listenManSysMessage(String msg) {
+    public void listenManSysMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
@@ -260,11 +280,13 @@ public class MessageListener {
     /**
      * listenSysManMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${sys.man.queue}")
-    public void listenSysManMessage(String msg) {
+    public void listenSysManMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
 
         try {
             msg = CryptUtil.decrypt(msg);
@@ -295,11 +317,13 @@ public class MessageListener {
     /**
      * listenDevSysDataMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${dev.sys.data.queue}")
-    public void listenDevSysDataMessage(String msg) {
+    public void listenDevSysDataMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
@@ -328,11 +352,13 @@ public class MessageListener {
     /**
      * listenDevSysStatusMessage
      *
-     * @param msg Message
+     * @param receiver Message
      */
     @RabbitListener(queues = "${dev.sys.status.queue}")
-    public void listenDevSysStatusMessage(String msg) {
+    public void listenDevSysStatusMessage(Message receiver) {
+
         ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             ResultMessageVO result = objectMapper.readValue(msg, ResultMessageVO.class);
@@ -364,7 +390,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${sys.dev.reply.queue}")
-    public void listenSysDevReplyMessage(String msg) {
+    public void listenSysDevReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -374,7 +403,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${dev.sys.reply.queue}")
-    public void listenDevSysReplyMessage(String msg) {
+    public void listenDevSysReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -384,7 +416,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${sys.rem.reply.queue}")
-    public void listenSysRemReplyMessage(String msg) {
+    public void listenSysRemReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -394,7 +429,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${rem.sys.reply.queue}")
-    public void listenRemSysReplyMessage(String msg) {
+    public void listenRemSysReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -404,7 +442,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${sys.man.reply.queue}")
-    public void listenSysManReplyMessage(String msg) {
+    public void listenSysManReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -414,7 +455,10 @@ public class MessageListener {
     }
 
     @RabbitListener(queues = "${man.sys.reply.queue}")
-    public void listenManSysReplyMessage(String msg) {
+    public void listenManSysReplyMessage(Message receiver) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String msg = new String(receiver.getBody());
         try {
             msg = CryptUtil.decrypt(msg);
             log.info(msg);
@@ -428,10 +472,12 @@ public class MessageListener {
     /**
      * listenZabbixQueue
      *
-     * @param msg Message
+     * @param receiver Message
      */
     //@RabbitListener(queues = "${zabbix.queue}")
-    public void listenZabbixQueue(String msg) {
+    public void listenZabbixQueue(Message receiver) {
+        
+        String msg = new String(receiver.getBody());
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             System.out.println(msg);
