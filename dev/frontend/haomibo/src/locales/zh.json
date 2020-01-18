@@ -992,7 +992,8 @@
       "system": "系统",
       "artificial": "人工",
       "underreport": "漏报",
-      "falsepositive": "误报"
+      "falsepositive": "误报",
+      "default-user" : "默认用户"
     },
     "routine-plan": {
       "plan": "计划",

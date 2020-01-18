@@ -27,7 +27,7 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="resetGoodsSearchForm()">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onClickCreateGoods()" :disabled="checkPermItem('role_create')" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onClickCreateGoods()" :disabled="checkPermItem('seized_good_create')" variant="success default">
                       <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -50,17 +50,20 @@
                       @vuetable:pagination-data="onGoodsPaginationData"
                     >
                       <template slot="seizedGoods" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onGoodsNumberClicked(props.rowData)">
+                      <span v-if="checkPermItem('seized_good_modify')" class="cursor-p text-primary">
+                        {{props.rowData.seizedGoods}}
+                      </span>
+                        <span v-else class="cursor-p text-primary" @click="onGoodsNumberClicked(props.rowData)">
                         {{props.rowData.seizedGoods}}
                       </span>
                       </template>
                       <template slot="operating" slot-scope="props">
                         <b-button
-                          size="sm" :disabled="checkPermItem('assign_user_group_modify')"
+                          size="sm" :disabled="checkPermItem('seized_good_modify')"
                           variant="primary default btn-square" @click="onGoodsNumberClicked(props.rowData)">
                           <i class="icofont-edit"/>
                         </b-button>
-                        <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('role_delete')"
+                        <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('seized_good_delete')"
                                   @click="onClickDeleteGoods(props.rowData)">
                           <i class="icofont-bin"/>
                         </b-button>
@@ -89,10 +92,14 @@
                       {{$t('system-setting.goods')}}
                       <span class="text-danger">*</span>
                     </template>
-                    <b-form-input
-                      v-model="goodsForm.goodsName"
+<!--                    <b-form-input-->
+<!--                      v-model="goodsForm.goodsName"-->
+<!--                      :state="!$v.goodsForm.goodsName.$invalid"-->
+<!--                      :placeholder="$t('system-setting.enter-goods')"/>-->
+                    <b-form-select
+                      v-model="goodsForm.goodsName" :options="onNameOptions"
                       :state="!$v.goodsForm.goodsName.$invalid"
-                      :placeholder="$t('system-setting.enter-goods')"/>
+                    />
                   </b-form-group>
 
                   <b-form-group>
@@ -102,6 +109,7 @@
                     </template>
                     <b-form-select
                       v-model="goodsForm.goodsGrade" :options="onGradeOptions"
+                      :state="!$v.goodsForm.goodsGrade.$invalid"
                       />
                   </b-form-group>
 
@@ -112,13 +120,13 @@
                     </template>
                     <b-form-select
                       v-model="goodsForm.goodsCategory" :options="onCategoryOptions"
+                      :state="!$v.goodsForm.goodsCategory.$invalid"
                     />
                   </b-form-group>
 
                   <div class="d-flex align-items-end justify-content-end pt-3">
                     <div>
-                      <b-button :disabled="checkPermItem('role_modify')"
-                                @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
+                      <b-button @click="onClickSaveGoods" size="sm" variant="info default" class="mr-3">
                         <i class="icofont-save"/>
                         {{$t('permission-management.permission-control.save')}}
                       </b-button>
@@ -234,6 +242,7 @@
     },
     mounted() {
       this.tableData = staticUserTableData;
+      this.getOptions();
     },
     mixins: [validationMixin],
     data() {
@@ -245,12 +254,20 @@
           goodsGrade: '',
           goodsCategory: ''
         },
-        onCategoryOptions: [
+
+        onCategoryData:[],
+        onNameData:[],
+        onGradeData:[],
+        onNameOptions :[],
+        onCategoryOptions:[],
+        onGradeOptions:[],
+
+        onCategoryOption: [
           {value: '1000001401', text: '枪支'},
           {value: '1000001402', text: '药品'},
           {value: '1000001403', text: '其他'},
         ],
-        onGradeOptions: [
+        onGradeOption: [
           {value: '1000001501', text: '1级'},
           {value: '1000001502', text: '2级'},
           {value: '1000001503', text: '3级'},
@@ -326,6 +343,12 @@
       goodsForm: {
         goodsName: {
           required
+        },
+        goodsGrade: {
+          required
+        },
+        goodsCategory: {
+          required
         }
       },
     },
@@ -335,8 +358,84 @@
         this.selectedGoods =false;
         this.goodsForm.visible =false;
       },
+
+      onNameData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.dataValue,
+          value: site.dataCode
+        }));
+        this.onNameOptions = options;
+      },
+      onGradeData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.dataValue,
+          value: site.dataCode
+        }));
+        this.onGradeOptions = options;
+      },
+      onCategoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
+        let options = [];
+        options = newVal.map(site => ({
+          text: site.dataValue,
+          value: site.dataCode
+        }));
+        this.onCategoryOptions = options;
+      },
     },
     methods: {
+
+      getOptions(){
+        getApiManager()
+          .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
+          'dictionaryId': 14
+        })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                  this.onCategoryData = data;
+                break;
+
+            }
+          })
+          .catch((error) => {
+          });
+
+        getApiManager()
+          .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
+            'dictionaryId': 15
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.onGradeData = data;
+                break;
+            }
+          })
+          .catch((error) => {
+          });
+
+        getApiManager()
+          .post(`${apiBaseUrl}/dictionary-management/dictionary-data/get-by-id`, {
+            'dictionaryId': 16
+          })
+          .then((response) => {
+            let message = response.data.message;
+            let data = response.data.data;
+            switch (message) {
+              case responseMessages['ok']:
+                this.onNameData = data;
+                break;
+            }
+          })
+          .catch((error) => {
+          });
+      },
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
@@ -378,13 +477,17 @@
       },
       onClickSaveGoods() {
 
-          this.isLoading = true;
 
+          if(this.$v.goodsForm.$invalid){
+            return;
+          }
+
+          this.isLoading = true;
           if(this.selectedGoods) {
             getApiManager()
               .post(`${apiBaseUrl}/seized-good-management/seized/modify`, {
                 'goodsId': this.selectedGoods.goodsId,
-                'seizedGoods': this.goodsForm.goodsName,
+                'seizedGoodsCode': this.goodsForm.goodsName,
                 'seizedGoodType': this.goodsForm.goodsCategory,
                 'seizedGoodsLevel': this.goodsForm.goodsGrade,
               })
@@ -423,7 +526,7 @@
           if(this.goodsForm.visible){
             getApiManager()
               .post(`${apiBaseUrl}/seized-good-management/seized/create`, {
-                'seizedGoods': this.goodsForm.goodsName,
+                'seizedGoodsCode': this.goodsForm.goodsName,
                 'seizedGoodType': this.goodsForm.goodsCategory,
                 'seizedGoodsLevel': this.goodsForm.goodsGrade,
               })
@@ -513,7 +616,7 @@
           perPage: this.vuetableItems.perPage,
           sort: httpOptions.params.sort,
           filter: {
-            goods: this.goods,
+            goodsCode: this.goods,
           }
         });
       },

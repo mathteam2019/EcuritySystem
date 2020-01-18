@@ -73,7 +73,7 @@ const data = [
         label: "menu.system-setting",
         to: "/pages/system-setting/system-setting",
         newWindow: false,
-        permissionId: 24,
+        permissionId: 164,
       },
       {
         id: 'system-setting-*-goods-management',
@@ -81,7 +81,7 @@ const data = [
         label: "menu.goods-management",
         to: "/pages/system-setting/goods-management",
         newWindow: false,
-        permissionId: 24,
+        permissionId: 165,
       },
       {
         id: 'system-setting-*-permission-control',
@@ -89,7 +89,7 @@ const data = [
         label: "menu.dictionary-table",
         to: "/pages/system-setting/dictionary-table",
         newWindow: false,
-        permissionId: 24,
+        permissionId: 169,
       }
     ]
   },

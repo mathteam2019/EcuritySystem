@@ -178,6 +178,7 @@
         if (this.$v.passwordForm.$invalid) {
           return;
         }
+        // this.passwordForm.password
         getApiManager()
           .post(`${apiBaseUrl}/auth/change-password` , {
             oldPassword:this.passwordForm.oldPassword,
