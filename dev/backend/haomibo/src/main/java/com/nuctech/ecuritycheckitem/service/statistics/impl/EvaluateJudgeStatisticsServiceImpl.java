@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -237,18 +238,18 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 "and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
                 "OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "')" +
                 " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "', 1, 0)) as intelligenceJudge,\n" +
+                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "', 1, 0)) as intelligenceJudge,\n" +
                 "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' " +
                 " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
                 " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
                 " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
+                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
                 " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISSING + "', 1, 0)) as intelligenceJudgeMissing,\n" +
                 "\tsum( IF ( s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "' " +
                 " and (wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001301 + "' " +
                 " OR wm.MODE_NAME like '" + SysWorkMode.WorkModeValue.MODE_1000001302 + "') " +
                 " and a.ASSIGN_TIMEOUT like '" + SerJudgeGraph.AssignTimeout.TRUE + "' " +
-                " and j.JUDGE_USER_ID = l.USER_ID and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
+                " and j.JUDGE_USER_ID =  " + Constants.DEFAULT_SYSTEM_USER + " and j.JUDGE_TIMEOUT like '" + SerJudgeGraph.JudgeTimeout.TRUE + "' " +
                 " and c.HAND_APPRAISE like '" + SerHandExamination.HandAppraise.MISTAKE + "', 1, 0)) as intelligenceJudgeMistake,\n" +
                 "\t\n" +
                 "\tMAX( TIMESTAMPDIFF( SECOND, h.HAND_START_TIME, h.HAND_END_TIME ) ) AS maxDuration,\n" +
@@ -269,9 +270,8 @@ public class EvaluateJudgeStatisticsServiceImpl implements EvaluateJudgeStatisti
                 "\tINNER JOIN ser_task t ON h.TASK_ID = t.task_id\n" +
                 "\tLEFT JOIN ser_check_result c ON t.TASK_ID = c.task_id\n" +
                 "\tleft join ser_judge_graph j on t.TASK_ID = j.TASK_ID\n" +
-                "\tLEFT join ser_login_info l on j.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tleft join ser_scan s on t.TASK_ID = s.TASK_ID\n" +
-                "\tleft join ser_assign a on t.task_id = a.task_id\n" +
+                "\tleft join ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_HAND_DEVICE_ID IS NOT NULL ) a on t.task_id = a.task_id\n" +
                 "\tleft join sys_workflow wf on t.WORKFLOW_ID = wf.workflow_id\n" +
                 "\tleft join sys_work_mode wm on wf.MODE_ID = wm.MODE_ID\n";
     }
