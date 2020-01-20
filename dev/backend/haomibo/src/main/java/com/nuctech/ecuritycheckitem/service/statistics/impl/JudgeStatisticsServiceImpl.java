@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
@@ -243,9 +244,9 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\n" +
                 groupBy +
                 "\t( judge_start_time ) AS time,\n" +
-                "\tsum( IF ( g.judge_user_id != l.USER_ID, 1, 0 ) ) AS artificialJudge,\n" +
+                "\tsum( IF ( g.judge_user_id != " + Constants.DEFAULT_SYSTEM_USER + ", 1, 0 ) ) AS artificialJudge,\n" +
                 "\tsum( IF ( s.SCAN_INVALID LIKE '" + SerScan.Invalid.FALSE + "' AND a.ASSIGN_TIMEOUT LIKE '" + SerJudgeGraph.AssignTimeout.TRUE + "', 1, 0 ) ) AS assignResult,\n" +
-                "\tsum( IF ( g.judge_user_id = l.USER_ID AND g.judge_timeout LIKE '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
+                "\tsum( IF ( g.judge_user_id = " + Constants.DEFAULT_SYSTEM_USER + " AND g.judge_timeout LIKE '" + SerJudgeGraph.JudgeTimeout.TRUE +"', 1, 0 ) ) AS judgeTimeout,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "', 1, 0 ) ) AS atrResult,\n" +
                 "\tsum( IF ( s.SCAN_ATR_RESULT LIKE '" + SerScan.ATRResult.TRUE + "' " +
                 " AND g.JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.SYSTEM + "', 1, 0 ) ) AS suspiction,\n" +
@@ -256,10 +257,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
                 "\tMAX( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS maxDuration,\n" +
                 "\tMIN( TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ) AS minDuration,\n" +
                 "\t\n" +
-                "\tAVG( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
+                "\tAVG( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) \n" +
                 "\t AS artificialAvgDuration,\n" +
-                "\tMAX( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
-                "\tMIN( CASE WHEN g.JUDGE_USER_ID != l.USER_ID THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
+                "\tMAX( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMaxDuration,\n" +
+                "\tMIN( CASE WHEN g.JUDGE_USER_ID != " + Constants.DEFAULT_SYSTEM_USER + " THEN TIMESTAMPDIFF( SECOND, g.JUDGE_START_TIME, g.JUDGE_END_TIME ) ELSE NULL END ) AS artificialMinDuration\n";
 
     }
 
@@ -270,11 +271,10 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
     private String getJoinQuery() {
         return "\tser_judge_graph g\n" +
                 "\tLEFT JOIN sys_user u ON g.JUDGE_USER_ID = u.USER_ID\n" +
-                "\tLEFT JOIN ser_login_info l ON g.JUDGE_DEVICE_ID = l.DEVICE_ID\n" +
                 "\tINNER JOIN ser_task t ON g.TASK_ID = t.TASK_ID\n" +
                 "\tLEFT JOIN sys_workflow wf ON t.WORKFLOW_ID = wf.WORKFLOW_ID\n" +
                 "\tLEFT JOIN ser_scan s ON t.TASK_ID = s.TASK_ID\n" +
-                "\tLEFT JOIN ser_assign a ON t.task_id = a.task_id \n";
+                "\tLEFT JOIN ( SELECT task_id, assign_id, assign_judge_device_id, ASSIGN_TIMEOUT FROM ser_assign WHERE ASSIGN_JUDGE_DEVICE_ID IS NOT NULL ) a ON t.task_id = a.task_id \n";
     }
 
     /**

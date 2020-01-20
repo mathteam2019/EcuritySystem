@@ -76,4 +76,7 @@ public class Constants {
 
     public static Long SEIZED_DICTIONARY_ID = 16L;
 
+    public static final Long DEFAULT_SYSTEM_USER = Long.valueOf(10000);
+
+
 }
