@@ -330,8 +330,8 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( judge_id ) AS totalJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.SYSTEM + "', 1, 0 ) ) AS suspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.ARTIFICIAL + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
                 "\t\tsum(TIMESTAMPDIFF(SECOND,JUDGE_START_TIME,JUDGE_END_TIME)) as judgeWorkingSeconds,\t" + "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" + "\t\tser_judge_graph j \n" + "\t:whereJudge\t" + "\tGROUP BY\n" + "\t\tq2 \n" +
                 "\t) AS t2 ON t0.q = t2.q2\t";

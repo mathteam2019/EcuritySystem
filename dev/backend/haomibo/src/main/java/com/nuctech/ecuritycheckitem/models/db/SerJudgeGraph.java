@@ -47,18 +47,18 @@ import java.util.Date;
 public class SerJudgeGraph extends BaseEntity implements Serializable {
 
     public static class Result {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
+        public static final String SYSTEM = "1000001201";
+        public static final String ARTIFICIAL = "1000001202";
     }
 
     public static class AssignTimeout {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
+        public static final String TRUE = "1000001701";
+        public static final String FALSE = "1000001702";
     }
 
     public static class JudgeTimeout {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
+        public static final String TRUE = "1000001701";
+        public static final String FALSE = "1000001702";
     }
 
     @Id

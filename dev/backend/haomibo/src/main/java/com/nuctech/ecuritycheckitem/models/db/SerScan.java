@@ -52,13 +52,13 @@ public class SerScan extends BaseEntity implements Serializable {
     }
 
     public static class ATRResult {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
+        public static final String TRUE = "1000000601";
+        public static final String FALSE = "1000000602";
     }
 
     public static class FootAlarm {
-        public static final String TRUE = "TRUE";
-        public static final String FALSE = "FALSE";
+        public static final String TRUE = "1000000601";
+        public static final String FALSE = "1000000602";
     }
 
     @Id

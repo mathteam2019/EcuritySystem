@@ -436,8 +436,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         return "LEFT JOIN (\n" +
                 "\tSELECT\n" +
                 "\t\tcount( judge_id ) AS totalJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.TRUE + "', 1, 0 ) ) AS suspictionJudge,\n" +
-                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.FALSE + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.SYSTEM + "', 1, 0 ) ) AS suspictionJudge,\n" +
+                "\t\tsum( IF ( JUDGE_RESULT LIKE '" + SerJudgeGraph.Result.ARTIFICIAL + "', 1, 0 ) ) AS noSuspictionJudge,\n" +
                 "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" +
                 "\t\tser_judge_graph j \n" +

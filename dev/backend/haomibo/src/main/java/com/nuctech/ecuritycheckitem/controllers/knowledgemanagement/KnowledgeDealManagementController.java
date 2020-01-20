@@ -165,6 +165,12 @@ public class KnowledgeDealManagementController extends BaseController {
         List<String> tagList;
     }
 
+    /**
+     * Knowledge case create request
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
     //@PreAuthorize(Role.Authority.HAS_KNOWLEDGECASE_CREATE)
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object insertKnowledgeCase(@RequestBody @Valid KnowledgeCaseInsertRequestBody requestBody, BindingResult bindingResult) {
