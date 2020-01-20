@@ -115,6 +115,20 @@ public class DictionaryManagementController extends BaseController {
     }
 
     /**
+     * Dictionary data by dictionary id.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class DictionaryDataGetByIdRequestBody {
+
+        @NotNull
+        Long dictionaryId;
+    }
+
+    /**
      * Dictionary modify request body.
      */
     @Getter
@@ -568,6 +582,34 @@ public class DictionaryManagementController extends BaseController {
                         .to(perPage * currentPage + data.size()) //set last index of current page
                         .data(data) //set data
                         .build()));
+
+        FilterProvider filters = ModelJsonFilters
+                .getDefaultFilters();
+
+        value.setFilters(filters);
+
+        return value;
+    }
+
+    /**
+     * Dictionay datatable data.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/dictionary-data/get-by-id", method = RequestMethod.POST)
+    public Object dictionaryDataGetById(
+            @RequestBody @Valid DictionaryDataGetByIdRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        List<SysDictionaryData> dictionaryDataList = dictionaryService.getDictionaryListById(requestBody.getDictionaryId());
+
+        MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, dictionaryDataList));
 
         FilterProvider filters = ModelJsonFilters
                 .getDefaultFilters();

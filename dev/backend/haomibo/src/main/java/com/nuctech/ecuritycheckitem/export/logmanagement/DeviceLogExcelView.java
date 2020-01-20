@@ -94,15 +94,12 @@ public class DeviceLogExcelView extends BaseExcelView {
                 row.createCell(0).setCellValue(log.getId().toString());
                 if(log.getDevice() != null) {
                     row.createCell(1).setCellValue(log.getDevice().getDeviceName());
+                    row.createCell(2).setCellValue(log.getDevice().getDeviceSerial());
                 } else {
                     row.createCell(1).setCellValue("无");
+                    row.createCell(2).setCellValue("无");
                 }
-                row.createCell(2).setCellValue(log.getLoginName());
-                if(log.getUser() != null) {
-                    row.createCell(3).setCellValue(log.getUser().getUserName());
-                } else {
-                    row.createCell(3).setCellValue("无");
-                }
+                row.createCell(3).setCellValue(log.getLoginName());
                 row.createCell(4).setCellValue(log.getCategory().toString());
                 row.createCell(5).setCellValue(log.getLevel().toString());
                 row.createCell(6).setCellValue(log.getContent());

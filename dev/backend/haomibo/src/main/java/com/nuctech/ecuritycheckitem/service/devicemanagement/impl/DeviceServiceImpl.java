@@ -356,17 +356,17 @@ public class DeviceServiceImpl implements DeviceService {
             sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysManualDeviceRepository.save(sysManualDevice);
         } else if(category.getCategoryId() == 3) {
+            SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
+            deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysDeviceConfigRepository.save(deviceConfig);
 
+            SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
+            scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            serScanParamRepository.save(scanParam);
         }
 
 
-        SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
-        deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        sysDeviceConfigRepository.save(deviceConfig);
 
-        SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
-        scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-        serScanParamRepository.save(scanParam);
     }
 
     /**

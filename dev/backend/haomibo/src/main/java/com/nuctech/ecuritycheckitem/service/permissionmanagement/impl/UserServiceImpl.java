@@ -203,7 +203,7 @@ public class UserServiceImpl implements UserService {
         SysUser oldSysUser = optionalOldSysUser.get();
 
         // Don't modify password.
-        user.setPassword(oldSysUser.getPassword());
+        //user.setPassword(oldSysUser.getPassword());
 
         // Don't modify portrait if uploaded file is not found.
         user.setPortrait(oldSysUser.getPortrait());

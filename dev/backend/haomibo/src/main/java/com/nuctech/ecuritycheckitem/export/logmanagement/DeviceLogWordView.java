@@ -100,15 +100,13 @@ public class DeviceLogWordView extends BaseWordView {
                 tableRow.getCell(0).setText(log.getId().toString());
                 if(log.getDevice() != null) {
                     tableRow.getCell(1).setText(log.getDevice().getDeviceName());
+                    tableRow.getCell(2).setText(log.getDevice().getDeviceSerial());
                 } else {
                     tableRow.getCell(1).setText("无");
+                    tableRow.getCell(2).setText("无");
                 }
-                tableRow.getCell(2).setText(log.getLoginName());
-                if(log.getUser() != null) {
-                    tableRow.getCell(3).setText(log.getUser().getUserName());
-                } else {
-                    tableRow.getCell(3).setText("无");
-                }
+                tableRow.getCell(3).setText(log.getLoginName());
+
                 tableRow.getCell(4).setText(log.getCategory().toString());
                 tableRow.getCell(5).setText(log.getLevel().toString());
                 tableRow.getCell(6).setText(log.getContent());

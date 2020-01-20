@@ -19,7 +19,7 @@ import com.nuctech.ecuritycheckitem.utils.PageResult;
 import java.util.List;
 
 public interface SerSeizedGoodService {
-    boolean checkGood(String seizedGood, Long goodId);
+    boolean checkGood(String seizedGoodsCode, Long goodId);
 
     void createGood(SerSeizedGood serSeizedGood);
 
@@ -29,6 +29,6 @@ public interface SerSeizedGoodService {
 
     boolean checkSeizedExist(Long goodsId);
 
-    PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goods, int currentPage, int perPage);
+    PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goodsCode, int currentPage, int perPage);
 
 }

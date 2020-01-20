@@ -168,6 +168,10 @@ public class UserManagementController extends BaseController {
         String mobile;
         String address;
         String note;
+        @NotNull
+        @Pattern(regexp = UserCreateRequestBody.PasswordType.DEFAULT + "|" + UserCreateRequestBody.PasswordType.OTHER)
+        String passwordType;
+        String passwordValue;
 
         private MultipartFile portrait;
 
@@ -180,6 +184,7 @@ public class UserManagementController extends BaseController {
                     .userAccount(this.getUserAccount())
                     .userNumber(this.getUserNumber())
                     .gender(this.getGender())
+                    .password(UserCreateRequestBody.PasswordType.DEFAULT.equals(this.getPasswordType()) ? Constants.DEFAULT_PASSWORD_FOR_NEW_SYS_USER : this.getPasswordValue())
                     .identityCard(this.getIdentityCard())
                     .post(this.getPost())
                     .education(this.getEducation())

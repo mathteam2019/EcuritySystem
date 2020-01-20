@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -191,6 +193,16 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public boolean checkDictionaryChildExist(Long dictionaryId) {
         return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dictionaryId.eq(dictionaryId));
+    }
+
+    @Override
+    public List<SysDictionaryData> getDictionaryListById(Long dictionaryId) {
+        QSysDictionaryData builder = QSysDictionaryData.sysDictionaryData;
+        BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
+        predicate.and(builder.dictionaryId.eq(dictionaryId));
+        return StreamSupport
+                .stream(sysDictionaryDataRepository.findAll(predicate).spliterator(), false)
+                .collect(Collectors.toList());
     }
 
     /**

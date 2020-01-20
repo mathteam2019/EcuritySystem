@@ -36,13 +36,16 @@ public class SerSeizedGood extends BaseEntity implements Serializable {
     @Column(name = "GOODS_ID", length = 20, nullable = false)
     private Long goodsId;
 
-    @Column(name = "SEIZED_GOODS", length = 255)
-    private String seizedGoods;
+    @Column(name = "SEIZED_GOODS_CODE", length = 255)
+    private String seizedGoodsCode;
 
     @Column(name = "SEIZED_GOODS_TYPE", length = 10)
     private String seizedGoodType;
 
     @Column(name = "SEIZED_GOODS_LEVEL", length = 10)
     private String seizedGoodsLevel;
+
+    @javax.persistence.Transient
+    private String seizedGoods;
     
 }
