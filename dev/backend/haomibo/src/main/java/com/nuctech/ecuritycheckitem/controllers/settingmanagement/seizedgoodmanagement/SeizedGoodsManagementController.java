@@ -12,15 +12,18 @@
 
 package com.nuctech.ecuritycheckitem.controllers.settingmanagement.seizedgoodmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.controllers.fieldmanagement.FieldManagementController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.SerSeizedGood;
+import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.DictionaryService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
@@ -54,6 +57,8 @@ public class SeizedGoodsManagementController extends BaseController {
     SerSeizedGoodService serSeizedGoodService;
     @Autowired
     AuditLogService auditLogService;
+    @Autowired
+    DictionaryService dictionaryService;
 
 
 
@@ -72,7 +77,7 @@ public class SeizedGoodsManagementController extends BaseController {
         @NoArgsConstructor
         @AllArgsConstructor
         static class Filter {
-            String goods;
+            String goodsCode;
         }
 
         @NotNull
@@ -97,7 +102,7 @@ public class SeizedGoodsManagementController extends BaseController {
         @NotNull
         Long goodsId;
         @NotNull
-        String seizedGoods;
+        String seizedGoodsCode;
         @NotNull
         String seizedGoodType;
         @NotNull
@@ -107,7 +112,7 @@ public class SeizedGoodsManagementController extends BaseController {
             return SerSeizedGood
                     .builder()
                     .goodsId(this.getGoodsId())
-                    .seizedGoods(this.getSeizedGoods())
+                    .seizedGoodsCode(this.getSeizedGoodsCode())
                     .seizedGoodType(this.getSeizedGoodType())
                     .seizedGoodsLevel(this.getSeizedGoodsLevel())
                     .build();
@@ -125,7 +130,7 @@ public class SeizedGoodsManagementController extends BaseController {
     private static class SeizedCreateRequestBody {
 
         @NotNull
-        String seizedGoods;
+        String seizedGoodsCode;
         @NotNull
         String seizedGoodType;
         @NotNull
@@ -134,7 +139,7 @@ public class SeizedGoodsManagementController extends BaseController {
         SerSeizedGood convert2SerSeizedGood() { //create new object from input parameters
             return SerSeizedGood
                     .builder()
-                    .seizedGoods(this.getSeizedGoods())
+                    .seizedGoodsCode(this.getSeizedGoodsCode())
                     .seizedGoodType(this.getSeizedGoodType())
                     .seizedGoodsLevel(this.getSeizedGoodsLevel())
                     .build();
@@ -168,20 +173,20 @@ public class SeizedGoodsManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(serSeizedGoodService.checkGood(requestBody.getSeizedGoods(), null)) {
+        if(serSeizedGoodService.checkGood(requestBody.getSeizedGoodsCode(), null)) {
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
         SerSeizedGood serSeizedGood = requestBody.convert2SerSeizedGood();
         serSeizedGoodService.createGood(serSeizedGood);
         auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getSeizedGoods(),null);
+                , "", "", requestBody.getSeizedGoodsCode(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -200,19 +205,19 @@ public class SeizedGoodsManagementController extends BaseController {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!serSeizedGoodService.checkSeizedExist(requestBody.getGoodsId())) { // Check if goods id is existing.
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(serSeizedGoodService.checkGood(requestBody.getSeizedGoods(), requestBody.getGoodsId())) {
+        if(serSeizedGoodService.checkGood(requestBody.getSeizedGoodsCode(), requestBody.getGoodsId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoods(),null);
+                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
@@ -220,7 +225,7 @@ public class SeizedGoodsManagementController extends BaseController {
         SerSeizedGood serSeizedGood = requestBody.convert2SerSeizedGood();
         serSeizedGoodService.modifyGood(serSeizedGood);
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getSeizedGoods(),null);
+                , "", "", requestBody.getSeizedGoodsCode(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -267,10 +272,11 @@ public class SeizedGoodsManagementController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        String goods = "";
+        String goodsCode = "";
         if(requestBody.getFilter() != null) {
-            goods = requestBody.getFilter().getGoods();
+            goodsCode = requestBody.getFilter().getGoodsCode();
         }
+        List<SysDictionaryData> dictionaryDataList = dictionaryService.getDictionaryListById(Constants.SEIZED_DICTIONARY_ID);
 
         String sortBy = "";
         String order = "";
@@ -286,9 +292,19 @@ public class SeizedGoodsManagementController extends BaseController {
         int currentPage = requestBody.getCurrentPage() - 1; // On server side, page is calculated from 0.
         int perPage = requestBody.getPerPage();
 
-        PageResult<SerSeizedGood> result = serSeizedGoodService.getGoodsListByFilter(sortBy, order, goods, currentPage, perPage); //get list of field from database through fieldService
+        PageResult<SerSeizedGood> result = serSeizedGoodService.getGoodsListByFilter(sortBy, order, goodsCode, currentPage, perPage); //get list of field from database through fieldService
         long total = result.getTotal(); //get total count
         List<SerSeizedGood> data = result.getDataList();
+        for(int i = 0; i < data.size(); i ++) {
+            for(int j = 0; j < dictionaryDataList.size(); j ++) {
+                if(data.get(i).getSeizedGoodsCode().equals(dictionaryDataList.get(j).getDataCode())) {
+                    data.get(i).setSeizedGoods(dictionaryDataList.get(j).getDataValue());
+                    break;
+                }
+            }
+        }
+
+
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(
                 ResponseMessage.OK, //set response message as OK

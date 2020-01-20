@@ -41,16 +41,16 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
     /**
      * check goods name already exist
-     * @param seizedGood
+     * @param seizedGoodsCode
      * @param goodId
      * @return
      */
     @Override
-    public boolean checkGood(String seizedGood, Long goodId) {
+    public boolean checkGood(String seizedGoodsCode, Long goodId) {
         if (goodId == null) {
-            return serSeizedGoodRepository.exists(QSerSeizedGood.serSeizedGood.seizedGoods.eq(seizedGood));
+            return serSeizedGoodRepository.exists(QSerSeizedGood.serSeizedGood.seizedGoodsCode.eq(seizedGoodsCode));
         }
-        return serSeizedGoodRepository.exists(QSerSeizedGood.serSeizedGood.seizedGoods.eq(seizedGood)
+        return serSeizedGoodRepository.exists(QSerSeizedGood.serSeizedGood.seizedGoodsCode.eq(seizedGoodsCode)
                 .and(QSerSeizedGood.serSeizedGood.goodsId.ne(goodId)));
     }
 
@@ -103,20 +103,20 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
     /**
      * filter seized goods
-     * @param goods
+     * @param goodsCode
      * @param currentPage
      * @param perPage
      * @return
      */
     @Override
-    public PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goods, int currentPage, int perPage) {
+    public PageResult<SerSeizedGood> getGoodsListByFilter(String sortBy, String order, String goodsCode, int currentPage, int perPage) {
         QSerSeizedGood builder = QSerSeizedGood.serSeizedGood;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
 
 
-        if (!StringUtils.isEmpty(goods)) {
-            predicate.and(builder.seizedGoods.contains(goods));
+        if (!StringUtils.isEmpty(goodsCode)) {
+            predicate.and(builder.seizedGoodsCode.eq(goodsCode));
         }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

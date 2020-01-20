@@ -74,4 +74,6 @@ public class Constants {
 
     public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
 
+    public static Long SEIZED_DICTIONARY_ID = 16L;
+
 }

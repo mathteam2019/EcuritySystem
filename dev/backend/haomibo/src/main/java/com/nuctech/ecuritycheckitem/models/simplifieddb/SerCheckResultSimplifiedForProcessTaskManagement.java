@@ -49,6 +49,9 @@ public class SerCheckResultSimplifiedForProcessTaskManagement extends BaseEntity
     @Column(name = "TASK_ID", length = 20)
     private Long taskId;
 
+    @Column(name = "CONCLUSION_TYPE", length = 10)
+    private String conclusionType;
+
     @Column(name = "HAND_GOODS", length = 255)
     private String handGoods;
 

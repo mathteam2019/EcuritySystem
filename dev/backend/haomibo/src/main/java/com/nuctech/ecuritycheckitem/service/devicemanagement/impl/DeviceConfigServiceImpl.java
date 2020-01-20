@@ -160,6 +160,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
         }
 
+        categoryId = 3L;
+
         if (categoryId != null) {
             for (int i = 0; i < allData.size(); i++) {
                 SysDeviceConfig deviceConfigData = allData.get(i);
@@ -339,7 +341,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         for (int i = 0; i < preSysDeviceConfigList.size(); i++) {
             if (preSysDeviceConfigList.get(i).getDeviceId() != deviceId) {
-                sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
+                if(preSysDeviceConfigList.get(i).getDevice().getArchive().getArchiveTemplate().getCategoryId() == 3) {
+                    sysDeviceConfigList.add(preSysDeviceConfigList.get(i));
+                }
+
             }
         }
         return sysDeviceConfigList;

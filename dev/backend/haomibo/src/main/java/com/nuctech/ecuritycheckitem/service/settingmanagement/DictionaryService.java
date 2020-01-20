@@ -17,6 +17,8 @@ import com.nuctech.ecuritycheckitem.models.db.SysDictionary;
 import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 
+import java.util.List;
+
 public interface DictionaryService {
 
     boolean checkDictionary(String dictionaryName, Long dictionaryId);
@@ -42,6 +44,8 @@ public interface DictionaryService {
     boolean checkDictionaryDataExist(Long dataId);
 
     boolean checkDictionaryChildExist(Long dictionaryId);
+
+    List<SysDictionaryData> getDictionaryListById(Long dictionaryId);
 
     PageResult<SysDictionary> getDictionaryListByFilter(String sortBy, String order, String dictionaryName, int currentPage, int perPage);
 
