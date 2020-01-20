@@ -290,7 +290,7 @@ public class JudgeStatisticsServiceImpl implements JudgeStatisticsService {
      */
     private List<String> getWhereCause(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
         List<String> whereCause = new ArrayList<String>();
-        whereCause.add("s.SCAN_INVALID like 'true'");
+        whereCause.add("s.SCAN_INVALID like '" + SerScan.Invalid.FALSE + "'");
 
         if (fieldId != null) {
             whereCause.add("t.SCENE = " + fieldId);

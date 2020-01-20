@@ -257,7 +257,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+
+            whereCause.add("r.role_id = " + (ConstantDictionary.getDataValue(userCategory).isEmpty() ? "0" : ConstantDictionary.getDataValue(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
@@ -309,7 +310,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+
+            whereCause.add("r.role_id = " + (ConstantDictionary.getDataValue(userCategory).isEmpty() ? "0" : ConstantDictionary.getDataValue(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
@@ -362,7 +364,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
         if (userCategory != null && !userCategory.isEmpty()) {
-            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+
+            whereCause.add("r.role_id = " + (ConstantDictionary.getDataValue(userCategory).isEmpty() ? "0" : ConstantDictionary.getDataValue(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
