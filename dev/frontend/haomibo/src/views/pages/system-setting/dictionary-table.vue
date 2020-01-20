@@ -27,7 +27,7 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="resetDicSearchForm()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onClickCreateDicId()" :disabled="checkPermItem('role_create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onClickCreateDicId()" :disabled="checkPermItem('dictionary_create')" variant="success default">
                     <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -54,11 +54,11 @@
                     </template>
                     <template slot="operating" slot-scope="props">
                       <b-button
-                        size="sm" :disabled="checkPermItem('assign_user_group_modify')"
+                        size="sm" :disabled="checkPermItem('dictionary_modify')"
                         variant="primary default btn-square" @click="onDicModifyClicked(props.rowData)">
                         <i class="icofont-edit"/>
                       </b-button>
-                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('role_delete')"
+                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('dictionary_delete')"
                                 @click="onClickDeleteDicId(props.rowData)">
                         <i class="icofont-bin"/>
                       </b-button>
@@ -105,8 +105,7 @@
 
                 <div class="d-flex align-items-end justify-content-end pt-3">
                   <div>
-                    <b-button :disabled="checkPermItem('role_modify')"
-                              @click="onClickSaveDic" size="sm" variant="info default" class="mr-3">
+                    <b-button @click="onClickSaveDic" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
@@ -146,7 +145,7 @@
                     <i class="icofont-long-arrow-left"/>
                     {{ $t('personal-inspection.return') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onClickCreateDicData()" :disabled="checkPermItem('role_create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onClickCreateDicData()" :disabled="checkPermItem('dictionary_data_create')" variant="success default">
                     <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -167,17 +166,20 @@
                     @vuetable:pagination-data="onDicDataPaginationData"
                   >
                     <template slot="dataCode" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onDicDataModifyClicked(props.rowData)">
+                      <span v-if="checkPermItem('dictionary_data_modify')" class="cursor-p text-primary">
+                        {{props.rowData.dataCode}}
+                      </span>
+                      <span v-else class="cursor-p text-primary" @click="onDicDataModifyClicked(props.rowData)">
                         {{props.rowData.dataCode}}
                       </span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <b-button
-                        size="sm" :disabled="checkPermItem('assign_user_group_modify')"
+                        size="sm" :disabled="checkPermItem('dictionary_data_modify')"
                         variant="primary default btn-square" @click="onDicDataModifyClicked(props.rowData)">
                         <i class="icofont-edit"/>
                       </b-button>
-                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('role_delete')"
+                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('dictionary_data_delete')"
                                 @click="onClickDeleteDicData(props.rowData)">
                         <i class="icofont-bin"/>
                       </b-button>
@@ -235,8 +237,7 @@
 
                 <div class="d-flex align-items-end justify-content-end pt-3">
                   <div>
-                    <b-button :disabled="checkPermItem('role_modify')"
-                              @click="onClickSaveDicData" size="sm" variant="info default" class="mr-3">
+                    <b-button @click="onClickSaveDicData" size="sm" variant="info default" class="mr-3">
                       <i class="icofont-save"/>
                       {{$t('permission-management.permission-control.save')}}
                     </b-button>
@@ -254,7 +255,7 @@
              title="删除字典">
       您确定要删除字典吗？
       <template slot="modal-footer">
-        <b-button size="sm" variant="primary" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button size="sm" variant="primary" class="mr-1" @click="deleteDic">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-dic')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
@@ -263,7 +264,7 @@
              title="删除字典">
       您确定要删除字典吗？
       <template slot="modal-footer">
-        <b-button size="sm" variant="primary" class="mr-1">{{$t('system-setting.ok')}}</b-button>
+        <b-button size="sm" variant="primary" class="mr-1" @click="deleteDicData">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-dicData')">{{$t('system-setting.cancel')}}
         </b-button>
       </template>
@@ -344,11 +345,11 @@
   import _ from "lodash";
   import {validationMixin} from 'vuelidate';
 
-  const {required} = require('vuelidate/lib/validators');
+  const {required, minLength, maxLength} = require('vuelidate/lib/validators');
   import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
-  import {downLoadFileFromServer, getApiManager, getDateTimeWithFormat, printFileFromServer} from "../../../api";
+  import {downLoadFileFromServer, getApiManager, isDataCodeValid, getDateTimeWithFormat, printFileFromServer} from "../../../api";
 
   export default {
     components: {
@@ -455,7 +456,7 @@
               title: this.$t('permission-management.permission-control.serial-number'),
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '10%'
+              width: '15%'
             },
             {
               name: '__slot:dataCode',
@@ -463,39 +464,39 @@
               sortField : 'dataCode',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '11%'
+              width: '20%'
             },
             {
               name: 'dataValue',
               title: '字典值',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '11%'
+              width: '20%'
             },
             {
               name: 'note',
               title: '备注',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '11%'
+              width: '20%'
             },
             {
               name: 'createdTime',
               title: '时间',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '10%',
+              width: '20%',
               callback: (createdTime) => {
                 if (createdTime == null) return '';
                 return getDateTimeWithFormat(createdTime);
               }
             },
-            {
-              name: '__slot:operating',
-              title: this.$t('permission-management.permission-control.operating'),
-              titleClass: 'text-center',
-              dataClass: 'text-center',
-            }
+            // {
+            //   name: '__slot:operating',
+            //   title: this.$t('permission-management.permission-control.operating'),
+            //   titleClass: 'text-center',
+            //   dataClass: 'text-center',
+            // }
           ]
         },
       }
@@ -508,7 +509,8 @@
       },
       dicDataForm: {
         dicDataCode: {
-          required
+          isDataCodeValid,
+          required, minLength: minLength(10), maxLength: maxLength(10),
         },
         dicDataValue: {
           required
@@ -527,6 +529,7 @@
       this.selectedDicData = false;
       this.dicDataForm.visible = false;
     },
+
     },
     methods: {
 
@@ -587,6 +590,10 @@
       },
       onClickSaveDic() {
 
+        if(this.$v.dicForm.$invalid){
+          return;
+        }
+
         this.isLoading = true;
 
         if(this.selectedDic) {
@@ -610,6 +617,12 @@
                   break;
                 case responseMessages['used-dictionary-name']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-dictionary-name`), {
+                    duration: 3000,
+                    permanent: false
+                  });
+                  break;
+                case responseMessages['has-children']:
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -670,6 +683,9 @@
       },
       onClickSaveDicData() {
 
+        if(this.$v.dicDataForm.$invalid){
+          return;
+        }
         this.isLoading = true;
 
         if(this.selectedDicData) {
@@ -737,7 +753,7 @@
                     duration: 3000,
                     permanent: false
                   });
-                  this.$refs.vuetableId.reload();
+                  this.$refs.vuetableData.reload();
                   break;
                 case responseMessages['used-dictionary-code']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.used-dictionary-code`), {
@@ -820,7 +836,7 @@
                   this.$refs.vuetableId.refresh();
                   break;
                 case responseMessages['has-children']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`document-template.has-children`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -861,7 +877,7 @@
                   this.$refs.vuetableId.refresh();
                   break;
                 case responseMessages['has-children']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`document-template.has-children`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
                     duration: 3000,
                     permanent: false
                   });

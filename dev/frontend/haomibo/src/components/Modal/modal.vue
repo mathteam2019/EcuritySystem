@@ -116,15 +116,15 @@
   }
 
   .modal-select {
-    top: calc((100% - 300px)/2) !important;
-    left: calc((100% - 500px)/2) !important;
+    top: calc((100% - 350px)/2) !important;
+    left: calc((100% - 550px)/2) !important;
     background: #FFFFFF;
     box-shadow: 2px 2px 20px 1px;
     overflow-x: auto;
     display: flex;
     flex-direction: column;
-    max-width: 500px;
-    max-height: 300px;
+    width: 550px;
+    height: 350px;
   }
 
   .modal-header,

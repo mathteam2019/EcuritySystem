@@ -64,13 +64,16 @@
                 <b-button size="sm" class="ml-2" variant="info default" @click="onResetButton()">
                   <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_export')" @click="onExportButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_export')"
+                          @click="onExportButton()">
                   <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_print')" @click="onPrintUserButton()">
+                <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_print')"
+                          @click="onPrintUserButton()">
                   <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
                 </b-button>
-                <b-button size="sm" class="ml-2" @click="onCreatePage()" :disabled="checkPermItem('user_create')" variant="success default">
+                <b-button size="sm" class="ml-2" @click="onCreatePage()" :disabled="checkPermItem('user_create')"
+                          variant="success default">
                   <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                 </b-button>
               </b-col>
@@ -561,7 +564,7 @@
         </b-row>
       </b-tab>
 
-      <b-tab :title="$t('permission-management.user-group')"  @click="tabStatus='group'">
+      <b-tab :title="$t('permission-management.user-group')" @click="tabStatus='group'">
         <b-row class="h-100 ">
           <b-col cols="8" class="d-flex flex-column">
             <div class="section d-flex flex-column h-100">
@@ -581,13 +584,16 @@
                     <b-button size="sm" class="ml-2" variant="info default" @click="onUserGroupResetButton()">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_export')" @click="onExportButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('user_group_export')" @click="onExportButton()">
                       <i class="icofont-share-alt"/>&nbsp;{{ $t('permission-management.export') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_group_print')" @click="onPrintGroupButton()">
+                    <b-button size="sm" class="ml-2" variant="outline-info default"
+                              :disabled="checkPermItem('user_group_print')" @click="onPrintGroupButton()">
                       <i class="icofont-printer"/>&nbsp;{{ $t('permission-management.print') }}
                     </b-button>
-                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()" :disabled="checkPermItem('user_group_create')" variant="success default">
+                    <b-button size="sm" class="ml-2" @click="onUserGroupCreateButton()"
+                              :disabled="checkPermItem('user_group_create')" variant="success default">
                       <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                     </b-button>
                   </div>
@@ -611,7 +617,8 @@
                         <span class="cursor-p text-primary" @click="onUserGroupTableRowClick(props.rowData)">{{ props.rowData.groupNumber }}</span>
                       </template>
                       <template slot="operating" slot-scope="props">
-                        <b-button variant="danger default btn-square" class="m-0" :disabled="checkPermItem('user_group_delete')"
+                        <b-button variant="danger default btn-square" class="m-0"
+                                  :disabled="checkPermItem('user_group_delete')"
                                   @click="onAction('group-remove', props.rowData, props.rowIndex)"><i
                           class="icofont-bin"/></b-button>
                       </template>
@@ -711,10 +718,12 @@
               </div>
               <div class="d-flex align-items-end justify-content-end pt-3" v-if="groupForm.status!=='create'">
                 <div>
-                  <b-button @click="onClickModifyUserGroup" variant="info default" :disabled="checkPermItem('user_group_modify')" size="sm"><i
+                  <b-button @click="onClickModifyUserGroup" variant="info default"
+                            :disabled="checkPermItem('user_group_modify')" size="sm"><i
                     class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
                   </b-button>
-                  <b-button @click="onClickDeleteUserGroup"  :disabled="checkPermItem('user_group_delete')" variant="danger default" size="sm"><i
+                  <b-button @click="onClickDeleteUserGroup" :disabled="checkPermItem('user_group_delete')"
+                            variant="danger default" size="sm"><i
                     class="icofont-bin"/> {{$t('permission-management.delete')}}
                   </b-button>
 
@@ -738,10 +747,11 @@
       </template>
     </b-modal>
 
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -778,7 +788,7 @@
   import {apiBaseUrl} from "../../../constants/config";
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePaginationBootstrap from "../../../components/Common/VuetablePaginationBootstrap";
-  import {checkPermissionItem,getDirection} from "../../../utils";
+  import {checkPermissionItem, getDirection} from "../../../utils";
   import {downLoadFileFromServer, getApiManager, isPhoneValid, isAccountValid, printFileFromServer} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {validationMixin} from 'vuelidate';
@@ -818,7 +828,7 @@
     },
     mixins: [validationMixin],
     validations: {
-      fileSelection : {
+      fileSelection: {
         required
       },
       profileForm: {
@@ -842,11 +852,11 @@
         },
         userAccount: {
           isAccountValid,
-          required, minLength:minLength(6), maxLength: maxLength(50),
+          required, minLength: minLength(6), maxLength: maxLength(50),
         },
-        passwordValue :{
+        passwordValue: {
           isAccountValid,
-          required, minLength:minLength(6), maxLength: maxLength(50),
+          required, minLength: minLength(6), maxLength: maxLength(50),
         },
         mobile: {
           isPhoneValid,
@@ -893,17 +903,17 @@
       return {
         isLoading: false,
         submitted: false,
-        tabStatus : 'user',
+        tabStatus: 'user',
         link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
         tableData: [],
         pageStatus: 'table',
         defaultOrgId: '',
@@ -1225,23 +1235,23 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-        if(this.tabStatus==='user'){
+        if (this.tabStatus === 'user') {
           this.onExportUser();
         }
-        if(this.tabStatus==='group'){
+        if (this.tabStatus === 'group') {
           this.onExportGroup();
         }
         this.isModalVisible = true;
       },
       onExportButtonModel() {
-        if(this.tabStatus==='user'){
+        if (this.tabStatus === 'user') {
           this.onExportUser();
         }
-        if(this.tabStatus==='group'){
+        if (this.tabStatus === 'group') {
           this.onExportGroup();
         }
       },
-      onExportUser(){
+      onExportUser() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         this.params = {
@@ -1295,7 +1305,7 @@
         printFileFromServer(link, params);
       },
 
-      getAllUserData(){
+      getAllUserData() {
         getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
           type: 'with_org_tree'
         }).then((response) => {
@@ -1318,7 +1328,7 @@
         this.pageStatus = 'create';
       },
 
-      onGetAll(){
+      onGetAll() {
         getApiManager().post(`${apiBaseUrl}/permission-management/user-management/user/get-all`, {
           type: 'with_org_tree'
         }).then((response) => {
@@ -1336,10 +1346,16 @@
       },
       onSaveUserPage() {
         this.submitted = true;
+
         this.$v.profileForm.$touch();
+        //console.log(this.$v.profileForm.userAccount.$invalid);
+        if(this.profileForm.passwordType === "default"){
+          this.profileForm.passwordValue = "s123456";
+        }
         if (this.$v.profileForm.$invalid) {
           return;
         }
+
         const formData = new FormData();
         for (let key in this.profileForm) {
           if (key !== 'portrait')
@@ -1467,9 +1483,9 @@
         let status = action;
         if (status === 'unblock' || status === 'reset-password' || status === 'inactivate')
           status = '1000000302';
-        else if(status === 'activate')
+        else if (status === 'activate')
           status = '1000000301';
-        else if(status === 'blocked')
+        else if (status === 'blocked')
           status = '1000000303';
         getApiManager()
           .post(`${apiBaseUrl}/permission-management/user-management/user/update-status`, {

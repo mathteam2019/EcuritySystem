@@ -326,12 +326,12 @@
                       <b-form-input v-model="pendingFilter.deviceName"/>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="3">
-                    <b-form-group :label="$t('maintenance-management.maintenance-task.device-classification')">
-                      <b-form-select v-model="pendingFilter.categoryId" :options="deviceCategoryOptions"
-                                     plain/>
-                    </b-form-group>
-                  </b-col>
+<!--                  <b-col cols="3">-->
+<!--                    <b-form-group :label="$t('maintenance-management.maintenance-task.device-classification')">-->
+<!--                      <b-form-select v-model="pendingFilter.categoryId" :options="deviceCategoryOptions"-->
+<!--                                     plain/>-->
+<!--                    </b-form-group>-->
+<!--                  </b-col>-->
                   <b-col cols="3">
                     <b-form-group :label="$t('maintenance-management.maintenance-task.position')">
                       <b-form-select v-model="pendingFilter.fieldId" :options="siteSelectOptions" plain/>
@@ -425,8 +425,8 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
                   </template>
-                  <v-select v-model="configForm.fromDeviceId" :options="fromConfigDeviceSelectOptions"
-                            class="v-select-custom-style" :dir="direction" multiple/>
+                  <v-select v-model="configForm.fromDeviceId" deselect-label="Can't remove this value" @input="unSelectDevice" :options="fromConfigDeviceSelectOptions"
+                            :readonly="configForm.fromDeviceId == configForm.deviceId" class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -549,10 +549,10 @@
                         v-if="!checkPermItem('device_config_modify')">
                 <i class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
               </b-button>
-              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()"
-                        v-if="!checkPermItem('device_config_modify')">
-                <i class="icofont-bin"/> {{$t('permission-management.delete')}}
-              </b-button>
+<!--              <b-button variant="danger default" size="sm" @click="onDeleteDeviceConfig()"-->
+<!--                        v-if="!checkPermItem('device_config_modify')">-->
+<!--                <i class="icofont-bin"/> {{$t('permission-management.delete')}}-->
+<!--              </b-button>-->
               <b-button @click="onAction('list')" variant="info default" size="sm"><i
                 class="icofont-long-arrow-left"/> {{
                 $t('permission-management.return') }}
@@ -828,6 +828,12 @@
       closeModal() {
         this.isModalVisible = false;
       },
+      unSelectDevice(a){
+        return false;
+        console.log(a)
+        //console.log(" Teste toggleUnSelectLojas value : ", value);
+      },
+
       checkPermItem(value) {
         return checkPermissionItem(value);
       },
@@ -1122,6 +1128,7 @@
         }
       },
       initializeConfigData(data) {
+        let isDeviceId = false;
         this.selectedDeviceData = {
           fieldName: data.device.field ? data.device.field.fieldDesignation : '',
           deviceName: data.device.deviceName,
@@ -1148,12 +1155,29 @@
           fromDeviceId: []
         };
         data.fromConfigIdList.forEach(item => {
-          if (item.device != null)
-            this.configForm.fromDeviceId.push({
-              value: item.device.deviceId,
-              label: item.device.deviceName
-            })
+          if (item.device != null) {
+            if(item.device.deviceId===data.deviceId){
+              this.configForm.fromDeviceId.push({
+                value: item.device.deviceId,
+                label: item.device.deviceName,
+                removable :false
+              })
+              isDeviceId = true;
+            }
+            else {
+              this.configForm.fromDeviceId.push({
+                value: item.device.deviceId,
+                label: item.device.deviceName
+              })
+            }
+          }
         });
+        if(!isDeviceId){
+          this.configForm.fromDeviceId.push({
+            value: data.deviceId,
+            label: data.deviceName
+          })
+        }
         data.judgeGroupList.forEach(item => {
           if (item.judgeDevice != null)
             this.configForm.judgeDeviceId.push({
@@ -1388,7 +1412,8 @@
           if (opt.device !== null) {
             options.push({
               label: opt.device.deviceName,
-              value: opt.device.deviceId
+              value: opt.device.deviceId,
+              removable:false
             })
           }
         });

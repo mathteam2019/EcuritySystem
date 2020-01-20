@@ -609,7 +609,7 @@
   import Vuetable from '../../../components/Vuetable2/Vuetable'
   import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
   import VuetablePaginationBootstrap from '../../../components/Common/VuetablePaginationBootstrap'
-  import {getApiManager, getDateTimeWithFormat} from '../../../api';
+  import {getApiManager, getApiManagerError, getDateTimeWithFormat} from '../../../api';
   import {responseMessages} from '../../../constants/response-messages';
   import {apiBaseUrl, apiParamUrl} from "../../../constants/config";
   import ColorPicker from '../../../components/ColorPicker/VueColorPicker'
@@ -1069,17 +1069,18 @@
           this.platFormData.historyDataExportSelect.forEach(item => {
             this.platFormData.historyDataExportList.push(item.value);
           });
+
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/modify`, this.platFormData
           ).then((response) => {
-            getApiManager().post(`${apiParamUrl}`, this.platFormData);
+            getApiManagerError().post(`${apiParamUrl}`, this.platFormData);
             let message = response.data.message;
             let data = response.data.data;
             switch (message) {
               case responseMessages['ok']:
-                // this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`system-setting.setting-updated-successful`), {
-                //   duration: 3000,
-                //   permanent: false
-                // });
+                this.$notify('success', this.$t('permission-management.permission-control.success'), this.$t(`system-setting.setting-updated-successful`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
             }
           });

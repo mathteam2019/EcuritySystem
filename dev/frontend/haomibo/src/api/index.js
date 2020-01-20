@@ -75,6 +75,55 @@ const getApiManager = function () {
   return apiManager;
 };
 
+const getApiManagerError = function () {
+
+  const apiManager = axios.create({
+    headers: {'X-AUTH-TOKEN': getAuthTokenInfo().token}
+  });
+  apiManager.interceptors.response.use((response) => {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+
+    let message = response.data.message;
+
+
+    switch (message) {
+
+      case responseMessages['invalid-token']:
+        removeLoginInfo();
+
+        app.$router.push('/auth/login').catch(error => {
+        });
+        break;
+      case responseMessages['token-expired']:
+        removeLoginInfo();
+
+        app.$router.push('/auth/login').catch(error => {
+        });
+        break;
+
+      case responseMessages['forbidden']:
+
+        break;
+
+      case responseMessages['invalid-parameter']:
+
+        break;
+
+      default:
+
+    }
+
+    return response;
+  }, (error) => {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+  });
+
+  return apiManager;
+};
+
 const getDateTimeWithFormat = (datetime, formatType = 'zh',lang = 'zh') => {
   if (datetime === "" || datetime == null)
     return "";
@@ -195,20 +244,46 @@ function isPhoneValid(value) {
   else{
     return false;
   }
+};
 
-}
-
-function isAccountValid(value) {
+function isDataCodeValid(value) {
   if(value === "")
     return true;
-  let accountReg = /^[A-Za-z0-9._-]+$/;
-  if(accountReg.test(value)){
+  let Reg = /^[0-9]+$/;
+  if(Reg.test(value)){
     return true;
   }
   else{
     return false;
   }
+};
+
+function isAccountValid(value) {
+  let accountReg = /^[A-Za-z0-9._-]+$/;
+  let arrReg = [/^[A-Z]+$/, /^[a-z]+$/, /^[0-9]+$/, /^[._-]+$/];
+  let regId=0;
+  if(value === "") {
+    return false;
+  }else {
+    var arrPassword = value.split('');
+    for (let i = 0; i < arrPassword.length; i++) {
+      if (accountReg.test(arrPassword[i])) {
+        for(let j=0; j<arrReg.length; j++){
+          if(arrReg[j].test(arrPassword[i])){
+            if(i>0&&regId!==j){
+              return true;
+            }
+            regId = j;
+            break;
+          }
+        }
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
 
 }
 
-export {getApiManager, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid};
+export {getApiManager, getApiManagerError, getDateTimeWithFormat, downLoadFileFromServer, printFileFromServer,isPhoneValid, isAccountValid, isDataCodeValid};

@@ -190,10 +190,10 @@
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
-              <b-col style="padding-right: 0.5rem; padding-left: 1.5rem;">
+              <b-col style="padding-right: 1rem; padding-left: 2rem;">
                 <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col style="padding-right: 1.5rem; padding-left: 0.5rem;">
+              <b-col style="padding-right: 2rem; padding-left: 1rem;">
                 <canvas id="secondcanvas"  style="height: 23vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===true">
@@ -312,9 +312,9 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-                  <div class="right">
-                    <div>Start</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Start</div>-->
+<!--                  </div>-->
                 </div>
 
                 <div class="part">
@@ -326,9 +326,9 @@
                       <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Scanning</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Scanning</div>-->
+<!--                  </div>-->
                   <div class="top-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
@@ -345,23 +345,23 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="judgeUserName == null"></div>
+                      <div v-if="judgeUserName == null">{{$t('maintenance-management.process-task.default-user')}}</div>
                       <div v-else>{{judgeUserName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Decision</div>
-                    <div>diagram</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Decision</div>-->
+<!--                    <div>diagram</div>-->
+<!--                  </div>-->
                   <div class="top-date">
                     <label v-if="judgeStartTime==null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(judgeStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(judgeStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serJudgeGraph==null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
                     <label v-else/>
                   </div>
                 </div>
@@ -374,18 +374,18 @@
                       <div v-else>{{handUserName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Inspection</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Inspection</div>-->
+<!--                  </div>-->
                   <div class="top-date">
                     <label v-if="handStartTime == null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(handStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serHandExamination == null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
                   </div>
                 </div>
 
@@ -393,9 +393,9 @@
                   <div class="left">
                     <div>结束</div>
                   </div>
-                  <div class="right">
-                    <div>End</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>End</div>-->
+<!--                  </div>-->
                 </div>
 
               </div>
@@ -496,12 +496,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="judgeUserId == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-else-if="judgeUserId === defaultUserId"
-                                :value="this.$t('maintenance-management.process-task.system')"/>
+                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
-                                :value="this.$t('maintenance-management.process-task.artificial')"/>
+                                :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -949,6 +946,8 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
+        mode:null,
+        conclusionType:null,
 
         videoOptions: {
           autoplay: true,
@@ -1244,7 +1243,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === false) {
+        if (this.power === true) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1261,17 +1260,18 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === false) {
-          imageFilterById(id, this.imageRectL, this.imageRectR);
+        if (this.power === true) {
+          imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
 
       loadImage() {
         let url1 = '';
         let url2 = '';
+        this.slidebar1value = 0;
+        this.slidebar2value = 0;
         if (this.power === false) {
-          this.slidebar1value = 0;
-          this.slidebar2value = 0;
+
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
           }
@@ -1395,6 +1395,9 @@
           "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
           "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
           "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
+          "1000002301": `${this.$t('maintenance-management.process-task.system')}`,
+          "1000002302": `${this.$t('maintenance-management.process-task.artificial')}`,
+          "1000002303": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
           "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
         };
@@ -1560,6 +1563,12 @@
                 this.cartoonRectL = [];
                 this.handGoodExpanded=[];
                 this.handGoodDataCodeExpanded = [];
+
+                this.conclusionType = null;
+                if(this.showPage.serCheckResultList.length !==0) {
+                  this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
+                }
+                console.log(this.conclusionType);
 
                 deviceImage=[];
                 submitRects=[];
@@ -1764,7 +1773,7 @@
               }
             }
             if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
                 return 'bg-orange';
               }
             }

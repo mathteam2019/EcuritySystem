@@ -137,10 +137,10 @@
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
-              <b-col style="padding-right: 0.5rem; padding-left: 1.5rem;">
+              <b-col style="padding-right: 1rem; padding-left: 2rem;">
                 <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col style="padding-right: 1.5rem; padding-left: 0.5rem;">
+              <b-col style="padding-right: 2rem; padding-left: 1rem;">
                 <canvas id="secondcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===true">
@@ -292,20 +292,19 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="showPage.serJudgeGraph == null"></div>
-                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null"></div>
+                      <div v-if="showPage.serJudgeGraph == null">{{$t('maintenance-management.process-task.default-user')}}</div>
+                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null">{{$t('maintenance-management.process-task.default-user')}}</div>
                       <div v-else>{{showPage.serJudgeGraph.judgeUser.userName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Decision</div>
-                    <div>diagram</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Decision</div>-->
+<!--                    <div>diagram</div>-->
+<!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="showPage.serJudgeGraph==null"/>
+                    <label v-if="judgeStartTime==null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
-                    <label v-else/>
+                      v-else>{{this.getDateTimeFormat2(judgeStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serJudgeGraph==null"/>
@@ -324,13 +323,13 @@
                       <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Inspection</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Inspection</div>-->
+<!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="showPage.serHandExamination == null"></label>
+                    <label v-if="handStartTime == null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serHandExamination == null"></label>
@@ -343,9 +342,9 @@
                   <div class="left">
                     <div>结束</div>
                   </div>
-                  <div class="right">
-                    <div>End</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>End</div>-->
+<!--                  </div>-->
                 </div>
 
               </div>
@@ -436,9 +435,9 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="showPage.serJudgeGraph == null"/>
+                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
-                                :value="getOptionValue(showPage.serJudgeGraph.judgeResult)"/>
+                                :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -883,6 +882,7 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
+	conclusionType:null,
 
         handGoodDataCode: ['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
         handGoodExpanded: [false, false, false, false, false],
@@ -908,6 +908,27 @@
           }],
         },
 
+        taskDetailForm: {
+          taskNumber: null,
+          fieldName: null,
+          deviceName: null,
+          gender: "",
+          handDeviceName: 0,
+          judgeDeviceName: null,
+          workModeName: null,
+          handTaskResult: null,
+          handAppraise: null,
+          note: null,
+        },
+
+        detailForm: {},
+        judgeStartTime: null,
+        judgeDeviceName: null,
+        judgeUserName: null,
+        judgeUserId: null,
+        handStartTime: null,
+        handDeviceName: null,
+        handUserName: null,
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: '4', text: '安检仪+审图端+手检端'},
@@ -1101,7 +1122,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === false) {
+        if (this.power === true) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1118,17 +1139,18 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === false) {
-          imageFilterById(id, this.imageRectL, this.imageRectR);
+        if (this.power === true) {
+          imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
 
       loadImage() {
         let url1 = '';
         let url2 = '';
+        this.slidebar1value = 0;
+        this.slidebar2value = 0;
         if (this.power === false) {
-          this.slidebar1value = 0;
-          this.slidebar2value = 0;
+
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
           }
@@ -1250,6 +1272,9 @@
           "1000001106": `${this.$t('maintenance-management.process-task.scan')}`,
           "1000001201": `${this.$t('maintenance-management.process-task.system')}`,
           "1000001202": `${this.$t('maintenance-management.process-task.artificial')}`,
+          "1000002301": `${this.$t('maintenance-management.process-task.system')}`,
+          "1000002302": `${this.$t('maintenance-management.process-task.artificial')}`,
+          "1000002303": `${this.$t('maintenance-management.process-task.artificial')}`,
           "1000001801": `${this.$t('maintenance-management.process-task.underreport')}`,
           "1000001802": `${this.$t('maintenance-management.process-task.falsepositive')}`
         };
@@ -1373,6 +1398,32 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
+                //if(this.showPage.workFlow.modeName
+                let modeName;
+                this.judgeStartTime = null;
+                this.judgeDeviceName = null;
+                this.judgeUserId = null;
+                this.judgeUserName = null;
+                this.handStartTime = null;
+                this.handDeviceName = null;
+                this.handUserName = null;
+
+                for (let i = 0; i < this.showPage.serAssignList.length; i++) {
+                  if (this.showPage.serAssignList[i].handDevice !== null) {
+                    this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
+                    this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
+                    this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
+                  } else {
+                    if (this.showPage.serAssignList[i].judgeDevice !== null) {
+                      this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
+                    }
+                    this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
+                    this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
+                    this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
+                  }
+                }
+
+
                 this.thumbs = [];
                 this.videos = [];
                 this.images =[];
@@ -1387,6 +1438,13 @@
                 this.cartoonRectL = [];
                 this.handGoodExpanded=[];
                 this.handGoodDataCodeExpanded = [];
+
+                this.conclusionType = null;
+                if(this.showPage.serCheckResultList.length !==0) {
+                  this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
+                }
+                console.log(this.conclusionType);
+
                 deviceImage = [];
                 submitRects = [];
                 colourInfo = this.showPage.platFormCheckParams;
