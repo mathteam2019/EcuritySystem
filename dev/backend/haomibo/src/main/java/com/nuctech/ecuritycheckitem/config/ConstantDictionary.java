@@ -49,6 +49,12 @@ public class ConstantDictionary {
             new Dictionary("pending_inspection", "待查验"),
             new Dictionary("while_inspection", "查验中"),
 
+            new Dictionary("1000002404", "1"),
+            new Dictionary("1000002403", "2"),
+            new Dictionary("1000002402", "3"),
+
+
+
     };
 
     public static void setDictionaryList(Dictionary[] newDictionaryList) {

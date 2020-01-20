@@ -71,7 +71,7 @@ public class PreviewStatisticsController extends BaseController {
 
             Long fieldId; //field id
             Long deviceId; //device id
-            Long userCategory; //user category id
+            String userCategory; //user category id
             String userName; //user name
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime; //start time
@@ -84,7 +84,6 @@ public class PreviewStatisticsController extends BaseController {
         Integer currentPage; //current page no
         Integer perPage; //record count per page
         StatisticsRequestBody.Filter filter;
-
     }
 
     /**

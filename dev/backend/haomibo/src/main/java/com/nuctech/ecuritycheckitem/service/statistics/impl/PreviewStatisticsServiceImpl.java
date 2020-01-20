@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -58,7 +59,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
@@ -231,7 +232,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * @param statWidth : (hour, day, week, month, quarter, year)
      * @return
      */
-    private String getWhereCauseScan(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+    private String getWhereCauseScan(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -255,10 +256,17 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
+        if (userCategory != null && !userCategory.isEmpty()) {
+            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+        }
+
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id " +
+                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
+                "\t\tleft join sys_role r on ru.ROLE_ID = r.ROLE_ID ");
 
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id ");
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
@@ -276,7 +284,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * @param statWidth : (hour, day, week, month, quarter, year)
      * @return
      */
-    private String getWhereCauseJudge(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+    private String getWhereCauseJudge(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -300,10 +308,18 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
+        if (userCategory != null && !userCategory.isEmpty()) {
+            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+        }
+
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id " +
+                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
+                "\t\tLEFT JOIN sys_role r on ru.ROLE_ID = r.ROLE_ID ");
 
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
+
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
@@ -321,7 +337,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
      * @param statWidth : (hour, day, week, month, quarter, year)
      * @return
      */
-    private String getWhereCauseHand(Long fieldId, Long deviceId, Long userCategory, String userName, Date startTime, Date endTime, String statWidth) {
+    private String getWhereCauseHand(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -345,10 +361,18 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
+        if (userCategory != null && !userCategory.isEmpty()) {
+            whereCause.add("r.role_id = " + ConstantDictionary.getDataValue(userCategory));
+        }
+
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id " +
+                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
+                "\t\tleft join sys_role r on ru.ROLE_ID = r.ROLE_ID ");
+
 
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
