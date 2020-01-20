@@ -76,27 +76,27 @@
                 class="table-striped"
               >
                 <template slot="task" slot-scope="props">
-                    <span class="cursor-p text-primary" @click="onRowClicked(props.rowData.taskId)">
+                    <span class="cursor-p text-primary"
+                          @click="onRowClicked(props.rowData)">
                       {{props.rowData.task.taskNumber}}
                     </span>
-
                 </template>
                 <template slot="mode" slot-scope="props">
                   <div v-if="props.rowData.workMode==null"></div>
                   <div v-else>
-                    <div v-if="props.rowData.workMode.modeName==='1000001304'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('all')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001301'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001302'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+judge')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/monitors_icon.svg" class="operation-icon"/>
                     </div>
-                    <div v-if="props.rowData.workMode.modeName==='1000001303'">
+                    <div v-if="props.rowData.workMode.modeName===getModeDataCode('scan+hand')">
                       <b-img src="/assets/img/man_scan_icon.svg" class="operation-icon"/>
                       <b-img src="/assets/img/mobile_icon.svg" class="operation-icon"/>
                     </div>
@@ -170,7 +170,8 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-                <span><i class="icofont-star"/></span>
+                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
+                  class="icofont-star"/></span>
                 <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
                   class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
@@ -182,7 +183,7 @@
                 <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 2rem; padding-left: 1rem;">
-                <canvas id="secondcanvas"  style="height: 23vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===true">
                     <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
@@ -262,7 +263,7 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar2value"
                   :min="-50"
@@ -273,7 +274,7 @@
                   class="slide-class">
                 </VueSlideBar>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar1value"
                   :min="-50"
@@ -300,9 +301,9 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Start</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Start</div>-->
+                  <!--                  </div>-->
                 </div>
 
                 <div class="part">
@@ -314,18 +315,18 @@
                       <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Scanning</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Scanning</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
-                    <label v-else></label>
+                    <label v-else/>
                   </div>
                   <div class="bottom-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanEndTime)}}</label>
-                    <label v-else></label>
+                    <label v-else/>
                   </div>
                 </div>
 
@@ -333,15 +334,14 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="showPage.serJudgeGraph == null">{{$t('maintenance-management.process-task.default-user')}}</div>
-                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null">{{$t('maintenance-management.process-task.default-user')}}</div>
-                      <div v-else>{{showPage.serJudgeGraph.judgeUser.userName}}</div>
+                      <div v-if="judgeUserName == null">{{$t('maintenance-management.process-task.default-user')}}</div>
+                      <div v-else>{{judgeUserName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Decision</div>-->
-<!--                    <div>diagram</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Decision</div>-->
+                  <!--                    <div>diagram</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="judgeStartTime==null"/>
                     <label
@@ -350,8 +350,8 @@
                   <div class="bottom-date">
                     <label v-if="showPage.serJudgeGraph==null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
-                    <label v-else></label>
+                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
+                    <label v-else/>
                   </div>
                 </div>
 
@@ -359,23 +359,22 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-                      <div v-if="showPage.serHandExamination == null"></div>
-                      <div v-else-if="showPage.serHandExamination.handUser == null"></div>
-                      <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>
+                      <div v-if="handUserName == null"></div>
+                      <div v-else>{{handUserName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Inspection</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Inspection</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="handStartTime == null"/>
                     <label
                       v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serHandExamination == null"></label>
+                    <label v-if="showPage.serHandExamination == null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
                   </div>
                 </div>
 
@@ -383,16 +382,16 @@
                   <div class="left">
                     <div>结束</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>End</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>End</div>-->
+                  <!--                  </div>-->
                 </div>
 
               </div>
             </div>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
@@ -402,7 +401,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
@@ -413,7 +412,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
@@ -427,7 +426,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
@@ -442,35 +441,31 @@
 
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="showPage.serHandExamination == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-else-if="showPage.serHandExamination.handDevice == null"/>
+                                v-if="handDeviceName == null"/>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
-                                v-model="showPage.serHandExamination.handDevice.deviceName"/>
+                                v-model="handDeviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="showPage.serJudgeGraph == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-else-if="showPage.serJudgeGraph.judgeDevice == null"/>
+                                v-if="judgeDeviceName == null"/>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
-                                v-model="showPage.serJudgeGraph.judgeDevice.deviceName"/>
+                                v-model="judgeDeviceName"/>
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
@@ -484,9 +479,9 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
-                    {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
+                    {{$t('personal-inspection.judgement-conclusion-type')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
@@ -498,7 +493,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
@@ -518,7 +513,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     备注
                     <span class="text-danger">*</span>
@@ -536,7 +531,7 @@
                   style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
-                <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
+                <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"
                          style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -590,7 +585,7 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col cols="12" class="align-self-end text-right mt-3" style="width: 100px; height: 95px;">
+                  <b-col cols="12" class="align-self-end text-right mt-3" style="height: 130px;">
                     <b-img v-if="validIcon === 'TRUE'" hidden src="/assets/img/icon_invalid.png" class="align-self-end"
                            style="width: 100px; height: 95px;"/>
                     <b-img v-else hidden src="/assets/img/icon_valid.png" class="align-self-end"
@@ -600,8 +595,15 @@
                 </b-row>
                 <b-row style="margin-top: 0.5rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
-                    <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(history_id)">
-                      <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
+                    <b-button :disabled="checkPermItem('pending_knowledge_modify')"
+                              @click="onAction('success', caseId)"
+                              size="sm" variant="success default">
+                      <i class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
+                    </b-button>
+                    <b-button size="sm" variant="danger default"
+                              :disabled="checkPermItem('pending_knowledge_delete')"
+                              @click="onAction('dismiss', caseId)">
+                      <i class="icofont-bin"/> {{$t('system-setting.delete')}}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
                       <i class="icofont-long-arrow-left"/>
@@ -622,10 +624,11 @@
         <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"></i></span>
       </div>
     </div>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -657,6 +660,9 @@
   </div>
 </template>
 <style lang="scss">
+  .form-group-margin{
+    margin-bottom: 1.5rem;
+  }
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -893,10 +899,10 @@
         siteData: [],
         showPage: [],
 
- 	link: '',
+        link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
@@ -913,7 +919,7 @@
         // isSlidebar4Expended:false,
         // slidebar3value:0,
         // slidebar4value:0,
-        history_id: 0,
+        caseId: 0,
         slider: {
           lineHeight: 10,
           processStyle: {
@@ -1091,8 +1097,8 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
-        mode:null,
-        conclusionType:null,
+        mode: null,
+        conclusionType: null,
         modal_video_url: "",
         detailForm: {},
         judgeStartTime: null,
@@ -1403,7 +1409,7 @@
           });
 
       },
-      onRowClicked: function (taskId) {
+      onRowClicked: function (data) {
 
         this.pageStatus = 'show';
         this.power = false;
@@ -1411,6 +1417,7 @@
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
         this.orderCartoon = 0;
+        this.caseId = data.caseId;
         let url1 = '';
         let url2 = '';
         let rateWidth, rateHeight;
@@ -1422,7 +1429,7 @@
         // call api
         getApiManager()
           .post(`${apiBaseUrl}/task/process-task/get-one`, {
-            'taskId': taskId,
+            'taskId': data.taskId,
           })
           .then((response) => {
             let message = response.data.message;
@@ -1431,6 +1438,7 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
+
                 //if(this.showPage.workFlow.modeName
                 let modeName;
                 this.judgeStartTime = null;
@@ -1469,24 +1477,24 @@
                 this.cartoonRectR = [];
                 this.cartoonRectL = [];
                 this.conclusionType = null;
-                if(this.showPage.serCheckResultList.length !==0) {
+                if (this.showPage.serCheckResultList.length !== 0) {
                   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 }
                 console.log(this.conclusionType);
 
-                deviceImage=[];
-                submitRects=[];
+                deviceImage = [];
+                submitRects = [];
                 colourInfo = this.showPage.platFormCheckParams;
 
-                if(this.showPage.serScan!==undefined && this.showPage.serScan!==null) {
-                  if(this.showPage.serScan.scanDeviceImages!== null) {
+                if (this.showPage.serScan !== undefined && this.showPage.serScan !== null) {
+                  if (this.showPage.serScan.scanDeviceImages !== null) {
                     deviceImage = this.showPage.serScan.scanDeviceImages;
                     deviceImage = JSON.parse(deviceImage);
                   }
                 }
 
-                if(this.showPage.serJudgeGraph!==undefined && this.showPage.serJudgeGraph!==null) {
-                  if(this.showPage.serJudgeGraph.judgeSubmitrects!==null) {
+                if (this.showPage.serJudgeGraph !== undefined && this.showPage.serJudgeGraph !== null) {
+                  if (this.showPage.serJudgeGraph.judgeSubmitrects !== null) {
                     submitRects = this.showPage.serJudgeGraph.judgeSubmitrects;
                     submitRects = JSON.parse(submitRects);
                   }
@@ -1494,7 +1502,7 @@
 
                 this.cntCartoon = Math.floor(deviceImage.length / 2);
 
-                if(deviceImage!==null&& submitRects!==null) {
+                if (deviceImage !== null && submitRects !== null) {
                   for (let i = 0; i < deviceImage.length; i++) {
                     if (i < 2) {
                       this.imagesInfo.push({
@@ -1590,7 +1598,6 @@
                       poster: '',//todo if client need to show different poster for each videos, should get its poster image from server.
                     });
                   }
-
                 }
                 break;// okay
 
@@ -1599,7 +1606,7 @@
           .catch((error) => {
           });
 
-        this.history_id = taskId;
+
       },
       getDateTimeFormat2(dataTime) {
         if (dataTime == null) {
@@ -1642,7 +1649,7 @@
         this.name = 'Knowledge-Pending';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.pendingListTable.checkedAllStatus;
         let checkedIds = this.$refs.pendingListTable.selectedTo;
         let params = {
@@ -1653,7 +1660,7 @@
         let link = `knowledge-base/generate/pending`;
         if (checkedIds.length > 0) {
           downLoadFileFromServer(link, params, 'Knowledge-Pending', this.fileSelection);
-        this.hideModal('model-export')
+          this.hideModal('model-export')
         }
       },
 
@@ -1781,10 +1788,12 @@
           case 'success':
             successItem();
             activateItem();
+            this.pageStatus= 'table';
             break;
           case 'dismiss':
             dismissItem();
             activateItem();
+            this.pageStatus= 'table';
             break;
         }
       },

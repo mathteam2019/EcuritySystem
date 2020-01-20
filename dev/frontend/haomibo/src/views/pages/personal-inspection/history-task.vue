@@ -183,7 +183,7 @@
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
                   class="icofont-star"/></span>
-                <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='1000001201'"><i
+                <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
@@ -274,7 +274,7 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar2value"
                   :min="-50"
@@ -285,7 +285,7 @@
                   class="slide-class">
                 </VueSlideBar>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar1value"
                   :min="-50"
@@ -351,9 +351,9 @@
 <!--                    <div>diagram</div>-->
 <!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="judgeStartTime==null"/>
+                    <label v-if="showPage.judgeStartTime==null"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(judgeStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.judgeStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.judgeEndTime==null"/>
@@ -374,9 +374,9 @@
 <!--                    <div>Inspection</div>-->
 <!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="handStartTime == null"/>
+                    <label v-if="showPage.handStartTime == null"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.handStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.handEndTime == null"/>
@@ -398,7 +398,7 @@
             </div>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
@@ -410,7 +410,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
@@ -424,7 +424,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
@@ -435,7 +435,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
@@ -450,7 +450,7 @@
 
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -462,7 +462,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -474,7 +474,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
@@ -486,7 +486,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-conclusion-type')}}
                     <span class="text-danger">*</span>
@@ -500,7 +500,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
@@ -518,7 +518,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     备注
                     <span class="text-danger">*</span>
@@ -536,7 +536,7 @@
                   style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
-                <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
+                <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"
                          style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -590,40 +590,40 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col v-if="getLocale()==='zh'" cols="12" class="align-self-end text-right mt-3">
+                  <b-col v-if="getLocale()==='zh'" cols="12" class="align-self-end text-right mt-3" style="width: 100%; height: 130px !important;">
                     <div v-if="showPage.handResult !== null">
                       <b-img v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                       <b-img v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                     <div v-else-if="showPage.judgeResult!==null">
                       <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                       <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                     <div v-else>
                       <b-img src="/assets/img/icon_valid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                   </b-col>
                   <b-col v-if="getLocale()==='en'" cols="12" class="align-self-end text-right mt-3">
                     <div v-if="showPage.handResult !== null">
                       <b-img v-if="showPage.handResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                       <b-img v-if="showPage.handResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                     <div v-else-if="showPage.judgeResult!==null">
                       <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                       <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                     <div v-else>
                       <b-img src="/assets/img/icon_valid.png"
-                             class="align-self-end" style="width: 100px; height: 95px;"/>
+                             class="align-self-end img-result"/>
                     </div>
                   </b-col>
                 </b-row>
@@ -721,6 +721,15 @@
   </div>
 </template>
 <style lang="scss">
+
+  .form-group-margin{
+    margin-bottom: 1.5rem;
+  }
+
+  .img-result{
+    width: 130px;
+    height: 130px;
+  }
 
   .vc-chrome {
     position: absolute;

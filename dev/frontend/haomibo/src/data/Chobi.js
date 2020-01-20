@@ -1,6 +1,6 @@
 'use strict';
 
-var Chobi = function(elem, isToggled){
+var Chobi = function(elem, isToggled, left){
 			if(elem instanceof(Image)){
 				this.image = elem;
 				this.imageData = this.extractImageData();
@@ -16,20 +16,38 @@ var Chobi = function(elem, isToggled){
 				this.debugger('Not instanceof(Image). Trying as URL');
 				var img = new Image();
 				img.crossOrigin = "Anonymous";
+				console.log(elem);
 				if(elem===''){
           if(isToggled === false) {
-            elem = '/assets/img/scan-lr.gif';
+            if(left === true) {
+              elem = '/assets/img/scan-lr.gif';
+            }else {
+              elem = '/assets/img/scan-rl.gif';
+            }
           }else {
-            elem = '/assets/img/u244.jpg';
+            if(left) {
+              elem = '/assets/img/u245.jpg';
+            } else {
+              elem = '/assets/img/u244.jpg';
+            }
           }
         }
 				img.src = elem;
         img.onerror = function (evt){
-          if(isToggled === false) {
-            img.src = '/assets/img/scan-lr.gif';
-          }else {
-            img.src = '/assets/img/u244.jpg';
-          }
+
+            if(isToggled === false) {
+              if(left === true) {
+                elem = '/assets/img/scan-lr.gif';
+              }else {
+                elem = '/assets/img/scan-rl.gif';
+              }
+            }else {
+              if(left) {
+                elem = '/assets/img/u245.jpg';
+              } else {
+                elem = '/assets/img/u244.jpg';
+              }
+            }
         }
 				img.onload = function(){
 					context.image = img;

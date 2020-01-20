@@ -628,7 +628,7 @@
       onGoodsNumberClicked(dataItem) {
         this.goodsForm.visible = false;
         this.selectedGoods = JSON.parse(JSON.stringify(dataItem));
-        this.goodsForm.goodsName = this.selectedGoods.seizedGoods;
+        this.goodsForm.goodsName = this.selectedGoods.seizedGoodsCode;
         this.goodsForm.goodsCategory = this.selectedGoods.seizedGoodType;
         this.goodsForm.goodsGrade = this.selectedGoods.seizedGoodsLevel;
       },

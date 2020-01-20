@@ -130,7 +130,7 @@
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
                   class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
@@ -221,7 +221,7 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar2value"
                   :min="-50"
@@ -232,7 +232,7 @@
                   class="slide-class">
                 </VueSlideBar>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar1value"
                   :min="-50"
@@ -292,15 +292,19 @@
                   <div class="left">
                     <div>{{$t('maintenance-management.process-task.judge')}}</div>
                     <div>
-                      <div v-if="showPage.serJudgeGraph == null">{{$t('maintenance-management.process-task.default-user')}}</div>
-                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null">{{$t('maintenance-management.process-task.default-user')}}</div>
+                      <div v-if="showPage.serJudgeGraph == null">
+                        {{$t('maintenance-management.process-task.default-user')}}
+                      </div>
+                      <div v-else-if="showPage.serJudgeGraph.judgeUser == null">
+                        {{$t('maintenance-management.process-task.default-user')}}
+                      </div>
                       <div v-else>{{showPage.serJudgeGraph.judgeUser.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Decision</div>-->
-<!--                    <div>diagram</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Decision</div>-->
+                  <!--                    <div>diagram</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="judgeStartTime==null"/>
                     <label
@@ -323,9 +327,9 @@
                       <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>
                     </div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>Inspection</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>Inspection</div>-->
+                  <!--                  </div>-->
                   <div class="top-date">
                     <label v-if="handStartTime == null"/>
                     <label
@@ -342,16 +346,16 @@
                   <div class="left">
                     <div>结束</div>
                   </div>
-<!--                  <div class="right">-->
-<!--                    <div>End</div>-->
-<!--                  </div>-->
+                  <!--                  <div class="right">-->
+                  <!--                    <div>End</div>-->
+                  <!--                  </div>-->
                 </div>
 
               </div>
             </div>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
@@ -361,18 +365,19 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-if="showPage.field==null"
+                                style="background-color: whitesmoke; border: none;"/>
                   <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
                                 style="background-color: whitesmoke; border: none;"/>
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
@@ -386,7 +391,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
@@ -401,7 +406,7 @@
 
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -415,7 +420,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -429,19 +434,20 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
+                                v-if="conclusionType == null"
+                                :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
                                 :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
@@ -455,7 +461,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     备注
                     <span class="text-danger">*</span>
@@ -467,7 +473,7 @@
                 </b-form-group>
               </b-col>
             </b-row>
-            <b-row style="width: 100%; height: 60px;">
+            <b-row style="width: 100%; height: 90px;">
               <b-col/>
             </b-row>
             <b-row>
@@ -476,7 +482,7 @@
                   style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
-                <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
+                <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"
                          style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -530,7 +536,7 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col cols="12" class="align-self-end text-right mt-3" style="width: 100px; height: 95px;">
+                  <b-col cols="12" class="align-self-end text-right mt-3" style="height: 130px;">
                     <b-img v-if="validIcon === 'TRUE'" hidden src="/assets/img/icon_invalid.png" class="align-self-end"
                            style="width: 100px; height: 95px;"/>
                     <b-img v-else hidden src="/assets/img/icon_valid.png" class="align-self-end"
@@ -597,6 +603,9 @@
   </div>
 </template>
 <style lang="scss">
+  .form-group-margin{
+    margin-bottom: 1.5rem;
+  }
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -882,7 +891,7 @@
         cartoonRectL: [],
         cntCartoon: 0,
         orderCartoon: 0,
-	conclusionType:null,
+        conclusionType: null,
 
         handGoodDataCode: ['1000001601', '1000001602', '1000001603', '1000001604', '1000001605'],
         handGoodExpanded: [false, false, false, false, false],
@@ -1426,7 +1435,7 @@
 
                 this.thumbs = [];
                 this.videos = [];
-                this.images =[];
+                this.images = [];
                 this.imgRect = [];
                 this.cartoonRect = [];
                 this.rRects = [];
@@ -1436,11 +1445,11 @@
                 this.imageRectL = [];
                 this.cartoonRectR = [];
                 this.cartoonRectL = [];
-                this.handGoodExpanded=[];
+                this.handGoodExpanded = [];
                 this.handGoodDataCodeExpanded = [];
 
                 this.conclusionType = null;
-                if(this.showPage.serCheckResultList.length !==0) {
+                if (this.showPage.serCheckResultList.length !== 0) {
                   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
                 }
                 console.log(this.conclusionType);
@@ -1524,12 +1533,12 @@
 
                 let handGoodsStr = this.showPage.serCheckResult.handGoods;
                 let handAttactedStr = this.showPage.serCheckResult.handAttached;
-                if(handGoodsStr!==null && handAttactedStr!==null) {
+                if (handGoodsStr !== null && handAttactedStr !== null) {
                   handGood = handGoodsStr.split(",");
                   handAttached = handAttactedStr.split(",");
                 }
-                let k=0;
-                if(handGood !==null) {
+                let k = 0;
+                if (handGood !== null) {
                   for (let i = 0; i < handGood.length; i++) {
                     for (let j = 0; j < 5; j++) {
                       if (handGood[i] === this.handGoodDataCode[j]) {
@@ -1542,7 +1551,7 @@
                 }
 
                 //getting media data from server.
-                if(handAttached !==null) {
+                if (handAttached !== null) {
                   for (let i = 0; i < handAttached.length; i++) {
                     let iHandAttached = handAttached[i].split(".");
                     if (iHandAttached[1] === "png" || iHandAttached[1] === "jpg") {

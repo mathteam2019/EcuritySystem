@@ -40,7 +40,6 @@
                                     </router-link>
                                 </li>
                             </ul>
-
                         </b-collapse>
                     </template>
                     <router-link v-else :to="sub.to">

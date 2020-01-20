@@ -65,7 +65,8 @@
               <b-img src="/assets/img/clock.svg"/>
             </div>
             <div>
-              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span></div>
+              <div><span>D{{totalData['day'].value}} {{totalData['hour'].value}}h: {{totalData['minute'].value}}m: {{totalData['second'].value}}s</span>
+              </div>
               <div><span>累计运行时长</span></div>
             </div>
           </div>
@@ -78,7 +79,8 @@
               <b-img src="/assets/img/scan.svg"/>
             </div>
             <div>
-              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span></div>
+              <div><span>D{{scanData['day'].value}} {{scanData['hour'].value}}h: {{scanData['minute'].value}}m: {{scanData['second'].value}}s</span>
+              </div>
               <div><span>安检仪累计运行时长</span></div>
             </div>
           </div>
@@ -91,7 +93,8 @@
               <b-img src="/assets/img/round_check.svg"/>
             </div>
             <div>
-              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span></div>
+              <div><span>D{{judgeData['day'].value}} {{judgeData['hour'].value}}h: {{judgeData['minute'].value}}m: {{judgeData['second'].value}}s</span>
+              </div>
               <div><span>判图站累计运行时长</span></div>
             </div>
           </div>
@@ -118,10 +121,12 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"/>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_export')" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('device_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"/>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('device_statistics_print')" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('device_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"/>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -265,10 +270,11 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -478,7 +484,6 @@
               name: '判图',
               type: 'bar',
               stack: '总量',
-
               data: [0]
             },
             {
@@ -491,18 +496,18 @@
         },
 
         pageStatus: 'charts',
-	link: '',
+        link: '',
         params: {},
         name: '',
 
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
 
         filter: {
           deviceId: null,
@@ -533,7 +538,7 @@
           {value: 'year', text: "年"},
         ],
 
-        totalData : {
+        totalData: {
           'day': {
             value: 0
           },
@@ -548,7 +553,7 @@
           },
         },
 
-        scanData : {
+        scanData: {
           'day': {
             value: 0
           },
@@ -561,12 +566,12 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
 
-        judgeData : {
+        judgeData: {
           'day': {
             value: 0
           },
@@ -579,12 +584,12 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
 
-        handData : {
+        handData: {
           'day': {
             value: 0
           },
@@ -597,7 +602,7 @@
           'second': {
             value: 0
           },
-          'rate' : {
+          'rate': {
             value: 0
           }
         },
@@ -753,8 +758,7 @@
             value: 0,
             html: `${this.$t('system-setting.none')}`
           });
-        }
-        else {
+        } else {
           this.categorySelectOptions = newVal.map(site => ({
             text: site.categoryName,
             value: site.categoryId
@@ -766,7 +770,7 @@
 
     },
     methods: {
-     // showModal() {
+      // showModal() {
       //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
       //   let checkedIds = this.$refs.taskVuetable.selectedTo;
       //   this.params = {
@@ -781,7 +785,7 @@
       closeModal() {
         this.isModalVisible = false;
       },
-    checkPermItem(value) {
+      checkPermItem(value) {
         return checkPermissionItem(value);
       },
 
@@ -808,46 +812,44 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-       let checkedAll, checkedIds;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/devicestatistics/generate`;
         this.name = 'Statistics-OperatingHour';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
-        downLoadFileFromServer(link, params, 'Statistics-OperatingHour', this.fileSelection);
+        } else {
+          downLoadFileFromServer(link, params, 'Statistics-OperatingHour', this.fileSelection);
           this.hideModal('model-export')
         }
       },
@@ -861,22 +863,21 @@
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/devicestatistics/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
-        printFileFromServer(link, params);
+        } else {
+          printFileFromServer(link, params);
         }
       },
 
@@ -921,24 +922,21 @@
 
             let key = keyData[i];
 
-            xAxisChart[i-1] = this.graphData.detailedStatistics[key].name;
-            if(this.graphData.detailedStatistics[key].scanStatistics!=null) {
+            xAxisChart[i - 1] = this.graphData.detailedStatistics[key].name;
+            if (this.graphData.detailedStatistics[key].scanStatistics != null) {
               this.bar3ChartOptions.series[0].data[i] = this.graphData.detailedStatistics[key].scanStatistics.workingSeconds;
-            }
-            else {
+            } else {
               this.bar3ChartOptions.series[0].data[i] = 0;
             }
-            if(this.graphData.detailedStatistics[key].judgeStatistics!=null) {
+            if (this.graphData.detailedStatistics[key].judgeStatistics != null) {
               this.bar3ChartOptions.series[1].data[i] = this.graphData.detailedStatistics[key].judgeStatistics.workingSeconds;
+            } else {
+              this.bar3ChartOptions.series[1].data[i] = 0;
             }
-            else {
-              this.bar3ChartOptions.series[1].data[i]=0;
-            }
-            if(this.graphData.detailedStatistics[key].handExaminationStatistics!=null) {
+            if (this.graphData.detailedStatistics[key].handExaminationStatistics != null) {
               this.bar3ChartOptions.series[2].data[i] = this.graphData.detailedStatistics[key].handExaminationStatistics.workingSeconds;
-            }
-            else {
-              this.bar3ChartOptions.series[2].data[i]=0;
+            } else {
+              this.bar3ChartOptions.series[2].data[i] = 0;
             }
           }
 
@@ -951,7 +949,7 @@
         }).then((response) => {
           let message = response.data.message;
           this.preViewData = response.data.data;
-          
+
           let totalSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds + this.preViewData.totalStatistics.judgeStatistics.workingSeconds + this.preViewData.totalStatistics.handExaminationStatistics.workingSeconds;
           let scanSeconds = this.preViewData.totalStatistics.scanStatistics.workingSeconds;
           let judgeSeconds = this.preViewData.totalStatistics.judgeStatistics.workingSeconds;
@@ -981,8 +979,6 @@
           this.doublePieChartOptions.series[0].data[0].value = this.scanData['rate'].value;
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
           this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
-
-
 
 
         }).catch((error) => {

@@ -148,7 +148,7 @@
 
     <div v-show="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="4" style="padding-left: 13px; padding-right: 8px">
+        <b-col class="col-30" style="padding-left: 13px; padding-right: 8px">
           <b-card class="h-100">
             <div
               style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
@@ -274,7 +274,7 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar2value"
                   :min="-50"
@@ -285,7 +285,7 @@
                   class="slide-class">
                 </VueSlideBar>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
                 <VueSlideBar
                   v-model="slidebar1value"
                   :min="-50"
@@ -299,7 +299,7 @@
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="8" style="padding-right: 13px">
+        <b-col class="col-70" style="padding-right: 13px">
           <b-card class="h-100 d-flex flex-column right-card">
             <div style="height: 20px;">
               <div
@@ -402,7 +402,7 @@
             </div>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.task-number')}}&nbsp
                     <span class="text-danger">*</span>
@@ -412,7 +412,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
@@ -423,7 +423,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.security-instrument')}}&nbsp
                     <span class="text-danger">*</span>
@@ -437,7 +437,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
@@ -452,7 +452,7 @@
 
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -464,7 +464,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
@@ -476,7 +476,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
@@ -490,7 +490,7 @@
                 </b-form-group>
               </b-col>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
@@ -504,7 +504,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
@@ -524,7 +524,7 @@
             </b-row>
             <b-row>
               <b-col>
-                <b-form-group>
+                <b-form-group class="form-group-margin">
                   <template slot="label">
                     备注
                     <span class="text-danger">*</span>
@@ -537,12 +537,14 @@
               </b-col>
             </b-row>
             <b-row>
+            </b-row>
+            <b-row>
               <b-col>
                 <div
                   style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 3px;"/>
                 <label
                   style="font-size: 15px; font-weight: bold;">{{$t('personal-inspection.seized-contraband')}}</label>
-                <b-row class="justify-content-start" style="margin-bottom: 1rem; margin-top: 0.5rem">
+                <b-row class="justify-content-start" style="margin-bottom: 2rem; margin-top: 1rem">
                   <b-col>
                     <div v-if="handGoodExpanded[0]" class="text-center"
                          style="background-color: #ff0000; padding-top: 8px; padding-bottom: 8px; border-radius: 17px">
@@ -596,7 +598,7 @@
               </b-col>
               <b-col style="max-width: 45%;">
                 <b-row>
-                  <b-col cols="12" class="align-self-end text-right mt-3" style="width: 100px; height: 95px;">
+                  <b-col cols="12" class="align-self-end text-right mt-3" style="height: 130px;">
                     <b-img v-if="validIcon === 'TRUE'" hidden src="/assets/img/icon_invalid.png" class="align-self-end"
                            style="width: 100px; height: 95px;"/>
                     <b-img v-else hidden src="/assets/img/icon_valid.png" class="align-self-end"
@@ -663,6 +665,21 @@
   </div>
 </template>
 <style lang="scss">
+  .col-30{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 30%;
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+  .col-70{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 70%;
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+  .form-group-margin{
+    margin-bottom: 1.5rem;
+  }
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -888,6 +905,7 @@
     data() {
       return {
         link: '',
+        timer: '',
         params: {},
         name: '',
         isExpanded: false,
@@ -1143,6 +1161,19 @@
       }
     },
 
+    created () {
+      //this.onSearchButton();
+
+      if(this.pageStatus==='table') {
+        this.timer = setInterval(() => this.onSearchButton(), 5000);
+      }
+
+      //this.timer = setInterval(this.onSearchButton, 5000)
+    },
+    // beforeDestroy () {
+    //   clearInterval(this.timer)
+    // },
+
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
@@ -1202,6 +1233,7 @@
     },
 
     methods: {
+      cancelAutoUpdate () { clearInterval(this.timer) },
       // showModal() {
       //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
       //   let checkedIds = this.$refs.taskVuetable.selectedTo;
@@ -1760,25 +1792,28 @@
 
       //:row-class="rowColour(props.rowData)"
       rowColour(dataItem, index) {
-        if (dataItem.workFlow !== null) {
-          if (dataItem.workFlow.workMode !== null) {
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-                return 'bg-orange';
-              }
-            }
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
-                return 'bg-orange';
-              }
-            }
-            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
-              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-                return 'bg-orange';
-              }
-            }
-          }
+        if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+          return 'bg-orange';
         }
+        // if (dataItem.workFlow !== null) {
+        //   if (dataItem.workFlow.workMode !== null) {
+        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
+        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+        //         return 'bg-orange';
+        //       }
+        //     }
+        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
+        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+        //         return 'bg-orange';
+        //       }
+        //     }
+        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
+        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+        //         return 'bg-orange';
+        //       }
+        //     }
+        //   }
+        // }
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server

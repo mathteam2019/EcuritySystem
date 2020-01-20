@@ -8,6 +8,7 @@
     }
   }
 
+
 </style>
 <template>
   <nav class="navbar fixed-top">
@@ -59,12 +60,12 @@
         </b-dropdown>
       </div>
       <div class="d-inline-block">
-        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="logout"/>
+        <img src="/assets/img/turn_on_icon.svg" class="ml-5 mb-1 logout" @click="confirmLogout"/>
       </div>
     </div>
     <b-modal centered id="modal-reset" ref="modal-reset">
       <template slot="modal-header">
-        <h2 id="modal-reset___BV_modal_title_" style="font-size: 1.7rem; font-weight: bold;" class="modal-title">{{$t('password-reset.password-change')}}</h2>
+        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">{{$t('password-reset.password-change')}}</h2>
         <button type="button" aria-label="Close" @click="hideModal('modal-reset')" class="close">×</button>
 <!--        <h3 class="text-center font-weight-bold">{{$t('password-reset.password-change')}}</h3>-->
       </template>
@@ -106,6 +107,21 @@
         </b-button>
       </template>
     </b-modal>
+    <b-modal centered id="modal-logout" ref="modal-logout">
+      <template slot="modal-header">
+        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">注销该帐户</h2>
+        <button type="button" aria-label="Close" @click="hideModal('modal-logout')" class="close">×</button>
+      </template>
+      <span style="font-size: 1.2rem; font-weight: bold;">您确定要注销吗？
+      </span>
+      <template slot="modal-footer">
+        <b-button variant="primary default" @click="logout" class="mr-1">
+          {{$t('password-reset.confirm')}}
+        </b-button>
+        <b-button variant="light default" @click="hideModal('modal-logout')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
   </nav>
 
 </template>
@@ -121,6 +137,7 @@
   import {getApiManager, isAccountValid} from "../../../api";
   import {responseMessages} from "../../../constants/response-messages";
   import {validationMixin} from 'vuelidate';
+  import VuejsDialog from 'vuejs-dialog';
 
   const {required, minLength, sameAs} = require('vuelidate/lib/validators');
   export default {
@@ -173,9 +190,16 @@
         this.passwordForm.confirmPassword = null;
         this.$refs['modal-reset'].show();
       },
+      confirmLogout(){
+        this.$refs['modal-logout'].show();
+      },
       savePassword() {
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
+          this.$notify('error', this.$t('auth-token-messages.error-title'), this.$t(`password-reset.format-invalid`), {
+            duration: 3000,
+            permanent: false
+          });
           return;
         }
         // this.passwordForm.password
@@ -236,7 +260,9 @@
 
       logout() {
 
-        return getApiManager()
+        this.hideModal('modal-logout');
+
+        getApiManager()
           .post(`${apiBaseUrl}/auth/logout`, {})
           .then(response => {
             let message = response.data.message;

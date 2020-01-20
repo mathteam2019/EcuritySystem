@@ -275,7 +275,7 @@
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
                 <div class="bar-chart-1-and-2">
-                  <v-chart :options="barChart2Options" style="height: 300px" :autoresize="true"/>
+                  <v-chart :options="barChart2Options" :spacing="1" style="height: 300px" :autoresize="true"/>
                 </div>
               </div>
 
@@ -601,6 +601,9 @@
 
           ]
         },
+        options : {
+          seriesBarDistance: 1
+        },
 
         barChart2Options: {
           tooltip: {
@@ -620,6 +623,7 @@
             bottom: '3%',
             containLabel: true
           },
+
           xAxis: {
             type: 'category',
             data: [],
@@ -648,13 +652,19 @@
             }
           },
           color: ['#ff6600', '#ff0000'],
+          gap:1,
+
           series: [
             {
+              gap:0.3,
+              spacing:0.6,
               name: '无查获',
               type: 'bar',
               data: [0]
             },
             {
+              gap:0.3,
+              spacing:0.6,
               name: '查获',
               type: 'bar',
               data: [0]

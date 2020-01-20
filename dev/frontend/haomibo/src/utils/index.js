@@ -409,7 +409,7 @@ export const loadImageCanvas = (url1, url2, rectInfoL, rectInfoR, isToggled) => 
     url2 = '';
   }
 
-  imgObj = new Chobi(url1, isToggled);
+  imgObj = new Chobi(url1, isToggled, true);
   imgObj.ready(function () {
     this.canvas = document.getElementById("firstcanvas");
     this.loadImageToCanvas(null, rectInfoL, isToggled, true);

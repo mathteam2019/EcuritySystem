@@ -179,7 +179,7 @@
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i class="icofont-star"/></span>
-                <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='1000001201'"><i class="icofont-search-user"/></span>
+                <span v-if="showPage.judgeResult!=null && showPage.judgeResult==='TRUE'"><i class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i class="icofont-female"/></span>
               </b-col>
             </b-row>
@@ -558,9 +558,9 @@
                              class="align-self-end" style="width: 100px; height: 95px;"/>
                     </div>
                     <div v-else>
-                      <b-img v-if="showPage.judgeResult === '1000001201'" src="/assets/img/icon_invalid.png"
+                      <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid.png"
                              class="align-self-end" style="width: 100px; height: 95px;"/>
-                      <b-img v-if="showPage.judgeResult === '1000001202'" src="/assets/img/icon_valid.png"
+                      <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid.png"
                              class="align-self-end" style="width: 100px; height: 95px;"/>
                     </div>
                   </b-col>
@@ -572,9 +572,9 @@
                              class="align-self-end" style="width: 100px; height: 95px;"/>
                     </div>
                     <div v-else>
-                      <b-img v-if="showPage.judgeResult === '1000001201'" src="/assets/img/icon_invalid_en.png"
+                      <b-img v-if="showPage.judgeResult === 'TRUE'" src="/assets/img/icon_invalid_en.png"
                              class="align-self-end" style="width: 100px; height: 95px;"/>
-                      <b-img v-if="showPage.judgeResult === '1000001202'" src="/assets/img/icon_valid_en.png"
+                      <b-img v-if="showPage.judgeResult === 'FALSE'" src="/assets/img/icon_valid_en.png"
                              class="align-self-end" style="width: 100px; height: 95px;"/>
                     </div>
                   </b-col>

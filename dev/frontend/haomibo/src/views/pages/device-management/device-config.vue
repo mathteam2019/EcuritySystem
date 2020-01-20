@@ -425,8 +425,8 @@
                   <template slot="label">
                     {{$t('device-config.maintenance-config.suitable-for')}}&nbsp;
                   </template>
-                  <v-select v-model="configForm.fromDeviceId" deselect-label="Can't remove this value" @input="unSelectDevice" :options="fromConfigDeviceSelectOptions"
-                            :readonly="configForm.fromDeviceId == configForm.deviceId" class="v-select-custom-style" :dir="direction" multiple/>
+                  <v-select v-model="configForm.fromDeviceId" ref="deviceSelect" :options="fromConfigDeviceSelectOptions"
+                            class="v-select-custom-style" :dir="direction" multiple/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -632,7 +632,11 @@
       this.$refs.pendingListTable.$parent.transform = this.transformPendingTable.bind(this);
     },
     data() {
+
       return {
+        // Deselect: {
+        //   render: createElement => createElement('span', '❌'),
+        // },
         isLoading: false,
         isLoadCompleted: false,
         modeDictionaryData: {
@@ -686,6 +690,7 @@
         },
         manualDeviceOptions: [],
         judgeDeviceOptions: [],
+        selectedDeviceName: null,
         link: '',
         params: {},
         name: '',
@@ -825,14 +830,29 @@
       //   this.name = 'Invalid-Task';
       //   this.isModalVisible = true;
       // },
+      disableSelect(){
+
+        let context = document.getElementsByClassName("vs__selected");
+        console.log(context.length);
+        for(let i=0;i<context.length;i++){
+          let span_text = context[i].textContent.trim();
+          let btn = context[i].getElementsByTagName("button")[0];
+          btn.removeAttribute("hidden");
+          if(span_text===this.selectedDeviceName){
+            btn.setAttribute("hidden", true);
+            break;
+          }
+        }
+      },
+
       closeModal() {
         this.isModalVisible = false;
       },
-      unSelectDevice(a){
-        return false;
-        console.log(a)
-        //console.log(" Teste toggleUnSelectLojas value : ", value);
-      },
+      // unSelectDevice(a){
+      //   return false;
+      //   console.log(a)
+      //   //console.log(" Teste toggleUnSelectLojas value : ", value);
+      // },
 
       checkPermItem(value) {
         return checkPermissionItem(value);
@@ -1128,6 +1148,8 @@
         }
       },
       initializeConfigData(data) {
+        this.selectedDeviceName = null;
+        this.selectedDeviceName = data.deviceName;
         let isDeviceId = false;
         this.selectedDeviceData = {
           fieldName: data.device.field ? data.device.field.fieldDesignation : '',
@@ -1160,7 +1182,6 @@
               this.configForm.fromDeviceId.push({
                 value: item.device.deviceId,
                 label: item.device.deviceName,
-                removable :false
               })
               isDeviceId = true;
             }
@@ -1225,7 +1246,9 @@
           this.configForm.judgeDeviceIdList.push(item.value);
         });
         this.configForm.fromDeviceId.forEach(item => {
-          this.configForm.fromDeviceIdList.push(item.value);
+          if(item.label!==this.selectedDeviceName) {
+            this.configForm.fromDeviceIdList.push(item.value);
+          }
         });
         this.isLoading = true;
         getApiManager().post(`${apiBaseUrl}/device-management/device-config/config/modify`, this.configForm).then((response) => {
@@ -1308,6 +1331,14 @@
       'pendingListTableItems.perPage': function (newVal) {
         this.$refs.pendingListTable.refresh();
       },
+
+      'configForm.fromDeviceId': function (newVal) {
+        let that = this;
+        setTimeout(function(){
+          that.disableSelect();
+        },100);
+      },
+
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
 
         let options = [];
@@ -1332,7 +1363,7 @@
 
           let getParent = (org) => {
             for (let i = 0; i < newVal.length; i++) {
-              if (newVal[i].fieldId == org.parentFieldId) {
+              if (newVal[i].fieldId === org.parentFieldId) {
                 return newVal[i];
               }
             }

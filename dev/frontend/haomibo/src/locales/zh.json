@@ -168,6 +168,7 @@
     "old-password": "旧密码",
     "new-password": "新密码",
     "confirm-password": "确认密码",
+    "format-invalid" : "密码格式不正确",
     "confirm": "确认",
     "update-password-successful": "密码变更成功",
     "invalid-password" : "旧密码不正确"
