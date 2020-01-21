@@ -122,10 +122,12 @@
           <b-button size="sm" class="ml-2" variant="info default" @click="onDisplaceButton()">
             <i class="icofont-exchange"></i>&nbsp;{{ $t('log-management.switch') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_statistics_export')" @click="onExportButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('user_statistics_export')" @click="onExportButton()">
             <i class="icofont-share-alt"></i>&nbsp;{{ $t('log-management.export') }}
           </b-button>
-              <b-button size="sm" class="ml-2" variant="outline-info default" :disabled="checkPermItem('user_statistics_print')" @click="onPrintButton()">
+          <b-button size="sm" class="ml-2" variant="outline-info default"
+                    :disabled="checkPermItem('user_statistics_print')" @click="onPrintButton()">
             <i class="icofont-printer"></i>&nbsp;{{ $t('log-management.print') }}
           </b-button>
         </div>
@@ -264,10 +266,11 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
@@ -463,7 +466,6 @@
               name: '判图',
               type: 'bar',
               stack: '总量',
-
               data: [0]
             },
             {
@@ -476,18 +478,18 @@
         },
 
         pageStatus: 'charts',
-	link: '',
+        link: '',
         params: {},
         name: '',
 
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        isModalVisible: false,
 
         filter: {
           modeId: null,
@@ -736,7 +738,7 @@
       }
     },
     methods: {
-     // showModal() {
+      // showModal() {
       //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
       //   let checkedIds = this.$refs.taskVuetable.selectedTo;
       //   this.params = {
@@ -751,7 +753,7 @@
       closeModal() {
         this.isModalVisible = false;
       },
-    checkPermItem(value) {
+      checkPermItem(value) {
         return checkPermissionItem(value);
       },
 
@@ -763,45 +765,43 @@
       onExportButton() {
         // this.fileSelection = [];
         // this.$refs['model-export'].show();
-       let checkedAll, checkedIds;
+        let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         this.params = {
-          'isAll': checkedIds.length > 0  || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         this.link = `task/statistics/userstatistics/generate`;
         this.name = 'Statistics-WorkingHour';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll, checkedIds;
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/userstatistics/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
+        } else {
           downLoadFileFromServer(link, params, 'Statistics-WorkingHour', this.fileSelection);
           this.hideModal('model-export')
         }
@@ -816,21 +816,20 @@
         if (this.pageStatus === 'charts') {
           checkedAll = true;
           checkedIds = "";
-        }
-        else {
+        } else {
           checkedAll = this.$refs.taskVuetable.checkedAllStatus;
           checkedIds = this.$refs.taskVuetable.selectedTo;
         }
 
         let params = {
-          'isAll': checkedIds.length > 0 || this.pageStatus==='charts' ? checkedAll : false,
+          'isAll': checkedIds.length > 0 || this.pageStatus === 'charts' ? checkedAll : false,
           'filter': {'filter': this.filter},
-          'idList': this.pageStatus ==='charts'?checkedIds:checkedIds.join()
+          'idList': this.pageStatus === 'charts' ? checkedIds : checkedIds.join()
         };
         let link = `task/statistics/userstatistics/generate`;
-        if(this.pageStatus!=='charts'&& checkedIds.length === 0){
+        if (this.pageStatus !== 'charts' && checkedIds.length === 0) {
 
-        }else {
+        } else {
           printFileFromServer(link, params);
         }
       },
@@ -943,8 +942,6 @@
           this.doublePieChartOptions.series[0].data[1].value = this.judgeData['rate'].value;
           this.doublePieChartOptions.series[0].data[2].value = this.handData['rate'].value;
 
-
-          
 
         }).catch((error) => {
         });

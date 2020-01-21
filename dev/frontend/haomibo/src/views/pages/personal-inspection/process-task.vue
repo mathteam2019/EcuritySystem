@@ -153,7 +153,7 @@
             <div
               style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
             <div>
-              <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">
+              <div style="font-size: 15px; font-weight: bold; margin-bottom: 1.5rem;">
                 {{$t('personal-inspection.scanned-image')}}
               </div>
             </div>
@@ -183,21 +183,21 @@
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
                 <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
                   class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
-              <b-col style="padding-right: 1rem; padding-left: 2rem;">
-                <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 0.5rem; padding-left: 1rem;">
+                <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col style="padding-right: 2rem; padding-left: 1rem;">
-                <canvas id="secondcanvas"  style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
+                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
-                  <div v-if="power===true">
-                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                  <div v-if="power===false">
+                    <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
                     <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
@@ -274,27 +274,43 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+            </b-row>
+            <b-row style="height: 15px !important;">
+              <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar2value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
+                <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+              <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+                <vue-slider
                   v-model="slidebar1value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar1value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
@@ -391,7 +407,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>结束</div>
+                    <div>{{$t('menu.end')}}</div>
                   </div>
 <!--                  <div class="right">-->
 <!--                    <div>End</div>-->
@@ -404,11 +420,11 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                    {{$t('personal-inspection.task-number')}}&nbsp
+                    {{$t('personal-inspection.task-number')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-model="showPage.taskNumber"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -417,9 +433,9 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-if="showPage.field==null" class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -429,11 +445,11 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-if="showPage.serScan == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -442,9 +458,9 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.serScan == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.serScan.scanImageGender)"/>
                 </b-form-group>
               </b-col>
@@ -457,9 +473,9 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="handDeviceName == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="handDeviceName"/>
                 </b-form-group>
               </b-col>
@@ -469,9 +485,9 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="judgeDeviceName == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="judgeDeviceName"/>
                 </b-form-group>
               </b-col>
@@ -481,11 +497,11 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.workFlow==null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-else-if="showPage.workFlow.workMode==null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getModeName(showPage.workFlow.workMode.modeName)"/>
                 </b-form-group>
               </b-col>
@@ -495,10 +511,10 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
-                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
-                                :value="getOptionValue(conclusionType)"/>
+                  <b-form-input disabled class="form-input-border"
+                                v-if="judgeUserId===null || judgeUserId === defaultUserId" :value="$t('maintenance-management.process-task.system')"/>
+                  <b-form-input disabled class="form-input-border" v-else
+                                :value="$t('maintenance-management.process-task.artificial')"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -509,9 +525,9 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.history == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.history.handAppraise)"/>
                 </b-form-group>
               </b-col>
@@ -529,9 +545,9 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;"
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;"
                                 v-if="showPage.note == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;" v-else
                                 v-model="showPage.note"/>
                 </b-form-group>
               </b-col>
@@ -589,7 +605,7 @@
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
                          @click="onVideoClick(video)">
-                    <video style=" width: 50px; height: 40px;">
+                    <video style=" width: 60px; height: 50px;">
                       <source :src="video.src" type="video/mp4">
                     </video>
                   </b-col>
@@ -606,7 +622,7 @@
 
                   </b-col>
                 </b-row>
-                <b-row style="margin-top: 0.5rem">
+                <b-row style="margin-top: 1rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(task_id)">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
@@ -680,6 +696,10 @@
   .form-group-margin{
     margin-bottom: 1.5rem;
   }
+  .form-input-border{
+    background-color: white !important;
+    border: 1px solid #ebebeb;
+  }
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -739,7 +759,7 @@
         margin-bottom: 5px;
 
         img {
-          $size: 40px;
+          $size: 35px;
           width: $size;
           height: $size;
           margin-bottom: 6px;
@@ -877,7 +897,9 @@
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
   import {validationMixin} from "vuelidate";
-  import Modal from '../../../components/Modal/modal'
+  import Modal from '../../../components/Modal/modal';
+  import VueSlider from 'vue-slider-component'
+  import 'vue-slider-component/theme/default.css'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -891,6 +913,7 @@
       'date-picker': DatePicker,
       'video-player': Videoplayer,
       VueSlideBar,
+      VueSlider,
       Modal
     },
     mixins: [validationMixin],
@@ -904,13 +927,21 @@
     },
     data() {
       return {
+        value1: 0,
+        value2: [0, 0],
+        dotOptions: [{
+          disabled: true
+        }, {
+          disabled: false
+        }],
         link: '',
         timer: '',
+        timeout:5000,
         params: {},
         name: '',
         isExpanded: false,
         pageStatus: 'table',
-        power: false,
+        power: true,
         siteData: [],
         showPage: [],
 
@@ -925,8 +956,8 @@
 
         isSlidebar1Expended: false,
         isSlidebar2Expended: false,
-        slidebar1value: 0,
-        slidebar2value: 0,
+        slidebar1value: [0, 0],
+        slidebar2value: [0, 0],
 
         slider: {
           lineHeight: 10,
@@ -1040,6 +1071,9 @@
         // TODO: select options
 
         onSiteOption: [],
+
+        httpOption:null,
+        apiUrl:null,
 
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
@@ -1163,20 +1197,27 @@
 
     created () {
       //this.onSearchButton();
+      this.timer = setInterval(this.autoUpdate, 15000)
 
-      if(this.pageStatus==='table') {
-        this.timer = setInterval(() => this.onSearchButton(), 5000);
-      }
+      //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
+      //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
 
-      //this.timer = setInterval(this.onSearchButton, 5000)
     },
-    // beforeDestroy () {
-    //   clearInterval(this.timer)
-    // },
+    beforeDestroy () {
+      clearInterval(this.timer)
+    },
 
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+      },
+
+      pageStatus(newval){
+        if(newval==='show'){
+          clearInterval(this.timer);
+        }else{
+          this.timer = setInterval(() => this.autoUpdate(), 15000);
+        }
       },
 
       siteData: function (newVal, oldVal) {
@@ -1206,26 +1247,27 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(5);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(6);
           }
         }
       },
       slidebar2value(newsValue, oldValue) {
 
-        if(oldValue<newsValue) {
-          for(let i=oldValue; i<newsValue; i++) {
+        console.log(oldValue[1]);
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(7);
           }
         }
         else {
-          for(let i=newsValue; i<oldValue; i++) {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(8);
           }
         }
@@ -1275,7 +1317,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === true) {
+        if (this.power === false) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1292,7 +1334,7 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === true) {
+        if (this.power === false) {
           imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
@@ -1300,9 +1342,9 @@
       loadImage() {
         let url1 = '';
         let url2 = '';
-        this.slidebar1value = 0;
-        this.slidebar2value = 0;
-        if (this.power === false) {
+        this.slidebar1value = [0, 0];
+        this.slidebar2value= [0, 0];
+        if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
@@ -1529,11 +1571,18 @@
       onRowClicked: function (taskNumber) {
 
         this.pageStatus = 'show';
-        this.power = false;
+        this.power = true;
         this.isSlidebar1Expended = false;
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
         this.orderCartoon = 0;
+        this.judgeStartTime = null;
+        this.judgeDeviceName = null;
+        this.judgeUserId = null;
+        this.judgeUserName = null;
+        this.handStartTime = null;
+        this.handDeviceName = null;
+        this.handUserName = null;
         let url1 = '';
         let url2 = '';
         let rateWidth, rateHeight;
@@ -1555,28 +1604,40 @@
               case responseMessages['ok']:
                 this.showPage = response.data.data;
                 this.apiBaseURL = apiBaseUrl;
+                if(this.showPage.serCheckResult!==null){
+                  this.pageStatus='table';
+                  this.$refs.taskVuetable.reload();
+                }
                 //if(this.showPage.workFlow.modeName
                 let modeName;
-                this.judgeStartTime = null;
-                this.judgeDeviceName = null;
-                this.judgeUserId = null;
-                this.judgeUserName = null;
-                this.handStartTime = null;
-                this.handDeviceName = null;
-                this.handUserName = null;
+                if(this.showPage.serJudgeGraph !== null) {
+                  // this.judgeStartTime = this.showPage.serJudgeGraph.judgeStartTime;
+                  // this.judgeDeviceName = this.showPage.serJudgeGraph.judgeDevice.deviceName;
+                  this.judgeUserId = this.showPage.serJudgeGraph.judgeUserId;
+                  this.judgeUserName = this.showPage.serJudgeGraph.judgeUser.userName;
+                }
+                if(this.showPage.serHandExamination !== null) {
+                  //this.handStartTime = this.showPage.serHandExamination.handStartTime;
+                  //this.handDeviceName = this.showPage.serHandExamination.handDevice.deviceName;
+                  this.handUserName = this.showPage.serHandExamination.handUser.userName;
+                }
 
                 for (let i = 0; i < this.showPage.serAssignList.length; i++) {
                   if (this.showPage.serAssignList[i].handDevice !== null) {
-                    this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
-                    this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
+                    if(this.handUserName===null) {
+                      this.handUserName = this.showPage.serAssignList[i].assignUser.userName;
+                    }
                     this.handStartTime = this.showPage.serAssignList[i].assignEndTime;
+                    this.handDeviceName = this.showPage.serAssignList[i].handDevice.deviceName;
                   } else {
                     if (this.showPage.serAssignList[i].judgeDevice !== null) {
                       this.judgeDeviceName = this.showPage.serAssignList[i].judgeDevice.deviceName;
                     }
-                    this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
+                    if(this.judgeUserName===null) {
+                      this.judgeUserName = this.showPage.serAssignList[i].assignUser.userName;
+                      this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
+                    }
                     this.judgeStartTime = this.showPage.serAssignList[i].assignEndTime;
-                    this.judgeUserId = this.showPage.serAssignList[i].assignUser.userId;
                   }
                 }
 
@@ -1596,11 +1657,11 @@
                 this.handGoodExpanded=[];
                 this.handGoodDataCodeExpanded = [];
 
-                this.conclusionType = null;
-                if(this.showPage.serCheckResultList.length !==0) {
-                  this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
-                }
-                console.log(this.conclusionType);
+                // this.conclusionType = null;
+                // if(this.judgeUserId===this.defaultUserId) {
+                //   this.conclusionType = this.showPage.serCheckResultList[0].conclusionType;
+                // }
+                //console.log(this.conclusionType);
 
                 deviceImage=[];
                 submitRects=[];
@@ -1750,6 +1811,9 @@
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
+      autoUpdate(){
+        this.$refs.taskVuetable.reload();
+      },
 
       onResetButton() {
         this.filter = {
@@ -1795,28 +1859,31 @@
         if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
           return 'bg-orange';
         }
-        // if (dataItem.workFlow !== null) {
-        //   if (dataItem.workFlow.workMode !== null) {
-        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
-        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-        //         return 'bg-orange';
-        //       }
-        //     }
-        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
-        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
-        //         return 'bg-orange';
-        //       }
-        //     }
-        //     if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
-        //       if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-        //         return 'bg-orange';
-        //       }
-        //     }
-        //   }
-        // }
+        if (dataItem.workFlow !== null) {
+          if (dataItem.workFlow.workMode !== null) {
+            // if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
+            //   if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+            //     return 'bg-orange';
+            //   }
+            // }
+            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
+              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+                return 'bg-orange';
+              }
+            }
+            // if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
+            //   if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+            //     return 'bg-orange';
+            //   }
+            // }
+          }
+        }
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        this.apiUrl = apiUrl;
+        this.httpOption = httpOptions;
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

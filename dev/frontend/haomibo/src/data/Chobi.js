@@ -18,7 +18,7 @@ var Chobi = function(elem, isToggled, left){
 				img.crossOrigin = "Anonymous";
 				console.log(elem);
 				if(elem===''){
-          if(isToggled === false) {
+          if(isToggled === true) {
             if(left === true) {
               elem = '/assets/img/scan-lr.gif';
             }else {
@@ -35,7 +35,7 @@ var Chobi = function(elem, isToggled, left){
 				img.src = elem;
         img.onerror = function (evt){
 
-            if(isToggled === false) {
+            if(isToggled === true) {
               if(left === true) {
                 elem = '/assets/img/scan-lr.gif';
               }else {
@@ -420,7 +420,7 @@ var Chobi = function(elem, isToggled, left){
 				drawArea.height = imageData.height;
 				ctx.putImageData(imageData,0,0);
 				var infoLength = rectInfo.length;
-        if(isToggled === false) {
+        if(isToggled === true) {
           ctx.fillStyle = "white";
           ctx.textAlign = "center";
           ctx.font = "18px Arial";

@@ -1338,9 +1338,9 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
 
-          if (this.filter.statWidth === 'year') {
-            this.bar3ChartOptions.xAxis.data = this.xHour;
-          } else {
+          // if (this.filter.statWidth === 'year') {
+          //   this.bar3ChartOptions.xAxis.data = this.xHour;
+          // } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
             this.lineChart1Options.xAxis.data = this.xDay;
             this.lineChart2Options.xAxis.data = this.xDay;
@@ -1359,7 +1359,7 @@
 
               }
             }
-          }
+          //}
         });
       },
 

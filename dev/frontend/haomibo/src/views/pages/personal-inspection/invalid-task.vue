@@ -95,12 +95,12 @@
 
     <div v-show="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="4" style="padding-left: 13px; padding-right: 8px">
+        <b-col class="col-30" style="padding-left: 13px; padding-right: 8px">
           <b-card class="h-100">
             <div
               style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
             <div>
-              <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">
+              <div style="font-size: 15px; font-weight: bold; margin-bottom: 1.5rem;">
                 {{$t('personal-inspection.scanned-image')}}
               </div>
             </div>
@@ -137,14 +137,14 @@
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
-              <b-col style="padding-right: 1rem; padding-left: 2rem;">
-                <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 0.5rem; padding-left: 1rem;">
+                <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col style="padding-right: 2rem; padding-left: 1rem;">
-                <canvas id="secondcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
+                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
-                  <div v-if="power===true">
-                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                  <div v-if="power===false">
+                    <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
                     <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
@@ -221,32 +221,48 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+            </b-row>
+            <b-row style="height: 15px !important;">
+              <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar2value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
+                <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+              <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+                <vue-slider
                   v-model="slidebar1value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar1value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="8" style="padding-right: 13px">
+        <b-col class="col-70" style="padding-right: 13px">
           <b-card class="h-100 d-flex flex-column right-card">
             <div style="height: 20px;">
               <div
@@ -259,9 +275,9 @@
                   <div class="left">
                     <div>{{$t('menu.start')}}</div>
                   </div>
-                  <div class="right">
-                    <div>Start</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Start</div>-->
+<!--                  </div>-->
                 </div>
 
                 <div class="part">
@@ -273,9 +289,9 @@
                       <div v-else>{{showPage.serScan.scanPointsman.userName}}</div>
                     </div>
                   </div>
-                  <div class="right">
-                    <div>Scanning</div>
-                  </div>
+<!--                  <div class="right">-->
+<!--                    <div>Scanning</div>-->
+<!--                  </div>-->
                   <div class="top-date">
                     <label
                       v-if="showPage.serScan != null">{{this.getDateTimeFormat2(showPage.serScan.scanStartTime)}}</label>
@@ -306,15 +322,14 @@
                   <!--                    <div>diagram</div>-->
                   <!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="judgeStartTime==null"/>
+                    <label v-if="showPage.serJudgeGraph==null"/>
                     <label
-                      v-else>{{this.getDateTimeFormat2(judgeStartTime)}}</label>
+                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeStartTime)}}</label>
                   </div>
                   <div class="bottom-date">
                     <label v-if="showPage.serJudgeGraph==null"/>
                     <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+judge') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
-                    <label v-else/>
+                      v-else>{{this.getDateTimeFormat2(showPage.serJudgeGraph.judgeEndTime)}}</label>
                   </div>
                 </div>
 
@@ -322,29 +337,29 @@
                   <div class="left">
                     <div>{{$t('device-config.maintenance-config.inspection')}}</div>
                     <div>
-                      <div v-if="showPage.serHandExamination == null"></div>
-                      <div v-else-if="showPage.serHandExamination.handUser == null"></div>
-                      <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>
+<!--                      <div v-if="showPage.serHandExamination == null"></div>-->
+<!--                      <div v-else-if="showPage.serHandExamination.handUser == null"></div>-->
+<!--                      <div v-else>{{showPage.serHandExamination.handUser.userName}}</div>-->
                     </div>
                   </div>
                   <!--                  <div class="right">-->
                   <!--                    <div>Inspection</div>-->
                   <!--                  </div>-->
                   <div class="top-date">
-                    <label v-if="handStartTime == null"/>
-                    <label
-                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>
+<!--                    <label v-if="handStartTime == null"/>-->
+<!--                    <label-->
+<!--                      v-else>{{this.getDateTimeFormat2(handStartTime)}}</label>-->
                   </div>
                   <div class="bottom-date">
-                    <label v-if="showPage.serHandExamination == null"></label>
-                    <label
-                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>
+<!--                    <label v-if="showPage.serHandExamination == null"></label>-->
+<!--                    <label-->
+<!--                      v-else-if="showPage.workFlow.workMode.modeName===getModeDataCode('scan+hand') || showPage.workFlow.workMode.modeName===getModeDataCode('all')">{{this.getDateTimeFormat2(showPage.serHandExamination.handEndTime)}}</label>-->
                   </div>
                 </div>
 
                 <div class="part">
                   <div class="left">
-                    <div>结束</div>
+                    <div>{{$t('menu.end')}}</div>
                   </div>
                   <!--                  <div class="right">-->
                   <!--                    <div>End</div>-->
@@ -357,11 +372,11 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                    {{$t('personal-inspection.task-number')}}&nbsp
+                    {{$t('personal-inspection.task-number')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-model="showPage.taskNumber"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -370,10 +385,9 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null"
-                                style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-if="showPage.field==null" class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -383,11 +397,11 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-if="showPage.serScan == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -396,9 +410,9 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.serScan == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.serScan.scanImageGender)"/>
                 </b-form-group>
               </b-col>
@@ -411,11 +425,11 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.serHandExamination == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-else-if="showPage.serHandExamination.handDevice == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="showPage.serHandExamination.handDevice.deviceName"/>
                 </b-form-group>
               </b-col>
@@ -425,11 +439,11 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.serJudgeGraph == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-else-if="showPage.serJudgeGraph.judgeDevice == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="showPage.serJudgeGraph.judgeDevice.deviceName"/>
                 </b-form-group>
               </b-col>
@@ -439,10 +453,10 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="conclusionType == null"
                                 :value="$t('maintenance-management.process-task.system')"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
@@ -452,9 +466,9 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.history == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.history.handAppraise)"/>
                 </b-form-group>
               </b-col>
@@ -466,9 +480,9 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;"
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;"
                                 v-if="showPage.note == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;" v-else
                                 v-model="showPage.note"/>
                 </b-form-group>
               </b-col>
@@ -527,7 +541,7 @@
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
                          @click="onVideoClick(video)">
-                    <video style=" width: 50px; height: 40px;">
+                    <video style=" width: 60px; height: 50px;">
                       <source :src="video.src" type="video/mp4">
                     </video>
                   </b-col>
@@ -544,7 +558,7 @@
 
                   </b-col>
                 </b-row>
-                <b-row style="margin-top: 0.5rem">
+                <b-row style="margin-top: 1rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button size="sm" class="ml-2" variant="info default" @click="onRowClicked(task_id)">
                       <i class="icofont-ui-reply"/>&nbsp;{{$t('log-management.refresh') }}
@@ -603,8 +617,24 @@
   </div>
 </template>
 <style lang="scss">
+  .col-30{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 30%;
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+  .col-70{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 70%;
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
   .form-group-margin{
     margin-bottom: 1.5rem;
+  }
+  .form-input-border{
+    background-color: white !important;
+    border: 1px solid #ebebeb;
   }
   span.cursor-p {
     cursor: pointer !important;
@@ -661,7 +691,7 @@
         margin-bottom: 5px;
 
         img {
-          $size: 40px;
+          $size: 35px;
           width: $size;
           height: $size;
           margin-bottom: 6px;
@@ -799,7 +829,9 @@
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
   import {validationMixin} from "vuelidate";
-  import Modal from '../../../components/Modal/modal'
+  import Modal from '../../../components/Modal/modal';
+  import VueSlider from 'vue-slider-component'
+  import 'vue-slider-component/theme/default.css'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -813,6 +845,7 @@
       'date-picker': DatePicker,
       'video-player': Videoplayer,
       VueSlideBar,
+      VueSlider,
       Modal
     },
     mixins: [validationMixin],
@@ -826,6 +859,13 @@
     },
     data() {
       return {
+        value1: 0,
+        value2: [0, 0],
+        dotOptions: [{
+          disabled: true
+        }, {
+          disabled: false
+        }],
         link: '',
         params: {},
         name: '',
@@ -837,7 +877,7 @@
           fieldId: null,
           userName: null
         },
-        power: false,
+        power: true,
         siteData: [],
         showPage: [],
 
@@ -852,8 +892,8 @@
 
         isSlidebar1Expended: false,
         isSlidebar2Expended: false,
-        slidebar1value: 0,
-        slidebar2value: 0,
+        slidebar1value: [0, 0],
+        slidebar2value: [0, 0],
 
         slider: {
           lineHeight: 10,
@@ -938,6 +978,9 @@
         handStartTime: null,
         handDeviceName: null,
         handUserName: null,
+        httpOption:null,
+        apiUrl:null,
+
         operationModeOptions: [
           {value: null, text: this.$t('personal-inspection.all')},
           {value: '4', text: '安检仪+审图端+手检端'},
@@ -1034,9 +1077,30 @@
         },
       }
     },
+
+    created () {
+      //this.onSearchButton();
+      this.timer = setInterval(this.autoUpdate, 15000)
+
+      //this.timer = setInterval(() => this.onTaskVuetableChangePage(this.httpOption.params.page), 15000);
+      //this.timer = setInterval(() => this.transform(this.taskVuetableHttpFetch(this.apiUrl, this.httpOption)), 15000);
+
+    },
+    beforeDestroy () {
+      clearInterval(this.timer)
+    },
+
     watch: {
       'taskVuetableItems.perPage': function (newVal) {
         this.$refs.taskVuetable.refresh();
+      },
+
+      pageStatus(newval){
+        if(newval==='show'){
+          clearInterval(this.timer);
+        }else{
+          this.timer = setInterval(() => this.autoUpdate(), 15000);
+        }
       },
 
       siteData: function (newVal, oldVal) {
@@ -1064,12 +1128,13 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(5);
           }
-        } else {
-          for (let i = newsValue; i < oldValue; i++) {
+        }
+        else {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(6);
           }
         }
@@ -1077,18 +1142,21 @@
 
       slidebar2value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        console.log(oldValue[1]);
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(7);
           }
-        } else {
-          for (let i = newsValue; i < oldValue; i++) {
+        }
+        else {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(8);
           }
         }
       },
     },
     methods: {
+      cancelAutoUpdate () { clearInterval(this.timer) },
       // showModal() {
       //   let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
       //   let checkedIds = this.$refs.taskVuetable.selectedTo;
@@ -1131,7 +1199,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === true) {
+        if (this.power === false) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1148,7 +1216,7 @@
           this.isSlidebar1Expended = false;
           this.isSlidebar2Expended = false;
         }
-        if (this.power === true) {
+        if (this.power === false) {
           imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
@@ -1156,9 +1224,9 @@
       loadImage() {
         let url1 = '';
         let url2 = '';
-        this.slidebar1value = 0;
-        this.slidebar2value = 0;
-        if (this.power === false) {
+        this.slidebar1value = [0, 0];
+        this.slidebar2value= [0, 0];
+        if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
@@ -1384,7 +1452,7 @@
       onRowClicked: function (taskNumber) {
 
         this.pageStatus = 'show';
-        this.power = false;
+        this.power = true;
         this.isSlidebar1Expended = false;
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
@@ -1601,6 +1669,9 @@
       onSearchButton() {
         this.$refs.taskVuetable.refresh();
       },
+      autoUpdate(){
+        this.$refs.taskVuetable.reload();
+      },
 
       onResetButton() {
         this.filter = {
@@ -1639,6 +1710,9 @@
       },
 
       taskVuetableHttpFetch(apiUrl, httpOptions) { // customize data loading for table from server
+
+        this.apiUrl = apiUrl;
+        this.httpOption = httpOptions;
 
         return getApiManager().post(apiUrl, {
           currentPage: httpOptions.params.page,

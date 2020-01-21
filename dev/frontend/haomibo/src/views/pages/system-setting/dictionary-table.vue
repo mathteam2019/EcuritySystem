@@ -27,7 +27,8 @@
                   <b-button size="sm" class="ml-2" variant="info default" @click="resetDicSearchForm()">
                     <i class="icofont-ui-reply"/>&nbsp;{{$t('permission-management.reset') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onClickCreateDicId()" :disabled="checkPermItem('dictionary_create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onClickCreateDicId()"
+                            :disabled="checkPermItem('dictionary_create')" variant="success default">
                     <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -53,15 +54,18 @@
                       </span>
                     </template>
                     <template slot="operating" slot-scope="props">
-                      <b-button
-                        size="sm" :disabled="checkPermItem('dictionary_modify')"
-                        variant="primary default btn-square" @click="onDicModifyClicked(props.rowData)">
-                        <i class="icofont-edit"/>
-                      </b-button>
-                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('dictionary_delete')"
-                                @click="onClickDeleteDicId(props.rowData)">
-                        <i class="icofont-bin"/>
-                      </b-button>
+                      <div v-if="props.rowData.dictionaryType === 2">
+                        <b-button
+                          size="sm" :disabled="checkPermItem('dictionary_modify')"
+                          variant="primary default btn-square" @click="onDicModifyClicked(props.rowData)">
+                          <i class="icofont-edit"/>
+                        </b-button>
+                        <b-button size="sm" variant="danger default btn-square" class="m-0"
+                                  :disabled="checkPermItem('dictionary_delete')"
+                                  @click="onClickDeleteDicId(props.rowData)">
+                          <i class="icofont-bin"/>
+                        </b-button>
+                      </div>
                     </template>
 
                   </vuetable>
@@ -80,7 +84,8 @@
         </b-col>
         <b-col cols="3" class="pl-0" v-if="selectedDic || dicForm.visible">
           <div class="section d-flex flex-column h-100 px-3">
-            <div v-if="selectedDic || dicForm.visible" style="margin-left: 1.5rem; margin-right: 1.5rem;" class="flex-grow-1">
+            <div v-if="selectedDic || dicForm.visible" style="margin-left: 1.5rem; margin-right: 1.5rem;"
+                 class="flex-grow-1">
               <b-form class="h-100 d-flex flex-column">
                 <b-form-group>
                   <template slot="label">
@@ -145,7 +150,8 @@
                     <i class="icofont-long-arrow-left"/>
                     {{ $t('personal-inspection.return') }}
                   </b-button>
-                  <b-button size="sm" class="ml-2" @click="onClickCreateDicData()" :disabled="checkPermItem('dictionary_data_create')" variant="success default">
+                  <b-button size="sm" class="ml-2" @click="onClickCreateDicData()"
+                            :disabled="checkPermItem('dictionary_data_create')" variant="success default">
                     <i class="icofont-plus"/>&nbsp;{{$t('permission-management.new') }}
                   </b-button>
                 </div>
@@ -174,15 +180,18 @@
                       </span>
                     </template>
                     <template slot="operating" slot-scope="props">
+                      <div v-if="dicIdType === 2">
                       <b-button
                         size="sm" :disabled="checkPermItem('dictionary_data_modify')"
                         variant="primary default btn-square" @click="onDicDataModifyClicked(props.rowData)">
                         <i class="icofont-edit"/>
                       </b-button>
-                      <b-button size="sm" variant="danger default btn-square" class="m-0" :disabled="checkPermItem('dictionary_data_delete')"
+                      <b-button size="sm" variant="danger default btn-square" class="m-0"
+                                :disabled="checkPermItem('dictionary_data_delete')"
                                 @click="onClickDeleteDicData(props.rowData)">
                         <i class="icofont-bin"/>
                       </b-button>
+                      </div>
                     </template>
 
                   </vuetable>
@@ -201,7 +210,8 @@
         </b-col>
         <b-col cols="3" class="pl-0" v-if="selectedDicData || dicDataForm.visible">
           <div class="section d-flex flex-column h-100 px-3">
-            <div v-if="selectedDicData || dicDataForm.visible" style="margin-left: 1.5rem; margin-right: 1.5rem;" class="flex-grow-1">
+            <div v-if="selectedDicData || dicDataForm.visible" style="margin-left: 1.5rem; margin-right: 1.5rem;"
+                 class="flex-grow-1">
               <b-form class="h-100 d-flex flex-column">
                 <b-form-group>
                   <template slot="label">
@@ -282,6 +292,7 @@
     padding: 1.5rem 0 1rem 0;
     border: solid 1px #cccccc;
   }
+
   .halo-tree .inputCheck {
     top: 2px !important;
   }
@@ -349,7 +360,13 @@
   import {responseMessages} from '../../../constants/response-messages';
 
   import staticUserTableData from '../../../data/user'
-  import {downLoadFileFromServer, getApiManager, isDataCodeValid, getDateTimeWithFormat, printFileFromServer} from "../../../api";
+  import {
+    downLoadFileFromServer,
+    getApiManager,
+    isDataCodeValid,
+    getDateTimeWithFormat,
+    printFileFromServer
+  } from "../../../api";
 
   export default {
     components: {
@@ -363,8 +380,8 @@
     mixins: [validationMixin],
     data() {
       return {
-        pageStatus : 'table',
-        pageStatus1 : '',
+        pageStatus: 'table',
+        pageStatus1: '',
         isLoading: false,
         dicForm: {
           visible: false,
@@ -381,14 +398,15 @@
 
         dicName: '',
         dicDataId: null,
-        dicDataCode : null,
-        dicDataValue : null,
+        dicDataCode: null,
+        dicDataValue: null,
         resourceList: [],
         resourceTreeData: [],
         selectedDic: null,
         selectedDicData: null,
         deletingDic: null,
         deletingDicData: null,
+        dicIdType:null,
 
         vuetableIdItems: {
           apiUrl: `${apiBaseUrl}/dictionary-management/dictionary/get-by-filter-and-page`,
@@ -461,17 +479,17 @@
             {
               name: '__slot:dataCode',
               title: '字典编号',
-              sortField : 'dataCode',
+              sortField: 'dataCode',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '20%'
+              width: '15%'
             },
             {
               name: 'dataValue',
               title: '字典值',
               titleClass: 'text-center',
               dataClass: 'text-center',
-              width: '20%'
+              width: '15%'
             },
             {
               name: 'note',
@@ -491,12 +509,12 @@
                 return getDateTimeWithFormat(createdTime);
               }
             },
-            // {
-            //   name: '__slot:operating',
-            //   title: this.$t('permission-management.permission-control.operating'),
-            //   titleClass: 'text-center',
-            //   dataClass: 'text-center',
-            // }
+            {
+              name: '__slot:operating',
+              title: this.$t('permission-management.permission-control.operating'),
+              titleClass: 'text-center',
+              dataClass: 'text-center',
+            }
           ]
         },
       }
@@ -524,11 +542,11 @@
         this.dicForm.visible = false;
       },
 
-    'vuetableDataItems.perPage': function (newVal) {
-      this.$refs.vuetableData.refresh();
-      this.selectedDicData = false;
-      this.dicDataForm.visible = false;
-    },
+      'vuetableDataItems.perPage': function (newVal) {
+        this.$refs.vuetableData.refresh();
+        this.selectedDicData = false;
+        this.dicDataForm.visible = false;
+      },
 
     },
     methods: {
@@ -537,7 +555,7 @@
         return checkPermissionItem(value);
       },
 
-      getDataCodeValue(value){
+      getDataCodeValue(value) {
         const dictionary = {
 
           "1000001401": `枪支`,
@@ -573,16 +591,16 @@
       onClickCreateDicId() {
         this.selectedDic = null;
         this.dicForm = {
-          visible : true,
+          visible: true,
           dicName: '',
           dicGrade: '',
           note: ''
         }
       },
       onClickCreateDicData() {
-        this.selectedDic = null;
+        this.selectedDicData = null;
         this.dicDataForm = {
-          visible : true,
+          visible: true,
           dicDataCode: '',
           dicDataVaule: '',
           note: ''
@@ -590,13 +608,13 @@
       },
       onClickSaveDic() {
 
-        if(this.$v.dicForm.$invalid){
+        if (this.$v.dicForm.$invalid) {
           return;
         }
 
         this.isLoading = true;
 
-        if(this.selectedDic) {
+        if (this.selectedDic) {
           getApiManager()
             .post(`${apiBaseUrl}/dictionary-management/dictionary/modify`, {
               'dictionaryId': this.selectedDic.dictionaryId,
@@ -628,7 +646,7 @@
                   });
                   break;
                 case responseMessages['invalid-parameter']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-message.invalid-parameter`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.invalid-parameter`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -641,7 +659,7 @@
               this.isLoading = false;
             });
         }
-        if(this.dicForm.visible){
+        if (this.dicForm.visible) {
           getApiManager()
             .post(`${apiBaseUrl}/dictionary-management/dictionary/create`, {
               'dictionaryName': this.dicForm.dicName,
@@ -666,7 +684,7 @@
                   });
                   break;
                 case responseMessages['invalid-parameter']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-message.invalid-parameter`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.invalid-parameter`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -683,16 +701,16 @@
       },
       onClickSaveDicData() {
 
-        if(this.$v.dicDataForm.$invalid){
+        if (this.$v.dicDataForm.$invalid) {
           return;
         }
         this.isLoading = true;
 
-        if(this.selectedDicData) {
+        if (this.selectedDicData) {
           getApiManager()
             .post(`${apiBaseUrl}/dictionary-management/dictionary-data/modify`, {
               'dataId': this.selectedDicData.dataId,
-              'dictionaryId' :this.dicDataId,
+              'dictionaryId': this.dicDataId,
               'dataCode': this.dicDataForm.dicDataCode,
               'dataValue': this.dicDataForm.dicDataValue,
               'note': this.dicDataForm.note,
@@ -722,7 +740,7 @@
                   });
                   break;
                 case responseMessages['invalid-parameter']:
-                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-message.invalid-parameter`), {
+                  this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-messages.invalid-parameter`), {
                     duration: 3000,
                     permanent: false
                   });
@@ -735,7 +753,7 @@
               this.isLoading = false;
             });
         }
-        if(this.dicDataForm.visible){
+        if (this.dicDataForm.visible) {
           getApiManager()
             .post(`${apiBaseUrl}/dictionary-management/dictionary-data/create`, {
               'dictionaryId': this.dicDataId,
@@ -801,7 +819,7 @@
       },
       onDicDataModifyClicked(dataItem) {
         this.dicDataForm.visible = false;
-        this.selectedDic = JSON.parse(JSON.stringify(dataItem));
+        this.selectedDicData = JSON.parse(JSON.stringify(dataItem));
         this.dicDataForm.dicDataCode = this.selectedDicData.dataCode;
         this.dicDataForm.dicDataValue = this.selectedDicData.dataValue;
         this.dicDataForm.note = this.selectedDicData.note;
@@ -809,9 +827,9 @@
 
       onDetailClicked(dataItem) {
         this.dicDataId = dataItem.dictionaryId;
+        this.dicIdType = dataItem.dictionaryType;
         this.pageStatus = 'modify';
         // this.pageStatus = 'table';
-
         this.$refs.vuetableData.refresh();
       },
 
@@ -859,12 +877,12 @@
       deleteDicData() {
         if (this.deletingDicData) {
           getApiManager()
-            .post(`${apiBaseUrl}/dictionary-management/dictionary/delete`, {
+            .post(`${apiBaseUrl}/dictionary-management/dictionary-data/delete`, {
               'dataId': this.deletingDicData.dataId
             })
             .then((response) => {
               this.isLoading = false;
-              this.hideModal('modal-delete-dic');
+              this.hideModal('modal-delete-dicData');
               let message = response.data.message;
               let data = response.data.data;
               switch (message) {
@@ -873,8 +891,8 @@
                     duration: 3000,
                     permanent: false
                   });
-                  this.deletingDic = null;
-                  this.$refs.vuetableId.refresh();
+                  this.deletingDicData = null;
+                  this.$refs.vuetableData.refresh();
                   break;
                 case responseMessages['has-children']:
                   this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-template.has-children`), {
@@ -908,7 +926,7 @@
         });
       },
       vuetableDataHttpFetch(apiUrl, httpOptions) {
-        if(this.dicDataId === null) return null;
+        if (this.dicDataId === null) return null;
         else {
           return getApiManager().post(apiUrl, {
             currentPage: httpOptions.params.page,

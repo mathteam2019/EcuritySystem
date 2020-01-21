@@ -275,7 +275,7 @@
 
               <div class="w-100 flex-grow-1 d-flex flex-column ">
                 <div class="bar-chart-1-and-2">
-                  <v-chart :options="barChart2Options" :spacing="1" style="height: 300px" :autoresize="true"/>
+                  <v-chart :options="barChart2Options" style="height: 300px" :autoresize="true"/>
                 </div>
               </div>
 
@@ -606,6 +606,8 @@
         },
 
         barChart2Options: {
+
+          seriesBarDistance:0,
           tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -623,7 +625,6 @@
             bottom: '3%',
             containLabel: true
           },
-
           xAxis: {
             type: 'category',
             data: [],
@@ -652,22 +653,19 @@
             }
           },
           color: ['#ff6600', '#ff0000'],
-          gap:1,
 
           series: [
             {
-              gap:0.3,
-              spacing:0.6,
               name: '无查获',
               type: 'bar',
-              data: [0]
+              data: [0],
+              barGap:'0%',
             },
             {
-              gap:0.3,
-              spacing:0.6,
               name: '查获',
               type: 'bar',
-              data: [0]
+              data: [0],
+              barGap:'0%',
             },
           ]
         },
@@ -1240,9 +1238,9 @@
             this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.seizure;
             this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSeizure;
           }
-          if (this.filter.statWidth === 'year') {
-            this.barChart2Options.xAxis.data = this.xHour;
-          } else {
+          // if (this.filter.statWidth === 'year') {
+          //   this.barChart2Options.xAxis.data = this.xHour;
+          // } else {
             //this.xDay = [];
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
@@ -1255,7 +1253,7 @@
                 this.barChart2Options.series[1].data[i] = this.preViewData.detailedStatistics[key].seizure;
               }
             }
-          }
+          //}
         });
       },
       getGraphData() {
