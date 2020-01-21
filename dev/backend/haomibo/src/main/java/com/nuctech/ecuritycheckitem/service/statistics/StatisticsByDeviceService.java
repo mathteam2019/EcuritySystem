@@ -28,6 +28,6 @@ public interface StatisticsByDeviceService {
      * @param perPage
      * @return
      */
-    TotalStatisticsResponse getStatistics(String sortBy, String order, Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(String sortBy, String order, String deviceCategory, String deviceName, Date startTime, Date endTime, Integer currentPage, Integer perPage);
 
 }

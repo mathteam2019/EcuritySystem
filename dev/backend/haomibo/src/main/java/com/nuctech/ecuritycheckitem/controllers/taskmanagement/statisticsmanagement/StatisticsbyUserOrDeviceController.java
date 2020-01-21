@@ -16,7 +16,6 @@ package com.nuctech.ecuritycheckitem.controllers.taskmanagement.statisticsmanage
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
-import com.nuctech.ecuritycheckitem.export.statisticsmanagement.ScanStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsExcelView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsPdfView;
 import com.nuctech.ecuritycheckitem.export.statisticsmanagement.UserOrDeviceStatisticsWordView;
@@ -99,8 +98,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         @AllArgsConstructor
         static class Filter {
 
-            Long deviceCategoryId; //device category id
-            Long deviceId; //device id
+            String deviceType; //device category id
+            String deviceName; //device id
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime; //start time
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
@@ -216,8 +215,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
         //get statistics from database through deviceStatisticsService
         TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getDeviceCategoryId(), //get device category id from input parameter
-                requestBody.getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getDeviceType(), //get device category id from input parameter
+                requestBody.getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getEndTime(), //get end time from input parameter
                 requestBody.getCurrentPage(), //get current page no from input parameter
@@ -391,8 +390,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
             }
         }
         TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getDeviceCategoryId(), //get device category id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
+                requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
                 null,
@@ -436,8 +435,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
         //get statistics from database through deviceStatisticsService
         TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getDeviceCategoryId(), //get device category id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
+                requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
                 null,
@@ -481,8 +480,8 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         }
         //get statistics from database through deviceStatisticsService
         TotalStatisticsResponse response = deviceStatisticsService.getStatistics(sortBy, order,
-                requestBody.getFilter().getFilter().getDeviceCategoryId(), //get device category id from input parameter
-                requestBody.getFilter().getFilter().getDeviceId(), //get device id from input parameter
+                requestBody.getFilter().getFilter().getDeviceType(), //get device category id from input parameter
+                requestBody.getFilter().getFilter().getDeviceName(), //get device id from input parameter
                 requestBody.getFilter().getFilter().getStartTime(), //get start time from input parameter
                 requestBody.getFilter().getFilter().getEndTime(), //get end time from input parameter
                 null,

@@ -26,6 +26,7 @@ import com.nuctech.ecuritycheckitem.service.statistics.StatisticsByDeviceService
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.text.DateFormat;
@@ -45,21 +46,22 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get total statistics by device
-     * @param deviceCategoryId : device category id
-     * @param deviceId : device id
-     * @param startTime : start time
-     * @param endTime : end time
+     *
+     * @param deviceType  : device category id
+     * @param deviceName  : device id
+     * @param startTime   : start time
+     * @param endTime     : end time
      * @param currentPage : current page
-     * @param perPage : per page
+     * @param perPage     : per page
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long deviceCategoryId, Long deviceId, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, String deviceType, String deviceName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
         //.... Get Total Statistics
-        String strQuery = makeQuery(deviceCategoryId, deviceId, startTime, endTime);
+        String strQuery = makeQuery(deviceType, deviceName, startTime, endTime);
         TotalStatistics totalStatistics = getTotalStatistics(strQuery);
         response.setTotalStatistics(totalStatistics);
 
@@ -84,7 +86,8 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 } else {
                     response.setLast_page(response.getTotal() / response.getPer_page() + 1);
                 }
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
 
         return response;
@@ -92,6 +95,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get total statistics amount
+     *
      * @param query
      * @return
      */
@@ -115,12 +119,13 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get statistics by statistics width
+     *
      * @param query
      * @param startTime : start time
-     * @param endTime : endtime
+     * @param endTime   : endtime
      * @return
      */
-    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query,  Date startTime, Date endTime) {
+    private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, Date startTime, Date endTime) {
 
         String temp = query;
         temp = temp.replace(":scanGroupBy", "(SCAN_DEVICE_ID)");
@@ -144,6 +149,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get paginated list using current pang and per page
+     *
      * @param list
      * @param currentPage
      * @param perPage
@@ -196,60 +202,82 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * join query to get available scan device list
-     * @param deviceId
+     *
+     * @param deviceName
      * @return
      */
-    private String getJoinWhereQueryForAvailableScanDeviceId(Long deviceId) {
+    private String getJoinWhereQueryForAvailableScanDeviceId(String deviceType, String deviceName) {
 
-        String strResult = "\t\t\twhere SCAN_DEVICE_ID = :deviceId\n";
-        strResult = strResult.replace(":deviceId", deviceId.toString());
+        String strResult = "\t\t\tLEFT JOIN sys_device d on s.SCAN_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%' AND d.DEVICE_TYPE like ':deviceType'\n";
+        strResult = strResult.replace(":deviceName", deviceName);
+        strResult = strResult.replace(":deviceType", deviceType);
 
         return strResult;
     }
 
     /**
      * join query to get available judge device list
-     * @param deviceId
+     *
+     * @param deviceName
      * @return
      */
-    private String getJoinWhereQueryForAvailableJudgeDeviceId(Long deviceId) {
+    private String getJoinWhereQueryForAvailableJudgeDeviceId(String deviceType, String deviceName) {
 
-        String strResult = "\t\t\twhere JUDGE_DEVICE_ID = :deviceId\n";
-        strResult = strResult.replace(":deviceId", deviceId.toString());
+        String strResult = "\t\t\tLEFT JOIN sys_device d on j.JUDGE_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%'  AND d.DEVICE_TYPE like ':deviceType'\n";
+        strResult = strResult.replace(":deviceName", deviceName);
+        strResult = strResult.replace(":deviceType", deviceType);
 
         return strResult;
     }
 
     /**
      * join query to get available handexamination device list
-     * @param deviceId
+     *
+     * @param deviceName
      * @return
      */
-    private String getJoinWhereQueryForAvailableHandDeviceId(Long deviceId) {
+    private String getJoinWhereQueryForAvailableHandDeviceId(String deviceType, String deviceName) {
 
-        String strResult = "\t\t\twhere HAND_DEVICE_ID = :deviceId\n";
-        strResult = strResult.replace(":deviceId", deviceId.toString());
+        String strResult = "\t\t\tLEFT JOIN sys_device d on h.HAND_DEVICE_ID = d.DEVICE_ID where d.DEVICE_NAME like '%:deviceName%' AND d.DEVICE_TYPE like ':deviceType'\n";
+        strResult = strResult.replace(":deviceName", deviceName);
+        strResult = strResult.replace(":deviceType", deviceType);
 
         return strResult;
     }
 
     /**
      * build entire query
-     * @param deviceId
+     *
+     * @param deviceName
      * @return
      */
-    private String makeQuery(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime) {
+    private String makeQuery(String deviceType, String deviceName, Date startTime, Date endTime) {
 
-        String strQuery =  getSelectQuery() + getJoinQuery();
+        if (deviceType == null) {
+            deviceType = "";
+        }
+        if (deviceName == null) {
+            deviceName = "";
+        }
 
-        strQuery = strQuery.replace(":whereScan", getWhereCauseScan(deviceCategoryId, deviceId, startTime, endTime));
-        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(deviceCategoryId, deviceId, startTime, endTime));
-        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(deviceCategoryId, deviceId, startTime, endTime));
+        String strQuery = getSelectQuery() + getJoinQuery();
 
-        if (deviceId != null) {
-            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId(deviceId));
-            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId(deviceId));
-            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId(deviceId));
+        strQuery = strQuery.replace(":whereScan", getWhereCauseScan(deviceType, deviceName, startTime, endTime));
+        strQuery = strQuery.replace(":whereJudge", getWhereCauseJudge(deviceType, deviceName, startTime, endTime));
+        strQuery = strQuery.replace(":whereHand", getWhereCauseHand(deviceType, deviceName, startTime, endTime));
+
+        if (!deviceName.isEmpty() && !deviceType.isEmpty()) {
+            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId(deviceType, deviceName));
+            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId(deviceType, deviceName));
+            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId(deviceType, deviceName));
+        } else if (!deviceName.isEmpty() && deviceType.isEmpty()) {
+            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId("%%", deviceName));
+            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId("%%", deviceName));
+            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId("%%", deviceName));
+        } else if (deviceName.isEmpty() && !deviceType.isEmpty()) {
+            strQuery = strQuery.replace(":selectScanDeviceIds", getJoinWhereQueryForAvailableScanDeviceId(deviceType, deviceName));
+            strQuery = strQuery.replace(":selectJudgeDeviceIds", getJoinWhereQueryForAvailableJudgeDeviceId(deviceType, deviceName));
+            strQuery = strQuery.replace(":selectHandDeviceIds", getJoinWhereQueryForAvailableHandDeviceId(deviceType, deviceName));
         }
         else {
             strQuery = strQuery.replace(":selectScanDeviceIds", "");
@@ -262,13 +290,14 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get where query for scan statistics
-     * @param deviceCategoryId
-     * @param deviceId
+     *
+     * @param deviceType
+     * @param deviceName
      * @param startTime
      * @param endTime
      * @return
      */
-    private String getWhereCauseScan(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime) {
+    private String getWhereCauseScan(String deviceType, String deviceName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -283,8 +312,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             String strDate = dateFormat.format(endTime);
             whereCause.add("SCAN_END_TIME <= '" + strDate + "'");
         }
-        if (deviceId != null) {
-            whereCause.add("SCAN_DEVICE_ID = " + deviceId);
+        if (deviceName != null && !deviceName.isEmpty()) {
+            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
+        }
+        if (deviceType != null && !deviceType.isEmpty()) {
+            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
         if (!whereCause.isEmpty()) {
@@ -296,13 +328,14 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get where query for judge statistics
-     * @param deviceCategoryId
-     * @param deviceId
+     *
+     * @param deviceType
+     * @param deviceName
      * @param startTime
      * @param endTime
      * @return
      */
-    private String getWhereCauseJudge(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime)  {
+    private String getWhereCauseJudge(String deviceType, String deviceName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -317,9 +350,13 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             String strDate = dateFormat.format(endTime);
             whereCause.add("JUDGE_END_TIME <= '" + strDate + "'");
         }
-        if (deviceId != null) {
-            whereCause.add("JUDGE_DEVICE_ID = " + deviceId);
+        if (deviceName != null && !deviceName.isEmpty()) {
+            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
         }
+        if (deviceType != null && !deviceType.isEmpty()) {
+            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
+        }
+
         if (!whereCause.isEmpty()) {
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
@@ -329,13 +366,14 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get where query for hand examination statistics
-     * @param deviceCategoryId
-     * @param deviceId
+     *
+     * @param deviceType
+     * @param deviceName
      * @param startTime
      * @param endTime
      * @return
      */
-    private String getWhereCauseHand(Long deviceCategoryId, Long deviceId, Date startTime, Date endTime)  {
+    private String getWhereCauseHand(String deviceType, String deviceName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -350,8 +388,11 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             String strDate = dateFormat.format(endTime);
             whereCause.add("HAND_END_TIME <= '" + strDate + "'");
         }
-        if (deviceId != null) {
-            whereCause.add("HAND_DEVICE_ID = " + deviceId);
+        if (deviceName != null && !deviceName.isEmpty()) {
+            whereCause.add("d.DEVICE_NAME like '%" + deviceName + "%'");
+        }
+        if (deviceType != null && !deviceType.isEmpty()) {
+            whereCause.add("d.DEVICE_TYPE like '" + deviceType + "'");
         }
 
         if (!whereCause.isEmpty()) {
@@ -363,6 +404,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * Get select query part
+     *
      * @return
      */
     private String getSelectQuery() {
@@ -377,7 +419,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\tSELECT\n" + "\t\tq \n" + "\tFROM\n" + "\t\t(\n" +
                 "\t\tSELECT DISTINCT \n" +
                 "\t\t:scanGroupBy AS q \n" +
-                "\t\tFROM\n" + "\t\t\tser_scan s \n"+
+                "\t\tFROM\n" + "\t\t\tser_scan s \n" +
                 "\t:selectScanDeviceIds\n" +
                 "\t\tUNION\n" +
                 "\t\tSELECT DISTINCT \n" +
@@ -396,6 +438,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * build entire join query
+     *
      * @return
      */
     private String getJoinQuery() {
@@ -405,6 +448,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get scan join query
+     *
      * @return
      */
     private String getScanJoinQuery() {
@@ -420,6 +464,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t\t:scanGroupBy AS q1 \n" +
                 "\tFROM\n" +
                 "\t\tser_scan s \n" +
+                "\t\tLEFT JOIN sys_device d on s.SCAN_DEVICE_ID = d.DEVICE_ID\n" +
                 "\t:whereScan\t" +
                 "\tGROUP BY\n" +
                 "\t\tq1 \n" +
@@ -428,6 +473,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get judge join query
+     *
      * @return
      */
     private String getJudgeJoinQuery() {
@@ -441,6 +487,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t\t:judgeGroupBy AS q2 \n" +
                 "\tFROM\n" +
                 "\t\tser_judge_graph j \n" +
+                "\t\tLEFT JOIN sys_device d on j.JUDGE_DEVICE_ID = d.DEVICE_ID\n" +
                 "\t:whereJudge\t" +
                 "\tGROUP BY\n" +
                 "\t\tq2 \n" +
@@ -449,6 +496,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * get hand join query
+     *
      * @return
      */
     private String getHandJoinQuery() {
@@ -462,6 +510,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
                 "\t\t:handGroupBy AS q3 \n" +
                 "\tFROM\n" +
                 "\t\tser_hand_examination h \n" +
+                "\t\tLEFT JOIN sys_device d on h.HAND_DEVICE_ID = d.DEVICE_ID\n" +
                 "\t:whereHand\t" +
                 "\tGROUP BY\n" +
                 "\t\tq3 \n" +
@@ -470,6 +519,7 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
 
     /**
      * return a total statistics record from a record of a query
+     *
      * @param item
      * @return
      */
@@ -515,7 +565,8 @@ public class StatisticsByDeviceServiceImpl implements StatisticsByDeviceService 
             record.setJudgeStatistics(judgeStat);
             record.setHandExaminationStatistics(handStat);
 
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         return record;
     }

@@ -383,9 +383,11 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
 
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id ");
+
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id ");
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
@@ -422,9 +424,10 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
 
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id ");
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
@@ -460,9 +463,12 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
         if (userName != null && !userName.isEmpty()) {
             whereCause.add("u.USER_NAME like '%" + userName + "%' ");
         }
+
+        stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
+                "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
+
         if (!whereCause.isEmpty()) {
-            stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                    "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id ");
+
             stringBuilder.append(" where " + StringUtils.join(whereCause, " and "));
         }
 
