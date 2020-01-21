@@ -7,6 +7,23 @@
       }
     }
   }
+  #modal-logout___BV_modal_content_ {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    width: 90%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: .3rem;
+    outline: 0;
+  }
 
 
 </style>
@@ -107,12 +124,13 @@
         </b-button>
       </template>
     </b-modal>
-    <b-modal centered id="modal-logout" ref="modal-logout">
+
+    <b-modal centered id="modal-logout" ref="modal-logout" class="modal-logout-content">
       <template slot="modal-header">
-        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">注销该帐户</h2>
+        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">{{$t('logout.title')}}</h2>
         <button type="button" aria-label="Close" @click="hideModal('modal-logout')" class="close">×</button>
       </template>
-      <span style="font-size: 1.2rem; font-weight: bold;">您确定要注销吗？
+      <span style="font-size: 1rem; font-weight: bold;">{{$t('logout.body')}}
       </span>
       <template slot="modal-footer">
         <b-button variant="primary default" @click="logout" class="mr-1">

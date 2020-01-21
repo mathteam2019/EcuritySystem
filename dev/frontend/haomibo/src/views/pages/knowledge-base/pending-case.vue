@@ -115,7 +115,7 @@
                       size="sm"
                       variant="danger default btn-square"
                       :disabled="checkPermItem('pending_knowledge_delete')"
-                      @click="onAction('dismiss', props.rowData.caseId)">
+                      @click="onAction('dismiss', props.rowData.caseDealId)">
                       <i class="icofont-ban"/>
                     </b-button>
                   </div>
@@ -137,12 +137,12 @@
 
     <div v-show="pageStatus === 'show'">
       <b-row class="fill-main">
-        <b-col cols="4" style="padding-left: 13px; padding-right: 8px">
+        <b-col class="col-30" style="padding-left: 13px; padding-right: 8px">
           <b-card class="h-100">
             <div
               style="width: 2px; height: 13px; background-color: #0c70ab; max-width: 2px; float: left; margin-top: 5px; margin-right: 5px;"/>
             <div>
-              <div style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">
+              <div style="font-size: 15px; font-weight: bold; margin-bottom: 1.5rem;">
                 {{$t('personal-inspection.scanned-image')}}
               </div>
             </div>
@@ -170,23 +170,22 @@
                 </div>
               </b-col>
               <b-col style="margin-bottom: 5px;" class="text-right icon-container">
-                <span v-if="showPage.serKnowledgeCase!=null && showPage.serKnowledgeCase.caseId!=null"><i
-                  class="icofont-star"/></span>
-                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='1000001201'"><i
+                <span><i class="icofont-star"/></span>
+                <span v-if="showPage.serJudgeGraph!=null && showPage.serJudgeGraph.judgeResult==='TRUE'"><i
                   class="icofont-search-user"/></span>
                 <span v-if="showPage.serScan!=null && showPage.serScan.scanImageGender==='1000000002'"><i
                   class="icofont-female"/></span>
               </b-col>
             </b-row>
             <b-row style="margin-bottom: 0.5rem;">
-              <b-col style="padding-right: 1rem; padding-left: 2rem;">
-                <canvas id="firstcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 0.5rem; padding-left: 1rem;">
+                <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
-              <b-col style="padding-right: 2rem; padding-left: 1rem;">
-                <canvas id="secondcanvas" style="height: 23vw;" class="img-fluid w-100 "/>
+              <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
+                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
-                  <div v-if="power===true">
-                    <b-img :disabled="power===true" src="/assets/img/previous_cartoon.png" class="operation-icon"
+                  <div v-if="power===false">
+                    <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
                            @click="previousImage()"/>
                     <b-img src="/assets/img/next_cartoon.png" class="operation-icon" @click="nextImage()"/>
                   </div>
@@ -263,32 +262,48 @@
                   </div>
                 </div>
               </b-col>
-              <b-col cols="8" v-if="isSlidebar2Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+            </b-row>
+            <b-row style="height: 15px !important;">
+              <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar2value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
+                <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
               </b-col>
-              <b-col cols="8" v-if="isSlidebar1Expended" style="max-width: 100%; flex: none; padding-top: 1.25rem;">
-                <VueSlideBar
+              <b-col v-if="isSlidebar1Expended" style="max-width: 100%; flex: none;">
+                <vue-slider
                   v-model="slidebar1value"
                   :min="-50"
                   :max="50"
-                  :processStyle="slider.processStyle"
-                  :lineHeight="slider.lineHeight"
-                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"
-                  class="slide-class">
-                </VueSlideBar>
+                  :dot-options="dotOptions"
+                  :order="false"
+                />
+<!--                <VueSlideBar-->
+<!--                  v-model="slidebar1value"-->
+<!--                  :min="-50"-->
+<!--                  :max="50"-->
+<!--                  :processStyle="slider.processStyle"-->
+<!--                  :lineHeight="slider.lineHeight"-->
+<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+<!--                  class="slide-class">-->
+<!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
         </b-col>
-        <b-col cols="8" style="padding-right: 13px">
+        <b-col class="col-70" style="padding-right: 13px">
           <b-card class="h-100 d-flex flex-column right-card">
             <div style="height: 20px;">
               <div
@@ -380,7 +395,7 @@
 
                 <div class="part">
                   <div class="left">
-                    <div>结束</div>
+                    <div>{{$t('menu.end')}}</div>
                   </div>
                   <!--                  <div class="right">-->
                   <!--                    <div>End</div>-->
@@ -393,11 +408,11 @@
               <b-col>
                 <b-form-group class="form-group-margin">
                   <template slot="label">
-                    {{$t('personal-inspection.task-number')}}&nbsp
+                    {{$t('personal-inspection.task-number')}}
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-model="showPage.taskNumber"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -406,9 +421,9 @@
                     {{$t('personal-inspection.on-site')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled v-if="showPage.field==null" style="background-color: whitesmoke; border: none;"/>
+                  <b-form-input disabled v-if="showPage.field==null" class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.field.fieldDesignation"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -418,11 +433,11 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled v-if="showPage.serScan == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else-if="showPage.serScan.scanDevice == null"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                   <b-form-input disabled v-else v-model="showPage.serScan.scanDevice.deviceName"
-                                style="background-color: whitesmoke; border: none;"/>
+                                class="form-input-border"/>
                 </b-form-group>
               </b-col>
               <b-col>
@@ -431,9 +446,9 @@
                     {{$t('personal-inspection.image-gender')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.serScan == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.serScan.scanImageGender)"/>
                 </b-form-group>
               </b-col>
@@ -446,9 +461,9 @@
                     {{$t('personal-inspection.hand-check-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="handDeviceName == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="handDeviceName"/>
                 </b-form-group>
               </b-col>
@@ -458,9 +473,9 @@
                     {{$t('personal-inspection.judgement-station')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="judgeDeviceName == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 v-model="judgeDeviceName"/>
                 </b-form-group>
               </b-col>
@@ -470,11 +485,11 @@
                     {{$t('personal-inspection.operation-mode')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.workFlow==null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-else-if="showPage.workFlow.workMode==null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getModeName(showPage.workFlow.workMode.modeName)"/>
                 </b-form-group>
               </b-col>
@@ -484,9 +499,9 @@
                     {{$t('personal-inspection.judgement-conclusion-type')}}
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
               </b-col>
@@ -498,9 +513,9 @@
                     {{$t('personal-inspection.evaluation-chart')}}&nbsp
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;"
+                  <b-form-input disabled class="form-input-border"
                                 v-if="showPage.history == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(showPage.history.handAppraise)"/>
                 </b-form-group>
               </b-col>
@@ -518,9 +533,9 @@
                     备注
                     <span class="text-danger">*</span>
                   </template>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;"
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;"
                                 v-if="showPage.note == null"/>
-                  <b-form-input disabled style="background-color: whitesmoke; max-width: 100%; border: none;" v-else
+                  <b-form-input disabled class="form-input-border" style="max-width: 100%;" v-else
                                 v-model="showPage.note"/>
                 </b-form-group>
               </b-col>
@@ -576,7 +591,7 @@
                   </b-col>
                   <b-col cols="auto" v-for="(video, videoIndex) in videos" :key="`video_${videoIndex}`"
                          @click="onVideoClick(video)">
-                    <video style=" width: 50px; height: 40px;">
+                    <video style=" width: 60px; height: 50px;">
                       <source :src="video.src" type="video/mp4">
                     </video>
                   </b-col>
@@ -593,7 +608,7 @@
 
                   </b-col>
                 </b-row>
-                <b-row style="margin-top: 0.5rem">
+                <b-row style="margin-top: 1rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button :disabled="checkPermItem('pending_knowledge_modify')"
                               @click="onAction('success', caseId)"
@@ -602,7 +617,7 @@
                     </b-button>
                     <b-button size="sm" variant="danger default"
                               :disabled="checkPermItem('pending_knowledge_delete')"
-                              @click="onAction('dismiss', caseId)">
+                              @click="onAction('dismiss', caseDealId)">
                       <i class="icofont-bin"/> {{$t('system-setting.delete')}}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
@@ -621,7 +636,7 @@
         <div class="video-container">
           <video-player ref="videoPlayer" :options="videoOptions"/>
         </div>
-        <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"></i></span>
+        <span class="switch-action" @click="finishVideoShow()"><i class="icofont-close-line"/></span>
       </div>
     </div>
     <b-modal centered id="model-export" ref="model-export">
@@ -660,8 +675,24 @@
   </div>
 </template>
 <style lang="scss">
+  .col-30{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 30%;
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+  .col-70{
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 70%;
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
   .form-group-margin{
     margin-bottom: 1.5rem;
+  }
+  .form-input-border{
+    background-color: white !important;
+    border: 1px solid #ebebeb;
   }
   span.cursor-p {
     cursor: pointer !important;
@@ -718,7 +749,7 @@
         margin-bottom: 5px;
 
         img {
-          $size: 40px;
+          $size: 35px;
           width: $size;
           height: $size;
           margin-bottom: 6px;
@@ -856,7 +887,9 @@
   import {checkPermissionItem} from "../../../utils";
   import Videoplayer from '../../../components/Common/VideoPlayer';
   import {validationMixin} from "vuelidate";
-  import Modal from '../../../components/Modal/modal'
+  import Modal from '../../../components/Modal/modal';
+  import VueSlider from 'vue-slider-component'
+  import 'vue-slider-component/theme/default.css'
 
   const {required, email, minLength, maxLength, alphaNum} = require('vuelidate/lib/validators');
 
@@ -870,6 +903,7 @@
       'date-picker': DatePicker,
       'video-player': Videoplayer,
       VueSlideBar,
+      VueSlider,
       Modal
     },
     mixins: [validationMixin],
@@ -883,6 +917,13 @@
     },
     data() {
       return {
+      value1: 0,
+        value2: [0, 0],
+        dotOptions: [{
+          disabled: true
+        }, {
+          disabled: false
+        }],
         videoOptions: {
           autoplay: true,
           language: 'zh',//todo need to set that lang setting with multiple.
@@ -895,7 +936,7 @@
         selectedVideo: null,
         isExpanded: false,
         pageStatus: 'table',
-        power: false,
+        power: true,
         siteData: [],
         showPage: [],
 
@@ -913,13 +954,14 @@
 
         isSlidebar1Expended: false,
         isSlidebar2Expended: false,
-        slidebar1value: 0,
-        slidebar2value: 0,
+        slidebar1value: [0, 0],
+        slidebar2value: [0, 0],
         // isSlidebar3Expended:false,
         // isSlidebar4Expended:false,
         // slidebar3value:0,
         // slidebar4value:0,
         caseId: 0,
+        caseDealId: 0,
         slider: {
           lineHeight: 10,
           processStyle: {
@@ -1140,12 +1182,13 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(5);
           }
-        } else {
-          for (let i = newsValue; i < oldValue; i++) {
+        }
+        else {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(6);
           }
         }
@@ -1153,12 +1196,14 @@
 
       slidebar2value(newsValue, oldValue) {
 
-        if (oldValue < newsValue) {
-          for (let i = oldValue; i < newsValue; i++) {
+        console.log(oldValue[1]);
+        if(oldValue[1]<newsValue[1]) {
+          for(let i=oldValue[1]; i<newsValue[1]; i++) {
             this.filterId(7);
           }
-        } else {
-          for (let i = newsValue; i < oldValue; i++) {
+        }
+        else {
+          for(let i=newsValue[1]; i<oldValue[1]; i++) {
             this.filterId(8);
           }
         }
@@ -1207,7 +1252,7 @@
       },
 
       onlyOneSlide(value) {
-        if (this.power === true) {
+        if (this.power === false) {
           if (value === 1) {
             this.isSlidebar1Expended = !this.isSlidebar1Expended;
             this.isSlidebar2Expended = !this.isSlidebar1Expended;
@@ -1225,7 +1270,7 @@
           this.isSlidebar2Expended = false;
 
         }
-        if (this.power === true) {
+        if (this.power === false) {
           imageFilterById(id, this.cartoonRectL, this.cartoonRectR);
         }
       },
@@ -1233,9 +1278,9 @@
       loadImage() {
         let url1 = '';
         let url2 = '';
-        this.slidebar1value = 0;
-        this.slidebar2value = 0;
-        if (this.power === false) {
+        this.slidebar1value = [0, 0];
+        this.slidebar2value= [0, 0];
+        if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
             url1 = this.imagesInfo[0].imageUrl;
@@ -1412,12 +1457,13 @@
       onRowClicked: function (data) {
 
         this.pageStatus = 'show';
-        this.power = false;
+        this.power = true;
         this.isSlidebar1Expended = false;
         this.isSlidebar2Expended = false;
         this.cntCartoon = 0;
         this.orderCartoon = 0;
         this.caseId = data.caseId;
+        this.caseDealId = data.caseDealId;
         let url1 = '';
         let url2 = '';
         let rateWidth, rateHeight;
@@ -1743,8 +1789,7 @@
 
         let dismissItem = () => {
           this.actionFilter = {
-            caseId: data,
-            status: "1000002502",
+            caseDealId: data,
           };
         };
 
@@ -1760,20 +1805,39 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
-                  if (this.actionFilter.status === '1000002503') {
                     this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.activate`), {
                       duration: 3000,
                       permanent: false
                     });
-                  }
 
-                  if (this.actionFilter.status === '1000002502') {
+                  this.pageStatus= 'table';
+                  this.$refs.pendingListTable.refresh();
+                  break;
+
+              }
+            })
+            .catch((error) => {
+            });
+        };
+
+        let deleteItem = () => {
+          // call api
+          getApiManager()
+            .post(`${apiBaseUrl}/knowledge-base/delete`, {
+              'caseDealId': this.actionFilter.caseDealId,
+            })
+            .then((response) => {
+              let message = response.data.message;
+              let data = response.data.data;
+              switch (message) {
+                case responseMessages['ok']: // okay
+
                     this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.dismiss`), {
                       duration: 3000,
                       permanent: false
                     });
-                  }
 
+                  this.pageStatus= 'table';
                   this.$refs.pendingListTable.refresh();
                   break;
 
@@ -1788,12 +1852,12 @@
           case 'success':
             successItem();
             activateItem();
-            this.pageStatus= 'table';
+
             break;
           case 'dismiss':
             dismissItem();
-            activateItem();
-            this.pageStatus= 'table';
+            deleteItem();
+
             break;
         }
       },

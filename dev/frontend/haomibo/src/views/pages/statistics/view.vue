@@ -869,6 +869,7 @@
       'operatingLogTableItems.perPage': function (newVal) {
         this.$refs.operatingLogTable.refresh();
       },
+
       siteData: function (newVal, oldVal) {
 
         this.onSiteOption = [];
@@ -1038,6 +1039,18 @@
 
 
       getPreviewData() {
+
+        // if(this.filter.startTime!==null){
+        //     console.log("d");
+        //     let time = this.filter.startTime;
+        //     console.log(time);
+        //       let array=time.split(".");
+        //   time = array[0];
+        //   this.filter.startTime = time + "." + "000+1400";
+        //
+        // }
+        // console.log(this.filter);
+
         getApiManager().post(`${apiBaseUrl}/task/statistics/preview`, {
           filter: this.filter
         }).then((response) => {
@@ -1049,6 +1062,7 @@
             this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.scanStatistics.validScan;
             this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.scanStatistics.alarmScan;
             this.doublePieChartOptions.series[1].data[1].value = this.preViewData.totalStatistics.scanStatistics.passedScan;
+
           }
           else {
             this.doublePieChartOptions.series[0].data[0].value = 0;
@@ -1057,9 +1071,9 @@
             this.doublePieChartOptions.series[1].data[1].value = 0;
           }
 
-          if (this.filter.statWidth === 'year') {
-            this.bar3ChartOptions.xAxis.data = this.xHour;
-          } else {
+          // if (this.filter.statWidth === 'year') {
+          //   this.bar3ChartOptions.xAxis.data = this.xHour;
+          // } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
             this.bar3ChartOptions.xAxis.data = this.xDay;
@@ -1077,7 +1091,7 @@
                 this.bar3ChartOptions.series[2].data[i] = 0;
               }
             }
-          }
+          //}
 
         }).catch((error) => {
           });
@@ -1097,6 +1111,7 @@
           endTime: null,
           statWidth: 'hour',
         };
+
         //this.getPreviewData();
         //this.$refs.taskVuetable.refresh();
 

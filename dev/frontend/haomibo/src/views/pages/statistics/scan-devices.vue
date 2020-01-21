@@ -993,7 +993,7 @@
           let message = response.data.message;
           this.preViewData = response.data.data;
           if(this.preViewData.totalStatistics!=null) {
-          
+
           this.doublePieChartOptions.series[0].data[0].value = this.preViewData.totalStatistics.invalidScan;
           this.doublePieChartOptions.series[0].data[1].value = this.preViewData.totalStatistics.validScan;
           this.doublePieChartOptions.series[1].data[0].value = this.preViewData.totalStatistics.alarmScan;
@@ -1006,9 +1006,9 @@
             this.doublePieChartOptions.series[1].data[1].value = 0;
           }
 
-          if (this.filter.statWidth === 'year') {
-            this.bar3ChartOptions.xAxis.data = this.xHour;
-          } else {
+          // if (this.filter.statWidth === 'year') {
+          //   this.bar3ChartOptions.xAxis.data = this.xHour;
+          // } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
             this.bar3ChartOptions.xAxis.data = this.xDay;
@@ -1021,8 +1021,8 @@
                 this.bar3ChartOptions.series[2].data[i] = this.preViewData.detailedStatistics[key].invalidScan;
               }
             }
-          }
-          
+          //}
+
 
         });
       },

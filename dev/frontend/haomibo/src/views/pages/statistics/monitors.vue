@@ -1312,9 +1312,9 @@
             this.pieChart2Options.series[0].data[0].value = this.preViewData.totalStatistics.suspiction;
             this.pieChart2Options.series[0].data[1].value = this.preViewData.totalStatistics.noSuspiction;
           }
-          if (this.filter.statWidth === 'year') {
-            this.bar3ChartOptions.xAxis.data = this.xHour;
-          } else {
+          // if (this.filter.statWidth === 'year') {
+          //   this.bar3ChartOptions.xAxis.data = this.xHour;
+          // } else {
             this.xDay = Object.keys(this.preViewData.detailedStatistics);
 
             this.barChart1Options.xAxis.data = this.xDay;
@@ -1335,7 +1335,7 @@
                 this.barChart3Options.series[2].data[i] = this.preViewData.detailedStatistics[key].minArtificialJudgeDuration;
               }
             }
-          }
+          //}
         });
       },
 

@@ -78,6 +78,10 @@
     "not-normal-role": "这用户不是普通职员",
     "title": "毫米波集中查验系统"
   },
+  "logout": {
+    "title": "退出",
+    "body" : "是否退出系统，重新登录？"
+  },
   "menu": {
     "admin": "主场",
     "user": "主场",
@@ -85,6 +89,7 @@
     "second-menu": "第二菜单",
     "second": "第二",
     "start": "开始",
+    "end": "结束",
     "single": "单",
     "pages": "页数",
     "charts": "图表",
