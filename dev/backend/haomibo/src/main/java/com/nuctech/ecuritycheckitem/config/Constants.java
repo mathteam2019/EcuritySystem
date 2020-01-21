@@ -14,6 +14,7 @@
 package com.nuctech.ecuritycheckitem.config;
 
 import java.io.File;
+import java.util.TreeMap;
 
 public class Constants {
 
@@ -77,6 +78,22 @@ public class Constants {
     public static Long SEIZED_DICTIONARY_ID = 16L;
 
     public static final Long DEFAULT_SYSTEM_USER = Long.valueOf(10000);
+
+    public static final TreeMap<String, String> userCategory = new TreeMap<String, String>() {{
+        put("1000002404", "1");
+        put("1000002403", "2");
+        put("1000002402", "3");
+    }};
+
+
+    public static class WorkMode {
+
+        public static final String MODE_1000002601 = "1000002601";
+        public static final String MODE_1000002602 = "1000002602";
+        public static final String MODE_1000002603 = "1000002603";
+        public static final String MODE_1000002604 = "1000002604";
+
+    }
 
 
 }

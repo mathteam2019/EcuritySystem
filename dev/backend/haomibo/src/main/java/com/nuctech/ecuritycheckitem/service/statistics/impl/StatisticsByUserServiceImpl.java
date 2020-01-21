@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.statistics.impl;
 
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.SerHandExamination;
 import com.nuctech.ecuritycheckitem.models.db.SerJudgeGraph;
 import com.nuctech.ecuritycheckitem.models.db.SerScan;
@@ -55,7 +56,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @return
      */
     @Override
-    public TotalStatisticsResponse getStatistics(String sortBy, String order, Long modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
+    public TotalStatisticsResponse getStatistics(String sortBy, String order, String modeId, String userName, Date startTime, Date endTime, Integer currentPage, Integer perPage) {
 
         TotalStatisticsResponse response = new TotalStatisticsResponse();
 
@@ -245,7 +246,7 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @param endTime
      * @return
      */
-    private String makeQuery(Long modeId, String userName, Date startTime, Date endTime) {
+    private String makeQuery(String modeId, String userName, Date startTime, Date endTime) {
 
         String strQuery = getSelectQuery() + getJoinQuery();
 
@@ -361,13 +362,16 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @param endTime
      * @return
      */
-    private String getWhereCauseScan(Long modeId, String userName, Date startTime, Date endTime) {
+    private String getWhereCauseScan(String modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (modeId != null) {
-            whereCause.add("wf.MODE_ID = " + modeId);
+        if (modeId != null && !modeId.equals(Constants.WorkMode.MODE_1000002601)) {
+            if (!modeId.equals(Constants.WorkMode.MODE_1000002602)) {
+
+                whereCause.add("FALSE");
+            }
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -402,13 +406,16 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @param endTime
      * @return
      */
-    private String getWhereCauseJudge(Long modeId, String userName, Date startTime, Date endTime) {
+    private String getWhereCauseJudge(String modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (modeId != null) {
-            whereCause.add("wf.MODE_ID = " + modeId);
+        if (modeId != null && modeId != Constants.WorkMode.MODE_1000002601) {
+            if (!modeId.equals(Constants.WorkMode.MODE_1000002603)) {
+
+                whereCause.add("FALSE");
+            }
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -442,13 +449,16 @@ public class StatisticsByUserServiceImpl implements StatisticsByUserService {
      * @param endTime
      * @return
      */
-    private String getWhereCauseHand(Long modeId, String userName, Date startTime, Date endTime) {
+    private String getWhereCauseHand(String modeId, String userName, Date startTime, Date endTime) {
 
         List<String> whereCause = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (modeId != null) {
-            whereCause.add("wf.MODE_ID = " + modeId);
+        if (modeId != null && modeId != Constants.WorkMode.MODE_1000002601) {
+            if (!modeId.equals(Constants.WorkMode.MODE_1000002604)) {
+
+                whereCause.add("FALSE");
+            }
         }
         if (startTime != null) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");

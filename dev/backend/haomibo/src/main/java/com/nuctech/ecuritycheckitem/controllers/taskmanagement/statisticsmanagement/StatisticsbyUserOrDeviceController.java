@@ -66,7 +66,7 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
         @AllArgsConstructor
         static class Filter {
 
-            Long modeId; //work mode id
+            String modeId; //work mode id
             String userName; //user name
             @DateTimeFormat(style = Constants.DATETIME_FORMAT)
             Date startTime; //start time

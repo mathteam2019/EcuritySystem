@@ -29,6 +29,6 @@ public interface StatisticsByUserService {
      * @param perPage
      * @return
      */
-    TotalStatisticsResponse getStatistics(String sortBy, String order, Long modeId, String userName, Date startTime, Date endTime,  Integer currentPage, Integer perPage);
+    TotalStatisticsResponse getStatistics(String sortBy, String order, String modeId, String userName, Date startTime, Date endTime,  Integer currentPage, Integer perPage);
 
 }
