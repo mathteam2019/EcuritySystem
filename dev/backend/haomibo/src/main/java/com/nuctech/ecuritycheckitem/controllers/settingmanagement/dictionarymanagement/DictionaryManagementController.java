@@ -255,6 +255,7 @@ public class DictionaryManagementController extends BaseController {
 
         SysDictionary sysDictionary = SysDictionary.builder()
                 .dictionaryName(requestBody.getDictionaryName())
+                .dictionaryType(SysDictionary.Type.USER)
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.createDictionary(sysDictionary);
@@ -353,6 +354,7 @@ public class DictionaryManagementController extends BaseController {
         SysDictionary sysDictionary = SysDictionary.builder()
                 .dictionaryName(requestBody.getDictionaryName())
                 .dictionaryId(requestBody.getDictionaryId())
+                .dictionaryType(SysDictionary.Type.USER)
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.modifyDictionary(sysDictionary);
@@ -381,23 +383,23 @@ public class DictionaryManagementController extends BaseController {
         }
 
 
-        if (!dictionaryService.checkDictionaryDataExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
+        if (!dictionaryService.checkDictionaryDataExist(requestBody.getDataId())) { // Check if data id is existing.
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataValue(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
-        if(dictionaryService.checkDictionaryDataCode(requestBody.getDataCode(), requestBody.getDictionaryId())) {
+        if(dictionaryService.checkDictionaryDataCode(requestBody.getDataCode(), requestBody.getDataId())) {
             auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , "", messageSource.getMessage("UsedDictionaryCode", null, currentLocale), requestBody.getDataValue(),null);
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
-        if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), requestBody.getDictionaryId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryValue", null, currentLocale), requestBody.getDataValue(),null);
-            return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
-        }
+//        if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), requestBody.getDataId())) {
+//            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+//                    , "", messageSource.getMessage("UsedDictionaryValue", null, currentLocale), requestBody.getDataValue(),null);
+//            return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
+//        }
 
 
         SysDictionaryData sysDictionaryData = SysDictionaryData.builder()

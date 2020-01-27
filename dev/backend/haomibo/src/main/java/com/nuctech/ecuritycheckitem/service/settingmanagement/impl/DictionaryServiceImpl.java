@@ -72,7 +72,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         if (dataId == null) {
             return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue));
         }
-        return sysDictionaryRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue)
+        return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue)
                 .and(QSysDictionaryData.sysDictionaryData.dataId.ne(dataId)));
     }
 
@@ -87,7 +87,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         if (dataId == null) {
             return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode));
         }
-        return sysDictionaryRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode)
+        return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode)
                 .and(QSysDictionaryData.sysDictionaryData.dataId.ne(dataId)));
     }
 
@@ -162,7 +162,7 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     @Override
     public void removeDictionaryData(Long dataId) {
-        sysDictionaryDataRepository.delete(SysDictionaryData.builder().dictionaryId(dataId).build());
+        sysDictionaryDataRepository.delete(SysDictionaryData.builder().dataId(dataId).build());
     }
 
     /**

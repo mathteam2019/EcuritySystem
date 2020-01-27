@@ -408,6 +408,13 @@ public class UserManagementController extends BaseController {
                     , "", messageSource.getMessage("UsedAccount", null, currentLocale), requestBody.getUserAccount().toString(),null);
             return new CommonResponseBody(ResponseMessage.USED_USER_ACCOUNT);
         }
+
+        if (userService.checkNumberExist(requestBody.getUserNumber(), null)) { // Check if user account is duplicated.
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("User.Number", null, currentLocale), requestBody.getUserAccount().toString(),null);
+            return new CommonResponseBody(ResponseMessage.USED_USER_NUMBER);
+        }
+
         if (UserCreateRequestBody.PasswordType.OTHER.equals(requestBody.getPasswordType()) && (requestBody.getPasswordValue() == null || requestBody.getPasswordValue().length() < 6)) { // Check password.
             auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserAccount().toString(),null);

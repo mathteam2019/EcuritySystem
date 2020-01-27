@@ -73,6 +73,15 @@ public class DeviceServiceImpl implements DeviceService {
     FromConfigIdRepository fromConfigIdRepository;
 
     @Autowired
+    SerScanRepository serScanRepository;
+
+    @Autowired
+    HistoryRepository historyRepository;
+
+    @Autowired
+    SerAssignRepository serAssignRepository;
+
+    @Autowired
     Utils utils;
 
     /**
@@ -139,6 +148,38 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return sysDeviceRepository.exists(QSysDevice.sysDevice.guid.eq(guid)
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
+    /**
+     * check if device status and it used in history
+     * @param deviceId
+     * @return
+     */
+    @Override
+    public int checkDeviceStatus(Long deviceId) {
+        Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.deviceId.eq(deviceId));
+        SysDevice sysDevice = optionalSysDevice.get();
+        if(sysDevice.getStatus().equals(SysDevice.Status.INACTIVE)) {
+            return 0;
+        }
+        if(serScanRepository.exists(QSerScan.serScan.scanDeviceId.eq(deviceId))) {
+            return 1;
+        }
+
+        if(serAssignRepository.exists(QSerAssign.serAssign.assignJudgeDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(serAssignRepository.exists(QSerAssign.serAssign.assignHandDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(historyRepository.exists(QHistory.history.handDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(historyRepository.exists(QHistory.history.judgeDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        return 2;
     }
 
     /**

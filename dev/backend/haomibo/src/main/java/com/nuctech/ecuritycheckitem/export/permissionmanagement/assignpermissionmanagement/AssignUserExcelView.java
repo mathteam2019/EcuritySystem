@@ -111,7 +111,7 @@ public class AssignUserExcelView extends BaseExcelView {
                     row.createCell(5).setCellValue("无");
                 }
 
-                row.createCell(6).setCellValue(user.getDataRangeCategory());
+                row.createCell(6).setCellValue(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

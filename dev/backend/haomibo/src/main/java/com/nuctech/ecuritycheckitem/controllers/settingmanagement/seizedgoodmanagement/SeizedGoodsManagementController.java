@@ -28,6 +28,7 @@ import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodServi
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -41,10 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Seized Goods management controller.
@@ -295,15 +293,10 @@ public class SeizedGoodsManagementController extends BaseController {
         PageResult<SerSeizedGood> result = serSeizedGoodService.getGoodsListByFilter(sortBy, order, goodsCode, currentPage, perPage); //get list of field from database through fieldService
         long total = result.getTotal(); //get total count
         List<SerSeizedGood> data = result.getDataList();
-        for(int i = 0; i < data.size(); i ++) {
-            for(int j = 0; j < dictionaryDataList.size(); j ++) {
-                if(data.get(i).getSeizedGoodsCode().equals(dictionaryDataList.get(j).getDataCode())) {
-                    data.get(i).setSeizedGoods(dictionaryDataList.get(j).getDataValue());
-                    break;
-                }
-            }
-        }
 
+        for(int i = 0; i < data.size(); i ++) {
+            data.get(i).setSeizedGoods(data.get(i).getSysDictionaryData().getDataValue());
+        }
 
 
         MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(

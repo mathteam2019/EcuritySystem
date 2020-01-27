@@ -199,6 +199,16 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return serKnowledgeCaseRepository.exists(QSerKnowledgeCase.serKnowledgeCase.caseId.eq(caseId));
     }
 
+    @Override
+    public void delete(Long caseDealId) {
+        Optional<SerKnowledgeCaseDeal> optionalSerKnowledgeCase = serKnowledgeCaseDealRepository.findOne(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal
+                .caseDealId.eq(caseDealId));
+        SerKnowledgeCaseDeal serKnowledgeCaseDeal = optionalSerKnowledgeCase.get();
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseDeal.getKnowledgeCase();
+        serKnowledgeCaseRepository.delete(serKnowledgeCase);
+        serKnowledgeCaseDealRepository.delete(serKnowledgeCaseDeal);
+    }
+
     /**
      * update knowledgecase status
      * @param caseId

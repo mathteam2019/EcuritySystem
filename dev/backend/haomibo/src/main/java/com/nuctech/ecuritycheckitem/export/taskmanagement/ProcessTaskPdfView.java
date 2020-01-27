@@ -155,11 +155,9 @@ public class ProcessTaskPdfView extends BasePdfView {
 
                 }
                 else {
-
                     addTableCell(table, "无");
                     addTableCell(table, "无");
                     addTableCell(table, "无");
-
                 }
 
             }

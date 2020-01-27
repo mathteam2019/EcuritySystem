@@ -112,6 +112,20 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * check if account exists
+     * @param userNumber
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean checkNumberExist(String userNumber, Long userId) {
+        if (userId == null) {
+            return sysUserRepository.exists(QSysUser.sysUser.userNumber.eq(userNumber));
+        }
+        return sysUserRepository.exists(QSysUser.sysUser.userNumber.eq(userNumber).and(QSysUser.sysUser.userId.ne(userId)));
+    }
+
+    /**
      * check if email exists
      * @param email
      * @param userId

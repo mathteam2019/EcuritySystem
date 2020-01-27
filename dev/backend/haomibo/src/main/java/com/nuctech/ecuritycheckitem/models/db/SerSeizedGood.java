@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -44,6 +46,13 @@ public class SerSeizedGood extends BaseEntity implements Serializable {
 
     @Column(name = "SEIZED_GOODS_LEVEL", length = 10)
     private String seizedGoodsLevel;
+
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SEIZED_GOODS_CODE", referencedColumnName = "DATA_CODE", insertable = false, updatable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @MapsId("dictionary")
+    private SysDictionaryData sysDictionaryData; // Relation to SerArchivesTemplate table.
 
     @javax.persistence.Transient
     private String seizedGoods;

@@ -123,7 +123,7 @@ public class AuthServiceImpl implements AuthService {
      * @param count
      */
     @Override
-    public void checkPendingUser(SysUser user, Integer count) {
+    public int checkPendingUser(SysUser user, Integer count) {
 
         Integer passwordLimit = 7;
 
@@ -136,12 +136,16 @@ public class AuthServiceImpl implements AuthService {
                 passwordLimit = loginNumber.intValue();
             }
         }
-        passwordLimit --;
-        if(count != null && count >= passwordLimit) {
-            user.setStatus(SysUser.Status.PENDING);
-            sysUserRepository.save(user);
-
+        if(count != null) {
+            if(count == passwordLimit - 1) {
+                return 1;
+            } else if(count >= passwordLimit) {
+                user.setStatus(SysUser.Status.PENDING);
+                sysUserRepository.save(user);
+                return 2;
+            }
         }
+        return 0;
     }
 
     /**

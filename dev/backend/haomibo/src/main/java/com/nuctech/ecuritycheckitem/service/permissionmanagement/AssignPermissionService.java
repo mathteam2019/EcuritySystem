@@ -22,6 +22,13 @@ import java.util.List;
 public interface AssignPermissionService {
 
     /**
+     * Check user role assigned
+     * @param userId
+     * @return
+     */
+    boolean checkUserAssignRole(Long userId);
+
+    /**
      * Assign user role and data range
      * @param userId
      * @param roleIdList
@@ -31,6 +38,13 @@ public interface AssignPermissionService {
      */
     boolean userAssignRoleAndDataRange(Long userId, List<Long> roleIdList, String dataRangeCategory, Long selectedDataGroupId);
 
+
+    /**
+     * Check user group role assigned
+     * @param userGroupId
+     * @return
+     */
+    boolean checkUserGroupAssignRole(Long userGroupId);
     /**
      * Assign role and datagroup for user group
      * @param userGroupId
@@ -62,7 +76,8 @@ public interface AssignPermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, Integer currentPage, Integer perPage);
+    PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName,
+                                               String dataRangeCategory, Integer currentPage, Integer perPage);
 
     /**
      * Get user list by filter
@@ -71,7 +86,7 @@ public interface AssignPermissionService {
      * @param roleName
      * @return
      */
-    List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName);
+    List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory);
 
     /**
      * Get paginated user group by filter and page
@@ -82,7 +97,8 @@ public interface AssignPermissionService {
      * @param perPage
      * @return
      */
-    PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, Integer currentPage, Integer perPage);
+    PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, String dataRangeCategory,
+                                                         Integer currentPage, Integer perPage);
 
     /**
      * Get user group by filter
@@ -91,6 +107,6 @@ public interface AssignPermissionService {
      * @param roleName
      * @return
      */
-    List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName);
+    List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName, String dataRangeCategory);
 
 }

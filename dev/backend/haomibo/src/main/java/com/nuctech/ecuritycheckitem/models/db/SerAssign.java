@@ -51,6 +51,12 @@ public class SerAssign extends BaseEntity implements Serializable {
     @Column(name = "ASSIGN_END_TIME", nullable = false)
     private Date assignEndTime;
 
+    @Column(name = "ASSIGN_JUDGE_DEVICE_ID", length = 20)
+    private Long assignJudgeDeviceId;
+
+    @Column(name = "ASSIGN_HAND_DEVICE_ID", length = 20)
+    private Long assignHandDeviceId;
+
 
     @OneToOne()
     @JoinColumn(name = "ASSIGN_JUDGE_DEVICE_ID", referencedColumnName = "DEVICE_ID", insertable = false, updatable = false)

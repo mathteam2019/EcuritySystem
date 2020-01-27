@@ -116,7 +116,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
 
         if (!StringUtils.isEmpty(goodsCode)) {
-            predicate.and(builder.seizedGoodsCode.eq(goodsCode));
+            predicate.and(builder.sysDictionaryData.dataValue.contains(goodsCode));
         }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

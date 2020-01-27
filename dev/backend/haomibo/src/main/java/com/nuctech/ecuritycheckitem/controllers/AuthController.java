@@ -167,15 +167,25 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.USER_NOT_FOUND);
         }
 
-        if(sysUser.getStatus().equals(SysUser.Status.PENDING)) {
+        if(!(sysUser.getStatus().equals(SysUser.Status.ACTIVE))) {
             accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , messageSource.getMessage("Block", null, currentLocale), null);
-            return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
+                    , messageSource.getMessage("NonActive", null, currentLocale), null);
+            return new CommonResponseBody(ResponseMessage.USER_NON_ACTIVE_STATUS);
         }
 
         if (!sysUser.getPassword().equals(requestBody.getPassword())) {
             // This is when the password is incorrect.
-            authService.checkPendingUser(sysUser, requestBody.getCount());
+            int checkValue = authService.checkPendingUser(sysUser, requestBody.getCount());
+            if(checkValue == 2) {
+                accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , messageSource.getMessage("Block", null, currentLocale), null);
+                return new CommonResponseBody(ResponseMessage.USER_PENDING_STATUS);
+            }
+            if(checkValue == 1) {
+                accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , messageSource.getMessage("InvalidPassword", null, currentLocale), null);
+                return new CommonResponseBody(ResponseMessage.PRE_USER_PENDING_STATUS);
+            }
             accessLogService.saveAccessLog(sysUser, messageSource.getMessage("Login", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , messageSource.getMessage("InvalidPassword", null, currentLocale), null);
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);

@@ -303,25 +303,25 @@ public class OrganizationManagementController extends BaseController {
      */
     private Object checkExist(Long orgId) {
 
-        if(organizationService.checkDataGroupExist(orgId)) {
-            return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
-        }
-
-        if(organizationService.checkUserGroupExist(orgId)) {
-            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
-        }
+//        if(organizationService.checkDataGroupExist(orgId)) {
+//            return new CommonResponseBody(ResponseMessage.HAS_DATA_GROUPS);
+//        }
+//
+//        if(organizationService.checkUserGroupExist(orgId)) {
+//            return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
+//        }
 
         if(organizationService.checkUserExist(orgId)) {
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
 
-        if(organizationService.checkRoleExist(orgId)) {
-            return new CommonResponseBody(ResponseMessage.HAS_ROLES);
-        }
-
-        if(organizationService.checkFieldExist(orgId)) {
-            return new CommonResponseBody(ResponseMessage.HAS_FIELDS);
-        }
+//        if(organizationService.checkRoleExist(orgId)) {
+//            return new CommonResponseBody(ResponseMessage.HAS_ROLES);
+//        }
+//
+//        if(organizationService.checkFieldExist(orgId)) {
+//            return new CommonResponseBody(ResponseMessage.HAS_FIELDS);
+//        }
         return null;
     }
 
@@ -428,6 +428,12 @@ public class OrganizationManagementController extends BaseController {
             auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getOrgId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         Object checkResult = checkExist(requestBody.getOrgId());

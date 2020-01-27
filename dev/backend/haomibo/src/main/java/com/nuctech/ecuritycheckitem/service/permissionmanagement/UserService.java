@@ -45,6 +45,14 @@ public interface UserService {
     boolean checkAccountExist(String userAccount, Long userId);
 
     /**
+     * check if account exists
+     * @param userNumber
+     * @param userId
+     * @return
+     */
+    boolean checkNumberExist(String userNumber, Long userId);
+
+    /**
      * check if  email exists
      * @param email
      * @param userId

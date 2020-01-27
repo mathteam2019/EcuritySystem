@@ -29,6 +29,8 @@ public interface KnowledgeService {
 
     void updateStatus(Long caseId, String status);
 
+    void delete(Long caseDealId);
+
     Long insertNewKnowledgeCase(SerKnowledgeCase knowledgeCase, List<String> tagList);
 
     Long insertNewKnowledgeCaseDeal(SerKnowledgeCaseDeal knowledgeCaseDeal);

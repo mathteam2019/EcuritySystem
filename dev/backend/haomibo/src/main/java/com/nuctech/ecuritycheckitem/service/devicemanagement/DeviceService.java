@@ -59,6 +59,13 @@ public interface DeviceService {
     boolean checkDeviceGuidExist(String guid, Long deviceId);
 
     /**
+     * check if device status and it used in history
+     * @param deviceId
+     * @return
+     */
+    int checkDeviceStatus(Long deviceId);
+
+    /**
      * get filtered and paginated device list
      * @param archiveName
      * @param deviceName

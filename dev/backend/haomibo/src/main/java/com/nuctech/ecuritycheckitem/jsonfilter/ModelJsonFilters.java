@@ -45,6 +45,7 @@ public class ModelJsonFilters {
     public final static String FILTER_FROM_CONFIG_ID = "filter_from_config_id"; //filter to serialize SysConfig
     public final static String FILTER_SYS_DEVICE_CONFIG = "filter_sys_device_config"; //filter to serialize SysDeviceConfig
     public final static String FILTER_SYS_AUDIT_LOG = "filter_sys_audit_log"; //filter to serialize SysAuditLog
+    public final static String FILTER_SYS_AUDIT_LOG_DETAIL = "filter_sys_audit_log_detail"; //filter to serialize SysAuditLogDetail
     public final static String FILTER_SYS_ACCESS_LOG = "filter_sys_access_log"; //filter to serialize SysAccessLog
     public final static String FILTER_SER_DEV_LOG = "filter_ser_dev_log"; //filter to serialize SerDevLog
     public final static String FILTER_SER_LOGIN_INFO = "filter_ser_login_info"; //filter to serialize SerLoginInfo

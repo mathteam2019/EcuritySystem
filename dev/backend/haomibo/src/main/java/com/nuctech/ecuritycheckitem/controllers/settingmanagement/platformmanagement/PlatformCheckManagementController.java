@@ -24,6 +24,7 @@ import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,6 +53,8 @@ public class PlatformCheckManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
+    @Autowired
+    private RedisUtil redisUtil;
 
 
 
@@ -145,6 +148,15 @@ public class PlatformCheckManagementController extends BaseController {
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", "",null);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String serPlatformCheckParamsStr = objectMapper.writeValueAsString(serPlatformCheckParams);
+            serPlatformCheckParamsStr = CryptUtil.encrypt(serPlatformCheckParamsStr);
+            redisUtil.set(("sys.setting.platform.check"),
+                    serPlatformCheckParamsStr, 8 * 60 * 60);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

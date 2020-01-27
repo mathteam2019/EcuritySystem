@@ -31,6 +31,7 @@ import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveService;
 
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 
@@ -38,6 +39,7 @@ import com.querydsl.core.BooleanBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -70,6 +73,15 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     @Autowired
     SysDeviceRepository sysDeviceRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
 
     /**
      * get predicate from filter parameters
@@ -189,6 +201,24 @@ public class ArchiveServiceImpl implements ArchiveService {
                 sysDevice.archiveId.eq(archiveId));
     }
 
+    public String getJsonFromArchive(SerArchive archive) {
+        SerArchive newArchive = SerArchive.builder()
+                .archiveId(archive.getArchiveId())
+                .archivesTemplateId(archive.getArchivesTemplateId())
+                .archivesName(archive.getArchivesName())
+                .archivesNumber(archive.getArchivesNumber())
+                .status(archive.getStatus())
+                .imageUrl(archive.getImageUrl())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newArchive);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
     /**
      * update archive status
      * @param archiveId
@@ -200,6 +230,7 @@ public class ArchiveServiceImpl implements ArchiveService {
         Optional<SerArchive> optionalSerArchive = serArchiveRepository.findOne(QSerArchive.
                 serArchive.archiveId.eq(archiveId));
         SerArchive serArchive = optionalSerArchive.get();
+        String valueBefore = getJsonFromArchive(serArchive);
 
         // Update status.
         serArchive.setStatus(status);
@@ -208,6 +239,9 @@ public class ArchiveServiceImpl implements ArchiveService {
         serArchive.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         serArchiveRepository.save(serArchive);
+        String valueAfter = getJsonFromArchive(serArchive);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Archive", null, currentLocale), "", serArchive.getArchiveId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -230,6 +264,10 @@ public class ArchiveServiceImpl implements ArchiveService {
                     serArchiveValueRepository.save(archiveValue);
                 }
             }
+            String valueBefore = "";
+            String valueAfter = getJsonFromArchive(serArchive);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("Archive", null, currentLocale), "", serArchive.getArchiveId().toString(), null, true, valueBefore, valueAfter);
         }catch(Exception ex) {
             ex.printStackTrace();
         }
@@ -277,9 +315,9 @@ public class ArchiveServiceImpl implements ArchiveService {
 
         SerArchive oldSerArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(serArchive.getArchiveId())).orElse(null);
-
+        String valueBefore = getJsonFromArchive(oldSerArchive);
         serArchive.setCreatedBy(oldSerArchive.getCreatedBy());
-        serArchive.setCreatedTime(oldSerArchive.getCreatedTime());;
+        serArchive.setCreatedTime(oldSerArchive.getCreatedTime());
 
         //remove original indicators value
         if(oldSerArchive.getArchiveValueList() != null) {
@@ -292,6 +330,10 @@ public class ArchiveServiceImpl implements ArchiveService {
         //add new indicators value
         createArchiveValue(json, serArchive);
         serArchiveRepository.save(serArchive);
+
+        String valueAfter = getJsonFromArchive(serArchive);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Archive", null, currentLocale), "", serArchive.getArchiveId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -303,13 +345,21 @@ public class ArchiveServiceImpl implements ArchiveService {
     public void removeSerArchive(long archiveId) {
         SerArchive serArchive = serArchiveRepository.findOne(QSerArchive.serArchive
                 .archiveId.eq(archiveId)).orElse(null);
-        if(serArchive.getArchiveValueList() != null) {
-            for(int i = 0; i < serArchive.getArchiveValueList().size(); i ++) {
-                serArchiveValueRepository.delete(serArchive.getArchiveValueList().get(i));
+        if(serArchive != null) {
+            String valueBefore = getJsonFromArchive(serArchive);
+            String valueAfter = "";
+            String archiveIdStr = serArchive.getArchiveId().toString();
+            if(serArchive.getArchiveValueList() != null) {
+                for(int i = 0; i < serArchive.getArchiveValueList().size(); i ++) {
+                    serArchiveValueRepository.delete(serArchive.getArchiveValueList().get(i));
+                }
             }
+
+            serArchiveRepository.delete(serArchive);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("Archive", null, currentLocale), "", archiveIdStr, null, true, valueBefore, valueAfter);
         }
 
-        serArchiveRepository.delete(serArchive);
     }
 
     /**

@@ -31,6 +31,12 @@ import java.io.Serializable;
 @JsonFilter(ModelJsonFilters.FILTER_SYS_DICTONARY)
 @Table(name = "sys_dictionary")
 public class SysDictionary extends BaseEntity implements Serializable {
+
+    public static class Type {
+        public static final Integer ADMIN = 1;
+        public static final Integer USER = 2;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DICTIONARY_ID", length = 20, nullable = false)
@@ -38,5 +44,10 @@ public class SysDictionary extends BaseEntity implements Serializable {
 
     @Column(name = "DICTIONARY_NAME", length = 50)
     private String dictionaryName;
+
+    @Column(name = "DICTIONARY_TYPE", length = 1)
+    private Integer dictionaryType;
+
+
 
 }

@@ -15,7 +15,9 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysAuditLog;
 import com.nuctech.ecuritycheckitem.models.db.SysAuditLog;
+import com.nuctech.ecuritycheckitem.models.db.SysAuditLogDetail;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.repositories.SysAuditLogDetailRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAuditLogRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
@@ -39,6 +41,9 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     @Autowired
     SysAuditLogRepository sysAuditLogRepository;
+
+    @Autowired
+    SysAuditLogDetailRepository sysAuditLogDetailRepository;
 
     @Autowired
     AuthenticationFacade authenticationFacade;
@@ -188,6 +193,45 @@ public class AuditLogServiceImpl implements AuditLogService {
      * @return
      */
     @Override
+    public boolean saveAudioLog(String action, String result, String content, String fieldName, String reason, String object, Long onlineTime, boolean isSuccess, String valueBefore, String valueAfter) {
+        SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+        SysAuditLog auditLog = SysAuditLog.builder()
+                .clientIp(utils.ipAddress)
+                .action(action)
+                .operateResult(result)
+                .reasonCode(reason)
+                .operateContent(content)
+                .onlineTime(onlineTime)
+                .operateAccount(user.getUserAccount())
+                .operatorId(user.getUserId())
+                .operateTime(new Date())
+                .operateObject(fieldName)
+                .build();
+        auditLog.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        sysAuditLogRepository.save(auditLog);
+        if(isSuccess) {
+            SysAuditLogDetail auditLogDetail = SysAuditLogDetail.builder()
+                    .auditLogId(auditLog.getId())
+                    .fieldName(object)
+                    .valueBefore(valueBefore)
+                    .valueAfter(valueAfter)
+                    .build();
+            auditLogDetail.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysAuditLogDetailRepository.save(auditLogDetail);
+        }
+        return true;
+    }
+
+    /**
+     *
+     * @param action: 操作
+     * @param result: 操作结果
+     * @param content: 操作内容
+     * @param reason: 失败原因代码
+     * @param onlineTime: 在线时长(秒)
+     * @return
+     */
+    @Override
     public boolean saveAudioLog(String action, String result, String content, String reason, String object, Long onlineTime) {
         SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
         SysAuditLog auditLog = SysAuditLog.builder()
@@ -202,6 +246,7 @@ public class AuditLogServiceImpl implements AuditLogService {
                 .operateTime(new Date())
                 .operateObject(object)
                 .build();
+        auditLog.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysAuditLogRepository.save(auditLog);
         return true;
     }

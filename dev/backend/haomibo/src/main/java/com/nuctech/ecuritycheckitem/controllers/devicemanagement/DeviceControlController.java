@@ -875,6 +875,19 @@ public class DeviceControlController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
+        int checkStatus = deviceService.checkDeviceStatus(requestBody.getDeviceId());
+        if(checkStatus == 0) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("DeviceInactive", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.DEVICE_INACTIVE_STATUS);
+        }
+
+        if(checkStatus == 1) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                    , "", messageSource.getMessage("UsedDevice", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            return new CommonResponseBody(ResponseMessage.USED_DEVICE);
+        }
+
         deviceService.removeDevice(requestBody.getDeviceId());
         auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", requestBody.getDeviceId().toString(),null);
