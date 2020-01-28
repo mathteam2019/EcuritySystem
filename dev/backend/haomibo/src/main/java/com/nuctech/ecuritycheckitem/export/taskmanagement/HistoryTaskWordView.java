@@ -74,13 +74,7 @@ public class HistoryTaskWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanUserName", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanStartTime", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanEndTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeUserName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeStartTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeEndTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
+
 
     }
 
@@ -171,49 +165,6 @@ public class HistoryTaskWordView extends BaseWordView {
                     tableRow.getCell(8).setText("无");
                 }
 
-                if (task.getJudgeDevice() != null) {
-                    tableRow.getCell(9).setText(task.getJudgeDevice().getDeviceName());
-                } else {
-                    tableRow.getCell(9).setText("无");
-                }
-
-                if (task.getJudgeUser() != null) {
-                    tableRow.getCell(10).setText(task.getJudgeUser().getUserName());
-                } else {
-                    tableRow.getCell(10).setText("无");
-                }
-
-                if (task.getJudgeStartTime() != null) {
-                    tableRow.getCell(11).setText(formatDate(task.getJudgeStartTime()));
-                } else {
-                    tableRow.getCell(11).setText("无");
-                }
-
-                if (task.getJudgeEndTime() != null) {
-                    tableRow.getCell(12).setText(formatDate(task.getJudgeEndTime()));
-                } else {
-                    tableRow.getCell(12).setText("无");
-                }
-
-
-
-                if (task.getHandDevice() != null) {
-                    tableRow.getCell(13).setText(task.getHandDevice().getDeviceName());
-                } else {
-                    tableRow.getCell(13).setText("无");
-                }
-
-                if (task.getHandUser() != null) {
-                    tableRow.getCell(14).setText(task.getHandUser().getUserName());
-                } else {
-                    tableRow.getCell(14).setText("无");
-                }
-
-                if (task.getHandEndTime() != null) {
-                    tableRow.getCell(15).setText(formatDate(task.getHandEndTime()));
-                } else {
-                    tableRow.getCell(15).setText("无");
-                }
             }
 
             document.write(out);

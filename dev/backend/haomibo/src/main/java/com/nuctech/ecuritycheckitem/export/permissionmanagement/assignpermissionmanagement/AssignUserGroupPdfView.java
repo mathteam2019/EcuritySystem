@@ -19,6 +19,7 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BasePdfView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
@@ -87,7 +88,7 @@ public class AssignUserGroupPdfView extends BasePdfView {
                     }
                 }
                 addTableCell(table, strRole);
-                addTableCell(table, userGroup.getDataRangeCategory());
+                addTableCell(table, ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
             }
 
             document.add(table);

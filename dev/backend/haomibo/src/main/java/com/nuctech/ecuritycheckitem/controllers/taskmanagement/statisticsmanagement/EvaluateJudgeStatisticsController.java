@@ -23,6 +23,7 @@ import com.nuctech.ecuritycheckitem.export.taskmanagement.InvalidTaskPdfView;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeResponseModel;
 import com.nuctech.ecuritycheckitem.models.response.userstatistics.EvaluateJudgeStatisticsPaginationResponse;
+import com.nuctech.ecuritycheckitem.models.response.userstatistics.JudgeStatisticsResponseModel;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -322,11 +323,20 @@ public class EvaluateJudgeStatisticsController extends BaseController {
                 }
                 if (isExist == true) { //if exist
                     exportList.put(entry.getKey(), record);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
 
         } else { //if isAll is true
-            exportList = detailedStatistics;
+            for (Map.Entry<Integer, EvaluateJudgeResponseModel> entry : detailedStatistics.entrySet()) {
+                EvaluateJudgeResponseModel record = entry.getValue();
+                exportList.put(entry.getKey(), record);
+                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                    break;
+                }
+            }
         }
         return exportList;
     }

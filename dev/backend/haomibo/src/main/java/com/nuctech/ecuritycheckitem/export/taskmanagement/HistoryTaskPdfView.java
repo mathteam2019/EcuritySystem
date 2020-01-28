@@ -50,11 +50,10 @@ public class HistoryTaskPdfView extends BasePdfView {
             document.open();
             document.add(getTitle(messageSource.getMessage("HistoryTaskTableTitle", null, currentLocale)));
             document.add(getTime());
-
-            PdfPTable table = new PdfPTable(16);
+            PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
-            Stream.of("ID", "TaskNumber", "WorkMode", "TaskResult", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime", "JudgeDeviceName", "JudgeUserName", "JudgeStartTime", "JudgeEndTime", "HandExaminationDeviceName", "HandExaminationUserName", "HandExaminationStartTime")
+            Stream.of("ID", "TaskNumber", "WorkMode", "TaskResult", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -123,49 +122,6 @@ public class HistoryTaskPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if (task.getJudgeDevice() != null) {
-                    addTableCell(table, task.getJudgeDevice().getDeviceName());
-                } else {
-                    addTableCell(table, "无");
-                }
-
-                if (task.getJudgeUser() != null) {
-                    addTableCell(table, task.getJudgeUser().getUserName());
-                } else {
-                    addTableCell(table, "无");
-                }
-
-                if (task.getJudgeStartTime() != null) {
-                    addTableCell(table, formatDate(task.getJudgeStartTime()));
-                } else {
-                    addTableCell(table, "无");
-                }
-
-                if (task.getJudgeEndTime() != null) {
-                    addTableCell(table, formatDate(task.getJudgeEndTime()));
-                } else {
-                    addTableCell(table, "无");
-                }
-
-
-
-                if (task.getHandDevice() != null) {
-                    addTableCell(table, task.getHandDevice().getDeviceName());
-                } else {
-                    addTableCell(table, "无");
-                }
-
-                if (task.getHandUser() != null) {
-                    addTableCell(table, task.getHandUser().getUserName());
-                } else {
-                    addTableCell(table, "无");
-                }
-
-                if (task.getHandEndTime() != null) {
-                    addTableCell(table, formatDate(task.getHandEndTime()));
-                } else {
-                    addTableCell(table, "无");
-                }
             }
 
             document.add(table);

@@ -64,27 +64,6 @@ public class ProcessTaskExcelView extends BaseExcelView {
 
         Cell headerCellScanEndTime = header.createCell(8);
         headerCellScanEndTime.setCellValue(messageSource.getMessage("ScanEndTime", null, currentLocale));
-
-        Cell headerCellJudgeDevice = header.createCell(9);
-        headerCellJudgeDevice.setCellValue(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
-
-        Cell headerCellJudgeUser = header.createCell(10);
-        headerCellJudgeUser.setCellValue(messageSource.getMessage("JudgeUserName", null, currentLocale));
-
-        Cell headerCellJudgeStartTime = header.createCell(11);
-        headerCellJudgeStartTime.setCellValue(messageSource.getMessage("JudgeStartTime", null, currentLocale));
-
-        Cell headerCellJudgeEndTime = header.createCell(12);
-        headerCellJudgeEndTime.setCellValue(messageSource.getMessage("JudgeEndTime", null, currentLocale));
-
-        Cell headerCellHandExaminationDevice = header.createCell(13);
-        headerCellHandExaminationDevice.setCellValue(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
-
-        Cell headerCellHandExaminationUser = header.createCell(14);
-        headerCellHandExaminationUser.setCellValue(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
-
-        Cell headerCellStartTime = header.createCell(15);
-        headerCellStartTime.setCellValue(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
     }
 
 
@@ -173,72 +152,6 @@ public class ProcessTaskExcelView extends BaseExcelView {
                     row.createCell(8).setCellValue("无");
                 }
 
-                if (task.getSerJudgeGraph() != null) {
-                    if (task.getSerJudgeGraph().getJudgeDevice() != null) {
-                        row.createCell(9).setCellValue(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
-                    } else {
-                        row.createCell(9).setCellValue("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeUser() != null) {
-                        row.createCell(10).setCellValue(task.getSerJudgeGraph().getJudgeUser().getUserName());
-                    } else {
-                        row.createCell(10).setCellValue("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
-                        row.createCell(11).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
-                    }
-                    else {
-                        row.createCell(11).setCellValue("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
-                        row.createCell(12).setCellValue(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
-                    }
-                    else {
-                        row.createCell(12).setCellValue("无");
-                    }
-
-
-                }
-                else {
-
-                    row.createCell(9).setCellValue("无");
-                    row.createCell(10).setCellValue("无");
-                    row.createCell(11).setCellValue("无");
-                    row.createCell(12).setCellValue("无");
-                }
-
-                if(task.getSerHandExamination() != null) {
-
-
-                    if (task.getSerHandExamination().getHandDevice() != null) {
-                        row.createCell(13).setCellValue(task.getSerHandExamination().getHandDevice().getDeviceName());
-                    } else {
-                        row.createCell(13).setCellValue("无");
-                    }
-
-                    if (task.getSerHandExamination().getHandUser() != null) {
-                        row.createCell(14).setCellValue(task.getSerHandExamination().getHandUser().getUserName());
-                    } else {
-                        row.createCell(14).setCellValue("无");
-                    }
-
-                    if (task.getSerHandExamination().getHandEndTime() != null) {
-                        row.createCell(15).setCellValue(formatDate(task.getSerHandExamination().getHandEndTime()));
-                    }
-                    else {
-                        row.createCell(15).setCellValue("无");
-                    }
-                }
-                else {
-
-                    row.createCell(13).setCellValue("无");
-                    row.createCell(14).setCellValue("无");
-                    row.createCell(15).setCellValue("无");
-
-                }
 
             }
 

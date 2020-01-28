@@ -256,10 +256,15 @@ public class ProcessTaskController extends BaseController {
                 }
                 if(isExist == true) { //if is All is true
                     exportList.add(task);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = taskList;
+            for(int i = 0; i < taskList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(taskList.get(i));
+            }
         }
         return exportList;
     }

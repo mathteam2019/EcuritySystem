@@ -51,10 +51,10 @@ public class ProcessTaskPdfView extends BasePdfView {
             document.add(getTitle(messageSource.getMessage("ProcessTaskTableTitle", null, currentLocale)));
             document.add(getTime());
 
-            PdfPTable table = new PdfPTable(16);
+            PdfPTable table = new PdfPTable(9);
 
             table.setWidthPercentage(100);
-            Stream.of("ID", "TaskNumber", "WorkMode", "TaskStatus", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime", "JudgeDeviceName", "JudgeUserName", "JudgeStartTime", "JudgeEndTime", "HandExaminationDeviceName", "HandExaminationUserName", "HandExaminationStartTime")
+            Stream.of("ID", "TaskNumber", "WorkMode", "TaskStatus", "Scene", "ScanDeviceName", "ScanUserName", "ScanStartTime", "ScanEndTime")
                     .forEach(columnTitle -> {
                         PdfPCell header = new PdfPCell();
 
@@ -110,55 +110,6 @@ public class ProcessTaskPdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
 
-                if (task.getSerJudgeGraph() != null) {
-                    if (task.getSerJudgeGraph().getJudgeDevice() != null) {
-                        addTableCell(table, task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
-                    } else {
-                        addTableCell(table, "无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeUser() != null) {
-                        addTableCell(table, task.getSerJudgeGraph().getJudgeUser().getUserName());
-                    } else {
-                        addTableCell(table, "无");
-                    }
-
-                    addTableCell(table, formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
-                    addTableCell(table, formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
-
-                } else {
-
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-
-                }
-
-                if (task.getSerHandExamination() != null) {
-
-
-
-                    if (task.getSerHandExamination().getHandDevice() != null) {
-                        addTableCell(table, task.getSerHandExamination().getHandDevice().getDeviceName());
-                    } else {
-                        addTableCell(table, "无");
-                    }
-
-                    if (task.getSerHandExamination().getHandUser() != null) {
-                        addTableCell(table, task.getSerHandExamination().getHandUser().getUserName());
-                    } else {
-                        addTableCell(table, "无");
-                    }
-
-                    addTableCell(table, formatDate(task.getSerHandExamination().getHandEndTime()));
-
-                }
-                else {
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                    addTableCell(table, "无");
-                }
 
             }
 

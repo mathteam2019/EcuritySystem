@@ -740,27 +740,31 @@ public class DeviceControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {// Check if device is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(requestBody.getStatus().equals(SysDevice.Status.INACTIVE)) {
             if (deviceService.checkDeviceContainField(requestBody.getDeviceId())) {// Check if device contain field
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("Device", null, currentLocale),
+                        messageSource.getMessage("HaveField", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_FIELDS);
             }
 
             int configSettingResult = deviceService.checkDeviceConfigActive(requestBody.getDeviceId());
             if(configSettingResult == 1) {
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("Device", null, currentLocale),
+                        messageSource.getMessage("DeviceConfigActive", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.DEVICE_CONFIG_ACTIVE);
             }
 //            else if(configSettingResult == 2) {
@@ -770,8 +774,6 @@ public class DeviceControlController extends BaseController {
 //            }
         }
         deviceService.updateStatus(requestBody.getDeviceId(), requestBody.getStatus());
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDeviceId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -788,36 +790,41 @@ public class DeviceControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) { // Check if archive is valid.
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceName", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
         }
         if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceSerial", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceSerial", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
         }
         if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceGuid", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceGuid", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.createDevice(sysDevice, requestBody.getImageUrl());
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDeviceSerial(),null);
-
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -834,41 +841,47 @@ public class DeviceControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!deviceService.checkArchiveExist(requestBody.getArchiveId())) {        // Check if archive is valid.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (!deviceService.checkDeviceExist(requestBody.getDeviceId())) {        // Check if device is valid.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(deviceService.checkDeviceNameExist(requestBody.getDeviceName(), requestBody.getDeviceId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceName", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_NAME);
         }
         if(deviceService.checkDeviceSerialExist(requestBody.getDeviceSerial(), requestBody.getDeviceId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceSerial", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceSerial", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_SERIAL);
         }
         if(deviceService.checkDeviceGuidExist(requestBody.getGuid(), requestBody.getDeviceId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDeviceGuid", null, currentLocale), requestBody.getDeviceSerial(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDeviceGuid", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_DEVICE_GUID);
         }
 
         SysDevice sysDevice = requestBody.convert2SysDevice();
         deviceService.modifyDevice(sysDevice, requestBody.getImageUrl());
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDeviceSerial(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -885,32 +898,34 @@ public class DeviceControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if(!deviceService.checkDeviceExist(requestBody.getDeviceId())) { //check device exist or not
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         int checkStatus = deviceService.checkDeviceStatus(requestBody.getDeviceId());
         if(checkStatus == 0) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("DeviceInactive", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("DeviceInactive", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.DEVICE_INACTIVE_STATUS);
         }
 
         if(checkStatus == 1) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDevice", null, currentLocale), requestBody.getDeviceId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("UsedDevice", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_DEVICE);
         }
 
         deviceService.removeDevice(requestBody.getDeviceId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDeviceId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -927,8 +942,9 @@ public class DeviceControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), "",null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Device", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 

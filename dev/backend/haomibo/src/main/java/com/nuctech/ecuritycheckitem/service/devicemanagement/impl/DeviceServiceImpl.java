@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -20,11 +21,13 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -81,10 +85,51 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     SerAssignRepository serAssignRepository;
 
-
-
     @Autowired
     Utils utils;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromDevice(SysDevice device) {
+        SysDevice newDevice = SysDevice.builder()
+                .deviceId(device.getDeviceId())
+                .guid(device.getGuid())
+                .deviceName(device.getDeviceName())
+                .deviceType(device.getDeviceType())
+                .deviceSerial(device.getDeviceSerial())
+                .originalFactoryNumber(device.getOriginalFactoryNumber())
+                .manufacturerDate(device.getManufacturerDate())
+                .purchaseDate(device.getPurchaseDate())
+                .supplier(device.getSupplier())
+                .contacts(device.getContacts())
+                .mobile(device.getMobile())
+                .registrationNumber(device.getRegistrationNumber())
+                .imageUrl(device.getImageUrl())
+                .fieldId(device.getFieldId())
+                .archiveId(device.getArchiveId())
+                .categoryId(device.getCategoryId())
+                .registerId(device.getRegisterId())
+                .deviceDesc(device.getDeviceDesc())
+                .deviceIp(device.getDeviceIp())
+                .devicePassageWay(device.getDevicePassageWay())
+                .status(device.getStatus())
+                .currentStatus(device.getCurrentStatus())
+                .workStatus(device.getWorkStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newDevice);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * check if device exists
@@ -394,6 +439,7 @@ public class DeviceServiceImpl implements DeviceService {
         Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
                 sysDevice.deviceId.eq(deviceId));
         SysDevice sysDevice = optionalSysDevice.get();
+        String valueBefore = getJsonFromDevice(sysDevice);
         // Update status.
         sysDevice.setStatus(status);
 
@@ -422,6 +468,9 @@ public class DeviceServiceImpl implements DeviceService {
         sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -483,7 +532,9 @@ public class DeviceServiceImpl implements DeviceService {
             scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
-
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, "", valueAfter);
 
 
     }
@@ -498,7 +549,7 @@ public class DeviceServiceImpl implements DeviceService {
     public void modifyDevice(SysDevice sysDevice, MultipartFile portraitFile) {
         SysDevice oldSysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
+        String valueBefore = getJsonFromDevice(oldSysDevice);
         sysDevice.setCreatedBy(oldSysDevice.getCreatedBy());
         sysDevice.setCreatedTime(oldSysDevice.getCreatedTime());
         sysDevice.setStatus(oldSysDevice.getStatus());
@@ -514,6 +565,9 @@ public class DeviceServiceImpl implements DeviceService {
         sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -525,6 +579,7 @@ public class DeviceServiceImpl implements DeviceService {
     public void removeDevice(Long deviceId) {
         SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(deviceId)).orElse(null);
+        String valueBefore = getJsonFromDevice(sysDevice);
 
         if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.JUDGE)) {
             SysJudgeDevice sysJudgeDevice = sysJudgeDeviceRepository.findOne(QSysJudgeDevice.sysJudgeDevice
@@ -565,6 +620,8 @@ public class DeviceServiceImpl implements DeviceService {
             }
         }
         sysDeviceRepository.delete(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, "");
     }
 
     /**
@@ -580,9 +637,13 @@ public class DeviceServiceImpl implements DeviceService {
             SysDevice realDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                     .deviceId.eq(device.getDeviceId())).orElse(null);
             if(realDevice != null) {
+                String valueBefore = getJsonFromDevice(realDevice);
                 realDevice.setFieldId(device.getFieldId());
                 realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                 sysDeviceRepository.save(realDevice);
+                String valueAfter = getJsonFromDevice(realDevice);
+                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                        "", messageSource.getMessage("Device", null, currentLocale), "", realDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
             }
         }
     }

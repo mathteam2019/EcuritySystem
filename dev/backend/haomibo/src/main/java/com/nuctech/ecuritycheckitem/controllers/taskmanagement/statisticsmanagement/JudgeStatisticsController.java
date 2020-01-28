@@ -319,12 +319,21 @@ public class JudgeStatisticsController extends BaseController {
                 }
                 if (isExist == true) {  //if exist
                     exportList.put(entry.getKey(), record);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
 
             }
 
         } else { //if isAll is true
-            exportList = detailedStatistics;
+            for (Map.Entry<Integer, JudgeStatisticsResponseModel> entry : detailedStatistics.entrySet()) {
+                JudgeStatisticsResponseModel record = entry.getValue();
+                exportList.put(entry.getKey(), record);
+                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                    break;
+                }
+            }
         }
 
         return exportList;

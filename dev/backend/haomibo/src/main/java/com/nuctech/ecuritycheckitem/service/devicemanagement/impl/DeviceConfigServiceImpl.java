@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -19,11 +20,13 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import jdk.nashorn.internal.runtime.options.Option;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -67,6 +71,38 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Autowired
     SerDeviceStatusRepository serDeviceStatusRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromDeviceConfig(SysDeviceConfig deviceConfig) {
+        SysDeviceConfig newConfig = SysDeviceConfig.builder()
+                .configId(deviceConfig.getConfigId())
+                .modeId(deviceConfig.getModeId())
+                .deviceId(deviceConfig.getDeviceId())
+                .manualSwitch(deviceConfig.getManualSwitch())
+                .atrSwitch(deviceConfig.getAtrSwitch())
+                .manRemoteGender(deviceConfig.getManRemoteGender())
+                .womanRemoteGender(deviceConfig.getWomanRemoteGender())
+                .manManualGender(deviceConfig.getManManualGender())
+                .womanManualGender(deviceConfig.getWomanManualGender())
+                .manDeviceGender(deviceConfig.getManDeviceGender())
+                .womanDeviceGender(deviceConfig.getWomanDeviceGender())
+                .status(deviceConfig.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newConfig);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * find config with id
@@ -110,9 +146,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         Optional<SysDeviceConfig> sysDeviceConfigData = sysDeviceConfigRepository.findOne(
                 QSysDeviceConfig.sysDeviceConfig.configId.eq(configId));
         SysDeviceConfig sysDeviceConfig = sysDeviceConfigData.get();
+        String valueBefore = getJsonFromDeviceConfig(sysDeviceConfig);
         sysDeviceConfig.setStatus(status);
         sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDeviceConfigRepository.save(sysDeviceConfig);
+        String valueAfter = getJsonFromDeviceConfig(sysDeviceConfig);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DeviceConfig", null, currentLocale), "", sysDeviceConfig.getConfigId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -224,7 +264,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Transactional
     public void modifyDeviceConfig(SysDeviceConfig sysDeviceConfig, List<Long> manualDeviceIdList, List<Long> judgeDeviceIdList,
                                    List<Long> configDeviceIdList) {
-
+        Optional<SysDeviceConfig> sysDeviceConfigData = sysDeviceConfigRepository.findOne(
+                QSysDeviceConfig.sysDeviceConfig.configId.eq(sysDeviceConfig.getConfigId()));
+        SysDeviceConfig oldSysDeviceConfig = sysDeviceConfigData.get();
+        String valueBefore = getJsonFromDeviceConfig(oldSysDeviceConfig);
+        sysDeviceConfig.setCreatedBy(oldSysDeviceConfig.getCreatedBy());
+        sysDeviceConfig.setCreatedTime(oldSysDeviceConfig.getCreatedTime());
         sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         List<SysDeviceConfig> deviceConfigList = new ArrayList<>();
         if (configDeviceIdList != null && configDeviceIdList.size() > 0) {
@@ -282,7 +327,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             }
 
         }
-        ;
         sysManualGroupRepository.deleteAll(manualGroups);
         sysJudgeGroupRepository.deleteAll(judgeGroups);
         fromConfigIdRepository.deleteAll(sysDeviceConfig.getFromConfigIdList());
@@ -325,6 +369,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         fromConfigIdRepository.saveAll(configList);
         sysManualGroupRepository.saveAll(manualGroups);
         sysJudgeGroupRepository.saveAll(judgeGroups);
+
+        String valueAfter = getJsonFromDeviceConfig(sysDeviceConfig);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DeviceConfig", null, currentLocale), "", sysDeviceConfig.getConfigId().toString(), null, true, valueBefore, valueAfter);
     }
 
 

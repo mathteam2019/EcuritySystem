@@ -275,8 +275,9 @@ public class DeviceConfigManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -284,8 +285,9 @@ public class DeviceConfigManagementController extends BaseController {
 
         //check if device config is valid.
         if(sysDeviceConfig == null) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         List<Long> manualDeviceIdList = requestBody.getManualDeviceIdList(); //get Manual Device IdList from input paramenter
@@ -303,8 +305,7 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getConfigId().toString(),null);
+        updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -320,26 +321,30 @@ public class DeviceConfigManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(requestBody.getConfigId()); //get config by id through deviceConfigService
 
         if(sysDeviceConfig == null) {//check device config exist or not
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         Long deviceId = sysDeviceConfig.getDeviceId();
         if(requestBody.getStatus().equals(SysDeviceConfig.Status.INACTIVE)) {
             if(deviceConfigService.checkDeviceOnline(deviceId)) {
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("DeviceOnline", null, currentLocale), requestBody.getConfigId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                        messageSource.getMessage("DeviceOnline", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.DEVICE_ONLINE);
             }
         }
 
         deviceConfigService.updateStatusDeviceConfig(requestBody.getConfigId(), requestBody.getStatus()); //remove correspond manual group
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getConfigId().toString(),null);
-        updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

@@ -393,10 +393,15 @@ public class HistoryTaskController extends BaseController {
                 }
                 if(isExist == true) {//if exist
                     exportList.add(task);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {//if isAll is true
-            exportList = taskList;
+            for(int i = 0; i < taskList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(taskList.get(i));
+            }
         }
         return exportList;
     }
