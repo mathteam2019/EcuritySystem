@@ -20,6 +20,7 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.redis.SerPlatformCheckParamsInfo;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
@@ -150,9 +151,25 @@ public class PlatformCheckManagementController extends BaseController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String serPlatformCheckParamsStr = objectMapper.writeValueAsString(serPlatformCheckParams);
+            SerPlatformCheckParamsInfo serPlatformCheckParamsInfo = new SerPlatformCheckParamsInfo();
+            serPlatformCheckParamsInfo.setScanId(serPlatformCheckParams.getScanId());
+            serPlatformCheckParamsInfo.setScanRecogniseColour(serPlatformCheckParams.getScanRecogniseColour());
+            serPlatformCheckParamsInfo.setScanOverTime(serPlatformCheckParams.getScanOverTime());
+            serPlatformCheckParamsInfo.setJudgeAssignTime(serPlatformCheckParams.getJudgeAssignTime());
+            serPlatformCheckParamsInfo.setJudgeProcessingTime(serPlatformCheckParams.getJudgeProcessingTime());
+            serPlatformCheckParamsInfo.setJudgeScanOvertime(serPlatformCheckParams.getJudgeScanOvertime());
+            serPlatformCheckParamsInfo.setJudgeRecogniseColour(serPlatformCheckParams.getJudgeRecogniseColour());
+            serPlatformCheckParamsInfo.setHandOverTime(serPlatformCheckParams.getHandOverTime());
+            serPlatformCheckParamsInfo.setHandRecogniseColour(serPlatformCheckParams.getHandRecogniseColour());
+            serPlatformCheckParamsInfo.setHistoryDataStorage(serPlatformCheckParams.getHistoryDataStorage());
+            serPlatformCheckParamsInfo.setDisplayDataExport(serPlatformCheckParams.getHistoryDataExport());
+            serPlatformCheckParamsInfo.setDisplayDeleteSuspicion(serPlatformCheckParams.getDisplayDeleteSuspicion());
+            serPlatformCheckParamsInfo.setDisplayDeleteSuspicionColour(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
+
+
+            String serPlatformCheckParamsStr = objectMapper.writeValueAsString(serPlatformCheckParamsInfo);
             serPlatformCheckParamsStr = CryptUtil.encrypt(serPlatformCheckParamsStr);
-            redisUtil.set(("sys.setting.platform.check"),
+            redisUtil.set(Constants.REDIS_PLATFORM_CHECK,
                     serPlatformCheckParamsStr, 8 * 60 * 60);
         } catch(Exception ex) {
             ex.printStackTrace();

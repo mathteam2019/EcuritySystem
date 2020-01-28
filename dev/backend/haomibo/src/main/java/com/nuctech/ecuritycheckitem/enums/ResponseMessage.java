@@ -78,7 +78,10 @@ public enum ResponseMessage {
     USED_DICTIONARY_VALUE("used_dictionary_value"),  //response message in case of used seized goods
     FAILED_INSERT_KNOWLEDGECASE("failed_insert_knowledgecase"), //response message in case of failed inserting new knowledgecase
     FAILED_UPDATE_KNOWLEDGECASE("failed_update_knowledgecase"), //response message in case of failed updating new knowledgecase
-    FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"); //response message in case of failed inserting new knowledgecasedeal
+    FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"), //response message in case of failed inserting new knowledgecasedeal
+    DEVICE_CONFIG_ACTIVE("device_config_active"),//response message if device config is active for update status of device
+    DEVICE_SCAN_ACTIVE("device_scan_active"),//response message if device scan param is active for update status of device
+    DEVICE_ONLINE("device_online");// response message if device is online
 
 
     private final String value;

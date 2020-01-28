@@ -401,10 +401,15 @@ public class ArchiveServiceImpl implements ArchiveService {
                 }
                 if(isExist == true) {
                     exportList.add(archive);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = archiveList;
+            for(int i = 0; i < archiveList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(archiveList.get(i));
+            }
         }
         return exportList;
     }

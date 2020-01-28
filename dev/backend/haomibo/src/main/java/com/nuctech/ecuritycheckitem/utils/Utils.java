@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
@@ -112,22 +113,29 @@ public class Utils {
      * @param sysUser Target user.
      * @return Token string and its expiration time wrapped in Token class.
      */
-    public Token generateTokenForSysUser(SysUser sysUser) {
+    public Token generateTokenForSysUser(SysUser sysUser, SerPlatformOtherParams serPlatformOtherParams) {
 
         // Create claim.
         Claims claims = Jwts.claims().setSubject(String.valueOf(sysUser.getUserId()));
 
         // Save userId to claim.
         claims.put("userId", String.valueOf(sysUser.getUserId()));
+        int jwt_validity_second;
+        if(serPlatformOtherParams != null) {
+            jwt_validity_second = serPlatformOtherParams.getOperatingTimeLimit() * 60;
+        } else {
+            jwt_validity_second = Constants.DEFAULT_JWT_VALIDITY_SECONDS;
+        }
+
 
         // Calculate expiration Date.
-        Date expirationDate = new Date(System.currentTimeMillis() + Constants.JWT_VALIDITY_SECONDS * 1000);
+        Date expirationDate = new Date(System.currentTimeMillis() + jwt_validity_second * 1000);
 
         // Generate token.
         return new Token(Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .setId(String.valueOf(System.currentTimeMillis()))
                 .compact(), expirationDate);
     }
 

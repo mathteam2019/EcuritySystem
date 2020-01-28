@@ -292,10 +292,15 @@ public class FieldServiceImpl implements FieldService {
                 }
                 if (isExist == true) {
                     exportList.add(field);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = fieldList;
+            for(int i = 0; i < fieldList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(fieldList.get(i));
+            }
         }
         return exportList;
     }

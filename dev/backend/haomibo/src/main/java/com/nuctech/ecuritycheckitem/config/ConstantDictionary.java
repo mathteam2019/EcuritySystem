@@ -45,6 +45,8 @@ public class ConstantDictionary {
             new Dictionary("1000000504", "所有人数据"),
             new Dictionary("1000000505", "自定义数据组"),
             new Dictionary("1000000506", "组内所有人数据"),
+            new Dictionary("1000000901", "同方"),
+            new Dictionary("1000000902", "威视"),
             new Dictionary("noseizure", "无查获"),
             new Dictionary("seized", "有查获"),
             new Dictionary("doubt", "有嫌疑"),

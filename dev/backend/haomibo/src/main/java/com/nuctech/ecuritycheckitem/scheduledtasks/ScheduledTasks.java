@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.scheduledtasks;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QForbiddenToken;
 import com.nuctech.ecuritycheckitem.repositories.ForbiddenTokenRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class ScheduledTasks {
 
     @Autowired
     ForbiddenTokenRepository forbiddenTokenRepository;
+
+    @Autowired
+    SerPlatformOtherParamRepository serPlatformOtherParamRepository;
 
     /**
      * Write current time to log.
@@ -58,13 +62,13 @@ public class ScheduledTasks {
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
-        cal.add(Calendar.SECOND, (int) -Constants.JWT_VALIDITY_SECONDS);
+        cal.add(Calendar.SECOND, (int) -Constants.MAX_JWT_VALIDITY_SECONDS);
 
         // Delete all records which is created more than JWT validity time ago.
 
         QForbiddenToken qForbiddenToken = QForbiddenToken.forbiddenToken;
 
-        forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(qForbiddenToken.createdTime.before(cal.getTime())));
+        forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(qForbiddenToken.editedTime.before(cal.getTime())));
 
         log.info("========END Cleaning Forbidden token table from DB========");
     }

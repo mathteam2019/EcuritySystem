@@ -78,6 +78,8 @@ public class PlatformOtherManagementController extends BaseController {
         Integer storageAlarm;
         @NotNull
         Integer historyDataCycle;
+        @NotNull
+        Integer operatingTimeLimit;
 
         SerPlatformOtherParams convert2SerPlatformOtherParam() {//create new object from input parameters
             return SerPlatformOtherParams
@@ -91,6 +93,7 @@ public class PlatformOtherManagementController extends BaseController {
                     .storageDetectionCycle(this.getStorageDetectionCycle())
                     .storageAlarm(this.getStorageAlarm())
                     .historyDataCycle(this.getHistoryDataCycle())
+                    .operatingTimeLimit(this.getOperatingTimeLimit())
                     .build();
         }
     }

@@ -47,5 +47,8 @@ public class ForbiddenToken implements Serializable {
     @Column(name = "CREATEDTIME", nullable = false)
     private Date createdTime;
 
+    @Column(name = "EDITEDTIME", nullable = false)
+    private Date editedTime;
+
 }
 

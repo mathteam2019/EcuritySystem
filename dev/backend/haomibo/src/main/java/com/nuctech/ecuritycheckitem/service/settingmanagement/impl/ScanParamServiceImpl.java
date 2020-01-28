@@ -13,10 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.QSerScanParam;
-import com.nuctech.ecuritycheckitem.models.db.SerScanParam;
-import com.nuctech.ecuritycheckitem.models.db.SerScanParamsFrom;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
@@ -29,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +59,9 @@ public class ScanParamServiceImpl implements ScanParamService {
         if (!StringUtils.isEmpty(deviceName) && !deviceName.isEmpty()) {
             predicate.and(builder.device.deviceName.contains(deviceName));
         }
+        predicate.and(builder.device.status.eq(SysDevice.Status.ACTIVE));
         if (!StringUtils.isEmpty(status)) {
-            predicate.and(builder.device.status.eq(status));
+            predicate.and(builder.status.eq(status));
         }
 
         return predicate;
@@ -84,6 +83,22 @@ public class ScanParamServiceImpl implements ScanParamService {
         SerScanParam serScanParam = optionalSerScanParam.get();
 
         return serScanParam;
+    }
+
+    /**
+     * update Status of scan param
+     * @param paramId
+     * @return
+     */
+    @Override
+    @Transactional
+    public void updateStatus(Long paramId, String status) {
+        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
+                serScanParam.scanParamsId.eq(paramId));
+        SerScanParam serScanParam = optionalSerScanParam.get();
+        serScanParam.setStatus(status);
+        serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        serScanParamRepository.save(serScanParam);
     }
 
     /**

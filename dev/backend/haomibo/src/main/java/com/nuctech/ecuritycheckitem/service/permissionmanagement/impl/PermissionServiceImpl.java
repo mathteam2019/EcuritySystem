@@ -225,10 +225,15 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 if (isExist == true) {
                     exportList.add(role);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = roleList;
+            for(int i = 0; i < roleList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(roleList.get(i));
+            }
         }
         return exportList;
     }
@@ -538,10 +543,15 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 if (isExist == true) {
                     exportList.add(dataGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = dataGroupList;
+            for(int i = 0; i < dataGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(dataGroupList.get(i));
+            }
         }
         return exportList;
     }

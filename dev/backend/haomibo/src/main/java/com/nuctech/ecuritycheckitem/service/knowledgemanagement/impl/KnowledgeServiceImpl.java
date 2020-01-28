@@ -110,10 +110,15 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                 }
                 if (isExist == true) {
                     exportList.add(deal);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = dealList;
+            for(int i = 0; i < dealList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(dealList.get(i));
+            }
         }
         return exportList;
     }

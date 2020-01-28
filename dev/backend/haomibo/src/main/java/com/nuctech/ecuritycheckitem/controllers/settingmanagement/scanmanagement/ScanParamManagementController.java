@@ -104,6 +104,21 @@ public class ScanParamManagementController extends BaseController {
     }
 
     /**
+     * Device config delete request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class ScanParamUpdateStatusRequestBody {
+
+        @NotNull
+        Long scanParamsId; // scan param id
+        String status; //update status
+    }
+
+    /**
      * Scan Param modify request body.
      */
     @Getter
@@ -294,5 +309,31 @@ public class ScanParamManagementController extends BaseController {
                     , "", "", requestBody.getScanParamsId().toString(),null);
             return new CommonResponseBody(ResponseMessage.OK);
         }
+    }
+
+    /**
+     * Device Config update status request.
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public Object deviceConfigUpdateStatus(
+            @RequestBody @Valid ScanParamUpdateStatusRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+        SerScanParam serScanParam = scanParamService.getById(requestBody.getScanParamsId()); //get scan param by i
+
+        if(serScanParam == null) {//check device config exist or not
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        scanParamService.updateStatus(requestBody.getScanParamsId(), requestBody.getStatus()); //remove correspond manual group
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
+                , "", "", requestBody.getScanParamsId().toString(),null);
+        return new CommonResponseBody(ResponseMessage.OK);
     }
 }

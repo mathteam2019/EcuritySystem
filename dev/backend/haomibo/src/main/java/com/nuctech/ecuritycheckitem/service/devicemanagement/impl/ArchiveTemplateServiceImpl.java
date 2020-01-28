@@ -394,10 +394,15 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 }
                 if (isExist == true) {
                     exportList.add(archiveTemplate);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = archiveTemplateList;
+            for(int i = 0; i < archiveTemplateList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(archiveTemplateList.get(i));
+            }
         }
         return exportList;
     }

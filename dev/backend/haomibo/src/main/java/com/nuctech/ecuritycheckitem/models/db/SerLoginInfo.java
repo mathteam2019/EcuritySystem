@@ -48,10 +48,10 @@ public class SerLoginInfo extends BaseEntity implements Serializable {
     private Long loginInfoId;
 
     @Column(name = "USER_ID", length = 20)
-    private String userId;
+    private Long userId;
 
     @Column(name = "DEVICE_ID", length = 20)
-    private String deviceId;
+    private Long deviceId;
 
     @Column(name = "LOGIN_CATEGORY", length = 10)
     private String loginCategory;

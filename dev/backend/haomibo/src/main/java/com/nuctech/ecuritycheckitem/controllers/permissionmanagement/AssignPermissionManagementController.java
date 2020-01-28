@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -235,10 +236,15 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(user);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userList;
+            for(int i = 0; i < userList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userList.get(i));
+            }
         }
         return exportList;
     }
@@ -748,10 +754,15 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(userGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userGroupList;
+            for(int i = 0; i < userGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userGroupList.get(i));
+            }
         }
         return exportList;
     }

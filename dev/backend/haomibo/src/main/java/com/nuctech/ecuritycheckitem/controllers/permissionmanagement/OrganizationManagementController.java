@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -595,10 +596,15 @@ public class OrganizationManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(org);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = orgList;
+            for(int i = 0; i < orgList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(orgList.get(i));
+            }
         }
         return exportList;
     }

@@ -19,11 +19,7 @@ import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 
-import com.nuctech.ecuritycheckitem.models.db.SysDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysDeviceDictionaryData;
-import com.nuctech.ecuritycheckitem.models.db.SysResource;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.ForbiddenToken;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.Token;
@@ -31,6 +27,7 @@ import com.nuctech.ecuritycheckitem.models.reusables.User;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
+import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -67,6 +64,9 @@ public class AuthController extends BaseController {
 
     @Autowired
     AccessLogService accessLogService;
+
+    @Autowired
+    PlatformOtherService platformOtherService;
 
     @Autowired
     public MessageSource messageSource;
@@ -191,8 +191,20 @@ public class AuthController extends BaseController {
             return new CommonResponseBody(ResponseMessage.INVALID_PASSWORD);
         }
 
+        SerPlatformOtherParams serPlatformOtherParams = null;
+        try {
+            serPlatformOtherParams = platformOtherService.findAll().get(0);
+        } catch(Exception ex) {}
+
+
         // Generate token for user.
-        Token token = utils.generateTokenForSysUser(sysUser);
+        Token token = utils.generateTokenForSysUser(sysUser, serPlatformOtherParams);
+        ForbiddenToken forbiddenToken = new ForbiddenToken();
+
+        forbiddenToken.setToken(token.getToken());
+
+        forbiddenTokenRepository.save(forbiddenToken);
+        forbiddenTokenRepository.flush();
 
         List<SysResource> availableSysResourceList = authService.getAvailableSysResourceList(sysUser);
 
@@ -239,12 +251,9 @@ public class AuthController extends BaseController {
     public Object logout(
             @RequestHeader(value = Constants.REQUEST_HEADER_AUTH_TOKEN_KEY, defaultValue = "") String authToken) {
         SysUser user = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
-        ForbiddenToken forbiddenToken = new ForbiddenToken();
 
-        forbiddenToken.setToken(authToken);
 
-        forbiddenTokenRepository.save(forbiddenToken);
-        forbiddenTokenRepository.flush();
+        forbiddenTokenRepository.deleteAll(forbiddenTokenRepository.findAll(QForbiddenToken.forbiddenToken.token.eq(authToken)));
 
         accessLogService.saveAccessLog(user, messageSource.getMessage("Logout", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", null);
@@ -288,7 +297,14 @@ public class AuthController extends BaseController {
 
         SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
 
-        Token token = utils.generateTokenForSysUser(sysUser);
+        SerPlatformOtherParams serPlatformOtherParams = null;
+        try {
+            serPlatformOtherParams = platformOtherService.findAll().get(0);
+        } catch(Exception ex) {}
+
+
+        // Generate token for user.
+        Token token = utils.generateTokenForSysUser(sysUser, serPlatformOtherParams);
 
         return new CommonResponseBody(
                 ResponseMessage.OK,

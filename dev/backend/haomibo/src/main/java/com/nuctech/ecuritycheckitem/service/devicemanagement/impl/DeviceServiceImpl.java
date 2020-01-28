@@ -81,6 +81,8 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     SerAssignRepository serAssignRepository;
 
+
+
     @Autowired
     Utils utils;
 
@@ -104,6 +106,8 @@ public class DeviceServiceImpl implements DeviceService {
         return serArchiveRepository.exists(QSerArchive.serArchive
                 .archiveId.eq(archiveId));
     }
+
+
 
     /**
      * check if device name exists
@@ -133,6 +137,49 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return sysDeviceRepository.exists(QSysDevice.sysDevice.deviceSerial.eq(deviceSerial)
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
+    /**
+     * check if device have field or not
+     * @param deviceId
+     * @return
+     */
+    public boolean checkDeviceContainField(Long deviceId) {
+        Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.deviceId.eq(deviceId));
+        SysDevice sysDevice = optionalSysDevice.get();
+        if(sysDevice.getField() == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check if device is security and it's config setting is active or not.
+     * @param deviceId
+     * @return
+     */
+    public int checkDeviceConfigActive(Long deviceId) {
+        Optional<SysDeviceConfig> optionalSysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.
+                sysDeviceConfig.deviceId.eq(deviceId));
+        if(!optionalSysDeviceConfig.isPresent()) {
+            return 0;
+        }
+        SysDeviceConfig sysDeviceConfig = optionalSysDeviceConfig.get();
+        if(sysDeviceConfig != null) {
+            if(sysDeviceConfig.getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
+                return 1;
+            }
+        }
+        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
+                serScanParam.deviceId.eq(deviceId));
+        SerScanParam serScanParam = optionalSerScanParam.get();
+        if(serScanParam != null) {
+            if(serScanParam.getStatus().equals(SerScanParam.Status.ACTIVE)) {
+                return 2;
+            }
+        }
+        return 0;
     }
 
     /**
@@ -305,10 +352,15 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 if(isExist == true) {
                     exportList.add(device);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = deviceList;
+            for(int i = 0; i < deviceList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(deviceList.get(i));
+            }
         }
         return exportList;
     }
@@ -342,9 +394,29 @@ public class DeviceServiceImpl implements DeviceService {
         Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
                 sysDevice.deviceId.eq(deviceId));
         SysDevice sysDevice = optionalSysDevice.get();
-
         // Update status.
         sysDevice.setStatus(status);
+
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check device config exist or not
+        if(sysDeviceConfig != null) {
+            sysDeviceConfig.setStatus(SysDeviceConfig.Status.INACTIVE);
+            sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysDeviceConfigRepository.save(sysDeviceConfig);
+        }
+
+        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check scan param exist or not
+        if(scanParam != null) {
+            //change status of scan param
+            scanParam.setStatus(SerScanParam.Status.INACTIVE);
+            scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            serScanParamRepository.save(scanParam);
+        }
 
         // Add edited info.
         sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
@@ -368,11 +440,11 @@ public class DeviceServiceImpl implements DeviceService {
         SerArchive archive = optionalSerArchive.get();
         SysDeviceCategory category = archive.getArchiveTemplate().getDeviceCategory();
 
-        if(category.getCategoryId() == 2) {
+        if(category.getCategoryId() == Constants.JUDGE_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.JUDGE);
-        } else if(category.getCategoryId() == 3) {
+        } else if(category.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.SECURITY);
-        } else if(category.getCategoryId() == 4) {
+        } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.MANUAL);
         }
 
@@ -382,26 +454,32 @@ public class DeviceServiceImpl implements DeviceService {
 
         sysDeviceRepository.save(sysDevice);
 
-        if(category.getCategoryId() == 2) {
+        if(category.getCategoryId() == Constants.JUDGE_CATEGORY_ID) {
             SysJudgeDevice sysJudgeDevice = SysJudgeDevice.builder()
                     .judgeDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
             sysJudgeDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysJudgeDeviceRepository.save(sysJudgeDevice);
-        } else if(category.getCategoryId() == 4) {
+        } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             SysManualDevice sysManualDevice = SysManualDevice.builder()
                     .manualDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
             sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysManualDeviceRepository.save(sysManualDevice);
-        } else if(category.getCategoryId() == 3) {
-            SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
+        } else if(category.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
+            SysDeviceConfig deviceConfig = SysDeviceConfig.builder()
+                    .deviceId(sysDevice.getDeviceId())
+                    .status(SysDeviceConfig.Status.INACTIVE)
+                    .build();
             deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysDeviceConfigRepository.save(deviceConfig);
 
-            SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
+            SerScanParam scanParam = SerScanParam.builder()
+                    .deviceId(sysDevice.getDeviceId())
+                    .status(SerScanParam.Status.INACTIVE)
+                    .build();
             scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
@@ -452,43 +530,41 @@ public class DeviceServiceImpl implements DeviceService {
             SysJudgeDevice sysJudgeDevice = sysJudgeDeviceRepository.findOne(QSysJudgeDevice.sysJudgeDevice
                     .judgeDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
             if(sysJudgeDevice != null) {
+                sysJudgeGroupRepository.deleteAll(sysJudgeGroupRepository.findAll(
+                        QSysJudgeGroup.sysJudgeGroup.judgeDeviceId.eq(sysJudgeDevice.getId())));
                 sysJudgeDeviceRepository.delete(sysJudgeDevice);
             }
         } else if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.MANUAL)) {
             SysManualDevice sysManualDevice = sysManualDeviceRepository.findOne(QSysManualDevice.sysManualDevice
                     .manualDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
             if(sysManualDevice != null) {
+                sysManualGroupRepository.deleteAll(sysManualGroupRepository.findAll(
+                        QSysManualGroup.sysManualGroup.manualDeviceId.eq(sysManualDevice.getId())));
                 sysManualDeviceRepository.delete(sysManualDevice);
             }
-        }
+        } else {
+            SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                    .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
 
-
-        sysDeviceRepository.deleteById(deviceId);
-
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check device config exist or not
-        if(sysDeviceConfig != null) {
-            sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
-        }
-
-        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check scan param exist or not
-        if(scanParam != null) {
-            serScanParamRepository.deleteById(scanParam.getScanParamsId());
-            //remove correspond from config.
-            SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
-                    scanParam.getFromParamsList().get(0): null;
-
-            //check from params exist or not
-            if(fromParams != null) {
-                serScanParamsFromRepository.deleteById(fromParams.getScanParamsId());
+            //check device config exist or not
+            if(sysDeviceConfig != null) {
+                fromConfigIdRepository.deleteAll(fromConfigIdRepository.findAll(
+                        QFromConfigId.fromConfigId1.configId.eq(sysDeviceConfig.getConfigId())));
+                sysDeviceConfigRepository.delete(sysDeviceConfig);
             }
 
+            SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                    .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+            //check scan param exist or not
+            if(scanParam != null) {
+                //remove correspond from config.
+                serScanParamsFromRepository.deleteAll(serScanParamsFromRepository.findAll(
+                        QSerScanParamsFrom.serScanParamsFrom.scanParamsId.eq(scanParam.getScanParamsId())));
+                serScanParamRepository.delete(scanParam);
+            }
         }
+        sysDeviceRepository.delete(sysDevice);
     }
 
     /**
@@ -545,6 +621,27 @@ public class DeviceServiceImpl implements DeviceService {
                 .collect(Collectors.toList());
 
         List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
+        return getInactiveConfigDevice(sysDeviceList);
+    }
+
+    private List<SysDevice> getInactiveConfigDevice(List<SysDevice> preSysDeviceList) {
+        List<SysDevice> sysDeviceList = new ArrayList<>();
+        List<SysDeviceConfig> deviceConfigList = sysDeviceConfigRepository.findAll();
+        for(int i = 0; i < preSysDeviceList.size(); i ++) {
+            SysDevice sysDevice = preSysDeviceList.get(i);
+            if(sysDevice.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
+                for(int j = 0; j < deviceConfigList.size(); j ++) {
+                    if(deviceConfigList.get(j).getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
+                        continue;
+                    }
+                    if(deviceConfigList.get(j).getDeviceId() == sysDevice.getDeviceId()) {
+                        sysDeviceList.add(sysDevice);
+                    }
+                }
+            } else {
+                sysDeviceList.add(sysDevice);
+            }
+        }
         return sysDeviceList;
     }
 
@@ -571,6 +668,8 @@ public class DeviceServiceImpl implements DeviceService {
                 .collect(Collectors.toList());
 
         List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
-        return sysDeviceList;
+        return getInactiveConfigDevice(sysDeviceList);
     }
+
+
 }

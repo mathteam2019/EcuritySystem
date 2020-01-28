@@ -74,7 +74,7 @@ public class DeviceArchivePdfView extends BasePdfView {
                     addTableCell(table, "无");
                 }
                 if(archive.getArchiveTemplate() != null) {
-                    addTableCell(table, archive.getArchiveTemplate().getManufacturer());
+                    addTableCell(table, ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
                     addTableCell(table, archive.getArchiveTemplate().getOriginalModel());
                 } else {
                     addTableCell(table, "无");

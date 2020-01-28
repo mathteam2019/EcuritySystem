@@ -17,11 +17,9 @@ package com.nuctech.ecuritycheckitem.jwt;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
-import com.nuctech.ecuritycheckitem.models.db.QForbiddenToken;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysResource;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.ForbiddenTokenRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import io.jsonwebtoken.Claims;
@@ -41,10 +39,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     ForbiddenTokenRepository forbiddenTokenRepository;
+
+    @Autowired
+    SerPlatformOtherParamRepository serPlatformOtherParamRepository;
 
     @Autowired
     private PathMatcher pathMatcher;
@@ -88,8 +87,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         // If token is forbidden, this token is invalid.
-        if (forbiddenTokenRepository.exists(QForbiddenToken.forbiddenToken.token.eq(token))) {
+        Optional<ForbiddenToken> forbiddenTokenData = forbiddenTokenRepository.findOne(QForbiddenToken.forbiddenToken.token.eq(token));
+        if (!forbiddenTokenData.isPresent()) {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
+            return;
+        }
+        ForbiddenToken forbiddenToken = forbiddenTokenData.get();
+
+        Date curDate = new Date();
+        long diffInMillies = Math.abs(curDate.getTime() - forbiddenToken.getEditedTime().getTime());
+        long diff = diffInMillies / 1000;
+        int jwt_validity_second;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = serPlatformOtherParamRepository.findAll().get(0);
+            jwt_validity_second = serPlatformOtherParams.getOperatingTimeLimit() * 60;
+        } catch(Exception ex) {
+            jwt_validity_second = Constants.DEFAULT_JWT_VALIDITY_SECONDS;
+        }
+
+
+        if(jwt_validity_second > 0 && diff > jwt_validity_second) {
+            forbiddenTokenRepository.delete(forbiddenToken);
+            utils.writeResponse(response, ResponseMessage.TOKEN_EXPIRED);
             return;
         }
 
@@ -111,6 +130,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
+
+
 
         if (!claims.containsKey("userId")) {
             // If claims have not key "userId", this token is invalid.
@@ -137,6 +158,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             utils.writeResponse(response, ResponseMessage.INVALID_TOKEN);
             return;
         }
+
+        forbiddenToken.setEditedTime(new Date());
+        forbiddenTokenRepository.save(forbiddenToken);
 
         SysUser sysUser = optionalSysUser.get();
 

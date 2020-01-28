@@ -330,10 +330,15 @@ public class UserServiceImpl implements UserService {
                 }
                 if (isExist == true) {
                     exportList.add(user);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userList;
+            for(int i = 0; i < userList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userList.get(i));
+            }
         }
         return exportList;
     }
@@ -509,10 +514,15 @@ public class UserServiceImpl implements UserService {
                 }
                 if (isExist == true) {
                     exportList.add(userGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userGroupList;
+            for(int i = 0; i < userGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userGroupList.get(i));
+            }
         }
         return exportList;
     }

@@ -15,7 +15,9 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerDevLog;
 import com.nuctech.ecuritycheckitem.models.db.SerDevLog;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.repositories.SerDevLogRepository;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.service.logmanagement.DeviceLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
@@ -35,6 +37,9 @@ import java.util.stream.StreamSupport;
 public class DeviceLogServiceImpl implements DeviceLogService {
     @Autowired
     SerDevLogRepository serDevLogRepository;
+
+    @Autowired
+    SerPlatformOtherParamRepository platformOtherParamRepository;
 
     /**
      * get predicate from filter parameters
@@ -92,6 +97,11 @@ public class DeviceLogServiceImpl implements DeviceLogService {
      */
     private List<SerDevLog> getExportList(List<SerDevLog> logList, boolean isAll, String idList) {
         List<SerDevLog> exportList = new ArrayList<>();
+        Long max_size = 5000L;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+            max_size = serPlatformOtherParams.getLogMaxNumber();
+        } catch(Exception ex) {}
         if(isAll == false) {
             String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
@@ -105,10 +115,15 @@ public class DeviceLogServiceImpl implements DeviceLogService {
                 }
                 if(isExist == true) {
                     exportList.add(log);
+                    if(exportList.size() >= max_size) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = logList;
+            for(int i = 0; i < logList.size() && i < max_size; i ++) {
+                exportList.add(logList.get(i));
+            }
         }
         return exportList;
     }

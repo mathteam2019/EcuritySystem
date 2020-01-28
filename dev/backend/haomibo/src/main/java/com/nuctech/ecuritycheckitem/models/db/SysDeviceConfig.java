@@ -48,6 +48,10 @@ import java.util.List;
 @Table(name = "sys_device_config")
 public class SysDeviceConfig extends BaseEntity implements Serializable {
 
+    public static class Status {
+        public static final String ACTIVE = "1000000701";
+        public static final String INACTIVE = "1000000702";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,6 +90,9 @@ public class SysDeviceConfig extends BaseEntity implements Serializable {
 
     @Column(name = "WOMAN_DEVICE_GENDER", length = 10)
     private String womanDeviceGender;
+
+    @Column(name = "STATUS", length = 10)
+    private String status;
 
 
     @ToString.Exclude

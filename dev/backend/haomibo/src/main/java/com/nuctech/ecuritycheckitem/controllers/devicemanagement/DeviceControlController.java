@@ -749,6 +749,26 @@ public class DeviceControlController extends BaseController {
                     , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+
+        if(requestBody.getStatus().equals(SysDevice.Status.INACTIVE)) {
+            if (deviceService.checkDeviceContainField(requestBody.getDeviceId())) {// Check if device contain field
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+                return new CommonResponseBody(ResponseMessage.HAS_FIELDS);
+            }
+
+            int configSettingResult = deviceService.checkDeviceConfigActive(requestBody.getDeviceId());
+            if(configSettingResult == 1) {
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+                return new CommonResponseBody(ResponseMessage.DEVICE_CONFIG_ACTIVE);
+            }
+//            else if(configSettingResult == 2) {
+//                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
+//                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDeviceId().toString(),null);
+//                return new CommonResponseBody(ResponseMessage.DEVICE_SCAN_ACTIVE);
+//            }
+        }
         deviceService.updateStatus(requestBody.getDeviceId(), requestBody.getStatus());
         auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", requestBody.getDeviceId().toString(),null);
