@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -20,11 +21,13 @@ import com.nuctech.ecuritycheckitem.repositories.*;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -73,7 +77,59 @@ public class DeviceServiceImpl implements DeviceService {
     FromConfigIdRepository fromConfigIdRepository;
 
     @Autowired
+    SerScanRepository serScanRepository;
+
+    @Autowired
+    HistoryRepository historyRepository;
+
+    @Autowired
+    SerAssignRepository serAssignRepository;
+
+    @Autowired
     Utils utils;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromDevice(SysDevice device) {
+        SysDevice newDevice = SysDevice.builder()
+                .deviceId(device.getDeviceId())
+                .guid(device.getGuid())
+                .deviceName(device.getDeviceName())
+                .deviceType(device.getDeviceType())
+                .deviceSerial(device.getDeviceSerial())
+                .originalFactoryNumber(device.getOriginalFactoryNumber())
+                .manufacturerDate(device.getManufacturerDate())
+                .purchaseDate(device.getPurchaseDate())
+                .supplier(device.getSupplier())
+                .contacts(device.getContacts())
+                .mobile(device.getMobile())
+                .registrationNumber(device.getRegistrationNumber())
+                .imageUrl(device.getImageUrl())
+                .fieldId(device.getFieldId())
+                .archiveId(device.getArchiveId())
+                .categoryId(device.getCategoryId())
+                .registerId(device.getRegisterId())
+                .deviceDesc(device.getDeviceDesc())
+                .deviceIp(device.getDeviceIp())
+                .devicePassageWay(device.getDevicePassageWay())
+                .status(device.getStatus())
+                .currentStatus(device.getCurrentStatus())
+                .workStatus(device.getWorkStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newDevice);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * check if device exists
@@ -95,6 +151,8 @@ public class DeviceServiceImpl implements DeviceService {
         return serArchiveRepository.exists(QSerArchive.serArchive
                 .archiveId.eq(archiveId));
     }
+
+
 
     /**
      * check if device name exists
@@ -127,6 +185,49 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     /**
+     * check if device have field or not
+     * @param deviceId
+     * @return
+     */
+    public boolean checkDeviceContainField(Long deviceId) {
+        Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.deviceId.eq(deviceId));
+        SysDevice sysDevice = optionalSysDevice.get();
+        if(sysDevice.getField() == null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * check if device is security and it's config setting is active or not.
+     * @param deviceId
+     * @return
+     */
+    public int checkDeviceConfigActive(Long deviceId) {
+        Optional<SysDeviceConfig> optionalSysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.
+                sysDeviceConfig.deviceId.eq(deviceId));
+        if(!optionalSysDeviceConfig.isPresent()) {
+            return 0;
+        }
+        SysDeviceConfig sysDeviceConfig = optionalSysDeviceConfig.get();
+        if(sysDeviceConfig != null) {
+            if(sysDeviceConfig.getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
+                return 1;
+            }
+        }
+        Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
+                serScanParam.deviceId.eq(deviceId));
+        SerScanParam serScanParam = optionalSerScanParam.get();
+        if(serScanParam != null) {
+            if(serScanParam.getStatus().equals(SerScanParam.Status.ACTIVE)) {
+                return 2;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * check if device guid exits
      * @param guid
      * @param deviceId
@@ -139,6 +240,38 @@ public class DeviceServiceImpl implements DeviceService {
         }
         return sysDeviceRepository.exists(QSysDevice.sysDevice.guid.eq(guid)
                 .and(QSysDevice.sysDevice.deviceId.ne(deviceId)));
+    }
+
+    /**
+     * check if device status and it used in history
+     * @param deviceId
+     * @return
+     */
+    @Override
+    public int checkDeviceStatus(Long deviceId) {
+        Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
+                sysDevice.deviceId.eq(deviceId));
+        SysDevice sysDevice = optionalSysDevice.get();
+        if(sysDevice.getStatus().equals(SysDevice.Status.INACTIVE)) {
+            return 0;
+        }
+        if(serScanRepository.exists(QSerScan.serScan.scanDeviceId.eq(deviceId))) {
+            return 1;
+        }
+
+        if(serAssignRepository.exists(QSerAssign.serAssign.assignJudgeDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(serAssignRepository.exists(QSerAssign.serAssign.assignHandDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(historyRepository.exists(QHistory.history.handDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        if(historyRepository.exists(QHistory.history.judgeDeviceId.eq(deviceId))) {
+            return 1;
+        }
+        return 2;
     }
 
     /**
@@ -264,10 +397,15 @@ public class DeviceServiceImpl implements DeviceService {
                 }
                 if(isExist == true) {
                     exportList.add(device);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = deviceList;
+            for(int i = 0; i < deviceList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(deviceList.get(i));
+            }
         }
         return exportList;
     }
@@ -301,14 +439,38 @@ public class DeviceServiceImpl implements DeviceService {
         Optional<SysDevice> optionalSysDevice = sysDeviceRepository.findOne(QSysDevice.
                 sysDevice.deviceId.eq(deviceId));
         SysDevice sysDevice = optionalSysDevice.get();
-
+        String valueBefore = getJsonFromDevice(sysDevice);
         // Update status.
         sysDevice.setStatus(status);
+
+        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check device config exist or not
+        if(sysDeviceConfig != null) {
+            sysDeviceConfig.setStatus(SysDeviceConfig.Status.INACTIVE);
+            sysDeviceConfig.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            sysDeviceConfigRepository.save(sysDeviceConfig);
+        }
+
+        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+        //check scan param exist or not
+        if(scanParam != null) {
+            //change status of scan param
+            scanParam.setStatus(SerScanParam.Status.INACTIVE);
+            scanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+            serScanParamRepository.save(scanParam);
+        }
 
         // Add edited info.
         sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -327,11 +489,11 @@ public class DeviceServiceImpl implements DeviceService {
         SerArchive archive = optionalSerArchive.get();
         SysDeviceCategory category = archive.getArchiveTemplate().getDeviceCategory();
 
-        if(category.getCategoryId() == 2) {
+        if(category.getCategoryId() == Constants.JUDGE_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.JUDGE);
-        } else if(category.getCategoryId() == 3) {
+        } else if(category.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.SECURITY);
-        } else if(category.getCategoryId() == 4) {
+        } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             sysDevice.setDeviceType(SysDevice.DeviceType.MANUAL);
         }
 
@@ -341,30 +503,38 @@ public class DeviceServiceImpl implements DeviceService {
 
         sysDeviceRepository.save(sysDevice);
 
-        if(category.getCategoryId() == 2) {
+        if(category.getCategoryId() == Constants.JUDGE_CATEGORY_ID) {
             SysJudgeDevice sysJudgeDevice = SysJudgeDevice.builder()
                     .judgeDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
             sysJudgeDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysJudgeDeviceRepository.save(sysJudgeDevice);
-        } else if(category.getCategoryId() == 4) {
+        } else if(category.getCategoryId() == Constants.MANUAL_CATEGORY_ID) {
             SysManualDevice sysManualDevice = SysManualDevice.builder()
                     .manualDeviceId(sysDevice.getDeviceId())
                     .deviceStatus(SysDevice.DeviceStatus.UNREGISTER)
                     .build();
             sysManualDevice.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysManualDeviceRepository.save(sysManualDevice);
-        } else if(category.getCategoryId() == 3) {
-            SysDeviceConfig deviceConfig = SysDeviceConfig.builder().deviceId(sysDevice.getDeviceId()).build();
+        } else if(category.getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
+            SysDeviceConfig deviceConfig = SysDeviceConfig.builder()
+                    .deviceId(sysDevice.getDeviceId())
+                    .status(SysDeviceConfig.Status.INACTIVE)
+                    .build();
             deviceConfig.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             sysDeviceConfigRepository.save(deviceConfig);
 
-            SerScanParam scanParam = SerScanParam.builder().deviceId(sysDevice.getDeviceId()).build();
+            SerScanParam scanParam = SerScanParam.builder()
+                    .deviceId(sysDevice.getDeviceId())
+                    .status(SerScanParam.Status.INACTIVE)
+                    .build();
             scanParam.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
             serScanParamRepository.save(scanParam);
         }
-
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, "", valueAfter);
 
 
     }
@@ -379,7 +549,7 @@ public class DeviceServiceImpl implements DeviceService {
     public void modifyDevice(SysDevice sysDevice, MultipartFile portraitFile) {
         SysDevice oldSysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
+        String valueBefore = getJsonFromDevice(oldSysDevice);
         sysDevice.setCreatedBy(oldSysDevice.getCreatedBy());
         sysDevice.setCreatedTime(oldSysDevice.getCreatedTime());
         sysDevice.setStatus(oldSysDevice.getStatus());
@@ -395,6 +565,9 @@ public class DeviceServiceImpl implements DeviceService {
         sysDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDeviceRepository.save(sysDevice);
+        String valueAfter = getJsonFromDevice(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -406,48 +579,49 @@ public class DeviceServiceImpl implements DeviceService {
     public void removeDevice(Long deviceId) {
         SysDevice sysDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                 .deviceId.eq(deviceId)).orElse(null);
+        String valueBefore = getJsonFromDevice(sysDevice);
 
         if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.JUDGE)) {
             SysJudgeDevice sysJudgeDevice = sysJudgeDeviceRepository.findOne(QSysJudgeDevice.sysJudgeDevice
                     .judgeDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
             if(sysJudgeDevice != null) {
+                sysJudgeGroupRepository.deleteAll(sysJudgeGroupRepository.findAll(
+                        QSysJudgeGroup.sysJudgeGroup.judgeDeviceId.eq(sysJudgeDevice.getId())));
                 sysJudgeDeviceRepository.delete(sysJudgeDevice);
             }
         } else if(sysDevice.getDeviceType().equals(SysDevice.DeviceType.MANUAL)) {
             SysManualDevice sysManualDevice = sysManualDeviceRepository.findOne(QSysManualDevice.sysManualDevice
                     .manualDeviceId.eq(sysDevice.getDeviceId())).orElse(null);
             if(sysManualDevice != null) {
+                sysManualGroupRepository.deleteAll(sysManualGroupRepository.findAll(
+                        QSysManualGroup.sysManualGroup.manualDeviceId.eq(sysManualDevice.getId())));
                 sysManualDeviceRepository.delete(sysManualDevice);
             }
-        }
+        } else {
+            SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
+                    .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
 
-
-        sysDeviceRepository.deleteById(deviceId);
-
-        SysDeviceConfig sysDeviceConfig = sysDeviceConfigRepository.findOne(QSysDeviceConfig.sysDeviceConfig
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check device config exist or not
-        if(sysDeviceConfig != null) {
-            sysDeviceConfigRepository.deleteById(sysDeviceConfig.getConfigId());
-        }
-
-        SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
-                .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
-
-        //check scan param exist or not
-        if(scanParam != null) {
-            serScanParamRepository.deleteById(scanParam.getScanParamsId());
-            //remove correspond from config.
-            SerScanParamsFrom fromParams = (scanParam.getFromParamsList() != null && scanParam.getFromParamsList().size() > 0)?
-                    scanParam.getFromParamsList().get(0): null;
-
-            //check from params exist or not
-            if(fromParams != null) {
-                serScanParamsFromRepository.deleteById(fromParams.getScanParamsId());
+            //check device config exist or not
+            if(sysDeviceConfig != null) {
+                fromConfigIdRepository.deleteAll(fromConfigIdRepository.findAll(
+                        QFromConfigId.fromConfigId1.configId.eq(sysDeviceConfig.getConfigId())));
+                sysDeviceConfigRepository.delete(sysDeviceConfig);
             }
 
+            SerScanParam scanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
+                    .deviceId.eq(sysDevice.getDeviceId())).orElse(null);
+
+            //check scan param exist or not
+            if(scanParam != null) {
+                //remove correspond from config.
+                serScanParamsFromRepository.deleteAll(serScanParamsFromRepository.findAll(
+                        QSerScanParamsFrom.serScanParamsFrom.scanParamsId.eq(scanParam.getScanParamsId())));
+                serScanParamRepository.delete(scanParam);
+            }
         }
+        sysDeviceRepository.delete(sysDevice);
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Device", null, currentLocale), "", sysDevice.getDeviceId().toString(), null, true, valueBefore, "");
     }
 
     /**
@@ -463,9 +637,13 @@ public class DeviceServiceImpl implements DeviceService {
             SysDevice realDevice = sysDeviceRepository.findOne(QSysDevice.sysDevice
                     .deviceId.eq(device.getDeviceId())).orElse(null);
             if(realDevice != null) {
+                String valueBefore = getJsonFromDevice(realDevice);
                 realDevice.setFieldId(device.getFieldId());
                 realDevice.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
                 sysDeviceRepository.save(realDevice);
+                String valueAfter = getJsonFromDevice(realDevice);
+                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                        "", messageSource.getMessage("Device", null, currentLocale), "", realDevice.getDeviceId().toString(), null, true, valueBefore, valueAfter);
             }
         }
     }
@@ -504,6 +682,27 @@ public class DeviceServiceImpl implements DeviceService {
                 .collect(Collectors.toList());
 
         List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
+        return getInactiveConfigDevice(sysDeviceList);
+    }
+
+    private List<SysDevice> getInactiveConfigDevice(List<SysDevice> preSysDeviceList) {
+        List<SysDevice> sysDeviceList = new ArrayList<>();
+        List<SysDeviceConfig> deviceConfigList = sysDeviceConfigRepository.findAll();
+        for(int i = 0; i < preSysDeviceList.size(); i ++) {
+            SysDevice sysDevice = preSysDeviceList.get(i);
+            if(sysDevice.getArchive().getArchiveTemplate().getDeviceCategory().getCategoryId() == Constants.SECURITY_CATEGORY_ID) {
+                for(int j = 0; j < deviceConfigList.size(); j ++) {
+                    if(deviceConfigList.get(j).getStatus().equals(SysDeviceConfig.Status.ACTIVE)) {
+                        continue;
+                    }
+                    if(deviceConfigList.get(j).getDeviceId() == sysDevice.getDeviceId()) {
+                        sysDeviceList.add(sysDevice);
+                    }
+                }
+            } else {
+                sysDeviceList.add(sysDevice);
+            }
+        }
         return sysDeviceList;
     }
 
@@ -530,6 +729,8 @@ public class DeviceServiceImpl implements DeviceService {
                 .collect(Collectors.toList());
 
         List<SysDevice> sysDeviceList = getFilterDeviceByCategory(preSysDeviceList, categoryId, 0, preSysDeviceList.size()).getDataList();
-        return sysDeviceList;
+        return getInactiveConfigDevice(sysDeviceList);
     }
+
+
 }

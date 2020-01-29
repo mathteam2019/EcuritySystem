@@ -12,18 +12,42 @@
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PlatformOtherServiceImpl implements PlatformOtherService {
     @Autowired
     SerPlatformOtherParamRepository serPlatformOtherParamRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromPlatform(SerPlatformOtherParams params) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(params);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
 
     /**
@@ -41,6 +65,14 @@ public class PlatformOtherServiceImpl implements PlatformOtherService {
      */
     @Override
     public void modifyPlatform(SerPlatformOtherParams serPlatformOtherParams) {
+        String valueBefore = "";
+        List<SerPlatformOtherParams> paramsList = findAll();
+        if(paramsList.size() > 0) {
+            valueBefore = getJsonFromPlatform(paramsList.get(0));
+        }
         serPlatformOtherParamRepository.save(serPlatformOtherParams);
+        String valueAfter = getJsonFromPlatform(serPlatformOtherParams);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("PlatformOther", null, currentLocale), "", "", null, true, valueBefore, valueAfter);
     }
 }

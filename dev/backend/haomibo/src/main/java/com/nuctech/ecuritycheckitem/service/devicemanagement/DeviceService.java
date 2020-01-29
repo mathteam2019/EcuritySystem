@@ -34,6 +34,8 @@ public interface DeviceService {
      */
     boolean checkArchiveExist(Long archiveId);
 
+
+
     /**
      * check if device name exists
      * @param deviceName
@@ -51,12 +53,33 @@ public interface DeviceService {
     boolean checkDeviceSerialExist(String deviceSerial, Long deviceId);
 
     /**
+     * check if device have field or not
+     * @param deviceId
+     * @return
+     */
+    boolean checkDeviceContainField(Long deviceId);
+
+    /**
+     * check if device is security and it's config setting is active or not.
+     * @param deviceId
+     * @return
+     */
+    int checkDeviceConfigActive(Long deviceId);
+
+    /**
      * check if device guid exists
      * @param guid
      * @param deviceId
      * @return
      */
     boolean checkDeviceGuidExist(String guid, Long deviceId);
+
+    /**
+     * check if device status and it used in history
+     * @param deviceId
+     * @return
+     */
+    int checkDeviceStatus(Long deviceId);
 
     /**
      * get filtered and paginated device list

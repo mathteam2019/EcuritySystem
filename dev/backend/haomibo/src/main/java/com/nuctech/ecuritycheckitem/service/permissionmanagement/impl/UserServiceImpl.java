@@ -12,17 +12,9 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import com.nuctech.ecuritycheckitem.models.db.SysUserGroup;
-import com.nuctech.ecuritycheckitem.models.db.SysUserGroupUser;
-import com.nuctech.ecuritycheckitem.models.db.SysResource;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupRole;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
@@ -32,12 +24,14 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRoleRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.auth.AuthService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.UserService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -46,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -76,6 +71,63 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromUser(SysUser user) {
+        SysUser newUser = SysUser.builder()
+                .userId(user.getUserId())
+                .orgId(user.getOrgId())
+                .userName(user.getUserName())
+                .userAccount(user.getUserAccount())
+                .password(user.getPassword())
+                .dataRangeCategory(user.getDataRangeCategory())
+                .userNumber(user.getUserNumber())
+                .gender(user.getGender())
+                .identityCard(user.getIdentityCard())
+                .post(user.getPost())
+                .education(user.getEducation())
+                .degree(user.getDegree())
+                .email(user.getEmail())
+                .mobile(user.getMobile())
+                .address(user.getAddress())
+                .category(user.getDataRangeCategory())
+                .status(user.getStatus())
+                .portrait(user.getPortrait())
+                .taskId(user.getTaskId())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newUser);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
+    public String getJsonFromUserGroup(SysUserGroup userGroup) {
+        SysUserGroup newRole = SysUserGroup.builder()
+                .userGroupId(userGroup.getUserGroupId())
+                .orgId(userGroup.getOrgId())
+                .dataRangeCategory(userGroup.getDataRangeCategory())
+                .groupNumber(userGroup.getGroupNumber())
+                .groupName(userGroup.getDataRangeCategory())
+                .groupFlag(userGroup.getGroupFlag())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newRole);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * check if user exists
@@ -109,6 +161,20 @@ public class UserServiceImpl implements UserService {
             return sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(userAccount));
         }
         return sysUserRepository.exists(QSysUser.sysUser.userAccount.eq(userAccount).and(QSysUser.sysUser.userId.ne(userId)));
+    }
+
+    /**
+     * check if account exists
+     * @param userNumber
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean checkNumberExist(String userNumber, Long userId) {
+        if (userId == null) {
+            return sysUserRepository.exists(QSysUser.sysUser.userNumber.eq(userNumber));
+        }
+        return sysUserRepository.exists(QSysUser.sysUser.userNumber.eq(userNumber).and(QSysUser.sysUser.userId.ne(userId)));
     }
 
     /**
@@ -187,6 +253,10 @@ public class UserServiceImpl implements UserService {
         user.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(user);
+        String valueAfter = getJsonFromUser(user);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("User", null, currentLocale), "", user.getUserId().toString(), null, true, "", valueAfter);
+
         return true;
     }
 
@@ -201,7 +271,7 @@ public class UserServiceImpl implements UserService {
     public boolean modifyUser(SysUser user, MultipartFile portraitFile) {
         Optional<SysUser> optionalOldSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(user.getUserId()));
         SysUser oldSysUser = optionalOldSysUser.get();
-
+        String valueBefore = getJsonFromUser(oldSysUser);
         // Don't modify password.
         //user.setPassword(oldSysUser.getPassword());
 
@@ -222,6 +292,10 @@ public class UserServiceImpl implements UserService {
         user.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(user);
+        String valueAfter = getJsonFromUser(user);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("User", null, currentLocale), "", user.getUserId().toString(), null, true, valueBefore, valueAfter);
+
         return true;
     }
 
@@ -316,10 +390,15 @@ public class UserServiceImpl implements UserService {
                 }
                 if (isExist == true) {
                     exportList.add(user);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userList;
+            for(int i = 0; i < userList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userList.get(i));
+            }
         }
         return exportList;
     }
@@ -374,6 +453,7 @@ public class UserServiceImpl implements UserService {
         Optional<SysUser> optionalSysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId));
 
         SysUser sysUser = optionalSysUser.get();
+        String valueBefore = getJsonFromUser(sysUser);
 
         sysUser.setStatus(status);
 
@@ -381,6 +461,9 @@ public class UserServiceImpl implements UserService {
         sysUser.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysUserRepository.save(sysUser);
+        String valueAfter = getJsonFromUser(sysUser);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("User", null, currentLocale), "", sysUser.getUserId().toString(), null, true, valueBefore, valueAfter);
         return true;
     }
 
@@ -426,6 +509,9 @@ public class UserServiceImpl implements UserService {
 
         // Save.
         sysUserGroupUserRepository.saveAll(relationList);
+        String valueAfter = getJsonFromUserGroup(userGroup);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("UserGroup", null, currentLocale), "", userGroup.getUserGroupId().toString(), null, true, "", valueAfter);
         return true;
     }
 
@@ -495,10 +581,15 @@ public class UserServiceImpl implements UserService {
                 }
                 if (isExist == true) {
                     exportList.add(userGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userGroupList;
+            for(int i = 0; i < userGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userGroupList.get(i));
+            }
         }
         return exportList;
     }
@@ -579,6 +670,7 @@ public class UserServiceImpl implements UserService {
         Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
 
         SysUserGroup sysUserGroup = optionalSysUserGroup.get();
+        String valueBefore = getJsonFromUserGroup(sysUserGroup);
 
         // Delete all existing relation.
         Iterable<SysUserGroupUser> userGroupList = sysUserGroupUserRepository.findAll(QSysUserGroupUser.sysUserGroupUser.userGroupId.eq(sysUserGroup.getUserGroupId()));
@@ -605,6 +697,9 @@ public class UserServiceImpl implements UserService {
         // Add edited info.
         sysUserGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysUserGroupRepository.save(sysUserGroup);
+        String valueAfter = getJsonFromUserGroup(sysUserGroup);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("UserGroup", null, currentLocale), "", sysUserGroup.getUserGroupId().toString(), null, true, valueBefore, valueAfter);
         return true;
     }
 
@@ -616,12 +711,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean removeUserGroup(long userGroupId) {
+        Optional<SysUserGroup> optionalSysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId));
+
+        SysUserGroup sysUserGroup = optionalSysUserGroup.get();
+        String valueBefore = getJsonFromUserGroup(sysUserGroup);
         sysUserGroupRepository.delete(
                 SysUserGroup
                         .builder()
                         .userGroupId(userGroupId)
                         .build()
         );
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("UserGroup", null, currentLocale), "", sysUserGroup.getUserGroupId().toString(), null, true, valueBefore, "");
         return true;
     }
 

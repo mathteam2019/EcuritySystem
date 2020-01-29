@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.export.BaseWordView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
@@ -123,7 +124,7 @@ public class AssignUserGroupWordView extends BaseWordView {
                     }
                 }
                 tableRow.getCell(3).setText(strRole);
-                tableRow.getCell(4).setText(userGroup.getDataRangeCategory());
+                tableRow.getCell(4).setText(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
 
             }
 

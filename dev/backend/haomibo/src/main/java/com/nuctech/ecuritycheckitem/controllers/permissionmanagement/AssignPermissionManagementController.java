@@ -15,6 +15,7 @@ package com.nuctech.ecuritycheckitem.controllers.permissionmanagement;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
@@ -136,6 +137,7 @@ public class AssignPermissionManagementController extends BaseController {
             String userName;
             Long orgId;
             String roleName;
+            String dataRangeCategory;
         }
 
         @NotNull
@@ -182,6 +184,7 @@ public class AssignPermissionManagementController extends BaseController {
             String groupName;
             String userName;
             String roleName;
+            String dataRangeCategory;
         }
 
         @NotNull
@@ -233,10 +236,15 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(user);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userList;
+            for(int i = 0; i < userList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userList.get(i));
+            }
         }
         return exportList;
     }
@@ -249,14 +257,65 @@ public class AssignPermissionManagementController extends BaseController {
      * @return
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_CREATE)
-    @RequestMapping(value = "/user/assign-role-and-data-range", method = RequestMethod.POST)
-    public Object userAssignRoleAndDataRange(
+    @RequestMapping(value = "/user/create/assign-role-and-data-range", method = RequestMethod.POST)
+    public Object userCreateAssignRoleAndDataRange(
             @RequestBody @Valid UserAssignRoleAndDataRangeRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(assignPermissionService.checkUserAssignRole(requestBody.getUserId())){
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.EXIST_USER);
+        }
+
+        if (assignPermissionService.userAssignRoleAndDataRange(requestBody.getUserId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
+
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+
+            MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
+            value.setFilters(filters);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
+            return value;
+        } else {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+    }
+
+    /**
+     * User assign role and data range request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_MODIFY)
+    @RequestMapping(value = "/user/modify/assign-role-and-data-range", method = RequestMethod.POST)
+    public Object userModifyAssignRoleAndDataRange(
+            @RequestBody @Valid UserAssignRoleAndDataRangeRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -269,12 +328,14 @@ public class AssignPermissionManagementController extends BaseController {
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -287,14 +348,66 @@ public class AssignPermissionManagementController extends BaseController {
      * @return
      */
     @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_CREATE)
-    @RequestMapping(value = "/user-group/assign-role-and-data-range", method = RequestMethod.POST)
-    public Object userGroupAssignRoleAndDataRange(
+    @RequestMapping(value = "/user-group/create/assign-role-and-data-range", method = RequestMethod.POST)
+    public Object userGroupCreateAssignRoleAndDataRange(
             @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+        if(assignPermissionService.checkUserGroupAssignRole(requestBody.getUserGroupId())){
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.EXIST_USER_GROUP);
+        }
+
+        if (assignPermissionService.userGroupAssignRoleAndDataRange(requestBody.getUserGroupId(), requestBody.getRoleIdList(), requestBody.getDataRangeCategory(), requestBody.getSelectedDataGroupId())) {
+
+            SysUser sysUser = (SysUser) authenticationFacade.getAuthentication().getPrincipal();
+            List<SysResource> permission = userService.getResourceList(sysUser.getUserId());
+
+            MappingJacksonValue value = new MappingJacksonValue(new CommonResponseBody(ResponseMessage.OK, permission));
+            SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
+            filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
+
+            value.setFilters(filters);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return value;
+        } else {
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+    }
+
+    /**
+     * User group assign role and data range request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @PreAuthorize(Role.Authority.HAS_ASSIGN_USER_GROUP_MODIFY)
+    @RequestMapping(value = "/user-group/modify/assign-role-and-data-range", method = RequestMethod.POST)
+    public Object userGroupModifyAssignRoleAndDataRange(
+            @RequestBody @Valid UserGroupAssignRoleAndDataRangeRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -308,12 +421,14 @@ public class AssignPermissionManagementController extends BaseController {
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
 
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -390,6 +505,7 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getOrgId(), //get ord id  from input parameter
                 requestBody.getFilter().getRoleName(), //get role name from input parameter
+                requestBody.getFilter().getDataRangeCategory(), //get data range from input parameter
                 currentPage,
                 perPage);
 
@@ -451,7 +567,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
-                requestBody.getFilter().getRoleName());
+                requestBody.getFilter().getRoleName(),
+                requestBody.getFilter().getDataRangeCategory());
 
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
@@ -499,7 +616,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
-                requestBody.getFilter().getRoleName());
+                requestBody.getFilter().getRoleName(),
+                requestBody.getFilter().getDataRangeCategory());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         setDictionary(); //set dictionary data
@@ -547,7 +665,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUser> userList = assignPermissionService.userGetByFilter(sortBy, order,
                 requestBody.getFilter().getUserName(),
                 requestBody.getFilter().getOrgId(),
-                requestBody.getFilter().getRoleName());
+                requestBody.getFilter().getRoleName(),
+                requestBody.getFilter().getDataRangeCategory());
 
         List<SysUser> exportList = getExportList(userList, requestBody.getIsAll(), requestBody.getIdList());
         AssignUserPdfView.setResource(getFontResource()); //set font resource
@@ -599,6 +718,7 @@ public class AssignPermissionManagementController extends BaseController {
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
                 requestBody.getFilter().getRoleName(), //get role name from input parameter
+                requestBody.getFilter().getDataRangeCategory(), //get data range from input parameter
                 currentPage,
                 perPage);
 
@@ -651,10 +771,15 @@ public class AssignPermissionManagementController extends BaseController {
                 }
                 if (isExist == true) {
                     exportList.add(userGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = userGroupList;
+            for(int i = 0; i < userGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(userGroupList.get(i));
+            }
         }
         return exportList;
     }
@@ -689,7 +814,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
-                requestBody.getFilter().getRoleName() //get role name from input parameter
+                requestBody.getFilter().getRoleName(), //get role name from input parameter
+                requestBody.getFilter().getDataRangeCategory()
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList()); //get export list
@@ -737,7 +863,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
-                requestBody.getFilter().getRoleName() //get role name from input parameter
+                requestBody.getFilter().getRoleName(), //get role name from input parameter
+                requestBody.getFilter().getDataRangeCategory()
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());
@@ -786,7 +913,8 @@ public class AssignPermissionManagementController extends BaseController {
         List<SysUserGroup> userGroupList = assignPermissionService.userGroupGetByFilter(sortBy, order,
                 requestBody.getFilter().getGroupName(), //get group name from input parameter
                 requestBody.getFilter().getUserName(), //get user name from input parameter
-                requestBody.getFilter().getRoleName() //get role name from input parameter
+                requestBody.getFilter().getRoleName(), //get role name from input parameter
+                requestBody.getFilter().getDataRangeCategory()
         );
 
         List<SysUserGroup> exportList = getUserGroupExportList(userGroupList, requestBody.getIsAll(), requestBody.getIdList());

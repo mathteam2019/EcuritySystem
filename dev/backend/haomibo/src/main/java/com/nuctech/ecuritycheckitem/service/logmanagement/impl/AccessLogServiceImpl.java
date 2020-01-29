@@ -14,8 +14,10 @@ package com.nuctech.ecuritycheckitem.service.logmanagement.impl;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSysAccessLog;
+import com.nuctech.ecuritycheckitem.models.db.SerPlatformOtherParams;
 import com.nuctech.ecuritycheckitem.models.db.SysAccessLog;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.repositories.SerPlatformOtherParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysAccessLogRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AccessLogService;
@@ -40,6 +42,9 @@ public class AccessLogServiceImpl implements AccessLogService {
 
     @Autowired
     SysAccessLogRepository sysAccessLogRepository;
+
+    @Autowired
+    SerPlatformOtherParamRepository platformOtherParamRepository;
 
     @Autowired
     AuthenticationFacade authenticationFacade;
@@ -89,6 +94,12 @@ public class AccessLogServiceImpl implements AccessLogService {
      */
     private List<SysAccessLog> getExportList(List<SysAccessLog> logList, boolean isAll, String idList) {
         List<SysAccessLog> exportList = new ArrayList<>();
+        Long max_size = 5000L;
+        try {
+            SerPlatformOtherParams serPlatformOtherParams = platformOtherParamRepository.findAll().get(0);
+            max_size = serPlatformOtherParams.getLogMaxNumber();
+        } catch(Exception ex) {}
+
         if(isAll == false) {
             String[] splits = idList.split(",");
             for(int i = 0; i < logList.size(); i ++) {
@@ -102,10 +113,15 @@ public class AccessLogServiceImpl implements AccessLogService {
                 }
                 if(isExist == true) {
                     exportList.add(log);
+                    if(exportList.size() >= max_size) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = logList;
+            for(int i = 0; i < logList.size() && i < max_size; i ++) {
+                exportList.add(logList.get(i));
+            }
         }
         return exportList;
     }

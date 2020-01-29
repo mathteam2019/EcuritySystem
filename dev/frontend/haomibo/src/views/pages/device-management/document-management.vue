@@ -103,7 +103,7 @@
                   <b-button @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
-                            :disabled="props.rowData.status === '1000000701' || checkPermItem('device_archive_modify')">
+                            :disabled="checkPermItem('device_archive_modify')">
                     <i class="icofont-edit"/>
                   </b-button>
                   <b-button
@@ -148,7 +148,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('device-management.file-no')}}<span class="text-danger">*</span>
                   </template>
-                  <b-form-input v-model="archivesForm.archivesNumber" :state="!$v.archivesForm.archivesNumber.$dirty ? null : !$v.archivesForm.archivesNumber.$invalid"/>
+                  <b-form-input :disabled="pageStatus==='show' || pageStatus==='edit'" v-model="archivesForm.archivesNumber" :state="!$v.archivesForm.archivesNumber.$dirty ? null : !$v.archivesForm.archivesNumber.$invalid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesNumber.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -171,7 +171,7 @@
                   <template slot="label">{{$t('device-management.template-name')}}<span class="text-danger">*</span>
                   </template>
                   <b-form-select v-model="archivesForm.archivesTemplateId" :options="templateOptions" :state="!$v.archivesForm.archivesTemplateId.$dirty ? null : !$v.archivesForm.archivesTemplateId.$invalid"
-                                 :disabled="pageStatus === 'show'" plain/>
+                                 :disabled="pageStatus === 'show' || archivesForm.status==='1000000701'" plain/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.archivesForm.archivesTemplateId.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -233,7 +233,7 @@
                 <img v-if="archivesForm.status === '1000000702'" src="../../../assets/img/no_active_stamp.png">
               </div>
             </div>
-            <input type="file" ref="imgFile" @change="onFileChange" style="display: none"/>
+            <input type="file" ref="imgFile" @change="onFileChange" accept="image/*" style="display: none"/>
             <b-button @click="$refs.imgFile.click()" class="mt-3" variant="info skyblue default" size="sm">{{
               $t('permission-management.upload-image')}}
             </b-button>
@@ -252,8 +252,8 @@
                         @click="onAction('inactivate',archivesForm)" variant="warning default" :disabled="checkPermItem('device_archive_update_status')">
                 <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
               </b-button>
-              <b-button size="sm" v-if="pageStatus !=='create' && archivesForm.status === '1000000702'" :disabled="checkPermItem('device_archive_delete')"
-                        @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"></i>
+              <b-button size="sm" v-if="pageStatus ==='edit' && archivesForm.status === '1000000702'" :disabled="checkPermItem('device_archive_delete')"
+                        @click="onAction('delete',archivesForm)" variant="danger default"><i class="icofont-bin"/>
                 {{$t('device-management.delete')}}
               </b-button>
               <b-button size="sm" variant="info default" @click="onAction('show-list')"><i
@@ -298,7 +298,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -634,6 +634,7 @@
             this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
+            //this.updateItemStatus('1000000702');
             this.$refs['modal-inactive'].show();
             break;
           case 'delete':
@@ -821,8 +822,8 @@
                 });
                 if (this.archivesForm.archiveId > 0)
                   this.archivesForm.status = statusValue;
-                if (this.pageStatus === 'list')
-                  this.$refs.vuetable.reload();
+
+                this.$refs.vuetable.reload();
                 break;
               case responseMessages['has-devices']: // okay
                 this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.document-management.has-devices`), {

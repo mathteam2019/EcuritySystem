@@ -18,13 +18,20 @@ import java.util.TreeMap;
 
 public class Constants {
 
-    public static final long JWT_VALIDITY_SECONDS = 2 * 60 * 60;
+    public static final int DEFAULT_JWT_VALIDITY_SECONDS = 20 * 60;
+    public static final long MAX_JWT_VALIDITY_SECONDS = 60 * 60;
     public static final String REQUEST_HEADER_AUTH_TOKEN_KEY = "X-AUTH-TOKEN";
     public static final long TASK_PERIOD_SECONDS_CLEAN_FORBIDDEN_TOKEN_TABLE = 24 * 60 * 60;
     public static final String DEFAULT_PASSWORD_FOR_NEW_SYS_USER = "123456";
 
     public static final String PORTRAIT_FILE_UPLOAD_DIRECTORY = "storage" + File.separator + "portrait";
     public static final String PORTRAIT_FILE_SERVING_BASE_URL = "/portrait/";
+
+    public static final int JUDGE_CATEGORY_ID = 2;
+    public static final int MANUAL_CATEGORY_ID = 4;
+    public static final int SECURITY_CATEGORY_ID = 3;
+    public static final int DEVICE_ONLINE = 1;
+    public static final String LOGIN_STATUS = "1000001001";
 
     public static final String[] EXCLUDE_URL_PATTERNS = {
             "/",
@@ -54,6 +61,8 @@ public class Constants {
     public static final String EXCEL_DATETIME_FORMAT = "yyyy/MM/dd";
     public static final String LOG_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String REDIS_SECURITY_INFO = "sys.security.info";
+    public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
 
     //add by tiny 2019/12/12
     public static class StatisticWidth {
@@ -73,11 +82,13 @@ public class Constants {
 
     public static long EXPIRE_TIME = 8 * 60 * 60;
 
-    public static final String REDIS_PLATFORM_CHECK = "sys.setting.platform.check";
+
 
     public static Long SEIZED_DICTIONARY_ID = 16L;
 
     public static final Long DEFAULT_SYSTEM_USER = Long.valueOf(10000);
+
+    public static final Long MAX_EXPORT_NUMBER = 50000L;
 
     public static final TreeMap<String, String> userCategory = new TreeMap<String, String>() {{
         put("1000002404", "1");

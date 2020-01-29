@@ -53,7 +53,7 @@ public interface AuthService {
      * @param user
      * @param count
      */
-    void checkPendingUser(SysUser user, Integer count);
+    int checkPendingUser(SysUser user, Integer count);
 
     /**
      * get all resource for user

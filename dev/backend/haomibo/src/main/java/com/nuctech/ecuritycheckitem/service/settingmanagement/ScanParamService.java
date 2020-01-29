@@ -27,6 +27,13 @@ public interface ScanParamService {
     SerScanParam getById(Long paramId);
 
     /**
+     * update Status of scan param
+     * @param paramId
+     * @return
+     */
+    void updateStatus(Long paramId, String status);
+
+    /**
      * get paginated and filtered list of scan param list
      * @param deviceName
      * @param status

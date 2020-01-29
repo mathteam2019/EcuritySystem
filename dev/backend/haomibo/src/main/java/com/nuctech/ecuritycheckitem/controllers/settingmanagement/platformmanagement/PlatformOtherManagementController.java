@@ -78,6 +78,8 @@ public class PlatformOtherManagementController extends BaseController {
         Integer storageAlarm;
         @NotNull
         Integer historyDataCycle;
+        @NotNull
+        Integer operatingTimeLimit;
 
         SerPlatformOtherParams convert2SerPlatformOtherParam() {//create new object from input parameters
             return SerPlatformOtherParams
@@ -91,6 +93,7 @@ public class PlatformOtherManagementController extends BaseController {
                     .storageDetectionCycle(this.getStorageDetectionCycle())
                     .storageAlarm(this.getStorageAlarm())
                     .historyDataCycle(this.getHistoryDataCycle())
+                    .operatingTimeLimit(this.getOperatingTimeLimit())
                     .build();
         }
     }
@@ -123,8 +126,9 @@ public class PlatformOtherManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), "",null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("PlatformOther", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -134,8 +138,6 @@ public class PlatformOtherManagementController extends BaseController {
             serPlatformOtherParams.setId(serPlatformOtherParamsList.get(0).getId());
         }
         platformOtherService.modifyPlatform(serPlatformOtherParams);
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", "",null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

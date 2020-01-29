@@ -89,6 +89,20 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
     SysOrgRepository sysOrgRepository;
 
     /**
+     * Check user role assigned
+     * @param userId
+     * @return
+     */
+    public boolean checkUserAssignRole(Long userId) {
+        SysUser sysUser = sysUserRepository.findOne(QSysUser.sysUser.userId.eq(userId)).orElse(null);
+        if (sysUser == null) {
+            return false;
+        }
+        boolean isExist = sysRoleUserRepository.exists(QSysRoleUser.sysRoleUser.userId.eq(sysUser.getUserId()));
+        return isExist;
+    }
+
+    /**
      * Assign user role and data range
      *
      * @param userId
@@ -153,6 +167,20 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
 
         return true;
 
+    }
+
+    /**
+     * Check user group role assigned
+     * @param userGroupId
+     * @return
+     */
+    public boolean checkUserGroupAssignRole(Long userGroupId) {
+        SysUserGroup sysUserGroup = sysUserGroupRepository.findOne(QSysUserGroup.sysUserGroup.userGroupId.eq(userGroupId)).orElse(null);
+        if (sysUserGroup == null) {
+            return false;
+        }
+        boolean isExist = sysUserGroupRoleRepository.exists(QSysUserGroupRole.sysUserGroupRole.userGroupId.eq(sysUserGroup.getUserGroupId()));
+        return isExist;
     }
 
     /**
@@ -251,9 +279,9 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param perPage
      * @return
      */
-    public PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, Integer currentPage, Integer perPage) {
+    public PageResult<SysUser> userGetByFilterAndPage(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory, Integer currentPage, Integer perPage) {
 
-        BooleanBuilder predicate = getPredicate(userName, orgId, roleName);
+        BooleanBuilder predicate = getPredicate(userName, orgId, roleName, dataRangeCategory);
 
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
@@ -279,8 +307,8 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    public List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName) {
-        BooleanBuilder predicate = getPredicate(userName, orgId, roleName);
+    public List<SysUser> userGetByFilter(String sortBy, String order, String userName, Long orgId, String roleName, String dataRangeCategory) {
+        BooleanBuilder predicate = getPredicate(userName, orgId, roleName, dataRangeCategory);
         Sort sort = null;
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {
             sort = new Sort(Sort.Direction.ASC, sortBy);
@@ -308,9 +336,10 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param perPage
      * @return
      */
-    public PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, Integer currentPage, Integer perPage) {
+    public PageResult<SysUserGroup> userGroupGetByFilterAndPage(String sortBy, String order, String groupName, String userName, String roleName, String dataRangeCategory,
+                                                                Integer currentPage, Integer perPage) {
 
-        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName);
+        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName, dataRangeCategory);
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
 
         long total = sysUserGroupRepository.count(predicate);
@@ -328,8 +357,8 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    public List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName) {
-        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName);
+    public List<SysUserGroup> userGroupGetByFilter(String sortBy, String order, String groupName, String userName, String roleName, String dataRangeCategory) {
+        BooleanBuilder predicate = getUserGroupPredicate(groupName, userName, roleName, dataRangeCategory);
 
         return StreamSupport
                 .stream(sysUserGroupRepository.findAll(predicate).spliterator(), false)
@@ -344,7 +373,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    private BooleanBuilder getPredicate(String userName, Long orgId, String roleName) {
+    private BooleanBuilder getPredicate(String userName, Long orgId, String roleName, String dataRangeCategory) {
         QSysUser builder = QSysUser.sysUser;
 
         BooleanBuilder predicate = new BooleanBuilder(builder.isNotNull());
@@ -355,6 +384,12 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         }
         if (!StringUtils.isEmpty(roleName)) {
             predicate.and(builder.roles.any().roleName.contains(roleName));
+        }
+
+        predicate.and(builder.roles.size().ne(0));
+
+        if (!StringUtils.isEmpty(dataRangeCategory)) {
+            predicate.and(builder.dataRangeCategory.eq(dataRangeCategory));
         }
 
         if (orgId != null) {
@@ -381,7 +416,7 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
      * @param roleName
      * @return
      */
-    private BooleanBuilder getUserGroupPredicate(String groupName, String userName, String roleName) {
+    private BooleanBuilder getUserGroupPredicate(String groupName, String userName, String roleName, String dataRangeCategory) {
 
         QSysUserGroup builder = QSysUserGroup.sysUserGroup;
 
@@ -396,6 +431,11 @@ public class AssignPermissionServiceImpl implements AssignPermissionService {
         }
         if (!StringUtils.isEmpty(roleName)) {
             predicate.and(builder.roles.any().roleName.contains(roleName));
+        }
+        predicate.and(builder.roles.size().ne(0));
+
+        if (!StringUtils.isEmpty(dataRangeCategory)) {
+            predicate.and(builder.dataRangeCategory.eq(dataRangeCategory));
         }
 
         return predicate;

@@ -51,6 +51,27 @@ public interface DeviceConfigService {
                             List<Long> configDeviceIdList);
 
     /**
+     * Check device is offline or not.
+     * @param deviceId
+     * @return
+     */
+    boolean checkDeviceOnline(Long deviceId);
+
+    /**
+     * Check device have field or not
+     * @param deviceId
+     * @return
+     */
+    boolean checkDeviceHaveField(Long deviceId);
+
+    /**
+     * Change device config status
+     * @param configId
+     * @return
+     */
+    void updateStatusDeviceConfig(Long configId, String status);
+
+    /**
      * remove device config
      * @param sysDeviceConfig
      */

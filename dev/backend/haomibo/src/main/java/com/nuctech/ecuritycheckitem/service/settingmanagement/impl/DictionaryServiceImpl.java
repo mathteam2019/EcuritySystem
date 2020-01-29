@@ -11,24 +11,28 @@
  */
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SerSeizedGoodRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryDataRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDictionaryRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.DictionaryService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,6 +48,45 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Autowired
     SysDictionaryDataRepository sysDictionaryDataRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromDictionary(SysDictionary dictionary) {
+        SysDictionary newDictionary = SysDictionary.builder()
+                .dictionaryId(dictionary.getDictionaryId())
+                .dictionaryName(dictionary.getDictionaryName())
+                .dictionaryType(dictionary.getDictionaryType())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newDictionary);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
+    public String getJsonFromDictionaryData(SysDictionaryData dictionaryData) {
+        SysDictionaryData newDictionaryData = SysDictionaryData.builder()
+                .dataId(dictionaryData.getDataId())
+                .dictionaryId(dictionaryData.getDictionaryId())
+                .dataCode(dictionaryData.getDataCode())
+                .dataValue(dictionaryData.getDataValue())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newDictionaryData);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
 
     /**
@@ -72,7 +115,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         if (dataId == null) {
             return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue));
         }
-        return sysDictionaryRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue)
+        return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataValue.eq(dataValue)
                 .and(QSysDictionaryData.sysDictionaryData.dataId.ne(dataId)));
     }
 
@@ -87,7 +130,7 @@ public class DictionaryServiceImpl implements DictionaryService {
         if (dataId == null) {
             return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode));
         }
-        return sysDictionaryRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode)
+        return sysDictionaryDataRepository.exists(QSysDictionaryData.sysDictionaryData.dataCode.eq(dataCode)
                 .and(QSysDictionaryData.sysDictionaryData.dataId.ne(dataId)));
     }
 
@@ -98,7 +141,10 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public void createDictionary(SysDictionary sysDictionary) {
         sysDictionary.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        String valueAfter = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.save(sysDictionary);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Dictionary", null, currentLocale), "", sysDictionary.getDictionaryId().toString(), null, true, "", valueAfter);
     }
 
     /**
@@ -109,6 +155,9 @@ public class DictionaryServiceImpl implements DictionaryService {
     public void createDictionaryData(SysDictionaryData sysDictionaryData) {
         sysDictionaryData.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDictionaryDataRepository.save(sysDictionaryData);
+        String valueAfter = getJsonFromDictionaryData(sysDictionaryData);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DictionaryData", null, currentLocale), "", sysDictionaryData.getDataId().toString(), null, true, "", valueAfter);
     }
 
     /**
@@ -118,15 +167,17 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public void modifyDictionary(SysDictionary sysDictionary) {
         SysDictionary oldSysDictionary = sysDictionaryRepository.findOne(QSysDictionary.sysDictionary.dictionaryId.eq(sysDictionary.getDictionaryId())).orElse(null);
-
+        String valueBefore = getJsonFromDictionary(oldSysDictionary);
         //Don't modify created by and created time
         sysDictionary.setCreatedBy(oldSysDictionary.getCreatedBy());
         sysDictionary.setCreatedTime(oldSysDictionary.getCreatedTime());
 
         // Add edited info.
         sysDictionary.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
-
+        String valueAfter = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.save(sysDictionary);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Dictionary", null, currentLocale), "", sysDictionary.getDictionaryId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -136,7 +187,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     @Override
     public void modifyDictionaryData(SysDictionaryData sysDictionaryData) {
         SysDictionaryData oldSysDictionaryData = sysDictionaryDataRepository.findOne(QSysDictionaryData.sysDictionaryData.dataId.eq(sysDictionaryData.getDataId())).orElse(null);
-
+        String valueBefore = getJsonFromDictionaryData(oldSysDictionaryData);
         //Don't modify created by and created time
         sysDictionaryData.setCreatedBy(oldSysDictionaryData.getCreatedBy());
         sysDictionaryData.setCreatedTime(oldSysDictionaryData.getCreatedTime());
@@ -145,6 +196,9 @@ public class DictionaryServiceImpl implements DictionaryService {
         sysDictionaryData.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysDictionaryDataRepository.save(sysDictionaryData);
+        String valueAfter = getJsonFromDictionaryData(sysDictionaryData);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DictionaryData", null, currentLocale), "", sysDictionaryData.getDataId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -153,7 +207,12 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     @Override
     public void removeDictionary(Long dictionaryId) {
+        SysDictionary sysDictionary = sysDictionaryRepository.findOne(QSysDictionary.sysDictionary.dictionaryId.eq(dictionaryId)).orElse(null);
+        String valueBefore = getJsonFromDictionary(sysDictionary);
         sysDictionaryRepository.delete(SysDictionary.builder().dictionaryId(dictionaryId).build());
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Dictionary", null, currentLocale), "", sysDictionary.getDictionaryId().toString(), null, true, valueBefore, "");
+
     }
 
     /**
@@ -162,7 +221,11 @@ public class DictionaryServiceImpl implements DictionaryService {
      */
     @Override
     public void removeDictionaryData(Long dataId) {
-        sysDictionaryDataRepository.delete(SysDictionaryData.builder().dictionaryId(dataId).build());
+        SysDictionaryData sysDictionaryData = sysDictionaryDataRepository.findOne(QSysDictionaryData.sysDictionaryData.dataId.eq(dataId)).orElse(null);
+        String valueBefore = getJsonFromDictionaryData(sysDictionaryData);
+        sysDictionaryDataRepository.delete(SysDictionaryData.builder().dataId(dataId).build());
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DictionaryData", null, currentLocale), "", sysDictionaryData.getDictionaryId().toString(), null, true, valueBefore, "");
     }
 
     /**

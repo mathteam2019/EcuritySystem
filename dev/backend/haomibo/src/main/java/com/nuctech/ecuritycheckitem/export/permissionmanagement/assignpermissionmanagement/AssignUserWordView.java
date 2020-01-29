@@ -119,7 +119,7 @@ public class AssignUserWordView extends BaseWordView {
                     tableRow.getCell(5).setText("无");
                 }
 
-                tableRow.getCell(6).setText(user.getDataRangeCategory());
+                tableRow.getCell(6).setText(ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

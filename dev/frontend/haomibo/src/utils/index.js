@@ -187,7 +187,7 @@ export const saveLoginInfo = (loginInfo) => {
 
 export const setInvalidCount = (account) => {
   if(localStorage.getItem(account)==null){
-    localStorage.setItem(account, 1);
+    localStorage.setItem(account, '2');
   }
   else{
     let countValue = localStorage.getItem(account);
@@ -199,7 +199,7 @@ export const setInvalidCount = (account) => {
 
 export const getInvalidCount = (account) => {
   if(localStorage.getItem(account)==null){
-    return null;
+    return "1";
   }
   else{
     let countValue = localStorage.getItem(account);
@@ -317,7 +317,7 @@ export const getAuthTokenInfo = () => {
   let loginInfo = localStorage.getItem('loginInfo');
   try {
     loginInfo = JSON.parse(loginInfo);
-    if (loginInfo && loginInfo.token && loginInfo.token.token && loginInfo.token.expirationTimestamp) {
+    if (loginInfo && loginInfo.token && loginInfo.token.token) {//&& loginInfo.token.expirationTimestamp
       return loginInfo.token;
     }
   } catch (e) {
@@ -325,7 +325,7 @@ export const getAuthTokenInfo = () => {
 
   return {
     token: '',
-    expirationTimestamp: 0
+    //expirationTimestamp: 0
   };
 };
 
@@ -335,11 +335,12 @@ export const isLoggedIn = () => {
   let now = Math.floor(Date.now() / 1000);
 
   if (loginInfo.user
-    && loginInfo.token
-    && loginInfo.token.expirationTimestamp
-    && loginInfo.token.expirationTimestamp > now) {
+    && loginInfo.token) {
     return true;
   }
+
+  // && loginInfo.token.expirationTimestamp
+  //   && loginInfo.token.expirationTimestamp > now
 
   return false;
 };
@@ -350,23 +351,23 @@ export const doRefreshToken = () => {
     return;
   }
 
-  getApiManager().post(`${apiBaseUrl}/auth/refresh-token`).then((response) => {
-    let message = response.data.message;
-    let data = response.data.data;
-    switch (message) {
-      case responseMessages['ok']:
-
-        let loginInfo = getLoginInfo();
-        loginInfo.token = data;
-
-        saveLoginInfo(loginInfo);
-
-        scheduleRefreshToken();
-
-        break;
-    }
-
-  });
+  // getApiManager().post(`${apiBaseUrl}/auth/refresh-token`).then((response) => {
+  //   let message = response.data.message;
+  //   let data = response.data.data;
+  //   switch (message) {
+  //     case responseMessages['ok']:
+  //
+  //       let loginInfo = getLoginInfo();
+  //       loginInfo.token = data;
+  //
+  //       saveLoginInfo(loginInfo);
+  //
+  //       scheduleRefreshToken();
+  //
+  //       break;
+  //   }
+  //
+  // });
 };
 
 export const scheduleRefreshToken = () => {
@@ -379,23 +380,22 @@ export const scheduleRefreshToken = () => {
 
   let now = Math.floor(Date.now() / 1000);
 
-  if (authTokenInfo.expirationTimestamp < now) {
-    // token expired, need to re-login
-    removeLoginInfo();
+  // if (authTokenInfo.expirationTimestamp < now) {
+  //   // token expired, need to re-login
+  //   removeLoginInfo();
+  //
+  //   app.$router.push('/').catch(error => {
+  //   });
+  //
+  //   return;
+  // }
 
-    app.$router.push('/').catch(error => {
-    });
-
-    return;
-  }
-
-  if (authTokenInfo.expirationTimestamp - refreshTokenTimeDiff > now) {
-
-    setTimeout(() => doRefreshToken(), (authTokenInfo.expirationTimestamp - refreshTokenTimeDiff - now) * 1000);
-
-    return;
-
-  }
+  // if (authTokenInfo.expirationTimestamp - refreshTokenTimeDiff > now) {
+  //
+  //   setTimeout(() => doRefreshToken(), (authTokenInfo.expirationTimestamp - refreshTokenTimeDiff - now) * 1000);
+  //
+  //   return;
+  // }
 
   doRefreshToken();
 

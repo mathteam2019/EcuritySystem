@@ -13,6 +13,7 @@
 package com.nuctech.ecuritycheckitem.service.devicemanagement.impl;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.QSerArchiveTemplate;
 import com.nuctech.ecuritycheckitem.models.db.SerArchiveTemplate;
@@ -29,10 +30,12 @@ import com.nuctech.ecuritycheckitem.repositories.SysDeviceCategoryRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.ArchiveTemplateService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -63,6 +67,14 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     @Autowired
     SysDeviceCategoryRepository sysDeviceCategoryRepository;
 
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
     /**
      * get prediate from filter parameters
      * @param templateName
@@ -85,6 +97,43 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
             predicate.and(builder.deviceCategory.categoryId.eq(categoryId));
         }
         return predicate;
+    }
+
+    public String getJsonFromArchiveTemplate(SerArchiveTemplate archiveTemplate) {
+        SerArchiveTemplate newArchiveTemplate = SerArchiveTemplate.builder()
+                .templateName(archiveTemplate.getTemplateName())
+                .archivesTemplateId(archiveTemplate.getArchivesTemplateId())
+                .archivesTemplateNumber(archiveTemplate.getArchivesTemplateNumber())
+                .categoryId(archiveTemplate.getCategoryId())
+                .status(archiveTemplate.getStatus())
+                .manufacturer(archiveTemplate.getManufacturer())
+                .originalModel(archiveTemplate.getOriginalModel())
+                .status(archiveTemplate.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newArchiveTemplate);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
+    public String getJsonFromArchiveIndicator(SerArchiveIndicators archiveIndicators) {
+        SerArchiveIndicators newArchiveIndicator = SerArchiveIndicators.builder()
+                .indicatorsId(archiveIndicators.getIndicatorsId())
+                .archivesTemplateId(archiveIndicators.getArchivesTemplateId())
+                .indicatorsName(archiveIndicators.getIndicatorsName())
+                .indicatorsUnit(archiveIndicators.getIndicatorsUnit())
+                .isNull(archiveIndicators.getIsNull())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newArchiveIndicator);
+        } catch(Exception ex) {
+        }
+        return answer;
     }
 
     /**
@@ -192,14 +241,18 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         Optional<SerArchiveTemplate> optionalSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.
                 serArchiveTemplate.archivesTemplateId.eq(templateId));
         SerArchiveTemplate serArchiveTemplate = optionalSerArchiveTemplate.get();
+        String valueBefore = getJsonFromArchiveTemplate(serArchiveTemplate);
 
         // Update status.
         serArchiveTemplate.setStatus(status);
 
         // Add edited info.
         serArchiveTemplate.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        String valueAfter = getJsonFromArchiveTemplate(serArchiveTemplate);
 
         serArchiveTemplateRepository.save(serArchiveTemplate);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", serArchiveTemplate.getArchivesTemplateId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -211,6 +264,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
     public void createArchiveIndicator(SerArchiveIndicators archiveIndicators) {
         archiveIndicators.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         serArchiveIndicatorsRepository.save(archiveIndicators);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveIndicator", null, currentLocale), "", archiveIndicators.getIndicatorsId().toString(), null,
+                true, "", getJsonFromArchiveIndicator(archiveIndicators));
     }
 
     /**
@@ -236,14 +292,19 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
             return 1;
 
         }
+        String valueBefore = getJsonFromArchiveIndicator(serArchiveIndicators);
 
         // Update status.
         serArchiveIndicators.setIsNull(isNull);
 
         // Add edited info.
         serArchiveIndicators.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
+        String valueAfter = getJsonFromArchiveIndicator(serArchiveIndicators);
 
         serArchiveIndicatorsRepository.save(serArchiveIndicators);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveIndicator", null, currentLocale), "", String.valueOf(indicatorId), null,
+                true, valueBefore, valueAfter);
         return 2;
     }
 
@@ -268,6 +329,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 serArchiveIndicatorsRepository.save(serArchiveTemplate.getArchiveIndicatorsList().get(i));
             }
         }
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", serArchiveTemplate.getArchivesTemplateId().toString(), null,
+                true, "", getJsonFromArchiveTemplate(serArchiveTemplate));
     }
 
     /**
@@ -280,6 +344,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
 
         SerArchiveTemplate oldSerArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(serArchiveTemplate.getArchivesTemplateId())).orElse(null);
+        String valueBefore = getJsonFromArchiveTemplate(oldSerArchiveTemplate);
         serArchiveTemplate.setCreatedBy(oldSerArchiveTemplate.getCreatedBy());
         serArchiveTemplate.setCreatedTime(oldSerArchiveTemplate.getCreatedTime());
 
@@ -303,6 +368,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
 
             }
         }
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", serArchiveTemplate.getArchivesTemplateId().toString(), null,
+                true, valueBefore, getJsonFromArchiveTemplate(serArchiveTemplate));
     }
 
     /**
@@ -315,6 +383,7 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         SerArchiveTemplate serArchiveTemplate = serArchiveTemplateRepository.findOne(QSerArchiveTemplate.serArchiveTemplate
                 .archivesTemplateId.eq(archiveTemplateId)).orElse(null);
 
+        String valueBefore = getJsonFromArchiveTemplate(serArchiveTemplate);
         //remove it's indicators
         if (serArchiveTemplate.getArchiveIndicatorsList() != null) {
             for (int i = 0; i < serArchiveTemplate.getArchiveIndicatorsList().size(); i++) {
@@ -327,6 +396,9 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
         }
 
         serArchiveTemplateRepository.delete(serArchiveTemplate);
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", serArchiveTemplate.getArchivesTemplateId().toString(), null,
+                true, valueBefore, "");
     }
 
     /**
@@ -351,7 +423,11 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
             return 1;
 
         }
+        String valueBefore = getJsonFromArchiveIndicator(serArchiveIndicators);
         serArchiveIndicatorsRepository.delete(serArchiveIndicators);
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ArchiveTemplate", null, currentLocale), "", String.valueOf(archiveIndicatorId), null,
+                true, valueBefore, "");
         return 2;
     }
 
@@ -394,10 +470,15 @@ public class ArchiveTemplateServiceImpl implements ArchiveTemplateService {
                 }
                 if (isExist == true) {
                     exportList.add(archiveTemplate);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = archiveTemplateList;
+            for(int i = 0; i < archiveTemplateList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(archiveTemplateList.get(i));
+            }
         }
         return exportList;
     }

@@ -103,7 +103,7 @@ public class DeviceArchiveExcelView extends BaseExcelView {
                     row.createCell(4).setCellValue("无");
                 }
                 if(archive.getArchiveTemplate() != null) {
-                    row.createCell(5).setCellValue(archive.getArchiveTemplate().getManufacturer());
+                    row.createCell(5).setCellValue(ConstantDictionary.getDataValue(archive.getArchiveTemplate().getManufacturer()));
                     row.createCell(6).setCellValue(archive.getArchiveTemplate().getOriginalModel());
                 } else {
                     row.createCell(5).setCellValue("无");

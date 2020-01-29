@@ -387,7 +387,7 @@
 
     <b-modal centered id="modal-delete-role" ref="modal-delete-role"
              :title="$t('permission-management.permission-control.prompt')">
-      {{$t('permission-management.permission-control.delete-role-prompt')}}
+      {{$t('permission-management.user.user-group-delete-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" @click="deleteRole" class="mr-1">{{$t('system-setting.ok')}}</b-button>
         <b-button size="sm" variant="danger" @click="hideModal('modal-delete-role')">{{$t('system-setting.cancel')}}
@@ -397,7 +397,7 @@
 
     <b-modal centered id="modal-delete-data-group" ref="modal-delete-data-group"
              :title="$t('permission-management.permission-control.prompt')">
-      {{$t('permission-management.permission-control.delete-data-group-prompt')}}
+      {{$t('permission-management.user.user-group-delete-prompt')}}
       <template slot="modal-footer">
         <b-button size="sm" variant="primary" @click="deleteDataGroup" class="mr-1">{{$t('system-setting.ok')}}
         </b-button>
@@ -417,7 +417,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -592,7 +592,7 @@
         isSelectedAllResourcesForRole: false,
         roleVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/role/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -647,7 +647,7 @@
         isSelectedAllUsersForDataGroup: false,
         dataGroupVuetableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/permission-control/data-group/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
                 name: '__checkbox',

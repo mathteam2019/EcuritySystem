@@ -12,6 +12,7 @@
 
 package com.nuctech.ecuritycheckitem.service.knowledgemanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
@@ -20,10 +21,12 @@ import com.nuctech.ecuritycheckitem.repositories.SerKnowledgeCaseRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerTaskTagRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 import com.nuctech.ecuritycheckitem.service.knowledgemanagement.KnowledgeService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.rowset.Predicate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -50,6 +54,32 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromKnowledge(SerKnowledgeCase knowledgeCase) {
+        SerKnowledgeCase newKnowledge = SerKnowledgeCase.builder()
+                .caseId(knowledgeCase.getCaseId())
+                .caseDealId(knowledgeCase.getCaseDealId())
+                .taskId(knowledgeCase.getTaskId())
+                .caseStatus(knowledgeCase.getCaseStatus())
+                .caseCollectUserId(knowledgeCase.getCaseCollectUserId())
+                .caseApprovalUserId(knowledgeCase.getCaseApprovalUserId())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newKnowledge);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * get predicate from filter parameters
@@ -110,10 +140,15 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                 }
                 if (isExist == true) {
                     exportList.add(deal);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = dealList;
+            for(int i = 0; i < dealList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(dealList.get(i));
+            }
         }
         return exportList;
     }
@@ -199,6 +234,19 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return serKnowledgeCaseRepository.exists(QSerKnowledgeCase.serKnowledgeCase.caseId.eq(caseId));
     }
 
+    @Override
+    public void delete(Long caseDealId) {
+        Optional<SerKnowledgeCaseDeal> optionalSerKnowledgeCase = serKnowledgeCaseDealRepository.findOne(QSerKnowledgeCaseDeal.serKnowledgeCaseDeal
+                .caseDealId.eq(caseDealId));
+        SerKnowledgeCaseDeal serKnowledgeCaseDeal = optionalSerKnowledgeCase.get();
+        SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseDeal.getKnowledgeCase();
+        String valueBefore = getJsonFromKnowledge(serKnowledgeCase);
+        serKnowledgeCaseRepository.delete(serKnowledgeCase);
+        serKnowledgeCaseDealRepository.delete(serKnowledgeCaseDeal);
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("KnowledgeCase", null, currentLocale), "", serKnowledgeCase.getCaseId().toString(), null, true, valueBefore, "");
+    }
+
     /**
      * update knowledgecase status
      * @param caseId
@@ -210,7 +258,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Optional<SerKnowledgeCase> optionalSerKnowledgeCase = serKnowledgeCaseRepository.findOne(QSerKnowledgeCase.serKnowledgeCase
                 .caseId.eq(caseId));
         SerKnowledgeCase serKnowledgeCase = optionalSerKnowledgeCase.get();
-
+        String valueBefore = getJsonFromKnowledge(serKnowledgeCase);
         // Update status.
         serKnowledgeCase.setCaseStatus(status);
 
@@ -218,6 +266,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         serKnowledgeCase.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         serKnowledgeCaseRepository.save(serKnowledgeCase);
+        String valueAfter = getJsonFromKnowledge(serKnowledgeCase);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("KnowledgeCase", null, currentLocale), "", serKnowledgeCase.getCaseId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -260,6 +311,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
 
         SerKnowledgeCase serKnowledgeCase = serKnowledgeCaseRepository.save(existKnowledgeCase);
+        String valueAfter = getJsonFromKnowledge(serKnowledgeCase);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("KnowledgeCase", null, currentLocale), "", serKnowledgeCase.getCaseId().toString(), null, true, "", valueAfter);
         if (serKnowledgeCase != null) {
             return serKnowledgeCase.getCaseId();
         } else

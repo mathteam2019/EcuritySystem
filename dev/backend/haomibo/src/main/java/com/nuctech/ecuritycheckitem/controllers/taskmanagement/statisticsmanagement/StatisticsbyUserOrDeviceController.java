@@ -529,12 +529,21 @@ public class StatisticsbyUserOrDeviceController extends BaseController {
                 }
                 if (isExist == true) {//if exist
                     exportList.put(entry.getKey(), record);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
 
             }
 
         } else {//if isAll is true
-            exportList = detailedStatistics;
+            for (Map.Entry<Long, TotalStatistics> entry : detailedStatistics.entrySet()) {
+                TotalStatistics record = entry.getValue();
+                exportList.put(entry.getKey(), record);
+                if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                    break;
+                }
+            }
         }
 
         return exportList;

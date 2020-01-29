@@ -11,23 +11,24 @@
  */
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.QSerSeizedGood;
-import com.nuctech.ecuritycheckitem.models.db.SerSeizedGood;
-import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 import com.nuctech.ecuritycheckitem.repositories.SerSeizedGoodRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.SerSeizedGoodService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
@@ -38,6 +39,29 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
     @Autowired
     SerSeizedGoodRepository serSeizedGoodRepository;
 
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromSeized(SerSeizedGood seizedGood) {
+        SerSeizedGood newDictionary = SerSeizedGood.builder()
+                .goodsId(seizedGood.getGoodsId())
+                .seizedGoodsCode(seizedGood.getSeizedGoodsCode())
+                .seizedGoodType(seizedGood.getSeizedGoodType())
+                .seizedGoodsLevel(seizedGood.getSeizedGoodsLevel())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newDictionary);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * check goods name already exist
@@ -62,6 +86,9 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
     public void createGood(SerSeizedGood serSeizedGood) {
         serSeizedGood.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         serSeizedGoodRepository.save(serSeizedGood);
+        String valueAfter = getJsonFromSeized(serSeizedGood);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("SeizedGood", null, currentLocale), "", serSeizedGood.getGoodsId().toString(), null, true, "", valueAfter);
     }
 
     /**
@@ -71,7 +98,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
     @Override
     public void modifyGood(SerSeizedGood serSeizedGood) {
         SerSeizedGood oldSerSeizedGood = serSeizedGoodRepository.findOne(QSerSeizedGood.serSeizedGood.goodsId.eq(serSeizedGood.getGoodsId())).orElse(null);
-
+        String valueBefore = getJsonFromSeized(oldSerSeizedGood);
         //Don't modify created by and created time
         serSeizedGood.setCreatedBy(oldSerSeizedGood.getCreatedBy());
         serSeizedGood.setCreatedTime(oldSerSeizedGood.getCreatedTime());
@@ -80,6 +107,9 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
         serSeizedGood.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         serSeizedGoodRepository.save(serSeizedGood);
+        String valueAfter = getJsonFromSeized(serSeizedGood);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("SeizedGood", null, currentLocale), "", serSeizedGood.getGoodsId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -88,7 +118,11 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
      */
     @Override
     public void removeGood(Long goodsId) {
+        SerSeizedGood oldSerSeizedGood = serSeizedGoodRepository.findOne(QSerSeizedGood.serSeizedGood.goodsId.eq(goodsId)).orElse(null);
+        String valueBefore = getJsonFromSeized(oldSerSeizedGood);
         serSeizedGoodRepository.delete(SerSeizedGood.builder().goodsId(goodsId).build());
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("SeizedGood", null, currentLocale), "", String.valueOf(goodsId), null, true, valueBefore, "");
     }
 
     /**
@@ -116,7 +150,7 @@ public class SerSeizedGoodServiceImpl implements SerSeizedGoodService {
 
 
         if (!StringUtils.isEmpty(goodsCode)) {
-            predicate.and(builder.seizedGoodsCode.eq(goodsCode));
+            predicate.and(builder.sysDictionaryData.dataValue.contains(goodsCode));
         }
         PageRequest pageRequest = PageRequest.of(currentPage, perPage);
         if (StringUtils.isNotBlank(order) && StringUtils.isNotEmpty(sortBy)) {

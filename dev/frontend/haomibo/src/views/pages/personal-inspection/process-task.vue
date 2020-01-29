@@ -656,7 +656,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -1510,6 +1510,7 @@
         // this.$refs['model-export'].show();
         let checkedAll = this.$refs.taskVuetable.checkedAllStatus;
         let checkedIds = this.$refs.taskVuetable.selectedTo;
+        let checkedData = this.$refs.taskVuetable.selectedData;
         this.params = {
           'isAll': checkedIds.length > 0 ? checkedAll : true,
           'filter': this.filter,
@@ -1856,26 +1857,31 @@
 
       //:row-class="rowColour(props.rowData)"
       rowColour(dataItem, index) {
-        if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-          return 'bg-orange';
-        }
+        // if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+        //   return 'bg-orange';
+        // }
         if (dataItem.workFlow !== null) {
           if (dataItem.workFlow.workMode !== null) {
-            // if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
-            //   if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-            //     return 'bg-orange';
-            //   }
-            // }
+            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('all')) {
+              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+                return 'bg-orange';
+              }
+            }
             if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+judge')) {
               if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
                 return 'bg-orange';
               }
             }
-            // if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
-            //   if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
-            //     return 'bg-orange';
-            //   }
-            // }
+            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan+hand')) {
+              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 2) {
+                return 'bg-orange';
+              }
+            }
+            if (dataItem.workFlow.workMode.modeName === this.getModeDataCode('scan')) {
+              if (dataItem.serAssignList === null || dataItem.serAssignList.length !== 1) {
+                return 'bg-orange';
+              }
+            }
           }
         }
       },

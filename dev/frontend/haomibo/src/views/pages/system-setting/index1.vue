@@ -81,14 +81,14 @@
                     <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
                       <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions"
                                 :state="!$v.platFormData.historyDataStorageSelect.$invalid"
-                                class="v-select-custom-style" multiple :dir="direction"/>
+                                class="v-select-custom-style" multiple :searchable="false" :dir="direction"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
                       <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions"
                                 :state="!$v.platFormData.historyDataExportSelect.$invalid"
-                                class="v-select-custom-style" multiple :dir="direction"/>
+                                class="v-select-custom-style" multiple :searchable="false" :dir="direction"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -380,7 +380,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style"
-                            multiple :dir="direction"/>
+                            multiple :searchable="false" :dir="direction"/>
                 </b-form-group>
               </b-col>
             </b-row>

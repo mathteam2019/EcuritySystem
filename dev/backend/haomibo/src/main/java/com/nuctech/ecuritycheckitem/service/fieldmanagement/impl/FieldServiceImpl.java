@@ -12,21 +12,21 @@
 
 package com.nuctech.ecuritycheckitem.service.fieldmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.SysField;
-import com.nuctech.ecuritycheckitem.models.db.QSysField;
-import com.nuctech.ecuritycheckitem.models.db.QSysDevice;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SysDeviceRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysFieldRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
 
 import com.nuctech.ecuritycheckitem.service.fieldmanagement.FieldService;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -51,6 +52,34 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     AuthenticationFacade authenticationFacade;
 
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromField(SysField field) {
+        SysField newField = SysField.builder()
+                .fieldId(field.getFieldId())
+                .orgId(field.getOrgId())
+                .parentFieldId(field.getParentFieldId())
+                .fieldSerial(field.getFieldSerial())
+                .fieldDesignation(field.getFieldDesignation())
+                .leader(field.getLeader())
+                .mobile(field.getMobile())
+                .status(field.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newField);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
     /**
      * create new field
      * @param sysField
@@ -58,6 +87,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     @Transactional
     public void createField(SysField sysField) {
+
         if (sysField.getParentFieldId() == 0) {
             sysField.setStatus(SysField.Status.ACTIVE);
         }
@@ -65,6 +95,9 @@ public class FieldServiceImpl implements FieldService {
         sysField.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
+        String valueAfter = getJsonFromField(sysField);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Field", null, currentLocale), "", sysField.getFieldId().toString(), null, true, "", valueAfter);
     }
 
     /**
@@ -135,7 +168,7 @@ public class FieldServiceImpl implements FieldService {
     @Transactional
     public void modifyField(SysField sysField) {
         SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(sysField.getFieldId())).orElse(null);
-
+        String valueBefore = getJsonFromField(oldSysField);
         //Don't modify created by and created time
         sysField.setCreatedBy(oldSysField.getCreatedBy());
         sysField.setCreatedTime(oldSysField.getCreatedTime());
@@ -144,6 +177,9 @@ public class FieldServiceImpl implements FieldService {
         sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
+        String valueAfter = getJsonFromField(sysField);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Field", null, currentLocale), "", sysField.getFieldId().toString(), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -153,7 +189,11 @@ public class FieldServiceImpl implements FieldService {
     @Override
     @Transactional
     public void removeField(Long fieldId) {
+        SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(fieldId)).orElse(null);
+        String valueBefore = getJsonFromField(oldSysField);
         sysFieldRepository.delete(SysField.builder().fieldId(fieldId).build());
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Field", null, currentLocale), "", String.valueOf(fieldId), null, true, valueBefore, "");
     }
 
     /**
@@ -166,7 +206,7 @@ public class FieldServiceImpl implements FieldService {
     public void updateStatus(Long fieldId, String status) {
         Optional<SysField> optionalSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(fieldId));
         SysField sysField = optionalSysField.get();
-
+        String valueBefore = getJsonFromField(sysField);
         // Update status.
         sysField.setStatus(status);
 
@@ -174,6 +214,9 @@ public class FieldServiceImpl implements FieldService {
         sysField.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysFieldRepository.save(sysField);
+        String valueAfter = getJsonFromField(sysField);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Field", null, currentLocale), "", String.valueOf(fieldId), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -292,10 +335,15 @@ public class FieldServiceImpl implements FieldService {
                 }
                 if (isExist == true) {
                     exportList.add(field);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = fieldList;
+            for(int i = 0; i < fieldList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(fieldList.get(i));
+            }
         }
         return exportList;
     }

@@ -533,24 +533,26 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!archiveTemplateService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveDevice", null, currentLocale), requestBody.getArchivesTemplateId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("HaveDevice", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getArchivesTemplateId().toString(),null);
         archiveTemplateService.updateStatus(requestBody.getArchivesTemplateId(), requestBody.getStatus());
 
         return new CommonResponseBody(ResponseMessage.OK);
@@ -569,24 +571,26 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         int status = archiveTemplateService.updateIndicatorStatus(requestBody.getIndicatorsId(), requestBody.getIsNull());
         switch (status) {
             case 0:
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                        messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
             case 1:
-                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("HaveArchive", null, currentLocale), requestBody.getIndicatorsId().toString(),null);
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                        messageSource.getMessage("HaveArchive", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getIndicatorsId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -603,34 +607,36 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if category is existing.
         if (!archiveTemplateService.checkCategoryExist(requestBody.getCategoryId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedTemplateName", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("UsedTemplateName", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
         }
 
         if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedTemplateNumber", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("UsedTemplateNumber", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
         }
 
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();
         archiveTemplateService.createSerArchiveTemplate(serArchiveTemplate);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getArchivesTemplateNumber(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -647,8 +653,9 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsName(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -656,9 +663,6 @@ public class ArchiveTemplateManagementController extends BaseController {
         SerArchiveIndicators serArchiveIndicators = requestBody.convert2SerArchiveIndicator();
 
         archiveTemplateService.createArchiveIndicator(serArchiveIndicators);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsName(), null);
-
         return new CommonResponseBody(ResponseMessage.OK, serArchiveIndicators.getIndicatorsId());
     }
 
@@ -675,48 +679,52 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         // Check if category is existing.
         if (!archiveTemplateService.checkCategoryExist(requestBody.getCategoryId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check if template exist
         if(!archiveTemplateService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check this template used
         if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveArchive", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("HaveArchive", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
 
         if(archiveTemplateService.checkTemplateNameExist(requestBody.getTemplateName(), requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedTemplateName", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("UsedTemplateName", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NAME);
         }
 
         if(archiveTemplateService.checkTemplateNumberExist(requestBody.getArchivesTemplateNumber(), requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedTemplateNumber", null, currentLocale), requestBody.getArchivesTemplateNumber(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("UsedTemplateNumber", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_TEMPLATE_NUMBER);
         }
 
         SerArchiveTemplate serArchiveTemplate = requestBody.convert2SerArchiveTemplate();
         archiveTemplateService.modifySerArchiveTemplate(serArchiveTemplate);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getArchivesTemplateNumber(), null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -733,27 +741,29 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateId().toString() , null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         //check template exist or not
         if(!archiveTemplateService.checkArchiveTemplateExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getArchivesTemplateId().toString() , null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(archiveTemplateService.checkArchiveExist(requestBody.getArchivesTemplateId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveArchive", null, currentLocale), requestBody.getArchivesTemplateId().toString() , null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveTemplate", null, currentLocale),
+                    messageSource.getMessage("HaveArchive", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
 
         archiveTemplateService.removeSerArchiveTemplate(requestBody.getArchivesTemplateId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getArchivesTemplateId().toString(), null);
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -770,20 +780,23 @@ public class ArchiveTemplateManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsId().toString() , null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         int status = archiveTemplateService.removeSerArchiveIndicator(requestBody.getIndicatorsId());
         switch (status) {
             case 0:
-                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getIndicatorsId().toString() , null);
+                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                        messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
             case 1:
-                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                        , "", messageSource.getMessage("HaveArchive", null, currentLocale), requestBody.getIndicatorsId().toString() , null);
+                auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("ArchiveIndicator", null, currentLocale),
+                        messageSource.getMessage("HaveArchive", null, currentLocale), "", null, false, "", "");
                 return new CommonResponseBody(ResponseMessage.HAS_ARCHIVES);
         }
 

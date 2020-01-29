@@ -1,4 +1,7 @@
 <style lang="scss">
+  /*.section {*/
+  /*  padding: 1rem 0 8px 0 !important;*/
+  /*}*/
   .user-management {
     .img-wrapper {
       padding: 5px;
@@ -29,7 +32,7 @@
 
       <b-tab :title="$t('permission-management.member-table')" @click="tabStatus='user'">
         <b-row v-show="pageStatus==='table'" class="h-100 ">
-          <b-col cols="12 d-flex flex-column">
+          <b-col cols="12 d-flex flex-column" style="padding-right: 15px; padding-left: 15px;">
             <b-row class="pt-2">
               <b-col cols="7">
                 <b-row>
@@ -99,7 +102,6 @@
                       <div>
 
                         <b-button
-                          v-if="props.rowData.status==='1000000302'"
                           size="sm"
                           variant="primary default btn-square"
                           :disabled="checkPermItem('user_modify')"
@@ -107,13 +109,13 @@
                           <i class="icofont-edit"/>
                         </b-button>
 
-                        <b-button
-                          v-if="props.rowData.status!=='1000000302'"
-                          size="sm"
-                          variant="primary default btn-square"
-                          disabled>
-                          <i class="icofont-edit"/>
-                        </b-button>
+<!--                        <b-button-->
+<!--                          v-if="props.rowData.status!=='1000000302'"-->
+<!--                          size="sm"-->
+<!--                          variant="primary default btn-square"-->
+<!--                          disabled>-->
+<!--                          <i class="icofont-edit"/>-->
+<!--                        </b-button>-->
 
                         <b-button
                           v-if="props.rowData.status==='1000000302'"
@@ -224,7 +226,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.th-user-id')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text" v-model="profileForm.userNumber"
+                  <b-form-input :disabled="modifyPage" type="text" v-model="profileForm.userNumber"
                                 :state="!$v.profileForm.userNumber.$dirty ? null : !$v.profileForm.userNumber.$invalid"
                                 :placeholder="$t('permission-management.please-enter-user-id')"/>
                   <div class="invalid-feedback d-block">
@@ -332,6 +334,7 @@
                   <template slot="label">{{$t('permission-management.user-account')}}&nbsp;<span
                     class="text-danger">*</span></template>
                   <b-form-input type="text"
+                                :disabled="modifyPage"
                                 v-model="profileForm.userAccount"
                                 :state="!$v.profileForm.userAccount.$dirty ? null : !$v.profileForm.userAccount.$invalid"
                                 :placeholder="$t('permission-management.please-enter-user-account')"/>
@@ -359,6 +362,7 @@
                     <div class="align-self-end flex-grow-1 pl-3">
                       <b-form-input type="password" v-model="profileForm.passwordValue"
                                     :disabled="profileForm.passwordType==='default'"
+                                    :state="!$v.profileForm.passwordValue.$dirty ? null : !$v.profileForm.passwordValue.$invalid"
                                     :placeholder="$t('permission-management.please-enter-password')"/>
                     </div>
                   </div>
@@ -392,6 +396,26 @@
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
             <div>
+              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301' && modifyPage===true" class="mr-1" @click="onAction('inactivate', profileForm)"
+                        variant="warning default" size="sm"><i class="icofont-ban"/> {{
+                $t('permission-management.action-make-inactive') }}
+              </b-button>
+              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1" @click="onAction('activate', profileForm)"
+                        variant="success default" size="sm"><i class="icofont-check-circled"/> {{
+                $t('permission-management.active') }}
+              </b-button>
+              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302' && modifyPage===true" class="mr-1" @click="onAction('blocked', profileForm)"
+                        variant="danger default" size="sm"><i class="icofont-minus-circle"/> {{
+                $t('permission-management.action-block') }}
+              </b-button>
+              <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000303' && modifyPage===true" class="mr-1" @click="onAction('unblock', profileForm)"
+                        variant="success default" size="sm"><i class="icofont-power"/> {{
+                $t('permission-management.action-unblock') }}
+              </b-button>
+              <b-button :disabled="checkPermItem('user_modify')" v-if="profileForm.status==='1000000304' && modifyPage===true" class="mr-1" @click="onAction('reset-password', profileForm)"
+                        variant="purple default" size="sm"><i class="icofont-ui-password"/> {{
+                $t('permission-management.pending') }}
+              </b-button>
               <b-button @click="onSaveUserPage()" variant="info default" size="sm"><i
                 class="icofont-save"/> {{
                 $t('permission-management.save') }}
@@ -418,7 +442,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.th-user-id')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text" v-model="profileForm.userNumber"
+                  <b-form-input :disabled="true" type="text" v-model="profileForm.userNumber"
                                 :placeholder="$t('permission-management.please-enter-user-id')"/>
                 </b-form-group>
               </b-col>
@@ -497,7 +521,7 @@
                 <b-form-group>
                   <template slot="label">{{$t('permission-management.user-account')}}&nbsp;<span
                     class="text-danger">*</span></template>
-                  <b-form-input type="text" v-model="profileForm.userAccount"
+                  <b-form-input disabled type="text" v-model="profileForm.userAccount"
                                 :placeholder="$t('permission-management.please-enter-user-account')"/>
                 </b-form-group>
               </b-col>
@@ -519,6 +543,7 @@
                     <div class="align-self-end flex-grow-1 pl-2">
                       <b-form-input type="password" v-model="profileForm.passwordValue"
                                     :disabled="profileForm.passwordType==='default'"
+                                    :state="!$v.profileForm.passwordValue.$dirty ? null : !$v.profileForm.passwordValue.$invalid"
                                     :placeholder="$t('permission-management.please-enter-password')"/>
                     </div>
                   </div>
@@ -548,13 +573,13 @@
             </div>
           </b-col>
           <b-col cols="12" class="d-flex justify-content-end align-self-end">
-            <b-button v-if="profileForm.status==='1000000301'" class="mr-1" @click="onAction('inactivate', profileForm)"
+            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000301'" class="mr-1" @click="onAction('inactivate', profileForm)"
                       variant="warning default" size="sm"><i class="icofont-ban"/> {{
               $t('permission-management.action-make-inactive') }}
             </b-button>
-            <b-button v-if="profileForm.status==='1000000302'" class="mr-1" @click="onAction('activate', profileForm)"
+            <b-button :disabled="checkPermItem('user_update_status')" v-if="profileForm.status==='1000000302'" class="mr-1" @click="onAction('activate', profileForm)"
                       variant="success default" size="sm"><i class="icofont-check-circled"/> {{
-              $t('permission-management.action-unblock') }}
+              $t('permission-management.active') }}
             </b-button>
             <b-button @click="onTableListPage()" variant="danger default" size="sm"><i
               class="icofont-long-arrow-left"/> {{
@@ -758,7 +783,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -916,6 +941,7 @@
         isModalVisible: false,
         tableData: [],
         pageStatus: 'table',
+        modifyPage : false,
         defaultOrgId: '',
         filter: {
           userName: '',
@@ -1083,7 +1109,7 @@
         },
         userGroupTableItems: {
           apiUrl: `${apiBaseUrl}/permission-management/user-management/user-group/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -1322,6 +1348,7 @@
         // reset models
         this.onInitialUserData();
         this.submitted = false;
+        this.modifyPage=false;
         // reset create form
         this.$v.profileForm.$reset();
         // change page to create
@@ -1404,6 +1431,12 @@
                   permanent: false
                 });
                 break;
+              case responseMessages['used-user-number']://duplicated user email
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`permission-management.user.used-number`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
             }
             this.isLoading = false;
           })
@@ -1416,6 +1449,7 @@
         let userId = data.userId;
         switch (action) {
           case 'modify':
+            this.modifyPage = true;
             this.fnModifyItem(data);
             break;
           case 'show':
@@ -1427,6 +1461,10 @@
             this.fnChangeItemStatus(userId, action);
             break;
           case 'inactivate':
+            this.promptTemp.userId = userId;
+            this.promptTemp.action = action;
+            this.fnChangeItemStatus();
+            break;
           case 'blocked':
             this.fnShowConfDiaglog(userId, action);
             break;

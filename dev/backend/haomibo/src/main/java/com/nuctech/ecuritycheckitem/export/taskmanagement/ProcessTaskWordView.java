@@ -74,13 +74,6 @@ public class ProcessTaskWordView extends BaseWordView {
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanUserName", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanStartTime", null, currentLocale));
         tableRowHeader.addNewTableCell().setText(messageSource.getMessage("ScanEndTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeUserName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeStartTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("JudgeEndTime", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
-        tableRowHeader.addNewTableCell().setText(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
 
     }
 
@@ -162,72 +155,6 @@ public class ProcessTaskWordView extends BaseWordView {
                     tableRow.getCell(6).setText("无");
                     tableRow.getCell(7).setText("无");
                     tableRow.getCell(8).setText("无");
-                }
-
-                if (task.getSerJudgeGraph() != null) {
-                    if (task.getSerJudgeGraph().getJudgeDevice() != null) {
-                        tableRow.getCell(9).setText(task.getSerJudgeGraph().getJudgeDevice().getDeviceName());
-                    } else {
-                        tableRow.getCell(9).setText("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeUser() != null) {
-                        tableRow.getCell(10).setText(task.getSerJudgeGraph().getJudgeUser().getUserName());
-                    } else {
-                        tableRow.getCell(10).setText("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeStartTime() != null) {
-                        tableRow.getCell(11).setText(formatDate(task.getSerJudgeGraph().getJudgeStartTime()));
-                    }
-                    else {
-                        tableRow.getCell(11).setText("无");
-                    }
-
-                    if (task.getSerJudgeGraph().getJudgeEndTime() != null) {
-                        tableRow.getCell(12).setText(formatDate(task.getSerJudgeGraph().getJudgeEndTime()));
-                    }
-                    else {
-                        tableRow.getCell(12).setText("无");
-                    }
-
-                }
-                else {
-
-                    tableRow.getCell(9).setText("无");
-                    tableRow.getCell(10).setText("无");
-                    tableRow.getCell(11).setText("无");
-                    tableRow.getCell(12).setText("无");
-                }
-
-                if(task.getSerHandExamination() != null) {
-
-
-                    if (task.getSerHandExamination().getHandDevice() != null) {
-                        tableRow.getCell(13).setText(task.getSerHandExamination().getHandDevice().getDeviceName());
-                    } else {
-                        tableRow.getCell(13).setText("无");
-                    }
-
-                    if (task.getSerHandExamination().getHandUser() != null) {
-                        tableRow.getCell(14).setText(task.getSerHandExamination().getHandUser().getUserName());
-                    } else {
-                        tableRow.getCell(14).setText("无");
-                    }
-
-                    if (task.getSerHandExamination().getHandEndTime() != null) {
-                        tableRow.getCell(15).setText(formatDate(task.getSerHandExamination().getHandEndTime()));
-                    }
-                    else {
-                        tableRow.getCell(15).setText("无");
-                    }
-                }
-                else {
-
-                    tableRow.getCell(13).setText("无");
-                    tableRow.getCell(14).setText("无");
-                    tableRow.getCell(15).setText("无");
-
                 }
             }
 

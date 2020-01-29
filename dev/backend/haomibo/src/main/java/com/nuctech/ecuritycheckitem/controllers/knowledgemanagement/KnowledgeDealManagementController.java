@@ -131,6 +131,21 @@ public class KnowledgeDealManagementController extends BaseController {
     }
 
     /**
+     * Knowledge Case Deal delete request body.
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    private static class KnowledgeCaseDeleteRequestBody {
+
+        @NotNull
+        Long caseDealId;
+
+    }
+
+    /**
      * Knowledge Case Deal generate request body.
      */
     @Getter
@@ -165,26 +180,22 @@ public class KnowledgeDealManagementController extends BaseController {
         List<String> tagList;
     }
 
-    /**
-     * Knowledge case create request
-     * @param requestBody
-     * @param bindingResult
-     * @return
-     */
     //@PreAuthorize(Role.Authority.HAS_KNOWLEDGECASE_CREATE)
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public Object insertKnowledgeCase(@RequestBody @Valid KnowledgeCaseInsertRequestBody requestBody, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         HistorySimplifiedForHistoryTaskManagement history = historyService.getOne(requestBody.getHistoryId());
         if (history == null) { //if specified history id doesn't exist
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -197,8 +208,9 @@ public class KnowledgeDealManagementController extends BaseController {
         //insert new knowledge case and get new id
         Long knowledgeId = knowledgeService.insertNewKnowledgeCase(knowledgeCase, requestBody.getTagList());
         if (knowledgeId == null) { //failed inserting
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.FAILED_INSERT_KNOWLEDGECASE);
         }
         knowledgeCase.setCaseId(knowledgeId);
@@ -208,18 +220,18 @@ public class KnowledgeDealManagementController extends BaseController {
         knowledgeCaseDeal.setCaseId(knowledgeId);
         Long knowledgeCaseDealId = knowledgeService.insertNewKnowledgeCaseDeal(knowledgeCaseDeal);
         if (knowledgeCaseDealId == null) { //failed inserting
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("InsertKnowledgeCase", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.FAILED_INSERT_KNOWLEDGECASEDEAL);
         }
         knowledgeCase.setCaseDealId(knowledgeCaseDealId); //set new knowledgecasedeal id to knowledgecase and update it
         if (knowledgeService.updateKnowledgeCase(knowledgeId, knowledgeCase) == null) { //failed updating
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getHistoryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("UpdateKnowledgeCase", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.FAILED_UPDATE_KNOWLEDGECASE);
         }
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getHistoryId().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -367,19 +379,44 @@ public class KnowledgeDealManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCaseId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!knowledgeService.checkKnowledgeExist(requestBody.getCaseId())) { // Check if knowledge case is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getCaseId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         knowledgeService.updateStatus(requestBody.getCaseId(), requestBody.getStatus()); //update db through knowledgeService
-        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getCaseId().toString(),null);
+        return new CommonResponseBody(ResponseMessage.OK);
+    }
+
+    /**
+     * Knowledge Case delete request.
+     *
+     * @param requestBody
+     * @param bindingResult
+     * @return
+     */
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    public Object knowledgeCaseDelete(
+            @RequestBody @Valid KnowledgeCaseDeleteRequestBody requestBody,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("KnowledgeCase", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+            return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
+        }
+
+
+        knowledgeService.delete(requestBody.getCaseDealId()); //update db through knowledgeService
         return new CommonResponseBody(ResponseMessage.OK);
     }
 

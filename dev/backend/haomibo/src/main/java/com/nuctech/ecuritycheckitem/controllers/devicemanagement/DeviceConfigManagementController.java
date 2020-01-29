@@ -13,19 +13,28 @@
 
 package com.nuctech.ecuritycheckitem.controllers.devicemanagement;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.controllers.BaseController;
 import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.redis.SysDeviceConfigInfoVO;
+import com.nuctech.ecuritycheckitem.models.redis.SysJudgeInfoVO;
+import com.nuctech.ecuritycheckitem.models.redis.SysManualInfoVO;
+import com.nuctech.ecuritycheckitem.models.redis.SysSecurityInfoVO;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.models.reusables.FilteringAndPaginationResult;
 import com.nuctech.ecuritycheckitem.service.devicemanagement.DeviceConfigService;
+import com.nuctech.ecuritycheckitem.service.devicemanagement.SerLoginInfoService;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
+import com.nuctech.ecuritycheckitem.utils.CryptUtil;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import com.nuctech.ecuritycheckitem.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,17 +44,16 @@ import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.converter.json.MappingJacksonValue;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import com.alibaba.fastjson.JSONArray;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/device-management/device-config")
@@ -58,7 +66,13 @@ public class DeviceConfigManagementController extends BaseController {
     AuditLogService auditLogService;
 
     @Autowired
+    SerLoginInfoService serLoginInfoService;
+
+    @Autowired
     public MessageSource messageSource;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
 
 
@@ -123,10 +137,11 @@ public class DeviceConfigManagementController extends BaseController {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    private static class DeviceConfigDeleteRequestBody {
+    private static class DeviceConfigUpdateStatusRequestBody {
 
         @NotNull
-        Long configId; //config id
+        Long configId; // device id
+        String status; //update status
     }
 
     /**
@@ -260,8 +275,9 @@ public class DeviceConfigManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -269,8 +285,9 @@ public class DeviceConfigManagementController extends BaseController {
 
         //check if device config is valid.
         if(sysDeviceConfig == null) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getConfigId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         List<Long> manualDeviceIdList = requestBody.getManualDeviceIdList(); //get Manual Device IdList from input paramenter
@@ -288,34 +305,46 @@ public class DeviceConfigManagementController extends BaseController {
         sysDeviceConfig.setWomanDeviceGender(requestBody.getWomanDeviceGender());
 
         deviceConfigService.modifyDeviceConfig(sysDeviceConfig, manualDeviceIdList, judgeDeviceIdList, configDeviceIdList);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getConfigId().toString(),null);
+        updateRedisValue(requestBody.getConfigId());
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
     /**
-     * Device Config delete request.
+     * Device Config update status request.
      * @param requestBody
      * @param bindingResult
      * @return
      */
-    @RequestMapping(value = "/config/delete", method = RequestMethod.POST)
-    public Object deviceConfigDelete(
-            @RequestBody @Valid DeviceConfigDeleteRequestBody requestBody,
+    @RequestMapping(value = "/config/update", method = RequestMethod.POST)
+    public Object deviceConfigUpdateStatus(
+            @RequestBody @Valid DeviceConfigUpdateStatusRequestBody requestBody,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-
         SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(requestBody.getConfigId()); //get config by id through deviceConfigService
 
         if(sysDeviceConfig == null) {//check device config exist or not
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
+        Long deviceId = sysDeviceConfig.getDeviceId();
+        if(requestBody.getStatus().equals(SysDeviceConfig.Status.INACTIVE)) {
+            if(deviceConfigService.checkDeviceOnline(deviceId)) {
+                auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                        "", messageSource.getMessage("DeviceConfig", null, currentLocale),
+                        messageSource.getMessage("DeviceOnline", null, currentLocale), "", null, false, "", "");
+                return new CommonResponseBody(ResponseMessage.DEVICE_ONLINE);
+            }
+        }
 
-        deviceConfigService.removeDeviceConfig(sysDeviceConfig); //remove correspond manual group
-
+        deviceConfigService.updateStatusDeviceConfig(requestBody.getConfigId(), requestBody.getStatus()); //remove correspond manual group
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -394,6 +423,134 @@ public class DeviceConfigManagementController extends BaseController {
         value.setFilters(filters);
 
         return value;
+    }
+
+    @Async
+    public void updateRedisValue(Long configId) {
+        try {
+            SysDeviceConfig sysDeviceConfig = deviceConfigService.findConfigById(configId); //get config by id through deviceConfigService
+            SysDevice item = sysDeviceConfig.getDevice();
+            SysSecurityInfoVO sysSecurityInfoVO = new SysSecurityInfoVO();
+            sysSecurityInfoVO.setGuid(item.getGuid());
+            sysSecurityInfoVO.setDeviceId(item.getDeviceId());
+            sysSecurityInfoVO.setDeviceName(item.getDeviceName());
+            sysSecurityInfoVO.setDeviceSerial(item.getDeviceSerial());
+            sysSecurityInfoVO.setCurrentStatus(item.getCurrentStatus());
+            sysSecurityInfoVO.setWorkStatus(item.getWorkStatus());
+
+            //获取每个设备的设备配置
+            SysDeviceConfigInfoVO sysDeviceConfigInfoVO = new SysDeviceConfigInfoVO();
+            sysDeviceConfigInfoVO.setConfigId(sysDeviceConfig.getConfigId());
+            sysDeviceConfigInfoVO.setModeId(sysDeviceConfig.getModeId());
+            sysDeviceConfigInfoVO.setManualSwitch(sysDeviceConfig.getManualSwitch());
+            sysDeviceConfigInfoVO.setManRemoteGender(sysDeviceConfig.getManRemoteGender());
+            sysDeviceConfigInfoVO.setWomanRemoteGender(sysDeviceConfig.getWomanRemoteGender());
+            sysDeviceConfigInfoVO.setManManualGender(sysDeviceConfig.getManManualGender());
+            sysDeviceConfigInfoVO.setWomanManualGender(sysDeviceConfig.getWomanManualGender());
+            sysDeviceConfigInfoVO.setManDeviceGender(sysDeviceConfig.getManDeviceGender());
+            sysDeviceConfigInfoVO.setWomanDeviceGender(sysDeviceConfig.getWomanDeviceGender());
+            sysSecurityInfoVO.setWorkMode(sysDeviceConfig.getWorkMode().getModeName());
+
+            sysSecurityInfoVO.setConfigInfo(sysDeviceConfigInfoVO);
+
+            // 获取安全设备的判断设备列表和手检站列表
+            List<SysJudgeInfoVO> sysJudgeInfoVOS = new ArrayList<SysJudgeInfoVO>();
+            List<SysManualInfoVO> sysManualInfoVOS = new ArrayList<SysManualInfoVO>();
+
+
+            List<SysJudgeGroup> sysJudgeGroups = sysDeviceConfig.getJudgeGroupList();
+            for (SysJudgeGroup group : sysJudgeGroups) {
+                SysDevice judgeDevice = group.getJudgeDevice();
+                if (judgeDevice != null) {
+                    SysJudgeInfoVO sysJudgeInfoVO = new SysJudgeInfoVO();
+                    sysJudgeInfoVO.setGuid(judgeDevice.getGuid());
+                    sysJudgeInfoVO.setDeviceId(judgeDevice.getDeviceId());
+                    sysJudgeInfoVO.setDeviceName(judgeDevice.getDeviceName());
+                    sysJudgeInfoVO.setDeviceSerial(judgeDevice.getDeviceSerial());
+                    sysJudgeInfoVO.setCurrentStatus(judgeDevice.getCurrentStatus());
+                    sysJudgeInfoVO.setWorkStatus(judgeDevice.getWorkStatus());
+
+                    SysJudgeDevice sysJudgeDevice = new SysJudgeDevice();
+                    sysJudgeDevice.setJudgeDeviceId(group.getJudgeDeviceId());
+                    sysJudgeDevice = group.getSysJudgeDevice();
+                    if (sysJudgeDevice != null) {
+                        sysJudgeInfoVO.setDeviceCheckerGender(sysJudgeDevice.getDeviceCheckGender());
+                    }
+
+                    sysJudgeInfoVO.setConfigInfo(null);
+
+                    SerLoginInfo serLoginInfo = serLoginInfoService.findLatestLoginInfo(judgeDevice.getDeviceId());
+                    if (serLoginInfo != null) {
+                        if (serLoginInfo.getLoginCategory().equals(Constants.LOGIN_STATUS)) {
+                            sysJudgeInfoVO.setLogInedUserId(serLoginInfo.getUserId());
+                        }
+                    }
+
+                    sysJudgeInfoVOS.add(sysJudgeInfoVO);
+                }
+            }
+
+            // 设置手检查点信息
+            List<SysManualGroup> sysManualGroups = sysDeviceConfig.getManualGroupList();
+            for (SysManualGroup group : sysManualGroups) {
+                SysDevice manualDevice = group.getManualDevice();
+                if (manualDevice != null) {
+                    SysManualInfoVO sysManualInfoVO = new SysManualInfoVO();
+                    sysManualInfoVO.setGuid(manualDevice.getGuid());
+                    sysManualInfoVO.setDeviceId(manualDevice.getDeviceId());
+                    sysManualInfoVO.setDeviceName(manualDevice.getDeviceName());
+                    sysManualInfoVO.setDeviceSerial(manualDevice.getDeviceSerial());
+                    sysManualInfoVO.setCurrentStatus(manualDevice.getCurrentStatus());
+                    sysManualInfoVO.setWorkStatus(manualDevice.getWorkStatus());
+
+                    SysManualDevice sysManualDevice = new SysManualDevice();
+                    sysManualDevice.setManualDeviceId(group.getManualDeviceId());
+                    sysManualDevice = group.getSysManualDevice();
+                    if (sysManualDevice != null) {
+                        sysManualInfoVO.setDeviceCheckerGender(sysManualDevice.getDeviceCheckGender());
+                    }
+
+                    sysManualInfoVO.setConfigInfo(null);
+
+                    SerLoginInfo serLoginInfo = serLoginInfoService.findLatestLoginInfo(manualDevice.getDeviceId());
+                    if (serLoginInfo != null) {
+                        if (serLoginInfo.getLoginCategory().equals(Constants.LOGIN_STATUS)) {
+                            sysManualInfoVO.setLogInedUserId(serLoginInfo.getUserId());
+                        }
+                    }
+
+                    sysManualInfoVOS.add(sysManualInfoVO);
+                }
+            }
+
+
+
+            sysSecurityInfoVO.setManualDeviceModelList(sysManualInfoVOS);
+            sysSecurityInfoVO.setJudgeDeviceModelList(sysJudgeInfoVOS);
+
+            SerLoginInfo serLoginInfo = serLoginInfoService.findLatestLoginInfo(item.getDeviceId());
+            if (serLoginInfo != null) {
+                if (serLoginInfo.getLoginCategory().equals(Constants.LOGIN_STATUS)) {
+                    sysSecurityInfoVO.setLogInedUserId(serLoginInfo.getUserId());
+                }
+            }
+
+
+            List<SysSecurityInfoVO> sysSecurityInfoVOS;
+            String sysSecurityInfoStr = redisUtil.get((Constants.REDIS_SECURITY_INFO));
+            JSONArray sysSecurityInfoListStr = JSONArray.parseArray(sysSecurityInfoStr);
+            sysSecurityInfoVOS = sysSecurityInfoListStr.toJavaList(SysSecurityInfoVO.class);
+            for(int i = 0; i < sysSecurityInfoVOS.size(); i ++) {
+                if(sysSecurityInfoVOS.get(i).getDeviceId() == item.getDeviceId()) {
+                    sysSecurityInfoVOS.set(i, sysSecurityInfoVO);
+                }
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            redisUtil.set(Constants.REDIS_SECURITY_INFO,
+                    CryptUtil.encrypt(objectMapper.writeValueAsString(sysSecurityInfoVOS)),
+                    Constants.EXPIRE_TIME);
+        } catch(Exception ex) { }
+
     }
 
 }

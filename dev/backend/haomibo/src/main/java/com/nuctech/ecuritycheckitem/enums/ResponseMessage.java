@@ -27,13 +27,18 @@ public enum ResponseMessage {
     INVALID_SCANID("invalid_serscan_id"),  //response message in case of invalid serscan id detected
     USER_NOT_FOUND("user_not_found"),  //response message in case of user not found
     USER_PENDING_STATUS("user_pending_status"),  //response message in case of user pending statue
+    USER_NON_ACTIVE_STATUS("user_non_active_status"),  //response message in case of user non active statue
+    PRE_USER_PENDING_STATUS("pre_user_pending_status"),  //response message in case of one time before of user pending statue
     INVALID_PASSWORD("invalid_password"),  //response message in case of invalid password
     TOKEN_EXPIRED("token_expired"),  //response message in case of token expired
     INVALID_TOKEN("invalid_token"),  //response message in case of invalid token
     USED_EMAIL("used_email"),  //response message in case of used email
     SERVER_ERROR("server_error"),  //response message in case of server error
+    EXIST_USER("exist_user"), //response message in case of create assign user role
+    EXIST_USER_GROUP("exist_user_group"), //response message in case of create assign user group role
     HAS_CHILDREN("has_children"),  //response message in case of has children
     USED_USER_ACCOUNT("used_user_account"),  //response message in case of used user account
+    USED_USER_NUMBER("used_user_number"),  //response message in case of used user account
     USED_MOBILE("used_mobile"),  //response message in case of used mobile
     FORBIDDEN("forbidden"),  //response message in case of forbidden
     BAD_REQUEST("bad_request"),  //response message in case of bad request
@@ -46,6 +51,7 @@ public enum ResponseMessage {
     HAS_ARCHIVES("has_archives"),  //response message in case of has archives
     HAS_ARCHIVE_TEMPLATE("has_archive_template"),  //response message in case of has archive template
     HAS_DEVICES("has_devices"),  //response message in case of has devices
+    DEVICE_INACTIVE_STATUS("device_inactive_status"),  //response message in case of device inactive status
     USED_CATEGORY_NAME("used_category_name"),  //response message in case of used category name
     USED_CATEGORY_NUMBER("used_category_number"),  //response message in case of used category number
     USED_TEMPLATE_NAME("used_template_name"),  //response message in case of used template_name
@@ -54,6 +60,7 @@ public enum ResponseMessage {
     USED_ARCHIVE_NUMBER("used_archive_number"),  //response message in case of used archive number
     USED_DEVICE_NAME("used_device_name"),  //response message in case of used device name
     USED_DEVICE_SERIAL("used_device_serial"),  //response message in case of used device serial
+    USED_DEVICE("used_device"),  //response message in case of used device
     USED_DEVICE_GUID("used_device_guid"),  //response message in case of used device guid
     USED_FIELD_SERIAL("used_field_serial"),  //response message in case of used field serial
     USED_FIELD_DESIGNATION("used_field_designation"),  //response message in case of used field designation
@@ -71,7 +78,10 @@ public enum ResponseMessage {
     USED_DICTIONARY_VALUE("used_dictionary_value"),  //response message in case of used seized goods
     FAILED_INSERT_KNOWLEDGECASE("failed_insert_knowledgecase"), //response message in case of failed inserting new knowledgecase
     FAILED_UPDATE_KNOWLEDGECASE("failed_update_knowledgecase"), //response message in case of failed updating new knowledgecase
-    FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"); //response message in case of failed inserting new knowledgecasedeal
+    FAILED_INSERT_KNOWLEDGECASEDEAL("failed_insert_knowledgecasedeal"), //response message in case of failed inserting new knowledgecasedeal
+    DEVICE_CONFIG_ACTIVE("device_config_active"),//response message if device config is active for update status of device
+    DEVICE_SCAN_ACTIVE("device_scan_active"),//response message if device scan param is active for update status of device
+    DEVICE_ONLINE("device_online");// response message if device is online
 
 
     private final String value;

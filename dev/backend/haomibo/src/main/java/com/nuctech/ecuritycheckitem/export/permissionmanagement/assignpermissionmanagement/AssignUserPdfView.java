@@ -87,7 +87,7 @@ public class AssignUserPdfView extends BasePdfView {
 
 
 
-                addTableCell(table, user.getDataRangeCategory());
+                addTableCell(table, ConstantDictionary.getDataValue(user.getDataRangeCategory()));
 
             }
 

@@ -12,25 +12,11 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.SysRole;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.SysResource;
-import com.nuctech.ecuritycheckitem.models.db.QSysResource;
-import com.nuctech.ecuritycheckitem.models.db.QSysRoleResource;
-import com.nuctech.ecuritycheckitem.models.db.SysRoleResource;
-import com.nuctech.ecuritycheckitem.models.db.QSysRole;
-import com.nuctech.ecuritycheckitem.models.db.QSysRoleUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupRole;
-import com.nuctech.ecuritycheckitem.models.db.QSysDataGroup;
-import com.nuctech.ecuritycheckitem.models.db.SysDataGroupUser;
-import com.nuctech.ecuritycheckitem.models.db.SysDataGroup;
-import com.nuctech.ecuritycheckitem.models.db.QSysDataGroupUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserLookup;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroupLookup;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 
 import com.nuctech.ecuritycheckitem.repositories.SysRoleRepository;
@@ -46,11 +32,13 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserLookupRepository;
 
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.PermissionService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -58,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -96,6 +85,50 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     SysUserLookupRepository sysUserLookupRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromRole(SysRole role) {
+        SysRole newRole = SysRole.builder()
+                .roleId(role.getRoleId())
+                .orgId(role.getOrgId())
+                .roleNumber(role.getRoleNumber())
+                .roleName(role.getRoleName())
+                .roleFlag(role.getRoleFlag())
+                .status(role.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newRole);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
+
+    public String getJsonFromDataGroup(SysDataGroup dataGroup) {
+        SysDataGroup newRole = SysDataGroup.builder()
+                .dataGroupId(dataGroup.getDataGroupId())
+                .orgId(dataGroup.getOrgId())
+                .dataGroupNumber(dataGroup.getDataGroupNumber())
+                .dataGroupName(dataGroup.getDataGroupName())
+                .dataGroupFlag(dataGroup.getDataGroupFlag())
+                .status(dataGroup.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newRole);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * create role
@@ -158,6 +191,10 @@ public class PermissionServiceImpl implements PermissionService {
                 )
                 .collect(Collectors.toList());
         sysRoleResourceRepository.saveAll(relationList);
+        String valueAfter = getJsonFromRole(sysRole);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Role", null, currentLocale), "", sysRole.getRoleId().toString(), null, true, "", valueAfter);
+
         return true;
     }
 
@@ -225,10 +262,15 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 if (isExist == true) {
                     exportList.add(role);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = roleList;
+            for(int i = 0; i < roleList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(roleList.get(i));
+            }
         }
         return exportList;
     }
@@ -289,6 +331,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional
     public boolean modifyRole(long roleId, List<Long> resourceIdList) {
         SysRole sysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(roleId)).orElse(null);
+        String valueBefore = getJsonFromRole(sysRole);
 
 
         // Get valid resource list from request resource id list.
@@ -338,6 +381,10 @@ public class PermissionServiceImpl implements PermissionService {
         // Add edited info.
         sysRole.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysRoleRepository.save(sysRole);
+        String valueAfter = getJsonFromRole(sysRole);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Role", null, currentLocale), "", sysRole.getRoleId().toString(), null, true, valueBefore, valueAfter);
+
         return true;
     }
 
@@ -380,12 +427,17 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public void removeRole(long roleId) {
+        SysRole sysRole = sysRoleRepository.findOne(QSysRole.sysRole.roleId.eq(roleId)).orElse(null);
+        String valueBefore = getJsonFromRole(sysRole);
         sysRoleRepository.delete(
                 SysRole
                         .builder()
                         .roleId(roleId)
                         .build()
         );
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Role", null, currentLocale), "", sysRole.getRoleId().toString(), null, true, valueBefore, "");
+
         return;
     }
 
@@ -470,6 +522,10 @@ public class PermissionServiceImpl implements PermissionService {
 
         // Save.
         sysDataGroupUserRepository.saveAll(relationList);
+        String valueAfter = getJsonFromDataGroup(sysDataGroup);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DataGroup", null, currentLocale), "", dataGroup.getDataGroupId().toString(), null, true, "", valueAfter);
+
         return true;
     }
 
@@ -538,10 +594,15 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 if (isExist == true) {
                     exportList.add(dataGroup);
+                    if(exportList.size() >= Constants.MAX_EXPORT_NUMBER) {
+                        break;
+                    }
                 }
             }
         } else {
-            exportList = dataGroupList;
+            for(int i = 0; i < dataGroupList.size() && i < Constants.MAX_EXPORT_NUMBER; i ++) {
+                exportList.add(dataGroupList.get(i));
+            }
         }
         return exportList;
     }
@@ -611,6 +672,7 @@ public class PermissionServiceImpl implements PermissionService {
         Optional<SysDataGroup> optionalSysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(dataGroupId));
 
         SysDataGroup sysDataGroup = optionalSysDataGroup.get();
+        String valueBefore = getJsonFromDataGroup(sysDataGroup);
 
         sysDataGroupUserRepository.deleteAll(sysDataGroupUserRepository.findAll(QSysDataGroupUser.sysDataGroupUser.dataGroupId.eq(sysDataGroup.getDataGroupId())));
 
@@ -635,6 +697,9 @@ public class PermissionServiceImpl implements PermissionService {
         // Add edited info.
         sysDataGroup.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         sysDataGroupRepository.save(sysDataGroup);
+        String valueAfter = getJsonFromDataGroup(sysDataGroup);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DataGroup", null, currentLocale), "", sysDataGroup.getDataGroupId().toString(), null, true, valueBefore, valueAfter);
         return true;
     }
 
@@ -686,12 +751,19 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public boolean removeDataGroup(long dataGroupId) {
+        Optional<SysDataGroup> optionalSysDataGroup = sysDataGroupRepository.findOne(QSysDataGroup.sysDataGroup.dataGroupId.eq(dataGroupId));
+
+        SysDataGroup sysDataGroup = optionalSysDataGroup.get();
+        String valueBefore = getJsonFromDataGroup(sysDataGroup);
         sysDataGroupRepository.delete(
                 SysDataGroup
                         .builder()
                         .dataGroupId(dataGroupId)
                         .build()
         );
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("DataGroup", null, currentLocale), "", sysDataGroup.getDataGroupId().toString(), null, true, valueBefore, "");
+
         return true;
     }
 }

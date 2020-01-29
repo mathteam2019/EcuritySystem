@@ -65,26 +65,7 @@ public class HistoryTaskExcelView extends BaseExcelView {
         Cell headerCellScanEndTime = header.createCell(8);
         headerCellScanEndTime.setCellValue(messageSource.getMessage("ScanEndTime", null, currentLocale));
 
-        Cell headerCellJudgeDevice = header.createCell(9);
-        headerCellJudgeDevice.setCellValue(messageSource.getMessage("JudgeDeviceName", null, currentLocale));
 
-        Cell headerCellJudgeUser = header.createCell(10);
-        headerCellJudgeUser.setCellValue(messageSource.getMessage("JudgeUserName", null, currentLocale));
-
-        Cell headerCellJudgeStartTime = header.createCell(11);
-        headerCellJudgeStartTime.setCellValue(messageSource.getMessage("JudgeStartTime", null, currentLocale));
-
-        Cell headerCellJudgeEndTime = header.createCell(12);
-        headerCellJudgeEndTime.setCellValue(messageSource.getMessage("JudgeEndTime", null, currentLocale));
-
-        Cell headerCellHandExaminationDevice = header.createCell(13);
-        headerCellHandExaminationDevice.setCellValue(messageSource.getMessage("HandExaminationDeviceName", null, currentLocale));
-
-        Cell headerCellHandExaminationUser = header.createCell(14);
-        headerCellHandExaminationUser.setCellValue(messageSource.getMessage("HandExaminationUserName", null, currentLocale));
-
-        Cell headerCellStartTime = header.createCell(15);
-        headerCellStartTime.setCellValue(messageSource.getMessage("HandExaminationStartTime", null, currentLocale));
     }
 
 
@@ -180,47 +161,6 @@ public class HistoryTaskExcelView extends BaseExcelView {
                     row.createCell(8).setCellValue("无");
                 }
 
-                if (task.getJudgeDevice() != null) {
-                    row.createCell(9).setCellValue(task.getJudgeDevice().getDeviceName());
-                } else {
-                    row.createCell(9).setCellValue("无");
-                }
-
-                if (task.getJudgeUser() != null) {
-                    row.createCell(10).setCellValue(task.getJudgeUser().getUserName());
-                } else {
-                    row.createCell(10).setCellValue("无");
-                }
-
-                if (task.getJudgeStartTime() != null) {
-                    row.createCell(11).setCellValue(formatDate(task.getJudgeStartTime()));
-                } else {
-                    row.createCell(11).setCellValue("无");
-                }
-
-                if (task.getJudgeEndTime() != null) {
-                    row.createCell(12).setCellValue(formatDate(task.getJudgeEndTime()));
-                } else {
-                    row.createCell(12).setCellValue("无");
-                }
-
-                if (task.getHandDevice() != null) {
-                    row.createCell(13).setCellValue(task.getHandDevice().getDeviceName());
-                } else {
-                    row.createCell(13).setCellValue("无");
-                }
-
-                if (task.getHandUser() != null) {
-                    row.createCell(14).setCellValue(task.getHandUser().getUserName());
-                } else {
-                    row.createCell(14).setCellValue("无");
-                }
-
-                if (task.getHandEndTime() != null) {
-                    row.createCell(15).setCellValue(formatDate(task.getHandEndTime()));
-                } else {
-                    row.createCell(15).setCellValue("无");
-                }
 
             }
 

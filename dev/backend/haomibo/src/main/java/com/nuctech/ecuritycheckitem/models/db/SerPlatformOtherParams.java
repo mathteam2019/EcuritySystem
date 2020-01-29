@@ -73,6 +73,10 @@ public class SerPlatformOtherParams implements Serializable {
     @Column(name = "HISTORY_DATA_CYCLE", length = 11)
     private Integer historyDataCycle;
 
+    @Column(name = "NO_OPERATING_TIME_LIMIT", length = 11)
+    private Integer operatingTimeLimit;
+
+
 
 
 

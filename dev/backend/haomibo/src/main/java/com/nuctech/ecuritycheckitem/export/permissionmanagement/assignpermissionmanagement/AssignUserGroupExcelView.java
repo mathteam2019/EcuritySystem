@@ -13,6 +13,7 @@
 
 package com.nuctech.ecuritycheckitem.export.permissionmanagement.assignpermissionmanagement;
 
+import com.nuctech.ecuritycheckitem.config.ConstantDictionary;
 import com.nuctech.ecuritycheckitem.export.BaseExcelView;
 import com.nuctech.ecuritycheckitem.models.db.SysRole;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
@@ -112,7 +113,7 @@ public class AssignUserGroupExcelView  extends BaseExcelView {
                     }
                 }
                 row.createCell(3).setCellValue(strRole);
-                row.createCell(4).setCellValue(userGroup.getDataRangeCategory());
+                row.createCell(4).setCellValue(ConstantDictionary.getDataValue(userGroup.getDataRangeCategory()));
             }
 
             workbook.write(out);

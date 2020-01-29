@@ -20,10 +20,12 @@ import com.nuctech.ecuritycheckitem.enums.ResponseMessage;
 import com.nuctech.ecuritycheckitem.enums.Role;
 import com.nuctech.ecuritycheckitem.jsonfilter.ModelJsonFilters;
 import com.nuctech.ecuritycheckitem.models.db.*;
+import com.nuctech.ecuritycheckitem.models.redis.SerPlatformCheckParamsInfo;
 import com.nuctech.ecuritycheckitem.models.response.CommonResponseBody;
 import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import com.nuctech.ecuritycheckitem.utils.CryptUtil;
+import com.nuctech.ecuritycheckitem.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,6 +54,8 @@ public class PlatformCheckManagementController extends BaseController {
     @Autowired
     public MessageSource messageSource;
 
+    @Autowired
+    private RedisUtil redisUtil;
 
 
 
@@ -123,8 +127,9 @@ public class PlatformCheckManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), "",null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("PlatformCheck", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -145,6 +150,31 @@ public class PlatformCheckManagementController extends BaseController {
         auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
                 , "", "", "",null);
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            SerPlatformCheckParamsInfo serPlatformCheckParamsInfo = new SerPlatformCheckParamsInfo();
+            serPlatformCheckParamsInfo.setScanId(serPlatformCheckParams.getScanId());
+            serPlatformCheckParamsInfo.setScanRecogniseColour(serPlatformCheckParams.getScanRecogniseColour());
+            serPlatformCheckParamsInfo.setScanOverTime(serPlatformCheckParams.getScanOverTime());
+            serPlatformCheckParamsInfo.setJudgeAssignTime(serPlatformCheckParams.getJudgeAssignTime());
+            serPlatformCheckParamsInfo.setJudgeProcessingTime(serPlatformCheckParams.getJudgeProcessingTime());
+            serPlatformCheckParamsInfo.setJudgeScanOvertime(serPlatformCheckParams.getJudgeScanOvertime());
+            serPlatformCheckParamsInfo.setJudgeRecogniseColour(serPlatformCheckParams.getJudgeRecogniseColour());
+            serPlatformCheckParamsInfo.setHandOverTime(serPlatformCheckParams.getHandOverTime());
+            serPlatformCheckParamsInfo.setHandRecogniseColour(serPlatformCheckParams.getHandRecogniseColour());
+            serPlatformCheckParamsInfo.setHistoryDataStorage(serPlatformCheckParams.getHistoryDataStorage());
+            serPlatformCheckParamsInfo.setDisplayDataExport(serPlatformCheckParams.getHistoryDataExport());
+            serPlatformCheckParamsInfo.setDisplayDeleteSuspicion(serPlatformCheckParams.getDisplayDeleteSuspicion());
+            serPlatformCheckParamsInfo.setDisplayDeleteSuspicionColour(serPlatformCheckParams.getDisplayDeleteSuspicionColour());
+
+
+            String serPlatformCheckParamsStr = objectMapper.writeValueAsString(serPlatformCheckParamsInfo);
+            serPlatformCheckParamsStr = CryptUtil.encrypt(serPlatformCheckParamsStr);
+            redisUtil.set(Constants.REDIS_PLATFORM_CHECK,
+                    serPlatformCheckParamsStr, 8 * 60 * 60);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
         return new CommonResponseBody(ResponseMessage.OK);
     }
 }

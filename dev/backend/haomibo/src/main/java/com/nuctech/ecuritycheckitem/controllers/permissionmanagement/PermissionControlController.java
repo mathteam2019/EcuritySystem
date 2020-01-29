@@ -316,20 +316,24 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getRoleNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(permissionService.checkRoleNameExist(requestBody.getRoleName(), null)) { // if role name exists
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedRoleName", null, currentLocale), requestBody.getRoleNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("UsedRoleName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_ROLE_NAME);
         }
 
         if(permissionService.checkRoleNumberExist(requestBody.getRoleNumber(), null)) { // if role number exists
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedRoleNumber", null, currentLocale), requestBody.getRoleNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("UsedRoleNumber", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_ROLE_NUMBER);
         }
 
@@ -339,12 +343,11 @@ public class PermissionControlController extends BaseController {
 
         boolean result = permissionService.createRole(role, resourceIdList);
         if(result == false) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getRoleNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getRoleNumber().toString(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -554,10 +557,18 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (permissionService.checkRoleExist(requestBody.getRoleId()) == false) {    // If role is not found, it's invalid parameter.
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (permissionService.checkUserExist(requestBody.getRoleId())) { // If there are users assigned with this role, it can't be deleted.
@@ -569,6 +580,10 @@ public class PermissionControlController extends BaseController {
 
         boolean result = permissionService.modifyRole(requestBody.getRoleId(), requestBody.getResourceIdList()); // Get role from database.
         if(result == false) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -596,24 +611,30 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getRoleId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!permissionService.checkRoleExist(requestBody.getRoleId())) { // Check if role is existing in the database.
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getRoleId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (permissionService.checkUserExist(requestBody.getRoleId())) { // If there are users assigned with this role, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUser", null, currentLocale), String.valueOf(requestBody.getRoleId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
         if (permissionService.checkUserGroupExist(requestBody.getRoleId())) { // If there are user groups assigned with this role, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), String.valueOf(requestBody.getRoleId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Role", null, currentLocale),
+                    messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
         permissionService.removeRole(requestBody.getRoleId());
@@ -625,8 +646,6 @@ public class PermissionControlController extends BaseController {
         SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
         filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
         value.setFilters(filters);
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", String.valueOf(requestBody.getRoleId()),null);
         return value;
     }
 
@@ -643,19 +662,25 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getDataGroupNumber()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (permissionService.checkGroupNameExist(requestBody.getDataGroupName())) { //if group name exists
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedGroupName", null, currentLocale), String.valueOf(requestBody.getDataGroupNumber()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("UsedGroupName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NAME);
         }
         if (permissionService.checkGroupNumberExist(requestBody.getDataGroupNumber())) { //if group number exists
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedGroupNumber", null, currentLocale), String.valueOf(requestBody.getDataGroupNumber()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("UsedGroupNumber", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DATA_GROUP_NUMBER);
         }
 
@@ -664,8 +689,6 @@ public class PermissionControlController extends BaseController {
 
         List<Long> userIdList = requestBody.getUserIdList();
         permissionService.createDataGroup(dataGroup, userIdList);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", String.valueOf(requestBody.getDataGroupNumber()),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -872,31 +895,34 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!permissionService.checkDataGroupExist(requestBody.getDataGroupId())) { // If data group is not found, this request is invalid.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) { // If there are users assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUser", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
         if (permissionService.checkDataGroupLookupExist(requestBody.getDataGroupId())) { // If there are user groups assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
 
         List<Long> userIdList = requestBody.getUserIdList();
         permissionService.modifyDataGroup(requestBody.getDataGroupId(), userIdList);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", String.valueOf(requestBody.getDataGroupId()),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -913,34 +939,40 @@ public class PermissionControlController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!permissionService.checkDataGroupExist(requestBody.getDataGroupId())) { // If data group is not found, this request is invalid.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
         if (permissionService.checkGroupChildExist(requestBody.getDataGroupId())) { // If data group has users, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUser", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
         if (permissionService.checkUserLookUpExist(requestBody.getDataGroupId())) { // If there are users assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUser", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_USERS);
         }
         if (permissionService.checkDataGroupLookupExist(requestBody.getDataGroupId())) { // If there are user groups assigned with this data group, it can't be deleted.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveUserGroup", null, currentLocale), String.valueOf(requestBody.getDataGroupId()),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DataGroup", null, currentLocale),
+                    messageSource.getMessage("HaveUserGroup", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_USER_GROUPS);
         }
         permissionService.removeDataGroup(requestBody.getDataGroupId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", String.valueOf(requestBody.getDataGroupId()),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
