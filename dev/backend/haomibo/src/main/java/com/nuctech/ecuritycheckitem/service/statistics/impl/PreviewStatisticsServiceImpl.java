@@ -50,13 +50,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * get judge statistcs
-     * @param fieldId : scene id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : scene id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : statistics width (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : statistics width (hour, day, week, month, quarter, year)
      * @return
      */
     @Override
@@ -104,6 +105,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get total statistics amount
+     *
      * @param query
      * @return
      */
@@ -127,10 +129,11 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get statistics by statistics width
+     *
      * @param query
      * @param statisticsWidth : (hour, day, week, month, quarter, year)
-     * @param startTime : start time
-     * @param endTime : endtime
+     * @param startTime       : start time
+     * @param endTime         : endtime
      * @return
      */
     private TreeMap<Long, TotalStatistics> getDetailedStatistics(String query, String statisticsWidth, Date startTime, Date endTime) {
@@ -154,7 +157,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         try {
             keyValueMin = keyValues.get(0);
             keyValueMax = keyValues.get(1);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         for (Integer i = keyValueMin; i <= keyValueMax; i++) {
             TotalStatistics item = new TotalStatistics();
@@ -177,6 +181,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get paginated list using current pang and per page
+     *
      * @param sorted
      * @param statWidth
      * @param startTime
@@ -224,13 +229,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get scan statistics where condition  list
-     * @param fieldId : field id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : field id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : (hour, day, week, month, quarter, year)
      * @return
      */
     private String getWhereCauseScan(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
@@ -259,13 +265,18 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON s.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN sys_user u ON s.SCAN_POINTSMAN_ID = u.user_id " +
-                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
-                "\t\tleft join sys_role r on ru.ROLE_ID = r.ROLE_ID ");
+                "\t\tLEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tu.user_id, r.role_id \n" +
+                "\tFROM\n" +
+                "\t\tsys_user u\n" +
+                "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
+                "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
+                "\t) as u ON s.SCAN_POINTSMAN_ID = u.user_id ");
 
         if (!whereCause.isEmpty()) {
 
@@ -277,13 +288,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get judge statistics where condition  list
-     * @param fieldId : field id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : field id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : (hour, day, week, month, quarter, year)
      * @return
      */
     private String getWhereCauseJudge(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
@@ -312,13 +324,18 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON j.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN sys_user u ON j.JUDGE_USER_ID = u.user_id " +
-                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
-                "\t\tLEFT JOIN sys_role r on ru.ROLE_ID = r.ROLE_ID ");
+                "\t\tLEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tu.user_id, r.role_id \n" +
+                "\tFROM\n" +
+                "\t\tsys_user u\n" +
+                "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
+                "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
+                "\t) as u  ON j.JUDGE_USER_ID = u.user_id ");
 
         if (!whereCause.isEmpty()) {
 
@@ -331,13 +348,14 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get hand statistics where condition  list
-     * @param fieldId : field id
-     * @param deviceId : device id
+     *
+     * @param fieldId      : field id
+     * @param deviceId     : device id
      * @param userCategory : user category
-     * @param userName : user name
-     * @param startTime : start time
-     * @param endTime : end time
-     * @param statWidth : (hour, day, week, month, quarter, year)
+     * @param userName     : user name
+     * @param startTime    : start time
+     * @param endTime      : end time
+     * @param statWidth    : (hour, day, week, month, quarter, year)
      * @return
      */
     private String getWhereCauseHand(Long fieldId, Long deviceId, String userCategory, String userName, Date startTime, Date endTime, String statWidth) {
@@ -366,13 +384,19 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
         }
         if (userCategory != null && !userCategory.isEmpty()) {
 
-            whereCause.add("r.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
+            whereCause.add("u.role_id = " + (Constants.userCategory.get(userCategory) == null ? "0" : Constants.userCategory.get(userCategory)));
         }
 
         stringBuilder.append("\t\tLEFT JOIN ser_task t ON h.task_id = t.task_id\n" +
-                "\t\tLEFT JOIN sys_user u ON h.HAND_USER_ID = u.user_id " +
-                "\t\tLEFT JOIN sys_role_user ru on u.USER_ID = ru.user_id " +
-                "\t\tleft join sys_role r on ru.ROLE_ID = r.ROLE_ID ");
+                "\t\tLEFT JOIN (\n" +
+                "\tSELECT\n" +
+                "\t\tu.user_id, r.role_id \n" +
+                "\tFROM\n" +
+                "\t\tsys_user u\n" +
+                "\t\tLEFT JOIN sys_role_user ru ON u.USER_ID = ru.user_id\n" +
+                "\t\tLEFT JOIN sys_role r ON ru.ROLE_ID = r.ROLE_ID \n" +
+                "\t) as u" +
+                " ON h.HAND_USER_ID = u.user_id ");
 
 
         if (!whereCause.isEmpty()) {
@@ -385,6 +409,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * build whole query with select query and join query
+     *
      * @return
      */
     private String makeQuery() {
@@ -395,6 +420,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * query of select part
+     *
      * @return
      */
     private String getSelectQuery() {
@@ -425,6 +451,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * Get query for whole join
+     *
      * @return
      */
     private String getJoinQuery() {
@@ -435,6 +462,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * get query for scan join query
+     *
      * @return
      */
     private String getScanJoinQuery() {
@@ -457,6 +485,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * get query for judge join query
+     *
      * @return
      */
     private String getJudgeJoinQuery() {
@@ -477,6 +506,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * get query for hand join query
+     *
      * @return
      */
     private String getHandJoinQuery() {
@@ -497,6 +527,7 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
 
     /**
      * return a Total statistics record from a record of a query
+     *
      * @param item
      * @return
      */
@@ -539,7 +570,8 @@ public class PreviewStatisticsServiceImpl implements PreviewStatisticsService {
             record.setJudgeStatistics(judgeStat);
             record.setHandExaminationStatistics(handStat);
 
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
 
         return record;
     }
