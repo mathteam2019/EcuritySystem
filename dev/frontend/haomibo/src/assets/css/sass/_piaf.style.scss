@@ -3020,6 +3020,7 @@ main {
     padding-left: 32px;
     padding-top: 20px;
     padding-right: 32px;
+    padding-bottom: 15px;
 
     @include respond-below(xs) {
       padding: 1.25rem;
@@ -3719,7 +3720,7 @@ div[data-notify="container"] {
 .notification-container {
   box-sizing: border-box;
   position: fixed;
-  top: 0;
+  top: 45%;
   right: 0;
   z-index: 999999;
   width: 320px;
@@ -4211,6 +4212,7 @@ select.form-control:not([size]):not([multiple]) {
   .vs__search {
     margin: 2px !important;
     line-height: 1.5rem !important;
+    border: none;
   }
   .vs__actions {
     color: $secondary-color;

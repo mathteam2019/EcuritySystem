@@ -98,7 +98,7 @@
                   <span class="cursor-p text-primary" @click="onAction('show',props.rowData)">{{ props.rowData.deviceSerial }}</span>
                 </div>
                 <div slot="operating" slot-scope="props">
-                  <b-button :disabled="props.rowData.status === '1000000701' || checkPermItem('device_modify')"
+                  <b-button :disabled="checkPermItem('device_modify')"
                             @click="onAction('edit',props.rowData)"
                             size="sm"
                             variant="primary default btn-square"
@@ -181,19 +181,19 @@
                   </div>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
+              <b-col cols="4" v-if="mainForm.archiveId>0">
                 <b-form-group>
                   <template slot="label">{{$t('device-management.device-classify')}}<span class="text-danger">*</span>
                   </template>
                   <label class="input-label">{{archiveForm.category}}</label>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
+              <b-col cols="4" v-if="mainForm.archiveId>0">
                 <b-form-group :label="$t('device-management.manufacture')">
                   <label class="input-label">{{archiveForm.manufacturer}}</label>
                 </b-form-group>
               </b-col>
-              <b-col cols="4">
+              <b-col cols="4" v-if="mainForm.archiveId>0">
                 <b-form-group :label="$t('device-management.origin-model')">
                   <label class="input-label">{{archiveForm.originalModel}}</label>
                 </b-form-group>
@@ -213,7 +213,7 @@
                     class="text-danger">*</span>
                   </template>
                   <b-form-input v-model="mainForm.guid"
-                                :state="!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid"/>
+                                :state="(!$v.mainForm.guid.$dirty ? null : !$v.mainForm.guid.$invalid) && invalidGuid"/>
                   <div class="invalid-feedback d-block">
                     {{ (submitted && !$v.mainForm.guid.required) ?
                     $t('device-management.device-classify-item.field-is-mandatory') :"&nbsp;"}}
@@ -498,18 +498,18 @@
               class="icofont-save"/>
               {{$t('device-management.save')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === '1000000702'"
+            <b-button size="sm" v-if="mainForm.status === '1000000702'"
                       :disabled="checkPermItem('device_update_status')"
                       @click="onAction('activate',mainForm)" variant="success default"><i
               class="icofont-check-circled"/>
               {{$t('device-management.active')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'active'"
+            <b-button size="sm" v-if="mainForm.status === '1000000701'"
                       :disabled="checkPermItem('device_update_status')"
                       @click="onAction('inactivate',mainForm)" variant="warning default"><i class="icofont-ban"/>
-              {{$t('device-management.inactive')}}
+              {{$t('permission-management.action-make-inactive')}}
             </b-button>
-            <b-button size="sm" v-if="pageStatus!=='create' && mainForm.status === 'inactive'"
+            <b-button size="sm" v-if="pageStatus!=='show' && mainForm.status === '1000000702'"
                       :disabled="checkPermItem('device_delete')"
                       @click="onAction('delete',mainForm)" variant="danger default"><i class="icofont-bin"/>
               {{$t('device-management.delete')}}
@@ -545,17 +545,18 @@
       </template>
     </b-modal>
 
-    <b-modal  centered id="model-export" ref="model-export">
+    <b-modal centered id="model-export" ref="model-export">
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
-          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export') }}</h3>
+          <h3 class="text-center font-weight-bold" style="margin-bottom: 1rem;">{{ $t('permission-management.export')
+            }}</h3>
         </b-col>
       </b-row>
       <b-row style="height : 100px;">
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -570,7 +571,7 @@
         </b-button>
       </div>
     </b-modal>
-     <Modal
+    <Modal
       ref="exportModal"
       v-if="isModalVisible"
       :link="link" :params="params" :name="name"
@@ -588,7 +589,7 @@
     downLoadFileFromServer,
     getApiManager,
     getDateTimeWithFormat,
-    isPhoneValid,
+    isPhoneValid, isGuidValid,
     printFileFromServer
   } from '../../../api';
   import {validationMixin} from 'vuelidate';
@@ -597,7 +598,7 @@
   import 'vue-select/dist/vue-select.css'
   import Modal from '../../../components/Modal/modal'
 
-  const {required} = require('vuelidate/lib/validators');
+  const {required, minLength, maxLength} = require('vuelidate/lib/validators');
   //todo need to remove after applying dictionaly
   let getManufacturerName = (options, value) => {
     let name = null;
@@ -624,7 +625,7 @@
     },
     mixins: [validationMixin],
     validations: {
-      fileSelection : {
+      fileSelection: {
         required
       },
       mainForm: {
@@ -638,7 +639,8 @@
           required
         },
         guid: {
-          required
+          isGuidValid,
+          required, minLength: minLength(36), maxLength: maxLength(36),
         },
         mobile: {
           isPhoneValid
@@ -650,17 +652,20 @@
         isLoading: false,
         pageStatus: 'list',
         submitted: false,
-	link: '',
+        link: '',
         params: {},
         name: '',
-        fileSelection : [],
+        fileSelection: [],
         direction: getDirection().direction,
         fileSelectionOptions: [
           {value: 'docx', label: 'WORD'},
           {value: 'xlsx', label: 'EXCEL'},
           {value: 'pdf', label: 'PDF'},
         ],
-	isModalVisible: false,
+        invalidGuid:true,
+        randomGuid : '',
+        guidString:['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+        isModalVisible: false,
         categoryData: [],
         categoryFilterData: [],
         categorySelectOptions: [],
@@ -804,6 +809,19 @@
       //   this.name = 'Invalid-Task';
       //   this.isModalVisible = true;
       // },
+      createGuid(){
+        let randGuid = '';
+        for(let i=0; i<36; i++){
+          if(i===8||i===13||i===18||i===23){
+            randGuid = randGuid + "-";
+          }
+          else {
+            let rand = Math.floor(Math.random() * 36);
+            randGuid = randGuid + this.guidString[rand];
+          }
+        }
+        this.mainForm.guid = randGuid;
+      },
       closeModal() {
         this.isModalVisible = false;
       },
@@ -827,7 +845,7 @@
         this.name = 'device';
         this.isModalVisible = true;
       },
-      onExport(){
+      onExport() {
         let checkedAll = this.$refs.vuetable.checkedAllStatus;
         let checkedIds = this.$refs.vuetable.selectedTo;
         let params = {
@@ -836,7 +854,7 @@
           'idList': checkedIds.join()
         };
         let link = `device-management/device-table/device`;
-        if(this.fileSelection !== null) {
+        if (this.fileSelection !== null) {
           downLoadFileFromServer(link, params, 'device', this.fileSelection);
           this.hideModal('model-export')
         }
@@ -986,6 +1004,7 @@
             this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
+            //this.updateItemStatus('1000000702');
             this.$refs['modal-inactive'].show();
             break;
           case 'delete':
@@ -1068,8 +1087,20 @@
                 });
                 if (this.mainForm.deviceId > 0)
                   this.mainForm.status = statusValue;
-                if (this.pageStatus === 'list')
-                  this.$refs.vuetable.reload();
+
+                this.$refs.vuetable.reload();
+                break;
+              case responseMessages['device-config-active']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`device-management.device-table.device-config-active`), {
+                  duration: 3000,
+                  permanent: false
+                });
+                break;
+              case responseMessages['has-fields']: // okay
+                this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.has-fields`), {
+                  duration: 3000,
+                  permanent: false
+                });
                 break;
 
             }
@@ -1139,6 +1170,7 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.invalidGuid=true;
                 this.pageStatus = 'list';
                 this.$refs.vuetable.reload();
                 this.isLoading = false;
@@ -1160,6 +1192,7 @@
                   duration: 3000,
                   permanent: false
                 });
+                this.invalidGuid=false;
                 break;
             }
             this.isLoading = false;
@@ -1174,6 +1207,9 @@
     watch: {
       'vuetableItems.perPage': function (newVal) {
         this.$refs.vuetable.refresh();
+      },
+      'mainForm.guid': function (newVal) {
+        this.invalidGuid=true;
       },
 
       categoryData(newVal, oldVal) { // maybe called when the org data is loaded from server
@@ -1209,6 +1245,9 @@
       },
       'mainForm.archiveId': function (newVal) {
         this.getArchiveDetailData(newVal);
+        if(this.pageStatus==='create'){
+          this.createGuid();
+        }
       }
     }
   }

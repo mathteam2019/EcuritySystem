@@ -108,14 +108,14 @@
                       size="sm"
                       variant="success default btn-square"
                       :disabled="checkPermItem('pending_knowledge_modify')"
-                      @click="onAction('success', props.rowData.caseId)">
+                      @click="showModal('success', props.rowData.caseId)">
                       <i class="icofont-check-alt"/>
                     </b-button>
                     <b-button
                       size="sm"
                       variant="danger default btn-square"
                       :disabled="checkPermItem('pending_knowledge_delete')"
-                      @click="onAction('dismiss', props.rowData.caseDealId)">
+                      @click="showModal('dismiss', props.rowData.caseDealId)">
                       <i class="icofont-ban"/>
                     </b-button>
                   </div>
@@ -182,7 +182,7 @@
                 <canvas id="firstcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
               </b-col>
               <b-col style="padding-right: 1rem; padding-left: 0.5rem;">
-                <canvas id="secondcanvas"  style="height: 24vw;" class="img-fluid w-100 "/>
+                <canvas id="secondcanvas" style="height: 24vw;" class="img-fluid w-100 "/>
                 <div style="width: 100%; height: 24px;" class="text-right icon-container">
                   <div v-if="power===false">
                     <b-img :disabled="power===false" src="/assets/img/previous_cartoon.png" class="operation-icon"
@@ -265,15 +265,15 @@
             </b-row>
             <b-row style="height: 15px !important;">
               <b-col v-if="isSlidebar2Expended" style="max-width: 100%; flex: none;">
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar2value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
+                <!--                <VueSlideBar-->
+                <!--                  v-model="slidebar2value"-->
+                <!--                  :min="-50"-->
+                <!--                  :max="50"-->
+                <!--                  :processStyle="slider.processStyle"-->
+                <!--                  :lineHeight="slider.lineHeight"-->
+                <!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+                <!--                  class="slide-class">-->
+                <!--                </VueSlideBar>-->
                 <vue-slider
                   v-model="slidebar2value"
                   :min="-50"
@@ -290,15 +290,15 @@
                   :dot-options="dotOptions"
                   :order="false"
                 />
-<!--                <VueSlideBar-->
-<!--                  v-model="slidebar1value"-->
-<!--                  :min="-50"-->
-<!--                  :max="50"-->
-<!--                  :processStyle="slider.processStyle"-->
-<!--                  :lineHeight="slider.lineHeight"-->
-<!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
-<!--                  class="slide-class">-->
-<!--                </VueSlideBar>-->
+                <!--                <VueSlideBar-->
+                <!--                  v-model="slidebar1value"-->
+                <!--                  :min="-50"-->
+                <!--                  :max="50"-->
+                <!--                  :processStyle="slider.processStyle"-->
+                <!--                  :lineHeight="slider.lineHeight"-->
+                <!--                  :tooltipStyles="{ backgroundColor: 'blue', borderColor: 'blue' }"-->
+                <!--                  class="slide-class">-->
+                <!--                </VueSlideBar>-->
               </b-col>
             </b-row>
           </b-card>
@@ -500,7 +500,8 @@
                     <span class="text-danger">*</span>
                   </template>
                   <b-form-input disabled class="form-input-border"
-                                v-if="conclusionType == null" :value="$t('maintenance-management.process-task.system')"/>
+                                v-if="conclusionType == null"
+                                :value="$t('maintenance-management.process-task.system')"/>
                   <b-form-input disabled class="form-input-border" v-else
                                 :value="getOptionValue(conclusionType)"/>
                 </b-form-group>
@@ -611,14 +612,14 @@
                 <b-row style="margin-top: 1rem">
                   <b-col cols="12" class="align-self-end text-right mt-3">
                     <b-button :disabled="checkPermItem('pending_knowledge_modify')"
-                              @click="onAction('success', caseId)"
+                              @click="showModal('success', caseId)"
                               size="sm" variant="success default">
-                      <i class="icofont-save"/> {{$t('permission-management.permission-control.save')}}
+                      <i class="icofont-check-alt"/> {{$t('permission-management.permission-control.pending-success')}}
                     </b-button>
                     <b-button size="sm" variant="danger default"
                               :disabled="checkPermItem('pending_knowledge_delete')"
-                              @click="onAction('dismiss', caseDealId)">
-                      <i class="icofont-bin"/> {{$t('system-setting.delete')}}
+                              @click="showModal('dismiss', caseDealId)">
+                      <i class="icofont-ban"/>{{$t('permission-management.permission-control.pending-dismiss')}}
                     </b-button>
                     <b-button size="sm" variant="info default" @click="pageStatus='table'">
                       <i class="icofont-long-arrow-left"/>
@@ -650,7 +651,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>
@@ -665,6 +666,26 @@
         </b-button>
       </div>
     </b-modal>
+    <b-modal centered id="modal-success" ref="modal-success" :title="$t('system-setting.prompt')">
+      {{$t('device-management.device-table.success-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="onAction('success', actionId)" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-success')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
+    <b-modal centered id="modal-dismiss" ref="modal-dismiss" :title="$t('system-setting.prompt')">
+      {{$t('device-management.device-table.dismiss-prompt')}}
+      <template slot="modal-footer">
+        <b-button variant="primary" @click="onAction('dismiss', actionId)" class="mr-1">
+          {{$t('system-setting.ok')}}
+        </b-button>
+        <b-button variant="danger" @click="hideModal('modal-dismiss')">{{$t('system-setting.cancel')}}
+        </b-button>
+      </template>
+    </b-modal>
     <Modal
       ref="exportModal"
       v-if="isModalVisible"
@@ -675,25 +696,29 @@
   </div>
 </template>
 <style lang="scss">
-  .col-30{
+  .col-30 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30%;
     flex: 0 0 30%;
     max-width: 30%;
   }
-  .col-70{
+
+  .col-70 {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 70%;
     flex: 0 0 70%;
     max-width: 70%;
   }
-  .form-group-margin{
+
+  .form-group-margin {
     margin-bottom: 1.5rem;
   }
-  .form-input-border{
+
+  .form-input-border {
     background-color: white !important;
     border: 1px solid #ebebeb;
   }
+
   span.cursor-p {
     cursor: pointer !important;
   }
@@ -917,7 +942,8 @@
     },
     data() {
       return {
-      value1: 0,
+        actionId:null,
+        value1: 0,
         value2: [0, 0],
         dotOptions: [{
           disabled: true
@@ -1182,13 +1208,12 @@
 
       slidebar1value(newsValue, oldValue) {
 
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(5);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(6);
           }
         }
@@ -1197,13 +1222,12 @@
       slidebar2value(newsValue, oldValue) {
 
         console.log(oldValue[1]);
-        if(oldValue[1]<newsValue[1]) {
-          for(let i=oldValue[1]; i<newsValue[1]; i++) {
+        if (oldValue[1] < newsValue[1]) {
+          for (let i = oldValue[1]; i < newsValue[1]; i++) {
             this.filterId(7);
           }
-        }
-        else {
-          for(let i=newsValue[1]; i<oldValue[1]; i++) {
+        } else {
+          for (let i = newsValue[1]; i < oldValue[1]; i++) {
             this.filterId(8);
           }
         }
@@ -1279,7 +1303,7 @@
         let url1 = '';
         let url2 = '';
         this.slidebar1value = [0, 0];
-        this.slidebar2value= [0, 0];
+        this.slidebar2value = [0, 0];
         if (this.power === true) {
 
           if (this.imagesInfo[0] !== undefined) {
@@ -1777,6 +1801,19 @@
         this.$refs.pendingListTable.changePage(page);
       },
 
+      showModal(action, data) {
+        this.actionId = data;
+        switch (action) {
+          case 'success':
+            this.$refs['modal-success'].show();
+            break;
+          case 'dismiss':
+            this.$refs['modal-dismiss'].show();
+            break;
+        }
+
+      },
+
       onAction(action, data) { // called when any action button is called from table
 
         let successItem = () => {
@@ -1805,12 +1842,12 @@
               let data = response.data.data;
               switch (message) {
                 case responseMessages['ok']: // okay
-                    this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.activate`), {
-                      duration: 3000,
-                      permanent: false
-                    });
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.activate`), {
+                    duration: 3000,
+                    permanent: false
+                  });
 
-                  this.pageStatus= 'table';
+                  this.pageStatus = 'table';
                   this.$refs.pendingListTable.refresh();
                   break;
 
@@ -1832,12 +1869,12 @@
               switch (message) {
                 case responseMessages['ok']: // okay
 
-                    this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.dismiss`), {
-                      duration: 3000,
-                      permanent: false
-                    });
+                  this.$notify('success', this.$t('permission-management.success'), this.$t(`knowledge-base.dismiss`), {
+                    duration: 3000,
+                    permanent: false
+                  });
 
-                  this.pageStatus= 'table';
+                  this.pageStatus = 'table';
                   this.$refs.pendingListTable.refresh();
                   break;
 
@@ -1852,12 +1889,12 @@
           case 'success':
             successItem();
             activateItem();
-
+            this.hideModal('modal-success');
             break;
           case 'dismiss':
             dismissItem();
             deleteItem();
-
+            this.hideModal('modal-dismiss');
             break;
         }
       },

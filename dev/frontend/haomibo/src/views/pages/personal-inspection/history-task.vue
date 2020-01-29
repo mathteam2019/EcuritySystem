@@ -94,7 +94,7 @@
             <div class="table-wrapper table-responsive">
               <vuetable
                 ref="taskVuetable"
-                track-by="taskId"
+                track-by="historyId"
                 :api-url="taskVuetableItems.apiUrl"
                 :fields="taskVuetableItems.fields"
                 :http-fetch="taskVuetableHttpFetch"
@@ -687,7 +687,7 @@
           <b-col style="margin-top: 1rem; margin-left: 5rem; margin-right: 5rem;">
             <b-form-group class="mw-100 w-100" label="標簽">
               <v-select v-model="collectionLabel" :options="collectionLabelOptions"
-                        class="v-select1" multiple :dir="direction"/>
+                        class="v-select1" multiple :searchable="false" :dir="direction"/>
             </b-form-group>
           </b-col>
         </b-row>
@@ -713,7 +713,7 @@
         <b-col style="margin-top: 1rem; margin-left: 6rem; margin-right: 6rem;">
           <b-form-group class="mw-100 w-100" :label="$t('permission-management.export')">
             <v-select v-model="fileSelection" :options="fileSelectionOptions"
-                      :state="!$v.fileSelection.$invalid"
+                      :state="!$v.fileSelection.$invalid" :searchable="false"
                       class="v-select-custom-style" :dir="direction" multiple/>
           </b-form-group>
         </b-col>

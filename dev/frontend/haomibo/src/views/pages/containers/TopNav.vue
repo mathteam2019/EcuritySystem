@@ -3,10 +3,11 @@
     .dropdown-menu-item-hidden {
       ul.dropdown-menu {
         opacity: 0;
-        display: none!important;
+        display: none !important;
       }
     }
   }
+
   #modal-logout___BV_modal_content_ {
     position: relative;
     display: -webkit-box;
@@ -20,7 +21,7 @@
     pointer-events: auto;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid rgba(0,0,0,0.2);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: .3rem;
     outline: 0;
   }
@@ -65,15 +66,16 @@
           </b-dropdown-item>
         </b-dropdown>
       </div>
-      <div class="user d-inline-block" >
-        <b-dropdown class="dropdown-menu-right dropdown-menu-item-hidden"  right variant="empty" toggle-class="p-0" menu-class="mt-3" no-caret>
-          <template slot="button-content" v-if="currentUser" >
+      <div class="user d-inline-block">
+        <b-dropdown class="dropdown-menu-right dropdown-menu-item-hidden" right variant="empty" toggle-class="p-0"
+                    menu-class="mt-3" no-caret>
+          <template slot="button-content" v-if="currentUser">
             <span @click="showPasswordResetView()">
                 <img :alt="currentUser.title" :src="portrait" @error="portraitOnError"/>
             </span>
             <span @click="showPasswordResetView()" class="name ml-1 mr-2">{{currentUser.name}}</span>
           </template>
-          <b-dropdown-item  @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
+          <b-dropdown-item @click="showPasswordResetView()">{{this.$t('menu.account')}}</b-dropdown-item>
         </b-dropdown>
       </div>
       <div class="d-inline-block">
@@ -82,36 +84,43 @@
     </div>
     <b-modal centered id="modal-reset" ref="modal-reset">
       <template slot="modal-header">
-        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">{{$t('password-reset.password-change')}}</h2>
+        <h2 style="font-size: 1.7rem; font-weight: bold;" class="modal-title">
+          {{$t('password-reset.password-change')}}</h2>
         <button type="button" aria-label="Close" @click="hideModal('modal-reset')" class="close">×</button>
-<!--        <h3 class="text-center font-weight-bold">{{$t('password-reset.password-change')}}</h3>-->
+        <!--        <h3 class="text-center font-weight-bold">{{$t('password-reset.password-change')}}</h3>-->
       </template>
       <b-row>
         <b-col cols="12" class="d-flex justify-content-center">
           <div style="width: 100%">
-<!--            <b-form-group class="mw-100">-->
-<!--              <template slot="label">{{$t('password-reset.user-account')}}<span-->
-<!--                class="text-danger"/>-->
-<!--              </template>-->
-<!--              <b-form-input disabled v-model="passwordForm.userAccount" class="mw-100"/>-->
-<!--            </b-form-group>-->
+            <!--            <b-form-group class="mw-100">-->
+            <!--              <template slot="label">{{$t('password-reset.user-account')}}<span-->
+            <!--                class="text-danger"/>-->
+            <!--              </template>-->
+            <!--              <b-form-input disabled v-model="passwordForm.userAccount" class="mw-100"/>-->
+            <!--            </b-form-group>-->
             <b-form-group class="mw-100">
               <template slot="label">{{$t('password-reset.old-password')}}<span
                 class="text-danger">*</span>
               </template>
-              <b-form-input type="password" v-model="passwordForm.oldPassword" class="mw-100"/>
+              <b-form-input type="password" v-model="passwordForm.oldPassword"
+                            :state="passwordForm.oldPassword!==null && invalidPassword && !$v.passwordForm.oldPassword.$invalid"
+                            class="mw-100"/>
             </b-form-group>
             <b-form-group class="mw-100">
               <template slot="label">{{$t('password-reset.new-password')}}<span
                 class="text-danger">*</span>
               </template>
-              <b-form-input type="password" v-model="passwordForm.password" :state="!$v.passwordForm.password.$dirty ? null : !$v.passwordForm.password.$invalid" class="mw-100"/>
+              <b-form-input type="password" v-model="passwordForm.password"
+                            :state="!$v.passwordForm.password.$dirty ? null : !$v.passwordForm.password.$invalid"
+                            class="mw-100"/>
             </b-form-group>
             <b-form-group>
               <template slot="label">{{$t('password-reset.confirm-password')}}<span
                 class="text-danger">*</span>
               </template>
-              <b-form-input type="password" v-model="passwordForm.confirmPassword" :state="!$v.passwordForm.confirmPassword.$dirty ? null : !$v.passwordForm.confirmPassword.$invalid" class="mw-100"/>
+              <b-form-input type="password" v-model="passwordForm.confirmPassword"
+                            :state="!$v.passwordForm.confirmPassword.$dirty ? null : !$v.passwordForm.confirmPassword.$invalid"
+                            class="mw-100"/>
             </b-form-group>
           </div>
         </b-col>
@@ -171,8 +180,8 @@
           required, minLength: minLength(6)
         },
         password: {
-          isAccountValid,
-          required, minLength: minLength(6)
+          required, minLength: minLength(6),
+          isAccountValid
         },
         confirmPassword: {
           required, sameAs: sameAs('password')
@@ -186,9 +195,9 @@
         localeOptions,
         notifications,
         portrait: '',
+        invalidPassword:true,
         passwordForm: {
-          userAccount: null,
-          oldPassword:null,
+          oldPassword: null,
           password: null,
           confirmPassword: null
         }
@@ -196,35 +205,54 @@
     },
     mounted() {
       this.portrait = `${apiBaseUrl}${this.currentUser.portrait}`;
-      this.passwordForm.userAccount = `${this.currentUser.name}`;
+      //this.passwordForm.userAccount = `${this.currentUser.name}`;
     },
     methods: {
       ...mapMutations(['changeSideMenuStatus', 'changeSideMenuForMobile']),
       ...mapActions(['setLang']),
 
       showPasswordResetView() {
-        this.passwordForm.oldPassword = null;
-        this.passwordForm.password = null;
-        this.passwordForm.confirmPassword = null;
+        this.passwordForm = {
+          oldPassword: null,
+          password: null,
+          confirmPassword: null
+        };
         this.$refs['modal-reset'].show();
       },
-      confirmLogout(){
+      confirmLogout() {
         this.$refs['modal-logout'].show();
       },
       savePassword() {
         this.$v.passwordForm.$touch();
         if (this.$v.passwordForm.$invalid) {
-          this.$notify('error', this.$t('auth-token-messages.error-title'), this.$t(`password-reset.format-invalid`), {
-            duration: 3000,
-            permanent: false
-          });
+          console.log(this.passwordForm.password);
+          if(this.passwordForm.password === null){
+            this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.input-none`), {
+              duration: 3000,
+              permanent: false
+            });
+          }
+          else {
+            if(!isAccountValid(this.passwordForm.password)){
+              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.format-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+            else if(this.$v.passwordForm.confirmPassword.$invalid){
+              this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.confirm-invalid`), {
+                duration: 3000,
+                permanent: false
+              });
+            }
+          }
           return;
         }
         // this.passwordForm.password
         getApiManager()
-          .post(`${apiBaseUrl}/auth/change-password` , {
-            oldPassword:this.passwordForm.oldPassword,
-            password:this.passwordForm.password
+          .post(`${apiBaseUrl}/auth/change-password`, {
+            oldPassword: this.passwordForm.oldPassword,
+            password: this.passwordForm.password
           })
           .then((response) => {
             let message = response.data.message;
@@ -238,12 +266,14 @@
                 this.passwordForm.oldPassword = null;
                 this.passwordForm.password = null;
                 this.passwordForm.confirmPassword = null;
+                this.invalidPassword=true;
                 break;
               case responseMessages['invalid-password']:
                 this.$notify('error', this.$t('permission-management.warning'), this.$t(`password-reset.invalid-password`), {
                   duration: 3000,
                   permanent: false
                 });
+                this.invalidPassword =false;
                 break;
             }
           })
@@ -326,6 +356,9 @@
         if (from !== to) {
           this.$router.go(this.$route.path)
         }
+      },
+      'passwordForm.oldPassword': function (newVal) {
+        this.invalidPassword = true;
       },
     }
   }

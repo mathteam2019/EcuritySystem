@@ -36,12 +36,15 @@
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.atr-suspect-box-color')">
                       <colorpicker :color="platFormData.scanRecogniseColour"
-                                   v-model="platFormData.scanRecogniseColour" style="margin-bottom: 0rem !important;"/>
+                                   v-model="platFormData.scanRecogniseColour"
+                                   :state="!$v.platFormData.scanRecogniseColour.$dirty ? null : !$v.platFormData.scanRecogniseColour.$invalid"
+                                   style="margin-bottom: 0 !important;"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
-                      <b-form-input v-model="platFormData.scanOverTime"/>
+                      <b-form-input type="number" v-model="platFormData.scanOverTime"
+                                    :state="!$v.platFormData.scanOverTime.$dirty ? null : !$v.platFormData.scanOverTime.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -51,25 +54,30 @@
                   </b-col>
                   <b-col cols="2">
                     <b-form-group :label="$t('system-setting.parameter-setting.dispatch-timeout')">
-                      <b-form-input v-model="platFormData.judgeAssignTime"/>
+                      <b-form-input type="number" v-model="platFormData.judgeAssignTime"
+                                    :state="!$v.platFormData.judgeAssignTime.$dirty ? null : !$v.platFormData.judgeAssignTime.$invalid"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.processing-timeout-period')">
-                      <b-form-input v-model="platFormData.judgeProcessingTime"/>
+                      <b-form-input type="number" v-model="platFormData.judgeProcessingTime"
+                                    :state="!$v.platFormData.judgeProcessingTime.$dirty ? null : !$v.platFormData.judgeProcessingTime.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.work-timeout-reminder')">
-                      <b-form-input v-model="platFormData.judgeScanOvertime"/>
+                      <b-form-input type="number" v-model="platFormData.judgeScanOvertime"
+                                    :state="!$v.platFormData.judgeScanOvertime.$dirty ? null : !$v.platFormData.judgeScanOvertime.$invalid"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.judgement-frame-color')">
                       <colorpicker :color="platFormData.judgeRecogniseColour"
-                                   v-model="platFormData.judgeRecogniseColour" style="margin-bottom: 0rem !important;"/>
+                                   v-model="platFormData.judgeRecogniseColour"
+                                   :state="!$v.platFormData.judgeRecogniseColour.$dirty ? null : !$v.platFormData.judgeRecogniseColour.$invalid"
+                                   style="margin-bottom: 0rem !important;"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -81,14 +89,14 @@
                     <b-form-group :label="$t('system-setting.parameter-setting.data-storage')">
                       <v-select v-model="platFormData.historyDataStorageSelect" :options="dataStorageOptions"
                                 :state="!$v.platFormData.historyDataStorageSelect.$invalid"
-                                class="v-select-custom-style" multiple :dir="direction"/>
+                                class="v-select-custom-style" multiple :searchable="false" :dir="direction"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.data-output')">
                       <v-select v-model="platFormData.historyDataExportSelect" :options="dataStorageOptions"
                                 :state="!$v.platFormData.historyDataExportSelect.$invalid"
-                                class="v-select-custom-style" multiple :dir="direction"/>
+                                class="v-select-custom-style" multiple :searchable="false" :dir="direction"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -116,15 +124,16 @@
                   <b-col cols="2" offset="1">
                     <b-form-group class="mb-0"
                                   :label="$t('system-setting.parameter-setting.deleted-suspected-box-color')">
-                      <colorpicker :color="platFormData.displayDeleteSuspicionColour"
-                                   v-model="platFormData.displayDeleteSuspicionColour"/>
+                      <colorpicker :searchable="false" :color="platFormData.displayDeleteSuspicionColour"
+                                   v-model="platFormData.displayDeleteSuspicionColour"
+                                   :state="!$v.platFormData.displayDeleteSuspicionColour.$dirty ? null : !$v.platFormData.displayDeleteSuspicionColour.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
               </div>
             </b-tab>
             <b-tab :title="$t('permission-management.other')">
-              <div>
+              <div>.
                 <b-row class="mb-3">
                   <b-col cols="7">
                     <b-row>
@@ -143,13 +152,22 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('permission-management.password')">
-                      <b-form-input type="password" v-model="platFormOtherData.initialPassword"/>
+                      <b-form-input type="password" v-model="platFormOtherData.initialPassword"
+                                    :state="!$v.platFormOtherData.initialPassword.$dirty ? null : !$v.platFormOtherData.initialPassword.$invalid"/>
                     </b-form-group>
                   </b-col>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.login-fail-count')">
                       <!--<label>{{platFormOtherData.loginNumber}}</label>-->
-                      <b-form-input v-model="platFormOtherData.loginNumber"/>
+                      <b-form-input type="number" v-model="platFormOtherData.loginNumber"
+                                    :state="!$v.platFormOtherData.loginNumber.$dirty ? null : !$v.platFormOtherData.loginNumber.$invalid"/>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="2" offset="1">
+                    <b-form-group :label="$t('system-setting.parameter-setting.operating-time-limit')">
+                      <!--<label>{{platFormOtherData.loginNumber}}</label>-->
+                      <b-form-input type="number" v-model="platFormOtherData.operatingTimeLimit"
+                                    :state="!$v.platFormOtherData.operatingTimeLimit.$dirty ? null : !$v.platFormOtherData.operatingTimeLimit.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -172,7 +190,8 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.log-export-number')">
-                      <b-form-input v-model="platFormOtherData.logMaxNumber"/>
+                      <b-form-input type="number" v-model="platFormOtherData.logMaxNumber"
+                                    :state="!$v.platFormOtherData.logMaxNumber.$dirty ? null : !$v.platFormOtherData.logMaxNumber.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -207,7 +226,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-high')">
                       <b-form-input type="number" v-model="platFormOtherData.deviceTrafficHigh"
-                                    :state="!$v.platFormOtherData.deviceTrafficHigh.$invalid"/>
+                                    :state="!$v.platFormOtherData.deviceTrafficHigh.$dirty ? null : !$v.platFormOtherData.deviceTrafficHigh.$invalid"/>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficHigh.minValue ||
                         !$v.platFormOtherData.deviceTrafficHigh.maxValue)) ?
@@ -218,7 +237,7 @@
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.security-instrument-flow-middle')">
                       <b-form-input type="number" v-model="platFormOtherData.deviceTrafficMiddle"
-                                    :state="!$v.platFormOtherData.deviceTrafficMiddle.$invalid"/>
+                                    :state="!$v.platFormOtherData.deviceTrafficMiddle.$dirty ? null : !$v.platFormOtherData.deviceTrafficMiddle.$invalid"/>
                       <div class="invalid-feedback d-block">
                         {{ (submitted && (!$v.platFormOtherData.deviceTrafficMiddle.minValue ||
                         !$v.platFormOtherData.deviceTrafficMiddle.maxValue)) ?
@@ -251,19 +270,22 @@
                 <b-row>
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.storage-check-period')">
-                      <b-form-input v-model="platFormOtherData.storageDetectionCycle"/>
+                      <b-form-input type="number" v-model="platFormOtherData.storageDetectionCycle"
+                                    :state="!$v.platFormOtherData.storageDetectionCycle.$dirty ? null : !$v.platFormOtherData.storageDetectionCycle.$invalid"/>
                     </b-form-group>
                   </b-col>
 
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.storage-warning-size')">
-                      <b-form-input type="number" v-model="platFormOtherData.storageAlarm"/>
+                      <b-form-input type="number" v-model="platFormOtherData.storageAlarm"
+                                    :state="!$v.platFormOtherData.storageAlarm.$dirty ? null : !$v.platFormOtherData.storageAlarm.$invalid"/>
                     </b-form-group>
                   </b-col>
 
                   <b-col cols="2" offset="1">
                     <b-form-group :label="$t('system-setting.parameter-setting.history-save-period')">
-                      <b-form-input v-model="platFormOtherData.historyDataCycle"/>
+                      <b-form-input type="number" v-model="platFormOtherData.historyDataCycle"
+                                    :state="!$v.platFormOtherData.historyDataCycle.$dirty ? null : !$v.platFormOtherData.historyDataCycle.$invalid"/>
                     </b-form-group>
                   </b-col>
                 </b-row>
@@ -334,7 +356,7 @@
                     @vuetable:pagination-data="onTablePaginationData"
                   >
                     <template slot="deviceNumber" slot-scope="props">
-                      <span class="cursor-p text-primary" @click="onAction('modify', props.rowData)">{{ props.rowData.deviceNumber }}</span>
+                      <span class="cursor-p text-primary" @click="onAction('show', props.rowData)">{{ props.rowData.deviceNumber }}</span>
                     </template>
                     <template slot="operating" slot-scope="props">
                       <div>
@@ -344,6 +366,21 @@
                           variant="info default btn-square"
                           @click="onAction('modify', props.rowData)">
                           <i class="icofont-edit"/>
+                        </b-button>
+
+                        <b-button
+                          v-if="props.rowData.status==='1000000702'"
+                          size="sm" @click="onAction('activate',props.rowData)"
+                          variant="success default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                        >
+                          <i class="icofont-check-circled"/>
+                        </b-button>
+                        <b-button @click="onAction('inactivate',props.rowData)"
+                                  v-if="props.rowData.status==='1000000701'"
+                                  size="sm"
+                                  variant="warning default btn-square" :disabled="checkPermItem('scan_param_update_status')"
+                        >
+                          <i class="icofont-ban"/>
                         </b-button>
 
                         <!-- <b-button
@@ -380,7 +417,7 @@
                     <span class="text-danger">*</span>
                   </template>
                   <v-select v-model="scanForm.fromDeviceId" :options="deviceSelectOptions" class="v-select-custom-style"
-                            multiple :dir="direction"/>
+                            multiple :searchable="false" :dir="direction"/>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -556,8 +593,20 @@
             <div>
               <b-button @click="onSaveScanFormData()" variant="success default"
                         :disabled="checkPermItem('scan_param_modify')"
+                        v-if="pageStatus==='modify'"
                         size="sm"><i class="icofont-save"/>
                 {{ $t('permission-management.save-button') }}
+              </b-button>
+              <b-button v-if="scanForm.status === '1000000701'"
+                        @click="onAction('inactivate',scanForm)" size="sm"
+                        variant="warning default" :disabled="checkPermItem('scan_param_update_status')">
+                <i class="icofont-ban"/> {{$t('system-setting.status-inactive')}}
+              </b-button>
+              <b-button v-if="scanForm.status === '1000000702'"
+                        @click="onAction('activate',scanForm)" size="sm"
+                        :disabled="checkPermItem('scan_param_update_status')"
+                        variant="success default">
+                <i class="icofont-check-circled"/> {{$t('system-setting.status-active')}}
               </b-button>
               <b-button @click="onAction('back')" variant="info default" size="sm"><i
                 class="icofont-long-arrow-left"/> {{
@@ -618,7 +667,7 @@
   import vSelect from 'vue-select'
   import 'vue-select/dist/vue-select.css'
 
-  const {required, minValue, maxValue} = require('vuelidate/lib/validators');
+  const {required, minValue, maxValue, minLength, maxLength} = require('vuelidate/lib/validators');
 
   let findDicTextData = (options, value, flag = true) => {
     let name = null;
@@ -642,6 +691,28 @@
     mixins: [validationMixin],
     validations: {
       platFormData: {
+        scanRecogniseColour: {
+          required,
+        },
+        scanOverTime: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(720)
+        },
+        judgeAssignTime: {
+          required
+        },
+        judgeProcessingTime: {
+          required
+        },
+        judgeScanOvertime: {
+          required
+        },
+        judgeRecogniseColour: {
+          required
+        },
+        displayDeleteSuspicionColour: {
+          required
+        },
         historyDataStorageSelect: {
           required
         },
@@ -650,13 +721,43 @@
         }
       },
       platFormOtherData: {
+        initialPassword: {
+          required,
+          minLength: minLength(6), maxLength: maxLength(50)
+        },
+        loginNumber: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(8)
+        },
+        operatingTimeLimit: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(60)
+        },
+        logMaxNumber: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(10000)
+        },
+        historyDataCycle: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(5000)
+        },
+        storageAlarm: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(100)
+        },
+        storageDetectionCycle: {
+          required,
+          minValue: minValue(0), maxValue: maxValue(600)
+        },
         deviceTrafficSettings: {
           required
         },
         deviceTrafficHigh: {
+          required,
           minValue: minValue(0), maxValue: maxValue(400)
         },
         deviceTrafficMiddle: {
+          required,
           minValue: minValue(0), maxValue: maxValue(400)
         }
       }
@@ -779,6 +880,7 @@
           id: 0,
           initialPassword: null,
           loginNumber: null,
+          operatingTimeLimit:null,
           logMaxNumber: null,
           deviceTrafficSettings: 10,
           storageDetectionCycle: null,
@@ -790,7 +892,6 @@
         dataStorageOptions: [
           {value: '1000002201', label: this.$t('system-setting.storage-business')},
           {value: '1000002202', label: this.$t('system-setting.storage-cartoon')},
-          {value: '1000002203', label: this.$t('system-setting.storage-conversion')},
           {value: '1000002204', label: this.$t('system-setting.storage-original')},
         ],
         levelOptions: [
@@ -801,6 +902,7 @@
         ],
         scanForm: {
           scanParamsId: 0,
+          status:null,
           airCaliWarnTime: null,
           standByTime: null,
           alarmSound: null,
@@ -851,10 +953,17 @@
             this.selectedDeviceId = data.deviceId;
             this.initializeSpanFormData(data);
             break;
+          case 'show':
+            this.pageStatus = 'show';
+            this.selectedDeviceId = data.deviceId;
+            this.initializeSpanFormData(data);
+            break;
           case 'activate':
+            this.selectedDeviceId = data.scanParamsId;
             this.updateItemStatus('1000000701');
             break;
           case 'inactivate':
+            this.selectedDeviceId = data.scanParamsId;
             this.$refs['modal-inactive'].show();
             break;
           case 'back':
@@ -907,9 +1016,10 @@
         for (let key in this.scanForm) {
           if (Object.keys(result).includes(key)) {
             this.scanForm[key] = result[key];
-          } else if (key === 'status') {
-            this.scanForm.status = result.device ? result.device.status : null;
           }
+          // else if (key === 'status') {
+          //   this.scanForm.status = result.device ? result.device.status : null;
+          // }
           /*else if (key === 'fromDeviceId') {
             this.scanForm.fromDeviceId = result.fromParamsList.length > 0 ? result.fromParamsList[0].fromDeviceId : null;
           }*/
@@ -931,8 +1041,8 @@
         if (this.selectedDeviceId === 0)
           return false;
         getApiManager()
-          .post(`${apiBaseUrl}/device-management/device-table/device/update-status`, {
-            deviceId: this.selectedDeviceId,
+          .post(`${apiBaseUrl}/system-setting/scan-param/update`, {
+            scanParamsId: this.selectedDeviceId,
             status: statusValue
           })
           .then((response) => {
@@ -945,7 +1055,6 @@
                   permanent: false
                 });
                 this.scanForm.status = statusValue;
-                if (this.pageStatus === 'table')
                   this.$refs.vuetable.refresh();
                 break;
 
@@ -1072,7 +1181,7 @@
 
           getApiManager().post(`${apiBaseUrl}/system-setting/platform-check/modify`, this.platFormData
           ).then((response) => {
-            getApiManagerError().post(`${apiParamUrl}`, this.platFormData);
+            //getApiManagerError().post(`${apiParamUrl}`, this.platFormData);
             let message = response.data.message;
             let data = response.data.data;
             switch (message) {

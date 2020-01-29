@@ -410,7 +410,7 @@
 
         vuetableIdItems: {
           apiUrl: `${apiBaseUrl}/dictionary-management/dictionary/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -461,7 +461,7 @@
         },
         vuetableDataItems: {
           apiUrl: `${apiBaseUrl}/dictionary-management/dictionary-data/get-by-filter-and-page`,
-          perPage: 5,
+          perPage: 10,
           fields: [
             {
               name: '__checkbox',
@@ -609,6 +609,12 @@
       onClickSaveDic() {
 
         if (this.$v.dicForm.$invalid) {
+          if(this.dicForm.dicName===""){
+            this.$notify('warning', this.$t('permission-management.warning'), this.$t(`response-error-message.dictionary-invalid`), {
+              duration: 3000,
+              permanent: false
+            });
+          }
           return;
         }
 

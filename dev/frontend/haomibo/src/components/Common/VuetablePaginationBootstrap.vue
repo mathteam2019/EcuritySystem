@@ -45,11 +45,10 @@
             v-model="perPage"
             class="mr-3 form-control d-inline font-weight-bold"
             style="width: 80px;">
-            <option>5</option>
             <option>10</option>
-            <option>15</option>
             <option>20</option>
-            <option>25</option>
+            <option>50</option>
+            <option>100</option>
           </select>
           <span class="mr-3">{{$t('vuetable.items')}}</span>
           <span class="mr-3">/</span>
