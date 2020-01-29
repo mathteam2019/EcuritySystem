@@ -12,15 +12,20 @@
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.models.db.SerPlatformCheckParams;
+import com.nuctech.ecuritycheckitem.models.db.SysDictionary;
 import com.nuctech.ecuritycheckitem.models.db.SysUser;
 import com.nuctech.ecuritycheckitem.repositories.SerPlatformCheckParamRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.PlatformCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class PlatformCheckServiceImpl implements PlatformCheckService {
@@ -29,6 +34,25 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromPlatform(SerPlatformCheckParams params) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(params);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * find all platformcheck params
@@ -50,6 +74,7 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
         return result;
     }
 
+
     /**
      * modify platform param
      * @param serPlatformCheckParams
@@ -57,11 +82,16 @@ public class PlatformCheckServiceImpl implements PlatformCheckService {
      */
     @Override
     public void modifyPlatform(SerPlatformCheckParams serPlatformCheckParams, boolean isCreate) {
+        String valueBefore = "";
         if(isCreate == true) {
             serPlatformCheckParams.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         } else {
+            valueBefore = getJsonFromPlatform(findAll().get(0));
             serPlatformCheckParams.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         }
         serPlatformCheckParamRepository.save(serPlatformCheckParams);
+        String valueAfter = getJsonFromPlatform(serPlatformCheckParams);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("PlatformCheck", null, currentLocale), "", "", null, true, valueBefore, valueAfter);
     }
 }

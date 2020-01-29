@@ -269,30 +269,34 @@ public class OrganizationManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(organizationService.checkOrgNameExist(requestBody.getOrgName(), null)) { //check OrgName Exist
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedOrgName", null, currentLocale), requestBody.getOrgNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("UsedOrgName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
         }
         if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), null)) { //check org number exist
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedOrgNumber", null, currentLocale), requestBody.getOrgNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("UsedOrgNumber", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
         if (organizationService.createOrganization(requestBody.getParentOrgId(), sysOrg)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getOrgNumber().toString(),null);
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgNumber().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -339,36 +343,44 @@ public class OrganizationManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgNumber(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(organizationService.checkOrgNameExist(requestBody.getOrgName(), requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedOrgName", null, currentLocale), requestBody.getOrgNumber(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("UsedOrgName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_ORG_NAME);
         }
         if(organizationService.checkOrgNumberExist(requestBody.getOrgNumber(), requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedOrgNumber", null, currentLocale), requestBody.getOrgNumber(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("UsedOrgNumber", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_ORG_NUMBER);
         }
 
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+
             return checkResult;
         }
 
         SysOrg sysOrg = requestBody.convert2SysOrg();
 
         if (organizationService.modifyOrganization(requestBody.getOrgId(), requestBody.getParentOrgId(), sysOrg)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getOrgNumber(),null);
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgNumber(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -386,29 +398,33 @@ public class OrganizationManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
             return checkResult;
         }
 
         if (organizationService.deleteOrganization(requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getOrgId().toString(),null);
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -426,29 +442,36 @@ public class OrganizationManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(organizationService.checkChildrenExist(requestBody.getOrgId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         Object checkResult = checkExist(requestBody.getOrgId());
         if(checkResult != null) {
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("HaveUser", null, currentLocale), "", null, false, "", "");
+
             return checkResult;
         }
 
         if (organizationService.updateOrganizationStatus(requestBody.getOrgId(), requestBody.getStatus())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getOrgId().toString(),null);
             return new CommonResponseBody(ResponseMessage.OK);
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getOrgId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Org", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }

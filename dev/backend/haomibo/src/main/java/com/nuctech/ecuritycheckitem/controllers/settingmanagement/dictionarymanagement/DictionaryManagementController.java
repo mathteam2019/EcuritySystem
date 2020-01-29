@@ -242,14 +242,17 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(dictionaryService.checkDictionary(requestBody.getDictionaryName(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryName", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryName", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_NAME);
         }
 
@@ -259,8 +262,7 @@ public class DictionaryManagementController extends BaseController {
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.createDictionary(sysDictionary);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDictionaryName(),null);
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -277,26 +279,30 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!dictionaryService.checkDictionaryExist(requestBody.getDictionaryId())) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryValue", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryValue", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_VALUE);
         }
 
         if(dictionaryService.checkDictionaryDataCode(requestBody.getDataCode(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryCode", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryCode", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_CODE);
         }
 
@@ -307,8 +313,7 @@ public class DictionaryManagementController extends BaseController {
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.createDictionaryData(sysDictionaryData);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDataValue(),null);
+
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -326,27 +331,31 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         if (!dictionaryService.checkDictionaryExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (dictionaryService.checkDictionaryChildExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         if(dictionaryService.checkDictionary(requestBody.getDictionaryName(), requestBody.getDictionaryId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryName", null, currentLocale), requestBody.getDictionaryName(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryName", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_VALUE);
         }
 
@@ -358,8 +367,6 @@ public class DictionaryManagementController extends BaseController {
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.modifyDictionary(sysDictionary);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDictionaryName(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -377,22 +384,26 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         if (!dictionaryService.checkDictionaryDataExist(requestBody.getDataId())) { // Check if data id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataValue(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(dictionaryService.checkDictionaryDataCode(requestBody.getDataCode(), requestBody.getDataId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedDictionaryCode", null, currentLocale), requestBody.getDataValue(),null);
-            return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("UsedDictionaryCode", null, currentLocale), "", null, false, "", "");
+
+            return new CommonResponseBody(ResponseMessage.USED_DICTIONARY_CODE);
         }
 
 //        if(dictionaryService.checkDictionaryData(requestBody.getDataValue(), requestBody.getDataId())) {
@@ -410,8 +421,7 @@ public class DictionaryManagementController extends BaseController {
                 .note(requestBody.getNote())
                 .build();
         dictionaryService.modifyDictionaryData(sysDictionaryData);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDataValue(),null);
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -430,20 +440,20 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDictionaryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (dictionaryService.checkDictionaryChildExist(requestBody.getDictionaryId())) { // Check if goods id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("HaveChild", null, currentLocale), requestBody.getDictionaryId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("Dictionary", null, currentLocale),
+                    messageSource.getMessage("HaveChild", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.HAS_CHILDREN);
         }
 
         dictionaryService.removeDictionary(requestBody.getDictionaryId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getDictionaryId().toString(),null);
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -461,8 +471,9 @@ public class DictionaryManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getDataId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("DictionaryData", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 

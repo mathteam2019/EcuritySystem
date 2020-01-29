@@ -192,7 +192,7 @@ public class FieldServiceImpl implements FieldService {
         SysField oldSysField = sysFieldRepository.findOne(QSysField.sysField.fieldId.eq(fieldId)).orElse(null);
         String valueBefore = getJsonFromField(oldSysField);
         sysFieldRepository.delete(SysField.builder().fieldId(fieldId).build());
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
                 "", messageSource.getMessage("Field", null, currentLocale), "", String.valueOf(fieldId), null, true, valueBefore, "");
     }
 

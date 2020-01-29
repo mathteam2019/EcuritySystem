@@ -263,14 +263,17 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(assignPermissionService.checkUserAssignRole(requestBody.getUserId())){
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.EXIST_USER);
         }
 
@@ -283,12 +286,15 @@ public class AssignPermissionManagementController extends BaseController {
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -307,8 +313,9 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -321,12 +328,14 @@ public class AssignPermissionManagementController extends BaseController {
             SimpleFilterProvider filters = ModelJsonFilters.getDefaultFilters();
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                    , "", "", requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUser", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
     }
@@ -345,14 +354,17 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(assignPermissionService.checkUserGroupAssignRole(requestBody.getUserGroupId())){
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.EXIST_USER_GROUP);
         }
 
@@ -366,12 +378,14 @@ public class AssignPermissionManagementController extends BaseController {
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
 
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", "", requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -391,8 +405,9 @@ public class AssignPermissionManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
@@ -406,12 +421,14 @@ public class AssignPermissionManagementController extends BaseController {
             filters.addFilter(ModelJsonFilters.FILTER_SYS_RESOURCE, SimpleBeanPropertyFilter.filterOutAllExcept("resourceId", "parentResourceId", "resourceName", "resourceCaption")); //return all fields except specified fields from SysResource model
 
             value.setFilters(filters);
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", "", requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return value;
         } else {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getUserGroupId().toString(), null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("AssignUserGroup", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 

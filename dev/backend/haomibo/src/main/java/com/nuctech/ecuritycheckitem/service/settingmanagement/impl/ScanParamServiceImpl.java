@@ -12,17 +12,20 @@
 
 package com.nuctech.ecuritycheckitem.service.settingmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
 import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamRepository;
 import com.nuctech.ecuritycheckitem.repositories.SerScanParamsFromRepository;
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.settingmanagement.ScanParamService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -45,6 +49,49 @@ public class ScanParamServiceImpl implements ScanParamService {
 
     @Autowired
     SerScanParamsFromRepository serScanParamsFromRepository;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromScanParam(SerScanParam scanParam) {
+        SerScanParam newParam = SerScanParam.builder()
+                .scanParamsId(scanParam.getScanParamsId())
+                .deviceId(scanParam.getDeviceId())
+                .airCaliWarnTime(scanParam.getAirCaliWarnTime())
+                .standByTime(scanParam.getStandByTime())
+                .alarmSound(scanParam.getAlarmSound())
+                .passSound(scanParam.getPassSound())
+                .posErrorSound(scanParam.getPosErrorSound())
+                .standSound(scanParam.getStandSound())
+                .scanSound(scanParam.getScanSound())
+                .scanOverUseSound(scanParam.getScanOverUseSound())
+                .autoRecognise(scanParam.getAutoRecognise())
+                .recognitionRate(scanParam.getRecognitionRate())
+                .saveScanData(scanParam.getSaveScanData())
+                .saveSuspectData(scanParam.getSaveSuspectData())
+                .facialBlurring(scanParam.getFacialBlurring())
+                .chestBlurring(scanParam.getChestBlurring())
+                .hipBlurring(scanParam.getHipBlurring())
+                .groinBlurring(scanParam.getGroinBlurring())
+                .autoConfig(scanParam.getAutoConfig())
+                .dictionaryName(scanParam.getDictionaryName())
+                .deviceStorageAlarm(scanParam.getDeviceStorageAlarm())
+                .deviceStorageAlarmPercent(scanParam.getDeviceStorageAlarmPercent())
+                .status(scanParam.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newParam);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * @param deviceName
@@ -96,9 +143,13 @@ public class ScanParamServiceImpl implements ScanParamService {
         Optional<SerScanParam> optionalSerScanParam = serScanParamRepository.findOne(QSerScanParam.
                 serScanParam.scanParamsId.eq(paramId));
         SerScanParam serScanParam = optionalSerScanParam.get();
+        String valueBefore = getJsonFromScanParam(serScanParam);
         serScanParam.setStatus(status);
         serScanParam.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
         serScanParamRepository.save(serScanParam);
+        String valueAfter = getJsonFromScanParam(serScanParam);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ScanParam", null, currentLocale), "", String.valueOf(paramId), null, true, valueBefore, valueAfter);
     }
 
     /**
@@ -169,6 +220,7 @@ public class ScanParamServiceImpl implements ScanParamService {
 
         SerScanParam serScanParam = serScanParamRepository.findOne(QSerScanParam.serScanParam
                 .scanParamsId.eq(serScanParamNew.getScanParamsId())).orElse(null);
+        String valueBefore = getJsonFromScanParam(serScanParam);
 
         //check if ser scan param is valid.
         if (serScanParam == null) {
@@ -242,7 +294,9 @@ public class ScanParamServiceImpl implements ScanParamService {
             serScanParamRepository.saveAll(serScanParamList);
             serScanParamsFromRepository.saveAll(serScanParamsFromList);
         }
-
+        String valueAfter = getJsonFromScanParam(serScanParam);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("ScanParam", null, currentLocale), "", serScanParam.getScanParamsId().toString(), null, true, valueBefore, valueAfter);
 
         return true;
     }

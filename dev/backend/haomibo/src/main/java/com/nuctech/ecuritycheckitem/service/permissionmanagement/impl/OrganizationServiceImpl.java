@@ -12,15 +12,9 @@
 
 package com.nuctech.ecuritycheckitem.service.permissionmanagement.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nuctech.ecuritycheckitem.config.Constants;
-import com.nuctech.ecuritycheckitem.models.db.QSysOrg;
-import com.nuctech.ecuritycheckitem.models.db.QSysRole;
-import com.nuctech.ecuritycheckitem.models.db.QSysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysDataGroup;
-import com.nuctech.ecuritycheckitem.models.db.QSysField;
-import com.nuctech.ecuritycheckitem.models.db.SysOrg;
-import com.nuctech.ecuritycheckitem.models.db.SysUser;
-import com.nuctech.ecuritycheckitem.models.db.QSysUserGroup;
+import com.nuctech.ecuritycheckitem.models.db.*;
 
 import com.nuctech.ecuritycheckitem.repositories.SysOrgRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysUserRepository;
@@ -30,16 +24,19 @@ import com.nuctech.ecuritycheckitem.repositories.SysUserGroupRepository;
 import com.nuctech.ecuritycheckitem.repositories.SysDataGroupRepository;
 
 import com.nuctech.ecuritycheckitem.security.AuthenticationFacade;
+import com.nuctech.ecuritycheckitem.service.logmanagement.AuditLogService;
 import com.nuctech.ecuritycheckitem.service.permissionmanagement.OrganizationService;
 import com.nuctech.ecuritycheckitem.utils.PageResult;
 import com.querydsl.core.BooleanBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -67,6 +64,33 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Autowired
     AuthenticationFacade authenticationFacade;
+
+    @Autowired
+    AuditLogService auditLogService;
+
+    @Autowired
+    public MessageSource messageSource;
+
+    public static Locale currentLocale = Locale.ENGLISH;
+
+    public String getJsonFromOrg(SysOrg org) {
+        SysOrg newOrg = SysOrg.builder()
+                .orgId(org.getOrgId())
+                .parentOrgId(org.getParentOrgId())
+                .orgName(org.getOrgName())
+                .orgNumber(org.getOrgNumber())
+                .leader(org.getLeader())
+                .mobile(org.getMobile())
+                .status(org.getStatus())
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String answer = "";
+        try {
+            answer = objectMapper.writeValueAsString(newOrg);
+        } catch(Exception ex) {
+        }
+        return answer;
+    }
 
     /**
      * check if org name exists
@@ -174,6 +198,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         sysOrg.addCreatedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
+        String valueAfter = getJsonFromOrg(sysOrg);
+        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Org", null, currentLocale), "", sysOrg.getOrgId().toString(), null, true, "", valueAfter);
 
         return true;
 
@@ -188,7 +215,7 @@ public class OrganizationServiceImpl implements OrganizationService {
      */
     public boolean modifyOrganization(Long orgId, Long parentOrgId, SysOrg sysOrg) {
         SysOrg oldSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).orElse(null);
-
+        String valueBefore = getJsonFromOrg(oldSysOrg);
         // Check if org is existing.
         if (oldSysOrg == null) {
             return false;
@@ -207,6 +234,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
+        String valueAfter = getJsonFromOrg(sysOrg);
+        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Org", null, currentLocale), "", sysOrg.getOrgId().toString(), null, true, valueBefore, valueAfter);
+
 
         return true;
     }
@@ -223,9 +254,12 @@ public class OrganizationServiceImpl implements OrganizationService {
             // Can't delete if org has children.
             return false;
         }
+        SysOrg oldSysOrg = sysOrgRepository.findOne(QSysOrg.sysOrg.orgId.eq(orgId)).orElse(null);
+        String valueBefore = getJsonFromOrg(oldSysOrg);
 
         sysOrgRepository.delete(SysOrg.builder().orgId(orgId).build());
-
+        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Org", null, currentLocale), "", String.valueOf(orgId), null, true, valueBefore, "");
         return true;
     }
 
@@ -243,7 +277,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         }
 
         SysOrg sysOrg = optionalSysOrg.get();
-
+        String valueBefore = getJsonFromOrg(sysOrg);
         // Update status.
         sysOrg.setStatus(status);
 
@@ -251,7 +285,9 @@ public class OrganizationServiceImpl implements OrganizationService {
         sysOrg.addEditedInfo((SysUser) authenticationFacade.getAuthentication().getPrincipal());
 
         sysOrgRepository.save(sysOrg);
-
+        String valueAfter = getJsonFromOrg(sysOrg);
+        auditLogService.saveAudioLog(messageSource.getMessage("UpdateStatus", null, currentLocale), messageSource.getMessage("Success", null, currentLocale),
+                "", messageSource.getMessage("Org", null, currentLocale), "", String.valueOf(orgId), null, true, valueBefore, valueAfter);
         return true;
     }
 

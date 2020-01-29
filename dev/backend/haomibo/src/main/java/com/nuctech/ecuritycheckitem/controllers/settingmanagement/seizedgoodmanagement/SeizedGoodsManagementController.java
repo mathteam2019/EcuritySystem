@@ -170,21 +170,22 @@ public class SeizedGoodsManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(serSeizedGoodService.checkGood(requestBody.getSeizedGoodsCode(), null)) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("UsedSeizedGoods", null, currentLocale), "", null, false, "", "");
+
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
         SerSeizedGood serSeizedGood = requestBody.convert2SerSeizedGood();
         serSeizedGoodService.createGood(serSeizedGood);
-        auditLogService.saveAudioLog(messageSource.getMessage("Create", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getSeizedGoodsCode(),null);
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
@@ -202,28 +203,30 @@ public class SeizedGoodsManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if (!serSeizedGoodService.checkSeizedExist(requestBody.getGoodsId())) { // Check if goods id is existing.
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
         if(serSeizedGoodService.checkGood(requestBody.getSeizedGoodsCode(), requestBody.getGoodsId())) {
-            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("UsedSeizedGoods", null, currentLocale), requestBody.getSeizedGoodsCode(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("UsedSeizedGoods", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.USED_SEIZED_GOOD);
         }
 
 
         SerSeizedGood serSeizedGood = requestBody.convert2SerSeizedGood();
         serSeizedGoodService.modifyGood(serSeizedGood);
-        auditLogService.saveAudioLog(messageSource.getMessage("Modify", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getSeizedGoodsCode(),null);
+
 
         return new CommonResponseBody(ResponseMessage.OK);
     }
@@ -242,16 +245,14 @@ public class SeizedGoodsManagementController extends BaseController {
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) { //return invalid parameter if input parameter validation failed
-            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale)
-                    , "", messageSource.getMessage("ParameterError", null, currentLocale), requestBody.getGoodsId().toString(),null);
+            auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Fail", null, currentLocale),
+                    "", messageSource.getMessage("SeizedGood", null, currentLocale),
+                    messageSource.getMessage("ParameterError", null, currentLocale), "", null, false, "", "");
             return new CommonResponseBody(ResponseMessage.INVALID_PARAMETER);
         }
 
 
         serSeizedGoodService.removeGood(requestBody.getGoodsId());
-        auditLogService.saveAudioLog(messageSource.getMessage("Delete", null, currentLocale), messageSource.getMessage("Success", null, currentLocale)
-                , "", "", requestBody.getGoodsId().toString(),null);
-
         return new CommonResponseBody(ResponseMessage.OK);
     }
 
